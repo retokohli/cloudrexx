@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Pricelist
  *
  * Creates a PDF document with product price information
@@ -501,6 +504,7 @@ class Pricelist
         $arrCategoryName = ShopCategories::getNameArray();
         $arrOutput = array();
         foreach ($arrProduct as $product_id => $objProduct) {
+<<<<<<< HEAD
             $categoryIds = explode(',', $objProduct->category_id());
             $arrCategoryNames = array();
             foreach ($categoryIds as $categoryId){
@@ -510,13 +514,27 @@ class Pricelist
             $arrOutput[$product_id] = array(
                 'product_name' => self::decode($objProduct->name()),
                 'category_name' => self::decode(implode(', ', $arrCategoryNames)),
+=======
+            $category_id = $objProduct->category_id();
+            $category_name = self::decode($arrCategoryName[$category_id]);
+//$objProduct = new Product();
+            $arrOutput[$product_id] = array(
+                'product_name' => self::decode($objProduct->name()),
+                'category_name' => $category_name,
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                 'product_code' => self::decode($objProduct->code()),
                 'product_id' => self::decode($objProduct->id()),
                 'price' =>
                     ($objProduct->discount_active()
+<<<<<<< HEAD
                         ? "S " . Currency::formatPrice($objProduct->discountprice())
                         : Currency::formatPrice($objProduct->price())) .
                     ' ' . $currency_symbol,
+=======
+                        ? Currency::formatPrice($objProduct->price())
+                        : "S ".Currency::formatPrice($objProduct->discountprice())).
+                    ' '.$currency_symbol,
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             );
         }
         $objPdf->ezTable($arrOutput, array(

@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -26,6 +27,8 @@
  * our trademarks remain entirely with us.
  */
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 global $_ARRAYLANG;
 $_ARRAYLANG['SHOP_SHIPMENT_TOO_HEAVY'] = "The total weight of your order exceeds the available shipment conditions";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Accept changes";
@@ -979,5 +982,9 @@ $_ARRAYLANG['TXT_SHOP_CREDIT_CARD_NUMBER'] = "Credit card number";
 $_ARRAYLANG['TXT_SHOP_CVC'] = "CVC";
 $_ARRAYLANG['TXT_SHOP_CARD_HOLDER'] = "Card holder";
 $_ARRAYLANG['TXT_SHOP_CARD_EXPIRY'] = "Expiry (MM/YYYY)";
+<<<<<<< HEAD
 $_ARRAYLANG['TXT_SHOP_SUBMIT'] = "Submit";
 $_ARRAYLANG['TXT_SHOP_SETTING_NUMOF_PRODUCTS_PER_PAGE_FRONTEND'] = "Number of products per page in the frontend";
+=======
+$_ARRAYLANG['TXT_SHOP_SUBMIT'] = "Submit";
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211

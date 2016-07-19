@@ -1,5 +1,6 @@
 <?php
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -26,6 +27,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Calendar
  * 
  * @package    contrexx
@@ -153,6 +156,7 @@ class CalendarLibrary
     const PICTURE_FIELD_KEY = 'picture_id';
     
     /**
+<<<<<<< HEAD
      * Attachment field key
      * 
      * @var string
@@ -160,6 +164,8 @@ class CalendarLibrary
     const ATTACHMENT_FIELD_KEY = 'attachment_id';
     
     /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
      * Assign the template path
      * Sets the Global variable for the calendar module
      * 
@@ -216,7 +222,11 @@ class CalendarLibrary
                 self::getSettings();
 
                 switch($strAction) {
+<<<<<<< HEAD
                     case 'add_event':
+=======
+                    case 'add_event':  
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                        if($this->arrSettings['addEventsFrontend'] == 1 || $this->arrSettings['addEventsFrontend'] == 2) {
                             if($this->arrSettings['addEventsFrontend'] == 2) {
                                 if($bolUserLogin) {

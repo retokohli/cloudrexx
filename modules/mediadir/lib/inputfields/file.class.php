@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Media Directory Inputfield File Class
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -131,7 +134,11 @@ class mediaDirectoryInputfieldFile extends mediaDirectoryLibrary implements inpu
                 }
 
                 if($objInit->mode == 'backend') {
+<<<<<<< HEAD
                     $strInputfield = $strFilePreview.'<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][file]" value="'.$strValue.'" id="'.$this->moduleName.'Inputfield_'.$intId.'" style="width: 300px;" onfocus="this.select();" />&nbsp;<input type="button" value="' . $_ARRAYLANG['TXT_BROWSE'] . '" onClick="getFileBrowser(\''.$this->moduleName.'Inputfield_'.$intId.'\', \''.$this->moduleName.'\', \'/uploads\')" />';
+=======
+                    $strInputfield = $strFilePreview.'<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][file]" value="'.$strValue.'" id="'.$this->moduleName.'Inputfield_'.$intId.'" style="width: 300px;" onfocus="this.select();" />&nbsp;<input type="button" value="Durchsuchen" onClick="getFileBrowser(\''.$this->moduleName.'Inputfield_'.$intId.'\', \''.$this->moduleName.'\', \'/uploads\')" />';
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                     $strInputfield .= '<br /><input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][name]" value="'.$strName.'" id="'.$this->moduleName.'Inputfield_'.$intId.'_name" style="width: 300px;" onfocus="this.select();" />&nbsp;<i>'.$_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME'].'</i>';
                 
                 } else {

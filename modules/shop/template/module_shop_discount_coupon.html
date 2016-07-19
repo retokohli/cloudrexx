@@ -173,6 +173,7 @@
 </div>
 <script type="text/javascript">// <[CDATA[
 
+<<<<<<< HEAD
 function delete_coupon(index) {
     if (confirm("{TXT_SHOP_DISCOUNT_COUPON_DELETE_CONFIRM}\n\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
         window.location.replace(
@@ -181,6 +182,9 @@ function delete_coupon(index) {
 }
 cx.ready(function() {
   var $ = cx.jQuery;
+=======
+cx.jQuery(function($) {
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
   $("#end_time_unlimited").change(function() {
     if ($("#end_time_unlimited").is(":checked")) {
       $("#end_date").attr("disabled", true);
@@ -196,6 +200,7 @@ cx.ready(function() {
       });
     }
   }).change();
+<<<<<<< HEAD
   var uses = $("#uses").val();
   $("#unlimited").change(function() {
     if ($("#unlimited").is(":checked")) {
@@ -208,6 +213,18 @@ cx.ready(function() {
   var element = $("#customer_widget").find("input[name=customer_id]");
   var customer_id = element.val();
   $("[name=global_or_customer]").change(function() {
+=======
+  $("#unlimited").change(function() {
+    if ($("#unlimited").is(":checked")) {
+      $("#uses").attr("disabled", true).val("");
+    } else {
+      $("#uses").attr("disabled", false).val("1");
+    }
+  }).change();
+  var customer_id = "{SHOP_DISCOUNT_COUPON_CUSTOMER_ID}";
+  $("[name=global_or_customer]").change(function() {
+    var element = $("#customer_widget").find("input[name=customer_id]");
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     if ($("#global").is(":checked")) {
       customer_id = element.val();
       element.val("0");
@@ -240,6 +257,18 @@ cx.ready(function() {
   };
   change_type("{SHOP_DISCOUNT_COUPON_TYPE_SELECTED}");
 });
+<<<<<<< HEAD
 // ]]>
 </script>
 <!-- END module_shop_discount_coupon.html -->
+=======
+function delete_coupon(index) {
+  if (confirm("{TXT_SHOP_DISCOUNT_COUPON_DELETE_CONFIRM}\n\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
+    window.location.replace(
+      "index.php?{CSRF_PARAM}&cmd=shop&act=settings&tpl=coupon&delete="+index);
+  }
+}
+// ]]>
+</script>
+<!-- END module_shop_discount_coupon.html -->
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211

@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -26,6 +27,8 @@
  * our trademarks remain entirely with us.
  */
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * Forum
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -301,6 +304,7 @@ class ForumAdmin extends ForumLibrary {
                    'CATEGORY_ADD_LANGUAGES_2'    =>    $arrLanguages[1],
                    'CATEGORY_ADD_LANGUAGES_3'    =>    $arrLanguages[2]
                ));
+<<<<<<< HEAD
             } else {
                $activeFrontendLangIds = \FWLanguage::getActiveFrontendLanguages();
                reset($activeFrontendLangIds);
@@ -328,6 +332,9 @@ class ForumAdmin extends ForumLibrary {
                    'CATEGORY_ADD_LANGUAGES_1'    =>    $activeLang
                ));
             }
+=======
+           }
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
      //show "add forum"-form
         $this->_objTpl->setVariable(array(

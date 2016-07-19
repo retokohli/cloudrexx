@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Newsletter
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
@@ -2829,11 +2832,16 @@ class newsletter extends NewsletterLib
     function _setTmpSending($mailId)
     {
         $mailAddresses = $this->getAllRecipientEmails($mailId);
+<<<<<<< HEAD
         $mailAddresses->rewind();
         while ($mailAddresses->valid()) {
             $mail = $mailAddresses->current();
             $this->insertTmpEmail($mailId, $mail['email'], $mail['type']);
             $mailAddresses->next();
+=======
+        foreach ($mailAddresses as $mail) {
+            $this->insertTmpEmail($mailId, $mail['email'], $mail['type']);
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
         $this->updateNewsletterRecipientCount($mailId);
     }
@@ -3573,6 +3581,7 @@ class newsletter extends NewsletterLib
             $_CONFIG['domainUrl'].
             ($_SERVER['SERVER_PORT'] == 80
               ? '' : ':'.intval($_SERVER['SERVER_PORT'])).
+<<<<<<< HEAD
             ASCMS_PATH_OFFSET.'/'.
             \FWLanguage::getLanguageParameter(
                 $this->getUsersPreferredLanguageId(
@@ -3581,6 +3590,11 @@ class newsletter extends NewsletterLib
                 ),
                 'lang'
             ).
+=======
+            ASCMS_PATH_OFFSET.
+// TODO: use the recipient's language instead of the default language
+            '/'.FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'lang').
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
 
         return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
@@ -3605,6 +3619,7 @@ class newsletter extends NewsletterLib
             $_CONFIG['domainUrl'].
             ($_SERVER['SERVER_PORT'] == 80
               ? NULL : ':'.intval($_SERVER['SERVER_PORT'])).
+<<<<<<< HEAD
             ASCMS_PATH_OFFSET.'/'.
             \FWLanguage::getLanguageParameter(
                 $this->getUsersPreferredLanguageId(
@@ -3613,6 +3628,11 @@ class newsletter extends NewsletterLib
                 ),
                 'lang'
             ).
+=======
+            ASCMS_PATH_OFFSET.
+// TODO: use the recipient's language instead of the default language
+            '/'.FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'lang').
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
         return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
     }
@@ -4214,7 +4234,11 @@ $WhereStatement = '';
                 $arrLists = array();
 
                 if (isset($_POST['newsletter_recipient_associated_list'])) {
+<<<<<<< HEAD
                     foreach (explode(',', $_POST['newsletter_recipient_associated_list']) as $listId) {
+=======
+                    foreach ($_POST['newsletter_recipient_associated_list'] as $listId) {                    
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                         array_push($arrLists, intval($listId));             
                     }                
                 }
@@ -4232,7 +4256,11 @@ $WhereStatement = '';
                     }
 
                     $arrRecipient['email'] = trim($arrRecipient['email']);
+<<<<<<< HEAD
                     if (!\FWValidator::isEmail($arrRecipient['email'])) {
+=======
+                    if (!FWValidator::isEmail($arrRecipient['email'])) {
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                         array_push($arrBadEmails, $arrRecipient['email']);
                     } else {
                         $EmailCount++;
@@ -4387,7 +4415,11 @@ $WhereStatement = '';
                     $arrLists = array();
                 
                     if (isset($_POST['newsletter_recipient_associated_list'])) {
+<<<<<<< HEAD
                         foreach ($_POST['newsletter_recipient_associated_list'] as $listId) {
+=======
+                        foreach (explode(',', $_POST['newsletter_recipient_associated_list']) as $listId) {                    
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                             array_push($arrLists, intval($listId));
                         }                
                     }
@@ -5883,7 +5915,11 @@ function MultiAction() {
                     'NEWSLETTER_LINK_ROW_CLASS' => $rowNr % 2 == 1 ? 'row1' : 'row2',
                     'NEWSLETTER_LINK_TITLE'     => $objResult->fields['title'],
                     'NEWSLETTER_LINK_URL'       => $objResult->fields['url'],
+<<<<<<< HEAD
                     'NEWSLETTER_MAIL_USERS'     => (int) $objResult->fields['feedback_count'], // number of users, who have clicked the link
+=======
+                    'NEWSLETTER_MAIL_USERS'     => $objResult->fields['feedback_count'], // number of users, who have clicked the link
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                     'NEWSLETTER_LINK_FEEDBACK'  => $objResult->fields['count'] > 0 ? round(100 /  $objResult->fields['count'] * $objResult->fields['feedback_count']) : 0
                 ));
 
@@ -6336,7 +6372,11 @@ if (!class_exists('DBIterator')) {
          * @param       object (adodb result object)
          */
         public function __construct($obj) {
+<<<<<<< HEAD
             $this->empty = (!($obj instanceof \ADORecordSet_pdo) && empty($obj->fields));
+=======
+            $this->empty = !($obj instanceof ADORecordSet);
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
             $this->obj = $obj;
         }

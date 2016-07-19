@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Class newsletter library
  *
  * Newsletter module class
@@ -136,6 +139,7 @@ class NewsletterLib
         return $arrLists;
     }
 
+<<<<<<< HEAD
     /**
      * Returns the Language ID for a newsletter user
      * 
@@ -181,6 +185,8 @@ class NewsletterLib
         }
         return $userLanguage;
     }
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
     /**
      * Return the count of recipients of a list

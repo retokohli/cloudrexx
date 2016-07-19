@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php 
 /**
  * Contrexx
@@ -27,6 +28,9 @@
 
 define('UPDATE_PATH', dirname(__FILE__));@include_once(UPDATE_PATH.'/../config/configuration.php');@header('content-type: text/html; charset='.(UPDATE_UTF8 ? 'utf-8' : 'iso-8859-1'));
 ?>
+=======
+<?php define('UPDATE_PATH', dirname(__FILE__));@include_once(UPDATE_PATH.'/../config/configuration.php');@header('content-type: text/html; charset='.(UPDATE_UTF8 ? 'utf-8' : 'iso-8859-1'));?>
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
 var request_active = false;
 var getDebugInfo = false;
@@ -137,6 +141,7 @@ function getFormData(goBack)
     }
   }
   
+<<<<<<< HEAD
   oElements = document.getElementById('wrapper').getElementsByTagName('textarea');
   if (oElements.length > 0) {
     for (i = 0;i < oElements.length; i++) {
@@ -151,6 +156,8 @@ function getFormData(goBack)
     }
   }
   
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
   aFormData = new Array();
   for (i in oFormData) {
     aFormData.push(i+':'+((typeof(oFormData[i]) == 'object') ? '["'+oFormData[i].join('","')+'"]' : '"'+oFormData[i]+'"'));

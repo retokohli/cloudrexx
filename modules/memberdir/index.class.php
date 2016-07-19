@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Member directory
  *
  * Frontend memberdir class
@@ -401,11 +404,19 @@ class memberDir extends MemberDirLibrary
                     }
                     $subs = array();
                     if(strpos($objResult->fields[$key], 'http://') !== false){
+<<<<<<< HEAD
                         preg_match('#http://([a-zA-Z0-9_\-\.]+\.[a-zA-Z]{1,}[a-zA-Z0-9_\-\#\%\&/\?\.\=]+)#', $objResult->fields[$key], $subs);
                         $objResult->fields[$key] = '<a href="http://'.$subs[1].'" title="http://'.$subs[1].'" target="_blank">'.$objResult->fields[$key].'</a>';
                     }
                     if(strpos($objResult->fields[$key], 'www.') !== false){
                         preg_match('#www\.([a-zA-Z0-9_\-\.]+\.[a-zA-Z]{1,}[a-zA-Z0-9_\-\#\%\&/\?\.\=]+)#', $objResult->fields[$key], $subs);
+=======
+                        preg_match('#http://([a-zA-Z0-9_\-\.]+\.[a-zA-Z]{1,}[a-zA-Z0-9_\-\#\%\&/\?]+)#', $objResult->fields[$key], $subs);
+                        $objResult->fields[$key] = '<a href="http://'.$subs[1].'" title="http://'.$subs[1].'" target="_blank">'.$objResult->fields[$key].'</a>';
+                    }
+                    if(strpos($objResult->fields[$key], 'www.') !== false){
+                        preg_match('#www\.([a-zA-Z0-9_\-\.]+\.[a-zA-Z]{1,}[a-zA-Z0-9_\-\#\%\&/\?]+)#', $objResult->fields[$key], $subs);
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                         $objResult->fields[$key] = '<a href="http://www.'.$subs[1].'" title="http://www.'.$subs[1].'" target="_blank">'.$objResult->fields[$key].'</a>';
                     }
                     $this->_objTpl->setVariable(array(

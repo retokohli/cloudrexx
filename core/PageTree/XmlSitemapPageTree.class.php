@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Class XmlSitemapPageTree
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -55,6 +58,7 @@ class XmlSitemapPageTree extends PageTree {
     private static $strFileNameWithLang = 'sitemap_%s.xml';
 
     /**
+<<<<<<< HEAD
      * Override the constructor from the PageTree
      * @see Cx\Core\PageTree::__construct()
      * @param type $entityManager
@@ -75,6 +79,8 @@ class XmlSitemapPageTree extends PageTree {
     }
 
     /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
      * Writes the XML-Sitemap in all langs (if activated in config)
      * @global type $_CONFIG
      * @global type $_CORELANG
@@ -243,9 +249,12 @@ class XmlSitemapPageTree extends PageTree {
     protected function preRenderElement($level, $hasChilds, $lang, $page) {
         
     }
+<<<<<<< HEAD
     
     protected function getFullNavigation() {
         return true;
     }
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 }
 

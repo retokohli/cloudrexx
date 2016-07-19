@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -26,6 +27,8 @@
  * our trademarks remain entirely with us.
  */
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
@@ -92,6 +95,10 @@ $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'] = "Fødselsdag";
 $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE'] = "Tilmeld";
 $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'] = "Firma";
 $_ARRAYLANG['TXT_NEWSLETTER_MONTHS_ARRAY'] = "January,February,March,April,May,June,July,August,September,October,November,December";
+<<<<<<< HEAD
+=======
+$_ARRAYLANG['TXT_NEWSLETTER_MUST_SELECT_LIST'] = "Du skal som minimum valge en liste!";
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED'] = "Dine data er blevet aktualiseret med sucess";
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA'] = "Der er opstået en fejl ved aktualiseringen af dine data!";
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU'] = "Der er opstået en fejl ved tilføjelsen af nyhedsbrevsystemet";

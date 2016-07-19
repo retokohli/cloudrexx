@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -26,6 +27,8 @@
  * our trademarks remain entirely with us.
  */
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * This file is used so index.php works under PHP 5.2 (namespaces!)
  * @author <michael.ritter@comvation.com>

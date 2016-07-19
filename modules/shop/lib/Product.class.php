@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Shop Product class
  * @version     3.0.0
  * @package     contrexx
@@ -242,7 +245,11 @@ class Product
         // Assign & check
         $this->code         = trim(strip_tags($code));
         $this->category_id  = trim(strip_tags($category_id));
+<<<<<<< HEAD
         $this->name         = trim($name);
+=======
+        $this->name         = trim(contrexx_input2db($name));
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $this->distribution = trim(strip_tags($distribution));
         $this->price        = floatval($price);
         $this->ord          = intval($ord);
@@ -298,7 +305,11 @@ class Product
     function name($name=null)
     {
         if (isset($name) && $name != '') {
+<<<<<<< HEAD
             $this->name = trim($name);
+=======
+            $this->name = trim(contrexx_input2db($name));
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
         return $this->name;
     }
@@ -1015,6 +1026,7 @@ class Product
     {
         global $objDatabase;
 
+<<<<<<< HEAD
         $args = array(
             $this->pictures,
             $this->category_id,
@@ -1072,6 +1084,37 @@ class Product
         ';
         
         $objResult = $objDatabase->Execute($query, $args);
+=======
+        $query = "
+            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
+            SET picture='$this->pictures',
+                category_id='".addslashes($this->category_id)."',
+                distribution='$this->distribution',
+                normalprice=$this->price,
+                resellerprice=$this->resellerprice,
+                stock=$this->stock,
+                stock_visible=".($this->stock_visible ? 1 : 0).",
+                discountprice=$this->discountprice,
+                discount_active=".($this->discount_active ? 1 : 0).",
+                active=".($this->active ? 1 : 0).",
+                b2b=".($this->b2b ? 1 : 0).",
+                b2c=".($this->b2c ? 1 : 0).",
+                date_start='$this->date_start',
+                date_end='$this->date_end',
+                manufacturer_id=$this->manufacturer_id,
+                ord=$this->ord,
+                vat_id=$this->vat_id,
+                weight=$this->weight,
+                flags='".addslashes($this->flags)."',
+                usergroup_ids=".($this->usergroup_ids
+                    ? "'".$this->usergroup_ids."'" : 'NULL').",
+                group_id=".($this->group_id
+                    ? $this->group_id : 'NULL').",
+                article_id=".($this->article_id
+                    ? $this->article_id : 'NULL')."
+          WHERE id=$this->id";
+        $objResult = $objDatabase->Execute($query);
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         if (!$objResult) return false;
         return true;
     }

@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Module Session
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -674,12 +677,16 @@ class cmsSession extends RecursiveArrayAccess {
     {
         global $_DBCONFIG;
         
+<<<<<<< HEAD
         // MySQL 5.7.5 and later enforces a maximum length on lock names of 64 characters. Previously, no limit was enforced.
         return substr(md5($_DBCONFIG['database'].DBPREFIX), 16)
               .'_'
               .substr(md5($_SESSION->sessionid), 15)
               .'_'
               .substr(md5($key), 31);
+=======
+        return $_DBCONFIG['database'].DBPREFIX."sessions_".$_SESSION->sessionid.'_'.$key;
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     }
 
     /**

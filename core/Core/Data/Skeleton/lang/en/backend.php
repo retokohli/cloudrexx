@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -26,6 +27,8 @@
  * our trademarks remain entirely with us.
  */
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * This is the english language file for backend mode.
  * This file is included by Contrexx and all entries are set as placeholder
@@ -49,4 +52,8 @@ $_ARRAYLANG['TXT_MODULE_SKELETON_ACT_DEFAULT'] = 'Congratulations';
 // Now our content specific values:
 $_ARRAYLANG['TXT_MODULE_SKELETON_CONGRATULATIONS'] = 'Congratulations';
 $_ARRAYLANG['TXT_MODULE_SKELETON_SUCCESSFUL_CREATION'] = 'You successfully created a new module!';
+<<<<<<< HEAD
 $_ARRAYLANG['TXT_MODULE_SKELETON_EXAMPLE_TEMPLATE'] = 'This is the default template for this component. It is used for all ACTs that do not have their own template.';
+=======
+$_ARRAYLANG['TXT_MODULE_SKELETON_EXAMPLE_TEMPLATE'] = 'This is the default template for this component. It is used for all ACTs that do not have their own template.';
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211

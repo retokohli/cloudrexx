@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * An URL container
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -122,17 +125,21 @@ class Url {
     const ROUTED = 2;
 
     protected $state = 0;
+<<<<<<< HEAD
     
     /**
      * The fragment (after #) part of the URL
      * @var string
      */
     protected $fragment = '';
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
     /**
      * Initializes $domain and $path.
      * @param string $url http://example.com/Test
      */
+<<<<<<< HEAD
     public function __construct($url, $replacePorts = false) {
         
         $data = parse_url($url);
@@ -165,6 +172,21 @@ class Url {
         if (!empty($data['fragment'])) {
             $this->fragment = $data['fragment'];
         }
+=======
+    public function __construct($url) {
+        $matches = array();
+        $matchCount = preg_match('/^(https?:\/\/[^\/]+\/)(.*)?/', $url, $matches);
+        if ($matchCount == 0) {
+            throw new UrlException('Malformed URL: ' . $url);
+        }
+
+        $this->domain = $matches[1];
+        if (isset($matches[2])) {
+            $this->setPath($matches[2]);
+        } else {
+            $this->suggest();
+        }
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
         $this->addPassedParams();
     }
@@ -223,6 +245,7 @@ class Url {
     public function getPath() {
         return $this->path;
     }
+<<<<<<< HEAD
     
     /**
      * Returns the URL fragment (if any), including the #
@@ -236,6 +259,10 @@ class Url {
         $data = parse_url($path);
         $path = $data['path'];
         $this->fragment = (isset($data['fragment']) ? $data['fragment'] : '');
+=======
+
+    public function setPath($path) {
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $pathOffset = substr(ASCMS_INSTANCE_OFFSET, 1);
         if (!empty($pathOffset) && substr($path, 0, strlen($pathOffset)) == $pathOffset) {
             $path = substr($path, strlen($pathOffset) + 1);
@@ -782,7 +809,11 @@ class Url {
         return
             ASCMS_INSTANCE_OFFSET.'/'.
             ($this->getMode() != 'backend' ? $this->getLangDir().'/' : '').
+<<<<<<< HEAD
             $this->path . (empty($this->fragment) ? '' : '#' . $this->fragment); // contains path (except for PATH_OFFSET and virtual language dir) and params
+=======
+            $this->path; // contains path (except for PATH_OFFSET and virtual language dir) and params
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     }
 
 

@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -26,6 +27,8 @@
  * our trademarks remain entirely with us.
  */
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * This handles exceptions for new Component structure. This is old code
  * and should be replaced so that this class becomes unnecessary
@@ -1027,7 +1030,11 @@ class LegacyComponentHandler {
                                     ||  $objTemplate->blockExists('access_currently_online_male_members')
                                     ||  $objTemplate->blockExists('access_currently_online_members'))) {
                                 if ($cl->loadFile(ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php'))
+<<<<<<< HEAD
                                     $objAccessBlocks = new \Access_Blocks();
+=======
+                                    $objAccessBlocks = new Access_Blocks();
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                                 if ($objTemplate->blockExists('access_currently_online_female_members'))
                                     $objAccessBlocks->setCurrentlyOnlineUsers('female');
                                 if ($objTemplate->blockExists('access_currently_online_male_members'))
@@ -1047,7 +1054,11 @@ class LegacyComponentHandler {
                                     ||  $objTemplate->blockExists('access_last_active_members'))) {
                                 if (   !$objAccessBlocks
                                     && $cl->loadFile(ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php'))
+<<<<<<< HEAD
                                     $objAccessBlocks = new \Access_Blocks();
+=======
+                                    $objAccessBlocks = new Access_Blocks();
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                                 if ($objTemplate->blockExists('access_last_active_female_members'))
                                     $objAccessBlocks->setLastActiveUsers('female');
                                 if ($objTemplate->blockExists('access_last_active_male_members'))
@@ -1087,7 +1098,11 @@ class LegacyComponentHandler {
                                     ||  $objTemplate->blockExists('access_birthday_members'))) {
                                 if (   !$objAccessBlocks
                                     && $cl->loadFile(ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php'))
+<<<<<<< HEAD
                                     $objAccessBlocks = new \Access_Blocks();
+=======
+                                    $objAccessBlocks = new Access_Blocks();
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                                 if ($objAccessBlocks->isSomeonesBirthdayToday()) {
                                     if ($objTemplate->blockExists('access_birthday_female_members'))
                                         $objAccessBlocks->setBirthdayUsers('female');
@@ -1175,12 +1190,19 @@ class LegacyComponentHandler {
                         $teaser = $newsObj->getTeaser();
                         if ($teaser !== null) //news details, else getTeaser would return null
                             $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET))));
+<<<<<<< HEAD
                         if ($page->getCmd() === 'details') {
                             \Env::get('cx')->getPage()->setTitle($newsObj->newsTitle);
                             \Env::get('cx')->getPage()->setContentTitle($newsObj->newsTitle);
                             \Env::get('cx')->getPage()->setMetaTitle($newsObj->newsTitle);
                             $page_metatitle = $newsObj->newsTitle;
                         }
+=======
+                        \Env::get('cx')->getPage()->setTitle($newsObj->newsTitle);
+                        \Env::get('cx')->getPage()->setContentTitle($newsObj->newsTitle);
+                        \Env::get('cx')->getPage()->setMetaTitle($newsObj->newsTitle);
+                        $page_metatitle = $newsObj->newsTitle;
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                     },
 
                     'livecam' => function() {
@@ -1492,7 +1514,11 @@ class LegacyComponentHandler {
                     },
 
                     'jobs' => function() {
+<<<<<<< HEAD
                         global $cl, $_CORELANG, $page, $page_metatitle;
+=======
+                        global $cl, $_CORELANG, $objTemplate, $page_metatitle;
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/jobs/index.class.php'))
@@ -1500,12 +1526,19 @@ class LegacyComponentHandler {
                         $jobsObj= new \jobs(\Env::get('cx')->getPage()->getContent());
                         \Env::get('cx')->getPage()->setContent($jobsObj->getJobsPage());
                         $jobsObj->getPageTitle(\Env::get('cx')->getPage()->getTitle());
+<<<<<<< HEAD
                         if ($page->getCmd() === 'details') {
                             \Env::get('cx')->getPage()->setTitle($jobsObj->jobsTitle);
                             \Env::get('cx')->getPage()->setContentTitle($jobsObj->jobsTitle);
                             \Env::get('cx')->getPage()->setMetaTitle($jobsObj->jobsTitle);
                             $page_metatitle = $jobsObj->jobsTitle;
                         }
+=======
+                        \Env::get('cx')->getPage()->setTitle($jobsObj->jobsTitle);
+                        \Env::get('cx')->getPage()->setContentTitle($jobsObj->jobsTitle);
+                        \Env::get('cx')->getPage()->setMetaTitle($jobsObj->jobsTitle);
+                        $page_metatitle = $jobsObj->jobsTitle;
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                     },
 
                     'error' => function() {
@@ -1966,9 +1999,14 @@ class LegacyComponentHandler {
                         $objSkins->getPage();
                     },
                     'content' => function() {
+<<<<<<< HEAD
                         global $objTemplate, $objDatabase, $objInit, $act, $subMenuTitle, $_ARRAYLANG;
                         
                         $subMenuTitle = $_ARRAYLANG['TXT_CONTENT_MANAGER'];
+=======
+                        global $objTemplate, $objDatabase, $objInit, $act;
+
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                         \Permission::checkAccess(6, 'static');
                         $cm = new \Cx\Core\ContentManager\Controller\ContentManager($act, $objTemplate, $objDatabase, $objInit);
                         $cm->getPage();

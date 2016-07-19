@@ -1,5 +1,6 @@
 <?php
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -26,6 +27,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Blog
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
@@ -242,8 +245,13 @@ class Blog extends BlogLibrary  {
             'BLOG_DETAILS_ID'           =>  $intMessageId,
             'BLOG_DETAILS_TITLE'        =>  $arrEntries[$intMessageId]['subject'],
             'BLOG_DETAILS_POSTED'       =>  $this->getPostedByString($arrEntries[$intMessageId]['user_name'], $arrEntries[$intMessageId]['time_created']),
+<<<<<<< HEAD
             'BLOG_DETAILS_POSTED_ICON'	=>  $this->getPostedByIcon($arrEntries[$intMessageId]['time_created']),
             'BLOG_DETAILS_CONTENT'      =>  html_entity_decode($arrEntries[$intMessageId]['translation'][$this->_intLanguageId]['content']),
+=======
+            'BLOG_DETAILS_POSTED_ICON'	=>	$this->getPostedByIcon($arrEntries[$intMessageId]['time_created']),
+            'BLOG_DETAILS_CONTENT'      =>  $arrEntries[$intMessageId]['translation'][$this->_intLanguageId]['content'],
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             'BLOG_DETAILS_IMAGE'        =>  ($arrEntries[$intMessageId]['translation'][$this->_intLanguageId]['image'] != '') ? '<img src="'.$arrEntries[$intMessageId]['translation'][$this->_intLanguageId]['image'].'" title="'.$arrEntries[$intMessageId]['subject'].'" alt="'.$arrEntries[$intMessageId]['subject'].'" />' : '',
             'BLOG_DETAILS_NETWORKS'     =>  $strNetworks
         ));
@@ -876,7 +884,11 @@ class Blog extends BlogLibrary  {
                     'BLOG_SEARCH_RESULTS_POSTED'        =>  $arrEntries[$intEntryId]['time_created'],
                     'BLOG_SEARCH_RESULTS_CATEGORIES'    =>  $this->getCategoryString($arrEntries[$intEntryId]['categories'][$this->_intLanguageId], true),
                     'BLOG_SEARCH_RESULTS_TAGS'          =>  $this->getLinkedTags($arrEntries[$intEntryId]['translation'][$this->_intLanguageId]['tags']),
+<<<<<<< HEAD
                     'BLOG_SEARCH_RESULTS_INTRODUCTION'  =>  html_entity_decode($this->getIntroductionText($arrEntries[$intEntryId]['translation'][$this->_intLanguageId]['content']))
+=======
+                    'BLOG_SEARCH_RESULTS_INTRODUCTION'  =>  $this->getIntroductionText($arrEntries[$intEntryId]['translation'][$this->_intLanguageId]['content'])
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                 ));
 
                 $this->_objTpl->parse('showResults');

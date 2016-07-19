@@ -85,14 +85,22 @@
       <td>{TXT_SHOP_PRICELIST_CATEGORIES}</td>
       <td>
         <input type="checkbox" name="category_all" id="category_all" value="1"
+<<<<<<< HEAD
             {SHOP_PRICELIST_CATEGORY_ALL_CHECKED} />
+=======
+            onchange="toggle_categories();" {SHOP_PRICELIST_CATEGORY_ALL_CHECKED} />
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         <label for="category_all">{TXT_SHOP_PRICELIST_CATEGORIES_ALL}</label>
     </tr>
 <!-- BEGIN shop_category -->
     <tr class="{SHOP_CATEGORY_ROWCLASS}">
       <td>&nbsp;</td>
       <td>
+<<<<<<< HEAD
         {SHOP_CATEGORY_LEVELSPACE}<input type="checkbox" name="category_id[]" id="category_id_{SHOP_CATEGORY_ID}"
+=======
+        <input type="checkbox" name="category_id[]" id="category_id_{SHOP_CATEGORY_ID}"
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             value="{SHOP_CATEGORY_ID}" {SHOP_CATEGORY_CHECKED} />
         <label for="category_id_{SHOP_CATEGORY_ID}">{SHOP_CATEGORY_NAME}</label>
       </td>
@@ -116,6 +124,7 @@ function toggle_footer()
   document.getElementById("pricelist_footer").style.display = disp;
 }
 
+<<<<<<< HEAD
 function toggle_categories(status)
 {
   var check = jQuery('#category_all:checked').length > 0;
@@ -143,6 +152,20 @@ jQuery(document).ready(function($){
 toggle_header();
 toggle_footer();
 toggle_categories(true);
+=======
+function toggle_categories()
+{
+  var check = document.form_pricelist.category_all.checked;
+  for each (var element in document.getElementsByName("category_id[]")) {
+//    element.checked = !check;
+    element.disabled = check;
+  }
+}
+
+toggle_header();
+toggle_footer();
+toggle_categories();
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 // ]]>
 </script>
 <!-- END shop_pricelist_details.html -->

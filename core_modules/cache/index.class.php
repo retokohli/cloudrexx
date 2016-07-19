@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -26,6 +27,8 @@
  * our trademarks remain entirely with us.
  */
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * Cache
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -159,7 +162,10 @@ class Cache extends cacheLib
      */
     public function endContrexxCaching($page)
     {
+<<<<<<< HEAD
         
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         if (!$this->boolIsEnabled) {
             return null;
         }

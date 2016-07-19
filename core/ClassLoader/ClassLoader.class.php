@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Contrexx ClassLoader
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -151,7 +154,11 @@ class ClassLoader {
         foreach ($parts as $part) {
             $part = '/' . $part;
             if (!is_dir($this->basePath . $path . $part) && (!$this->customizingPath || !is_dir($this->customizingPath . $path . $part))) {
+<<<<<<< HEAD
                 return false;
+=======
+                break;
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             }
             $path .= $part;
         }

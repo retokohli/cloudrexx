@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 /**
  * Contrexx
  *
@@ -24,6 +25,8 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
 /**
  * User Management
@@ -1043,12 +1046,16 @@ class AccessLib
                         }
                     }
                 } else {
+<<<<<<< HEAD
                     // if menu is not set, the function returns false and we need to set 0 "Please select" as selected value
                     if($objUser->getProfileAttribute($objAttribute->getId(), $historyId) !== false){
                         $objSelectedAttribute = $objAttribute->getById($objUser->getProfileAttribute($objAttribute->getId(), $historyId));
                     }else{
                         $objSelectedAttribute = $objAttribute->getById(0);
                     }
+=======
+                    $objSelectedAttribute = $objAttribute->getById($objUser->getProfileAttribute($objAttribute->getId(), $historyId));
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                     $value = $objSelectedAttribute->getName();
                 }
 
@@ -1532,8 +1539,11 @@ JSaccessValidatePrimaryGroupAssociation
             $arrLetters[] = 48;
             $arrLetters = array_merge($arrLetters, range(65, 90)); // ascii codes of characters "A" to "Z"
             $arrLetters[] = '';
+<<<<<<< HEAD
             
             $selfUri = \Cx\Core\Routing\Url::fromPage(\Env::get('cx')->getPage());
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
             foreach ($arrLetters as $letter) {
                 switch ($letter) {
@@ -1553,6 +1563,7 @@ JSaccessValidatePrimaryGroupAssociation
                 if ($letter == '' && $selectedLetter == '' || chr($letter) == $selectedLetter) {
                     $parsedLetter = '<strong>'.$parsedLetter.'</strong>';
                 }
+<<<<<<< HEAD
                 
                 $uriLetter = null;
                 if (!empty($letter)) {
@@ -1564,6 +1575,12 @@ JSaccessValidatePrimaryGroupAssociation
                     $this->modulePrefix.'USER_LETTER_INDEX_URI'        => $URI.(!empty($letter) ? '&amp;'.$paramName.'='.chr($letter) : null),
                     $this->modulePrefix.'USER_LETTER_INDEX_LETTER'    => $parsedLetter,
                     $this->modulePrefix.'USER_LETTER_INDEX_URI_SELF' => $selfUri,
+=======
+
+                $this->_objTpl->setVariable(array(
+                    $this->modulePrefix.'USER_LETTER_INDEX_URI'        => $URI.(!empty($letter) ? '&amp;'.$paramName.'='.chr($letter) : null),
+                    $this->modulePrefix.'USER_LETTER_INDEX_LETTER'    => $parsedLetter
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                 ));
 
                 $this->_objTpl->parse('access_user_letter_index_list');
@@ -1625,6 +1642,7 @@ JSaccessValidatePrimaryGroupAssociation
                 $arrUploadedImages = array();
                 if ($historyId === 'new') {
                     foreach (array_keys($data) as $historyIndex) {
+<<<<<<< HEAD
                         if (\FWValidator::is_file_ending_harmless($arrImages['name'][$attribute][$historyId][$historyIndex])) {
                             $arrUploadedImages[] = array(
                                 'name'            => \FWValidator::getCleanFileName(urldecode($arrImages['name'][$attribute][$historyId][$historyIndex])),
@@ -1644,6 +1662,25 @@ JSaccessValidatePrimaryGroupAssociation
                             'size'        => $arrImages['size'][$attribute][$historyId]
                         );
                     }
+=======
+                        $arrUploadedImages[] = array(
+// TODO: What is contrexx_stripslashes good for here?
+                            'name'            => contrexx_stripslashes($arrImages['name'][$attribute][$historyId][$historyIndex]),
+                            'tmp_name'        => $arrImages['tmp_name'][$attribute][$historyId][$historyIndex],
+                            'error'            => $arrImages['error'][$attribute][$historyId][$historyIndex],
+                            'size'            => $arrImages['size'][$attribute][$historyId][$historyIndex],
+                            'history_index'    => $historyIndex
+                        );
+                    }
+                } else {
+                    $arrUploadedImages[] = array(
+// TODO: What is contrexx_stripslashes good for here?
+                        'name'        => contrexx_stripslashes($arrImages['name'][$attribute][$historyId]),
+                        'tmp_name'    => $arrImages['tmp_name'][$attribute][$historyId],
+                        'error'        => $arrImages['error'][$attribute][$historyId],
+                        'size'        => $arrImages['size'][$attribute][$historyId]
+                    );
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                 }
 
                 foreach ($arrUploadedImages as $arrImage) {

@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 /**
  * Contrexx
  *
@@ -25,6 +26,8 @@
  * our trademarks remain entirely with us.
  */
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /* 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -102,7 +105,11 @@ class License {
         $this->state = $state;
         $this->editionName = $editionName;
         $this->availableComponents = $availableComponents;
+<<<<<<< HEAD
         $this->legalComponents = $this->loadLegalComponentsHack();
+=======
+        $this->legalComponents = $legalComponents;
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $this->validTo = $validTo;
         $this->createdAt = $createdAt;
         $this->registeredDomains = is_array($registeredDomains) ? $registeredDomains : array();
@@ -134,6 +141,7 @@ class License {
         $this->setLastSuccessfulUpdateTime($lastSuccessfulUpdate);
     }
     
+<<<<<<< HEAD
     /**
      * This is a dirty fix to allow 3rd party components with disabled licensing
      */
@@ -159,6 +167,8 @@ class License {
         return $legalComponents;
     }
     
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     public function getState() {
         return $this->state;
     }

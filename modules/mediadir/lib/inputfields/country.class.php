@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,6 +29,9 @@
 
 /**
  * MediaDir Modul Inputfield Country Class
+=======
+ * Marketplace Modul Inputfield Country Class
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
@@ -42,7 +46,11 @@
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface.php';
 
 /**
+<<<<<<< HEAD
  * MediaDir Modul Inputfield Country Class
+=======
+ * Marketplace Modul Inputfield Country Class
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>

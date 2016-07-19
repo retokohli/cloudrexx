@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Validator
  *
  * Global request validator
@@ -287,6 +290,7 @@ function contrexx_raw2db($raw)
         }
         return $arr;
     }
+<<<<<<< HEAD
     
     $cx = \Env::get('cx');
     $db = $cx->getDb(); 
@@ -303,6 +307,12 @@ function contrexx_raw2db($raw)
     return $rawQuoted;
 }
 
+=======
+    return addslashes($raw);
+}
+
+
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * Encodes a raw string or array thereof for use with XML
  *

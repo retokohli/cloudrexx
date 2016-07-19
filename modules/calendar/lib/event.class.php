@@ -1,5 +1,6 @@
 <?php
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -26,6 +27,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Calendar Class Event
  * 
  * @package    contrexx
@@ -992,7 +995,10 @@ class CalendarEvent extends CalendarLibrary
         //frontend picture upload & thumbnail creation
         if($objInit->mode == 'frontend') {
             $unique_id = intval($_REQUEST[self::PICTURE_FIELD_KEY]);
+<<<<<<< HEAD
             $attachmentUniqueId = intval($_REQUEST[self::ATTACHMENT_FIELD_KEY]);
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             
             if (!empty($unique_id)) {
                 $picture = $this->_handleUpload('pictureUpload', $unique_id);
@@ -1011,6 +1017,7 @@ class CalendarEvent extends CalendarLibrary
                     $pic = $picture;
                 }
             }
+<<<<<<< HEAD
             
             if (!empty($attachmentUniqueId)) {
                 $attachment = $this->_handleUpload('attachmentUpload', $attachmentUniqueId);
@@ -1023,6 +1030,8 @@ class CalendarEvent extends CalendarLibrary
                 }
             }
             
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         } else {
             // create thumb if not exists
             if (!file_exists(ASCMS_PATH."$pic.thumb")) {
@@ -1629,6 +1638,7 @@ class CalendarEvent extends CalendarLibrary
                     // move file
                     try {
                         $objFile = new \Cx\Lib\FileSystem\File($tmpUploadDir.$f);
+<<<<<<< HEAD
                         $fileInfo = pathinfo($tmpUploadDir.$f);
                         $objFile->move($depositionTarget.$prefix.$f, false);
                         
@@ -1638,6 +1648,14 @@ class CalendarEvent extends CalendarLibrary
                             $objImage->_createThumb($this->uploadImgPath, $this->uploadImgWebPath, $imageName, 180);
                         }
                         
+=======
+                        $objFile->move($depositionTarget.$prefix.$f, false);
+                        
+                        $imageName = $prefix.$f;
+                        $objImage = new ImageManager();
+                        $objImage->_createThumb($this->uploadImgPath, $this->uploadImgWebPath, $imageName, 180);
+
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                         $pic = contrexx_input2raw($this->uploadImgWebPath.$imageName);
                     } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                         \DBG::msg($e->getMessage());                        

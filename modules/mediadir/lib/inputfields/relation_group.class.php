@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Media Directory Inputfield Relation Group Class
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -198,7 +201,11 @@ class mediaDirectoryInputfieldRelation_group extends mediaDirectoryLibrary imple
                     }
 
                     if($bolAddNewAlowed || (intval($intFormType) == 0) || $intUserIsAdmin == 1) {
+<<<<<<< HEAD
                         $strAddNewButton = '<a class="addEntryLink" rel="shadowbox[add'.$intId.'];height=750;width=730;options={onClose:new Function(\'refreshSelector_'.$intId.'(\\\''.$intId.'\\\', \\\''.$this->moduleName.'Inputfield_deselected_'.$intId.'\\\', \\\''.$this->moduleName.'Inputfield_'.$intId.'\\\', \\\''.$_GET['section'].'\\\', \\\''.$_GET['cmd'].'\\\', \\\''.$intEntryId.'\\\')\')}" href="index.php?section=mediadir&cmd='.$strAddNewCmd.'" ><img src="cadmin/images/icons/icon-user-add.png" style="cursor: pointer;  border: 0px;" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_ADD_ENTRY'].'</a>';
+=======
+                        $strAddNewButton = '<a class="addEntryLink" rel="shadowbox[add'.$intId.'];height=750;width=730;options={onClose:new Function(\'refreshSelector_'.$intId.'(\\\''.$intId.'\\\', \\\''.$this->moduleName.'Inputfield_deselected_'.$intId.'\\\', \\\''.$this->moduleName.'Inputfield_'.$intId.'\\\', \\\''.$_GET['section'].'\\\', \\\''.$_GET['cmd'].'\\\', \\\''.$intEntryId.'\\\')\')}" href="index.php?section=marketplace&cmd='.$strAddNewCmd.'" ><img src="cadmin/images/icons/icon-user-add.png" style="cursor: pointer;  border: 0px;" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_ADD_ENTRY'].'</a>';
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                         $strEditFunction = 'ondblclick="editSelectedElement_'.$intId.'(this);"';
                     } else {
                     	$strAddNewButton = '';
@@ -278,7 +285,11 @@ class mediaDirectoryInputfieldRelation_group extends mediaDirectoryLibrary imple
 
 
     function editSelectedElement_$intId(eid){
+<<<<<<< HEAD
         var editLink = 'index.php?section=mediadir&cmd=$editPageCmd&eid=' + eid;
+=======
+        var editLink = 'index.php?section=marketplace&cmd=$editPageCmd&eid=' + eid;
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
         Shadowbox.open({
             content:    editLink,
@@ -317,7 +328,11 @@ function refreshSelector_$intId(fieldId,elementDeselectedId,elementSelectedId,pa
 }
 
 function editSelectedElement_$intId(elmSelector){
+<<<<<<< HEAD
     var editLink = 'index.php?section=mediadir&cmd=$strEditCmd&eid=' + elmSelector.value;
+=======
+    var editLink = 'index.php?section=marketplace&cmd=$strEditCmd&eid=' + elmSelector.value;
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
     Shadowbox.open({
         content:    editLink,

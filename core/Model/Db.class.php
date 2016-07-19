@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -26,6 +27,8 @@
  * our trademarks remain entirely with us.
  */
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * Db Class
  *
@@ -152,6 +155,7 @@ namespace Cx\Core\Model {
                 )
             );
             $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
+<<<<<<< HEAD
 
             // disable ONLY_FULL_GROUP_BY, STRICT_TRANS_TABLES mode
             // this is a temporary fix to ensure MySQL 5.7 compatability
@@ -169,6 +173,8 @@ namespace Cx\Core\Model {
             );
             $this->pdo->exec('SET SESSION sql_mode = \'' . implode(',', $sqlModes) . '\'');
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             \Env::set('pdo', $this->pdo);
             return $this->pdo;
         }
@@ -247,6 +253,7 @@ namespace Cx\Core\Model {
                     break;
                 case \Cache::CACHE_ENGINE_MEMCACHE:
                     $memcache = $objCache->getMemcache();
+<<<<<<< HEAD
                     $cache = new \Doctrine\Common\Cache\MemcacheCache();
                     $cache->setMemcache($memcache);
                     $cache->setNamespace($_DBCONFIG['database'] . '.' . DBPREFIX);
@@ -255,6 +262,15 @@ namespace Cx\Core\Model {
                     $memcache = $objCache->getMemcache();
                     $cache = new \Doctrine\Common\Cache\MemcachedCache();
                     $cache->setMemcache($memcache);
+=======
+                    if ($memcache instanceof \Memcache) {
+                        $cache = new \Doctrine\Common\Cache\MemcacheCache();
+                        $cache->setMemcache($memcache);
+                    } elseif ($memcache instanceof \Memcached) {
+                        $cache = new \Cx\Core_Modules\Cache\lib\Doctrine\CacheDriver\MemcachedCache();
+                        $cache->setMemcache($memcache);
+                    }
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                     $cache->setNamespace($_DBCONFIG['database'] . '.' . DBPREFIX);
                     break;
                 case \Cache::CACHE_ENGINE_XCACHE:

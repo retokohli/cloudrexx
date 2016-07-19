@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -26,6 +27,8 @@
  * our trademarks remain entirely with us.
  */
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * Calendar Language variables
  * 
@@ -146,7 +149,10 @@ $_ARRAYLANG['TXT_CALENDAR_EVENT_LINK'] = "Link";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_PRICE'] = "Admission charge";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_FREE_PLACES'] = "Availability";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_PICTURE'] = "Picture";   
+<<<<<<< HEAD
 $_ARRAYLANG['TXT_CALENDAR_EVENT_ATTACHMENT'] = "Attachment";
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 $_ARRAYLANG['TXT_CALENDAR_EVENT_DESCRIPTION'] = "Description";
 $_ARRAYLANG['TXT_CALENDAR_EDIT'] = "Edit";
 $_ARRAYLANG['TXT_CALENDAR_PAYMENT_METHOD'] = "Payment method";

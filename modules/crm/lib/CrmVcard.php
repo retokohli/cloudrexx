@@ -1,5 +1,6 @@
 <?php
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -26,6 +27,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * CrmVcard Class CRM
  * A class to generate vCards for contact data.
  *

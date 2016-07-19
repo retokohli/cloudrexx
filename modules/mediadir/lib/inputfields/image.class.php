@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Media Directory Inputfield Image Class
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -117,7 +120,11 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
                         $strImagePreview.'<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.']"'.
                         ' value="'.$strValue.'" id="'.$this->moduleName.'Inputfield_'.$intId.'"'.
                         ' style="width: 300px;" onfocus="this.select();" />'.
+<<<<<<< HEAD
                         '&nbsp;<input type="button" value="' . $_ARRAYLANG['TXT_BROWSE'] . '"'.
+=======
+                        '&nbsp;<input type="button" value="Durchsuchen"'.
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                         ' onClick="getFileBrowser(\''.$this->moduleName.'Inputfield_'.$intId.'\', \''.$this->moduleName.'\', \'/uploads\')" />';
                 } else {
                     $strInputfield =

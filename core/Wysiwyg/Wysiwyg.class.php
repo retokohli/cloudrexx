@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Wysiwyg
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -190,6 +193,7 @@ class Wysiwyg
     }
 
     /**
+<<<<<<< HEAD
      * strip BB tags
      *
      * @param string $text
@@ -202,6 +206,8 @@ class Wysiwyg
     }
 
     /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
      * Alias for the method getSourceCode()
      *
      * @return string

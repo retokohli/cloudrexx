@@ -284,7 +284,11 @@ class StringParser {
 			StringParser_Node::destroyNode ($this->_root);
 		}
 		unset ($this->_root);
+<<<<<<< HEAD
 		$this->_root = new StringParser_Node_Root ();
+=======
+		$this->_root =& new StringParser_Node_Root ();
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 		$this->_stack[0] =& $this->_root;
 		
 		$this->_parserInit ();
@@ -981,7 +985,11 @@ class StringParser_Node {
 	function appendToLastTextChild ($text) {
 		$ccount = count ($this->_children);
 		if ($ccount == 0 || $this->_children[$ccount-1]->_type != STRINGPARSER_NODE_TEXT) {
+<<<<<<< HEAD
 			$ntextnode = new StringParser_Node_Text ($text);
+=======
+			$ntextnode =& new StringParser_Node_Text ($text);
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 			return $this->appendChild ($ntextnode);
 		} else {
 			$this->_children[$ccount-1]->appendText ($text);
@@ -1543,4 +1551,8 @@ class StringParser_Node_Text extends StringParser_Node {
 	}
 }
 
+<<<<<<< HEAD
 ?>
+=======
+?>
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211

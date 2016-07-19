@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Docsys RSS XML Feed
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
@@ -163,7 +166,11 @@ class rssFeed
                                u.id
                         FROM ".DBPREFIX."module_jobs AS n,
                              ".DBPREFIX."access_users AS u
+<<<<<<< HEAD
                         WHERE n.userid = u.id AND n.lang = ".$_LANGID." AND n.status = 1 AND (startdate<='".date('Y-m-d')."' OR startdate='0000-00-00 00:00:00') AND (enddate>='".date('Y-m-d')."' OR enddate='0000-00-00 00:00:00') 
+=======
+                        WHERE n.userid = u.id AND n.lang = ".$_LANGID."
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                         ORDER BY n.id DESC";
             $objResult = $objDatabase->SelectLimit($query, $this->limit);
 

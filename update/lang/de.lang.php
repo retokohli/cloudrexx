@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -26,6 +27,8 @@
  * our trademarks remain entirely with us.
  */
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 $_CORELANG = array(
     'TXT_UPDATE_CONTREXX_UPDATE_SYSTEM'          => 'Contrexx® Update System',
     'TXT_UPDATE_INTRO_MSG'                       => '<h1>Willkommen zum Contrexx® Update System</h1>Damit Sie das Update System verwenden können, müssen Sie sich zuerst mit einem Administratorkonto anmelden.',
@@ -114,7 +117,11 @@ $_CORELANG = array(
     'TXT_CONFLICTED_MODULES_DESCRIPTION'         => 'Folgende neue Module können nicht installiert werden, da die entsprechenden Datenbank-Tabellen bereits existieren:',
     'TXT_UPDATE_ERROR'                           => 'Update Fehler',
     'TXT_UPDATE_LICENSE_CONDITIONS'              => 'Lizenzbedingungen',
+<<<<<<< HEAD
     'TXT_UPDATE_ACCEPT_LICENSE'                  => 'Ich akzeptiere die Contrexx Lizenzbestimmungen',
+=======
+    'TXT_UPDATE_ACCEPT_LICENSE'                  => 'Ich akzeptiere die Contrexx Lizenz',
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     'TXT_UPDATE_LICENSE_MODEL'                   => 'Neues Lizenzmodell',
     'TXT_UPDATE_ACCEPT_LICENSE_CHANGE'           => 'Ich habe die vorliegenden Informationen verstanden und bin damit einverstanden.',
     'TXT_UPDATE_CHECK_FAILED'                    => 'Überprüfung fehlgeschlagen',

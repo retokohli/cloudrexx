@@ -1,5 +1,6 @@
 <?php
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -26,6 +27,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Forum
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
@@ -586,15 +589,24 @@ class Forum extends ForumLibrary {
                             NULL, '.    $intForumId.', '.    $intLastThreadId.', 0,
                             '.$userId.', '.time().',         0,                    0,
                             0,             0, '.                $icon.", '".        addslashes($subject)."',
+<<<<<<< HEAD
                             '".addslashes($keywords)."' ,'".contrexx_raw2db($content)."' , '".$fileInfo['name']."'
+=======
+                            '".addslashes($keywords)."' ,'".addslashes($content)."' , '".$fileInfo['name']."'
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                         )";
             if($objDatabase->Execute($insertQuery) !== false){
                 $lastInsertId = $objDatabase->Insert_ID();
                 $this->_updateNotification($intLastThreadId);
                 $this->_sendNotifications($intLastThreadId, $subject, $content);
                 $this->updateViewsNewItem($intForumId, $lastInsertId);
+<<<<<<< HEAD
                 //$objCache = new Cache();
                 //$objCache->deleteAllFiles();
+=======
+                $objCache = new Cache();
+                $objCache->deleteAllFiles();
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             }
             CSRF::header('Location: ?section=forum&cmd=board&id='.$intForumId);
             die();
@@ -680,7 +692,11 @@ class Forum extends ForumLibrary {
             $pos = $this->_getEditPos($intPostId, $intThreadId);
             $arrPosts = $this->createPostArray($intThreadId, $pos);
             $arrPosts[$intPostId]['subject'] = !empty($_REQUEST['subject']) ? contrexx_strip_tags($_REQUEST['subject']) : $_ARRAYLANG['TXT_FORUM_NO_SUBJECT'];
+<<<<<<< HEAD
             $arrPosts[$intPostId]['content'] = \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForOutput(contrexx_input2raw($_REQUEST['message']));
+=======
+            $arrPosts[$intPostId]['content'] = \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForDb($_REQUEST['message']);
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
 
         $userId  = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
@@ -708,7 +724,11 @@ class Forum extends ForumLibrary {
                 $this->_objTpl->hideBlock('delAttachment');
             }
             $subject = !empty($_REQUEST['subject']) ? contrexx_strip_tags($_REQUEST['subject']) : '';
+<<<<<<< HEAD
             $content = !empty($_REQUEST['message']) ? contrexx_input2raw(strip_tags($_REQUEST['message'])) : '';
+=======
+            $content = !empty($_REQUEST['message']) ? contrexx_strip_tags($_REQUEST['message']) : '';
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             $keywords = !empty($_REQUEST['keywords']) ? contrexx_strip_tags($_REQUEST['keywords']) : '';
             $attachment = !empty($_REQUEST['attachment']) ? contrexx_strip_tags($_REQUEST['attachment']) : '';
             $this->_objTpl->touchBlock('createPost');
@@ -728,7 +748,11 @@ class Forum extends ForumLibrary {
         if($this->_arrSettings['wysiwyg_editor'] == 1) { //IF WYSIWIG enabled..
             $strMessageInputHTML = new \Cx\Core\Wysiwyg\Wysiwyg('message', $content, 'bbcode');
         }else{ //plain textarea
+<<<<<<< HEAD
             $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="message">'. contrexx_raw2xhtml($content) .'</textarea>';
+=======
+            $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="message">'.$content.'</textarea>';
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
         $this->_objTpl->setGlobalVariable(array(
             'FORUM_JAVASCRIPT_GOTO'                 =>    $this->getJavascript('goto'),
@@ -939,7 +963,11 @@ class Forum extends ForumLibrary {
                             NULL, '.        $intCatId.', '.    $intThreadId.', '.$intPrevPostId.',
                             '.$userId.', '.    time().',         0,                     0,
                             0,                   0,        0, '.            $icon.",
+<<<<<<< HEAD
                             '$keywords' ,'".$subject."',    '".contrexx_raw2db($content)."', '".$fileInfo['name']."'
+=======
+                            '$keywords' ,'".$subject."',    '".$content."', '".$fileInfo['name']."'
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                         )";
 
             if($objDatabase->Execute($insertQuery) !== false){
@@ -947,8 +975,13 @@ class Forum extends ForumLibrary {
                 $this->updateViewsNewItem($intCatId, $lastInsertId, true);
                 $this->_updateNotification($intThreadId);
                 $this->_sendNotifications($intThreadId, $subject, $content);
+<<<<<<< HEAD
                 //$objCache = new Cache();
                 //$objCache->_deleteAllFiles();
+=======
+                $objCache = new Cache();
+                $objCache->deleteAllFiles();
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             }
             CSRF::header('Location: index.php?section=forum&cmd=thread&id='.$intThreadId.'&pos='.$this->_getLastPos($postId, $intThreadId));
             die();
@@ -1040,14 +1073,23 @@ class Forum extends ForumLibrary {
                             icon = '.$icon.',
                             subject = \''.$subject.'\',
                             keywords = \''.$keywords.'\',
+<<<<<<< HEAD
                             content = \''.contrexx_raw2db($content).'\',
+=======
+                            content = \''.$content.'\',
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                             attachment = \''.$fileInfo['name'].'\'
                             WHERE id = '.$intPostId;
 
             if($objDatabase->Execute($updateQuery) !== false){
                 $this->updateViews($intThreadId, $intPostId);
+<<<<<<< HEAD
                //$objCache = new Cache();
                //$objCache->deleteAllFiles();
+=======
+                $objCache = new Cache();
+                $objCache->deleteAllFiles();
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             }
 
             CSRF::header('Location: index.php?section=forum&cmd=thread&id='.$intThreadId.'&pos='.$this->_getLastPos($postId, $intThreadId));
@@ -1309,8 +1351,13 @@ class Forum extends ForumLibrary {
             $arrSearch      = array('[[FORUM_THREAD_SUBJECT]]', '[[FORUM_THREAD_STARTER]]', '[[FORUM_LATEST_SUBJECT]]',    '[[FORUM_LATEST_MESSAGE]]',    '[[FORUM_THREAD_URL]]');
             $arrReplace     = array($strFirstPostSubject,         $strFirstPostAuthor,         $strSubject,                $strContent,                 $strThreadURL);
 
+<<<<<<< HEAD
             $_strMailTemplate = html_entity_decode(str_replace($arrSearch, $arrReplace, \Cx\Core\Wysiwyg\Wysiwyg::stripBBtags($this->_arrSettings['notification_template'])));
             $_strMailSubject  = html_entity_decode(str_replace($arrSearch, $arrReplace, \Cx\Core\Wysiwyg\Wysiwyg::stripBBtags($this->_arrSettings['notification_subject'])));
+=======
+            $_strMailTemplate = html_entity_decode(str_replace($arrSearch, $arrReplace, $this->stripBBtags($this->_arrSettings['notification_template'])));
+            $_strMailSubject  = html_entity_decode(str_replace($arrSearch, $arrReplace, $this->stripBBtags($this->_arrSettings['notification_subject'])));
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
             $objFWUser = FWUser::getFWUserObject();
 

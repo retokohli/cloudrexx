@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -26,6 +27,8 @@
  * our trademarks remain entirely with us.
  */
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * Guestbook
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -144,7 +147,11 @@ class GuestbookLibrary
 				if(document.getElementById("email").value == ""){
 					errorMsg += "\t- '.$_ARRAYLANG['TXT_EMAIL'].'\n";
 				} else {
+<<<<<<< HEAD
 					strAllowedChars = "^.+\\\@(\\\[?)[a-zA-Z0-9\\\ï¿½\\\ï¿½\\\ï¿½\\\ï¿½\\\ï¿½]{ 1 }[a-zA-Z0-9\\\ï¿½\\\ï¿½\\\ï¿½\\\ï¿½\\\ï¿½\\\-\\\.]+\\\.([a-zA-Z]{ 2,4 }|[0-9]{ 1,3 })(\\\]?)$";
+=======
+					strAllowedChars = "^.+\\\@(\\\[?)[a-zA-Z0-9\\\ä\\\ö\\\ü\\\è\\\é]{ 1 }[a-zA-Z0-9\\\ä\\\ö\\\ü\\\è\\\é\\\-\\\.]+\\\.([a-zA-Z]{ 2,4 }|[0-9]{ 1,3 })(\\\]?)$";
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 					arrStrAllowedChars = strAllowedChars.split(" ");
 					strAllowedChars = "";
 					for (i=0;i<arrStrAllowedChars.length;i++){

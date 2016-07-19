@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -26,6 +27,8 @@
  * our trademarks remain entirely with us.
  */
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * Filesystem Driver Adapter for doctrine
  *
@@ -68,11 +71,33 @@ class FilesystemCache extends FileCache
             return false;
         }
 
+<<<<<<< HEAD
         list( $lifetime, $data ) = preg_split("/\r?\n/", file_get_contents( $filename ), 2);
 
         $ret = unserialize($data);
         
         return $ret;
+=======
+        $resource = fopen($filename, "r");
+
+        if (false !== ($line = fgets($resource))) {
+            $lifetime = (integer) $line;
+        }
+
+        if ($lifetime !== 0 && $lifetime < time()) {
+            fclose($resource);
+
+            return false;
+        }
+
+        while (false !== ($line = fgets($resource))) {
+            $data .= $line;
+        }
+
+        fclose($resource);
+
+        return unserialize($data);
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     }
 
     /**

@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * The Shop
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
@@ -338,7 +341,11 @@ die("Failed to get Customer for ID $customer_id");
      */
     public static function getPageTitle() {
         if (isset(self::$pageTitle)) {
+<<<<<<< HEAD
             return self::$pageTitle;
+=======
+            return contrexx_raw2xhtml(self::$pageTitle);
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
         return null;
     }
@@ -944,11 +951,16 @@ die("Failed to update the Cart!");
         // Validate parameters
         if ($product_id && empty($category_id)) {
             $objProduct = Product::getById($product_id);
+<<<<<<< HEAD
             if ($objProduct && $objProduct->active()) {
                 $category_id = $objProduct->category_id();
             } else {
                 \CSRF::redirect(
                     Cx\Core\Routing\Url::fromModuleAndCmd('shop', ''));
+=======
+            if ($objProduct) {
+                $category_id = $objProduct->category_id();
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             }
             if (isset($_SESSION['shop']['previous_category_id'])) {
                 $category_id_previous = $_SESSION['shop']['previous_category_id'];
@@ -1014,7 +1026,10 @@ die("Failed to update the Cart!");
                 ));
             }
         }
+<<<<<<< HEAD
         $pagingCmd = (!empty($_REQUEST['cmd'])) ? '&amp;cmd='.  contrexx_input2raw($_REQUEST['cmd']) : '';
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $pagingCatId = '';
         $pagingManId = '';
         $pagingTerm = '';
@@ -1042,6 +1057,7 @@ die("Failed to update the Cart!");
 // TODO: Use Sorting class for the Product order
         $order = SettingDb::getValue('product_sorting');
         $count = $limit;
+<<<<<<< HEAD
         if ($product_id) {
             $product = Product::getById($product_id);
             if ($product) {
@@ -1056,6 +1072,15 @@ die("Failed to update the Cart!");
                 self::$objCustomer && self::$objCustomer->is_reseller()
             );
         }
+=======
+        $arrProduct = Products::getByShopParams(
+            $count, Paging::getPosition(),
+            $product_id, $category_id, $manufacturer_id, $term,
+            $flagSpecialoffer, $flagLastFive,
+            $order,
+            self::$objCustomer && self::$objCustomer->is_reseller()
+        );
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         if ($count == 0
          && !ShopCategories::getChildCategoryIdArray($category_id)) {
             //if ($term != '' || $manufacturer_id != 0 || $flagSpecialoffer) {
@@ -1098,7 +1123,11 @@ die("Failed to update the Cart!");
         }
         $uri =
 // TODO: Use the alias, if any
+<<<<<<< HEAD
             '&amp;section=shop'. MODULE_INDEX . $pagingCmd .
+=======
+            '&amp;section=shop'.MODULE_INDEX.
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             $pagingCatId.$pagingManId.$pagingTerm;
         self::$objTemplate->setVariable(array(
             'SHOP_PRODUCT_PAGING' => Paging::get($uri, '',
@@ -3189,7 +3218,11 @@ die("Shop::processRedirect(): This method is obsolete!");
 //DBG::log("Shop::process(): Customer is not in final customer group (ID $usergroup_id), either");
                 // Neither one, add to the final customer group (default)
                 $arrGroups[] = $usergroup_id;
+<<<<<<< HEAD
                 self::$objCustomer->setGroups($arrGroups);
+=======
+                self::$objCustomer->setGroups(array($usergroup_id));
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 //DBG::log("Shop::process(): Added Customer to final customer group (ID $usergroup_id): ".var_export(self::$objCustomer->getAssociatedGroupIds(), true));
             } else {
 //DBG::log("Shop::process(): Customer is a final customer (ID $usergroup_id) already: ".var_export(self::$objCustomer->getAssociatedGroupIds(), true));

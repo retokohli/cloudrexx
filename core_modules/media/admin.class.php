@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -26,6 +27,8 @@
  * our trademarks remain entirely with us.
  */
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * Media Manager
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -666,6 +669,7 @@ class MediaManager extends MediaLibrary
                             $thumb   = $this->webPath . $fileName;
                         }
 
+<<<<<<< HEAD
                         if (in_array(
                             $fileName, $this->highlightName
                         )) {
@@ -674,6 +678,8 @@ class MediaManager extends MediaLibrary
                                 );
                         }
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                         $this->_objTpl->setVariable(array(  // thumbnail
                             'MEDIA_FILE_NAME_SIZE'     => $tmpSize[0] . ' x ' . $tmpSize[1],
                             'MEDIA_FILE_NAME_PRE'      =>'preview_' . $fileName,

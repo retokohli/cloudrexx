@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * NodeRepository
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -382,11 +385,15 @@ class NodeRepository extends NestedTreeRepository {
     {
         $result = false;
         $meta = $this->getClassMetadata();
+<<<<<<< HEAD
         if (!$node instanceof $meta->name) {
             throw new InvalidArgumentException("Node is not related to this repository");
         }
         $this->_em->getConnection()->beginTransaction();
         try {
+=======
+        if ($node instanceof $meta->name) {
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             $config = $this->listener->getConfiguration($this->_em, $meta->name);
             $nextSiblings = $this->getNextSiblings($node, false, $skipAliasNodes);
             if ($numSiblings = count($nextSiblings)) {
@@ -400,10 +407,15 @@ class NodeRepository extends NestedTreeRepository {
                     ->getStrategy($this->_em, $meta->name)
                     ->updateNode($this->_em, $node, $nextSiblings[$number - 1], Nested::NEXT_SIBLING);
             }
+<<<<<<< HEAD
             $this->_em->getConnection()->commit();
         } catch (\Exception $e) {
             $this->_em->getConnection()->rollback();
             throw $e;
+=======
+        } else {
+            throw new InvalidArgumentException("Node is not related to this repository");
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
         return $result;
     }
@@ -422,11 +434,15 @@ class NodeRepository extends NestedTreeRepository {
     {
         $result = false;
         $meta = $this->getClassMetadata();
+<<<<<<< HEAD
         if (!$node instanceof $meta->name) {
             throw new InvalidArgumentException("Node is not related to this repository");
         }
         $this->_em->getConnection()->beginTransaction();
         try {
+=======
+        if ($node instanceof $meta->name) {
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             $config = $this->listener->getConfiguration($this->_em, $meta->name);
             $prevSiblings = array_reverse($this->getPrevSiblings($node, false, $skipAliasNodes));
             if ($numSiblings = count($prevSiblings)) {
@@ -440,10 +456,15 @@ class NodeRepository extends NestedTreeRepository {
                     ->getStrategy($this->_em, $meta->name)
                     ->updateNode($this->_em, $node, $prevSiblings[$number - 1], Nested::PREV_SIBLING);
             }
+<<<<<<< HEAD
             $this->_em->getConnection()->commit();
         } catch (\Exception $e) {
             $this->_em->getConnection()->rollback();
             throw $e;
+=======
+        } else {
+            throw new InvalidArgumentException("Node is not related to this repository");
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
         return $result;
     }

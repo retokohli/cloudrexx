@@ -1,5 +1,6 @@
 <?php
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -26,6 +27,8 @@
  */
  
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Calendar Class Mail Manager
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation <info@comvation.com>
@@ -227,8 +230,14 @@ class CalendarMailManager extends CalendarLibrary {
                         }
                         $lastEvent = $event;
                     }
+<<<<<<< HEAD
                     $eventManager->_setNextSeriesElement($lastEvent);
                 }
+=======
+                    $lastEvent = $event;
+                }
+                $eventManager->_setNextSeriesElement($lastEvent);
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             }
             
             $objRegistration = null;
@@ -273,7 +282,11 @@ class CalendarMailManager extends CalendarLibrary {
                 $regSearch     = array('[[REGISTRATION_TYPE]]', '[[REGISTRATION_SALUTATION]]', '[[REGISTRATION_FIRSTNAME]]', '[[REGISTRATION_LASTNAME]]', '[[REGISTRATION_EMAIL]]');
                 $regReplace    = array(      $regType,                 $regSalutation,                $regFirstname,                $regLastname,                $regMail);
             }
+<<<<<<< HEAD
                                                                                                   
+=======
+
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             $domain     = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/";
             $date       = $this->format2userDateTime(new \DateTime());
             $startDate  = $objEvent->startDate;

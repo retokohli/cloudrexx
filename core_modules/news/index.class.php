@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -26,6 +27,8 @@
  * our trademarks remain entirely with us.
  */
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * News
  *
@@ -522,8 +525,11 @@ class news extends newsLibrary {
             }
         }
 
+<<<<<<< HEAD
         \JS::activate('cx');
         
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         // create submit from
         if (FWUser::getFWUserObject()->objUser->login()) {
             $this->_objTpl->hideBlock('news_add_comment_name');

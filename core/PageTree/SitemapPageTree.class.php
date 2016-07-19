@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * SitemapPageTree
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -51,6 +54,7 @@ class SitemapPageTree extends SigmaPageTree {
     const subTagStart = "<ul>";
     const subTagEnd = "</ul>";
    
+<<<<<<< HEAD
     /**
      * Override the constructor from the PageTree
      * @see Cx\Core\PageTree::__construct()
@@ -74,6 +78,10 @@ class SitemapPageTree extends SigmaPageTree {
     protected function renderHeader($lang) {
     }
     
+=======
+    protected function renderHeader($lang) {
+    }
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     protected function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page) {
         $width = $level*25;
         $spacer = "<img src='".ASCMS_MODULE_IMAGE_WEB_PATH."/sitemap/spacer.gif' width='$width' height='12' alt='' />";

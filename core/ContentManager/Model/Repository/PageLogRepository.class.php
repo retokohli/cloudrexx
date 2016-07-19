@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Page log repository
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -360,4 +363,8 @@ class PageLogRepository extends LogEntryRepository
         return $username;
     }
     
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211

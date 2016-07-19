@@ -1,5 +1,6 @@
 <?php
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -26,6 +27,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Blog library
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
@@ -343,7 +346,11 @@ class BlogLibrary {
 
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['is_active']   = $objLangResult->fields['is_active'];
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['subject']     = htmlentities(stripslashes($objLangResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET);
+<<<<<<< HEAD
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['content']     = contrexx_raw2xhtml($objLangResult->fields['content']);
+=======
+                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['content']     = $objLangResult->fields['content'];
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['tags']        = htmlentities(stripslashes($objLangResult->fields['tags']), ENT_QUOTES, CONTREXX_CHARSET);
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['image']       = htmlentities(stripslashes($objLangResult->fields['image']), ENT_QUOTES, CONTREXX_CHARSET);
 

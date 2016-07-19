@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -26,6 +27,8 @@
  * our trademarks remain entirely with us.
  */
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 namespace Cx\Lib\FileSystem;
 /**
  * File System File
@@ -163,6 +166,7 @@ class FileSystemFile implements FileInterface
         \Cx\Lib\FileSystem\FileSystem::makeWritable($dst);
     }
 
+<<<<<<< HEAD
     public function move($dst)
     {
         if (!rename($this->filePath, $dst)) {
@@ -171,6 +175,8 @@ class FileSystemFile implements FileInterface
         \Cx\Lib\FileSystem\FileSystem::makeWritable($dst);
     }
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     public function getFilePermissions()
     {
         // fetch current permissions on loaded file

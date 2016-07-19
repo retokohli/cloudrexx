@@ -1,5 +1,6 @@
 <?php
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -26,6 +27,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Calendar 
  * 
  * @package    contrexx
@@ -532,7 +535,10 @@ EOF;
                 $javascript .= <<< UPLOADER
                 {$this->getUploaderCode($this->handleUniqueId(self::PICTURE_FIELD_KEY), 'pictureUpload')}
                 {$this->getUploaderCode($this->handleUniqueId(self::MAP_FIELD_KEY), 'mapUpload')}
+<<<<<<< HEAD
                 {$this->getUploaderCode($this->handleUniqueId(self::ATTACHMENT_FIELD_KEY), 'attachmentUpload', 'uploadFinished', false)}
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 UPLOADER;
             } catch(Exception $e) {
                 \DBG::msg("Error in initializing uploader");
@@ -577,7 +583,10 @@ UPLOADER;
             'TXT_'.$this->moduleLangVar.'_EVENT_LINK'               => $_ARRAYLANG['TXT_CALENDAR_EVENT_LINK'],
             'TXT_'.$this->moduleLangVar.'_EVENT_EMAIL'              => $_ARRAYLANG['TXT_CALENDAR_EVENT_EMAIL'],
             'TXT_'.$this->moduleLangVar.'_EVENT_PICTURE'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_PICTURE'],
+<<<<<<< HEAD
             'TXT_'.$this->moduleLangVar.'_EVENT_ATTACHMENT'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_ATTACHMENT'],
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             'TXT_'.$this->moduleLangVar.'_EVENT_CATEGORY'           => $_ARRAYLANG['TXT_CALENDAR_CAT'] ,
             'TXT_'.$this->moduleLangVar.'_EVENT_DESCRIPTION'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_DESCRIPTION'],
             'TXT_'.$this->moduleLangVar.'_PLEASE_CHECK_INPUT'       => $_ARRAYLANG['TXT_CALENDAR_PLEASE_CHECK_INPUT'],
@@ -601,7 +610,10 @@ UPLOADER;
             $this->moduleLangVar.'_EVENT_END_DATE'                  => $eventEndDate,
             $this->moduleLangVar.'_EVENT_PICTURE'                   => $objEvent->pic,
             $this->moduleLangVar.'_EVENT_PICTURE_THUMB'             => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'.thumb" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
+<<<<<<< HEAD
             $this->moduleLangVar.'_EVENT_ATTACHMENT'                => $objEvent->attach,
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             $this->moduleLangVar.'_EVENT_CATEGORIES'                => $objCategoryManager->getCategoryDropdown(intval($objEvent->catId), 2),            
             $this->moduleLangVar.'_EVENT_LINK'                      => $objEvent->link,            
             $this->moduleLangVar.'_EVENT_PLACE'                     => $objEvent->place,
@@ -718,7 +730,11 @@ UPLOADER;
                 $placeOptions .= '<option '.$selectedPlace.' value="'.$arrEntry['entryId'].'">'.$arrEntry['entryFields'][0].'</option>';   
             }
 
+<<<<<<< HEAD
             $this->_objTpl->setVariable(array(
+=======
+            $this->_objTpl->setVariable(array(   
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                 $this->moduleLangVar.'_EVENT_PLACE_OPTIONS'    => $placeOptions,    
             ));
             $this->_objTpl->parse('eventHostSelect');  
@@ -1023,7 +1039,11 @@ UPLOADER;
         }
     }
         
+<<<<<<< HEAD
     protected function getUploaderCode($submissionId, $fieldName, $uploadCallBack = "uploadFinished", $allowImageOnly = true)
+=======
+    protected function getUploaderCode($submissionId, $fieldName, $uploadCallBack = "uploadFinished")
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     {
         try {                        
             //init the uploader
@@ -1061,7 +1081,11 @@ UPLOADER;
             $uploader = $f->newUploader('exposedCombo', $submissionId, true);
             $uploader->setJsInstanceName($uploaderInstanceName);
             $uploader->setFinishedCallback(array(ASCMS_MODULE_PATH.'/calendar/index.class.php','Calendar', $uploadCallBack));
+<<<<<<< HEAD
             $uploader->setData(array('submission_id' => $submissionId, 'field_name' => $fieldName, 'allowImageOnly' => $allowImageOnly));
+=======
+            $uploader->setData(array('submission_id' => $submissionId, 'field_name' => $fieldName));
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             
             $strJs  = $uploader->getXHtml();
         $strJs .= $folderWidget->getXHtml("#{$fieldName}_uploadWidget", "uploadWidget".$submissionId);
@@ -1121,10 +1145,17 @@ JAVASCRIPT;
                 if($file == '.' || $file == '..') { continue; }
                 
                 //delete unwanted files
+<<<<<<< HEAD
                 if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes) && $data['allowImageOnly']) {                                     
                     $response->addMessage(
                         UploadResponse::STATUS_ERROR,
                         $lang["TXT_CALENDAR_IMAGE_UPLOAD_ERROR"],
+=======
+                if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {                                     
+                    $response->addMessage(
+                        UploadResponse::STATUS_ERROR,
+                        $lang["TXT_{$this->moduleLangVar}_IMAGE_UPLOAD_ERROR"],
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                         $file
                     );
                     \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);

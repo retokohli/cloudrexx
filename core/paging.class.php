@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Paging
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -194,6 +197,7 @@ class Paging
     static function getPosition($parameter_name=null)
     {
         $parameter_name = self::getParametername($parameter_name);//'pos';
+<<<<<<< HEAD
 
          if (\Env::get('cx')->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             if (!isset($_REQUEST[$parameter_name])) {
@@ -203,6 +207,8 @@ class Paging
             return intval($_REQUEST[$parameter_name]);
         }
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         if (!isset($_SESSION['paging'])) {
             $_SESSION['paging'] = array();
         }        

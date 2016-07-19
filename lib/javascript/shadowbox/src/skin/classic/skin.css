@@ -37,7 +37,11 @@
   position: fixed;
   display: block;
   visibility: hidden;
+<<<<<<< HEAD
   z-index: 10000;
+=======
+  z-index: 999;
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
   text-align: center; /* centers #shadowbox in quirks and IE */
 }
 #shadowbox_overlay {

@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -26,6 +27,8 @@
  * our trademarks remain entirely with us.
  */
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * JSON Adapter for Cx\Core\ContentManager\Model\Entity\Node
  * @copyright   Comvation AG
@@ -212,6 +215,7 @@ class JsonNode implements JsonAdapter {
         $moved_node = $this->nodeRepo->find($arguments['post']['id']);
         $parent_node = $this->nodeRepo->find($arguments['post']['ref']);
 
+<<<<<<< HEAD
         $this->em->getConnection()->beginTransaction();
         try {
             $moved_node->setParent($parent_node);
@@ -241,6 +245,30 @@ class JsonNode implements JsonAdapter {
             throw $e;
         }
         
+=======
+        $moved_node->setParent($parent_node);
+        $this->em->persist($parent_node);
+        $this->em->persist($moved_node);
+        $this->em->flush();
+
+
+        $this->nodeRepo->moveUp($moved_node, true);
+        if ($arguments['post']['position']) {
+            $this->nodeRepo->moveDown($moved_node, $arguments['post']['position'], true);
+        }
+        \Env::get('cx')->getEvents()->triggerEvent('model/onFlush', array(new \Doctrine\ORM\Event\LifecycleEventArgs($moved_node, $this->em)));
+
+        foreach ($moved_node->getPages() as $page) {
+            $page->setupPath($page->getLang());
+            $this->em->persist($page);
+        }
+        
+        $this->em->persist($moved_node);
+        $this->em->persist($parent_node);
+
+        $this->em->flush();
+        
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $nodeLevels = array();
         $nodeStack = array();
         array_push($nodeStack, $moved_node);

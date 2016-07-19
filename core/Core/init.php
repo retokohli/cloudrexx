@@ -1,5 +1,6 @@
 <?php
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -26,6 +27,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * This file loads everything needed to load Contrexx. Just require this file
  * and execute \init($mode); while $mode is optional. $mode can be one of
  * 'frontend', 'backend', 'cli' and 'minimal'

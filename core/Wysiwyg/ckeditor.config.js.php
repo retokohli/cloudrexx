@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -27,6 +28,8 @@
  */
 header('Content-Type: application/javascript; charset=UTF-8');
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 if (strpos(dirname(__FILE__), 'customizing') === false) {
     $contrexx_path = dirname(dirname(dirname(__FILE__)));
 } else {

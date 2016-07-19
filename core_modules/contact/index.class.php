@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Contact
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -922,7 +925,11 @@ CODE;
                             if (FWValidator::is_file_ending_harmless($fileName)) {
                                 if (@move_uploaded_file($fileTmpName, ASCMS_DOCUMENT_ROOT.$filePath)) {
                                     $id = intval(substr($file, 17));
+<<<<<<< HEAD
                                     $arrFiles[$id][] = array(
+=======
+                                    $arrFiles[$id] = array(
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                                         'path' => $filePath,
                                         'name' => $fileName
                                     );
@@ -1167,7 +1174,18 @@ CODE;
                 if($key === 0)
                     throw new ContactException('could not find file field for form with id ' . $arrFormData['id']);
 
+<<<<<<< HEAD
                 if (isset($arrFormData['uploadedFiles'][$key]) && count($arrFormData['uploadedFiles'][$key]) > 0) { //assign all files uploaded to the uploader fields name
+=======
+                if ($this->legacyMode) { //store files according to their inputs name
+// TODO: check legacyMode
+                    $arrDBEntry = array();
+                    foreach ($arrFormData['uploadedFiles'] as $key => $file) {
+                        $arrDbEntry[] = base64_encode($key).",".base64_encode(contrexx_strip_tags($file));
+                    }
+                    $value = implode(';', $arrDbEntry);
+                } elseif (isset($arrFormData['uploadedFiles'][$key]) && count($arrFormData['uploadedFiles'][$key]) > 0) { //assign all files uploaded to the uploader fields name
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                     $arrTmp = array();
                     foreach ($arrFormData['uploadedFiles'][$key] as $file) {
                         $arrTmp[] = $file['path'];

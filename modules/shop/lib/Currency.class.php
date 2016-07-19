@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Currency class
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
@@ -135,9 +138,12 @@ class Currency
                 self::$defaultCurrencyId = $objResult->fields['id'];
             $objResult->MoveNext();
         }
+<<<<<<< HEAD
         if (!isset($_SESSION['shop'])) {
             $_SESSION['shop'] = array();
         }
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         if (isset($_REQUEST['currency'])) {
             $currency_id = intval($_REQUEST['currency']);
             $_SESSION['shop']['currencyId'] =

@@ -1,6 +1,7 @@
 <?php
 
 /**
+<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,6 +28,8 @@
  */
 
 /**
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Login
  * @copyright   CONTREXX WCMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
@@ -156,7 +159,11 @@ class LoginManager {
         $confirmedPassword = isset($_POST['password2']) ? trim(contrexx_stripslashes($_POST['password2'])) : '';
 
         $this->objTemplate->setVariable(array(
+<<<<<<< HEAD
             'LOGIN_EMAIL'       => htmlentities($email, ENT_QUOTES, CONTREXX_CHARSET),
+=======
+            'LOGIN_USERNAME'    => htmlentities($email, ENT_QUOTES, CONTREXX_CHARSET),
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             'LOGIN_RESTORE_KEY' => htmlentities($restoreKey, ENT_QUOTES, CONTREXX_CHARSET),
         ));
 

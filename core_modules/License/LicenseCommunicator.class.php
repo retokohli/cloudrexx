@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 /**
  * Contrexx
  *
@@ -25,6 +26,8 @@
  * our trademarks remain entirely with us.
  */
 
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /*
  * This file contains the LicenseCommunicator, used to
  * update a license
@@ -256,7 +259,11 @@ class LicenseCommunicator {
             'sendTemplate' => $forceTemplate,
         );
         
+<<<<<<< HEAD
         if (true) {
+=======
+        if (false) {
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             try {
                 $objFile = new \Cx\Lib\FileSystem\File(ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/config/License.lic');
                 $rawData = $objFile->getData();
@@ -310,7 +317,10 @@ class LicenseCommunicator {
      * @param boolean $autoexec (optional) Wheter to perform update check automaticly or on form submit
      */
     public function addJsUpdateCode(&$_CORELANG, $license, $intern = false, $autoexec = true) {
+<<<<<<< HEAD
         return;
+=======
+>>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $v = preg_split('#\.#', $this->coreCmsVersion);
         $version = current($v);
         unset($v[key($v)]);
