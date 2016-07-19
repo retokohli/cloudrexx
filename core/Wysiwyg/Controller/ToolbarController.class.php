@@ -299,7 +299,7 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
      */
     protected function getToolbarIdsOfUserGroup($userGroups = array()) {
         // Get the database connection
-        $pdo = $this->cx->getDb()->getPdoConnection();
+        $dbCon = $this->cx->getDb()->getAdoDb();
         // populate $groupIds with the given user groups
         $groupIds = $userGroups;
         if (empty($groupIds)) {
@@ -315,13 +315,13 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         // Loop through all user group ids
         foreach ($groupIds as $groupId) {
             // Load user group information
-            $groupResult = $pdo->query("
+            $groupResult = $dbCon->Execute("
                 SELECT `toolbar` FROM `" . DBPREFIX . "access_user_groups`
                 WHERE `group_id` = " . intval($groupId) . "
                 LIMIT 1");
             // Assure that the query did not fail
             if ($groupResult !== false) {
-                $hasToolbar = $groupResult->fetch(\PDO::FETCH_ASSOC);
+                $hasToolbar = $groupResult->fields;
                 // Verify that we could fetch the result
                 if ($hasToolbar !== false) {
                     // Check if the user group has a toolbar assigned
@@ -346,7 +346,7 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
      */
     protected function loadRemovedButtons(array $toolbarIds) {
         // Get the database connection
-        $pdo = $this->cx->getDb()->getPdoConnection();
+        $dbCon = $this->cx->getDb()->getAdoDb();
         // Initiate an empty removedButtons array
         $removedButtons = array();
         if (empty($toolbarIds)) {
@@ -355,11 +355,11 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
             SELECT `removed_buttons` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
             WHERE `is_default` = 1
             LIMIT 1';
-            $defaultRemovedButtonsRes = $pdo->query($defaultRemovedButtonsQuery);
+            $defaultRemovedButtonsRes = $dbCon->Execute($defaultRemovedButtonsQuery);
             // Check if a default selection has been made
             if ($defaultRemovedButtonsRes) {
                 // Fetch the removed buttons
-                $defaultRemovedButtons = $defaultRemovedButtonsRes->fetch(\PDO::FETCH_ASSOC);
+                $defaultRemovedButtons = $defaultRemovedButtonsRes->fields;
                 // Check if the removed buttons list is not empty
                 if (!empty($defaultRemovedButtons)) {
                     // Add the default removed buttons to the array of removed buttons
@@ -371,14 +371,14 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         // Loop through each toolbar id
         foreach ($toolbarIds as $toolbarId) {
             // Load the removed buttons from the database
-            $removedButtonRes = $pdo->query("
+            $removedButtonRes = $dbCon->Execute("
                 SELECT `removed_buttons`
                   FROM `" . DBPREFIX . "core_wysiwyg_toolbar`
                 WHERE `id` = " . intval($toolbarId). "
                 LIMIT 1 ");
-            if ($removedButtonRes !== false) {
+            if ($removedButtonRes) {
                 // Fetch the removed buttons
-                $removedButton = $removedButtonRes->fetch(\PDO::FETCH_ASSOC);
+                $removedButton = $removedButtonRes->fields;
                 // Verify that the toolbar has any removed buttons
                 if (!empty($removedButton)) {
                     // Store the available functions for the current toolbar
@@ -458,17 +458,17 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         // Initiate the default removed buttons as empty string
         $defaultButtons = '';
         // Get the database connection
-        $pdo = $this->cx->getDb()->getPdoConnection();
+        $dbCon = $this->cx->getDb()->getAdoDb();
         // Prepare the query to load the default configuration
         $query = 'SELECT `removed_buttons` FROM `' . DBPREFIX .
                     'core_wysiwyg_toolbar`
                   WHERE `is_default` = 1
                   LIMIT 1';
-        $defaultButtonsRes = $pdo->query($query);
+        $defaultButtonsRes = $dbCon->Execute($query);
         // Verify that the query could be executed
-        if ($defaultButtonsRes !== false) {
+        if ($defaultButtonsRes) {
             // Fetch the data
-            $defaultButtons = $defaultButtonsRes->fetch(\PDO::FETCH_ASSOC);
+            $defaultButtons = $defaultButtonsRes->fields;
             // Check that a default toolbar has been configured
             if (!empty($defaultButtons)) {
                 // Rewrite the buttons with the default removed buttons
@@ -484,24 +484,22 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
                         'access_user_groups`
                       WHERE `group_id` = ' . $groupId . '
                       LIMIT 1';
-            $toolbarIdRes = $pdo->query($query);
+            $toolbarIdRes = $dbCon->Execute($query);
             // Verify that the query could be executed
-            if ($toolbarIdRes !== false) {
+            if ($toolbarIdRes) {
                 // Fetch the toolbar id
-                $toolbarId = $toolbarIdRes->fetch(\PDO::FETCH_ASSOC);
+                $toolbarId = $toolbarIdRes->fields;
                 if (!empty($toolbarId['toolbar'])) {
                     // Prepare the query to get the removed button of the toolbar
                     $query = 'SELECT `removed_buttons` FROM `' . DBPREFIX .
                         'core_wysiwyg_toolbar`
                           WHERE `id` = ' . intval($toolbarId['toolbar']) . '
                           LIMIT 1';
-                    $toolbarButtonsRes = $pdo->query($query);
+                    $toolbarButtonsRes = $dbCon->Execute($query);
                     // Verify that the query could be executed
-                    if ($toolbarButtonsRes !== false) {
+                    if ($toolbarButtonsRes) {
                         // Fetch the removed buttons
-                        $toolbarButtons = $toolbarButtonsRes->fetch(
-                            \PDO::FETCH_ASSOC
-                        );
+                        $toolbarButtons = $toolbarButtonsRes->fields;
                         // Verify that there are any removed buttons
                         if (!empty($toolbarButtons)) {
                             // Rewrite the buttons with the removed buttons of
