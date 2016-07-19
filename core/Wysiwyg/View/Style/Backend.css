@@ -20,6 +20,7 @@ div.toolbarModifier ul[data-type="table-header"] > li[data-type="header"] > ul >
     font-size: 16px;
     padding: 10px 0 5px 5px;
 }
+#toolbarModifierWrapper  div.toolbarModifier > ul > li > ul,
 div.toolbarModifier > ul > li > ul,
 div.toolbarModifier > ul > li,
 div.toolbarModifier {
