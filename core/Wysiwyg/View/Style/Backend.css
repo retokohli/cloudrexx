@@ -4,9 +4,9 @@
  * \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/FileName.css', 1));
  * or remove this file if you don't need it
  */
-#form-X-title, #imagePath, #form-X-description, #form-X-htmlContent {width: 500px;}
-#form-X-description {height: 50px;}
-#editor-htmlContent {height: 300px;width: 100%;}
+#form-X-title, #imagePath, #form-X-description, #form-X-htmlContent { width: 500px; }
+#form-X-description { height: 50px; }
+#editor-htmlContent { height: 300px;width: 100%; }
 #toolbarModifierWrapper .toolbar,
 body .staticContainer .inner .toolbar,
 div.toolbarModifier ul[data-type="table-header"] > li[data-type="header"] > p,
@@ -16,7 +16,7 @@ div.toolbarModifier ul[data-type="table-body"] > li[data-type="group"] > ul > li
 div.toolbarModifier ul[data-type="table-body"] > li[data-type="separator"] {
     display: none;
 }
-div.toolbarModifier ul[data-type="table-header"] > li[data-type="header"] > ul li > p:last-child {
+div.toolbarModifier ul[data-type="table-header"] > li[data-type="header"] > ul > li > p:last-child {
     font-size: 16px;
     padding: 10px 0 5px 5px;
 }
@@ -31,8 +31,30 @@ div.toolbarModifier > ul > li > ul {
 .editorfunctions .content {
     padding: 0;
 }
+div.toolbarModifier > ul,
+div.toolbarModifier > ul > li[data-type="group"],
+div.toolbarModifier ul[data-type="table-body"] > li[data-type="group"] > ul > li[data-type="subgroup"] {
+    border-color: #e5e5e5;
+}
 div.toolbarModifier ul[data-type="table-body"] > li[data-type="group"] > ul > li[data-type="subgroup"] > p {
-    font-size: 16px;
+    font-size: 12px;
+    height: 22px;
+    line-height: 22px;
+    padding: 3px;
+    text-align: left;
+    vertical-align: top;
+}
+div.toolbarModifier ul[data-type="table-body"] > li[data-type="group"] > ul > li[data-type="subgroup"] > ul > li > label > a {
+    height: 14px;
+}
+div.toolbarModifier ul[data-type="table-body"] > li[data-type="group"] > ul > li[data-type="subgroup"] > ul > li > label > a > span {
+    margin-top: -1px;
+}
+div.toolbarModifier span.cke_combo_text {
+    line-height: 17px;
+}
+div.toolbarModifier span.cke_combo_arrow {
+    margin-top: 7px;
 }
 div.toolbarModifier > ul > li[data-type="group"]:hover,
 div.toolbarModifier > ul > li[data-type="separator"]:hover {
