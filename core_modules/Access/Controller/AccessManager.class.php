@@ -1300,12 +1300,6 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             $cssDisplayStatusCreate = '';
         }
 
-        if ($objFWUser->objUser->getAdminStatus()) {
-            $cssDisplayStatus = 'none';
-        } else {
-            $cssDisplayStatus = '';
-        }
-
         if (isset($_POST['access_save_user'])) {
             $arrSettings = \User_Setting::getSettings();
 
@@ -1321,7 +1315,16 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             $objUser->setBackendLanguage(isset($_POST['access_user_backend_language']) ? intval($_POST['access_user_backend_language']) : 0);
 
             $oldActiveStatus = $objUser->getActiveStatus();
-            $objUser->setActiveStatus(isset($_POST['access_user_active']) ? (bool)$_POST['access_user_active'] : false);
+            if (   (   $objFWUser->objUser->getId() != $objUser->getId()
+                    && $objUser->getAdminStatus()
+                    && $objFWUser->objUser->getAdminStatus()
+                   )
+                || (   $objFWUser->objUser->getId() != $objUser->getId()
+                    && !$objUser->getAdminStatus()
+                   )
+            ) {
+                $objUser->setActiveStatus(isset($_POST['access_user_active']) ? (bool)$_POST['access_user_active'] : false);
+            }
 
             $objUser->setEmailAccess(isset($_POST['access_user_email_access']) && $objUser->isAllowedToChangeEmailAccess() ? trim(contrexx_stripslashes($_POST['access_user_email_access'])) : '');
             $objUser->setProfileAccess(isset($_POST['access_user_profile_access']) && $objUser->isAllowedToChangeProfileAccess() ? trim(contrexx_stripslashes($_POST['access_user_profile_access'])) : '');
@@ -1390,12 +1393,16 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $this->_objTpl->addBlockfile('ACCESS_USER_TEMPLATE', 'module_access_user_modify', 'module_access_user_modify.html');
 
-        if ($objUser->getId()) {
-            $this->_pageTitle = $_ARRAYLANG['TXT_ACCESS_MODIFY_USER_ACCOUNT'];
-            $this->_objTpl->touchBlock('access_user_active_notification_function_call');
-        } else {
+        //Hide the option 'status' if the user modifying their own entry
+        $this->_objTpl->hideBlock('access_user_status');
+        if ($objFWUser->objUser->getId() != $objUser->getId()) {
+            $this->_objTpl->touchBlock('access_user_status');
             $this->_pageTitle = $_ARRAYLANG['TXT_ACCESS_CREATE_USER_ACCOUNT'];
             $this->_objTpl->hideBlock('access_user_active_notification_function_call');
+            if ($objUser->getId()) {
+                $this->_pageTitle = $_ARRAYLANG['TXT_ACCESS_MODIFY_USER_ACCOUNT'];
+                $this->_objTpl->touchBlock('access_user_active_notification_function_call');
+            }
         }
 
         if (\Permission::hasAllAccess()) {
@@ -1507,7 +1514,6 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'ACCESS_USER_VALIDITY_EXPIRATION_MENU' => $this->getUserValidityMenu($objUser->getValidityTimePeriod(), $objUser->getExpirationDate()),
             'ACCESS_USER_VALIDITY_OPTION_DISPLAY'  => $objUser->getAdminStatus() ? 'none' : '',
             'ACCESS_JAVASCRIPT_FUNCTIONS'          => $this->getJavaScriptCode(),
-            'CSS_DISPLAY_STATUS'                   => $cssDisplayStatus,
             'CSS_DISPLAY_STATUS_CREATE'            => $cssDisplayStatusCreate,
             'ACCESS_PASSWORT_COMPLEXITY'           => isset($_CONFIG['passwordComplexity']) ? $_CONFIG['passwordComplexity'] : 'off',
             'SOURCE'                               => $source, //if source was newletter for ex.

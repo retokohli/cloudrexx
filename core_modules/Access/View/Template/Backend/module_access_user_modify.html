@@ -193,20 +193,24 @@ $J(document).ready(function() {
                     <input type="checkbox" name="access_user_is_admin" id="access_user_is_admin" value="1" {ACCESS_USER_IS_ADMIN} onchange="document.getElementById('access_user_validity_option').style.display = this.checked ? 'none' : ''" /> <label for="access_user_is_admin">{TXT_ACCESS_USER_ADMIN_RIGHTS}</label>
                     <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_ACCESS_USER_ADMIN_RIGHTS_TOOLTIP}</span>
                 </td>
-			</tr>
-			<tr class="row1" style="display:{CSS_DISPLAY_STATUS};">
-				<td>{TXT_ACCESS_STATUS}</td>
-				<td><input type="checkbox" name="access_user_active" id="access_user_active" value="1" {ACCESS_USER_ACTIVE} <!-- BEGIN access_user_active_notification_function_call -->onchange="confirmUserNotification('access_user_status_notification', this.checked)" <!-- END access_user_active_notification_function_call -->/> <label for="access_user_active">{TXT_ACCESS_ACTIVE}</label> <input type="hidden" name="access_user_status_notification" id="access_user_status_notification" value="0" /></td>
-			</tr>
-			<!-- BEGIN access_user_privacy -->
-			<tr class="row2">
-				<td rowspan="2">{TXT_ACCESS_PRIVACY}</td>
-				<td>
-					<!-- BEGIN access_user_email_access --><div>{ACCESS_USER_EMAIL_ACCESS}</div><!-- END access_user_email_access -->
-                    <!-- BEGIN access_user_profile_access --><div>{ACCESS_USER_PROFILE_ACCESS}</div><!-- END access_user_profile_access -->
-				</td>
-			</tr>
-			<!-- END access_user_privacy -->
+            </tr>
+            <!-- BEGIN access_user_status -->
+            <tr class="row1">
+                <td>{TXT_ACCESS_STATUS}</td>
+                <td>
+                    <input type="checkbox" name="access_user_active" id="access_user_active" value="1" {ACCESS_USER_ACTIVE} <!-- BEGIN access_user_active_notification_function_call -->onchange="confirmUserNotification('access_user_status_notification', this.checked)" <!-- END access_user_active_notification_function_call -->/> <label for="access_user_active">{TXT_ACCESS_ACTIVE}</label> <input type="hidden" name="access_user_status_notification" id="access_user_status_notification" value="0" />
+                </td>
+            </tr>
+            <!-- END access_user_status -->
+            <!-- BEGIN access_user_privacy -->
+            <tr class="row2">
+                    <td rowspan="2">{TXT_ACCESS_PRIVACY}</td>
+                    <td>
+                            <!-- BEGIN access_user_email_access --><div>{ACCESS_USER_EMAIL_ACCESS}</div><!-- END access_user_email_access -->
+        <!-- BEGIN access_user_profile_access --><div>{ACCESS_USER_PROFILE_ACCESS}</div><!-- END access_user_profile_access -->
+                    </td>
+            </tr>
+            <!-- END access_user_privacy -->
       </tbody>
 	</table>
   <table cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" summary="user account validity" style="display:{ACCESS_USER_VALIDITY_OPTION_DISPLAY};" id="access_user_validity_option">
