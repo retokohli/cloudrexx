@@ -302,6 +302,11 @@ class CalendarSettings extends CalendarLibrary
     {
         global $_ARRAYLANG, $_CORELANG;
 
+        \JS::activate('cx');
+        \JS::activate('jqueryui');
+        \JS::registerJS('lib/javascript/tag-it/js/tag-it.min.js');
+        \JS::registerCss('lib/javascript/tag-it/css/tag-it.css');
+
         $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_calendar_settings_modify_form.html');           
         
         if($formId != 0) {
@@ -341,6 +346,7 @@ class CalendarSettings extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_MINIMIZE'                 => $_ARRAYLANG['TXT_CALENDAR_MINIMIZE'],
             'TXT_'.$this->moduleLangVar.'_FIELDS'                   => $_ARRAYLANG['TXT_CALENDAR_FIELDS'],
             'TXT_'.$this->moduleLangVar.'_REGISTRATION_DATA'        => $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_DATA'],
+            'TXT_'.$this->moduleLangVar.'_ADD_OPTION'               => $_ARRAYLANG['TXT_CALENDAR_ADD_OPTION'],
         ));       
         
         $objFormManager = new \Cx\Modules\Calendar\Controller\CalendarFormManager();  

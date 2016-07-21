@@ -2,9 +2,7 @@
 <script language="JavaScript" type="text/javascript">
 var lastId      = {CALENDAR_INPUTFIELD_LAST_ID};
 var lastRow     = {CALENDAR_INPUTFIELD_LAST_ROW};
-var BlankField  = '',
-    defaultLang = '{CALENDAR_FORM_DEFAULT_LANG}',
-    activeLang  = [{CALENDAR_FORM_ACTIVE_LANG_ARRAY}];
+var BlankField  = '';
 
 function appendField(){
     lastId = lastId + 1;
@@ -19,8 +17,6 @@ function appendField(){
     var tmpBlankField2 = tmpBlankField1.replace(/FIELD_ROW/g, lastRow);
     
     $J('#inputfields').append(tmpBlankField2);
-    attachFieldEvents(cx.jQuery('#inputfield_'+ lastId + ' .lang_default_value_master'));
-    attachFieldEvents(cx.jQuery('#inputfield_'+ lastId + ' .lang_name_master'));
     $J('#inputfield_'+lastId).css('display', 'none');
     $J('#inputfield_'+lastId).fadeIn("slow");
 }
@@ -30,6 +26,15 @@ function deleteField(fieldId){
 }
 
 function ExpandMinimize(toggle, id) {
+        
+    if (toggle != "lang_name") {
+        var masterValue = $J("tr#inputfield_"+id+" .lang_"+toggle+"_master").val();
+        $J("tr#inputfield_"+id+" #inputfield_"+id+"_"+toggle+"_Expanded input").each(function(){
+            if ($J(this).val() == '') {
+                $J(this).val(masterValue);
+            }
+        });        
+    }
 
     elm1 = document.getElementById('inputfield_' + id + '_' + toggle + '_Minimized');
     elm2 = document.getElementById('inputfield_' + id + '_' + toggle + '_Expanded');
@@ -40,50 +45,20 @@ function ExpandMinimize(toggle, id) {
 $J(function(){    
     var formData = {CALENDAR_FORM_DATA};
     BlankField = $J("#blankField").html();
-
-    $J(formData).each(function(index, data) {
+    
+    $J(formData).each(function(index, data){
         $J('#inputfields').append(getField(data));
     });
-    cx.jQuery('.lang_default_value_master, .lang_name_master').each(function(){
-        cx.jQuery(this).data('lastDefaultValue', cx.jQuery(this).val());
-        attachFieldEvents(cx.jQuery(this));
-    });
 });
-function attachFieldEvents($elm) {
-
-    var id = $elm.data('id');
-    var relatedFieldPrefix = $elm.data('relatedFieldPrefix') ? $elm.data('relatedFieldPrefix') : 'inputfield';
-    $elm.keyup(function() {
-        var that = cx.jQuery(this);
-
-        var id = cx.jQuery(this).data('id');
-        var relatedFieldPrefix = cx.jQuery(this).data('relatedFieldPrefix') ? cx.jQuery(this).data('relatedFieldPrefix') : 'inputfield';
-        cx.jQuery.each(activeLang, function(i, v) {
-            if (cx.jQuery('#'+ relatedFieldPrefix + '_' + id +'_'+ v).val() == that.data('lastDefaultValue')) {
-                cx.jQuery('#'+ relatedFieldPrefix + '_' + id +'_'+ v).val(that.val());
-            }
-        });
-        cx.jQuery(this).data('lastDefaultValue', cx.jQuery(this).val());
-    });
-    console.log('#'+ relatedFieldPrefix + '_' + id +'_'+ defaultLang);
-    cx.jQuery('#'+ relatedFieldPrefix + '_' + id +'_'+ defaultLang).keyup(function(){
-        var id = cx.jQuery(this).data('id');
-        var relatedFieldPrefix = cx.jQuery(this).data('relatedFieldPrefix') ? cx.jQuery(this).data('relatedFieldPrefix') : 'inputfield';
-        cx.jQuery('#'+ relatedFieldPrefix + '_' + id +'_0').val(cx.jQuery(this).val());
-        cx.jQuery('#'+ relatedFieldPrefix + '_' + id +'_0').data('lastDefaultValue', cx.jQuery(this).val());
-    });
-}
 function getField(data) {
     var tmpBlankField1 = BlankField.replace(/FIELD_ID/g, data.id);
     tmpBlankField1 = tmpBlankField1.replace(/FIELD_ROW/g, data.row);
     $field = $J(tmpBlankField1);
     $field.find('.lang_name_master').val(data.name_master);
-    $field.find('.lang_name_master').data('lastDefaultValue', data.name_master);
     $field.find('.sort_order').val(data.order);
     $field.find('.sort_order').val(data.order);
     $field.find('.field_type').val(data.type);
     $field.find('.lang_default_value_master').val(data.default_value_master);
-    $field.find('.lang_default_value_master').data('lastDefaultValue', data.default_value_master);
     if (data.required == '1') {
         $field.find('.field_req').attr('checked', 'checked');
     }
@@ -99,25 +74,34 @@ function getField(data) {
         $field.find('.inputDefaultfield_'+index).val(value);
     });
     
-    changeFieldType($field);
-    
+    changeFieldType($field, false);
+
     return $field;
 }
-function changeFieldType(container) {
-    var fieldType = container.find('.field_type').val();
 
-    switch(container.data('prevFieldType')) {
-        case 'select':
-        case 'radio':
-        case 'checkbox':
-            container.find('.col_default_value .input_field').tagit('destroy');
-            break;
-        case 'textarea':
-            changeDefaultFieldType(container, 'text');
-            break;
+function changeFieldType(container, change ) {
+    var tr_id = container.attr('id');
+    var input_box = container.find('.lang_default_value_master').attr('id');
+    var fieldName = container.find('.lang_default_value_master').attr('name');
+    var field_type = container.find('.field_type').val();
+    if(field_type != 'select' && field_type != 'radio' && field_type != 'checkbox'){
+      container.find('.tagit').css('display','none');
+      container.find('#'+input_box).removeClass('tagit-hidden-field');
     }
+    if(change && !container.find('#'+input_box).is( "[type=text]" ) ){
+      var inputElement = container.find('#' + input_box);
+          var textbox = $J('<input />').attr({'style': inputElement.attr('style'),
+            'id': inputElement.attr('id'),
+            'class': inputElement.attr('class'),
+            'name': inputElement.attr('name')
+          });
+          textbox.val(inputElement.text());
+          textbox.css('display', 'block');
+          inputElement.parent().prepend(textbox);
+          inputElement.remove();
+        }
 
-    switch(fieldType) {
+    switch(field_type) {
         case 'fieldset':
             container.find(".field_req").attr('disabled', 'disabled').hide();
         case 'agb':
@@ -127,92 +111,58 @@ function changeFieldType(container) {
         case 'select':
         case 'radio':
         case 'checkbox':
-            addTagIt(container.find('.col_default_value .input_field'));
-            container.find(".col_default_value .input_field").hide();
+            minimize = container.find('#'+ tr_id +'_default_value_Minimized');
+            container.find('#'+input_box).addClass('tagit-hidden-field');
+            container.find('.tagit').css('display', 'block');
+            container.find('#' + input_box).css('display', 'none');
+            container.find('.tagit input').removeAttr('disabled').show();
+            addTagIt(container.find('#' + input_box),fieldName, false);
+
+            expand   = container.find('#'+ tr_id + '_default_value_Expanded');
+            expand.find('input').each(function(){
+  //            $J(this).css('display', 'none');
+              expand_input_id = $J(this).attr('class');
+              expand_input_name = $J(this).attr('name');
+              addTagIt(container.find(' .' + expand_input_id), expand_input_name, true);
+            });
+            expand.find('ul').each(function () {
+              $J(this).find('.tagit-new input').attr('style', $J(this).prev('input').attr('style'));
+            });
             break;
         case 'textarea':
-            changeDefaultFieldType(container, 'textarea');
+            var inputElement = container.find('#' + input_box);
+            var textArea = $J('<textarea />')
+                            .attr({
+                                style:  inputElement.attr('style'),
+                                id:     inputElement.attr('id'),
+                                class:  inputElement.attr('class'),
+                                name:   inputElement.attr('name'),
+                            });
+            textArea.text(inputElement.val());
+            textArea.css('display', 'block');
+            inputElement.parent().prepend(textArea);
+            inputElement.remove();
+            break;
+
         default:
             container.find(".field_req").removeAttr('disabled').show();
             container.find(".field_afflications").removeAttr('disabled').show();
             container.find(".col_default_value :input").removeAttr('disabled').show();
-
             break;
     }
-    container.data('prevFieldType', fieldType);
 }
-function changeDefaultFieldType(container, type) {
-    container.find('.col_default_value .input_field').each(function(){
-        var $this = cx.jQuery(this);
-        $this.replaceWith( changeInputFieldType($this, type) );
+function addTagIt(selector, input_name, lang){
+  $J(selector).tagit({
+      fieldName: input_name,
+      availableTags: '',
+      placeholderText: "Add Tags",
+      allowSpaces: true
     });
-}
-function changeInputFieldType(source, type) {
-    var inputTag = type == 'textarea' ? 'textarea' : 'input',
-        $field   = cx.jQuery('<'+ inputTag +' />')
-                    .attr({
-                        id   : source.attr('id'),
-                        style: source.attr('style'),
-                        class: source.attr('class'),
-                        name : source.attr('name')
-                    });
-
-    if (inputTag == 'input') {
-        $field.attr('type', 'text');
+    
+    if(lang){
+      $J(selector).find('.tagit-new input').attr('style', $J(selector).attr('style'));
     }
-    $field.val(source.val());
-
-    $field.data('id', source.data('id'));
-    $field.data('relatedFieldPrefix', source.data('relatedFieldPrefix'));
-    $field.data('lastDefaultValue', source.data('lastDefaultValue'));
-
-    return $field;
-}
-function addTagIt(selector) {
-  $J(selector)
-    .tagit({
-        placeholderText: "{TXT_CALENDAR_ADD_OPTION}",
-        allowSpaces: true,
-        afterTagAdded: function(event, ui) {
-            updateLangTagItFields(event, ui);
-            updateDefaultTagItFields(event, ui);
-        },
-        afterTagRemoved: function(event, ui) {
-            updateLangTagItFields(event, ui);
-            updateDefaultTagItFields(event, ui);
-        }
-    });
-}
-function updateLangTagItFields(event, ui) {
-    var $elm = cx.jQuery(event.target);
-    if ($elm.hasClass('lang_default_value_master') && $elm.data('isDirty') !== true) {
-        var id = $elm.data('id');
-        var relatedFieldPrefix = $elm.data('relatedFieldPrefix') ? $elm.data('relatedFieldPrefix') : 'inputfield';
-        cx.jQuery.each(activeLang, function(i, v) {
-            if (cx.jQuery('#'+ relatedFieldPrefix + '_' + id +'_'+ v).val() == $elm.data('lastDefaultValue')) {
-                cx.jQuery('#'+ relatedFieldPrefix + '_' + id +'_'+ v).val($elm.val());
-                cx.jQuery('#'+ relatedFieldPrefix + '_' + id +'_'+ v).tagit('destroy');
-                addTagIt('#'+ relatedFieldPrefix + '_' + id +'_'+ v);
-            }
-        });
-        $elm.data('lastDefaultValue', $elm.val());
-    }
-}
-function updateDefaultTagItFields(event, ui) {
-    var $elm = cx.jQuery(event.target);
-    var id = $elm.data('id');
-    var relatedFieldPrefix = $elm.data('relatedFieldPrefix') ? $elm.data('relatedFieldPrefix') : 'inputfield';
-
-    if ($elm.attr('id') == relatedFieldPrefix + '_' + id +'_'+ defaultLang) {
-        var defaultFieldId = '#'+ relatedFieldPrefix + '_' + id +'_0';
-        cx.jQuery(defaultFieldId).val($elm.val());
-        cx.jQuery(defaultFieldId).tagit('destroy');
-        cx.jQuery(defaultFieldId).data('isDirty', true);
-        addTagIt(defaultFieldId);
-        cx.jQuery(defaultFieldId).data('isDirty', false);
-        cx.jQuery(defaultFieldId).data('lastDefaultValue', $elm.val());
-    }
-}
+  }
 </script>
 <script id="blankField" type="jquery/tmpl">
     <tr class="FIELD_ROW" id="inputfield_FIELD_ID">
@@ -222,16 +172,16 @@ function updateDefaultTagItFields(event, ui) {
     </td>
     <td valign="top">
         <div id="inputfield_FIELD_ID_name_Minimized" style="display: block;">
-            <input data-id="FIELD_ID" data-last-default-value="" data-related-field-prefix="inputfieldName" id="inputfieldName_FIELD_ID_0" class='lang_name_master' name="inputfield[FIELD_ID][name][0]" maxlength="255" style="width: 200px;" type="text" value="" />
+            <input class='lang_name_master' name="inputfield[FIELD_ID][name][0]" maxlength="255" style="width: 200px;" type="text" value="" />
         </div>
         <div id="inputfield_FIELD_ID_name_Expanded" style="display: none;">
             <!-- BEGIN inputfieldNameList -->
-            <input data-id="FIELD_ID" data-related-field-prefix="inputfieldName" id="inputfieldName_FIELD_ID_{CALENDAR_INPUTFIELD_LANG_ID}" class="inputNamefield_{CALENDAR_INPUTFIELD_LANG_ID}" name="inputfield[FIELD_ID][name][{CALENDAR_INPUTFIELD_LANG_ID}]" maxlength="255" type="text" style="width: 179px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url('../core/Country/View/Media/Flag/flag_{CALENDAR_INPUTFIELD_LANG_SHORTCUT}.gif') no-repeat 3px 3px;" title="{CALENDAR_INPUTFIELD_LANG_NAME}" value="" /><br />
+            <input class="inputNamefield_{CALENDAR_INPUTFIELD_LANG_ID}" name="inputfield[FIELD_ID][name][{CALENDAR_INPUTFIELD_LANG_ID}]" maxlength="255" type="text" style="width: 179px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url('../core/Country/View/Media/Flag/flag_{CALENDAR_INPUTFIELD_LANG_SHORTCUT}.gif') no-repeat 3px 3px;" title="{CALENDAR_INPUTFIELD_LANG_NAME}" value="" /><br />
             <!--  END inputfieldNameList -->
         </div>
     </td>
     <td valign="top">
-        <select onChange="changeFieldType($J(this).closest('#inputfield_FIELD_ID'));" class="field_type" name="inputfield[FIELD_ID][type]" style="width: 140px">
+        <select onChange="changeFieldType($J(this).closest('#inputfield_FIELD_ID'), true);" class="field_type" name="inputfield[FIELD_ID][type]" style="width: 140px">
             <optgroup label="{TXT_CALENDAR_FIELDS}">
             <!-- BEGIN inputfieldTypes -->
             <option value="{CALENDAR_FORM_FIELD_TYPE}">{TXT_CALENDAR_FORM_FIELD_TYPE}</option>
@@ -246,11 +196,11 @@ function updateDefaultTagItFields(event, ui) {
     </td>
     <td valign="top" class="col_default_value">
         <div id="inputfield_FIELD_ID_default_value_Minimized" style="display: block;">
-            <input data-id="FIELD_ID" data-last-default-value="" id="inputfield_FIELD_ID_0" class="input_field lang_default_value_master" name="inputfield[FIELD_ID][default_value][0]" maxlength="255" style="width: 200px;" type="text" value="" />
+            <input class="lang_default_value_master" id="input_FIELD_ID" name="inputfield[FIELD_ID][default_value][0]" maxlength="255" style="width: 200px;" type="text" value="" />
         </div>
         <div id="inputfield_FIELD_ID_default_value_Expanded" style="display: none;">
             <!-- BEGIN inputfieldDefaultValueList -->
-            <input data-id="FIELD_ID" id="inputfield_FIELD_ID_{CALENDAR_INPUTFIELD_LANG_ID}" class="input_field inputDefaultfield_{CALENDAR_INPUTFIELD_LANG_ID}" name="inputfield[FIELD_ID][default_value][{CALENDAR_INPUTFIELD_LANG_ID}]" maxlength="255" type="text" style="width: 179px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url('../core/Country/View/Media/Flag/flag_{CALENDAR_INPUTFIELD_LANG_SHORTCUT}.gif') no-repeat 3px 3px;" title="{CALENDAR_INPUTFIELD_LANG_NAME}" value="{CALENDAR_INPUTFIELD_DEFAULT_VALUE}" />
+            <input class="inputDefaultfield_{CALENDAR_INPUTFIELD_LANG_ID}" id="input_lang_{CALENDAR_INPUTFIELD_LANG_ID}" name="inputfield[FIELD_ID][default_value][{CALENDAR_INPUTFIELD_LANG_ID}]" maxlength="255" type="text" style="width: 179px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url('../core/Country/View/Media/Flag/flag_{CALENDAR_INPUTFIELD_LANG_SHORTCUT}.gif') no-repeat 3px 3px;" title="{CALENDAR_INPUTFIELD_LANG_NAME}" value="{CALENDAR_INPUTFIELD_DEFAULT_VALUE}" /><br />
             <!-- END inputfieldDefaultValueList -->
         </div>
     </td>
@@ -285,15 +235,6 @@ function updateDefaultTagItFields(event, ui) {
 <style type="text/css">
     .pull-left{float: left;}
     .width-50{width: 50%;}
-    ul.tagit.ui-widget-content {
-        background: none;
-        border: none;
-        padding: 0;
-        margin: 0;
-    }
-    .tagit-new input.ui-widget-content.ui-autocomplete-input {
-        width: 209px;
-    }
 </style>
 <form name="formModifyForm" method="post" action="index.php?cmd={CALENDAR_MODULE_NAME}&act=settings&tpl=forms">
     <input name="formId" type="hidden" value="{CALENDAR_FORM_ID}" />  
@@ -303,7 +244,7 @@ function updateDefaultTagItFields(event, ui) {
 	    </tr>
         <tr class="row1">  
             <td width="87">{TXT_CALENDAR_TITLE}</td>
-            <td><input name="formTitle" maxlength="255" style="width: 200px;" type="text" value="{CALENDAR_FORM_TITLE}" /></td>      
+            <td><input name="formTitle" id="demo" maxlength="255" style="width: 200px;" type="text" value="{CALENDAR_FORM_TITLE}" /></td>      
         </tr>
     </table>
     <table id="inputfields" style="width: 100%; border-spacing: 0px;" class="adminlist" cellspacing="0" cellpadding="3">    

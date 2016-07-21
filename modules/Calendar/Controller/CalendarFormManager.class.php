@@ -248,18 +248,21 @@ class CalendarFormManager extends CalendarLibrary
                 case 1:
                     $this->getFrontendLanguages();
 
+                    $defaultLangId = $_LANGID;
+                    if (!in_array($defaultLangId, \FWLanguage::getIdArray())) {
+                        $defaultLangId = \FWLanguage::getDefaultLangId();
+                    }
+
                     $objTpl->setGlobalVariable(array(
                         $this->moduleLangVar.'_FORM_ID'    => !empty($formId) ? $objForm->id : '',
                         $this->moduleLangVar.'_FORM_TITLE' => !empty($formId) ? $objForm->title : '',
+                        $this->moduleLangVar.'_FORM_DEFAULT_LANG'      => $defaultLangId,
+                        $this->moduleLangVar.'_FORM_ACTIVE_LANG_ARRAY' => implode(',', \FWLanguage::getIdArray()),
                     ));
 
                     $i          = 0;
                     $formFields = array();
                     if (!empty($formId)) {
-                        $defaultLangId = $_LANGID;
-                        if (!in_array($defaultLangId, \FWLanguage::getIdArray())) {
-                            $defaultLangId = \FWLanguage::getDefaultLangId();
-                        }
                         foreach ($objForm->inputfields as $key => $arrInputfield) {
                             $i++;
 
