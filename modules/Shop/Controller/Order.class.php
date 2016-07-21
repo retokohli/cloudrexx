@@ -1342,6 +1342,29 @@ class Order
         if (empty($order_id)) {
             return false;
         }
+
+        // Deactivate accounts autocreated for downloads
+        $objOrder = self::getById($order_id);
+        if (   $objOrder
+            && $objCustomer = Customer::getById($objOrder->customer_id())
+        ) {
+            $customer_email =
+                Orders::usernamePrefix."_${order_id}_%-" .
+                $objCustomer->email();
+            $objUser = \FWUser::getFWUserObject()->objUser->getUsers(
+                array('email' => $customer_email)
+            );
+            if ($objUser) {
+                while (!$objUser->EOF) {
+                    $objUser->setActiveStatus(false);
+                    if (!$objUser->store()) {
+                        return false;
+                    }
+                    $objUser->next();
+                }
+            }
+        }
+
         $objUser = \FWUser::getFWUserObject()->objUser;
         $query = '
             UPDATE
