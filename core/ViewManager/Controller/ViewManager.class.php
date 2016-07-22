@@ -216,12 +216,12 @@ class ViewManager
 
         $navigation = '';
         if (\Permission::checkAccess(self::VIEW_MANAGER_ACCESS_ID, 'static', true)) {
-            $navigation .= "<a href='index.php?cmd=ViewManager' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_OVERVIEW']."</a>";
+            $navigation .= "<a href='index.php?cmd=ViewManager' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VIEWMANAGER_OVERVIEW']."</a>";
         }
         if (   \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static', true)
             || \Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static', true)
         ) {
-            $navigation .= "<a href='index.php?cmd=ViewManager&amp;act=templates' class='".($this->act == 'templates' || $this->act == 'newDir' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_TEMPLATES']."</a>";
+            $navigation .= "<a href='index.php?cmd=ViewManager&amp;act=templates' class='".($this->act == 'templates' || $this->act == 'newDir' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VIEWMANAGER_TEMPLATE_EDITOR']."</a>";
         }
         if (\Permission::checkAccess(self::ENABLE_THEMES_ACCESS_ID, 'static', true)) {
             $navigation .= "<a href='index.php?cmd=ViewManager&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_SETTINGS']."</a>";
