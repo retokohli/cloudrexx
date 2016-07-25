@@ -120,11 +120,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 if (isset($_POST) && isset($_POST['save'])) {
                     // Get the database connection
                     $dbCon = $this->cx->getDb()->getAdoDb();
-                    // Get the available functions
-                    $availableFunctions = $toolbarController->getAsOldSyntax(
-                        $_POST['removedButtons'], 
-                        'defaultFull'
-                    );
                     // Check if there is already a default toolbar
                     $defaultToolbar = $dbCon->Execute('
                         SELECT `id` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
@@ -135,28 +130,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         throw new \Exception('Failed to check for existing default toolbar!');
                     }
                     // Get the default toolbar id
-                    $toolbarId = $defaultToolbar->fields;
-                    // Check if there is already a default toolbar saved
-                    if (!empty($toolbarId)) {
-                        // Update the available functions
-                        $query = 'UPDATE `' . DBPREFIX . 'core_wysiwyg_toolbar`'
-                            . 'SET `available_functions` = \'' .
-                            contrexx_input2db($availableFunctions) . '\',
-                                        `removed_buttons` = \'' .
-                            contrexx_input2db($_POST['removedButtons']) . '\'
-                                      WHERE `id` = ' . intval($toolbarId['id']) . '
-                                      AND `is_default` = 1';
-                    } else {
-                        // Store the configuration as a new default toolbar
-                        $query = '
-                            INSERT INTO `' . DBPREFIX . 'core_wysiwyg_toolbar`(
-                                `available_functions`, `removed_buttons`,
-                                `is_default`)
-                            VALUES (\'' . $availableFunctions . '\', \'' .
-                            contrexx_input2db($_POST['removedButtons']) . '\',
-                                1)';
-                    }
-                    $dbCon->Execute($query);
+                    $toolbarId = $defaultToolbar->fields['id'];
+                    $toolbarController->store(
+                        $_POST['removedButtons'],
+                        $toolbarId,
+                        true
+                    );
                 }
                 $toolbarConfigurator = $toolbarController->getToolbarConfiguratorTemplate(
                     $this->getDirectory(false, true),

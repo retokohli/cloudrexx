@@ -568,4 +568,72 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
             'toolbarConfigurator'
         );
     }
+
+    /**
+     * Store a toolbar configuration
+     *
+     * Store a toolbar configuration and return the id in case of a new toolbar
+     * or 0 in case an existing one has been updated
+     * @param string    $toolbar    Toolbar configuration that shall be stored
+     * @param int       $toolbarId  Id of the toolbar if an existing one is updated
+     * @param bool      $isDefault  Store config as default configuration
+     * @return int
+     * @throws \Cx\Core\Model\DbException
+     */
+    public function store($toolbar, $toolbarId = 0, $isDefault = false) {
+        $dbCon = $this->cx->getDb()->getAdoDb();
+        // Get the new toolbar as an array
+        $newFunctions = json_decode($this->getAsOldSyntax($toolbar, 'full'));
+        // Toolbar already exists - editing an existing group
+        if ($toolbarId) {
+            // Load toolbar
+            $toolbarFunctionRes = $dbCon->Execute('
+                    SELECT `removed_buttons` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
+                    WHERE `id` = ' . intval($toolbarId) . '
+                    LIMIT 1');
+            // Assure that the statement did not fail
+            if ($toolbarFunctionRes) {
+                // Get the current toolbar as an array
+                $currentButtons = $toolbarFunctionRes->fields['removed_buttons'];
+                // Prepare the two removed buttons list for commparison
+                $currentButtons = explode(',', $currentButtons);
+                $newButtonsArr = explode(',', $toolbar);
+                // Check if the toolbar has been changed
+                if (   (count(array_diff($currentButtons, $newButtonsArr)) != 0)
+                    || (count(array_diff($newButtonsArr, $currentButtons)) != 0)) {
+                    $whereDefault = '';
+                    if ($isDefault) {
+                        $whereDefault = ' AND `is_default` = 1';
+                    }
+                    // The toolbar has been modified
+                    $query = '
+                            UPDATE `' . DBPREFIX . 'core_wysiwyg_toolbar`
+                            SET `available_functions` = \'' . json_encode($newFunctions) . '\',
+                                `removed_buttons` = \'' . contrexx_input2db($toolbar) . '\'
+                            WHERE `id` = ' . intval($toolbarId) . $whereDefault;
+                    $dbCon->Execute($query);
+                }
+                return 0;
+            }
+        } else {
+            $columnDefault = $valueDefault = '';
+            if ($isDefault) {
+                $columnDefault = ', `is_default`';
+                $valueDefault = ', 1';
+            }
+            // Group has currently no special toolbar assigned
+            // Store as a new toolbar and get its generated id
+            $query = 'INSERT INTO `' . DBPREFIX . 'core_wysiwyg_toolbar`(
+                        `available_functions`, `removed_buttons`'
+                . $columnDefault . ')
+                      VALUES (\'' . json_encode($newFunctions) . '\',
+                        \'' . contrexx_input2db($_POST['removedButtons']) . '\''
+                . $valueDefault . ')';
+            $dbCon->Execute($query);
+            // Get the id of the new toolbar
+            $toolbarId = $dbCon->Execute('SELECT LAST_INSERT_ID() AS `id`;')->fields['id'];
+            // Return the new toolbar id
+            return $toolbarId;
+        }
+    }
 }

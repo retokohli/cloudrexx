@@ -635,65 +635,28 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
             $objGroup->setDynamicPermissionIds($arrCurrentAccessIds);
             // Get Cx object from Environment variable
-            $cx = \Env::get('cx');
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             // Load entity manager
             $dbCon = $cx->getDb()->getAdoDb();
             // Instantiate a new Toolbarcontroller
             $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController($cx);
             $newButtons = $_POST['removedButtons'];
-            // Get the new toolbar as an array
-            $newFunctions = json_decode($toolbarController->getAsOldSyntax($newButtons, 'full'));
             // Get the assigned toolbar id of the current group
             $toolbarIdRes = $dbCon->Execute('
                 SELECT `toolbar` FROM `' . DBPREFIX . 'access_user_groups`
                 WHERE `group_id` = ' . intval($objGroup->getId()) . '
                 LIMIT 1');
-            // Assure that the statement did not fail
-            if ($toolbarIdRes) {
-                // Fetch the data
-                $toolbarId = $toolbarIdRes->fields;
-                $toolbarId = $toolbarId['toolbar'];
-                // Ensure that the group has a toolbar assigned
-                if (!empty($toolbarId)) {
-                    // Load toolbar
-                    $toolbarFunctionRes = $dbCon->Execute('
-                        SELECT `removed_buttons` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
-                        WHERE `id` = ' . intval($toolbarId) . '
-                        LIMIT 1');
-                    // Assure that the statement did not fail
-                    if ($toolbarFunctionRes) {
-                        // Get the current toolbar as an array
-                        $currentButtons = $toolbarFunctionRes->fields['removed_buttons'];
-                        // Prepare the two removed buttons list for commparison
-                        $currentButtons = explode(',', $currentButtons);
-                        $newButtonsArr = explode(',', $newButtons);
-                        // Check if the toolbar has been changed
-                        if (count($currentButtons) !== count($newButtonsArr)) {
-                            // The toolbar has been modified
-                            $query = '
-                                UPDATE `' . DBPREFIX . 'core_wysiwyg_toolbar`
-                                SET `available_functions` = \'' . json_encode($newFunctions) . '\',
-                                    `removed_buttons` = \'' . contrexx_input2db($newButtons) . '\'
-                                WHERE `id` = ' . intval($toolbarId);
-                            $dbCon->Execute($query);
-                        }
-                    }
-                } else {
-                    // Group has currently no special toolbar assigned
-                    // Store as a new toolbar and get its generated id
-                    $query = 'INSERT INTO `' . DBPREFIX . 'core_wysiwyg_toolbar`(
-                            `available_functions`, `removed_buttons`)
-                          VALUES (\'' . json_encode($newFunctions) . '\',
-                            \'' . contrexx_input2db($_POST['removedButtons']) . '\')';
-                    $dbCon->Execute($query);
-                    // Get the id of the new toolbar
-                    $toolbarId = $dbCon->Execute('SELECT LAST_INSERT_ID() AS `id`;')->fields['id'];
-                    // Set the toolbar id of the current group to the new id
-                    $query = 'UPDATE `' . DBPREFIX . 'access_user_groups`
-                          SET `toolbar` = ' . intval($toolbarId) . '
-                          WHERE `group_id` = ' . intval($objGroup->getId());
-                    $dbCon->Execute($query);
-                }
+            // Fetch the data
+            $toolbarId = $toolbarIdRes->fields;
+            $toolbarId = $toolbarId['toolbar'];
+            $newToolbarId = $toolbarController->store($newButtons, $toolbarId);
+            // Check if a new toolbar has been created or an existing one updated
+            if ($newToolbarId !== 0) {
+                // Set the toolbar id of the current group to the new id
+                $query = 'UPDATE `' . DBPREFIX . 'access_user_groups`
+                      SET `toolbar` = ' . intval($newToolbarId) . '
+                      WHERE `group_id` = ' . intval($objGroup->getId());
+                $dbCon->Execute($query);
             }
 
             if (isset($_POST['access_save_group'])) {
