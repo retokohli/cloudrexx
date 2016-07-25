@@ -51,8 +51,8 @@ namespace Cx\Core\Wysiwyg\Controller;
 class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
     /**
      * This is the default toolbar for either full or small
-     * @var array $defaultFull
-     * @access protected
+     * @var     array       $defaultFull
+     * @access  protected
      */
     protected $defaultFull = array(
         array('Source','-','NewPage','Templates'),
@@ -71,8 +71,8 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
     );
     /**
      * This is the default toolbar for Bbcode
-     * @var array $defaultBbcode
-     * @access protected
+     * @var     array       $defaultBbcode
+     * @access  protected
      */
     protected $defaultBbcode = array(
         array('Source','-','NewPage'),
@@ -81,8 +81,8 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
     );
     /**
      * This is the default toolbar for frontend editing contend
-     * @var array $defaultFrontendEditingContent
-     * @access protected
+     * @var     array       $defaultFrontendEditingContent
+     * @access  protected
      */
     protected $defaultFrontendEditingContent = array(
         array('Publish','Save','Templates'),
@@ -100,8 +100,8 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
     );
     /**
      * This is the default toolbar for frontend editing title
-     * @var array $defaultFrontendEditingTitle
-     * @access protected
+     * @var     array       $defaultFrontendEditingTitle
+     * @access  protected
      */
     protected $defaultFrontendEditingTitle = array(
         array('Publish','Save'),
@@ -110,11 +110,21 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
     );
     /**
      * These are the buttons that are removed by default and are not accessible
-     * @var string
-     * @access protected
+     * @var     string      Functions that shall never be available in Cloudrexx
+     * @access  protected
      */
     protected $defaultRemovedButtons = 'autoFormat,CommentSelectedRange,UncommentSelectedRange,AutoComplete,Preview,Smiley,Iframe,Styles';
+    /**
+     * The cx-framework to laod the database and other classes
+     * @var     \Cx\Core\Core\Controller\Cx Cloudrexx framewrok-object
+     * @access  protected
+     */
     protected $cx;
+    /**
+     * Contains all available types of toolbars
+     * @var     array       Contains all the type of toolbars available in Cloudrexx
+     * @access  protected
+     */
     protected $types = array(
         'small',
         'full',
@@ -122,9 +132,21 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         'frontendEditingTitle',
         'bbcode'
     );
+    /**
+     * Contains the connection to the database to change it fast and simple
+     * @var     \ADONewConnection   $dbCon  Connection with the Database
+     * @access  protected
+     */
+    protected $dbCon;
 
+    /**
+     * ToolbarController constructor.
+     * @param \Cx\Core\Core\Controller\Cx $cx
+     */
     public function __construct(\Cx\Core\Core\Controller\Cx $cx) {
         $this->cx = $cx;
+        // Get the database connection
+        $this->dbCon = $cx->getDb()->getAdoDb();
     }
 
     /**
@@ -225,6 +247,7 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         );
         \JS::registerJS($componentRoot . '/ckeditor.config.js.php');
         \JS::registerJS($componentRoot . '/View/Script/Backend.js');
+        \JS::registerJS($componentRoot . '/View/Script/ToolbarButtonsRemover.js');
         \JS::registerCSS($componentRoot . '/View/Style/Backend.css');
         if ($componentRoot[0] = '/') {
             $componentRoot = substr($componentRoot, 1);
@@ -243,6 +266,18 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         }
         \JS::activate('ckeditor');
         \JS::activate('jquery');
+        if ($isDefaultConfiguration) {
+            $buttons = $this->getRemovedButtons(true);
+            $scope = 'default';
+        } else {
+            $buttons = $this->getRemovedButtons(true, true);
+            $scope = 'groups';
+        }
+        \ContrexxJavascript::getInstance()->setVariable(
+            'removedButtons',
+            $buttons,
+            'wysiwyg/' . $scope
+        );
         // get the init object to change to te proper language file
         $init = \Env::get('init');
         // get the language file of the Wysiwyg component (this one btw.)
@@ -298,8 +333,6 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
      *                              Be wary though, as this array might be empty
      */
     protected function getToolbarIdsOfUserGroup($userGroups = array()) {
-        // Get the database connection
-        $dbCon = $this->cx->getDb()->getAdoDb();
         // populate $groupIds with the given user groups
         $groupIds = $userGroups;
         if (empty($groupIds)) {
@@ -314,22 +347,11 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         $toolbarIds = array();
         // Loop through all user group ids
         foreach ($groupIds as $groupId) {
-            // Load user group information
-            $groupResult = $dbCon->Execute("
-                SELECT `toolbar` FROM `" . DBPREFIX . "access_user_groups`
-                WHERE `group_id` = " . intval($groupId) . "
-                LIMIT 1");
-            // Assure that the query did not fail
-            if ($groupResult !== false) {
-                $hasToolbar = $groupResult->fields;
-                // Verify that we could fetch the result
-                if ($hasToolbar !== false) {
-                    // Check if the user group has a toolbar assigned
-                    if (!empty($hasToolbar['toolbar'])) {
-                        // Store the assigned toolbar id
-                        $toolbarIds[] = $hasToolbar['toolbar'];
-                    }
-                }
+            $toolbarId = $this->getToolbarByGroupId($groupId);
+            // Check if the user group has a toolbar assigned
+            if (!empty($toolbarId)) {
+                // Store the assigned toolbar id
+                $toolbarIds[] = $toolbarId;
             }
         }
         return $toolbarIds;
@@ -345,8 +367,6 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
      *                              the given toolbar ids
      */
     protected function loadRemovedButtons(array $toolbarIds) {
-        // Get the database connection
-        $dbCon = $this->cx->getDb()->getAdoDb();
         // Initiate an empty removedButtons array
         $removedButtons = array();
         if (empty($toolbarIds)) {
@@ -355,7 +375,7 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
             SELECT `removed_buttons` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
             WHERE `is_default` = 1
             LIMIT 1';
-            $defaultRemovedButtonsRes = $dbCon->Execute($defaultRemovedButtonsQuery);
+            $defaultRemovedButtonsRes = $this->dbCon->Execute($defaultRemovedButtonsQuery);
             // Check if a default selection has been made
             if ($defaultRemovedButtonsRes) {
                 // Fetch the removed buttons
@@ -370,20 +390,10 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         }
         // Loop through each toolbar id
         foreach ($toolbarIds as $toolbarId) {
-            // Load the removed buttons from the database
-            $removedButtonRes = $dbCon->Execute("
-                SELECT `removed_buttons`
-                  FROM `" . DBPREFIX . "core_wysiwyg_toolbar`
-                WHERE `id` = " . intval($toolbarId). "
-                LIMIT 1 ");
-            if ($removedButtonRes) {
-                // Fetch the removed buttons
-                $removedButton = $removedButtonRes->fields;
-                // Verify that the toolbar has any removed buttons
-                if (!empty($removedButton)) {
-                    // Store the available functions for the current toolbar
-                    $removedButtons[] = $removedButton['removed_buttons'];
-                }
+            $toolbarButtons = $this->getRemovedButtonsByToolbarId($toolbarId);
+            if (!empty($toolbarButtons)) {
+                // Store the available functions for the current toolbar
+                $removedButtons[] = $toolbarButtons;
             }
         }
         return $removedButtons;
@@ -457,67 +467,43 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         $buttons = $this->defaultRemovedButtons;
         // Initiate the default removed buttons as empty string
         $defaultButtons = '';
-        // Get the database connection
-        $dbCon = $this->cx->getDb()->getAdoDb();
         // Prepare the query to load the default configuration
         $query = 'SELECT `removed_buttons` FROM `' . DBPREFIX .
                     'core_wysiwyg_toolbar`
                   WHERE `is_default` = 1
                   LIMIT 1';
-        $defaultButtonsRes = $dbCon->Execute($query);
+        $defaultButtonsRes = $this->dbCon->Execute($query);
         // Verify that the query could be executed
         if ($defaultButtonsRes) {
             // Fetch the data
-            $defaultButtons = $defaultButtonsRes->fields;
+            $defaultButtons = $defaultButtonsRes->fields['removed_buttons'];
             // Check that a default toolbar has been configured
             if (!empty($defaultButtons)) {
                 // Rewrite the buttons with the default removed buttons
-                $buttons = $defaultButtons['removed_buttons'];
+                $buttons = $defaultButtons;
             }
         }
         // Check if a user group is edited
-        if (!empty($_GET['groupId'])) {
+        if (!empty($_GET['id'])) {
             // Get the group id
-            $groupId = intval($_GET['groupId']);
-            // Prepare the query to load the user group toolbar
-            $query = 'SELECT `toolbar` FROM `' . DBPREFIX .
-                        'access_user_groups`
-                      WHERE `group_id` = ' . $groupId . '
-                      LIMIT 1';
-            $toolbarIdRes = $dbCon->Execute($query);
-            // Verify that the query could be executed
-            if ($toolbarIdRes) {
-                // Fetch the toolbar id
-                $toolbarId = $toolbarIdRes->fields;
-                if (!empty($toolbarId['toolbar'])) {
-                    // Prepare the query to get the removed button of the toolbar
-                    $query = 'SELECT `removed_buttons` FROM `' . DBPREFIX .
-                        'core_wysiwyg_toolbar`
-                          WHERE `id` = ' . intval($toolbarId['toolbar']) . '
-                          LIMIT 1';
-                    $toolbarButtonsRes = $dbCon->Execute($query);
-                    // Verify that the query could be executed
-                    if ($toolbarButtonsRes) {
-                        // Fetch the removed buttons
-                        $toolbarButtons = $toolbarButtonsRes->fields;
-                        // Verify that there are any removed buttons
-                        if (!empty($toolbarButtons)) {
-                            // Rewrite the buttons with the removed buttons of
-                            // the user group
-                            $buttons = $toolbarButtons['removed_buttons'];
-                        }
-                    }
-                }
+            $groupId = intval($_GET['id']);
+            $toolbarId = $this->getToolbarByGroupId($groupId);
+            $toolbarButtons = $this->getRemovedButtonsByToolbarId($toolbarId);
+            if (
+                    !empty($toolbarButtons)
+                &&  $toolbarButtons != $this->defaultRemovedButtons
+            ) {
+                $buttons = $toolbarButtons;
             }
         }
         // Used to hide functions that are disabled by the default config
         if ($isAccess && $defaultButtons) {
-            $buttons = $defaultButtons['removed_buttons'];
+            // Overwrite the removed buttons from the toolbar to ensure that
+            // those functions are still available to enable / disable
+            $buttons = $defaultButtons;
         }
         // Used to hide functions that are not allowed to be enabled
-        if ($buttonsOnly) {
-            $buttons =  '\'' . $this->defaultRemovedButtons . '\'';
-        } else {
+        if (!$buttonsOnly) {
             $buttons = 'config.removeButtons = \'' . $buttons . '\'';
         }
         return $buttons;
@@ -581,13 +567,12 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
      * @throws \Cx\Core\Model\DbException
      */
     public function store($toolbar, $toolbarId = 0, $isDefault = false) {
-        $dbCon = $this->cx->getDb()->getAdoDb();
         // Get the new toolbar as an array
         $newFunctions = json_decode($this->getAsOldSyntax($toolbar, 'full'));
         // Toolbar already exists - editing an existing group
         if ($toolbarId) {
             // Load toolbar
-            $toolbarFunctionRes = $dbCon->Execute('
+            $toolbarFunctionRes = $this->dbCon->Execute('
                     SELECT `removed_buttons` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
                     WHERE `id` = ' . intval($toolbarId) . '
                     LIMIT 1');
@@ -596,11 +581,19 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
                 // Get the current toolbar as an array
                 $currentButtons = $toolbarFunctionRes->fields['removed_buttons'];
                 // Prepare the two removed buttons list for commparison
-                $currentButtons = explode(',', $currentButtons);
-                $newButtonsArr = explode(',', $toolbar);
+                $firstToolbar = explode(',', $currentButtons);
+                $secondToolbar = explode(',', $toolbar);
+                // Check if the second toolbar is more restricted than the first
+                if (count($secondToolbar) > count($firstToolbar)) {
+                    // Swap the first and second toolbar to ensure that the diff
+                    // does work as expected - in case of the latter containing
+                    // all entries of the first and even more the diff returns 0
+                    $temp = $secondToolbar;
+                    $secondToolbar = $firstToolbar;
+                    $firstToolbar = $temp;
+                }
                 // Check if the toolbar has been changed
-                if (   (count(array_diff($currentButtons, $newButtonsArr)) != 0)
-                    || (count(array_diff($newButtonsArr, $currentButtons)) != 0)) {
+                if ((count(array_diff($firstToolbar, $secondToolbar)) != 0)) {
                     $whereDefault = '';
                     if ($isDefault) {
                         $whereDefault = ' AND `is_default` = 1';
@@ -611,10 +604,10 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
                             SET `available_functions` = \'' . json_encode($newFunctions) . '\',
                                 `removed_buttons` = \'' . contrexx_input2db($toolbar) . '\'
                             WHERE `id` = ' . intval($toolbarId) . $whereDefault;
-                    $dbCon->Execute($query);
+                    $this->dbCon->Execute($query);
                 }
-                return 0;
             }
+            return 0;
         } else {
             $columnDefault = $valueDefault = '';
             if ($isDefault) {
@@ -629,11 +622,58 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
                       VALUES (\'' . json_encode($newFunctions) . '\',
                         \'' . contrexx_input2db($_POST['removedButtons']) . '\''
                 . $valueDefault . ')';
-            $dbCon->Execute($query);
+            $this->dbCon->Execute($query);
             // Get the id of the new toolbar
-            $toolbarId = $dbCon->Execute('SELECT LAST_INSERT_ID() AS `id`;')->fields['id'];
+            $toolbarId = $this->dbCon->Execute('SELECT LAST_INSERT_ID() AS `id`;')->fields['id'];
             // Return the new toolbar id
             return $toolbarId;
         }
+    }
+
+    /**
+     * @param $groupId
+     * @return string
+     */
+    public function getToolbarByGroupId($groupId) {
+        // Prepare the query to load the user group toolbar
+        $query = 'SELECT `toolbar` FROM `' . DBPREFIX . 'access_user_groups`
+                      WHERE `group_id` = ' . $groupId . '
+                      LIMIT 1';
+        $toolbarIdRes = $this->dbCon->Execute($query);
+        // Verify that the query could be executed
+        if ($toolbarIdRes) {
+            // Fetch the toolbar id
+            $toolbarId = $toolbarIdRes->fields['toolbar'];
+            if (!empty($toolbarId)) {
+               return $toolbarId;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * @param $toolbarId
+     * @return string
+     */
+    public function getRemovedButtonsByToolbarId($toolbarId) {
+        // Prepare the query to get the removed button of the toolbar
+        $query = 'SELECT `removed_buttons` FROM `' . DBPREFIX .
+            'core_wysiwyg_toolbar`
+                  WHERE `id` = ' . intval($toolbarId) . '
+                  LIMIT 1';
+        $toolbarButtonsRes = $this->dbCon->Execute($query);
+        // Verify that the query could be executed
+        if ($toolbarButtonsRes) {
+            // Fetch the removed buttons
+            $toolbarButtons = $toolbarButtonsRes->fields;
+            // Verify that there are any removed buttons
+            if (!empty($toolbarButtons)) {
+                // Rewrite the buttons with the removed buttons of
+                // the user group
+                $buttons = $toolbarButtons['removed_buttons'];
+                return $buttons;
+            }
+        }
+        return $this->defaultRemovedButtons;
     }
 }
