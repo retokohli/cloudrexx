@@ -65,7 +65,6 @@ function attachFieldEvents($elm) {
         });
         cx.jQuery(this).data('lastDefaultValue', cx.jQuery(this).val());
     });
-    console.log('#'+ relatedFieldPrefix + '_' + id +'_'+ defaultLang);
     cx.jQuery('#'+ relatedFieldPrefix + '_' + id +'_'+ defaultLang).keyup(function(){
         var id = cx.jQuery(this).data('id');
         var relatedFieldPrefix = cx.jQuery(this).data('relatedFieldPrefix') ? cx.jQuery(this).data('relatedFieldPrefix') : 'inputfield';
@@ -111,6 +110,8 @@ function changeFieldType(container) {
         case 'radio':
         case 'checkbox':
             container.find('.col_default_value .input_field').tagit('destroy');
+            // tagit ul is not removed
+            container.find('.col_default_value ul.tagit').remove();
             break;
         case 'textarea':
             changeDefaultFieldType(container, 'text');
@@ -129,6 +130,7 @@ function changeFieldType(container) {
         case 'checkbox':
             addTagIt(container.find('.col_default_value .input_field'));
             container.find(".col_default_value .input_field").hide();
+            updateLangFlag(container);
             break;
         case 'textarea':
             changeDefaultFieldType(container, 'textarea');
@@ -140,6 +142,16 @@ function changeFieldType(container) {
             break;
     }
     container.data('prevFieldType', fieldType);
+}
+function updateLangFlag(container) {
+    cx.jQuery.each(container.find('#'+container.attr('id')+'_default_value_Expanded .tagit'), function() {
+        cx.jQuery(this)
+            .find('input')
+            .css({
+                'background': cx.jQuery(this).prev('input').css('background'),
+                'padding-left': '21px'
+            });
+    })
 }
 function changeDefaultFieldType(container, type) {
     container.find('.col_default_value .input_field').each(function(){
@@ -192,9 +204,11 @@ function updateLangTagItFields(event, ui) {
             if (cx.jQuery('#'+ relatedFieldPrefix + '_' + id +'_'+ v).val() == $elm.data('lastDefaultValue')) {
                 cx.jQuery('#'+ relatedFieldPrefix + '_' + id +'_'+ v).val($elm.val());
                 cx.jQuery('#'+ relatedFieldPrefix + '_' + id +'_'+ v).tagit('destroy');
+                cx.jQuery('#'+ relatedFieldPrefix + '_' + id +'_'+ v).next('ul.tagit').remove();
                 addTagIt('#'+ relatedFieldPrefix + '_' + id +'_'+ v);
             }
         });
+        updateLangFlag(cx.jQuery('#'+ relatedFieldPrefix + '_' + id).closest('tr'));
         $elm.data('lastDefaultValue', $elm.val());
     }
 }
@@ -207,6 +221,7 @@ function updateDefaultTagItFields(event, ui) {
         var defaultFieldId = '#'+ relatedFieldPrefix + '_' + id +'_0';
         cx.jQuery(defaultFieldId).val($elm.val());
         cx.jQuery(defaultFieldId).tagit('destroy');
+        cx.jQuery(defaultFieldId).next('ul.tagit').remove();
         cx.jQuery(defaultFieldId).data('isDirty', true);
         addTagIt(defaultFieldId);
         cx.jQuery(defaultFieldId).data('isDirty', false);
