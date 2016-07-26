@@ -217,20 +217,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     /**
      * Get the buttons that shall be removed or unchecked
-     * @param   bool|false  $buttonsOnly    If set, returns only the buttons
+     * @return string
+     * @internal param bool|false $buttonsOnly If set, returns only the buttons
      *                                      no config.removedButtons prefix
-     * @param   bool|false  $isAccess       If set, removes the prefix
+     * @internal param bool|false $isAccess If set, removes the prefix
      *                                      config.removedButtons from the string
-     * @return  string
      */
-    public function getRemovedButtons($buttonsOnly = false, $isAccess = false) {
+    public function getRemovedButtons() {
         $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController(
             $this->cx
         );
-        $buttons = $toolbarController->getRemovedButtons($buttonsOnly, $isAccess);
-        if ($isAccess) {
-            $buttons = substr($buttons, 23);
-        }
+        $buttons = $toolbarController->getRemovedButtons();
         return $buttons;
     }
 }
