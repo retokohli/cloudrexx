@@ -229,45 +229,28 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         }
         // prepare the js and css files which are needed
         $requiredJsFiles = array(
-            'lib/codemirror/codemirror',
-            'lib/codemirror/javascript',
-            'lib/codemirror/show-hint',
             'js/fulltoolbareditor',
             'js/abstracttoolbarmodifier',
             'js/toolbarmodifier',
             'js/toolbartextmodifier',
-            'js/sf',
         );
-        $requiredCssFiles = array(
-            'CodeMirror',
-            'ShowHint',
-            'Neo',
-            'Fontello',
-            'Samples',
-        );
+        $ckeditorLibPath = '/lib/ckeditor/samples';
         \JS::registerJS($componentRoot . '/ckeditor.config.js.php');
         \JS::registerJS($componentRoot . '/View/Script/Backend.js');
         \JS::registerJS($componentRoot . '/View/Script/ToolbarButtonsRemover.js');
-        \JS::registerCSS($componentRoot . '/View/Style/Backend.css');
-        if ($componentRoot[0] = '/') {
-            $componentRoot = substr($componentRoot, 1);
-        }
         // register js and css files for the toolbarconfigurator
-        foreach ($requiredCssFiles as $filename) {
-            \JS::registerCSS(
-                $componentRoot . '/View/Style/' . $filename . '.css'
-            );
-        }
+        
         foreach ($requiredJsFiles as $filename) {
             \JS::registerJS(
-                $componentRoot . '/View/Script/toolbarconfigurator/' . $filename
-                . '.js'
+                $ckeditorLibPath . '/toolbarconfigurator/' . $filename . '.js'
             );
         }
         \JS::activate('ckeditor');
         \JS::activate('jquery');
+        \JS::registerCSS($componentRoot . '/View/Style/Samples.css');
+        \JS::registerCSS($componentRoot . '/View/Style/Backend.css');
         if ($isDefaultConfiguration) {
-            $buttons = $this->getRemovedButtons(true);
+            $buttons = $this->defaultRemovedButtons;
             $scope = 'default';
         } else {
             $buttons = $this->getRemovedButtons(true, true);
@@ -572,28 +555,20 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         // Toolbar already exists - editing an existing group
         if ($toolbarId) {
             // Load toolbar
-            $toolbarFunctionRes = $this->dbCon->Execute('
-                    SELECT `removed_buttons` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
-                    WHERE `id` = ' . intval($toolbarId) . '
-                    LIMIT 1');
+            $currentToolbar = $this->getRemovedButtonsByToolbarId(intval($toolbarId));
             // Assure that the statement did not fail
-            if ($toolbarFunctionRes) {
-                // Get the current toolbar as an array
-                $currentButtons = $toolbarFunctionRes->fields['removed_buttons'];
-                // Prepare the two removed buttons list for commparison
-                $firstToolbar = explode(',', $currentButtons);
+            if ($currentToolbar) {
+                // Prepare the two removed buttons list for comparison
+                $firstToolbar = explode(',', $currentToolbar);
                 $secondToolbar = explode(',', $toolbar);
+                // Create first diff
+                $diff = array_diff($firstToolbar, $secondToolbar);
                 // Check if the second toolbar is more restricted than the first
                 if (count($secondToolbar) > count($firstToolbar)) {
-                    // Swap the first and second toolbar to ensure that the diff
-                    // does work as expected - in case of the latter containing
-                    // all entries of the first and even more the diff returns 0
-                    $temp = $secondToolbar;
-                    $secondToolbar = $firstToolbar;
-                    $firstToolbar = $temp;
+                    $diff = array_diff($secondToolbar, $firstToolbar);
                 }
                 // Check if the toolbar has been changed
-                if ((count(array_diff($firstToolbar, $secondToolbar)) != 0)) {
+                if ((count($diff) != 0)) {
                     $whereDefault = '';
                     if ($isDefault) {
                         $whereDefault = ' AND `is_default` = 1';
