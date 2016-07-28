@@ -67,6 +67,7 @@ CREATE TABLE `contrexx_access_user_groups` (
   `is_active` tinyint(4) NOT NULL DEFAULT '1',
   `type` enum('frontend','backend') NOT NULL DEFAULT 'frontend',
   `homepage` varchar(255) NOT NULL DEFAULT '',
+  `toolbar` int(6) DEFAULT NULL,
   PRIMARY KEY (`group_id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_access_user_mail` (
@@ -452,6 +453,13 @@ CREATE TABLE `contrexx_core_wysiwyg_template` (
   `active` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_core_wysiwyg_toolbar` (
+  `id` int(6) NOT NULL AUTO_INCREMENT,
+  `available_functions` text COLLATE utf8_unicode_ci NOT NULL,
+  `removed_buttons` text COLLATE utf8_unicode_ci NOT NULL,
+  `is_default` int(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_ids` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `timestamp` int(14) DEFAULT NULL,
