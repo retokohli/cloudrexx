@@ -51,7 +51,7 @@ class EntityGenerator
     protected $_backupExisting = true;
 
     /** The extension to use for written php files */
-    protected $_extension = '.class.php';
+    protected $_extension = '.php';
 
     /** Whether or not the current ClassMetadataInfo instance is new or old */
     protected $_isNew = true;

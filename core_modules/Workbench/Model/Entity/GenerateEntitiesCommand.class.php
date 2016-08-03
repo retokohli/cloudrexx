@@ -85,6 +85,9 @@ class GenerateEntitiesCommand extends \Doctrine\ORM\Tools\Console\Command\Genera
 
             if (($extend = $input->getOption('extend')) !== null) {
                 $entityGenerator->setClassToExtend($extend);
+            } else {
+                // set default extend class
+                $entityGenerator->setClassToExtend('\\Cx\\Model\\Base\\EntityBase');
             }
 
             foreach ($metadatas as $metadata) {
