@@ -490,6 +490,7 @@ if (!$limit) {
                         'changeOrderStatus('.
                           $order_id.','.$status.',this.value)')
                     : $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$status]),
+                'SHOP_ORDER_STATUS_ID' => contrexx_input2int($status),
                 // Protected download account validity end date
 // TODO (still unused in the view)
 //                'SHOP_VALIDITY' => $endDate,

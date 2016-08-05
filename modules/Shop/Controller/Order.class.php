@@ -1331,10 +1331,13 @@ class Order
 
     /**
      * Deletes the Order with the given ID
+     *
      * @param   integer   $order_id     The Order ID
+     * @param   boolean   $stockUpdate  True to update stock of the product
+     *
      * @return  boolean                 True on success, false otherwise
      */
-    static function deleteById($order_id)
+    static function deleteById($order_id, $stockUpdate = false)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -1377,6 +1380,24 @@ class Order
                 `id`='. $order_id;
         if (!$objDatabase->Execute($query)) {
             return \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_DELETING_ORDER']);
+        }
+        if ($stockUpdate) {
+            $order     = new static();
+            $order->id = $order_id;
+            $arrItems  = $order->getItems();
+
+            foreach ($arrItems as $item) {
+                $product = Product::getById($item['product_id']);
+                if (!$product) {
+                    \DBG::log(sprintf(
+                        $_ARRAYLANG['TXT_SHOP_PRODUCT_NOT_FOUND'],
+                        $item['product_id']
+                    ));
+                    continue;
+                }
+                $product->stock($product->stock() + $item['quantity']);
+                $product->store();
+            }
         }
         return true;
     }
