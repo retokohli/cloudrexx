@@ -410,9 +410,7 @@ die("Failed to get Customer for ID $customer_id");
     {
         global $_ARRAYLANG, $themesPages;
         static $content = array();
-        $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getComponentControllerByName('Access');
-        $templateHash = $accessController->hash($template);
+        $templateHash = md5($template);
 
         if (!$use_cache) $content[$templateHash] = NULL;
         // Note: This is valid only as long as the content is the same every
