@@ -123,11 +123,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             'url' => $_SERVER['REQUEST_URI'],
             'request' => $request,
         );
-        $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getComponentControllerByName('Access');
-        $this->strCacheFilename = $accessController->hash(
-            serialize($this->arrPageContent)
-        );
+        $this->strCacheFilename = md5(serialize($this->arrPageContent));
     }
 
 

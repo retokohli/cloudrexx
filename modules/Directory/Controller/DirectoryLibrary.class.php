@@ -530,9 +530,7 @@ class DirectoryLibrary
         $arrSettings = $this->getSettings();
 
         if ($arrSettings['encodeFilename']['value'] == 1) {
-            $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getComponentControllerByName('Access');
-            $fileName = $accessController->hash($rand . $file) . $extension;
+            $fileName = md5($rand . $file) . $extension;
         }
         
         //Rename the file if the filename already exists
@@ -679,9 +677,7 @@ class DirectoryLibrary
         if ($arrSettings['encodeFilename']['value'] == 1) {
 // TODO: $fileName is neither set nor used!
 //            $fileName = md5($rand.$filename)."xml";
-            $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getComponentControllerByName('Access');
-            $filename = $accessController->hash($rand . $filename) . 'xml';
+            $filename = md5($rand . $filename) . 'xml';
         }
 
 

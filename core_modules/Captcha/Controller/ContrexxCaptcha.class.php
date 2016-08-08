@@ -288,9 +288,7 @@ class ContrexxCaptcha implements CaptchaInterface {
         }
 
         //add no cache param
-        $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getComponentControllerByName('Access');
-        $url .= '&amp;nc=' . $accessController->hash(time());
+        $url .= '&amp;nc='.md5(''.time());
         return $url;
     }
 

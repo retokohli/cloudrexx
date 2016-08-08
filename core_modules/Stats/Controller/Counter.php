@@ -348,8 +348,7 @@ class Counter
 			$this->arrClient['host'] = preg_replace('/^[a-zA-Z0-9-_]+\./', '*.', $this->arrClient['host']);
 		}
 
-        $accessController = $this->cx->getComponentControllerByName('Access');
-        $this->md5Id = $accessController->hash(
+        $this->md5Id = md5(
             $this->arrClient['ip'] . $this->arrClient['useragent'] .
             $this->arrClient['language'] . $this->arrProxy['ip'] .
             $this->arrProxy['host']

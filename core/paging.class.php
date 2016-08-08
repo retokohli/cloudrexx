@@ -278,12 +278,7 @@ class Paging
         // Therefore, if required, the parameter name is hashed and cut to the
         // maximum allowed session-variable-key-length.
         if (strlen($parameterName) > \cmsSession::getVariableKeyMaxLength()) {
-            $accessController = Cx\Core\Core\Controller\Cx::instanciate()
-                ->getComponentControllerByName('Access');
-            $parameterName = substr(
-                $accessController->hash($parameterName),
-                0, \cmsSession::getVariableKeyMaxLength()
-            );
+            $parameterName = substr(md5($parameterName), 0, \cmsSession::getVariableKeyMaxLength());
         }
 
         return $parameterName;

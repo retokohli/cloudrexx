@@ -748,8 +748,7 @@ class StatsLibrary
                                         ? htmlspecialchars($_SERVER['HTTP_ACCEPT_LANGUAGE'], ENT_QUOTES, CONTREXX_CHARSET) : '';
         $this->_getProxyInformations(); // get also the client ip
 
-        $accessController = $this->cx->getComponentControllerByName('Access');
-        $this->md5Id = $accessController->hash(
+        $this->md5Id = md5(
             $this->arrClient['ip'] . $this->arrClient['useragent'] .
             $this->arrClient['language'] . $this->arrProxy['ip'] .
             $this->arrProxy['host']

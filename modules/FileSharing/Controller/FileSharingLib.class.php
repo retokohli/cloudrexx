@@ -118,9 +118,7 @@ CODE;
      */
     public static function createCheck($hash)
     {
-        $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getComponentControllerByName('Access');
-        return $accessController->hash(substr($hash, 0, 5));
+        return md5(substr($hash, 0, 5));
     }
 
     /**

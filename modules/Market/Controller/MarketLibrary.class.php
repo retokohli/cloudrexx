@@ -193,9 +193,7 @@ class MarketLibrary
                 $status     = '0';
                 $regdate    = '';
                 $rand       = rand(10, 99);
-                $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-                    ->getComponentControllerByName('Access');
-                $key = substr($accessController->hash($rand . $today), 0, 6);
+                $key        = substr(md5($rand . $today) ,0 ,6);
             }
 
             $objFWUser = \FWUser::getFWUserObject();
@@ -485,16 +483,14 @@ class MarketLibrary
             $exte = (!empty($exte)) ? '.' . $exte : '';
             $part1 = substr($fileName, 0, strlen($fileName) - strlen($exte));
             $rand = rand(10, 99);
-            $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getComponentControllerByName('Access');
-            $fileName = $accessController->hash($rand . $fileName) . $exte;
+            $fileName = md5($rand . $fileName) . $exte;
 
             //check file
 // TODO: $x is not defined
             $x = 0;
             if (file_exists($this->mediaPath . $path . $fileName)) {
                 $fileName = $rand . $part1 . '_' . (time() + $x) . $exte;
-                $fileName = $accessController->hash($fileName) . $exte;
+                $fileName = md5($fileName) . $exte;
             }
 
             //Move the uploaded file to the path specified in the variable $this->mediaPath
@@ -529,16 +525,14 @@ class MarketLibrary
             $exte     = (!empty($exte)) ? '.' . $exte : '';
             $part1    = substr($fileName, 0, strlen($fileName) - strlen($exte));
             $rand      = rand(10, 99);
-            $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getComponentControllerByName('Access');
-            $fileName = $accessController->hash($rand.$fileName).$exte;
+            $fileName = md5($rand . $fileName) . $exte;
 
             //check file
             // TODO: $x is not defined
             $x = 0;
             if(file_exists($this->mediaPath.$path.$fileName)){
                 $fileName = $rand.$part1 . '_' . (time() + $x) . $exte;
-                $fileName = $accessController->hash($fileName) . $exte;
+                $fileName = md5($fileName) . $exte;
             }
 
             $objFile = new \File();
