@@ -907,6 +907,10 @@ class DBG
     {
         $error = preg_match('#^[0-9]+:#', $sql);
 
+        // clear sql query from whitespaces
+        $sql = str_replace(array("\r\n", "\n", "\r"), '', $sql);
+        $sql = preg_replace('/\s+/', ' ', $sql);
+
         if ($error) {
             if (self::$mode & DBG_DB_ERROR || self::$mode & DBG_DB) {
                 self::logSQL(self::getSQLQueryCache(), true);
