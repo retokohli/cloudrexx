@@ -73,6 +73,7 @@ class StatsLibrary
     public $arrCountryNames = array();
     public $arrConfig = array();
     public $arrSearchTerms = array();
+    public $arrExcludeIpList = array();
     public $pagingLimit = "";
     public $pagingLimitVisitorDetails = "";
     public $spiderAgent = false;
@@ -1765,5 +1766,25 @@ class StatsLibrary
             'requests' => $arrRequests,
         );
     }
+
+    function _initExclusionList()   
+    {
+         global $objDatabase;
+             
+         $query = "SELECT id,ip_address,remarks,timestamp,username FROM ".DBPREFIX."stats_exclude_ip ORDER BY id";
+         if (($objResult = $objDatabase->Execute($query))) {
+             while (!$objResult->EOF) {
+                  $arrExcludeIp = array(
+                                        'id'         => $objResult->fields['id'],
+                                        'ip_address' => $objResult->fields['ip_address'],
+                                        'remarks'    => $objResult->fields['remarks'],
+                                        'timestamp'  => date(ASCMS_DATE_FORMAT, strtotime($objResult->fields['timestamp'])),
+                                        'username'   => $objResult->fields['username']
+                                       );
+                 array_push($this->arrExcludeIpList, $arrExcludeIp);
+                 $objResult->MoveNext();
+             }
+        }
+    } 
 }
 ?>

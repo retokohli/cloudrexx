@@ -169,4 +169,13 @@ $_ARRAYLANG['TXT_PAGING_LIMIT'] = "Statistical Records Limit";
 $_ARRAYLANG['TXT_PAGING_LIMIT_VISITOR_DETAILS'] = "Visitor Details Limit";
 $_ARRAYLANG['TXT_IMAGE_EDIT_SHOW'] = "Show";
 $_ARRAYLANG['TXT_STATS_COUNT_VISIOTR_NUMBER'] = "Compute the number of the current visitor. This option must be enabled if you intend to use the placeholder [[VISITOR_NUMBER]] in the frontend.";
+$_ARRAYLANG['TXT_EXCLUSION_LIST'] = "Skip IP addresses";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_IP_TABLE'] = "Skip IP address";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_ID'] = "ID";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_IP'] = "IP address";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_REMARKS'] = "Remarks";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_DATE'] = "Date";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_USER'] = "User";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_ADD_IP'] = "Add IP address";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_DELETE_MARKED'] = "Delete marked";
 ?>

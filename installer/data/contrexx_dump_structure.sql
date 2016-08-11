@@ -3732,3 +3732,11 @@ CREATE TABLE `contrexx_voting_system` (
   `additional_comment` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_stats_exclude_ip` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ip_address` varchar(60) NOT NULL DEFAULT '',
+  `remarks` varchar(255) DEFAULT '',
+  `timestamp` timestamp NOT NULL,
+  `username` varchar(255) DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;

@@ -1116,6 +1116,55 @@ class Stats extends StatsLibrary
     }
 
     /**
+     * Add a IP address to the exclusion list.
+     *
+     * @param ip IP address to add.
+     */
+    function _addIpToExclusionList($ip, $remarks) {
+        global $objDatabase;
+
+        //$file = fopen("/data/www/test/log", "a+");
+//        fwrite($file,"Starting add\n");
+        $objFWUser = \FWUser::getFWUserObject();
+        $userName = $objFWUser->objUser->getRealUsername();
+        
+//        $res = print_r($objFWUser, true);
+//        fwrite($file, $res . "\n");
+//        fwrite($file, $userName . "\n");
+//        fclose($file);
+        
+        $ip = trim($ip);
+        if(preg_match("/[0-9|\*]{1,3}\.[0-9|\*]{1,3}\.[0-9|\*]{1,3}\.[0-9|\*]{1,3}/", $ip) == 1) {
+            $query = "INSERT INTO ".DBPREFIX."stats_exclude_ip(ip_address,remarks,username) VALUES('".$ip."','" . $remarks . "','" . $userName . "')";
+            $objDatabase->Execute($query);
+        }
+    }
+
+    /**
+     * Delete a IP address from the exclusion list.
+     *
+     * @param ip IP address to delete.
+     */
+    function _delIpFromExclusionList($id) {
+        global $objDatabase;
+        $query = "DELETE FROM ".DBPREFIX."stats_exclude_ip WHERE id=".$id;
+        $objDatabase->Execute($query);
+    }
+
+    /**
+     * Delete a IP address from the exclusion list.
+     *
+     * @param ip IP address to delete.
+     */
+    function _delIpsFromExclusionList($ids) {
+        global $objDatabase;
+        foreach ($ids as $id) {
+            $query = "DELETE FROM ".DBPREFIX."stats_exclude_ip WHERE id=".$id;
+            $objDatabase->Execute($query);
+        }
+    }
+
+    /**
     * Show settings
     *
     * Show the settings page
@@ -1132,6 +1181,25 @@ class Stats extends StatsLibrary
         }
         if (isset($_POST['delete_statistics']) && !empty($_POST['delete_statistics'])) {
             $this->strOkMessage .= $this->_deleteStatistics();
+        }
+        // Add an IP address to the exclusion list.
+        if (isset($_POST['add_ip']) && !empty($_POST['add_ip'])) {
+            $this->strOkMessage .= $this->_addIpToExclusionList($_POST['add_ip'], $_POST['remarks']);
+        }
+        // Delete IP address from exclusion list-
+        if (isset($_GET['act']) && !empty($_GET['act']) && strcmp($_GET['act'], 'deleteIp') == 0) {
+            if(isset($_GET['id']) && !empty($_GET['id']) && is_numeric($_GET['id'])) {
+                $this->strErrMessage .= $this->_delIpFromExclusionList((int)$_GET['id']);
+            }
+        }
+        // Delete a list of IP addresses
+        if (isset($_GET['act']) && !empty($_GET['act']) && strcmp($_GET['act'], 'deleteIps') == 0) {
+            $this->_delIpsFromExclusionList($_POST['selectedIps']);
+        }
+        // Set tab settings
+        $tab = 'settingsTab_statsSettings';
+        if (isset($_GET['tab']) && !empty($_GET['tab'])) {
+            $tab = $_GET['tab'];
         }
 
         $this->_objTpl->loadTemplateFile('module_stats_settings.html',true,true);
@@ -1170,7 +1238,16 @@ class Stats extends StatsLibrary
             'TXT_INDEXED_PAGES'                    => $_ARRAYLANG['TXT_INDEXED_PAGES'],
             'TXT_MARKED'                        => $_ARRAYLANG['TXT_MARKED'],
             'TXT_SELECT_ALL'                    => $_ARRAYLANG['TXT_SELECT_ALL'],
-            'TXT_REMOVE_SELECTION'                => $_ARRAYLANG['TXT_REMOVE_SELECTION']
+            'TXT_REMOVE_SELECTION'                => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
+            'TXT_EXCLUSION_LIST'               => $_ARRAYLANG['TXT_EXCLUSION_LIST'],
+            'TXT_EXCLUSION_LIST_IP_TABLE'      => $_ARRAYLANG['TXT_EXCLUSION_LIST_IP_TABLE'],
+            'TXT_EXCLUSION_LIST_ID'            => $_ARRAYLANG['TXT_EXCLUSION_LIST_ID'],
+            'TXT_EXCLUSION_LIST_IP'            => $_ARRAYLANG['TXT_EXCLUSION_LIST_IP'],
+            'TXT_EXCLUSION_LIST_ADD_IP'        => $_ARRAYLANG['TXT_EXCLUSION_LIST_ADD_IP'],
+            'TXT_EXCLUSION_LIST_REMARKS'       => $_ARRAYLANG['TXT_EXCLUSION_LIST_REMARKS'],
+            'TXT_EXCLUSION_LIST_USER'          => $_ARRAYLANG['TXT_EXCLUSION_LIST_USER'],
+            'TXT_EXCLUSION_LIST_DATE'          => $_ARRAYLANG['TXT_EXCLUSION_LIST_DATE'],
+            'TXT_EXCLUSION_LIST_DELETE_MARKED' => $_ARRAYLANG['TXT_EXCLUSION_LIST_DELETE_MARKED']
         ));
 
         $this->_objTpl->setVariable(array(
@@ -1198,6 +1275,30 @@ class Stats extends StatsLibrary
             'STATS_SETTINGS_PAGING_LIMIT'        => $this->arrConfig['paging_limit']['value'],
             'STATS_SETTINGS_PAGING_LIMIT_VISITOR_DETAILS'    => $this->arrConfig['paging_limit_visitor_details']['value'],
         ));
+
+        // Initialite exclude list
+        $this->_initExclusionList();
+        
+        // set client details
+        if (count($this->arrExcludeIpList)>0) {
+            $rowClass = 1;
+            foreach ($this->arrExcludeIpList as $excludeIp) {
+                $this->_objTpl->setVariable(array(
+                    'STATS_EXCLUSION_LIST_ROW_CLASS'    => $rowClass % 2 == 0 ? "row2" : "row1",
+                    'STATS_EXCLUSION_LIST_ID'           => $excludeIp['id'],
+                    'STATS_EXCLUSION_LIST_IP'           => $excludeIp['ip_address'],
+                    'STATS_EXCLUSION_LIST_REMARKS'      => $excludeIp['remarks'],
+                    'STATS_EXCLUSION_LIST_USER'         => $excludeIp['username'],
+                    'STATS_EXCLUSION_LIST_DATE'         => $excludeIp['timestamp']
+                ));
+                $this->_objTpl->parse('stats_exclusion');
+                $rowClass++;
+            }
+        } else {
+            $this->_objTpl->setVariable(array(
+                'TXT_NO_DATA_AVAILABLE' => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
+            ));
+        }
     }
 }
 

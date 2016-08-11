@@ -168,4 +168,13 @@ $_ARRAYLANG['TXT_PAGING_LIMIT'] = "Anzeigelimit für Statistikauswertung";
 $_ARRAYLANG['TXT_PAGING_LIMIT_VISITOR_DETAILS'] = "Anzeigelimit für Besucherdetails";
 $_ARRAYLANG['TXT_IMAGE_EDIT_SHOW'] = "Anzeigen";
 $_ARRAYLANG['TXT_STATS_COUNT_VISIOTR_NUMBER'] = "Nummer des aktuellen Besuchers berechnen. Diese Option muss aktiviert sein, falls Sie den Platzhalter [[VISITOR_NUMBER]] im Frontend verwenden wollen.";
+$_ARRAYLANG['TXT_EXCLUSION_LIST'] = "Пропустить IP-адреса";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_IP_TABLE'] = "Пропустить IP-адрес";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_ID'] = "Я БЫ";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_IP'] = "Aйпи адрес";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_REMARKS'] = "замечания";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_USER'] = "пользователь";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_DATE'] = "Дата";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_ADD_IP'] = "Добавить IP-адрес";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_DELETE_MARKED'] = "Удалить отмеченные";
 ?>

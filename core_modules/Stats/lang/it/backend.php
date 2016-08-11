@@ -168,4 +168,13 @@ $_ARRAYLANG['TXT_PAGING_LIMIT'] = "Anzeigelimit für Statistikauswertung";
 $_ARRAYLANG['TXT_PAGING_LIMIT_VISITOR_DETAILS'] = "Anzeigelimit für Besucherdetails";
 $_ARRAYLANG['TXT_IMAGE_EDIT_SHOW'] = "Show";
 $_ARRAYLANG['TXT_STATS_COUNT_VISIOTR_NUMBER'] = "Nummer des aktuellen Besuchers berechnen. Diese Option muss aktiviert sein, falls Sie den Platzhalter [[VISITOR_NUMBER]] im Frontend verwenden wollen.";
+$_ARRAYLANG['TXT_EXCLUSION_LIST'] = "Skip indirizzi IP";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_IP_TABLE'] = "Skip indirizzi IP";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_ID'] = "ID";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_IP'] = "Indirizzi IP";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_REMARKS'] = "Osservazioni";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_DATE'] = "Date";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_USER'] = "Utente";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_ADD_IP'] = "Aggiungere l'indirizzo IP";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_DELETE_MARKED'] = "Elimina segnati";
 ?>

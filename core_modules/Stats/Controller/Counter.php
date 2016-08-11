@@ -142,71 +142,93 @@ class Counter
             if (!$this->refererBlocked) {
                 // count spider
                 if (!$this->spiderAgent) {
-                    // count visitor
-                    $this->_countVisitor();
-
-                    // if visitor was counted, then make statistics
-                    if ($this->isNewVisitor) {
-
-                        // generate visitor statistics
-                        $this->_makeStatistics(DBPREFIX.'stats_visitors_summary');
-
-                        // count host
-                        if ($this->arrClient['hostname'] != "" && $this->arrConfig['count_hostname']['status']) {
-                            $this->_countHostname();
+                    // Check exclude list
+                    if(!$this->_skipIps()) {
+                        // count visitor
+                        $this->_countVisitor();
+                        
+                        // if visitor was counted, then make statistics
+                        if ($this->isNewVisitor) {
+                            
+                            // generate visitor statistics
+                            $this->_makeStatistics(DBPREFIX.'stats_visitors_summary');
+                            
+                            // count host
+                            if ($this->arrClient['hostname'] != "" && $this->arrConfig['count_hostname']['status']) {
+                                $this->_countHostname();
+                            }
+                            
+                            // count country
+                            if ($this->arrClient['country'] != "" && $this->arrConfig['count_country']['status']) {
+                                $this->_countCountry();
+                            }
+                            
+                            // count browser
+                            if ($this->arrConfig['count_browser']['status']) {
+                                $this->_countBrowser();
+                            }
+                            
+                            // count operating system
+                            if ($this->arrConfig['count_operating_system']['status']) {
+                                $this->_countOperatingSystem();
+                            }
+                            
+                            // count screen resolution
+                            if ($this->arrConfig['count_screen_resolution']['status'] && $this->javascriptEnabled) {
+                                $this->_countScreenResolution();
+                            }
+                            
+                            // count colour depth
+                            if ($this->arrConfig['count_colour_depth']['status'] && $this->javascriptEnabled) {
+                                $this->_countColourDepth();
+                            }
+                            
+                            // count javascript
+                            if ($this->arrConfig['count_javascript']['status']) {
+                                $this->_countJavascript();
+                            }
                         }
-
-                        // count country
-                        if ($this->arrClient['country'] != "" && $this->arrConfig['count_country']['status']) {
-                            $this->_countCountry();
+                        
+                        // count request
+                        $this->_countRequest();
+                        
+                        // count referer
+                        if ($this->arrConfig['count_referer']['status'] && !empty($this->referer)) {
+                            $this->_countReferer();
                         }
-
-                        // count browser
-                        if ($this->arrConfig['count_browser']['status']) {
-                            $this->_countBrowser();
+                        
+                        // count internal search term
+                        if ($this->arrConfig['count_search_terms']['status'] && strlen($this->searchTerm)>0) {
+                            $this->_countSearchquery($this->searchTerm, '0');
                         }
-
-                        // count operating system
-                        if ($this->arrConfig['count_operating_system']['status']) {
-                            $this->_countOperatingSystem();
+                        
+                        // count external search term
+                        if ($this->arrConfig['count_search_terms']['status'] && strlen($this->externalSearchTerm)>0) {
+                            $this->_countSearchquery($this->externalSearchTerm, '1');
                         }
-
-                        // count screen resolution
-                        if ($this->arrConfig['count_screen_resolution']['status'] && $this->javascriptEnabled) {
-                            $this->_countScreenResolution();
-                        }
-
-                        // count colour depth
-                        if ($this->arrConfig['count_colour_depth']['status'] && $this->javascriptEnabled) {
-                            $this->_countColourDepth();
-                        }
-
-                        // count javascript
-                        if ($this->arrConfig['count_javascript']['status']) {
-                            $this->_countJavascript();
-                        }
-                    }
-
-                    // count request
-                    $this->_countRequest();
-
-                    // count referer
-                    if ($this->arrConfig['count_referer']['status'] && !empty($this->referer)) {
-                        $this->_countReferer();
-                    }
-
-                    // count internal search term
-                    if ($this->arrConfig['count_search_terms']['status'] && strlen($this->searchTerm)>0) {
-                        $this->_countSearchquery($this->searchTerm, '0');
-                    }
-
-                    // count external search term
-                    if ($this->arrConfig['count_search_terms']['status'] && strlen($this->externalSearchTerm)>0) {
-                        $this->_countSearchquery($this->externalSearchTerm, '1');
                     }
                 }
             }
         }
+    }
+    
+    /**
+     * Skip request based on IP address.
+     *
+     * Full regular expressions are current excluded by the addIpToExclusionList function. Only fully qualified IP addresses
+     * or subnext masks are allowed (i.e. 1.2.3.4 or some like 1.2.3.*, 1.2.*).
+     *
+     * @access   private
+     * @param    string    $ip IP address or subnet to check.
+     * @return   boolean   false in case ip should be skipped, otherwise true.
+     */
+    function _skipIps($ip) {
+        global $objDb;
+        $query = "SELECT * FROM ".DBPREFIX."stats_exclude_ip WHERE '" . $ip . "' REGEXP ip_address";
+        if (($objResult = $objDb->Execute($query))) {
+            $count = $objResult->RecordCount();
+        }
+        return ($count == 0);
     }
 
     /**
