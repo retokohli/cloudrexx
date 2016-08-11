@@ -1123,17 +1123,14 @@ class Stats extends StatsLibrary
     function _addIpToExclusionList($ip, $remarks) {
         global $objDatabase;
 
-        //$file = fopen("/data/www/test/log", "a+");
-//        fwrite($file,"Starting add\n");
+	// Get current user name
         $objFWUser = \FWUser::getFWUserObject();
         $userName = $objFWUser->objUser->getRealUsername();
-        
-//        $res = print_r($objFWUser, true);
-//        fwrite($file, $res . "\n");
-//        fwrite($file, $userName . "\n");
-//        fclose($file);
-        
+
+	// Trim before inserting
         $ip = trim($ip);
+
+	// Currently only fully qualified IP addresses or subnet massks.
         if(preg_match("/[0-9|\*]{1,3}\.[0-9|\*]{1,3}\.[0-9|\*]{1,3}\.[0-9|\*]{1,3}/", $ip) == 1) {
             $query = "INSERT INTO ".DBPREFIX."stats_exclude_ip(ip_address,remarks,username) VALUES('".$ip."','" . $remarks . "','" . $userName . "')";
             $objDatabase->Execute($query);
