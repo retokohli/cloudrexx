@@ -131,7 +131,7 @@ class SeriesOption extends Option
                     'Cx\Core_Modules\TemplateEditor\Model\Entity\CombinedOption'
             ) {
                 // for the combinedOptions, we need to parse each single option
-                foreach($element["elements"] as $optionId => $option){
+                foreach($element['elements'] as $optionId => $option){
                     $template->setVariable(
                         strtoupper(
                             'TEMPLATE_EDITOR_' . $this->name . '_' . $optionId
@@ -210,7 +210,7 @@ class SeriesOption extends Option
                         foreach($elements as $id  => $element) {
                             $emptyElement['elements'][$id] = array_fill_keys(
                                 array_keys($element),
-                                ""
+                                ''
                             );
                         }
                     } else {
