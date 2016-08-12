@@ -66,6 +66,14 @@ class CalendarRegistration extends CalendarLibrary
     public $eventId;  
     
     /**
+     * Submission date
+     *
+     * @access public
+     * @var integer Timestamp of Registration submission date
+     */
+    public $submissionDate;
+    
+    /**
      * Event date
      *
      * @access public
@@ -199,6 +207,7 @@ class CalendarRegistration extends CalendarLibrary
         
         $query = 'SELECT registration.`id` AS `id`,
                          registration.`event_id` AS `event_id`,
+                         registration.`submission_date` AS `submission_date`,
                          registration.`date` AS `date`,
                          registration.`host_name` AS `host_name`,
                          registration.`ip_address` AS `ip_address`,
@@ -218,7 +227,8 @@ class CalendarRegistration extends CalendarLibrary
         if($objResult !== false) {
             $this->id = intval($objResult->fields['id']);
             $this->eventId = intval($objResult->fields['event_id']);           
-            $this->eventDate = intval($objResult->fields['date']);        
+            $this->eventDate = intval($objResult->fields['date']);
+            $this->submissionDate = $this->getInternDateTimeFromDb($objResult->fields['submission_date']);
             $this->userId= intval($objResult->fields['user_id']);        
             $this->langId= intval($objResult->fields['lang_id']);        
             $this->type = intval($objResult->fields['type']);        
@@ -342,13 +352,23 @@ class CalendarRegistration extends CalendarLibrary
         $key = $this->generateKey();
         
         if ($regId == 0) {
+            $submissionDate = new \DateTime();
             $query = 'INSERT INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration
-                                  (`event_id`,`date`,`host_name`,`ip_address`,`type`,`key`,`user_id`,`lang_id`,`export`,`payment_method`,`paid`)
-                           VALUES ("'.$eventId.'","'.$eventDate.'","'.$hostName.'","'.$ipAddress.'","'.$type.'","'.$key.'","'.$userId.'","'.$_LANGID.'",0,"'.$paymentMethod.'","'.$paid.'")';
-            
+                        SET `event_id`         = ' . $eventId . ',
+                            `submission_date`  = "' . $submissionDate->format('Y-m-d H:i:s') .'",
+                            `date`             = ' . $eventDate . ',
+                            `host_name`        = ' . $hostName . ',
+                            `ip_address`       = ' . $ipAddress . ',
+                            `type`             = ' . $type . ',
+                            `key`              = "' . $key . '",
+                            `user_id`          = ' . $userId . ',
+                            `lang_id`          = ' . $_LANGID . ',
+                            `export`           = 0,
+                            `payment_method`   = ' . $paymentMethod . ',
+                            `paid`             = ' . $paid . ' ';
             $objResult = $objDatabase->Execute($query);
-            
-            if($objResult !== false) {
+
+            if ($objResult !== false) {
                 $this->id = $objDatabase->Insert_ID();
             } else {
                 return false;

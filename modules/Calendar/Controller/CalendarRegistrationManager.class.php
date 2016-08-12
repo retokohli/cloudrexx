@@ -212,7 +212,7 @@ class CalendarRegistrationManager extends CalendarLibrary
         global $objDatabase, $_LANGID, $_ARRAYLANG;
         
         $objResult = $objDatabase->Execute('SELECT count(DISTINCT `field_id`) AS `count_form_fields` FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name` WHERE `form_id` = '.$this->formId);
-        $objTpl->setVariable($this->moduleLangVar.'_COUNT_FORM_FIELDS', $objResult->fields['count_form_fields'] + 3);
+        $objTpl->setVariable($this->moduleLangVar.'_COUNT_FORM_FIELDS', $objResult->fields['count_form_fields'] + 4);
         
         $query = '
             SELECT
@@ -260,6 +260,10 @@ class CalendarRegistrationManager extends CalendarLibrary
             $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_NAME', $dateFilterTpl->get());
             $objTpl->parse('eventRegistrationName');
             
+            //display the registration submission date header
+            $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_NAME', $_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTRATION_SUBMISSION']);
+            $objTpl->parse('eventRegistrationName');
+
             $arrFieldColumns = array();
             $arrDefaults = array();
             while (!$objResult->EOF) {
@@ -356,7 +360,11 @@ class CalendarRegistrationManager extends CalendarLibrary
             
             $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', date("d.m.Y", $objRegistration->eventDate));
             $objTpl->parse('eventRegistrationValue');
-            
+
+            //display the registration submission date value
+            $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', $this->format2userDateTime($objRegistration->submissionDate));
+            $objTpl->parse('eventRegistrationValue');
+
             foreach ($arrFieldColumns as $fieldId) {
                 $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', isset($arrValues[$objRegistration->id][$fieldId]) ? contrexx_raw2xhtml($arrValues[$objRegistration->id][$fieldId]) : '');
                 $objTpl->parse('eventRegistrationValue');
