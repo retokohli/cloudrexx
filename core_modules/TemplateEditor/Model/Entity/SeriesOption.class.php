@@ -181,7 +181,7 @@ class SeriesOption extends Option
         }
         if (empty($data['id']) && $data['id'] != 0) {
             throw new OptionValueNotValidException(
-                $_ARRAYLANG["TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_WITHOUT_ID"]
+                $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_WITHOUT_ID']
             );
         }
         if ($data['value']['elm'] === '' && !isset($data['value']['action'])) {
@@ -216,7 +216,7 @@ class SeriesOption extends Option
                     } else {
                         $emptyElement = array_fill_keys(
                             array_keys($this->elements[$key]),
-                            ""
+                            ''
                         );
                     }
                     $this->elements[] = $emptyElement;
@@ -320,7 +320,7 @@ class SeriesOption extends Option
         $optionClass = $this->type;
         $instance = new $optionClass(
             $this->name.'_seriesId' . $id,
-            "",
+            '',
             $specific,
             $this->type
         );
