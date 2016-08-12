@@ -127,7 +127,7 @@ class SeriesOption extends Option
                     'Cx\Core_Modules\TemplateEditor\Model\Entity\CombinedOption'
             ) {
                 // for the combinedOptions, we need to parse each single option
-                foreach($element["elements"] as $optionId => $option){
+                foreach($element['elements'] as $optionId => $option){
                     $template->setVariable(
                         strtoupper(
                             'TEMPLATE_EDITOR_' . $this->name . '_' . $optionId
@@ -177,7 +177,7 @@ class SeriesOption extends Option
         }
         if (empty($data['id']) && $data['id'] != 0) {
             throw new OptionValueNotValidException(
-                $_ARRAYLANG["TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_WITHOUT_ID"]
+                $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_WITHOUT_ID']
             );
         }
         if ($data['value']['elm'] === '' && !isset($data['value']['action'])) {
@@ -206,13 +206,13 @@ class SeriesOption extends Option
                         foreach($elements as $id  => $element) {
                             $emptyElement['elements'][$id] = array_fill_keys(
                                 array_keys($element),
-                                ""
+                                ''
                             );
                         }
                     } else {
                         $emptyElement = array_fill_keys(
                             array_keys($this->elements[$key]),
-                            ""
+                            ''
                         );
                     }
                     $this->elements[] = $emptyElement;
@@ -316,7 +316,7 @@ class SeriesOption extends Option
         $optionClass = $this->type;
         $instance = new $optionClass(
             $this->name.'_seriesId' . $id,
-            "",
+            '',
             $specific,
             $this->type
         );

@@ -1094,8 +1094,11 @@ die("Failed to update the Cart!");
         // Validate parameters
         if ($product_id && empty($category_id)) {
             $objProduct = Product::getById($product_id);
-            if ($objProduct) {
+            if ($objProduct && $objProduct->active()) {
                 $category_id = $objProduct->category_id();
+            } else {
+                \CSRF::redirect(
+                    Cx\Core\Routing\Url::fromModuleAndCmd('shop', ''));
             }
             if (isset($_SESSION['shop']['previous_category_id'])) {
                 $category_id_previous = $_SESSION['shop']['previous_category_id'];

@@ -1712,23 +1712,24 @@ namespace Cx\Core\Core\Controller {
         public function parseGlobalPlaceholders(&$content) {
             global $_CONFIG;
 
-            $content = str_replace('{PAGE_URL}',        htmlspecialchars(\Env::get('init')->getPageUri()), $content);
-            $content = str_replace('{PAGE_URL_ENCODED}',urlencode(\Env::get('init')->getPageUri()->toString()), $content);
-            $content = str_replace('{STANDARD_URL}',    contrexx_raw2xhtml(\Env::get('init')->getUriBy('smallscreen', 0)),     $content);
-            $content = str_replace('{MOBILE_URL}',      contrexx_raw2xhtml(\Env::get('init')->getUriBy('smallscreen', 1)),     $content);
-            $content = str_replace('{PRINT_URL}',       contrexx_raw2xhtml(\Env::get('init')->getUriBy('printview', 1)),       $content);
-            $content = str_replace('{PDF_URL}',         contrexx_raw2xhtml(\Env::get('init')->getUriBy('pdfview', 1)),         $content);
-            $content = str_replace('{APP_URL}',         contrexx_raw2xhtml(\Env::get('init')->getUriBy('appview', 1)),         $content);
-            $content = str_replace('{LOGOUT_URL}',      contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'logout')),  $content);
-            $content = str_replace('{CONTACT_EMAIL}',   isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $content);
-            $content = str_replace('{CONTACT_COMPANY}', isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $content);
-            $content = str_replace('{CONTACT_ADDRESS}', isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '', $content);
-            $content = str_replace('{CONTACT_ZIP}',     isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '', $content);
-            $content = str_replace('{CONTACT_PLACE}',   isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '', $content);
-            $content = str_replace('{CONTACT_COUNTRY}', isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '', $content);
-            $content = str_replace('{CONTACT_PHONE}',   isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '', $content);
-            $content = str_replace('{CONTACT_FAX}',     isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '', $content);
-            $content = str_replace('{CONTACT_NAME}',    isset($_CONFIG['coreAdminName'])    ? contrexx_raw2xhtml($_CONFIG['coreAdminName'])    : '', $content);
+            $content = str_replace('{PAGE_URL}',            htmlspecialchars(\Env::get('init')->getPageUri()), $content);
+            $content = str_replace('{PAGE_URL_ENCODED}',    urlencode(\Env::get('init')->getPageUri()->toString()), $content);
+            $content = str_replace('{STANDARD_URL}',        contrexx_raw2xhtml(\Env::get('init')->getUriBy('smallscreen', 0)),     $content);
+            $content = str_replace('{MOBILE_URL}',          contrexx_raw2xhtml(\Env::get('init')->getUriBy('smallscreen', 1)),     $content);
+            $content = str_replace('{PRINT_URL}',           contrexx_raw2xhtml(\Env::get('init')->getUriBy('printview', 1)),       $content);
+            $content = str_replace('{PDF_URL}',             contrexx_raw2xhtml(\Env::get('init')->getUriBy('pdfview', 1)),         $content);
+            $content = str_replace('{APP_URL}',             contrexx_raw2xhtml(\Env::get('init')->getUriBy('appview', 1)),         $content);
+            $content = str_replace('{LOGOUT_URL}',          contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'logout')),  $content);
+            $content = str_replace('{CONTACT_EMAIL}',       isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $content);
+            $content = str_replace('{CONTACT_COMPANY}',     isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $content);
+            $content = str_replace('{CONTACT_ADDRESS}',     isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '', $content);
+            $content = str_replace('{CONTACT_ZIP}',         isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '', $content);
+            $content = str_replace('{CONTACT_PLACE}',       isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '', $content);
+            $content = str_replace('{CONTACT_COUNTRY}',     isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '', $content);
+            $content = str_replace('{CONTACT_PHONE}',       isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '', $content);
+            $content = str_replace('{CONTACT_FAX}',         isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '', $content);
+            $content = str_replace('{CONTACT_NAME}',        isset($_CONFIG['coreAdminName'])    ? contrexx_raw2xhtml($_CONFIG['coreAdminName'])    : '', $content);
+            $content = str_replace('{GOOGLE_MAPS_API_KEY}', isset($_CONFIG['googleMapsAPIKey']) ? contrexx_raw2xhtml($_CONFIG['googleMapsAPIKey']) : '', $content);
         }
 
         /**
@@ -1809,15 +1810,24 @@ namespace Cx\Core\Core\Controller {
                     $themeFolderName = $themeRepo->getDefaultTheme($themeType, $page->getLang())->getFoldername();
                 }
 
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                 // load custom application template from page's theme
-                $themePath = \Env::get('cx')->getWebsiteThemesPath() .'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$component.'/Template/Frontend/'.$customAppTemplate;
-                if (file_exists($themePath)) {
+                $themePath = $cx->getClassLoader()->getFilePath($cx->getWebsiteThemesPath() .'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$component.'/Template/Frontend/'.$customAppTemplate);
+                if ($themePath) {
                     return file_get_contents($themePath);
                 }
 
+                // load default application template from page's theme
+                if ($customAppTemplate != $cmd.'.html') {
+                    $themePath = $cx->getClassLoader()->getFilePath($cx->getWebsiteThemesPath() .'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$component.'/Template/Frontend/'.$cmd.'.html');
+                    if ($themePath) {
+                        return file_get_contents($themePath);
+                    }
+                }
+
                 // load default application template from component
-                $modulePath = \Env::get('ClassLoader')->getFilePath(\Env::get('cx')->getCodeBaseDocumentRootPath() . '/'.$moduleFolderName.'/'.$component.'/View/Template/Frontend/'.$cmd.'.html');
-                if (file_exists($modulePath)) {
+                $modulePath = $cx->getClassLoader()->getFilePath($cx->getCodeBaseDocumentRootPath() . '/'.$moduleFolderName.'/'.$component.'/View/Template/Frontend/'.$cmd.'.html');
+                if ($modulePath) {
                     return file_get_contents($modulePath);
                 }
                 return;
@@ -1960,6 +1970,7 @@ namespace Cx\Core\Core\Controller {
                 'CONTACT_COUNTRY'                => isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '',
                 'CONTACT_PHONE'                  => isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '',
                 'CONTACT_FAX'                    => isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '',
+                'GOOGLE_MAPS_API_KEY'            => isset($_CONFIG['googleMapsAPIKey']) ? contrexx_raw2xhtml($_CONFIG['googleMapsAPIKey']) : '',
                 'FACEBOOK_LIKE_IFRAME'           => '<div id="fb-root"></div>
                                                     <script type="text/javascript">
                                                         (function(d, s, id) {
