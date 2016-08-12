@@ -1564,11 +1564,13 @@ class CalendarEvent extends CalendarLibrary
             }
         }   
             
-        if($send_invitation == 1) {    
-             $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();    
-             foreach ($invitationTemplate as $templateId) {
-                 $objMailManager->sendMail(intval($id), \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_INVITATION, null, $templateId);
-             }
+        if ($send_invitation == 1) {
+            // TO-DO set form data into $this
+            $event          = new CalendarEvent($this->id);
+            $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();
+            foreach ($invitationTemplate as $templateId) {
+                $objMailManager->sendMail($event, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_INVITATION, null, $templateId);
+            }
         }
         
         return true;

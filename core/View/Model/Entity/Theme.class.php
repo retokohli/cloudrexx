@@ -168,8 +168,8 @@ class Theme extends \Cx\Model\Base\EntityBase
      * @return string the preview image source web path
      */
     public function getPreviewImage() {
-        $websiteFilePath  = \Env::get('cx')->getWebsiteThemesPath() . '/' . $this->getFoldername() . self::THEME_PREVIEW_FILE;
-        $codeBaseFilePath = \Env::get('cx')->getCodeBaseThemesPath() . '/' . $this->getFoldername() . self::THEME_PREVIEW_FILE;
+        $websiteFilePath  = $this->cx->getWebsiteThemesPath() . '/' . $this->getFoldername() . self::THEME_PREVIEW_FILE;
+        $codeBaseFilePath = $this->cx->getCodeBaseThemesPath() . '/' . $this->getFoldername() . self::THEME_PREVIEW_FILE;
         $filePath         = file_exists($websiteFilePath)
                             ? $websiteFilePath
                             : ( file_exists($codeBaseFilePath)
@@ -177,9 +177,9 @@ class Theme extends \Cx\Model\Base\EntityBase
                                 : ''
                               );
         if ($filePath && file_exists($filePath)) {
-            return \Env::get('cx')->getWebsiteThemesWebPath() . '/' . $this->getFoldername() . self::THEME_PREVIEW_FILE;
+            return $this->cx->getWebsiteThemesWebPath() . '/' . $this->getFoldername() . self::THEME_PREVIEW_FILE;
         }
-        return \Env::get('cx')->getCodeBaseOffsetPath(). self::THEME_DEFAULT_PREVIEW_FILE;
+        return $this->cx->getCodeBaseOffsetPath(). self::THEME_DEFAULT_PREVIEW_FILE;
     }
     
     /**
