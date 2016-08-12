@@ -38,7 +38,7 @@
 namespace Cx\Core_Modules\TemplateEditor\Controller;
 
 /**
- * Class BackendController
+ * Class ComponentController
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Robin Glauser <robin.glauser@cloudrexx.com>
