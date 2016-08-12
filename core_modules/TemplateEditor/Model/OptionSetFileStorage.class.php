@@ -36,7 +36,8 @@ namespace Cx\Core_Modules\TemplateEditor\Model;
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
-class OptionSetFileStorage implements Storable
+class OptionSetFileStorage extends \Cx\Model\Base\EntityBase
+    implements Storable
 {
     /**
      * @var String
@@ -74,7 +75,7 @@ class OptionSetFileStorage implements Storable
      * @throws \Symfony\Component\Yaml\ParserException thrown if the file is not found or empty
      */
     protected function retrieveFile($fileName){
-        $file = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()
+        $file = $this->cx->getClassLoader()
             ->getFilePath($fileName);
         if (!$file) {
             throw new \Symfony\Component\Yaml\ParserException(

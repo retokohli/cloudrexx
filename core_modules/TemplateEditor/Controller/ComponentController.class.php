@@ -38,7 +38,7 @@
 namespace Cx\Core_Modules\TemplateEditor\Controller;
 
 /**
- * Class BackendController
+ * Class ComponentController
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Robin Glauser <robin.glauser@cloudrexx.com>
@@ -86,9 +86,18 @@ class ComponentController
                 new \Cx\Core\View\Model\Repository\ThemeRepository();
             $themeID = isset($_GET['preview']) ? $_GET['preview']
                 : null;
+            // load preview theme or page's custom theme
             $theme = $themeID ? $themeRepository->findById(
                 (int)$themeID
-            ) : $themeRepository->getDefaultTheme();
+            ) : $themeRepository->findById($this->cx->getPage()->getSkin());
+            // fallback: load default theme of active language
+            if (!$theme) {
+                $theme = $themeRepository->getDefaultTheme(\Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB, FRONTEND_LANG_ID);
+            }
+            // final fallback: try to load any existing default theme (independent of the language)
+            if (!$theme) {
+                $theme = $themeRepository->getDefaultTheme(\Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB);
+            }
             $themeOptions = $themeOptionRepository->get(
                 $theme
             );

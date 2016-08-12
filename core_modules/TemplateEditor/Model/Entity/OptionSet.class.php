@@ -434,8 +434,8 @@ class OptionSet extends \Cx\Model\Base\EntityBase
                     );
                 }
             }
-            $groupName = ($option['group']) ? $option['group'] : 'others_group';
-            $group = ($this->groups[$groupName]) ?
+            $groupName = isset($option['group']) ? $option['group'] : 'others_group';
+            $group = isset($this->groups[$groupName]) ?
                 $this->groups[$groupName] : $this->groups['others_group'];
             $this->options[$option['name']]
                 = new $optionType(
