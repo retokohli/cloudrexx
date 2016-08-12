@@ -55,6 +55,11 @@ class Registration extends \Cx\Model\Base\EntityBase {
     protected $date;
 
     /**
+     * @var dateTime $submissionDate
+     */
+    protected $submissionDate;
+
+    /**
      * @var string $hostName
      */
     protected $hostName;
@@ -142,6 +147,26 @@ class Registration extends \Cx\Model\Base\EntityBase {
     public function getDate()
     {
         return $this->date;
+    }
+
+    /**
+     * Set submissionDate
+     *
+     * @param dateTime $submissionDate
+     */
+    public function setSubmissionDate($submissionDate)
+    {
+        $this->submissionDate = $submissionDate;
+    }
+
+    /**
+     * Get submissionDate
+     *
+     * @return dateTime $submissionDate
+     */
+    public function getSubmissionDate()
+    {
+        return $this->submissionDate;
     }
 
     /**
