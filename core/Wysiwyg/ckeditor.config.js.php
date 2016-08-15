@@ -81,7 +81,7 @@ CKEDITOR.editorConfig = function( config )
     config.filebrowserBrowseUrl      = CKEDITOR.getUrl('<?php echo $linkBrowser; ?>');
     config.filebrowserImageBrowseUrl = CKEDITOR.getUrl('<?php echo $defaultBrowser; ?>');
     config.filebrowserFlashBrowseUrl = CKEDITOR.getUrl('<?php echo $defaultBrowser; ?>');
-    config.baseHref = 'http://<?php echo $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET; ?>/';
+    config.baseHref = '<?php echo \Cx\Core\Routing\Url::fromCapturedRequest('', ASCMS_PATH_OFFSET, array())->toString(); ?>';
 
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
 
