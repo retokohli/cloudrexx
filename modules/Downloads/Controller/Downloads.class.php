@@ -229,7 +229,7 @@ class Downloads extends DownloadsLibrary
                 && (!$objDownload->getExpirationDate() || $objDownload->getExpirationDate() > time())
             ) {
                 /* DOWNLOAD DETAIL PAGE */
-                $this->pageTitle = contrexx_raw2xhtml($objDownload->getName(FRONTEND_LANG_ID));
+                $this->pageTitle = $objDownload->getName(FRONTEND_LANG_ID);
 
                 $metakeys = $objDownload->getMetakeys(FRONTEND_LANG_ID);
                 if ($this->arrConfig['use_attr_metakeys'] && !empty($metakeys)) {
