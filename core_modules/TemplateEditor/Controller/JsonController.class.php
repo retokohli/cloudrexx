@@ -28,13 +28,6 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Controller;
 
-use Cx\Core\Core\Controller\Cx;
-use Cx\Core\Json\JsonAdapter;
-use Cx\Core\View\Model\Repository\ThemeRepository;
-use Cx\Core_Modules\TemplateEditor\Model\Entity\Preset;
-use Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage;
-use Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository;
-
 /**
  * Class JsonController
  *
@@ -43,7 +36,8 @@ use Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository;
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
-class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements JsonAdapter
+class JsonController extends \Cx\Core\Core\Model\Entity\Controller
+    implements \Cx\Core\Json\JsonAdapter
 {
 
 
@@ -103,7 +97,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
     public function saveOptions($params)
     {
         $themeID         = isset($params['get']['tid']) ? $params['get']['tid'] : 1;
-        $themeRepository = new ThemeRepository();
+        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
         $theme           = $themeRepository->findById($themeID);
         if (!isset($_SESSION['TemplateEditor'])) {
             $_SESSION['TemplateEditor'] = array();
@@ -111,10 +105,14 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
         if (!isset($_SESSION['TemplateEditor'][$themeID])) {
             $_SESSION['TemplateEditor'][$themeID] = array();
         }
-        $fileStorage           = new OptionSetFileStorage(
-            $this->cx->getWebsiteThemesPath()
-        );
-        $themeOptionRepository = new OptionSetRepository($fileStorage);
+        $fileStorage =
+            new \Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage(
+                $this->cx->getWebsiteThemesPath()
+            );
+        $themeOptionRepository =
+            new \Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository(
+                $fileStorage
+            );
 
         $themeOptions     = $themeOptionRepository->get(
             $theme
@@ -143,7 +141,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
 
         \Env::get('init')->loadLanguageData('TemplateEditor');
         $themeID         = isset($params['get']['tid']) ? $params['get']['tid'] : 1;
-        $themeRepository = new ThemeRepository();
+        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
         $theme           = $themeRepository->findById($themeID);
         if (!isset($_SESSION['TemplateEditor'])) {
             $_SESSION['TemplateEditor'] = array();
@@ -151,10 +149,14 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
         if (!isset($_SESSION['TemplateEditor'][$themeID])) {
             $_SESSION['TemplateEditor'][$themeID] = array();
         }
-        $fileStorage           = new OptionSetFileStorage(
-            $this->cx->getWebsiteThemesPath()
-        );
-        $themeOptionRepository = new OptionSetRepository($fileStorage);
+        $fileStorage =
+            new \Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage(
+                $this->cx->getWebsiteThemesPath()
+            );
+        $themeOptionRepository =
+            new \Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository(
+                $fileStorage
+            );
 
         $themeOptions = $themeOptionRepository->get(
             $theme
@@ -221,18 +223,24 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
      */
     public function activatePreset($params)
     {
-        if (!Preset::isValidPresetName( $params['post']['preset'])) {
+        if (
+            !\Cx\Core_Modules\TemplateEditor\Model\Entity\Preset::
+                isValidPresetName( $params['post']['preset'])
+        ) {
             return;
         }
         $presetName            =  $params['post']['preset'];
         $themeID               = isset($params['post']['tid']) ? 
             intval($params['post']['tid']) : 1;
-        $themeRepository       = new ThemeRepository();
+        $themeRepository       = new \Cx\Core\View\Model\Repository\ThemeRepository();
         $theme                 = $themeRepository->findById($themeID);
-        $fileStorage           = new OptionSetFileStorage(
+        $fileStorage           = new \Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage(
             $this->cx->getWebsiteThemesPath()
         );
-        $themeOptionRepository = new OptionSetRepository($fileStorage);
+        $themeOptionRepository =
+            new \Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository(
+                $fileStorage
+            );
 
         $themeOptions = $themeOptionRepository->get(
             $theme
@@ -250,7 +258,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
      * @param array $params List of get and post parameters which were sent to
      *                      the json adapter.
      *
-     * @return array Preset name
+     * @return array \Cx\Core_Modules\TemplateEditor\Model\Entity\Preset name
      */
     public function addPreset($params)
     {
@@ -258,24 +266,36 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
 
         \Env::get('init')->loadLanguageData('TemplateEditor');
         $presetName = $params['post']['preset'];
-        if (!Preset::isValidPresetName($presetName)) {
+        if (
+            !\Cx\Core_Modules\TemplateEditor\Model\Entity\Preset::
+                isValidPresetName($presetName)
+        ) {
             throw new \LogicException(
                 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_NEW_PRESET_TEXT_NOT_ALLOWED_CHARACTERS']
             );
         }
 
         $presetPresetName = 'Default';
-        if (isset($params['post']['presetpreset']) && Preset::isValidPresetName($params['post']['presetpreset'])) {
+        if (
+            isset($params['post']['presetpreset']) &&
+            \Cx\Core_Modules\TemplateEditor\Model\Entity\Preset::
+                isValidPresetName($params['post']['presetpreset'])
+        ) {
             $presetPresetName =  $params['post']['presetpreset'];
         }
         $themeID               = isset($params['post']['tid']) ? 
             intval($params['post']['tid']) : 1;
-        $themeRepository       = new ThemeRepository();
+        $themeRepository       =
+            new \Cx\Core\View\Model\Repository\ThemeRepository();
         $theme                 = $themeRepository->findById($themeID);
-        $fileStorage           = new OptionSetFileStorage(
-            $this->cx->getWebsiteThemesPath()
-        );
-        $themeOptionRepository = new OptionSetRepository($fileStorage);
+        $fileStorage           =
+            new \Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage(
+                $this->cx->getWebsiteThemesPath()
+            );
+        $themeOptionRepository =
+            new \Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository(
+                $fileStorage
+            );
         $optionSet = $themeOptionRepository->get(
             $theme
         );
@@ -300,7 +320,10 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
 
         \Env::get('init')->loadLanguageData('TemplateEditor');
      
-        if (!Preset::isValidPresetName($params['post']['preset'])) {
+        if (
+            !\Cx\Core_Modules\TemplateEditor\Model\Entity\Preset::
+                isValidPresetName($params['post']['preset'])
+        ) {
             return;
         }   
         
@@ -309,16 +332,23 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
          * Default shouldn't be deletable
          */
         if ($presetName == 'Default') {
-            throw new \LogicException($_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_DEFAULT_WARNING']);
+            throw new \LogicException(
+                $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_DEFAULT_WARNING']
+            );
         }
         $themeID               = isset($params['post']['tid']) ? 
             intval($params['post']['tid']) : 1;
-        $themeRepository       = new ThemeRepository();
+        $themeRepository       =
+            new \Cx\Core\View\Model\Repository\ThemeRepository();
         $theme                 = $themeRepository->findById($themeID);
-        $fileStorage           = new OptionSetFileStorage(
-            $this->cx->getWebsiteThemesPath()
-        );
-        $themeOptionRepository = new OptionSetRepository($fileStorage);
+        $fileStorage           =
+            new \Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage(
+                $this->cx->getWebsiteThemesPath()
+            );
+        $themeOptionRepository =
+            new \Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository(
+                $fileStorage
+            );
         $themeOptions = $themeOptionRepository->get(
             $theme
         );

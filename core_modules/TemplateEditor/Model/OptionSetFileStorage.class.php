@@ -28,11 +28,6 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Model;
 
-use Symfony\Component\Yaml\Exception;
-use Symfony\Component\Yaml\Parser;
-use Symfony\Component\Yaml\ParserException;
-use Symfony\Component\Yaml\Yaml;
-
 /**
  * Class OptionSetFileStorage
  *
@@ -62,7 +57,7 @@ class OptionSetFileStorage extends \Cx\Model\Base\EntityBase
      * @param String $name
      *
      * @return array
-     * @throws ParserException
+     * @throws \Symfony\Component\Yaml\ParserException
      */
     public function retrieve($name)
     {
@@ -77,32 +72,34 @@ class OptionSetFileStorage extends \Cx\Model\Base\EntityBase
     /**
      * @param  String $fileName  the file to load including its path
      * @return array             the data from the file
-     * @throws ParserException   thrown if the file is not found or empty
+     * @throws \Symfony\Component\Yaml\ParserException thrown if the file is not found or empty
      */
     protected function retrieveFile($fileName){
         $file = $this->cx->getClassLoader()
             ->getFilePath($fileName);
         if (!$file) {
-            throw new ParserException(
+            throw new \Symfony\Component\Yaml\ParserException(
                 "File" . $fileName . 'not found'
             );
         }
 
         $content = file_get_contents($file);
         if (!$content) {
-            throw new ParserException(
+            throw new \Symfony\Component\Yaml\ParserException(
                 "File" . $fileName . 'is empty'
             );
         }
 
         try {
-            $yaml = new Parser();
+            $yaml = new \Symfony\Component\Yaml\Parser();
             return $yaml->parse($content);
-        } catch (ParserException $e) {
+        } catch (\Symfony\Component\Yaml\ParserException $e) {
             preg_match(
                 "/line (?P<line>[0-9]+)/", $e->getMessage(), $matches
             );
-            throw new ParserException($e->getMessage(), $matches['line']);
+            throw new \Symfony\Component\Yaml\ParserException(
+                $e->getMessage(), $matches['line']
+            );
         }
     }
 
@@ -119,7 +116,7 @@ class OptionSetFileStorage extends \Cx\Model\Base\EntityBase
         return file_put_contents(
             $this->path
             . '/' . $name . '/options/Options.yml',
-            Yaml::dump($data->yamlSerialize(), 6)
+            \Symfony\Component\Yaml\Yaml::dump($data->yamlSerialize(), 6)
         );
     }
 

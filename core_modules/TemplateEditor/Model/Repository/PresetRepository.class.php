@@ -28,9 +28,6 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Repository;
 
-use Cx\Core_Modules\TemplateEditor\Model\Entity\Preset;
-use Cx\Core_Modules\TemplateEditor\Model\Storable;
-
 /**
  * Class ThemeOptionsRepository
  *
@@ -43,14 +40,16 @@ class PresetRepository
 {
 
     /**
-     * @var Storable
+     * @var \Cx\Core_Modules\TemplateEditor\Model\Storable
      */
     protected $storage;
 
     /**
-     * @param Storable $storage
+     * @param \Cx\Core_Modules\TemplateEditor\Model\Storable $storage
      */
-    public function __construct(Storable $storage)
+    public function __construct(
+        \Cx\Core_Modules\TemplateEditor\Model\Storable $storage
+    )
     {
         $this->storage = $storage;
     }
@@ -58,11 +57,13 @@ class PresetRepository
     /**
      * @param       $name
      *
-     * @return Preset
+     * @return \Cx\Core_Modules\TemplateEditor\Model\Entity\Preset
      */
     public function getByName($name)
     {
-        return Preset::createFromArray($name,$this->storage->retrieve($name));
+        return
+            \Cx\Core_Modules\TemplateEditor\Model\Entity\Preset::
+                createFromArray($name,$this->storage->retrieve($name));
     }
 
     /**
@@ -78,7 +79,7 @@ class PresetRepository
     /**
      * Save a ThemeOptions entity to the component.yml file.
      *
-     * @param Preset $entity
+     * @param \Cx\Core_Modules\TemplateEditor\Model\Entity\Preset $entity
      *
      * @return bool
      */

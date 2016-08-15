@@ -28,10 +28,6 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
-use Cx\Core\Core\Controller\Cx;
-use Cx\Core\Html\Sigma;
-use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
-
 /**
  * Class SeriesOption
  *
@@ -91,7 +87,7 @@ class SeriesOption extends Option
     /**
      * Render the option field in the backend.
      *
-     * @return Sigma    the template
+     * @return \Cx\Core\Html\Sigma    the template
      */
     public function renderOptionField()
     {
@@ -117,7 +113,7 @@ class SeriesOption extends Option
     /**
      * Render the option in the frontend.
      *
-     * @param Sigma $template
+     * @param \Cx\Core\Html\Sigma $template
      */
     public function renderTheme($template)
     {
@@ -299,7 +295,7 @@ class SeriesOption extends Option
      *
      * @param   int     $id                   the seriesId of the element
      * @param   array   $specific             the specific values of the element
-     * @return  Sigma                         the html template
+     * @return  \Cx\Core\Html\Sigma           the html template
      * @throws  OptionValueNotValidException  If the data which the option should
      *                                        handle is invalid this exception
      *                                        will be thrown..

@@ -33,9 +33,6 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
-
-use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
-
 /**
  * Class Preset
  *
@@ -44,7 +41,7 @@ use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
-class Preset implements YamlSerializable
+class Preset implements \Cx\Core_Modules\TemplateEditor\Model\YamlSerializable
 {
     /**
      * Name of the preset

@@ -28,9 +28,6 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
-use Cx\Core\Html\Sigma;
-use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
-
 /**
  * Class ImageOption
  *
@@ -72,12 +69,13 @@ class ImageOption extends Option
     /**
      * Render the option field in the backend.
      *
-     * @return Sigma    the template
+     * @return \Cx\Core\Html\Sigma    the template
      */
     public function renderOptionField()
     {
         global $_ARRAYLANG;
-        $mediaBrowser = new MediaBrowser();
+        $mediaBrowser =
+            new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions(
             array(
                 'views' => 'uploader,filebrowser',
@@ -100,7 +98,7 @@ class ImageOption extends Option
     /**
      * Render the option in the frontend.
      *
-     * @param Sigma $template
+     * @param \Cx\Core\Html\Sigma $template
      */
     public function renderTheme($template)
     {
