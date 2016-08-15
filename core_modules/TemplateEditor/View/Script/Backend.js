@@ -33,7 +33,8 @@ function updateOption(optionName, optionData, callback){
         catch (e){
             previewIframe.attr('src', cx.variables.get('iframeUrl','TemplateEditor'));
         }
-        if(callback(response)) {
+        // check for false. This is needed for options with no callback
+        if(callback(response) !== false) {
             jQuery('#saveOptionsButton').removeAttr("disabled");
         }
     }, "json");
@@ -299,7 +300,7 @@ function getSeriesElementValueById (name, id, elements) {
  * @param {object} button     the button which was clicked
  */
 function removeElement(button) {
-    var id = jQuery(button).parent().children('input, textarea')
+    var id = jQuery(button).parent().find('input, textarea')
         .first().attr('id');
     var parent = jQuery(button).parent();
     parent.addClass('saving');

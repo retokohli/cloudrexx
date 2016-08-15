@@ -1,5 +1,10 @@
 <label for="{TEMPLATEEDITOR_OPTION_NAME}">{TEMPLATEEDITOR_OPTION_HUMAN_NAME}</label>
-<input type="text"  id="{TEMPLATEEDITOR_OPTION_NAME}" value="{TEMPLATEEDITOR_OPTION_VALUE}"/>
+<input
+        type="text"
+        id="{TEMPLATEEDITOR_OPTION_NAME}"
+        class="color-option"
+        value="{TEMPLATEEDITOR_OPTION_VALUE}"
+/>
 <div class="error-box"></div>
 <script type="text/javascript">
     jQuery("#{TEMPLATEEDITOR_OPTION_NAME}").spectrum({
@@ -26,7 +31,7 @@
         var color = new tinycolor(jQuery(this).val());
         if (!color.isValid()){
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').text(cx.variables.get('colorError','TemplateEditor')).slideDown();
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').nextAll('.error-box:first').text(cx.variables.get('colorError','TemplateEditor')).slideDown();
             return;
         }
         jQuery("#{TEMPLATEEDITOR_OPTION_NAME}").spectrum("set", jQuery(this).val());
@@ -34,14 +39,14 @@
         updateOption('{TEMPLATEEDITOR_OPTION_NAME}',jQuery(this).val(), function(response){
             if (response.status == 'error'){
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').text(response.message).slideDown();
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').nextAll('.error-box:first').text(response.message).slideDown();
                 return false;
             }
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').slideUp();
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').nextAll('.error-box:first').slideUp();
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saving');
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saved');
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').addClass('saved');
             setTimeout(function () {
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saved');
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').removeClass('saved');
             }, 2000);
             return true;
         })

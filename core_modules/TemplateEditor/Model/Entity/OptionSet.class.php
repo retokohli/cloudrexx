@@ -193,8 +193,12 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     public function renderOptions($template)
     {
         global $_LANGID;
-        foreach ($this->getOptionsOrderedByGroups() as $key => $options) {
-            foreach ($options as $option) {
+        foreach ($this->getOptionsOrderedByGroups() as $key => $group) {
+            foreach ($group as $option) {
+                // empty groups should not be parsed
+                if (!$group) {
+                    continue;
+                }
                 $subTemplate = $option->renderOptionField();
                 $optionName = str_replace( // replace 'Option' so we get the net name
                     'Option',
@@ -386,9 +390,9 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                 );
             }
         }
-        if (isset($data['groups'])) {
-            $this->initializeGroups($data['groups']['groups']);
-        }
+        $specifiedGroups = isset($data['groups']['groups'])
+            ? $data['groups']['groups'] : array();
+        $this->initializeGroups($specifiedGroups);
         foreach ($data['options'] as $option) {
             $optionType = $option['type'];
             if ($option['series']) {
@@ -430,8 +434,8 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                     );
                 }
             }
-            $groupName = ($option['group']) ? $option['group'] : 'others_group';
-            $group = ($this->groups[$groupName]) ?
+            $groupName = isset($option['group']) ? $option['group'] : 'others_group';
+            $group = isset($this->groups[$groupName]) ?
                 $this->groups[$groupName] : $this->groups['others_group'];
             $this->options[$option['name']]
                 = new $optionType(

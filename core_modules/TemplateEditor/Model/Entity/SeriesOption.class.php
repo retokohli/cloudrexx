@@ -37,6 +37,7 @@ use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Robin Glauser <robin.glauser@cloudrexx.com>
+ * @author      Adrian Berger <adrian.berger@cloudrexx.com>
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
@@ -51,12 +52,12 @@ class SeriesOption extends Option
     protected $elements;
 
     /**
-     * @param String $name Name of the option
+     * @param String $name         Name of the option
      * @param array  $translations Array with translations for option.
-     * @param array  $data
-     * @param String $type          the type of the option
+     * @param array  $data         the specific data for this option
+     * @param String $type         the type of the option
      * @param Group  $group        the group of the option
-     * @param bool   $series        handle the elements as series if true
+     * @param bool   $series       handle the elements as series if true
      */
     public function __construct(
         $name,
@@ -67,9 +68,22 @@ class SeriesOption extends Option
         $series = false
     ) {
         parent::__construct($name, $translations, $data, $type, $group, $series);
-        foreach ($data['elements'] as $key => $elm) {
-            if (!empty($elm)) {
-                $this->elements[$key] = $elm;
+        foreach ($data['elements'] as $key => $element) {
+            if (
+                $type ==
+                    'Cx\Core_Modules\TemplateEditor\Model\Entity\CombinedOption'
+            ) {
+                // drop index 'elements' if it already exists. This is the case
+                // if the data are loaded from the session
+                if (isset($element['elements'])) {
+                    $element = $element['elements'];
+                }
+                $this->elements[$key]['elements'] = $element;
+                // we also need to store the options for each element,
+                // otherwise we don't now the type of the elements
+                $this->elements[$key]['options'] = $data['options'];
+            } else {
+                $this->elements[$key] = $element;
             }
         }
     }
@@ -111,11 +125,27 @@ class SeriesOption extends Option
         if (!$template->blockExists($blockName)) {
             return;
         }
-        foreach ($this->elements as $id => $element) {
-            $template->setVariable(
-                strtoupper('TEMPLATE_EDITOR_' . $this->name),
-                contrexx_raw2xhtml(current($element))
-            );
+        foreach ($this->elements as $element) {
+            if (
+                $this->type ==
+                    'Cx\Core_Modules\TemplateEditor\Model\Entity\CombinedOption'
+            ) {
+                // for the combinedOptions, we need to parse each single option
+                foreach($element['elements'] as $optionId => $option){
+                    $template->setVariable(
+                        strtoupper(
+                            'TEMPLATE_EDITOR_' . $this->name . '_' . $optionId
+                        ),
+                        contrexx_raw2xhtml(current($option))
+                    );
+                }
+            } else {
+                $template->setVariable(
+                    strtoupper('TEMPLATE_EDITOR_' . $this->name),
+                    contrexx_raw2xhtml(current($element))
+                );
+
+            }
             $template->parse($blockName);
         }
     }
@@ -151,7 +181,7 @@ class SeriesOption extends Option
         }
         if (empty($data['id']) && $data['id'] != 0) {
             throw new OptionValueNotValidException(
-                $_ARRAYLANG["TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_WITHOUT_ID"]
+                $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_WITHOUT_ID']
             );
         }
         if ($data['value']['elm'] === '' && !isset($data['value']['action'])) {
@@ -165,19 +195,37 @@ class SeriesOption extends Option
                     unset($this->elements[intval($data['id'])]);
                     break;
                 case 'add':
+                    // to add a new element, we copy the last element and delete
+                    // the values in copy, so the array structure is the same
                     end($this->elements);
                     $key = key($this->elements);
-                    $this->elements[] =
-                        array_fill_keys(
+                    if (
+                        $this->type ==
+                            'Cx\Core_Modules\TemplateEditor\Model\Entity\CombinedOption'
+                    ) {
+                        $emptyElement = $this->elements[$key];
+                        $elements = $this->elements[$key]['elements'];
+                        // for the combinedOption we need to delete each field
+                        // of each single option
+                        foreach($elements as $id  => $element) {
+                            $emptyElement['elements'][$id] = array_fill_keys(
+                                array_keys($element),
+                                ''
+                            );
+                        }
+                    } else {
+                        $emptyElement = array_fill_keys(
                             array_keys($this->elements[$key]),
-                            ""
+                            ''
                         );
+                    }
+                    $this->elements[] = $emptyElement;
                     return
                         array(
                             'elements' => $this->elements,
                             'html' => $this->getElementHtmlTemplate(
                                     $key + 1,
-                                    array()
+                                    $emptyElement
                                 )->get(),
                         );
                     break;
@@ -194,7 +242,7 @@ class SeriesOption extends Option
             $seriesElement = new $optionClass(
                 '',
                 array(),
-                array(),
+                $this->elements[$data['id']],
                 $this->type
             );
             $this->elements[$data['id']] =
@@ -228,8 +276,21 @@ class SeriesOption extends Option
      */
     public function getValue()
     {
+        if (
+            $this->type ==
+                'Cx\Core_Modules\TemplateEditor\Model\Entity\CombinedOption'
+        ) {
+            $elements = array();
+            // we only need to store the elements in the preset. There is no
+            // need to store the options in the presets
+            foreach($this->elements as $id => $element) {
+                $elements[$id] = $element['elements'];
+            }
+        } else {
+            $elements = $this->elements;
+        }
         return array(
-            'elements' => $this->elements
+            'elements' => $elements
         );
     }
 
@@ -258,8 +319,8 @@ class SeriesOption extends Option
         }
         $optionClass = $this->type;
         $instance = new $optionClass(
-            $this->name.'_seriesId'.$id,
-            "",
+            $this->name.'_seriesId' . $id,
+            '',
             $specific,
             $this->type
         );

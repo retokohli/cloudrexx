@@ -50,7 +50,7 @@
                     // (case: series of images), we need to initialize the
                     // button, otherwise click will not open anything
                     var mediaButton =
-                            jQuery(newElement).children('.mediabrowser-button');
+                            jQuery(newElement).find('.mediabrowser-button');
                     if (mediaButton !== undefined) {
                         initializeMediaButton.call(mediaButton);
                         mediaButton.trigger('click');
@@ -58,7 +58,7 @@
                     jQuery('#{TEMPLATEEDITOR_OPTION_NAME}')
                             .children('.elements').append(newElement);
                     // set focus to new created element for better ux
-                    jQuery(newElement).children('input, textarea')
+                    jQuery(newElement).find('input, textarea')
                             .first().focus();
                     return true;
                 }

@@ -78,12 +78,12 @@ p.groupName {
     border-bottom: 1px solid grey;
     font-weight: bold;
     background-position: 95%;
-    background-image: url('/cadmin/../core/Core/View/Media/icons/Expand.gif');
+    background-image: url('../../../../core/Core/View/Media/icons/Expand.gif');
     background-repeat: no-repeat;
 }
 
 p.groupName.open, .option.series.open {
-    background-image: url('/cadmin/../core/Core/View/Media/icons/Collapse.gif');
+    background-image: url('../../../../core/Core/View/Media/icons/Collapse.gif');
 }
 
 #content .option.text.error input {
@@ -201,17 +201,10 @@ p.groupName.open, .option.series.open {
 
 #content .option .element{
     position: relative;
-    overflow: auto;
+    overflow: hidden;
 }
 
-#content .option.saved input,
-#content .option.saved textarea,
-#content .option .image.saved input,
-#content .option .elements.saved input,
-#content .option .image.saved img,
-#content .option .element.saved img,
-#content .option .element.saved input,
-#content .option .element.saved textarea {
+#content .option .saved {
     border: 1px solid #00C755;
 }
 
@@ -288,9 +281,14 @@ p.groupName.open, .option.series.open {
     border: none;
 }
 
-#content .option.saved:after,
-#content .option .image.saved:after,
-#content .option .element.saved:after  {
+#content .option.combined .element img.remove-element {
+    top: 1px;
+}
+
+#content .element.combined > .remove-element {
+    display: none;
+}
+#content .option .saved:after {
     opacity: 1;
 }
 
@@ -299,7 +297,12 @@ p.groupName.open, .option.series.open {
     float: right;
 }
 
-#content  .colorPreview {
+#content .option .combined.element input[type=text].color-option {
+    width: calc(100% - 55px);
+    float: right;
+}
+
+#content .colorPreview {
     float: left;
     height: 20px;
     width: 22px;
@@ -360,8 +363,9 @@ p.groupName.open, .option.series.open {
 }
 
 .option.series {
+    position: static;
     background-position: 95% 9px;
-    background-image: url('/cadmin/../core/Core/View/Media/icons/Expand.gif');
+    background-image: url('../../../../core/Core/View/Media/icons/Expand.gif');
     background-repeat: no-repeat;
     background-size: 12px;
     padding: 0;
@@ -369,7 +373,7 @@ p.groupName.open, .option.series.open {
 }
 
 .option.series.open > label {
-    border-bottom: 1px dotted grey;
+    padding-bottom: 0;
 }
 
 .option.series > label, .option.series > div {
@@ -381,7 +385,8 @@ p.groupName.open, .option.series.open {
 }
 
 .series-list .elements img,
-.image.option img {
+.image.option img,
+.combined > img{
     margin: auto;
     display: block;
     max-width: calc(100% - 2px);
@@ -391,17 +396,26 @@ p.groupName.open, .option.series.open {
     -o-transition: border 0.5s;
     transition: border 0.5s;
 }
-.series-list .elements label {
+.series-list .elements label,
+.combined.element > label {
     display: none;
 }
 .image {
     position: relative;
 }
 
-.series-list .elements img {
+.series-list .elements img, .elements .combined > img {
     margin-top: 10px;
 }
 
+.series-list .combinedOption {
+    padding-top: 5px;
+}
+
+.series .combined.element {
+    padding-bottom: 10px;
+    border-bottom: 3px dotted grey;
+}
 
 .clearfix:after {
     content: " "; /* Older browser do not support empty content */

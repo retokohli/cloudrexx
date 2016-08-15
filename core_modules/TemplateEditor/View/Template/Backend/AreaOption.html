@@ -13,10 +13,6 @@
         }
         updateOption('{TEMPLATEEDITOR_OPTION_NAME}',checked, function(){
             parent.removeClass('saving');
-            parent.addClass('saved');
-            setTimeout(function(){
-                parent.removeClass('saved');
-            }, 2000);
             return true;
         })
     });
