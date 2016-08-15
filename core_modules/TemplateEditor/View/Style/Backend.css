@@ -905,7 +905,7 @@ span.introjs-helperNumberLayer {
     display: none;
 }
 .option-list {
-    float: left;
+    display: inline-block;
     width: 100%;
 }
 
