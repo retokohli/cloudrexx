@@ -259,7 +259,7 @@ class Downloads extends DownloadsLibrary
                 }
             } else {
                 /* CATEGORY DETAIL PAGE */
-                $this->pageTitle = htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
+                $this->pageTitle = $objCategory->getName($_LANGID);
 
                 // process create directory
                 $this->processCreateDirectory($objCategory);
