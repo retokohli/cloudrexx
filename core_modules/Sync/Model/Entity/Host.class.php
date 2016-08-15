@@ -256,7 +256,7 @@ class Host extends \Cx\Model\Base\EntityBase
     public function addChange(\Cx\Core_Modules\Sync\Model\Entity\Change $change)
     {
         $this->changes[] = $change;
-}
+    }
 
     /**
      * Get changes
