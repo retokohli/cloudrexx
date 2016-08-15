@@ -202,6 +202,11 @@ class CalendarEventManager extends CalendarLibrary
     public $listType;
     
     /**
+     * @var array List of indexData of calendar events synced from a remote location
+     */
+    protected static $syncedIds;
+    
+    /**
      * Loads the event manager configuration
      * 
      * @param integer $startDate     Start date Unix timestamp
@@ -456,12 +461,40 @@ class CalendarEventManager extends CalendarLibrary
      * 
      * @return null
      */
-    function _clearEmptyEvents() { 
-         foreach($this->eventList as $key => $objEvent) {
-             if(empty($objEvent->title)) {
-                unset($this->eventList[$key]); 
-             }
-         }
+    function _clearEmptyEvents() {
+        // customizing: hide synced events in backend
+        $cx = \Env::get('cx');
+        if (!isset(static::$syncedIds)) {
+            $query = '
+                SELECT
+                    `local_id`
+                FROM
+                    `' . DBPREFIX . 'core_module_sync_id_mapping`
+                WHERE
+                    `entity_type` LIKE \'Cx\\\\\\\\Modules\\\\\\\\Calendar\\\\\\\\Model\\\\\\\\Entity\\\\\\\\Event\'
+            ';
+            $adoDb = $cx->getDb()->getAdoDb();
+            $result = $adoDb->execute($query);
+            static::$syncedIds = array();
+            while (!$result->EOF) {
+                static::$syncedIds[] = $result->fields['local_id'];
+                $result->MoveNext();
+            }
+        }
+        
+        foreach ($this->eventList as $key => $objEvent) {
+            if (empty($objEvent->title)) {
+                unset($this->eventList[$key]);
+                continue;
+            }
+            if ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+                $indexData = serialize(array('id' => (string) $objEvent->getId()));
+                if (in_array($indexData, static::$syncedIds)) {
+                    unset($this->eventList[$key]);
+                    continue;
+                }
+            }
+        }
     }
    
     /**

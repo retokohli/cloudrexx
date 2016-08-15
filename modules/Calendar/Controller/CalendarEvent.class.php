@@ -2463,31 +2463,14 @@ class CalendarEvent extends CalendarLibrary
             ->getClassMetadata('Cx\Modules\Calendar\Model\Entity\Event');
         foreach ($formDatas['fields'] as $columnName => $columnValue) {
             $fieldName  = $classMetaData->getFieldName($columnName);
-            if (    $fieldName == 'catid'
-                &&  (   (   $event->getCategory()
-                        &&  ($event->getCategory()->getId() != $columnValue)
-                        )
-                    || (    !($event->getCategory())
-                        &&  $columnValue
-                       )
-                    )
-            ) {
+            if ($fieldName == 'catid') {
                 $fieldName   = 'category';
                 $columnValue = $this
                     ->em
                     ->getRepository('Cx\Modules\Calendar\Model\Entity\Category')
                     ->findOneById($columnValue);
                 $columnValue->setVirtual(true);
-            } elseif (
-                    $fieldName == 'registration_form'
-                &&  (   (   $event->getRegistrationForm()
-                        &&  ($event->getRegistrationForm()->getId() != $columnValue)
-                        )
-                    || (    !($event->getRegistrationForm())
-                        &&  $columnValue
-                       )
-                    )
-            ) {
+            } elseif ($fieldName == 'registration_form') {
                 $fieldName = 'registrationForm';
                 $columnValue = $this
                     ->em

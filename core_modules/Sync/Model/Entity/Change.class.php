@@ -57,9 +57,14 @@ class Change extends \Cx\Model\Base\EntityBase {
     protected $sync;
     
     /**
-     * @var \Cx\Core_Modules\Sync\Model\Entity\Host
+     * @var \Cx\Core_Modules\Sync\Model\Entity\Sync
      */
-    protected $host;
+    protected $originSync;
+    
+    /**
+     * @var array
+     */
+    protected $hosts = array();
     
     /**
      * @var string One of "delete", "put", "post"
@@ -67,14 +72,19 @@ class Change extends \Cx\Model\Base\EntityBase {
     protected $eventType;
     
     /**
+     * @var string One of "delete", "forward", "both"
+     */
+    protected $condition;
+    
+    /**
      * @var array
      */
     protected $entityIndexData;
     
     /**
-     * @var string <entityNs><slashDelimitedEntityIndexData>
+     * @var array
      */
-    protected $entityIdentifier;
+    protected $originEntityIndexData;
     
     /**
      * @var \Cx\Model\Base\EntityBase
@@ -89,18 +99,19 @@ class Change extends \Cx\Model\Base\EntityBase {
     /**
      * Create a new change object
      * @param \Cx\Core_Modules\Sync\Model\Entity\Sync $sync Related sync object
-     * @param \Cx\Core_Modules\Sync\Model\Entity\Host $host Related host object
      * @param string $eventType One of "delete", "put", "post"
      * @param array $entityIndexData Related entity's index data
-     * @param string $entityIdentifier <entityNs><slashDelimitedEntityIndexData>
+     * @param \Cx\Core_Modules\Sync\Model\Entity\Sync $originSync Origin sync object
+     * @param string $originEntityIndexData Origin entity's index data
      * @param array|\Cx\Model\Base\EntityBase $entityOrContents Related entity or Field=>value type array of contents
      */
-    public function __construct($sync, $host, $eventType, $entityIndexData, $entityIdentifier, $entityOrContents) {
+    public function __construct($sync, $eventType, $condition, $entityIndexData, $originSync, $originEntityIndexData, $entityOrContents) {
         $this->sync = $sync;
-        $this->host = $host;
         $this->eventType = $eventType;
+        $this->condition = $condition;
         $this->entityIndexData = $entityIndexData;
-        $this->entityIdentifier = $entityIdentifier;
+        $this->originSync = $originSync;
+        $this->originEntityIndexData = $originEntityIndexData;
         if (is_array($entityOrContents)) {
             $this->contents = $entityOrContents;
         } else {
@@ -141,19 +152,43 @@ class Change extends \Cx\Model\Base\EntityBase {
     }
     
     /**
-     * Sets related Host object
-     * @param \Cx\Core_Modules\Sync\Model\Entity\Host $host New Host
+     * Sets origin sync object
+     * @param \Cx\Core_Modules\Sync\Model\Entity\Sync $originSync New sync
      */
-    public function setHost($host) {
-        $this->host = $host;
+    public function setOriginSync($originSync) {
+        $this->originSync = $originSync;
     }
     
     /**
-     * Gets related Host object
-     * @return \Cx\Core_Modules\Sync\Model\Entity\Host Related Host
+     * Gets origin sync object
+     * @return \Cx\Core_Modules\Sync\Model\Entity\Sync Origin sync
      */
-    public function getHost() {
-        return $this->host;
+    public function getOriginSync() {
+        return $this->originSync;
+    }
+    
+    /**
+     * Adds a related Host object
+     * @param \Cx\Core_Modules\Sync\Model\Entity\Host $host New Host
+     */
+    public function addHost($host) {
+        $this->hosts[] = $host;
+    }
+    
+    /**
+     * Sets related Host objects
+     * @param array $hosts New Hosts
+     */
+    public function setHosts($hosts) {
+        $this->hosts = $hosts;
+    }
+    
+    /**
+     * Gets related Host objects
+     * @return array Related Hosts
+     */
+    public function getHosts() {
+        return $this->hosts;
     }
     
     /**
@@ -173,6 +208,22 @@ class Change extends \Cx\Model\Base\EntityBase {
     }
     
     /**
+     * Sets condition
+     * @param string $condition One of "delete", "forward", "both"
+     */
+    public function setCondition($condition) {
+        $this->condition = $condition;
+    }
+    
+    /**
+     * Gets condition
+     * @return string One of "delete", "forward", "both"
+     */
+    public function getCondition() {
+        return $this->condition;
+    }
+    
+    /**
      * Sets related entity's index data
      * @param array $entityIndexData Entity index data
      */
@@ -189,19 +240,19 @@ class Change extends \Cx\Model\Base\EntityBase {
     }
     
     /**
-     * Sets related entity's identifier (<entityNs><slashDelimitedEntityIndexData>)
-     * @param string $entityIdentifier Entity identifier
+     * Sets origin entity's index data
+     * @param array $originEntityIndexData Origin entity's index data
      */
-    public function setEntityIdentifier($entityIdentifier) {
-        $this->entityIdentifier = $entityIdentifier;
+    public function setOriginEntityIndexData($originEntityIndexData) {
+        $this->originEntityIndexData = $originEntityIndexData;
     }
     
     /**
-     * Gets related entity's identifier
-     * @return string Entity identifier
+     * Gets origin entity's index data
+     * @return array Origin entity's index data
      */
-    public function getEntityIdentifier() {
-        return $this->entityIdentifier;
+    public function getOriginEntityIndexData() {
+        return $this->originEntityIndexData;
     }
     
     /**
@@ -234,6 +285,22 @@ class Change extends \Cx\Model\Base\EntityBase {
      */
     public function getContents() {
         return $this->contents;
+    }
+    
+    /**
+     * Sets change mode
+     * @param string $hostEventType Either "forward" or "delete"
+     * @return boolean Wheter this change is to be applied in this mode or not
+     */
+    public function setMode($hostEventType) {
+        if (
+            $hostEventType == $this->getCondition() ||
+            $this->getCondition() == 'both'
+        ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

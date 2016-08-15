@@ -85,6 +85,11 @@ class Host extends \Cx\Model\Base\EntityBase
      * @var Cx\Core_Modules\Sync\Model\Entity\Change
      */
     protected $changes;
+
+    /**
+     * @var integer $state
+     */
+    protected $state;
     
     /**
      * @var string Default template for URI
@@ -251,7 +256,7 @@ class Host extends \Cx\Model\Base\EntityBase
     public function addChange(\Cx\Core_Modules\Sync\Model\Entity\Change $change)
     {
         $this->changes[] = $change;
-    }
+}
 
     /**
      * Get changes
@@ -271,6 +276,26 @@ class Host extends \Cx\Model\Base\EntityBase
     public function setChanges($changes)
     {
         $this->changes = $changes;
+    }
+
+    /**
+     * Set state
+     *
+     * @param integer $state
+     */
+    public function setState($state)
+    {
+        $this->state = $state;
+    }
+
+    /**
+     * Get state
+     *
+     * @return integer $state
+     */
+    public function getState()
+    {
+        return $this->state;
     }
     
     /**
@@ -293,24 +318,21 @@ class Host extends \Cx\Model\Base\EntityBase
         return $uri;
     }
     
-    /**
-     * Calculates the necessary changeset for a model event on this host and adds it to spooler
-     * @todo: If "active" value of this entity changes we should delete the remote entity
-     */
-    public function handleModelChange($entityIndexData, $entityClassName, $entity, $eventType, $spooler, $sync) {
+    public function handleChange($change) {
         // do I sync this entity?
         if (!$this->getActive()) {
-            return;
+            //echo "Host not active!\n";
+            return true;
         }
         
         $handle = false;
-        foreach ($sync->getHostEntitiesIncludingLegacy() as $hostEntity) {
+        foreach ($change->getOriginSync()->getHostEntitiesIncludingLegacy(false) as $hostEntity) {
             if ($hostEntity['host'] != $this) {
                 continue;
             }
             if (
                 $hostEntity['entityId'] != '*' &&
-                $hostEntity['entityId'] != current($entityIndexData)
+                $hostEntity['entityId'] != current($change->getOriginEntityIndexData())
             ) {
                 continue;
             }
@@ -318,150 +340,39 @@ class Host extends \Cx\Model\Base\EntityBase
             break;
         }
         
-        // nope: did I before?
+        // no: did I before?
         if (!$handle) {
-            // nope: return;
-            if (!in_array($this, $sync->getRemovedHosts($entityIndexData))) {
-                //echo 'Not handling event<br />';
-                return;
-            }
-            // yes: change event type to "delete"
-            //echo 'Treating as delete<br />';
-            $eventType = 'delete';
-        }
-        
-        // calculate changeset
-        $changeset = new \Cx\Core_Modules\Sync\Model\Entity\Changeset($entityIndexData, $entityClassName, $entity, $eventType, $sync, $this);
-        
-        // spool!
-        $spooler->addChangeset($this, $changeset);
-    }
-    
-    public function addContentsToChangeset($change) {
-        // delete needs no content
-        if ($change->getEventType() == 'delete') {
-            return;
-        }
-        $change->setContents($this->calculateContent($change->getEntity()));
-    }
-    
-    protected function calculateContent($entity) {
-        // customizing for current calendar:
-        if (
-            get_class($entity) == 'Cx\\Modules\\Calendar\\Model\\Entity\\Event'
-        ) {
-            // set registration to "extern" and registration uri to our host:
-            $entity->setRegistration(
-                \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_EXTERNAL
-            );
-            
-            $event = new \Cx\Modules\Calendar\Controller\CalendarEvent($entity->getId());
-            /*$url = \Cx\Core\Routing\Url::fromModuleAndCmd('Calendar', 'register', '', array(
-                'id' => $entity->getId(),
-                'date' => $event->startDate->getTimestamp(),
-            ));
-            $entity->setRegistrationExternalLink($url->toString());*/
-            $url = 'http://bpw.ch/?section=Calendar&cmd=register&id=' . $entity->getId() . '&date=' . $event->startDate->getTimestamp();
-            $entity->setRegistrationExternalLink($url);
-            
-            // from CalendarEventManager:
-            if ($event->registration == \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_INTERNAL) {
-                $fullyBooked = true;
-                if (
-                    (
-                        $event->registration == \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_EXTERNAL &&
-                        !$event->registrationExternalFullyBooked
-                    ) ||
-                    (
-                        $event->registration == \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_INTERNAL &&
-                        (
-                            empty($event->numSubscriber) ||
-                            !\FWValidator::isEmpty($event->getFreePlaces())
-                        )
-                    )
-                ) {
-                    $fullyBooked = false;
+            // no: return;
+            $in_array = false;
+            foreach ($change->getHosts() as $host) {
+                if ($host === $this) {
+                    $in_array = true;
+                    break;
                 }
-                $entity->setRegistrationExternalFullyBooked($fullyBooked);
             }
-            
-            $entity->setPlaceMap($this->makeLinkAbsolute($entity->getPlaceMap(), true));
-            $entity->setPic($this->makeLinkAbsolute($entity->getPic(), true));
-            $entity->setAttach($this->makeLinkAbsolute($entity->getAttach(), true));
-        } else if (
-            get_class($entity) == 'Cx\\Modules\\Calendar\\Model\\Entity\\EventField'
-        ) {
-            $entity->setDescription($this->makeLinkAbsolute($entity->getDescription()));
-            $entity->setRedirect($this->makeLinkAbsolute($entity->getRedirect(), true));
-        }
-        // end customizing
+            if (!$in_array) {
+                return true;
+            }
+            // yes: use delete changeset
+            $mode = 'delete';
+            $handle = $change->setMode('delete');
         
-        $content = array();
-        $metaData = $this->cx->getDb()->getEntityManager()->getClassMetadata(get_class($entity));
-        $primaryKeyNames = $metaData->getIdentifierFieldNames(); // get the name of primary key in database table
-        foreach ($metaData->getColumnNames() as $column) {
-            $field = $metaData->getFieldName($column);
-            if (in_array($field, $primaryKeyNames)) {
-                //continue;
-            }
-            $content[$field] = $metaData->getFieldValue($entity, $field);
-            if (is_object($content[$field]) && get_class($content[$field]) == 'DateTime') {
-                $content[$field] = $content[$field]->format(DATE_ATOM);
-            }
+        // yes: use "normal" changeset
+        } else {
+            $mode = 'forward';
+            $handle = $change->setMode('forward');
         }
-        $associationMappings = $metaData->getAssociationMappings();
-        $classMethods = get_class_methods($entity);
-        foreach ($associationMappings as $field => $associationMapping) {
-            if (   $metaData->isSingleValuedAssociation($field)
-                && in_array('set'.ucfirst($field), $classMethods)
-            ) {
-                if ($metaData->getFieldValue($entity, $field)) {
-                    $foreignEntity = $metaData->getFieldValue($entity, $field);
-                    $indexData = $this->getComponentController()->getEntityIndexData($foreignEntity);
-                    $content[$field] = implode('/', $indexData);
-                    continue;
-                }
-                $content[$field]= new $associationMapping['targetEntity']();
-            } elseif ($metaData->isCollectionValuedAssociation($field)) {
-                $content[$field]= new $associationMapping['targetEntity']();
-            }
+        if (!$handle) {
+            // change does not need to be applied for selected mode
+            //echo "Ignoring change of type " . $change->getEventType() . " due to mode " . $mode . "!\n";
+            return true;
         }
-        return $content;
-    }
-    
-    protected function makeLinkAbsolute($input, $simpleField = false) {
-        $input = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $input);
-        $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
-        \LinkGenerator::parseTemplate($input, true, $domainRepo->getMainDomain());
-        $domain = 'http://bpw.ch';
-        if ($simpleField && !empty($input) && substr($input, 0, strlen($domain)) != $domain) {
-            $input = $domain . $input;
-        }
-        if (!$simpleField) {
-            // this replaces image paths...
-            $allImg = array();
-            preg_match_all('/src="([^"]*)"/', $input, $allImg, PREG_PATTERN_ORDER);
-            $size = sizeof($allImg[1]);
-            
-            $i = 0;
-            while ($i < $size) {
-                $URLforReplace = $allImg[1][$i];
-                
-                $replaceUrl = new \Cx\Core\Routing\Url($URLforReplace, true);
-                if ($replaceUrl->isInternal()) {
-                    $ReplaceWith = $replaceUrl->toString();
-                } else {
-                    $ReplaceWith = $URLforReplace;
-                }
-                
-                $input = str_replace('"'.$URLforReplace.'"', '"'.$ReplaceWith.'"', $input);
-                $i++;
-            }
-        }
-        return $input;
-    }
-    
-    public function sendChange($change) {
+        //echo "Handling change of type " . $change->getEventType() . " due to mode " . $mode . "!\n";
+        
+        // replace IDs
+        // @todo: This is currently done on remote side
+        
+        //echo 'Sending change #' . $change->getId() . "\n";
         return $this->sendRequest(
             $change->getContents(),
             $change->getEntityIndexData(),
@@ -480,9 +391,10 @@ class Host extends \Cx\Model\Base\EntityBase
         $config = array(
         );
         $request = new \HTTP_Request2($url, $method, $config);
-        $refUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
+        /*$refUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
         $refUrl->setMode('backend');
-        $request->setHeader('Referrer', $refUrl->toString());
+        $request->setHeader('Referrer', $refUrl->toString());*/
+        $request->setHeader('Referrer', 'http://localhost/');
         $request->setBody(http_build_query($content, null, '&'));
         
         $response = $request->send();
@@ -491,6 +403,37 @@ class Host extends \Cx\Model\Base\EntityBase
         echo '<pre>' . $response->getBody() . "</pre>\n\n";
         
         return $response->getStatus() == 200;
+    }
+    
+    public function isLocked() {
+        $em = $this->cx->getDb()->getEntityManager();
+        $em->refresh($this);
+        return $this->state == 1;
+    }
+    
+    public function lock() {
+        if ($this->isLocked()) {
+            return false;
+        }
+        $this->state = 1;
+        $em = $this->cx->getDb()->getEntityManager();
+        $em->persist($this);
+        $em->flush();
+        return true;
+    }
+    
+    public function removeLock() {
+        $this->state = 0;
+        $em = $this->cx->getDb()->getEntityManager();
+        $em->persist($this);
+        $em->flush();
+    }
+    
+    public function disable() {
+        $this->state = 2;
+        $em = $this->cx->getDb()->getEntityManager();
+        $em->persist($this);
+        $em->flush();
     }
 }
 

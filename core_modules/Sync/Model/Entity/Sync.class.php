@@ -245,7 +245,10 @@ class Sync extends \Cx\Model\Base\EntityBase {
     }
     
     // Customizing for old Calendar sync config:
-    public function getHostEntitiesIncludingLegacy() {
+    public function getHostEntitiesIncludingLegacy($cached = true) {
+        if ($cached && isset($this->cachedHostEntities)) {
+            return $this->cachedHostEntities;
+        }
         $hostEntities = array();
         
         foreach ($this->getHostEntities() as $hostEntity) {
@@ -299,6 +302,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
             
             $results->moveNext();
         }
+        $this->cachedHostEntities = $hostEntities;
         return $hostEntities;
     }
     
@@ -387,138 +391,187 @@ class Sync extends \Cx\Model\Base\EntityBase {
         $this->changes[] = $changes;
     }
     
-    /**
-     * Pushes entity changes to remote
-     * @param string $eventType One of "post", "put", "delete"
-     * @param array $entityIndexData Field=>value-type array with primary key data
-     * @param \Cx\Model\Base\EntityBase $entity (optional) Entity for "post" and "put"
-     * @throws   HTTP_Request2_Exception
-     */
-    public function push($eventType, $entityIndexData, $entity) {
-        // is this synchronization active?
-        if (!$this->getActive()) {
-            return;
+    public function calculateRelations($spooler, $eventType, $entityClassName, $entityIndexData, $entity) {
+        $changeCondition = 'forward';
+        if ($eventType == 'delete') {
+            $changeCondition = 'both';
         }
         
-        // customizing for current calendar:
-        if (
-            $this->getDataAccess()->getDataSource()->getIdentifier() ==
-            'Cx\\Modules\\Calendar\\Model\\Entity\\Event'
-        ) {
-            // set registration to "extern" and registration uri to our host:
-            $entity->setRegistration(
-                \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_EXTERNAL
-            );
-            
-            $event = new \Cx\Modules\Calendar\Controller\CalendarEvent($entity->getId());
-            $url = \Cx\Core\Routing\Url::fromModuleAndCmd('Calendar', 'detail', '', array(
-                'id' => $entity->getId(),
-                'date' => '',//$event->startDate->getTimestamp(),
-            ));
-            $entity->setRegistrationExternalLink($url->toString());
-            
-            // from CalendarEventManager:
-            $fullyBooked = true;
-            if (
-                (
-                    $event->registration == \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_EXTERNAL &&
-                    !$event->registrationExternalFullyBooked
-                ) ||
-                (
-                    $event->registration == \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_INTERNAL &&
-                    (
-                        empty($event->numSubscriber) ||
-                        !\FWValidator::isEmpty($event->getFreePlaces())
-                    )
-                )
-            ) {
-                $fullyBooked = false;
-            }
-            $entity->setRegistrationExternalFullyBooked($fullyBooked);
-        }
-        // end customizing
+        $this->calculateChangeset($spooler, $eventType, $entityClassName, $entityIndexData, $entity, $changeCondition);
         
-        foreach ($this->getHostEntitiesIncludingLegacy() as $hostEntity) {
-            // is there a host we should sync this entity to?
-            if (
-                $hostEntity['host']->getActive() &&
-                $hostEntity['entityId'] != '*' &&
-                $hostEntity['entityId'] != current($entityIndexData)
-            ) {
-                continue;
-            }
-            
-            //\DBG::deactivate();\DBG::activate(DBG_PHP);
-            
-            // now we really push
-            $content = array();
-            $metaData = $this->cx->getDb()->getEntityManager()->getClassMetadata(get_class($entity));
-            $primaryKeyNames = $metaData->getIdentifierFieldNames(); // get the name of primary key in database table
-            foreach ($metaData->getColumnNames() as $column) {
-                $field = $metaData->getFieldName($column);
-                if (in_array($field, $primaryKeyNames)) {
-                    //continue;
-                }
-                $content[$field] = $metaData->getFieldValue($entity, $field);
-                if (is_object($content[$field]) && get_class($content[$field]) == 'DateTime') {
-                    $content[$field] = $content[$field]->format(DATE_ATOM);
-                }
-            }
-            $associationMappings = $metaData->getAssociationMappings();
-            $classMethods = get_class_methods($entity);
-            foreach ($associationMappings as $field => $associationMapping) {
-                if (   $metaData->isSingleValuedAssociation($field)
-                    && in_array('set'.ucfirst($field), $classMethods)
-                ) {
-                    if ($metaData->getFieldValue($entity, $field)) {
-                        $foreignEntity = $metaData->getFieldValue($entity, $field);
-                        $indexData = $this->getComponentController()->getEntityIndexData($foreignEntity);
-                        $content[$field] = implode('/', $indexData);
-                        continue;
-                    }
-                    $content[$field]= new $associationMapping['targetEntity']();
-                } elseif ($metaData->isCollectionValuedAssociation($field)) {
-                    $content[$field]= new $associationMapping['targetEntity']();
-                }
-            }
-            
-            $this->sendRequest($hostEntity['host'], $content, $entityIndexData, $eventType);
+        if ($eventType != 'delete') {
+            $this->calculateChangeset($spooler, 'delete', $entityClassName, $entityIndexData, $entity, 'delete');
         }
     }
     
-    public function sendRequest($host, $content, $entityIndexData, $eventType) {
-        ob_start();
-        
-        $method = strtoupper($eventType);
-        $url = $host->getToUri(
-            $this->getDataAccess()->getName(),
-            $entityIndexData
+    protected function calculateChangeset($spooler, $eventType, $entityClassName, $entityIndexData, $entity, $changeCondition) {
+        $changes = new \Cx\Core_Modules\Sync\Model\Entity\Changeset(
+            $entityIndexData,
+            $entityClassName,
+            $entity,
+            $eventType,
+            $this,
+            $changeCondition
         );
         
-        $config = array(
-        );
-        $request = new \HTTP_Request2($url, $method, $config);
-        $refUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
-        $refUrl->setMode('backend');
-        $request->setHeader('Referrer', $refUrl->toString());
-        $request->setBody(http_build_query($content, null, '&'));
-        
-        $response = $request->send();
-        var_dump($response->getStatus());
-        echo '<pre>' . $response->getBody() . '</pre>';
-        echo 'Pushed to ' . $url . ' with method ' . $method . ', body was: ' . http_build_query($content);
-        $logContents = ob_get_contents();
-        ob_end_clean();
-        
-        $severity = 'INFO';
-        if ($response->getStatus() != 200) {
-            $severity = 'FATAL';
+        foreach ($changes->getChanges() as $change) {
+            // add all related (old and current) hosts
+            //$change->setHosts($this->getRelatedHosts($entityIndexData));
+            
+            // if it's not a DELETE change
+            if ($change->getEventType() != 'delete') {
+                // add contents
+                $change->setContents($this->calculateContent($change));
+            }
         }
-        $this->cx->getEvents()->triggerEvent('SysLog/Add', array(
-           'severity' => $severity,
-           'message' => 'Sent ' . strtoupper($method) . ' to ' . $url,
-           'data' => $logContents,
-        ));
-        return $logContents;
+        
+        $spooler->addChangeset($changes);
+    }
+    
+    public function getRelatedHosts($entityIndexData) {
+        $relatedHosts = array();
+        foreach ($this->getOldHostEntitiesIncludingLegacy() as $hostEntity) {
+            if (in_array($hostEntity['host'], $relatedHosts)) {
+                continue;
+            }
+            if (!$this->isEntityInHostEntity($entityIndexData, $hostEntity)) {
+                continue;
+            }
+            $relatedHosts[] = $hostEntity['host'];
+        }
+        foreach ($this->getHostEntitiesIncludingLegacy(false) as $hostEntity) {
+            if (in_array($hostEntity['host'], $relatedHosts)) {
+                continue;
+            }
+            if (!$this->isEntityInHostEntity($entityIndexData, $hostEntity)) {
+                continue;
+            }
+            $relatedHosts[] = $hostEntity['host'];
+        }
+        foreach ($this->getRemovedHosts($entityIndexData) as $host) {
+            if (in_array($host, $relatedHosts)) {
+                continue;
+            }
+            $relatedHosts[] = $host;
+        }
+        return $relatedHosts;
+    }
+    
+    protected function calculateContent($change) {
+        $entity = $change->getEntity();
+        // customizing for current calendar:
+        if (
+            get_class($entity) == 'Cx\\Modules\\Calendar\\Model\\Entity\\Event'
+        ) {
+            // from CalendarEventManager:
+            if ($entity->getRegistration() == \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_INTERNAL) {
+                // set registration to "extern" and registration uri to our host:
+                $entity->setRegistration(
+                    \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_EXTERNAL
+                );
+                
+                // we use the legacy URL format in order to have dynamic language
+                $url = 'http://bpw.ch/?section=Calendar&cmd=register&id=' . $entity->getId() . '&date=[[SERIES_ELEMENT_STARTDATE]]';
+                $entity->setRegistrationExternalLink($url);
+                
+                // from CalendarEventManager:
+                $fullyBooked = true;
+                if (
+                    (
+                        $event->registration == \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_EXTERNAL &&
+                        !$event->registrationExternalFullyBooked
+                    ) ||
+                    (
+                        $event->registration == \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_INTERNAL &&
+                        (
+                            empty($event->numSubscriber) ||
+                            !\FWValidator::isEmpty($event->getFreePlaces())
+                        )
+                    )
+                ) {
+                    $fullyBooked = false;
+                }
+                $entity->setRegistrationExternalFullyBooked($fullyBooked);
+            }
+            
+            $entity->setPlaceMap($this->makeLinkAbsolute($entity->getPlaceMap(), true));
+            $entity->setPic($this->makeLinkAbsolute($entity->getPic(), true));
+            $entity->setAttach($this->makeLinkAbsolute($entity->getAttach(), true));
+        } else if (
+            get_class($entity) == 'Cx\\Modules\\Calendar\\Model\\Entity\\EventField'
+        ) {
+            $entity->setDescription($this->makeLinkAbsolute($entity->getDescription()));
+            $entity->setRedirect($this->makeLinkAbsolute($entity->getRedirect(), true));
+        }
+        // end customizing
+        
+        $em = $this->cx->getDb()->getEntityManager();
+        if (substr(get_class($entity), 0, 16) == 'Cx\Model\Proxies') {
+            $em->refresh($entity);
+            $entityClassName = $em->getClassMetadata(get_class($entity))->name;
+        }
+        $content = array();
+        $metaData = $em->getClassMetadata(get_class($entity));
+        $primaryKeyNames = $metaData->getIdentifierFieldNames(); // get the name of primary key in database table
+        foreach ($metaData->getColumnNames() as $column) {
+            $field = $metaData->getFieldName($column);
+            if (in_array($field, $primaryKeyNames)) {
+                //continue;
+            }
+            $content[$field] = $metaData->getFieldValue($entity, $field);
+            if (is_object($content[$field]) && get_class($content[$field]) == 'DateTime') {
+                $content[$field] = $content[$field]->format(DATE_ATOM);
+            }
+        }
+        $associationMappings = $metaData->getAssociationMappings();
+        $classMethods = get_class_methods($entity);
+        foreach ($associationMappings as $field => $associationMapping) {
+            if (   $metaData->isSingleValuedAssociation($field)
+                && in_array('set'.ucfirst($field), $classMethods)
+            ) {
+                if ($metaData->getFieldValue($entity, $field)) {
+                    $foreignEntity = $metaData->getFieldValue($entity, $field);
+                    $indexData = $this->getComponentController()->getEntityIndexData($foreignEntity);
+                    $content[$field] = implode('/', $indexData);
+                    continue;
+                }
+                $content[$field]= new $associationMapping['targetEntity']();
+            } elseif ($metaData->isCollectionValuedAssociation($field)) {
+                $content[$field]= new $associationMapping['targetEntity']();
+            }
+        }
+        return $content;
+    }
+    
+    protected function makeLinkAbsolute($input, $simpleField = false) {
+        $input = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $input);
+        $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
+        \LinkGenerator::parseTemplate($input, true, $domainRepo->getMainDomain());
+        $domain = 'http://bpw.ch';
+        if ($simpleField && !empty($input) && substr($input, 0, strlen($domain)) != $domain) {
+            $input = $domain . $input;
+        }
+        if (!$simpleField) {
+            // this replaces image paths...
+            $allImg = array();
+            preg_match_all('/src="([^"]*)"/', $input, $allImg, PREG_PATTERN_ORDER);
+            $size = sizeof($allImg[1]);
+            
+            $i = 0;
+            while ($i < $size) {
+                $URLforReplace = $allImg[1][$i];
+                
+                $replaceUrl = new \Cx\Core\Routing\Url($URLforReplace, true);
+                if ($replaceUrl->isInternal()) {
+                    $ReplaceWith = $replaceUrl->toString();
+                } else {
+                    $ReplaceWith = $URLforReplace;
+                }
+                
+                $input = str_replace('"'.$URLforReplace.'"', '"'.$ReplaceWith.'"', $input);
+                $i++;
+            }
+        }
+        return $input;
     }
 }
