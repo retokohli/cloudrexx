@@ -572,8 +572,8 @@ Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] ge
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
         try {
             // add new options
-            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_mediadir_settings` (`name`, `value`) VALUES ('showLatestEntriesInOverview', '1'");
-            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_mediadir_settings` (`name`, `value`) VALUES ('showLatestEntriesInWebdesignTmpl', '1'");
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_mediadir_settings` (`name`, `value`) VALUES ('showLatestEntriesInOverview', '1')");
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_mediadir_settings` (`name`, `value`) VALUES ('showLatestEntriesInWebdesignTmpl', '1')");
 
 
             // update inputfield_types
@@ -652,8 +652,6 @@ Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] ge
             'module_mediadir_comments'              => 'comment',
             'module_mediadir_forms'                 => 'picture',
             'module_mediadir_level_names'           => 'level_description',
-            'module_mediadir_rel_entry_inputfields_clean1'  => 'value',
-
         );
         try {
             foreach ($attributes as $table => $attribute) {
