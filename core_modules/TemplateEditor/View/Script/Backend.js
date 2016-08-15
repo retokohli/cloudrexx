@@ -339,6 +339,12 @@ function setToggleIcon(element) {
 }
 
 jQuery(document).ready(function(){
+    // if there exists only one group in the GUI open it for better usability
+    if (jQuery('.groupName').length == 1) {
+        var group = jQuery('.groupName').first();
+        jQuery(group).siblings('.optionsInGroup').toggle();
+        jQuery(group).addClass('open');
+    }
     jQuery('.groupName').click(function(){
         // close all other groups
         var otherGroups = jQuery(this).parent().siblings('.optionGroup');
