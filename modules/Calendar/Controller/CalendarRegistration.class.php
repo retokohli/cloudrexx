@@ -222,13 +222,12 @@ class CalendarRegistration extends CalendarLibrary
                    WHERE registration.`id` = "'.$regId.'"
                    LIMIT 1';   
         
-        $objResult = $objDatabase->Execute($query);  
-        
-        if($objResult !== false) {
+        $objResult = $objDatabase->Execute($query);
+
+        if ($objResult !== false) {
             $this->id = intval($objResult->fields['id']);
             $this->eventId = intval($objResult->fields['event_id']);           
             $this->eventDate = intval($objResult->fields['date']);
-            $this->submissionDate = $this->getInternDateTimeFromDb($objResult->fields['submission_date']);
             $this->userId= intval($objResult->fields['user_id']);        
             $this->langId= intval($objResult->fields['lang_id']);        
             $this->type = intval($objResult->fields['type']);        
@@ -238,7 +237,13 @@ class CalendarRegistration extends CalendarLibrary
             $this->firstExport = intval($objResult->fields['first_export']);
             $this->paymentMethod = intval($objResult->fields['payment_method']);
             $this->paid = intval($objResult->fields['paid']);
-            
+
+            $this->submissionDate = '';
+            if ($objResult->fields['submission_date'] !== '0000-00-00 00:00:00') {
+                $this->submissionDate = $this->getInternDateTimeFromDb(
+                    $objResult->fields['submission_date']
+                );
+            }
             foreach ($this->form->inputfields as $key => $arrInputfield) {         
                 $name = $arrInputfield['name'][$_LANGID];
                 $default = $arrInputfield['default_value'][$_LANGID];
@@ -357,8 +362,8 @@ class CalendarRegistration extends CalendarLibrary
                         SET `event_id`         = ' . $eventId . ',
                             `submission_date`  = "' . $submissionDate->format('Y-m-d H:i:s') .'",
                             `date`             = ' . $eventDate . ',
-                            `host_name`        = ' . $hostName . ',
-                            `ip_address`       = ' . $ipAddress . ',
+                            `host_name`        = "' . $hostName . '",
+                            `ip_address`       = "' . $ipAddress . '",
                             `type`             = ' . $type . ',
                             `key`              = "' . $key . '",
                             `user_id`          = ' . $userId . ',

@@ -362,7 +362,13 @@ class CalendarRegistrationManager extends CalendarLibrary
             $objTpl->parse('eventRegistrationValue');
 
             //display the registration submission date value
-            $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', $this->format2userDateTime($objRegistration->submissionDate));
+            $objTpl->setVariable(
+                $this->moduleLangVar.'_REGISTRATION_VALUE',
+                (($objRegistration->submissionDate instanceof \DateTime)
+                    ? $this->format2userDateTime($objRegistration->submissionDate)
+                    : ''
+                )
+            );
             $objTpl->parse('eventRegistrationValue');
 
             foreach ($arrFieldColumns as $fieldId) {
