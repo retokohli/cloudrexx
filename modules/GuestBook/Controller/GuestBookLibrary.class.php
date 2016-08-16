@@ -85,7 +85,7 @@ class GuestBookLibrary
 
 	function addHyperlinking2($string)
 	{
-	    $contents = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]", "<a href=\"\\0\" target=\"_blank\">\\0</a>", $contents);
+	    $contents = preg_replace("/[[:alpha:]]+:\/\/[^<>[:space:]]+[[:alnum:]\/]/", "<a href=\"\\0\" target=\"_blank\">\\0</a>", $contents);
 		return $contents;
 	}
 
@@ -97,7 +97,7 @@ class GuestBookLibrary
 	*/
 	function isUrl($string)
 	{
-		if( (strlen($string)<=10) OR (ereg('[!$%\'*+\\.><^_`{|}]$', $string)) ){
+		if( (strlen($string)<=10) OR (  preg_match('/[!$%\'*+\\.><^_`{|}]$/', $string)) ){
 	        return false;
 		}else{
 		    return true;

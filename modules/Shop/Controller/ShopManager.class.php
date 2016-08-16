@@ -2093,7 +2093,7 @@ if ($test === NULL) {
         @unlink($file);
         clearstatcache();
         if (@file_exists($file)) {
-            $filesys = eregi_replace('/', '\\', $file);
+            $filesys = preg_replace('/\//i', '\\', $file);
             @system('del '.$filesys);
             clearstatcache();
             // don't work in safemode

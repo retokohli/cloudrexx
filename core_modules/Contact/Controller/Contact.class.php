@@ -955,7 +955,7 @@ CODE;
                           'æ' => 'ae', '$' => 's',  '¥' => 'y');
         $name = strtr($name, $mixChars);
         // not permitted chars are replaced with "_"
-        return ereg_replace ('[^a-zA-Z0-9,._\+\()\-]', '_', $name);
+        return preg_replace('/[^a-zA-Z0-9,._\+\()\-]/', '_', $name);
     }
 
     /**

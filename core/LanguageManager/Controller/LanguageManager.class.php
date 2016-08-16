@@ -253,9 +253,9 @@ class LanguageManager
         if (empty($_POST['name']) || empty($_POST['shortName']) || empty($_POST['charset'])) {
             return false;
         }
-        $shortName = mysql_escape_string($_POST['shortName']);
-        $name = mysql_escape_string($_POST['name']);
-        $charset = mysql_escape_string($_POST['charset']);
+        $shortName = contrexx_input2db($_POST['shortName']);
+        $name      = contrexx_input2db($_POST['name']);
+        $charset   = contrexx_input2db($_POST['charset']);
 
         $objResult = $objDatabase->Execute("
             SELECT lang
@@ -274,9 +274,9 @@ class LanguageManager
         }
         $objDatabase->Execute("
             INSERT INTO ".DBPREFIX."languages
-               SET lang='".contrexx_addslashes($shortName)."',
-                   name='".contrexx_addslashes($name)."',
-                   charset='".contrexx_addslashes($charset)."',
+               SET lang='".$shortName."',
+                   name='".$name."',
+                   charset='".$charset."',
                    is_default='false'
         ");
         $newLanguageId = $objDatabase->Insert_ID();

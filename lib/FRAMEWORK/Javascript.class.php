@@ -607,7 +607,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             }
         }
         if (isset($data['loadcallback']) && isset($options)) {
-            self::$data['loadcallback']($options);
+            self::{$data['loadcallback']}($options);
         }
         return true;
     }
@@ -863,7 +863,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                     $jsScripts[] = self::makeSpecialCode(array($data['specialcode']));
                 }
                 if (isset($data['makecallback'])) {
-                    self::$data['makecallback']();
+                    self::{$data['makecallback']}();
                 }
                 // Special case cloudrexx-API: fetch specialcode if activated
                 if ($name == 'cx') {

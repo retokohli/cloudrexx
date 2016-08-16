@@ -340,7 +340,7 @@ class FileSystem
             @unlink($path.$fileName);
             clearstatcache();
             if (@file_exists($path.$fileName)) {
-                $filesys = eregi_replace('/', '\\', $path.$fileName);
+                $filesys = preg_replace('/\//i', '\\', $path.$fileName);
 //                @system("del $filesys");
 //                clearstatcache();
 //                // Doesn't work in safe mode

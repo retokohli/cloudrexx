@@ -302,10 +302,10 @@ class Recommend extends RecommendLibrary
      */
     function isEmail($string)
     {
-        if (eregi('^' . '[a-z0-9]+([_\\.-][a-z0-9]+)*' .    //user
+        if (preg_match('/^' . '[a-z0-9]+([_\\.-][a-z0-9]+)*' .    //user
             '@' . '([a-z0-9]+([\.-][a-z0-9]+)*)+' .            //domain
             '\\.[a-z]{2,4}' .                                 //sld, tld
-            '$', $string)) {
+            '$/i', $string)) {
             return true;
         } else {
             return false;

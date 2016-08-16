@@ -1248,7 +1248,7 @@ END;
             $strWWW = '';
         }
 
-        if (!ereg("^.+@.+\\..+$", $strEmail)) {
+        if (!preg_match("/^.+@.+\\..+$/", $strEmail)) {
             $strEmail = '';
         } else {
             $strEmail = htmlspecialchars(strip_tags($strEmail), ENT_QUOTES, CONTREXX_CHARSET);

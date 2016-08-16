@@ -299,7 +299,7 @@ class StatsLibrary
         if ($uriString == "") { // only uninteresting vars in uri (faked?)
             return "/index.php";
         } else {
-            return "/index.php?".mysql_escape_string(stripslashes(substr($uriString,1)));
+            return "/index.php?" . contrexx_input2db(substr($uriString, 1));
         }
     }
 
