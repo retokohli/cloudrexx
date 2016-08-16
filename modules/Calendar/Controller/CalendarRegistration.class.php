@@ -357,7 +357,7 @@ class CalendarRegistration extends CalendarLibrary
         $key = $this->generateKey();
         
         if ($regId == 0) {
-            $submissionDate = new \DateTime();
+            $submissionDate = $this->getDbDateTimeFromIntern($this->getInternDateTimeFromUser());
             $query = 'INSERT INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration
                         SET `event_id`         = ' . $eventId . ',
                             `submission_date`  = "' . $submissionDate->format('Y-m-d H:i:s') .'",
