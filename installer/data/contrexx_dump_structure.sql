@@ -361,26 +361,62 @@ CREATE TABLE `contrexx_core_module_linkmanager_link` (
   `brokenLinkText` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
-CREATE TABLE `contrexx_core_module_sync_id_mapping` (
-  `id` int(11) AUTO_INCREMENT NOT NULL,
-  `foreign_host` varchar(255) NOT NULL,
-  `entity_type` varchar(255) NOT NULL,
-  `foreign_id` varchar(255) NOT NULL,
-  `local_id` varchar(255) NOT NULL,
-  PRIMARY KEY(`id`)
-) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_module_sync` (
-  `id` int(11) AUTO_INCREMENT NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `data_access_id` int(11) DEFAULT NULL,
   `to_uri` varchar(255) NOT NULL,
   `api_key` varchar(32) NOT NULL,
   `active` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
   KEY `data_access_id` (`data_access_id`),
-  PRIMARY KEY(`id`),
   CONSTRAINT `contrexx_core_module_sync_ibfk_data_access_id` FOREIGN KEY (`data_access_id`) REFERENCES `contrexx_core_module_data_access` (`id`)
-) ENGINE = InnoDB;
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_core_module_sync_change` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sync_id` int(11) NOT NULL,
+  `origin_sync_id` int(11) NOT NULL,
+  `event_type` char(6) NOT NULL,
+  `condition` char(7) NOT NULL,
+  `entity_index_data` text NOT NULL,
+  `origin_entity_index_data` text NOT NULL,
+  `contents` longtext NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_core_module_sync_change_host` (
+  `change_id` int(11) NOT NULL,
+  `host_id` int(11) NOT NULL,
+  PRIMARY KEY (`change_id`,`host_id`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_core_module_sync_host` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `host` varchar(255) NOT NULL,
+  `active` tinyint(1) NOT NULL,
+  `api_key` varchar(32) NOT NULL,
+  `api_version` int(11) NOT NULL,
+  `url_template` varchar(255) NOT NULL,
+  `state` int(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `host_UNIQUE` (`host`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_core_module_sync_host_entity` (
+  `sync_id` int(11) NOT NULL,
+  `host_id` int(11) NOT NULL,
+  `entity_id` varchar(255) NOT NULL,
+  PRIMARY KEY (`sync_id`,`host_id`,`entity_id`),
+  KEY `host_id` (`host_id`),
+  CONSTRAINT `contrexx_core_module_sync_host_entity_ibfk_sync_id` FOREIGN KEY (`sync_id`) REFERENCES `contrexx_core_module_sync` (`id`),
+  CONSTRAINT `contrexx_core_module_sync_host_entity_ibfk_host_id` FOREIGN KEY (`host_id`) REFERENCES `contrexx_core_module_sync_host` (`id`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_core_module_sync_id_mapping` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `foreign_host` varchar(255) NOT NULL,
+  `entity_type` varchar(255) NOT NULL,
+  `foreign_id` varchar(255) NOT NULL,
+  `local_id` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_module_sync_relation` (
-  `id` int(11) AUTO_INCREMENT NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `parent_id` int(11) DEFAULT NULL,
   `related_sync_id` int(11) NOT NULL,
   `foreign_data_access_id` int(11) NOT NULL,
@@ -390,31 +426,13 @@ CREATE TABLE `contrexx_core_module_sync_relation` (
   `local_field_name` varchar(50) NOT NULL,
   `do_sync` tinyint(1) NOT NULL,
   `default_entity_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
   KEY `parent_id` (`parent_id`),
   KEY `related_sync_id` (`related_sync_id`),
-  PRIMARY KEY(`id`),
+  KEY `contrexx_core_module_sync_relation_ibfk_foreign_data_access_id` (`foreign_data_access_id`),
   CONSTRAINT `contrexx_core_module_sync_relation_ibfk_foreign_data_access_id` FOREIGN KEY (`foreign_data_access_id`) REFERENCES `contrexx_core_module_data_access` (`id`),
   CONSTRAINT `contrexx_core_module_sync_relation_ibfk_parent_id` FOREIGN KEY (`parent_id`) REFERENCES `contrexx_core_module_sync_relation` (`id`),
   CONSTRAINT `contrexx_core_module_sync_relation_ibfk_related_sync_id` FOREIGN KEY (`related_sync_id`) REFERENCES `contrexx_core_module_sync` (`id`)
-) ENGINE = InnoDB;
-CREATE TABLE `contrexx_core_module_sync_host` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `host` varchar(255) NOT NULL,
-  `active` tinyint(1) NOT NULL,
-  `api_key` varchar(32) NOT NULL,
-  `api_version` int(11) NOT NULL,
-  `url_template` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `host_UNIQUE` (`host`)
-) ENGINE=InnoDB;
-CREATE TABLE `contrexx_core_module_sync_host_entity` (
-  `sync_id` int(11) NOT NULL,
-  `host_id` int(11) NOT NULL,
-  `entity_id` varchar(255) NOT NULL,
-  KEY `host_id` (`host_id`),
-  PRIMARY KEY (`sync_id`,`host_id`,`entity_id`),
-  CONSTRAINT `contrexx_core_module_sync_host_entity_ibfk_sync_id` FOREIGN KEY (`sync_id`) REFERENCES `contrexx_core_module_sync` (`id`),
-  CONSTRAINT `contrexx_core_module_sync_host_entity_ibfk_host_id` FOREIGN KEY (`host_id`) REFERENCES `contrexx_core_module_sync_host` (`id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_rewrite_rule` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
