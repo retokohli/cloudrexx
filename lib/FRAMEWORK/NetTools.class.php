@@ -577,7 +577,7 @@ class NetTools {
                 fclose($sock);
 
                 // Get the country: data
-                $splresp = spliti("country:", $resp);
+                $splresp = preg_split("/country:/i", $resp);
 
 //              $hascountry = 0;
 //              if (count($splresp)>1) {

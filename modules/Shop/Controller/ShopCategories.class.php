@@ -634,7 +634,7 @@ class ShopCategories
             ? " AND ord=$objCategory->ord" : '').
         (!empty($objCategory->picture)
             ? " AND picture LIKE '%".addslashes($objCategory->picture)."%'" : '');
-        foreach (split(' ', $objCategory->flags) as $flag) {
+        foreach (preg_split('/ /', $objCategory->flags) as $flag) {
             $query .= " AND flags LIKE '%$flag%'";
         }
         $objResult = $objDatabase->Execute($query);

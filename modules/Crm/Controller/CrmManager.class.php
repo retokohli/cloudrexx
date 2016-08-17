@@ -5773,7 +5773,7 @@ END;
                         $objFile->copy($depositionTarget.$prefix.$file, false);
                         $fileName = $prefix.$file;
                         if (!empty ($fileName)) {
-                            list($file, $ext) = split('[.]', $fileName);
+                            list($file, $ext) = preg_split('/[.]/', $fileName);
                             if ($ext == 'csv') {
                                 $_SESSION['importFilename'] = $fileName;
                             }
