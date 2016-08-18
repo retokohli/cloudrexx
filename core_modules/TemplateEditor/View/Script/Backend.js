@@ -304,6 +304,20 @@ function removeElement(button) {
         .first().attr('id');
     var parent = jQuery(button).parent();
     parent.addClass('saving');
+
+    // the last element should not be deletable
+    var seriesElements = parent.parent('.elements').children('.element');
+    // if there are only 2 elements left before deleting one, we hide the remove
+    // button for the elements, so the last element can't be removed
+    if (seriesElements.length == 2) {
+        jQuery(seriesElements).children('.remove-element').hide();
+    }
+    // this case should not occur normally, because the delete button of the last
+    // element should be hidden
+    if (seriesElements.length == 1) {
+        console.message('Last element is not deletable');
+        return;
+    }
     updateOption(
         id,
         {
@@ -356,5 +370,12 @@ jQuery(document).ready(function(){
     jQuery('.series').children('label').click(function(){
         setToggleIcon(jQuery(this).parent());
         jQuery(this).siblings('.series-list').toggle();
+    });
+    jQuery('.elements').each(function(){
+        // if there is only one element in a series, it should not be deletable
+        var seriesElements = jQuery(this).children('.element');
+        if (seriesElements.length == 1) {
+            seriesElements.find('.remove-element').hide();
+        }
     });
 });
