@@ -38,7 +38,7 @@ namespace Cx\Core_Modules\TemplateEditor\Testing\UnitTest;
 class GroupsTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
 {
     /**
-     * @var \Cx\Core_Modules\TemplateEditor\Model\TestStorage
+     * @var \Cx\Core_Modules\TemplateEditor\Model\Entity\TestStorage
      */
     protected $testStorage;
 
@@ -60,7 +60,7 @@ class GroupsTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
     protected function setUp()
     {
         $this->testStorage =
-            new \Cx\Core_Modules\TemplateEditor\Model\TestStorage();
+            new \Cx\Core_Modules\TemplateEditor\Model\Entity\TestStorage();
         $this->themeOptionRepository =
             new \Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository(
                 $this->testStorage
@@ -84,13 +84,13 @@ class GroupsTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
         $optionGroups = $this->optionSet->getOptionsOrderedByGroups();
         $this->assertTrue(is_array($optionGroups));
         // check one self defined group
-        $this->assertTrue(
+       $this->assertTrue(
             count($optionGroups['example_group_1']) == 2 &&
             array_key_exists('main_title', $optionGroups['example_group_1']) &&
             array_key_exists('news_area', $optionGroups['example_group_1'])
         );
         // check standard group
-        $this->assertTrue(
+         $this->assertTrue(
             array_key_exists('logo_image', $optionGroups['others_group'])
         );
     }

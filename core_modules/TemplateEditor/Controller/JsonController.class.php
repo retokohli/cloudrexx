@@ -106,7 +106,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller
             $_SESSION['TemplateEditor'][$themeID] = array();
         }
         $fileStorage =
-            new \Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage(
+            new \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSetFileStorage(
                 $this->cx->getWebsiteThemesPath()
             );
         $themeOptionRepository =
@@ -150,7 +150,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller
             $_SESSION['TemplateEditor'][$themeID] = array();
         }
         $fileStorage =
-            new \Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage(
+            new \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSetFileStorage(
                 $this->cx->getWebsiteThemesPath()
             );
         $themeOptionRepository =
@@ -234,7 +234,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller
             intval($params['post']['tid']) : 1;
         $themeRepository       = new \Cx\Core\View\Model\Repository\ThemeRepository();
         $theme                 = $themeRepository->findById($themeID);
-        $fileStorage           = new \Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage(
+        $fileStorage           = new \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSetFileStorage(
             $this->cx->getWebsiteThemesPath()
         );
         $themeOptionRepository =
@@ -289,7 +289,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller
             new \Cx\Core\View\Model\Repository\ThemeRepository();
         $theme                 = $themeRepository->findById($themeID);
         $fileStorage           =
-            new \Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage(
+            new \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSetFileStorage(
                 $this->cx->getWebsiteThemesPath()
             );
         $themeOptionRepository =
@@ -342,7 +342,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller
             new \Cx\Core\View\Model\Repository\ThemeRepository();
         $theme                 = $themeRepository->findById($themeID);
         $fileStorage           =
-            new \Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage(
+            new \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSetFileStorage(
                 $this->cx->getWebsiteThemesPath()
             );
         $themeOptionRepository =

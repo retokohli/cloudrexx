@@ -26,7 +26,7 @@
  */
  
 
-namespace Cx\Core_Modules\TemplateEditor\Model;
+namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
 /**
  * Class OptionSetFileStorage

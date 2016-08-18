@@ -92,7 +92,7 @@ class BackendController
     {
         \Permission::checkAccess(47, 'static');
         $fileStorage =
-            new \Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage(
+            new \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSetFileStorage(
                 $this->cx->getWebsiteThemesPath()
             );
         $themeOptionRepository =
@@ -131,7 +131,7 @@ class BackendController
 
         $this->presetRepository =
             new \Cx\Core_Modules\TemplateEditor\Model\Repository\PresetRepository(
-                new \Cx\Core_Modules\TemplateEditor\Model\PresetFileStorage(
+                new \Cx\Core_Modules\TemplateEditor\Model\Entity\PresetFileStorage(
                     $this->cx->getWebsiteThemesPath() . '/'
                     . $this->theme->getFoldername()
                 )

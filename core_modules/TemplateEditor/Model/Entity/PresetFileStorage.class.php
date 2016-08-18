@@ -31,7 +31,7 @@
  * @package     contrexx
  */
 
-namespace Cx\Core_Modules\TemplateEditor\Model;
+namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\ParserException;
