@@ -798,7 +798,11 @@ class Resolver {
 
             // now lets resolve the page that is referenced by our fallback page
             $this->resolvePage(true);
-            $page->getFallbackContentFrom($this->page);
+            // fallback pages use theme options of their target page, symlink use their own
+            $page->setContentOf(
+                $this->page,
+                $page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK
+            );
 
             // Important: We must assigne a copy of $page to $this->path here.
             // Otherwise, the virtual fallback page ($this->page) will also
