@@ -1740,6 +1740,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         $this->cmd = $page->getCmd();
         $this->skin = $page->getSkin();
         $this->customContent = $page->getCustomContent();
+        $this->applicationTemplate = $page->getApplicationTemplate();
         $this->cssName = $page->getCssName();
         $this->cssNavName = $page->getCssNavName();
         
