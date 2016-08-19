@@ -1211,6 +1211,17 @@ die("Failed to update the Cart!");
                 self::$objCustomer && self::$objCustomer->is_reseller()
             );
         }
+
+        if (   isset($_REQUEST['cmd'])
+            && $_REQUEST['cmd'] == 'details'
+            && empty($arrProduct)
+        ) {
+            \Cx\Core\Csrf\Controller\Csrf::header(
+                'Location: ' .
+                \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', '')->toString()
+            );
+        }
+
         // Only show sorting when there's enough to be sorted
         if ($count > 1) {
             $objSorting->parseHeaders(self::$objTemplate, 'shop_product_order');
@@ -1646,7 +1657,7 @@ die("Failed to update the Cart!");
         }
         foreach ($productIds as $productId) {
             $product = Product::getById($productId);
-            if ($product) {
+            if ($product && $product->getStatus()) {
                 $arrProduct[] = $product;
             }
         }
@@ -3210,9 +3221,13 @@ die("Shop::processRedirect(): This method is obsolete!");
                 \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', ''));
         }
         self::$show_currency_navbar = false;
+        $stockStatus = Cart::checkProductStockStatus();
+        if ($stockStatus) {
+            \Message::warning($stockStatus);
+        }
         // The Customer clicked the confirm button; this must not be the case
         // the first time this method is called.
-        if (isset($_POST['process'])) {
+        if (isset($_POST['process']) && !$stockStatus) {
             return self::process();
         }
         // Show confirmation page.
