@@ -131,6 +131,16 @@ class Order
     }
 
     /**
+     * Set the Order id
+     *
+     * @param integer $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
      * Returns the Customer ID
      *
      * Optionally sets the value first if the parameter value is an integer
@@ -1382,26 +1392,44 @@ class Order
             return \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_DELETING_ORDER']);
         }
         if ($stockUpdate) {
-            $order     = new static();
-            $order->id = $order_id;
-            $arrItems  = $order->getItems();
-
-            foreach ($arrItems as $item) {
-                $product = Product::getById($item['product_id']);
-                if (!$product) {
-                    \DBG::log(sprintf(
-                        $_ARRAYLANG['TXT_SHOP_PRODUCT_NOT_FOUND'],
-                        $item['product_id']
-                    ));
-                    continue;
-                }
-                $product->stock($product->stock() + $item['quantity']);
-                $product->store();
-            }
+            $order = new static();
+            $order->setId($order_id);
+            $order->updateStock();
         }
         return true;
     }
 
+    /**
+     * Update related product stock
+     *
+     * @param boolean $increaseStock True to increase stock, false to decrease
+     */
+    public function updateStock($increaseStock = true)
+    {
+        global $_ARRAYLANG;
+
+        $arrItems  = $this->getItems();
+        foreach ($arrItems as $item) {
+
+            $product = Product::getById($item['product_id']);
+            if (!$product) {
+                \DBG::log(sprintf(
+                    $_ARRAYLANG['TXT_SHOP_PRODUCT_NOT_FOUND'],
+                    $item['product_id']
+                ));
+                continue;
+            }
+            $stock = $product->stock();
+            if ($increaseStock) {
+                $stock += $item['quantity'];
+            } else {
+                $stock -= $item['quantity'];
+            }
+
+            $product->stock($stock);
+            $product->store();
+        }
+    }
 
     /**
      * Returns an array of item IDs for the given Order ID

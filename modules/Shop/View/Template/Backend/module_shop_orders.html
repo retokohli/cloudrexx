@@ -1,5 +1,19 @@
 <!-- start shop_orders.html -->
 <script type="text/javascript">//<![CDATA[
+var shopOrder = {
+    jq: cx.jQuery,
+    deletedStatus: [2, 3],
+    isStockIncreasable: function(oldStatus, newStatus) {
+        return    this.jq.inArray(parseInt(oldStatus), this.deletedStatus) == -1
+               && this.jq.inArray(parseInt(newStatus), this.deletedStatus) != -1
+               && confirm('{TXT_SHOP_CONFIRM_RESET_STOCK}');
+    },
+    isStockDecreasable: function(oldStatus, newStatus) {
+       return     this.jq.inArray(parseInt(oldStatus), this.deletedStatus) != -1
+               && this.jq.inArray(parseInt(newStatus), this.deletedStatus) == -1
+               && confirm('{TXT_SHOP_CONFIRM_REDUCE_STOCK}');
+    }
+};
 function shopOrdersDoAction(strForm, strCheckbox, objSelect, strAct) {
   if (checkboxIsChecked(strForm, strCheckbox) == true) {
     switch (strAct) {
@@ -36,6 +50,11 @@ function changeOrderStatus(order_id, status, new_status) {
         strURI += "&sendMail=1";
       }
     }
+    if (   shopOrder.isStockIncreasable(status, new_status)
+        || shopOrder.isStockDecreasable(status, new_status)) {
+        strURI += '&stock_update=1';
+    }
+
     window.location.replace(strURI);
   } else {
     document.getElementById("order_status-"+order_id).setAttribute("value", status);
@@ -47,7 +66,7 @@ function changeOrderStatus(order_id, status, new_status) {
             var order = $(this).data('order');
             if (confirm('{TXT_CONFIRM_DELETE_ORDER}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
                 var stockUpdate = false;
-                if ($.inArray(order.status, ['2', '3']) == -1 && confirm('{TXT_SHOP_CONFIRM_RESET_STOCK}')) {
+                if (shopOrder.isStockIncreasable(order.status, 2)) {
                     stockUpdate = true;
                 }
                 window.location.replace("{SHOP_ACTION_URI}&{CSRF_PARAM}&act=delorder&order_id=" + order.id + (stockUpdate ? '&stock_update=1' : ''));

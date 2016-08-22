@@ -961,6 +961,15 @@ if (!$limit) {
             \Message::error($_ARRAYLANG['TXT_SHOP_ORDER_ERROR_UPDATING_STATUS']);
             \Cx\Core\Csrf\Controller\Csrf::redirect('index.php?cmd=Shop&act=orders');
         }
+        if (!empty($_GET['stock_update']) && $_GET['stock_update'] == 1) {
+            $increaseStock = false;
+            if (in_array($status, array(Order::STATUS_DELETED, Order::STATUS_CANCELLED))) {
+                $increaseStock = true;
+            }
+            $order = new Order();
+            $order->setId($order_id);
+            $order->updateStock($increaseStock);
+        }
         // Send an email to the customer
         if (   !empty($_GET['sendMail'])
             && !empty($_GET['order_id'])) {
