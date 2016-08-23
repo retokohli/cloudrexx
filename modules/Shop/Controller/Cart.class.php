@@ -165,7 +165,10 @@ class Cart
         }
 
         return sprintf(
-            $_ARRAYLANG['TXT_SHOP_PRODUCT_CART_STOCK_OUTOFF_ERROR'],
+            (   count($outOfStockProducts) > 1
+             ? $_ARRAYLANG['TXT_SHOP_PRODUCT_MULTIPLE_CART_STOCK_OUTOFF_ERROR']
+             : $_ARRAYLANG['TXT_SHOP_PRODUCT_SINGLE_CART_STOCK_OUTOFF_ERROR']
+            ),
             implode(', ', $outOfStockProducts)
         );
     }
