@@ -760,47 +760,69 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
             $objMail->Subject = $objUserMail->getSubject();
 
-            if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
+            $isTextMail  = in_array($objUserMail->getFormat(), array('multipart', 'text'));
+            $isHtmlMail  = in_array($objUserMail->getFormat(), array('multipart', 'html'));
+            $searchTerms = array(
+                '[[HOST]]',
+                '[[USERNAME]]',
+                '[[ACTIVATION_LINK]]',
+                '[[HOST_LINK]]',
+                '[[SENDER]]',
+                '[[LINK]]'
+            );
+            $replaceTerms = array(
+                $_CONFIG['domainUrl'],
+                ($isHtmlMail ? htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET) : $objUser->getUsername()),
+                'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
+                'http://'.$_CONFIG['domainUrl'],
+                ($isHtmlMail ? htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET) : $objUserMail->getSenderName()),
+                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
+            );
+            if ($mail2load == 'reg_confirm') {
+                $objUser->objAttribute->first();
+                while (!$objUser->objAttribute->EOF) {
+                    $objAttribute = $objUser->objAttribute->getById(
+                        $objUser->objAttribute->getId()
+                    );
+
+                    if (   !$objAttribute->isProtected()
+                        || (   \Permission::checkAccess(
+                                    $objAttribute->getAccessId(),
+                                    'dynamic',
+                                    true
+                               )
+                            || $objAttribute->checkModifyPermission()
+                           )
+                    ) {
+                        $placeholderName = strtoupper($objUser->objAttribute->getId());
+                        $searchTerms[]  = '[[USER_' . $placeholderName . ']]';
+                        if ($isHtmlMail && $objUser->objAttribute->getType() == 'text') {
+                            $replaceTerms[] = htmlentities(
+                                $objUser->getProfileAttribute($objAttribute->getId()),
+                                ENT_QUOTES, CONTREXX_CHARSET
+                            );
+                        } else {
+                            $replaceTerms[] = $objUser->getProfileAttribute($objAttribute->getId());
+                        }
+                    }
+                    $objUser->objAttribute->next();
+                }
+            }
+
+            if ($isTextMail) {
                 $objUserMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
                 $objMail->{($objUserMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = str_replace(
-                    array(
-                        '[[HOST]]',
-                        '[[USERNAME]]',
-                        '[[ACTIVATION_LINK]]',
-                        '[[HOST_LINK]]',
-                        '[[SENDER]]',
-                        '[[LINK]]'
-                    ),
-                    array(
-                        $_CONFIG['domainUrl'],
-                        $objUser->getUsername(),
-                        'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
-                        'http://'.$_CONFIG['domainUrl'],
-                        $objUserMail->getSenderName(),
-                        'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
-                    ),
+                    $searchTerms,
+                    $replaceTerms,
                     $objUserMail->getBodyText()
                 );
             }
-            if (in_array($objUserMail->getFormat(), array('multipart', 'html'))) {
+
+            if ($isHtmlMail) {
                 $objUserMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
                 $objMail->Body = str_replace(
-                    array(
-                        '[[HOST]]',
-                        '[[USERNAME]]',
-                        '[[ACTIVATION_LINK]]',
-                        '[[HOST_LINK]]',
-                        '[[SENDER]]',
-                        '[[LINK]]'
-                    ),
-                    array(
-                        $_CONFIG['domainUrl'],
-                        htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-                        'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
-                        'http://'.$_CONFIG['domainUrl'],
-                        htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET),
-                        'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
-                    ),
+                    $searchTerms,
+                    $replaceTerms,
                     $objUserMail->getBodyHtml()
                 );
             }
@@ -834,4 +856,3 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         return false;
     }
 }
-?>
