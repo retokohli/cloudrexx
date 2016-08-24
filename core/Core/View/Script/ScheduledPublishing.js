@@ -1,20 +1,9 @@
 /**
  * USAGE:
  *
- * In controller.class.php 
+ * In controller.class.php
  * =======================
- * \JS::activate('cx');
- * \JS::registerCSS('core/Core/View/Style/scheduledPublishing.css');
- * \JS::registerJS('core/Core/View/Script/scheduledPublishing.js');
- *
- * \ContrexxJavascript::getInstance()->setVariable(array(
- *      'active'            => $_CORELANG['TXT_CORE_ACTIVE'],
- *      'inactive'          => $_CORELANG['TXT_CORE_INACTIVE'],
- *      'scheduledActive'   => $_CORELANG['TXT_CORE_SCHEDULED_ACTIVE'],
- *      'scheduledInactive' => $_CORELANG['TXT_CORE_SCHEDULED_INACTIVE'], 
- * ), 'core/View');
- * 
- * Note: Requires global variable $_CORELANG 
+ * \JS::activate('schedule-publish-tooltip', array());
  *
  * In template file
  * ================
