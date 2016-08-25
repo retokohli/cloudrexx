@@ -2420,4 +2420,33 @@ class Order
         return $items;
     }
 
+    /**
+     * Is given status can increase stock
+     *
+     * @param integer $oldStatus Old order status
+     * @param integer $newStatus New order status
+     *
+     * @return boolean True when given status can increase stock, False otherwise
+     */
+    public function isStockIncreasable($oldStatus, $newStatus)
+    {
+        $deletedStatus = array(self::STATUS_DELETED, self::STATUS_CANCELLED);
+        return   in_array($newStatus, $deletedStatus)
+              && !in_array($oldStatus, $deletedStatus);
+    }
+
+    /**
+     * Is given status can decrease stock
+     *
+     * @param integer $oldStatus Old order status
+     * @param integer $newStatus New order status
+     *
+     * @return boolean True when given status can decrease stock, False otherwise
+     */
+    public function isStockDecreasable($oldStatus, $newStatus)
+    {
+        $deletedStatus = array(self::STATUS_DELETED, self::STATUS_CANCELLED);
+        return   in_array($oldStatus, $deletedStatus)
+              && !in_array($newStatus, $deletedStatus);
+    }
 }

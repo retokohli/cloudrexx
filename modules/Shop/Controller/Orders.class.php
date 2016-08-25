@@ -951,6 +951,15 @@ if (!$limit) {
             \Cx\Core\Csrf\Controller\Csrf::redirect('index.php?cmd=Shop&act=orders');
         }
         $objUser = \FWUser::getFWUserObject()->objUser;
+
+        $oldStatus = $objDatabase->getOne('
+            SELECT
+                `status`
+            FROM
+                `'.DBPREFIX.'module_shop'.MODULE_INDEX.'_orders`
+            WHERE
+                `id`=' . contrexx_input2int($order_id));
+
         $query = "
             UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_orders`
                SET `status`=$status,
@@ -961,14 +970,19 @@ if (!$limit) {
             \Message::error($_ARRAYLANG['TXT_SHOP_ORDER_ERROR_UPDATING_STATUS']);
             \Cx\Core\Csrf\Controller\Csrf::redirect('index.php?cmd=Shop&act=orders');
         }
-        if (!empty($_GET['stock_update']) && $_GET['stock_update'] == 1) {
-            $increaseStock = false;
-            if (in_array($status, array(Order::STATUS_DELETED, Order::STATUS_CANCELLED))) {
-                $increaseStock = true;
-            }
-            $order = new Order();
-            $order->setId($order_id);
-            $order->updateStock($increaseStock);
+
+        $order = new Order();
+        $order->setId($order_id);
+        if (   !empty($_GET['stock_update'])
+            && $_GET['stock_update'] == 1
+            && (
+                   $order->isStockIncreasable($oldStatus, $status)
+                || $order->isStockDecreasable($oldStatus, $status)
+            )
+        ) {
+            $order->updateStock(
+                $order->isStockIncreasable($oldStatus, $status)
+            );
         }
         // Send an email to the customer
         if (   !empty($_GET['sendMail'])
