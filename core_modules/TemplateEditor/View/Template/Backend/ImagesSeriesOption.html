@@ -1,14 +1,14 @@
 <label for="{TEMPLATEEDITOR_OPTION_NAME}">{TEMPLATEEDITOR_OPTION_HUMAN_NAME}</label>
-<div class="image-list">
+<div class="image-list" id="image-list-{TEMPLATEEDITOR_OPTION_NAME}">
 <!-- BEGIN images -->
 <div class="image">
     <img src="{TEMPLATEEDITOR_OPTION_VALUE}" alt="{TEMPLATEEDITOR_OPTION_NAME}"
          id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}_img"/>
     <div class="actions">
-        <button class="remove-image button" data-id="{TEMPLATEEDITOR_OPTION_ID}">
+        <button class="remove-image button remove-image-{TEMPLATEEDITOR_OPTION_NAME}" data-id="{TEMPLATEEDITOR_OPTION_ID}">
             {TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PICTURE}
         </button>
-        <button class="change-image button" data-id="{TEMPLATEEDITOR_OPTION_ID}">
+        <button class="change-image button change-image-{TEMPLATEEDITOR_OPTION_NAME}" data-id="{TEMPLATEEDITOR_OPTION_ID}">
             {TXT_CORE_MODULE_TEMPLATEEDITOR_CHANGE_PICTURE}
         </button>
     </div>
@@ -21,11 +21,11 @@
 <div class="clearfix"></div>
 {MEDIABROWSER_BUTTON}
 <script>
-    var template = '<div class="image"><img src="{TEMPLATEEDITOR_OPTION_VALUE}" alt="{TEMPLATEEDITOR_OPTION_NAME}"id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}_img"/> <div class="actions"> <button class="remove-image button" data-id="{TEMPLATEEDITOR_OPTION_ID}"> Entfernen </button> <button class="change-image button" data-id="{TEMPLATEEDITOR_OPTION_ID}">Ändern </button> </div> <input type="text" id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}" class="{TEMPLATEEDITOR_OPTION_NAME}" data-id="{TEMPLATEEDITOR_OPTION_ID}"value="{TEMPLATEEDITOR_OPTION_VALUE}"/> <div class="error-box"></div></div>';
+    var template{TEMPLATEEDITOR_OPTION_NAME} = '<div class="image"><img src="" alt="{TEMPLATEEDITOR_OPTION_NAME}" id="" /> <div class="actions"> <button class="remove-image button remove-image-{TEMPLATEEDITOR_OPTION_NAME}" data-id=""> Entfernen </button> <button class="change-image button change-image-{TEMPLATEEDITOR_OPTION_NAME}" data-id="">Ändern </button> </div> <input type="text" id="" class="{TEMPLATEEDITOR_OPTION_NAME}" data-id="" value="" /> <div class="error-box"></div></div>';
 
-    var lastId = {TEMPLATEEDITOR_LASTID};
+    var lastId{TEMPLATEEDITOR_OPTION_NAME} = {TEMPLATEEDITOR_LASTID};
 
-    var updateImage = function () {
+    var updateImage{TEMPLATEEDITOR_OPTION_NAME} = function () {
         var id = jQuery(this).data('id');
         cx.variables.get('jquery', 'mediabrowser')('#{MEDIABROWSER_ID}').trigger("click", {
             callback: function (callback) {
@@ -38,9 +38,9 @@
         });
     };
 
-    jQuery('.change-image').click(updateImage);
+    jQuery('.change-image-{TEMPLATEEDITOR_OPTION_NAME}').click(updateImage{TEMPLATEEDITOR_OPTION_NAME});
 
-    var removeImage = function () {
+    var removeImage{TEMPLATEEDITOR_OPTION_NAME} = function () {
         var id = jQuery(this).data('id');
         var parent = jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + id ).parent();
         parent.addClass('saving');
@@ -56,9 +56,9 @@
         })
     };
 
-    jQuery('.remove-image').click(removeImage);
+    jQuery('.remove-image-{TEMPLATEEDITOR_OPTION_NAME}').click(removeImage{TEMPLATEEDITOR_OPTION_NAME});
 
-    var changeImage = function () {
+    var changeImage{TEMPLATEEDITOR_OPTION_NAME} = function () {
         var parent = jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + jQuery(this).data('id') ).parent();
         var id = jQuery(this).data('id');
         parent.addClass('saving');
@@ -82,18 +82,18 @@
     function callback_{TEMPLATEEDITOR_OPTION_NAME}(callback)
     {
         if (callback.type == 'file') {
-            lastId++;
-            var newImage = jQuery(template);
-            newImage.find('img').attr('src', callback.data[0].datainfo.filepath).attr('id', '{TEMPLATEEDITOR_OPTION_NAME}_'+lastId+'_img');
-            newImage.find('.remove-image').data('id', lastId).click(removeImage);
-            newImage.find('.change-image').data('id', lastId).click(updateImage);
-            newImage.find('input').val(callback.data[0].datainfo.filepath).data('id', lastId).attr('id', '{TEMPLATEEDITOR_OPTION_NAME}_'+lastId);
-            jQuery('.image-list').append(newImage);
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + lastId ).change(changeImage);
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + lastId ).trigger('change');
-            jQuery('.options').animate({ scrollTop: (jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + lastId).offset().top)}, 2000);
+            lastId{TEMPLATEEDITOR_OPTION_NAME}++;
+            var newImage = jQuery(template{TEMPLATEEDITOR_OPTION_NAME});
+            newImage.find('img').attr('src', callback.data[0].datainfo.filepath).attr('id', '{TEMPLATEEDITOR_OPTION_NAME}_'+lastId{TEMPLATEEDITOR_OPTION_NAME}+'_img');
+            newImage.find('.remove-image-{TEMPLATEEDITOR_OPTION_NAME}').data('id', lastId{TEMPLATEEDITOR_OPTION_NAME}).click(removeImage{TEMPLATEEDITOR_OPTION_NAME});
+            newImage.find('.change-image-{TEMPLATEEDITOR_OPTION_NAME}').data('id', lastId{TEMPLATEEDITOR_OPTION_NAME}).click(updateImage{TEMPLATEEDITOR_OPTION_NAME});
+            newImage.find('input').val(callback.data[0].datainfo.filepath).data('id', lastId{TEMPLATEEDITOR_OPTION_NAME}).attr('id', '{TEMPLATEEDITOR_OPTION_NAME}_'+lastId{TEMPLATEEDITOR_OPTION_NAME});
+            jQuery('#image-list-{TEMPLATEEDITOR_OPTION_NAME}').append(newImage);
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + lastId{TEMPLATEEDITOR_OPTION_NAME} ).change(changeImage{TEMPLATEEDITOR_OPTION_NAME});
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + lastId{TEMPLATEEDITOR_OPTION_NAME} ).trigger('change');
+            jQuery('.options').animate({ scrollTop: (jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + lastId{TEMPLATEEDITOR_OPTION_NAME}).offset().top)}, 2000);
         }
     }
 
-    jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').change(changeImage);
+    jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').change(changeImage{TEMPLATEEDITOR_OPTION_NAME});
 </script>
