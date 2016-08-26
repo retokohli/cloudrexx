@@ -564,14 +564,16 @@ class User_Setting_Mail
                     $objFWUser->objUser->objAttribute->getId()
                 );
 
-                if (   !$objAttribute->isProtected()
-                    || (   \Permission::checkAccess(
-                                $objAttribute->getAccessId(),
-                                'dynamic',
-                                true
-                           )
-                        || $objAttribute->checkModifyPermission()
-                       )
+                if (
+                    !$objAttribute->isProtected() ||
+                    (
+                        \Permission::checkAccess(
+                            $objAttribute->getAccessId(),
+                            'dynamic',
+                            true
+                        ) ||
+                        $objAttribute->checkModifyPermission()
+                    )
                 ) {
                     $name = '[[USER_' . strtoupper($objFWUser->objUser->objAttribute->getId()) . ']]';
                     $arrPlaceholders[$name] = $objFWUser->objUser->objAttribute->getName(BACKEND_LANG_ID);
