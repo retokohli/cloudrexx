@@ -83,7 +83,11 @@ class MediaDirectory extends MediaDirectoryLibrary
         \JS::activate('shadowbox');
         \JS::activate('jquery');
 
-        $entryId = intval($this->cx->getRequest()->getUrl()->getParamArray()['eid']);
+        $entryId = 0;
+        $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+        if (isset($requestParams['eid'])) {
+            $entryId = intval($requestParams['eid']);
+        }
 
         if($this->arrSettings['settingsAllowVotes']) {
             $objVoting = new MediaDirectoryVoting($this->moduleName);
@@ -245,7 +249,10 @@ class MediaDirectory extends MediaDirectoryLibrary
             $intCategoryId = 0;
         }
 
-        $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : $intCategoryId;
+        $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+        if (isset($requestParams['cid'])) {
+            $intCategoryId = intval($requestParams['cid']);
+        }
 
         // show block {$this->moduleNameLC}Overview
         if (empty($intCategoryId) && empty($intLevelId) && $this->_objTpl->blockExists($this->moduleNameLC.'Overview')) {
@@ -487,7 +494,11 @@ class MediaDirectory extends MediaDirectoryLibrary
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         //get ids
-        $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : 0;
+        $intCategoryId = 0;
+        $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+        if (isset($requestParams['cid'])) {
+            $intCategoryId = intval($requestParams['cid']);
+        }
         $intLevelId = isset($_GET['lid']) ? intval($_GET['lid']) : 0;
         $intEntryId = intval($this->cx->getRequest()->getUrl()->getParamArray()['eid']);
         

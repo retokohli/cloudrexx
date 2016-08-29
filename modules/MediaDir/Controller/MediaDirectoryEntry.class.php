@@ -334,6 +334,66 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         }
     }
 
+    public function findOneBySlug($slug) {
+        return $this->findOneByName($this->getNameFromSlug($slug));
+    }
+
+    public function findOneByName($name, $formId = null, $catId = null, $levelId = null, $autoload = false) {
+		$strWhereLevel = '';
+		$strFromLevel = '';
+		$strWhereLangId = '';
+		$strWhereFormId = '';
+		$strFromCategory = '';
+		$strWhereCategory = '';
+
+        if($formId) {
+            $strWhereFormId = "AND (entry.`form_id` = ".$formId.") ";
+        }
+
+        if($levelId) {
+            $strWhereLevel = "AND ((level.`level_id` = ".$levelId.") AND (level.`entry_id` = entry.`id`)) ";
+            $strFromLevel = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS level";
+        }
+
+        if($catId) {
+        	$strWhereCategory = "AND ((category.`category_id` = ".$catId.") AND (category.`entry_id` = entry.`id`)) ";
+        	$strFromCategory = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS category";
+        }
+
+        if (!$this->arrSettings['settingsShowEntriesInAllLang']) {
+            $strWhereLangId = "AND (entry.`lang_id` = ".FRONTEND_LANG_ID.") ";
+        }
+
+        $query = "
+            SELECT DISTINCT entry.`id` AS `id`
+            FROM
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_entries AS entry
+                INNER JOIN ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield ON rel_inputfield.`entry_id` = entry.`id`
+                INNER JOIN ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS inputfield ON inputfield.`id` = rel_inputfield.`field_id`
+                # rel_inputfield.`lang_id`
+                ".$strFromCategory."
+                ".$strFromLevel."
+            WHERE
+                    entry.`active` = 1
+                AND entry.`confirmed` = 1
+                AND inputfield.`context_type` = 'title'
+                AND (entry.`duration_type` = 1 OR (entry.`duration_type` = 2 AND (entry.`duration_start` < '" . time() . "' AND entry.`duration_end` > '" . time() . "')))
+                AND rel_inputfield.`value` = '".contrexx_raw2db($name)."'
+                ".$strWhereCategory."
+                ".$strWhereLevel."
+                ".$strWhereLangId."
+                ".$strWhereFormId."
+            LIMIT 1
+        ";
+
+        $objResult = $this->cx->getDb()->getAdoDb()->Execute($query);
+        if (!$objResult || $objResult->EOF) {
+            return 0;
+        }
+
+        return $objResult->fields['id'];
+    }
+
     /**
      * Setter for $this->strBlockName
      * 
@@ -484,18 +544,9 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
                             $strDetailUrl = '#';
                             try {
-                                $detailUrl = $this->getDetailUrlOfEntry($arrEntry);
                                 if ($arrEntry['entryReadyToConfirm'] == 1 || $arrEntry['entryConfirmed'] == 1) {
-                                    $params = array();
-                                    if ($this->intLevelId) {
-                                        $params['lid'] = $this->intLevelId;
-                                    }
-                                    if ($this->intCatId) {
-                                        $params['cid'] = $this->intCatId;
-                                    }
-                                    $detailUrl->setParams($params);
+                                    $strDetailUrl = $this->getDetailUrlOfEntry($arrEntry);
                                 }
-                                $strDetailUrl = $detailUrl;
                             } catch (MediaDirectoryEntryException $e) {}
 
 	                        $objTpl->setVariable(array(
@@ -644,18 +695,9 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
                                 $strDetailUrl = '#';
                                 try {
-                                    $detailUrl = $this->getDetailUrlOfEntry($arrEntry);
                                     if ($arrEntry['entryReadyToConfirm'] == 1 || $arrEntry['entryConfirmed'] == 1) {
-                                        $params = array();
-                                        if ($this->intLevelId) {
-                                            $params['lid'] = $this->intLevelId;
-                                        }
-                                        if ($this->intCatId) {
-                                            $params['cid'] = $this->intCatId;
-                                        }
-                                        $detailUrl->setParams($params);
+                                        $strDetailUrl = $this->getDetailUrlOfEntry($arrEntry);
                                     }
-                                    $strDetailUrl = $detailUrl;
                                 } catch (MediaDirectoryEntryException $e) {}
 
                                 $objTpl->setVariable(array(
@@ -805,7 +847,42 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
     }
 
 
+    /**
+     * Get the Url of the section that is used to list the loaded entry
+     *
+     * If a form specific page exists (i.e. section=MediaDir&cmd=team), then
+     * the Url to that specific page is returned. Otherwise the Url to the mail
+     * application page is returned (section=MediaDir).
+     *
+     * @throws MediaDirectoryEntryException    In case no valid application page was found,
+     *                                         MediaDirectoryEntryException is thrown
+     * @return  \Cx\Core\Routing\Url    Url of the form specific section
+     */
+    public function getFormUrl() {
+        $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $arrEntry = $this->arrEntries[$this->intEntryId];
 
+        // fetch the definition of the form the entry is based on
+        $formDefinition = $this->getFormDefinitionOfEntry($arrEntry['entryId']);
+
+        // fetch form specific page (i.e. section=MediaDir&cmd=team)
+        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $formDefinition['formCmd'], FRONTEND_LANG_ID);
+
+        // fetch main application page (section=MediaDir)
+        if (!$page || !$page->isActive()) {
+            $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, '', FRONTEND_LANG_ID);
+        }
+
+        // abort in case the entry can't be linked to an existing page
+        if (!$page || !$page->isActive()) {
+            throw new MediaDirectoryEntryException();
+        }
+
+        // create url to the target page and add the entry's ID as argument
+        $url = \Cx\Core\Routing\Url::fromPage($page);
+
+        return $url;
+    }
 
     /**
      * Get the Url of the page on which the entry shall be displayed on
@@ -843,6 +920,11 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
      */
     public function getDetailUrlOfEntry($arrEntry, $fallbackToOverview = false) {
         static $arrIdsOfFormSpecificEntries = array();
+
+        // create human readable url if option has been enabled to do so
+        if ($this->arrSettings['usePrettyUrls']) {
+            return $this->getAutoSlugPath($arrEntry, $this->intCatId, $this->intLevelId);
+        }
 
         $detailCmd = 'detail';
         $formId = $arrEntry['entryFormId'];

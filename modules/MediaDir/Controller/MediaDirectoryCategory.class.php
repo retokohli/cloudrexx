@@ -81,7 +81,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
 
     function getCategories($intCategoryId=null, $intParentId=null)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID, $objInit;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;
 
         $arrCategories = array();
 
@@ -116,6 +116,12 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 break;
         }
 
+        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            $langId = FRONTEND_LANG_ID;
+        } else {
+            $langId = LANG_ID;
+        }
+
         $objCategories = $objDatabase->Execute("
             SELECT
                 cat.`id` AS `id`,
@@ -134,7 +140,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 ($whereCategoryId cat_names.category_id=cat.id)
                 $whereParentId
                 $whereActive
-                AND (cat_names.lang_id='".$_LANGID."')
+                AND (cat_names.lang_id='".$langId."')
             ORDER BY
                 ".$sortOrder."
         ");
@@ -196,7 +202,17 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
         return $arrCategories;
     }
 
+    public function findOneBySlug($slug) {
+        return $this->findOneByName($this->getNameFromSlug($slug));
+    }
 
+    public function findOneByName($name) {
+        foreach ($this->arrCategories as $arrCategory) {
+            if ($arrCategory['catName'][0] == $name) {
+                return $arrCategory['catId'];
+            }
+        }
+    }
 
     function listCategories($objTpl, $intView, $intCategoryId=null, $arrParentIds=null, $intEntryId=null, $arrExistingBlocks=null, $intStartLevel=1)
     {
@@ -489,14 +505,20 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 break;
             case 6:
                 //Frontend Tree Placeholder
+
+                $levelId = null;
+                $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+                if (isset($requestParams['lid'])) {
+                    $levelId = intval($requestParams['lid']);
+                }
+
                 foreach ($arrCategories as $key => $arrCategory) {
                 	$this->arrExpandedCategoryIds = array();
                     $bolExpandCategory = $this->getExpandedCategories($intCategoryId, array($arrCategory));
-                    $strLevelId = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
                     $strLinkClass = $bolExpandCategory ? 'active' : 'inactive';
                     $strListClass = 'level_'.intval(count($arrParentIds)+$intStartLevel);
                     
-                    $this->strNavigationPlaceholder .= '<li class="'.$strListClass.'"><a href="index.php?section='.$this->moduleName.$strLevelId.'&amp;cid='.$arrCategory['catId'].'" class="'.$strLinkClass.'">'.contrexx_raw2xhtml($arrCategory['catName'][0]).'</a></li>';
+                    $this->strNavigationPlaceholder .= '<li class="'.$strListClass.'"><a href="'.$this->getAutoSlugPath(null, $arrCategory['catId'], $levelId).'" class="'.$strLinkClass.'">'.contrexx_raw2xhtml($arrCategory['catName'][0]).'</a></li>';
             
                     $arrParentIds[] = $arrCategory['catId'];
 
@@ -779,4 +801,3 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
         return $childrenString;
     }
 }
-?>

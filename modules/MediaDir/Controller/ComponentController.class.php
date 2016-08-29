@@ -194,4 +194,98 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $this->cx->getEvents()->addEventListener('SearchFindContent',$eventListener);
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
     }
+
+    /**
+     * Called for additional, component specific resolving
+     * 
+     * If /en/Path/to/Page is the path to a page for this component
+     * a request like /en/Path/to/Page/with/some/parameters will
+     * give an array like array('with', 'some', 'parameters') for $parts
+     * 
+     * This may be used to redirect to another page
+     * @param array $parts List of additional path parts
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Resolved virtual page
+     */
+    public function resolve($parts, $page) {
+        if (empty($parts)) {
+            return;
+        }
+
+        $objMediaDirectoryEntry = new MediaDirectoryEntry($this->getName());
+        if (!$objMediaDirectoryEntry->arrSettings['usePrettyUrls']) {
+            return;
+        }
+
+        $detailPage = $page;
+        $slugCount = count($parts);
+        $cmd = $page->getCmd();
+        $slug = array_pop($parts);
+
+        $entryId = $objMediaDirectoryEntry->findOneBySlug($slug);
+        if ($entryId) {
+            if (substr($cmd,0,6) != 'detail') {
+                $formId = null;
+                $formData = $objMediaDirectoryEntry->getFormData();
+                foreach ($formData as $arrForm) {
+                    if ($arrForm['formCmd'] == $cmd) {
+                        $formId= $arrForm['formId'];
+                        break;
+                    }
+                }
+
+                $detailPage = $objMediaDirectoryEntry->getApplicationPageByEntry($formId);
+                if (!$detailPage) {
+                    return;
+                }
+                // TODO: we need an other method that does also load the additional infos (template, css, etc.)
+                //       this new method must also be used for symlink pages
+                $page->setContentOf($detailPage, true);
+                //$page->getFallbackContentFrom($detailPage);
+                $_GET['cmd']     = $_POST['cmd']     = $_REQUEST['cmd']     = $detailPage->getCmd();
+            }
+
+            $this->cx->getRequest()->getUrl()->setParam('eid', $entryId);
+
+            if (empty($parts)) {
+                $this->setCanonicalPage($detailPage);
+                return;
+            }
+
+            $slug = array_pop($parts);
+        }
+
+
+        // let's check if a category exists by the supplied slug
+        $objMediaDirectoryCategory = new MediaDirectoryCategory(null, null, 0, $this->getName());
+        $categoryId = $objMediaDirectoryCategory->findOneBySlug($slug);
+        if ($categoryId) {
+            $this->cx->getRequest()->getUrl()->setParam('cid', $categoryId);
+            $this->setCanonicalPage($detailPage);
+            return;
+        }
+
+        /*if (empty($parts)) {
+            return;
+        }
+
+        $objMediaDirectoryEntry = new MediaDirectoryEntry($this->getName());
+        if (!$objMediaDirectoryEntry->arrSettings['usePrettyUrls']) {
+            return;
+        }
+
+        $cmd = $page->getCmd();
+        if ($cmd == 'detail' || substr($cmd,0,6) == 'detail') {
+            $entrySlug = array_pop($parts);
+        }
+
+        $entryId = $objMediaDirectoryEntry->findOneByName($entrySlug);
+        if ($entryId) {
+            $this->cx->getRequest()->getUrl()->setParam('eid', $entryId);
+        }*/
+    }
+
+    protected function setCanonicalPage($canonicalPage) {
+        $canonicalUrl = \Cx\Core\Routing\Url::fromPage($canonicalPage, $this->cx->getRequest()->getUrl()->getParamArray());
+        header('Link: <' . $canonicalUrl->toString() . '>; rel="canonical"');
+    }
 }

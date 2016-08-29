@@ -83,6 +83,15 @@ class MediaDirectoryLibrary
     public $moduleLangVar = "MEDIADIR";
     public $moduleConstVar = "MEDIADIR";
 
+    protected $slugConversions = array(
+        '_' => '',
+        '-' => '_',
+        ' ' => '-',
+    );
+
+    protected static $category = null;
+    protected static $form = null;
+
     /*
      * @var \Cx\Core\Core\Controller\Cx
      */
@@ -911,6 +920,192 @@ EOF;
                         ->getThumbnailsFromFile(dirname($path), $path, true);
         
         return current($thumbnails);
+    }
+
+    public function getSlugFromName($name) {
+        $slug = str_replace(array_keys($this->slugConversions), $this->slugConversions, $name);
+        return urlencode($slug);
+    }
+
+    public function getNameFromSlug($slug) {
+        $slugConversions = array_reverse($this->slugConversions, true);
+        return  str_replace($slugConversions, array_keys($slugConversions), $slug);
+    }
+
+    public function getAutoSlugPath($arrEntry = null, $categoryId = null, $levelId = null) {
+        $entryId = null;
+        $entryName = null;
+        $formId = null;
+        $formCmd = null;
+        $page = null;
+
+        if (isset($arrEntry['entryId'])) {
+            $entryId = $arrEntry['entryId'];
+        }
+
+        if (isset($arrEntry['entryFields'][0])) {
+            $entryName = $arrEntry['entryFields'][0];
+        }
+
+        if (isset($arrEntry['entryFormId'])) {
+            $formId = $arrEntry['entryFormId'];
+            $formData = $this->getFormData();
+            if (isset($formData[$formId])) {
+                $formCmd = $formData[$formId]['formCmd'];
+            }
+        }
+
+        if ($categoryId) {
+            $page = $this->getApplicationPageByCategory($categoryId);
+            if ($page) {
+                $categoryId = null;
+            }
+        }
+
+        if (!$page && $entryId && $formCmd) {
+            $page = $this->getApplicationPageByForm($formCmd);
+        }
+
+        if (!$page && $categoryId) {
+            $page = $this->getMainApplicationPage();
+        }
+
+        if (!$page && $entryId) {
+            $page = $this->getApplicationPageByEntry($formId);
+        }
+
+        if (!$page) {
+            $page = $this->getMainApplicationPage();
+        }
+
+        if (!$page) {
+            return null;
+        }
+
+        $url = \Cx\Core\Routing\Url::fromPage($page);
+
+        // create human readable url if option has been enabled to do so
+        if ($this->arrSettings['usePrettyUrls']) {
+            // TODO
+            if ($levelId) {
+                $url->setParam('lid', $levelId);
+            }
+
+            
+            $url->setPath($url->getPath() . $this->getCategorySlugPath($categoryId) . $this->getEntrySlugPath($entryName));
+        } else {
+            if ($entryId) {
+                $url->setParam('eid', $entryId);
+            }
+            if ($categoryId) {
+                $url->setParam('cid', $categoryId);
+            }
+            if ($levelId) {
+                $url->setParam('lid', $levelId);
+            }
+        }
+
+        return $url;
+    }
+
+    public function getApplicationPageByCategory($categoryId) {
+        $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+
+        // fetch category specific application page (i.e. section=MediaDir&cmd=3)
+        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $categoryId, FRONTEND_LANG_ID);
+        if ($page && $page->isActive()) {
+            return $page;
+        }
+
+        return null;
+    }
+
+    protected function getApplicationPageByForm($formCmd) {
+        $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+
+        // fetch form specific application page (i.e. section=MediaDir&cmd=team)
+        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $formCmd, FRONTEND_LANG_ID);
+        if ($page && $page->isActive()) {
+            return $page;
+        }
+
+        return null;
+    }
+
+    protected function getMainApplicationPage() {
+        $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+
+        // fetch main application page (i.e. section=MediaDir)
+        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, '', FRONTEND_LANG_ID);
+        if ($page && $page->isActive()) {
+            return $page;
+        }
+
+        return null;
+    }
+
+    public function getApplicationPageByEntry($formId = null) {
+        $detailCmd = 'detail';
+        $formSpecificDetailCmd = $detailCmd . $formId;
+        $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+
+        // fetch form specific detail page (i.e. section=MediaDir&cmd=detail3)
+        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $formSpecificDetailCmd, FRONTEND_LANG_ID);
+
+        // check if form specific detail page exists
+        if (!$page || !$page->isActive()) {
+            // fetch regular detail page (section=MediaDir&cmd=detail)
+            $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $detailCmd, FRONTEND_LANG_ID);
+        }
+
+        if ($page && $page->isActive()) {
+            return $page;
+        }
+
+        return null;
+    }
+
+    public function getCategorySlugPath($categoryId) {
+        if (!$categoryId) {
+            return '';
+        }
+
+        $slugParts = array();
+        $arrCategories = $this->getCategoryData();
+        while (isset($arrCategories[$categoryId])) {
+            $slugParts[] = $this->getSlugFromName($arrCategories[$categoryId]['catName'][0]);
+            $categoryId = $arrCategories[$categoryId]['catParentId'];
+        }
+
+        if ($slugParts) {
+            return '/' . join('/', $slugParts);
+        }
+
+        return '';
+    }
+
+    public function getEntrySlugPath($entryName) {
+        if (!$entryName) {
+            return '';
+        }
+
+        return '/' . $this->getSlugFromName($entryName);
+    }
+
+    public function getCategoryData() {
+        if (!isset(self::$category)) {
+            self::$category = new MediaDirectoryCategory(null, null, 0, $this->moduleName);
+        }
+
+        return self::$category->arrCategories;
+    }
+
+    public function getFormData() {
+        if (!isset(self::$form)) {
+            self::$form = new MediaDirectoryForm(null, $this->moduleName);
+        }
+
+        return self::$form->arrForms;
     }
 
     /**
