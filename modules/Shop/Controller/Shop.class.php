@@ -1094,11 +1094,12 @@ die("Failed to update the Cart!");
         // Validate parameters
         if ($product_id && empty($category_id)) {
             $objProduct = Product::getById($product_id);
-            if ($objProduct && $objProduct->active()) {
+            if ($objProduct && $objProduct->getStatus()) {
                 $category_id = $objProduct->category_id();
             } else {
-                \CSRF::redirect(
-                    Cx\Core\Routing\Url::fromModuleAndCmd('shop', ''));
+                \Cx\Core\Csrf\Controller\Csrf::redirect(
+                    \Cx\Core\Routing\Url::fromModuleAndCmd('shop', '')
+                );
             }
             if (isset($_SESSION['shop']['previous_category_id'])) {
                 $category_id_previous = $_SESSION['shop']['previous_category_id'];
@@ -1232,16 +1233,6 @@ die("Failed to update the Cart!");
                 $flagSpecialoffer, $flagLastFive,
                 $objSorting->getOrder(),
                 self::$objCustomer && self::$objCustomer->is_reseller()
-            );
-        }
-
-        if (   isset($_REQUEST['cmd'])
-            && $_REQUEST['cmd'] == 'details'
-            && empty($arrProduct)
-        ) {
-            \Cx\Core\Csrf\Controller\Csrf::header(
-                'Location: ' .
-                \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', '')->toString()
             );
         }
 
