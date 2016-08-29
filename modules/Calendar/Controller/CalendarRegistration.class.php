@@ -301,14 +301,39 @@ class CalendarRegistration extends CalendarLibrary
         $userId = intval($data['userid']);
         
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
-        $query = 'SELECT `id`
-                    FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field`
-                   WHERE `type` = "seating"
-                   LIMIT 1';
+
+        if (   $objEvent->seriesStatus
+            && $objEvent->independentSeries
+        ) {
+            $eventDate = isset($data['registrationEventDate']) ? contrexx_input2int($data['registrationEventDate']) : $eventDate;
+
+            $endDate   = new \DateTime();
+            $endDate->modify('+10 years');
+
+            $eventManager = new CalendarEventManager(null, $endDate);
+            $eventManager->getEvent($objEvent, $eventDate, true);
+            $objEvent = $eventManager->eventList[0];
+            if (empty($objEvent)) {
+                return false;
+            }
+        }
+
+        $query = '
+            SELECT
+                `id`
+            FROM
+                `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field`
+            WHERE
+                `form` = '. $formId .'
+            AND
+                `type` = "seating"
+            LIMIT 1
+        ';
         $objResult = $objDatabase->Execute($query);
         
         $numSeating = intval($data['registrationField'][$objResult->fields['id']]);
-        $type = intval($objEvent->freePlaces - $numSeating) < 0 ? 2 : (isset($data['registrationType']) ? intval($data['registrationType']) : 1);
+        $type       =   empty($regId) && intval($objEvent->getFreePlaces() - $numSeating) < 0
+                      ? 2 : (isset($data['registrationType']) ? intval($data['registrationType']) : 1);
         $this->saveIn = intval($type);
         $paymentMethod = intval($data['paymentMethod']);
         $paid = intval($data['paid']);
@@ -396,9 +421,9 @@ class CalendarRegistration extends CalendarLibrary
             $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();
             
             $templateId     = $objEvent->emailTemplate[FRONTEND_LANG_ID];
-            $objMailManager->sendMail(intval($_REQUEST['id']), \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_CONFIRM_REG, $this->id, $templateId);
+            $objMailManager->sendMail($objEvent, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_CONFIRM_REG, $this->id, $templateId);
             
-            $objMailManager->sendMail(intval($_REQUEST['id']), \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_ALERT_REG, $this->id);
+            $objMailManager->sendMail($objEvent, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_ALERT_REG, $this->id);
         }
         
         return true;
