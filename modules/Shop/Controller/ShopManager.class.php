@@ -3259,7 +3259,7 @@ if ($test === NULL) {
             $productStatus = '';
             $productStatusValue = '';
             $productStatusPicture = 'status_red.gif';
-            if ($objProduct->active()) {
+            if ($objProduct->getStatus()) {
                 $productStatus = \Html::ATTRIBUTE_CHECKED;
                 $productStatusValue = 1;
                 $productStatusPicture = 'status_green.gif';

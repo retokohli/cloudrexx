@@ -1521,7 +1521,6 @@ if (!$limit) {
         } else {
 //\DBG::log("Orders::getSubstitutionArray(): No Coupon for Order ID $order_id");
         }
-        Products::deactivate_soldout();
         if (Vat::isEnabled()) {
 //DBG::log("Orders::getSubstitutionArray(): VAT amount: ".$objOrder->vat_amount());
             $arrSubstitution['VAT'] = array(0 => array(
