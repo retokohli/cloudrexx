@@ -372,6 +372,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         }
 
         $objFWUser = \FWUser::getFWUserObject();
+        \JS::activate('schedule-publish-tooltip', array());
 
         // initialize variables
         $paging = "";
@@ -582,7 +583,6 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     $selectedInterfaceLanguage = key($news['lang']);
                 }     
                 
-                $this->parseNewsStatusIcon($this->_objTpl, $newsId, $news, 'archive');
                 ($messageNr % 2) ? $class = 'row2' : $class = 'row1';
                 $messageNr++;
 
@@ -637,6 +637,16 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $previewLink = \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', $news['catIds']), '', array('newsid' => $newsId));
                 $previewLink .= '&newsPreview=1';
 
+                $newsStatus   = 'inactive';
+                $statusAction = 'invertStatus';
+                if ($news['status'] == 1) {
+                    $newsStatus   = 'active';
+                    if ($this->hasScheduledPublishing($news)) {
+                        $statusAction = 'edit&show=additionalTab';
+                        $newsStatus   =   $this->isActiveByScheduledPublishing($news)
+                                        ? 'scheduled active' : 'scheduled inactive';
+                    }
+                }
                 $this->_objTpl->setVariable(array(
                     'NEWS_ID'                => $newsId,
                     'NEWS_DATE'              => date(ASCMS_DATE_FORMAT, $news['date']),
@@ -651,6 +661,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 // TODO: Not in use yet. From r8465@branches/contrexx_2_1
 //                        'NEWS_FACEBOOK_SHARE_BUTTON'  => $socialNetworkTemplater->getFacebookShareButton()
                     'NEWS_PREVIEW_LINK_HREF' => $previewLink,
+                    'NEWS_STATUS_CLASS'     => $newsStatus,
+                    'NEWS_STATUS_ACTION'    => $statusAction,
                 ));
 
                 $this->_objTpl->setVariable(array(
@@ -771,7 +783,6 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 ($validatorNr % 2) ? $class = 'row2' : $class = 'row1';
                 $validatorNr++;
 
-                $this->parseNewsStatusIcon($this->_objTpl, $newsId, $news, 'unvalidate');
                 if ($news['userid'] && ($objUser = $objFWUser->objUser->getUser($news['userid']))) {
                     $author = contrexx_raw2xhtml($objUser->getUsername());
                 } else {
@@ -797,7 +808,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 } else {
                     $this->_objTpl->hideBlock('txt_languages_block_invalidated');
                 }
-                
+
+                $newsStatus   = 'inactive';
+                if ($news['status'] == 1) {
+                    $newsStatus   = 'active';
+                    if ($this->hasScheduledPublishing($news)) {
+                        $newsStatus =   $this->isActiveByScheduledPublishing($news)
+                                      ? 'scheduled active' : 'scheduled inactive';
+                    }
+                }
                 $this->_objTpl->setVariable(array(
                     'NEWS_ID'               => $newsId,
                     'NEWS_DATE'             => date(ASCMS_DATE_FORMAT, $news['date']),
@@ -808,6 +827,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     'NEWS_CATEGORY'         => contrexx_raw2xhtml($news['lang'][$selectedInterfaceLanguage]['catname']),
                     'NEWS_STATUS'           => $news['status'],
                     'NEWS_LANGUAGES'        => $langString,
+                    'NEWS_STATUS_CLASS'     => $newsStatus,
                 ));
 
                 $this->_objTpl->parse('news_validator_row');
@@ -830,51 +850,49 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
     }
 
     /**
-     * Parse the news status icon
+     * Get Scheduled Publishing status of the news
      *
-     * @param \Cx\Core\Html\Sigma $objTpl    template object
-     * @param integer             $newsId    id of the news
-     * @param array               $arrNews   array of news details
-     * @param string              $blockName name of the block
+     * @param array $arrNews News details
+     *
+     * @return boolean True when news contains the Scheduled Publishing data, false otherwise
      */
-    public function parseNewsStatusIcon(
-        \Cx\Core\Html\Sigma $objTpl, $newsId,
-        $arrNews, $blockName
-    ) {
-        global $_ARRAYLANG;
+    public function hasScheduledPublishing($arrNews)
+    {
+        return   $arrNews['startdate'] != '0000-00-00 00:00:00'
+              && $arrNews['enddate'] != '0000-00-00 00:00:00';
+    }
 
-        $statusName = 'inactive_status';
-        $action     = 'invertStatus';
-        $newsStatus = ($arrNews['status'] == 1);
-        $isNewsPublishing = !(   $arrNews['startdate'] == '0000-00-00 00:00:00'
-                             && $arrNews['enddate'] == '0000-00-00 00:00:00'
-                            );
-
-        if ($newsStatus && !$isNewsPublishing) {
-            $statusName = 'active_status';
+    /**
+     * Check whether the news is active by Scheduled Publishing
+     *
+     * @param array $arrNews News details
+     *
+     * @return boolean True when news active by Scheduled Publishing, false otherwise
+     */
+    public function isActiveByScheduledPublishing($arrNews)
+    {
+        $start = null;
+        if ($arrNews['startdate'] != '0000-00-00 00:00:00') {
+            $start = \DateTime::createFromFormat(
+                ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME,
+                $arrNews['startdate']
+            );
+        }
+        $end = null;
+        if ($arrNews['enddate'] != '0000-00-00 00:00:00') {
+            $end = \DateTime::createFromFormat(
+                ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME,
+                $arrNews['enddate']
+            );
+        }
+        if (   (!empty($start) && empty($end) && ($start->getTimestamp() > time()))
+            || (empty($start) && !empty($end) && ($end->getTimestamp() < time()))
+            || (!empty($start) && !empty($end) && !($start->getTimestamp() < time() && $end->getTimestamp() > time()))
+        ) {
+            return false;
         }
 
-        if ($newsStatus && $isNewsPublishing) {
-            $action = 'edit&show=additionalTab';
-            if (    time() > strtotime($arrNews['startdate'])
-                &&  time() < strtotime($arrNews['enddate'])
-            ) {
-                $statusName = 'active_scheduled_publishing_status';
-            } else {
-                $statusName = 'inactive_scheduled_publishing_status';
-            }
-        }
-
-        $placeholderName = 'TXT_NEWS_OVERVIEW_'.  strtoupper($statusName).'_TOOLTIP';
-        $objTpl->setVariable(array(
-            'NEWS_OVERVIEW_' .  strtoupper($blockName) . '_ACTION' => $action,
-            'NEWS_OVERVIEW_' .  strtoupper($blockName) . '_ID'     => $newsId,
-            'TXT_NEWS_OVERVIEW_' .  strtoupper($blockName) . '_STATUS_TOOLTIP'=>
-                $_ARRAYLANG[$placeholderName],
-            'NEWS_OVERVIEW_IMG_' .  strtoupper($blockName) . '_STATUS_CLASS'  =>
-                str_replace('_', '-', $statusName)
-        ));
-        $objTpl->parse('news_overview_' . strtolower($blockName) . '_status');
+        return true;
     }
 
     /**

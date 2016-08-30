@@ -47,31 +47,6 @@ $J(document).ready(function() {
 
 //-->
 </script>
-<style type="text/css">
-    span.status {
-        width: 18px;
-        height: 14px;
-        background-image: url('../core/Core/View/Media/icons/status_schedule_publish.png');
-        background-position: -34px -5px;
-        margin-top: 3px;
-        position: relative;
-        float: left;
-        margin-left: 2px;
-    }
-    span.inactive-scheduled-publishing-status {
-        background-position: -58px -5px;
-    }
-    span.active-status {
-        background-image: url('../core/Core/View/Media/icons/led_green.gif');
-        background-position: 0px;
-        background-repeat: no-repeat;
-    }
-    span.inactive-status {
-        background-image: url('../core/Core/View/Media/icons/led_red.gif');
-        background-position: 0px;
-        background-repeat: no-repeat;
-    }
-</style>
 <!-- BEGIN newstable -->
 <table class="adminlist" cellspacing="0" cellpadding="3" width="100%" border="0">
   <tr>
@@ -136,13 +111,7 @@ $J(document).ready(function() {
         <td nowrap="nowrap"><input type="checkbox" name="selectedNewsId[]" id="selectedNewsId" value="{NEWS_ID}" /></td>
         <td nowrap="nowrap">{NEWS_ID}</td>
         <td nowrap="nowrap">
-            <!-- BEGIN news_overview_archive_status -->
-            <a href="?cmd=News&amp;act={NEWS_OVERVIEW_ARCHIVE_ACTION}&amp;newsId={NEWS_OVERVIEW_ARCHIVE_ID}" title="{TXT_NEWS_OVERVIEW_ARCHIVE_STATUS_TOOLTIP}">
-                <span class="status {NEWS_OVERVIEW_IMG_ARCHIVE_STATUS_CLASS}"></span>
-            </a>
-            <span class="icon-info tooltip-trigger"></span>
-            <span class="tooltip-message">{TXT_NEWS_OVERVIEW_ARCHIVE_STATUS_TOOLTIP}</span>
-            <!-- END news_overview_archive_status -->
+            <a class="schedule_status {NEWS_STATUS_CLASS}" href="?cmd=News&amp;act={NEWS_STATUS_ACTION}&amp;newsId={NEWS_ID}"></a>
             <!-- BEGIN news_message_protected_icon --><img src="../core/Core/View/Media/icons/lock_closed.gif" width="12" height="13" alt="{TXT_NEWS_MESSAGE_PROTECTED}" /><!-- END news_message_protected_icon -->
             <!-- BEGIN news_message_not_protected_icon --><img src="../core/Core/View/Media/icons/pixel.gif" width="12" height="13" alt="{TXT_NEWS_READ_ALL_ACCESS_DESC}" /><!-- END news_message_not_protected_icon -->
         </td>
@@ -213,11 +182,7 @@ $J(document).ready(function() {
       <tr class="{NEWS_CLASS}">
         <td nowrap="nowrap"><input type="checkbox" name="selectedUnvalidatedNewsId[]" id="selectedUnvalidatedNewsId" value="{NEWS_ID}" /></td>
         <td nowrap="nowrap">
-        <!-- BEGIN news_overview_unvalidate_status -->
-            <span class="status {NEWS_OVERVIEW_IMG_UNVALIDATE_STATUS_CLASS}"></span>
-            <span class="icon-info tooltip-trigger"></span>
-            <span class="tooltip-message">{TXT_NEWS_OVERVIEW_UNVALIDATE_STATUS_TOOLTIP}</span>
-        <!-- END news_overview_unvalidate_status -->
+        <span class="schedule_status {NEWS_STATUS_CLASS}"></span>
         </td>
         <td><a href="?cmd=News&amp;act=edit&amp;newsId={NEWS_ID}&amp;validate=true">{NEWS_TITLE}</a>&nbsp;</td>
         <td nowrap="nowrap">{NEWS_LANGUAGES}&nbsp;</td>
