@@ -149,7 +149,3 @@ $_ARRAYLANG['TXT_BLOCK_TARGETING_INFO_EXCLUDE'] = 'This Content Pane will be sho
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_GLOBAL_INACTIVE'] = 'This Content Pane is not included in the global placeholder [[BLOCK_GLOBAL]]';
 $_ARRAYLANG['TXT_BLOCK_DIRECT_INFO_SHOW_ALL_PAGES'] = 'This Content Pane gets displayed on all pages in its own placeholder %s';
 $_ARRAYLANG['TXT_BLOCK_DIRECT_INFO_SHOW_SELECTED_PAGES'] = 'This Content Pane gets displayed on the following pages in its own placeholder %s:';
-$_ARRAYLANG['TXT_BLOCK_OVERVIEW_ACTIVE_STATUS_TOOLTIP'] = $_ARRAYLANG['TXT_BLOCK_ACTIVE'];
-$_ARRAYLANG['TXT_BLOCK_OVERVIEW_INACTIVE_STATUS_TOOLTIP'] = $_ARRAYLANG['TXT_BLOCK_INACTIVE'];
-$_ARRAYLANG['TXT_BLOCK_OVERVIEW_ACTIVE_SCHEDULED_PUBLISHING_STATUS_TOOLTIP'] = 'Activated by scheduled publishing';
-$_ARRAYLANG['TXT_BLOCK_OVERVIEW_INACTIVE_SCHEDULED_PUBLISHING_STATUS_TOOLTIP'] = 'Deactivated due to scheduled publishing';

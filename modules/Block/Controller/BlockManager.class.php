@@ -302,6 +302,8 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             return;
         }
 
+        \JS::activate('schedule-publish-tooltip', array());
+
         // create new ContentTree instance
         $objContentTree = new \ContentTree();
         $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
@@ -309,14 +311,6 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
         $rowNr = 0;
         foreach ($arrBlocks as $blockId => $arrBlock) {
             list($statusName, $action) = $this->getBlockStatusAndAction($arrBlock);
-            $placeholderName = 'TXT_BLOCK_OVERVIEW_'.  strtoupper($statusName).'_TOOLTIP';
-            $this->_objTpl->setVariable(array(
-                'TXT_BLOCK_OVERVIEW_STATUS_TOOLTIP' => $_ARRAYLANG[$placeholderName],
-                'BLOCK_OVERVIEW_BLOCK_ID'           => $blockId,
-                'BLOCK_OVERVIEW_PAGE_ACTION'        => $action,
-                'BLOCK_OVERVIEW_IMG_STATUS_CLASS'   => str_replace('_', '-', $statusName)
-            ));
-            $this->_objTpl->parse('block_overview_status');
 
             $blockPlaceholder = $this->blockNamePrefix . $blockId;
 
@@ -398,6 +392,8 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
                 'BLOCK_COPY'                  => sprintf($_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
                 'BLOCK_DELETE'                => sprintf($_ARRAYLANG['TXT_BLOCK_DELETE_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
                 'BLOCK_LANGUAGES_NAME'        => $langString,
+                'BLOCK_STATUS_ICON_ACTION'    => $action,
+                'BLOCK_STATUS_ICON_CLASS'     => $statusName,
             ));
             $this->_objTpl->parse('blockBlockList');
 
@@ -415,11 +411,11 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
     public function getBlockStatusAndAction($arrBlock)
     {
         if (empty($arrBlock['active'])) {
-            return array('inactive_status', 'activate');
+            return array('inactive', 'activate');
         }
 
         if (empty($arrBlock['start']) && empty($arrBlock['end'])) {
-            return array('active_status', 'deactivate');
+            return array('active', 'deactivate');
         }
 
         $currentDate = new \DateTime();
@@ -430,10 +426,10 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
         if (    $currentDate->getTimestamp() > $startDate->getTimestamp()
             &&  $currentDate->getTimestamp() < $endDate->getTimestamp()
         ) {
-            return array('active_scheduled_publishing_status', 'modify&show=additionalTab');
+            return array('scheduled active', 'modify&show=additionalTab');
         }
 
-        return array('inactive_scheduled_publishing_status', 'modify&show=additionalTab');
+        return array('scheduled inactive', 'modify&show=additionalTab');
     }
 
     /**

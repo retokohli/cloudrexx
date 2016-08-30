@@ -149,7 +149,3 @@ $_ARRAYLANG['TXT_BLOCK_TARGETING_INFO_EXCLUDE'] = 'Dieser Inhaltscontainer wird 
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_GLOBAL_INACTIVE'] = 'Dieser Inhaltscontainer wird im globalen Platzhalter [[BLOCK_GLOBAL]] nicht angezeigt';
 $_ARRAYLANG['TXT_BLOCK_DIRECT_INFO_SHOW_ALL_PAGES'] = 'Dieser Inhaltscontainer wird auf jeder Seite im eigenen Platzhalter %s angezeigt';
 $_ARRAYLANG['TXT_BLOCK_DIRECT_INFO_SHOW_SELECTED_PAGES'] = 'Dieser Inhaltscontainer wird auf den folgenden Seiten im eigenen Platzhalter %s angezeigt:';
-$_ARRAYLANG['TXT_BLOCK_OVERVIEW_ACTIVE_STATUS_TOOLTIP'] = $_ARRAYLANG['TXT_BLOCK_ACTIVE'];
-$_ARRAYLANG['TXT_BLOCK_OVERVIEW_INACTIVE_STATUS_TOOLTIP'] = $_ARRAYLANG['TXT_BLOCK_INACTIVE'];
-$_ARRAYLANG['TXT_BLOCK_OVERVIEW_ACTIVE_SCHEDULED_PUBLISHING_STATUS_TOOLTIP'] = 'Zeitgesteuerte Veröffentlichung aktiv';
-$_ARRAYLANG['TXT_BLOCK_OVERVIEW_INACTIVE_SCHEDULED_PUBLISHING_STATUS_TOOLTIP'] = 'Deaktivert aufgrund der zeitgesteuerten Veröffentlichung';

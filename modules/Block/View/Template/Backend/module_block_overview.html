@@ -56,31 +56,6 @@ function blockDeleteBlock(blockId, blockName)
         opacity: 1;
         filter: alpha(opacity=100);
     }
-    span.status {
-        width: 16px;
-        height: 14px;
-        background-image: url('../core/Core/View/Media/icons/status_schedule_publish.png');
-        background-position: -34px -5px;
-        margin-top: 3px;
-        position: relative;
-        float: left;
-        margin-left: 6px;
-    }
-    span.inactive-scheduled-publishing-status {
-        background-position: -58px -5px;
-    }
-    span.active-status {
-        width: 14px;
-        background-image: url('../core/Core/View/Media/icons/led_green.gif');
-        background-position: 0px;
-        background-repeat: no-repeat;
-    }
-    span.inactive-status {
-        width: 14px;
-        background-image: url('../core/Core/View/Media/icons/led_red.gif');
-        background-position: 0px;
-        background-repeat: no-repeat;
-    }
 </style>
 <form name="frmBlocks" method="post" action="{DIRECTORY_INDEX}?cmd=Block">
   <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
@@ -107,15 +82,9 @@ function blockDeleteBlock(blockId, blockName)
       <!-- BEGIN blockBlockList -->
         <tr class="{BLOCK_ROW_CLASS}" style="height:20px;">
           <td style="text-align:right; font-weight:bold;"><input type="checkbox" name="selectedBlockId[]" id="selectedBlockId" value="{BLOCK_ID}" /></td>
-          <!-- BEGIN block_overview_status -->
           <td style="text-align:center; font-weight:bold;">
-              <a href="index.php?cmd=Block&amp;act={BLOCK_OVERVIEW_PAGE_ACTION}&amp;blockId={BLOCK_OVERVIEW_BLOCK_ID}" title="{TXT_BLOCK_OVERVIEW_STATUS_TOOLTIP}">
-                  <span class="status {BLOCK_OVERVIEW_IMG_STATUS_CLASS}"></span>
-              </a>
-              <span class="icon-info tooltip-trigger"></span>
-              <span class="tooltip-message">{TXT_BLOCK_OVERVIEW_STATUS_TOOLTIP}</span>
+              <a class="schedule_status {BLOCK_STATUS_ICON_CLASS}" href="index.php?cmd=Block&amp;act={BLOCK_STATUS_ICON_ACTION}&amp;blockId={BLOCK_ID}"></a>
           </td>
-          <!-- END block_overview_status -->
 
           <td><input maxlength="5" size="1" value="{BLOCK_ORDER}" name="displayorder[{BLOCK_ID}]" /></td>
           <td><a href="index.php?cmd=Block&amp;act=modify&amp;blockId={BLOCK_ID}" title="{BLOCK_MODIFY}">{BLOCK_NAME}</a></td>
