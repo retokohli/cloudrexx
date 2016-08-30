@@ -3254,6 +3254,8 @@ if ($test === NULL) {
         // However, the design doesn't like it.  Limit to the current one.
         $arrLanguages = array(FRONTEND_LANG_ID => $arrLanguages[FRONTEND_LANG_ID]);
         $i = 0;
+
+        \JS::activate('schedule-publish-tooltip', array());
         foreach ($arrProducts as $objProduct) {
             $productStatus = 'inactive';
             if ($objProduct->active()) {

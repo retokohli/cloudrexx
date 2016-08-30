@@ -42,69 +42,15 @@ function shopProductsIsChecked(fieldName)
 }
 !(function($jq) {
     $jq(function(){
-        $jq('.product_status').each(function(){
+        $jq('.schedule_status').each(function(){
             if ($jq(this).hasClass('scheduled')) {
                 $jq(this).attr('href', $jq(this).attr('href') +'#content4');
             }
         });
     });
 })(cx.jQuery);
-cx.ready(function(){
-    cx.jQuery('.product_status')
-        .tooltip({
-            tip: '#tooltip_message',
-            position: 'top right',
-            track: true,
-            predelay: 200,
-            onBeforeShow: function() {
-                var statuses   = new Array();
-                var objTrigger = this.getTrigger();
-                var objTip     = this.getTip();
-                objTip.html('');
-
-                if (objTrigger.hasClass('scheduled')) {
-                    if (objTrigger.hasClass('active')) {
-                        statuses.push('{TXT_SHOP_PRODUCT_SCHEDULED_ACTIVE}');
-                    } else {
-                        statuses.push('{TXT_SHOP_PRODUCT_SCHEDULED_DEACTIVE}');
-                    }
-                } else if (objTrigger.hasClass('active')) {
-                    statuses.push('{TXT_ACTIVE}');
-                } else {
-                    statuses.push('{TXT_INACTIVE}');
-                }
-
-                if (statuses.length > 0) {
-                    objTip.html(statuses.join('<br />'));
-                }
-            }
-        });
-});
 // ]]>
 </script>
-<style type="text/css">
-    .product_status {
-        width: 18px;
-        height: 16px;
-        margin-top: 3px;
-        display: inline-block;
-    }
-    .product_status.active {
-        background: url('../core/Core/View/Media/icons/led_green.gif') no-repeat;
-    }
-    .product_status.inactive {
-        background: url('../core/Core/View/Media/icons/led_red.gif') no-repeat;
-    }
-    .product_status.scheduled {
-        background: url('../core/Core/View/Media/icons/status_schedule_publish.png') no-repeat;
-    }
-    .product_status.scheduled.active {
-        background-position: -34px -5px;
-    }
-    .product_status.scheduled.inactive {
-        background-position: -6px -5px;
-    }
-</style>
 <form name="product_search" method="get" action="index.php">
   <input type="hidden" name="cmd" value="Shop{MODULE_INDEX}" />
   <input type="hidden" name="act" value="products" />
@@ -127,7 +73,6 @@ cx.ready(function(){
   </table>
 </form>
 
-<div id="tooltip_message" class="tooltip-message"></div>
 <form name="product_list" method="post" action="index.php?cmd=Shop{MODULE_INDEX}&amp;act=products">
   <br />
   {SHOP_PRODUCT_PAGING}
@@ -174,7 +119,7 @@ cx.ready(function(){
         {SHOP_PRODUCT_ID}
         <input type="hidden" name="product_id[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_ID}" /></td>
       <td class="a_center">
-          <a class="product_status {SHOP_PRODUCT_STATUS_CLASS}"
+          <a class="schedule_status {SHOP_PRODUCT_STATUS_CLASS}"
              href="index.php?cmd=Shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}">
             &nbsp;
           </a>

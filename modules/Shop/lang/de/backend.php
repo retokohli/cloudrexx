@@ -1012,6 +1012,3 @@ $_ARRAYLANG['TXT_SHOP_PAYMENT_PAYREXX_API_SECRET'] = "API Secret";
 $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_PAYREXX'] = "Payrexx konnte auf Grund eines Konfigurationsfehlers nicht initialisiert werden.";
 $_ARRAYLANG['TXT_SHOP_SETTING_NUMOF_PRODUCTS_PER_PAGE_FRONTEND'] = "Anzahl Produkte pro Seite im Frontend";
 $_ARRAYLANG['TXT_SHOP_CHOOSE_FILE'] = 'Datei wählen';
-
-$_ARRAYLANG['TXT_SHOP_PRODUCT_SCHEDULED_DEACTIVE'] = "Deaktiviert aufgrund der zeitgesteuerten Veröffentlichung";
-$_ARRAYLANG['TXT_SHOP_PRODUCT_SCHEDULED_ACTIVE'] = "Zeitgesteuerte Veröffentlichung aktiv";
