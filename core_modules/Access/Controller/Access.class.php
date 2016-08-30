@@ -770,12 +770,20 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 '[[SENDER]]',
                 '[[LINK]]'
             );
-            $replaceTerms = array(
+            $replaceTextTerms = array(
                 $_CONFIG['domainUrl'],
-                ($isHtmlMail ? htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET) : $objUser->getUsername()),
+                $objUser->getUsername(),
                 'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
                 'http://'.$_CONFIG['domainUrl'],
-                ($isHtmlMail ? htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET) : $objUserMail->getSenderName()),
+                $objUserMail->getSenderName(),
+                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
+            );
+            $replaceHtmlTerms = array(
+                $_CONFIG['domainUrl'],
+                contrexx_raw2xhtml($objUser->getUsername()),
+                'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
+                'http://'.$_CONFIG['domainUrl'],
+                contrexx_raw2xhtml($objUserMail->getSenderName()),
                 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
             );
             if ($mail2load == 'reg_confirm') {
@@ -785,27 +793,15 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                         $objUser->objAttribute->getId()
                     );
 
-                    if (
-                        !$objAttribute->isProtected() ||
-                        (
-                            \Permission::checkAccess(
-                                $objAttribute->getAccessId(),
-                                'dynamic',
-                                true
-                            ) ||
-                            $objAttribute->checkModifyPermission()
-                        )
-                    ) {
-                        $placeholderName = strtoupper($objUser->objAttribute->getId());
-                        $searchTerms[]  = '[[USER_' . $placeholderName . ']]';
-                        if ($isHtmlMail && $objUser->objAttribute->getType() == 'text') {
-                            $replaceTerms[] = htmlentities(
-                                $objUser->getProfileAttribute($objAttribute->getId()),
-                                ENT_QUOTES, CONTREXX_CHARSET
-                            );
-                        } else {
-                            $replaceTerms[] = $objUser->getProfileAttribute($objAttribute->getId());
-                        }
+                    $placeholderName = strtoupper($objUser->objAttribute->getId());
+                    $searchTerms[]   = '[[USER_' . $placeholderName . ']]';
+                    $replaceTextTerms[] = $objUser->getProfileAttribute($objAttribute->getId());
+                    if ($isHtmlMail && $objUser->objAttribute->getType() == 'text') {
+                        $replaceHtmlTerms[] = contrexx_raw2xhtml(
+                            $objUser->getProfileAttribute($objAttribute->getId())
+                        );
+                    } else {
+                        $replaceHtmlTerms[] = $objUser->getProfileAttribute($objAttribute->getId());
                     }
                     $objUser->objAttribute->next();
                 }
@@ -815,7 +811,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $objUserMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
                 $objMail->{($objUserMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = str_replace(
                     $searchTerms,
-                    $replaceTerms,
+                    $replaceTextTerms,
                     $objUserMail->getBodyText()
                 );
             }
@@ -824,7 +820,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $objUserMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
                 $objMail->Body = str_replace(
                     $searchTerms,
-                    $replaceTerms,
+                    $replaceHtmlTerms,
                     $objUserMail->getBodyHtml()
                 );
             }
