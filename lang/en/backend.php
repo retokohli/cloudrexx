@@ -1386,3 +1386,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SYSTEM_MANAGEMENT']        = "System Mana
 
 $_ARRAYLANG['TXT_CORE_EDIT_USER_CRM_ACCOUNT'] = 'This user is a crm contact, click to open the crm contact.';
 $_ARRAYLANG['TXT_CORE_NONE'] = 'None';
+
+$_ARRAYLANG['TXT_CORE_ACTIVE'] = "Active";
+$_ARRAYLANG['TXT_CORE_INACTIVE'] = 'Inactive';
+$_ARRAYLANG['TXT_CORE_SCHEDULED_ACTIVE'] = 'Activated by scheduled publishing';
+$_ARRAYLANG['TXT_CORE_SCHEDULED_INACTIVE'] = 'Deactivated due to scheduled publishing';
