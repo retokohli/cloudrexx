@@ -3426,7 +3426,7 @@ class NewsletterManager extends NewsletterLib
         while ($i < $size) {
             $URLforReplace = $allImg[1][$i];
             
-            $replaceUrl = new \Cx\Core\Routing\Url($URLforReplace, true);
+            $replaceUrl = new \Cx\Core\Routing\Model\Entity\Url::fromString($URLforReplace, true);
             if ($replaceUrl->isInternal()) {
                 $ReplaceWith = $replaceUrl->toString();
             } else {
