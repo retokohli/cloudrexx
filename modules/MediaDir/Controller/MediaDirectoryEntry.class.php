@@ -315,6 +315,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             }
             $this->recordCount = $totalRecords->fields['found_rows'];
         }
+
+        $this->setCurrentFetchedEntryDataObject($this);
     }
 
     /**
@@ -337,7 +339,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         return $this->strBlockName;
     }
     
-    function listEntries($objTpl, $intView)
+    function listEntries($objTpl, $intView, $googleMapPlaceholder = null)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
@@ -724,6 +726,16 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 }
             case 4:
                 //Google Map
+
+                if (!isset($googleMapPlaceholder)) {
+                    $googleMapPlaceholder = $this->moduleLangVar.'_GOOGLE_MAP';
+                }
+
+                // abort in case the relevant placeholder is missing in the template
+                if (!$objTpl->placeholderExists($googleMapPlaceholder)) {
+                    break;
+                }
+
                 $objGoogleMap = new \googleMap();
                 $objGoogleMap->setMapId($this->moduleNameLC.'GoogleMap');
                 $objGoogleMap->setMapStyleClass('mapLarge');
@@ -784,7 +796,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 }
 
                 $objTpl->setVariable(array(
-                    $this->moduleLangVar.'_GOOGLE_MAP' => $objGoogleMap->getMap()
+                    $googleMapPlaceholder => $objGoogleMap->getMap()
                 ));
 
                 break;

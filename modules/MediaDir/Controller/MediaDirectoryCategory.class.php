@@ -468,6 +468,9 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrCategories[$intCategoryId]['catNumEntries'],
                 ));
 
+                // parse GoogleMap
+                $this->getCurrentFetchedEntryDataObject()->listEntries($objTpl, 4, $this->moduleLangVar.'_CATEGORY_LEVEL_GOOGLE_MAP');
+
                 if(!empty($arrCategories[$intCategoryId]['catPicture']) && $this->arrSettings['settingsShowCategoryImage'] == 1) {
                     $objTpl->parse($this->moduleNameLC.'CategoryLevelPicture');
                 } else {

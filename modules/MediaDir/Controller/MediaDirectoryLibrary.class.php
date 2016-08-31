@@ -84,6 +84,13 @@ class MediaDirectoryLibrary
     public $moduleConstVar = "MEDIADIR";
 
     /**
+     * Holds the MediaDirectoryEntry object with the most recently
+     * loaded entries (using MediaDirectoryEntry::getEntries())
+     * @var MediaDirectoryEntry
+     */
+    protected static $currentFetchedEntryDataObject = null;
+
+    /**
      * Constructor
      */
     function __construct($tplPath, $name)
@@ -933,5 +940,13 @@ EOF;
         }
         
         return $filePath;
+    }
+
+    protected function setCurrentFetchedEntryDataObject($objEntry) {
+        self::$currentFetchedEntryDataObject = $objEntry;
+    }
+
+    protected function getCurrentFetchedEntryDataObject() {
+        return self::$currentFetchedEntryDataObject;
     }
 }

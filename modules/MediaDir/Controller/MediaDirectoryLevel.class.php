@@ -466,6 +466,9 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrLevels[$intLevelId]['levelNumEntries'],
                 ));
 
+                // parse GoogleMap
+                $this->getCurrentFetchedEntryDataObject()->listEntries($objTpl, 4, $this->moduleLangVar.'_CATEGORY_LEVEL_GOOGLE_MAP');
+
                 if(!empty($arrLevels[$intLevelId]['levelPicture']) && $this->arrSettings['settingsShowLevelImage'] == 1) {
                     $objTpl->parse($this->moduleNameLC.'CategoryLevelPicture');
                 } else {
