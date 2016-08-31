@@ -42,8 +42,7 @@ class FrontendUrl extends \Cx\Core\Routing\Model\Entity\Url {
         // Throw an exception if we still were unable to locate
         // any usfull page till now
         if (!$page) {
-        \DBG::stack();
-            throw new UrlException("Unable to find a page with MODULE:$module and CMD:$cmd in language:$lang!");
+            throw new \Cx\Core\Routing\Model\Entity\UrlException("Unable to find a page with MODULE:$module and CMD:$cmd in language:$lang!");
         }
 
         return static::fromPage($page, $parameters, $scheme, true);

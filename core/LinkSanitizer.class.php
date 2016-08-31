@@ -230,7 +230,7 @@ class LinkSanitizer {
 
         if (strpos($value, '?') !== false) {
             list($path, $query) = explode('?', $value);
-            $query = \Cx\Core\Routing\Url::params2array($query);
+            $query = static::params2array($query);
         } else {
             $path = $value;
             $query = array();
@@ -251,11 +251,101 @@ class LinkSanitizer {
             $query['appview'] = $_GET['appview'];
         }
 
-        $query = \Cx\Core\Routing\Url::array2params($query);
+        $query = static::array2params($query);
 
         // replace & with &amp; but only & (not followed by amp;)
         $query = preg_replace('/&(?!amp;)/', '&amp;', $query);
         return $before.$quote.$path.'?'.$query.$quote.$after;
     }
 
+
+    /**
+     * Convert parameter string to array.
+     *
+     * @access  public
+     * @param   string      $params
+     * @return  array       $array
+     */
+    protected static function params2array($params = '') {
+        $array = array();
+        if (strpos($params, '?') !== false) {
+            list($path, $params) = explode('?', $params);
+        }
+        if (!empty($params)) {
+            $params = html_entity_decode($params, ENT_QUOTES, CONTREXX_CHARSET);
+            parse_str($params, $array);
+            if (isset($array['csrf'])) {
+                unset($array['csrf']);
+            }
+            $array = static::encodeParams($array);
+        }
+        return $array;
+    }
+
+    /**
+     * Convert array to parameter string.
+     *
+     * @access  public
+     * @param   array       $array
+     * @return  string
+     */
+    protected static function array2params($array = array()) {
+        if (isset($array['csrf'])) {
+            unset($array['csrf']);
+        }
+
+        // Decode parameters since http_build_query() encodes them by default.
+        // Otherwise the percent (which acts as escape character) of the already encoded string would be encoded again.
+        $array = static::decodeParams($array);
+
+        return http_build_query($array, null, '&');
+    }
+
+    /**
+     * Url encode passed array (key and value).
+     *
+     * @access  public
+     * @param   array       $input
+     * @return  array       $output
+     */
+    protected static function encodeParams($input = array()) {
+        $output = array();
+
+        foreach ($input as $key => $value) {
+            // First decode url before encode them (in case that the given string is already encoded).
+            // Otherwise the percent (which acts as escape character) of the already encoded string would be encoded again.
+            $key = urlencode(urldecode($key));
+
+            if (is_array($value)) {
+                $output[$key] = static::encodeParams($value);
+            } else {
+                $output[$key] = urlencode(urldecode($value));
+            }
+        }
+
+        return $output;
+    }
+
+    /**
+     * Url decode passed array (key and value).
+     *
+     * @access  public
+     * @param   array       $input
+     * @return  array       $output
+     */
+    protected static function decodeParams($input = array()) {
+        $output = array();
+
+        foreach ($input as $key => $value) {
+            $key = urldecode($key);
+
+            if (is_array($value)) {
+                $output[$key] = static::decodeParams($value);
+            } else {
+                $output[$key] = urldecode($value);
+            }
+        }
+
+        return $output;
+    }
 }

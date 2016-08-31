@@ -124,7 +124,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'readonly' => true,
                             'table' => array(
                                 'parse' => function($data, $rows) {
-                                    $url = clone \Cx\Core\Routing\Url::fromRequest();
+                                    $url = clone $this->cx->getRequest()->getUrl();
                                     $url->setMode('backend');
                                     $url->setParam('editid', $rows['id']);
                                     return '<a href="' . $url . '">' . contrexx_raw2xhtml($data) . '</a>';

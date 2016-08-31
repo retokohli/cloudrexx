@@ -169,7 +169,7 @@ class Csrf {
             return false;
         }
         
-        $url = \Cx\Core\Routing\Url::fromMagic($url);
+        $url = \Cx\Core\Routing\Model\Entity\Url::fromString($url);
         $url = $url->toString(); // use absolute url
         
         self::header('Location: '. $url);

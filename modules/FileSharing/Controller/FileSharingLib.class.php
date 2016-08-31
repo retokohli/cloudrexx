@@ -153,7 +153,7 @@ CODE;
             );
             try {
                 $objUrl = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('FileSharing', $objResult->fields['cmd'], FRONTEND_LANG_ID, $params, '', false);
-            } catch (\Cx\Core\Routing\UrlException $e) {
+            } catch (\Cx\Core\Routing\Model\Entity\UrlException $e) {
                 $objUrl = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('FileSharing', '', FRONTEND_LANG_ID, $params);
             }
             return $objUrl->toString();
@@ -180,7 +180,7 @@ CODE;
             );
             try {
                 $objUrl = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('FileSharing', $objResult->fields['cmd'], FRONTEND_LANG_ID, $params, '', false);
-            } catch (\Cx\Core\Routing\UrlException $e) {
+            } catch (\Cx\Core\Routing\Model\Entity\UrlException $e) {
                 $objUrl = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('FileSharing', '', FRONTEND_LANG_ID, $params);
             }
             return $objUrl->toString();

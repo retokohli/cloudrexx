@@ -173,7 +173,7 @@ class RewriteRule extends \Cx\Model\Base\EntityBase
         $this->continueOnMatch = $continueOnMatch;
     }
 
-    public function matches(\Cx\Core\Routing\Url $url)
+    public function matches(\Cx\Core\Routing\Model\EntityUrl $url)
     {
         return $this->getRegularExpression()->match($url->toString());
     }
@@ -181,14 +181,14 @@ class RewriteRule extends \Cx\Model\Base\EntityBase
     /**
      * Resolve
      */
-    public function resolve(\Cx\Core\Routing\Url $url, &$continue)
+    public function resolve(\Cx\Core\Routing\Model\Entity\Url $url, &$continue)
     {
         if (!$this->matches($url)) {
             return $url;
         }
 
         $continue = $this->getContinueOnMatch();
-        $newUrl = \Cx\Core\Routing\Url::fromMagic(
+        $newUrl = \Cx\Core\Routing\Model\Entity\Url::fromString(
             $this->getRegularExpression()->replace($url->toString())
         );
         \DBG::log('Redirecting to ' . $newUrl->toString());

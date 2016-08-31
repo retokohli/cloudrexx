@@ -1054,7 +1054,7 @@ class ViewGenerator {
      * @param string $parameterName name of the param
      */
     protected function setProperCancelUrl($parameterName){
-        if (!isset($this->options['cancelUrl']) || !is_a($this->options['cancelUrl'], 'Cx\Core\Routing\Url')) {
+        if (!isset($this->options['cancelUrl']) || !is_a($this->options['cancelUrl'], 'Cx\Core\Routing\Model\Entity\Url')) {
             $this->options['cancelUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
         }
         $this->options['cancelUrl']->setParam($parameterName, null);

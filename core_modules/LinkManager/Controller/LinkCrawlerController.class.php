@@ -650,7 +650,7 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
     public function isModulePage($url)
     {
         try {
-            $url  = new \Cx\Core\Routing\Url($url);
+            $url  = new \Cx\Core\Routing\Model\Entity\Url::fromString($url);
             $path = $url->getSuggestedTargetPath();
         } catch (\Exception $e) {
             $path = '';

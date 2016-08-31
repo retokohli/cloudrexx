@@ -179,7 +179,7 @@ class Navigation
 
     /**
      * getFrontendLangNavigation()
-     * @param \Cx\Core\Routing\Url $pageUrl
+     * @param \Cx\Core\Routing\Model\Entity\Url $pageUrl
      * @param boolean $langNameContraction
      * @return string 
      */
@@ -209,7 +209,7 @@ class Navigation
 
     /**
      * Sets the language placeholders in the provided template
-     * @param \Cx\Core\Routing\Url $pageUrl
+     * @param \Cx\Core\Routing\Model\Entity\Url $pageUrl
      * @param \Cx\Core\Html\Sigma $objTemplate 
      */
     public function setLanguagePlaceholders($page, $pageUrl, $objTemplate)

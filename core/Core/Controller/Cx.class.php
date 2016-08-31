@@ -150,7 +150,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Request URL
-         * @var \Cx\Core\Routing\Url
+         * @var \Cx\Core\Routing\Model\Entity\Request
          */
         protected $request = null;
 
@@ -1508,7 +1508,7 @@ namespace Cx\Core\Core\Controller {
          * @global \InitCMS $objInit
          * @global type $_LANGID
          * @global type $_CORELANG
-         * @global \Cx\Core\Routing\Url $url
+         * @global \Cx\Core\Routing\Model\Entity\Url $url
          * @param int $no Hook number
          */
         protected function legacyGlobalsHook($no) {
@@ -2204,7 +2204,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Returns the request URL
-         * @return \Cx\Core\Routing\Url Request URL
+         * @return \Cx\Core\Routing\Model\Request Request object
          */
         public function getRequest() {
             return $this->request;

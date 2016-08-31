@@ -578,7 +578,7 @@ die("Failed to get Customer for ID $customer_id");
 
             // parse the category in shop_breadcrumb
             $objTpl->setVariable(array(
-                'SHOP_BREADCRUMB_PART_SRC'  => \Cx\Core\Routing\URL::fromModuleAndCmd('Shop'.MODULE_INDEX, '', FRONTEND_LANG_ID, array('catId' => $id))->toString(),
+                'SHOP_BREADCRUMB_PART_SRC'  => \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, '', FRONTEND_LANG_ID, array('catId' => $id))->toString(),
                 'SHOP_BREADCRUMB_PART_TITLE'=> contrexx_raw2xhtml($arrShopCategory['name']),
             ));
             $objTpl->parse('shop_breadcrumb_part');
@@ -592,7 +592,7 @@ die("Failed to get Customer for ID $customer_id");
         // parse Product in shop_breadcrumb if a product is being viewed
         if ($product) {
             $objTpl->setVariable(array(
-                'SHOP_BREADCRUMB_PART_SRC'  => \Cx\Core\Routing\URL::fromModuleAndCmd('Shop'.MODULE_INDEX, '', FRONTEND_LANG_ID, array('productId' => $product->id()))->toString(),
+                'SHOP_BREADCRUMB_PART_SRC'  => \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, '', FRONTEND_LANG_ID, array('productId' => $product->id()))->toString(),
                 'SHOP_BREADCRUMB_PART_TITLE'=> contrexx_raw2xhtml($product->name()),
             ));
             $objTpl->parse('shop_breadcrumb_part');
@@ -1318,9 +1318,8 @@ die("Failed to update the Cart!");
                     self::scaleImageSizeToThumbnail($arrSize);
                     // Use the first available picture in microdata, if any
                     if (!$havePicture) {
-                        $picture_url = \Cx\Core\Routing\Url::fromCapturedRequest(
-                            $cx->getWebsiteImagesShopWebPath() . '/' . $image['img'],
-                            $cx->getWebsiteOffsetPath(), array());
+                        $picture_url = \Cx\Core\Routing\Model\Entity\Url::fromDocumentRoot();
+                        $picture_url->setPath($picture_url->getPath() . $cx->getWebsiteImagesShopWebPath() . '/' . $image['img']);
                         self::$objTemplate->setVariable(
                             'SHOP_PRODUCT_IMAGE', $picture_url->toString());
 //\DBG::log("Set image to ".$picture_url->toString());

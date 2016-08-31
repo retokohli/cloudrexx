@@ -45,7 +45,7 @@ namespace Cx\Core_Modules\LinkManager\Controller;
  * @subpackage  coremodule_linkmanager
  */
 
-class Url extends \Cx\Core\Routing\Url {
+class Url extends \Cx\Core\Routing\Model\Entity\Url {
     
     /**
      * Check if the link is internal or external link.

@@ -47,7 +47,6 @@ use Cx\Core_Modules\TemplateEditor\Model\PresetFileStorage;
 use Cx\Core_Modules\TemplateEditor\Model\PresetRepositoryException;
 use Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository;
 use Cx\Core\Core\Model\Entity\SystemComponentBackendController;
-use Cx\Core\Routing\Url;
 use Cx\Core\View\Model\Repository\ThemeRepository;
 use Cx\Core_Modules\TemplateEditor\Model\Repository\PresetRepository;
 
@@ -185,7 +184,7 @@ class BackendController extends SystemComponentBackendController
      *
      * @param $template
      *
-     * @throws \Cx\Core\Routing\UrlException
+     * @throws \Cx\Core\Routing\Model\Entity\UrlException
      */
     public function showOverview(Sigma $template)
     {
@@ -297,7 +296,7 @@ class BackendController extends SystemComponentBackendController
         }
         $template->setVariable(
             array(
-                'TEMPLATEEDITOR_IFRAME_URL' => Url::fromModuleAndCmd(
+                'TEMPLATEEDITOR_IFRAME_URL' => \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                     'home', '', null,
                     array(
                         'preview' => $this->theme->getId(),
@@ -334,7 +333,7 @@ class BackendController extends SystemComponentBackendController
                 'TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_BACK' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_BACK'],
                 'TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_STOP' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_STOP'],
                 'themeid' => $this->theme->getId(),
-                'iframeUrl' => Url::fromModuleAndCmd(
+                'iframeUrl' => \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                     'home', '', null,
                     array(
                         'preview' => $this->theme->getId(),

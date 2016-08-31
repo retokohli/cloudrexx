@@ -81,13 +81,13 @@ class CxCoreRoutingModelEntityRewriteRuleProxy extends \Cx\Core\Routing\Model\En
         return parent::setContinueOnMatch($continueOnMatch);
     }
 
-    public function matches(\Cx\Core\Routing\Url $url)
+    public function matches(\Cx\Core\Routing\Model\Entity\Url $url)
     {
         $this->_load();
         return parent::matches($url);
     }
 
-    public function resolve(\Cx\Core\Routing\Url $url, &$continue)
+    public function resolve(\Cx\Core\Routing\Model\Entity\Url $url, &$continue)
     {
         $this->_load();
         return parent::resolve($url, $continue);

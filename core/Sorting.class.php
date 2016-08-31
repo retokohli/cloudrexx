@@ -244,7 +244,7 @@ class Sorting
     {
         // Remove the order parameter name argument from the base URI
         Html::stripUriParam($uri, $this->orderUriParameter);
-        $this->baseUri = Cx\Core\Routing\Url::encode_amp($uri);
+        $this->baseUri = preg_replace('/&(?!amp;)/', '&amp;', $uri);
     }
 
 

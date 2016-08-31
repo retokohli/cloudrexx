@@ -119,9 +119,9 @@ class Paging
         // Set up the base navigation entries
         $array_paging = array(
             'first' => '<a class="pagingFirst" href="'.
-                Cx\Core\Routing\Url::encode_amp($firstUrl).'">',
+                preg_replace('/&(?!amp;)/', '&amp;', $firstUrl).'">',
             'last'  => '<a class="pagingLast" href="'.
-                Cx\Core\Routing\Url::encode_amp($lastUrl).'">',
+                preg_replace('/&(?!amp;)/', '&amp;', $lastUrl).'">',
             'total' => $numof_rows,
             'lower' => ($numof_rows ? $position + 1 : 0),
             'upper' => $numof_rows,
@@ -134,14 +134,14 @@ class Paging
             $previousUrl = clone $requestUrl;
             $previousUrl->setParam($parameter_name, ($position - $results_per_page));
             $array_paging['previous_link'] =
-                '<a href="'.Cx\Core\Routing\Url::encode_amp($previousUrl).'">';
+                '<a href="'.preg_replace('/&(?!amp;)/', '&amp;', $previousUrl).'">';
         }
         if (($numof_rows - $position) > $results_per_page) {
             $int_new_position = $position + $results_per_page;
             $nextUrl = clone $requestUrl;
             $nextUrl->setParam($parameter_name, $int_new_position);
             $array_paging['next_link'] =
-                '<a href="'.Cx\Core\Routing\Url::encode_amp($nextUrl).'">';
+                '<a href="'.preg_replace('/&(?!amp;)/', '&amp;', $nextUrl).'">';
         }
         // Add single pages, indexed by page numbers [1 .. numof_pages]
         for ($i = 1; $i <= $numof_pages; ++$i) {
@@ -153,7 +153,7 @@ class Paging
                 $pageUrl->setParam($parameter_name, (($i-1) * $results_per_page));
                 $array_paging[$i] =
                     '<a class="pagingPage'.$i.'" href="'.
-                    Cx\Core\Routing\Url::encode_amp($pageUrl).'">'.$i.'</a>';
+                    preg_replace('/&(?!amp;)/', '&amp;', $pageUrl).'">'.$i.'</a>';
             }
         }
         $paging =

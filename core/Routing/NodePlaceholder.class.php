@@ -366,7 +366,7 @@ class NodePlaceholder {
     
     /**
      * Returns the Url pointing to the same location as this placeholder
-     * @return \Cx\Core\Routing\Url Url pointing the same location as this placeholder
+     * @return \Cx\Core\Routing\Model\Entity\Url Url pointing the same location as this placeholder
      */
     public function getUrl() {
         $url = \Cx\Core\Routing\Model\Entity\Url::fromPage($this->node->getPage($this->lang));

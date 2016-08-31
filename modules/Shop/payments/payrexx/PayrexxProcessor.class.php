@@ -109,7 +109,7 @@ class PayrexxProcessor
 
         try {
             $link = $invoice->getLink() . '&RETURN_URL=' . base64_encode($successPageUrl);
-        } catch (\Cx\Core\Routing\UrlException $e) {
+        } catch (\Cx\Core\Routing\Model\Entity\UrlException $e) {
             self::$arrError[] = 'Could not find success page for shop module!';
             return false;
         }
