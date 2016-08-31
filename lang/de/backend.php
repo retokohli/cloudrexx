@@ -1454,3 +1454,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SYSTEM_MANAGEMENT']        = "Systemverwa
 
 $_ARRAYLANG['TXT_CORE_EDIT_USER_CRM_ACCOUNT'] = 'Dieser Benutzer ist verknüpft mit einem CRM Kontakt, klicken um direkt zum CRM Kontakt zu gelangen.';
 $_ARRAYLANG['TXT_CORE_NONE'] = 'Keine';
+
+$_ARRAYLANG['TXT_CORE_ACTIVE'] = "Aktiv";
+$_ARRAYLANG['TXT_CORE_INACTIVE'] = 'Inaktiv';
+$_ARRAYLANG['TXT_CORE_SCHEDULED_ACTIVE'] = 'Zeitgesteuerte Veröffentlichung aktiv';
+$_ARRAYLANG['TXT_CORE_SCHEDULED_INACTIVE'] = 'Deaktiviert aufgrund der zeitgesteuerten Veröffentlichung';
