@@ -179,7 +179,7 @@ APISETTING;
         
         $formContent .= self::closeElement('fieldset');
         
-        $form = Html::getForm('', Cx\Core\Routing\Url::fromPage($landingPage)->toString(), $formContent, 'payment-form', 'post');
+        $form = Html::getForm('', Cx\Core\Routing\Model\Entity\Url::fromPage($landingPage)->toString(), $formContent, 'payment-form', 'post');
         
         return $form;
     }

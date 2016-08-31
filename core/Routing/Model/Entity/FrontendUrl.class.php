@@ -8,6 +8,90 @@ namespace Cx\Core\Routing\Model\Entity;
 class FrontendUrl extends \Cx\Core\Routing\Model\Entity\Url {
     protected $page = null;
     
+    /**
+     * Returns an Url object for module, cmd and lang
+     * @todo There could be more than one page using the same module and cmd per lang
+     * @param string $module Module name
+     * @param string $cmd (optional) Module command, default is empty string
+     * @param int $lang (optional) Language to use, default is FRONTENT_LANG_ID
+     * @param array $parameters (optional) HTTP GET parameters to append
+     * @param string $scheme (optional) The scheme to use
+     * @param boolean $returnErrorPageOnError (optional) If set to TRUE, this method will return an URL object that point to the error page of Cloudrexx. Defaults to TRUE.
+     * @return \Cx\Core\Routing\Model\Entity\Url Url object for the supplied module, cmd and lang
+     */
+    public static function fromModuleAndCmd($module, $cmd = '', $lang = '', $parameters = array(), $scheme = '', $returnErrorPageOnError = true) {
+        if ($lang == '') {
+            $lang = FRONTEND_LANG_ID;
+        }
+        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $page = $pageRepo->findOneByModuleCmdLang($module, $cmd, $lang);
+
+        // In case we were unable to locate the requested page, we shall
+        // return the URL to the error page
+        if (!$page && $returnErrorPageOnError && $module != 'Error') {
+            $page = $pageRepo->findOneByModuleCmdLang('Error', '', $lang);
+        }
+
+        // In case we were unable to locate the requested page
+        // and were also unable to locate the error page, we shall
+        // return the URL to the Homepage
+        if (!$page && $returnErrorPageOnError) {
+            return static::fromDocumentRoot(null, $lang, $scheme);
+        }
+
+        // Throw an exception if we still were unable to locate
+        // any usfull page till now
+        if (!$page) {
+        \DBG::stack();
+            throw new UrlException("Unable to find a page with MODULE:$module and CMD:$cmd in language:$lang!");
+        }
+
+        return static::fromPage($page, $parameters, $scheme, true);
+    }
+    
+    /**
+     * Returns an Url object pointing to the documentRoot of the website
+     * @param int $lang (optional) Language to use, default is FRONTEND_LANG_ID
+     * @param string $scheme (optional) The scheme to use
+     * @return \Cx\Core\Routing\Model\Entity\Url Url object for the documentRoot of the website
+     */
+    public static function fromDocumentRoot($arrParameters = array(), $lang = '', $scheme = '') {
+        if (php_sapi_name() == 'cli') {
+            return \Cx\Core\Routing\Model\Entity\Url::fromString(
+                'file://todo' . $this->cx->getWebsiteOffsetPath()
+            );
+        }
+        if (empty($scheme)) {
+            $scheme = empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off' ? 'http' : 'https';
+        }
+        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+        $host = $domainRepository->getMainDomain()->getName();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $request = $cx->getWebsiteOffsetPath();
+        $params = '?';
+        foreach ($arrParameters as $key=>$value) {
+            $params .= $key . '=' . $value . '&';
+        }
+        $params = substr($params, 0, -1);
+        $url = \Cx\Core\Routing\Model\Entity\Url::fromString(
+            $scheme . '://' . $host . '/' . $request . $params
+        );
+        return $url;
+    }
+    
+    /**
+     * Returns the URL object for a page
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page to get the URL to
+     * @param array $parameters (optional) HTTP GET parameters to append
+     * @param string $scheme (optional) The scheme to use
+     * @return \Cx\Core\Routing\Model\Entity\Url Url object for the supplied page
+     */
+    public static function fromPage($page, $parameters = array(), $scheme = '') {
+        $url = static::fromDocumentRoot($parameters, $page->getLang(), $scheme);
+        $url->setPath($url->getPath() . $page->getPath());
+        return $url;
+    }
+    
     public function getPage() {
         if ($this->page) {
             return $this->page;

@@ -102,7 +102,7 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             if (empty($searchData['redirect'])) {
                 $newsId         = $searchData['id'];
                 $newsCategories = $objNewsLib->getCategoriesByNewsId($newsId);
-                $objUrl         = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                $objUrl         = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                                         'News',
                                         $objNewsLib->findCmdById(
                                             'details', array_keys($newsCategories)

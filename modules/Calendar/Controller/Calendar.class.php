@@ -200,7 +200,7 @@ class Calendar extends CalendarLibrary
                 if( $id!= null && $_GET['date'] != null) {
                     self::showEvent();
                 } else {
-                    \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName));
+                    \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd($this->moduleName));
                     exit();
                 }
                 break;
@@ -792,7 +792,7 @@ UPLOADER;
         global $_ARRAYLANG, $_CORELANG, $_LANGID;
 
         if (empty($this->objEventManager->eventList)) {
-            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName));
+            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd($this->moduleName));
             exit;
         }
         
@@ -1188,11 +1188,11 @@ JAVASCRIPT;
         $objEventManager->getEventList();  
         $this->_objTpl->setTemplate($this->pageContent);
         if ($_REQUEST['cmd'] == 'boxes') {
-            $objEventManager->calendarBoxUrl         = \Cx\Core\Routing\Url::fromModuleAndCmd('Calendar', 'boxes')->toString()."?act=list";
-            $objEventManager->calendarBoxMonthNavUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Calendar', 'boxes')->toString();
+            $objEventManager->calendarBoxUrl         = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Calendar', 'boxes')->toString()."?act=list";
+            $objEventManager->calendarBoxMonthNavUrl = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Calendar', 'boxes')->toString();
         } else {
-            $objEventManager->calendarBoxUrl         = \Cx\Core\Routing\Url::fromModuleAndCmd('Calendar', '')->toString()."?act=list";
-            $objEventManager->calendarBoxMonthNavUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Calendar', '')->toString();
+            $objEventManager->calendarBoxUrl         = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Calendar', '')->toString()."?act=list";
+            $objEventManager->calendarBoxMonthNavUrl = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Calendar', '')->toString();
         }
         
         if (empty($_GET['catid'])) {

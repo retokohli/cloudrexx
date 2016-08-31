@@ -606,7 +606,7 @@ class PriceList
     static function getUrl($list_id)
     {
         return
-            \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', '', '',
+            \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', '', '',
                 array('act' => 'pricelist', 'list_id' => $list_id, )
             )->toString();
     }

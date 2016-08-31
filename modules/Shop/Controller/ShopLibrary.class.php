@@ -332,7 +332,7 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
                         // Local time, as configured by $_CONFIG['timezone']
                         date_timestamp_get(date_create())),
                 'ROOT_URL' =>
-                    \Cx\Core\Routing\Url::fromDocumentRoot()->toString());
+                    \Cx\Core\Routing\Model\Entity\Url::fromDocumentRoot()->toString());
 //DBG::log("sendConfirmationMail($order_id, $create_accounts): Subs: ".var_dump($arrSubstitution, true));
         if (empty($arrSubstitution)) return false;
         // Prepared template for order confirmation
@@ -409,7 +409,7 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
     {
         return array(
             'SHOP_COMPANY' => \Cx\Core\Setting\Controller\Setting::getValue('company','Shop'),
-            'SHOP_HOMEPAGE' => \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'SHOP_HOMEPAGE' => \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                 'Shop', '', FRONTEND_LANG_ID)->toString(),
         );
     }

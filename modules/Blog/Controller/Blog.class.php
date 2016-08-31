@@ -228,7 +228,7 @@ class Blog extends \Cx\Modules\Blog\Controller\BlogLibrary  {
 
         if (count($arrNetworks) > 0) {
             $strPageUrl = urlencode(
-                \Cx\Core\Routing\Url::fromModuleAndCmd(
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                     'Blog',
                     'details',
                     '',

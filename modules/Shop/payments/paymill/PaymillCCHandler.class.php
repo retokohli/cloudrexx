@@ -234,7 +234,7 @@ APISETTING;
         
         $formContent .= self::closeElement('fieldset');
         
-        $form = Html::getForm('', Cx\Core\Routing\Url::fromPage($landingPage)->toString(), $formContent, 'card-tds-form', 'post');
+        $form = Html::getForm('', Cx\Core\Routing\Model\Entity\Url::fromPage($landingPage)->toString(), $formContent, 'card-tds-form', 'post');
         
         return $form;
     }

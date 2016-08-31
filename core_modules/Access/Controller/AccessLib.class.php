@@ -1612,7 +1612,7 @@ JS
             $arrLetters = array_merge($arrLetters, range(65, 90)); // ascii codes of characters "A" to "Z"
             $arrLetters[] = '';
             
-            $selfUri = \Cx\Core\Routing\Url::fromPage(\Cx\Core\Core\Controller\Cx::instanciate()->getPage());
+            $selfUri = \Cx\Core\Routing\Model\Entity\Url::fromPage(\Cx\Core\Core\Controller\Cx::instanciate()->getPage());
 
             foreach ($arrLetters as $letter) {
                 switch ($letter) {

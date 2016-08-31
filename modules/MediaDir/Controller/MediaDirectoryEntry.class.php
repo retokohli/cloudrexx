@@ -1552,7 +1552,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             //check the default overview exists if not, dont show the corresponding entry in entry
             switch (true) {
                 case $entries->checkPageCmd('detail' . $entry['entryFormId']):
-                    $pageUrlResult = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    $pageUrlResult = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                                         $entries->moduleName, 
                                         'detail' . $entry['entryFormId'], 
                                         FRONTEND_LANG_ID, 
@@ -1577,7 +1577,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                     $entryKeys = $pageCmdExists ? array_keys($formEntries[$entryForm['formCmd']]->arrEntries) : array_keys($defaultEntries->arrEntries);
                     $entryPos  = array_search($entry['entryId'], $entryKeys);
                     $position  = floor($entryPos / $entriesPerPage);
-                    $pageUrlResult = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    $pageUrlResult = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                                         $entries->moduleName, 
                                         $pageCmd, 
                                         FRONTEND_LANG_ID,

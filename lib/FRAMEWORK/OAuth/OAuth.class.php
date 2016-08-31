@@ -180,7 +180,7 @@ abstract class OAuth implements OAuthInterface
                 $_SESSION['user_id'] = $objUser->getId();
 
                 // generate url for sign up page and redirect
-                $signUpPageUri = \Cx\Core\Routing\Url::fromModuleAndCmd('Access', 'signup');
+                $signUpPageUri = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Access', 'signup');
                 \Cx\Core\Csrf\Controller\Csrf::header('Location: ' . $signUpPageUri->__toString());
                 exit;
             }

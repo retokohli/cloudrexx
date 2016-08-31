@@ -1456,14 +1456,14 @@ EOF;
         
         $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
         $objRSSWriter->channelTitle = $this->_arrSettings['feed_title'];
-        $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+        $objRSSWriter->channelLink = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
             'Podcast'
         )->toString();
         $objRSSWriter->channelDescription = $this->_arrSettings['feed_description'];
         $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
 
         if (!empty($this->_arrSettings['feed_image'])) {
-            $channelImageUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
+            $channelImageUrl = \Cx\Core\Routing\Model\Entity\Url::fromDocumentRoot();
             $channelImageUrl->setMode('backend');
             $channelImageUrl->setPath(substr(
                 $this->_arrSettings['feed_image'],
@@ -1486,7 +1486,7 @@ EOF;
                     $arrCategories,
                     array(
                         'domain' => htmlspecialchars(
-                            \Cx\Core\Routing\Url::fromModuleAndCmd(
+                            \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                                 'Podcast',
                                 '',
                                 '',
@@ -1505,7 +1505,7 @@ EOF;
             $objRSSWriter->addItem(
                 htmlspecialchars($arrMedium['title'], ENT_QUOTES, CONTREXX_CHARSET),
                 contrexx_raw2xhtml(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                         'Podcast',
                         '',
                         '',

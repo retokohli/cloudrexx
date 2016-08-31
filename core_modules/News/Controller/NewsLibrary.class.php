@@ -151,7 +151,7 @@ class NewsLibrary
 
         $html = '';
         if (!empty($monthlyStats)) {
-            $newsArchiveLink = \Cx\Core\Routing\Url::fromModuleAndCmd('News', 'archive');
+            $newsArchiveLink = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('News', 'archive');
             
             $html  = '<ul class="news_archive">';
             foreach ($monthlyStats as $key => $value) {
@@ -191,7 +191,7 @@ class NewsLibrary
             if ($catId != $this->nestedSetRootId) {
                 $html .= "<li>";
                 
-                $newsUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('News');                
+                $newsUrl = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('News');                
                 $newsUrl->setParam('category', $catId);
                 
                 $html .= '<a href="'.$newsUrl.'" title="'.contrexx_raw2xhtml($categoriesLang[$catId][FRONTEND_LANG_ID]).'">'.contrexx_raw2xhtml($categoriesLang[$catId][FRONTEND_LANG_ID]).'</a>';
@@ -1620,7 +1620,7 @@ class NewsLibrary
                         array(
                             'TXT_NEWS_PREVIOUS_LINK' => $_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK'],
                             'NEWS_PREVIOUS_TITLE' => $preNewsDetails['newsTitle'],
-                            'NEWS_PREVIOUS_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd(
+                            'NEWS_PREVIOUS_LINK' => \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                                     'news', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($arrNewsCategories),$arrCategory)),
                                     FRONTEND_LANG_ID, array('newsid' => contrexx_raw2xhtml($preNewsDetails['id']))
                             )
@@ -1639,7 +1639,7 @@ class NewsLibrary
                         array(
                             'TXT_NEWS_NEXT_LINK' => $_ARRAYLANG['TXT_NEWS_NEXT_LINK'],
                             'NEWS_NEXT_TITLE' => $nextNewsDetails['newsTitle'],
-                            'NEWS_NEXT_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd(
+                            'NEWS_NEXT_LINK' => \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                                     'news', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($arrNewsCategories),$arrCategory)),
                                     FRONTEND_LANG_ID, array('newsid' => contrexx_raw2xhtml($nextNewsDetails['id']))
                             )
@@ -1991,7 +1991,7 @@ class NewsLibrary
                 $newsUrl = empty($currentRelatedDetails['redirect'])
                     ? (empty($currentRelatedDetails['newscontent'])
                         ? ''
-                        : \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        : \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                             'news',
                             $this->findCmdById('details', array_keys($categories)),
                             FRONTEND_LANG_ID,
@@ -2356,7 +2356,7 @@ class NewsLibrary
         ) {
             foreach ($tags as $tag) {
                 ++$currentTagCount;
-                $newsLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                $newsLink = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                     'news',
                     '',
                     FRONTEND_LANG_ID,

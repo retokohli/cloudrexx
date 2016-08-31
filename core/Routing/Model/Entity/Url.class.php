@@ -74,6 +74,57 @@ abstract class Url extends \Cx\Lib\Net\Model\Entity\Url {
     }
     
     /**
+     * Returns an Url object for module, cmd and lang
+     * @todo There could be more than one page using the same module and cmd per lang
+     * @param string $module Module name
+     * @param string $cmd (optional) Module command, default is empty string
+     * @param int $lang (optional) Language to use, default is FRONTENT_LANG_ID
+     * @param array $parameters (optional) HTTP GET parameters to append
+     * @param string $scheme (optional) The scheme to use
+     * @param boolean $returnErrorPageOnError (optional) If set to TRUE, this method will return an URL object that point to the error page of Cloudrexx. Defaults to TRUE.
+     * @return \Cx\Core\Routing\Model\Entity\Url Url object for the supplied module, cmd and lang
+     */
+    public static function fromModuleAndCmd($module, $cmd = '', $lang = '', $parameters = array(), $scheme = '', $returnErrorPageOnError = true) {
+        return \Cx\Core\Routing\Model\Entity\FrontendUrl::fromModuleAndCmd(
+            $module,
+            $cmd,
+            $lang,
+            $parameters,
+            $scheme,
+            $returnErrorPageOnError
+        );
+    }
+    
+    /**
+     * Returns an Url object pointing to the documentRoot of the website
+     * @param int $lang (optional) Language to use, default is FRONTEND_LANG_ID
+     * @param string $scheme (optional) The protocol to use
+     * @return \Cx\Core\Routing\Model\Entity\Url Url object for the documentRoot of the website
+     */
+    public static function fromDocumentRoot($arrParameters = array(), $lang = '', $scheme = '') {
+        return \Cx\Core\Routing\Model\Entity\FrontendUrl::fromModuleAndCmd(
+            $arrParameters,
+            $lang,
+            $scheme
+        );
+    }
+    
+    /**
+     * Returns the URL object for a page
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page to get the URL to
+     * @param array $parameters (optional) HTTP GET parameters to append
+     * @param string $protocol (optional) The protocol to use
+     * @return \Cx\Core\Routing\Model\Entity\Url Url object for the supplied page
+     */
+    public static function fromPage($page, $parameters = array(), $scheme = '') {
+        return \Cx\Core\Routing\Model\Entity\FrontendUrl::fromModuleAndCmd(
+            $page,
+            $parameters,
+            $scheme
+        );
+    }
+    
+    /**
      * Tells the mode for an internal Url
      * @param \Cx\Lib\Net\Model\Entity\Url Internal Url
      * @throws UrlException if Url is not internal

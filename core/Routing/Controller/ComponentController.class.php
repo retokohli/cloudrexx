@@ -110,7 +110,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
         // TODO: this should be an internal redirect!
-        $redirectUrl = \Cx\Core\Routing\Url::fromPage($page);
+        $redirectUrl = \Cx\Core\Routing\Model\Entity\Url::fromPage($page);
         \Cx\Core\Csrf\Controller\CSRF::redirect($redirectUrl);
     }    
 }

@@ -634,7 +634,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     $this->_objTpl->hideBlock('txt_languages_block');
                 }
                 
-                $previewLink = \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', $news['catIds']), '', array('newsid' => $newsId));
+                $previewLink = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('News', $this->findCmdById('details', $news['catIds']), '', array('newsid' => $newsId));
                 $previewLink .= '&newsPreview=1';
 
                 $this->_objTpl->setVariable(array(
@@ -3145,7 +3145,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                         $objRSSWriter->channelTitle = contrexx_raw2xml($this->arrSettings['news_feed_title'][$LangId]);
                         $objRSSWriter->channelDescription = contrexx_raw2xml($this->arrSettings['news_feed_description'][$LangId]);
-                        $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        $objRSSWriter->channelLink = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                             'News',
                             '',
                             $LangId
@@ -3154,7 +3154,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
 
                         if (!empty($this->arrSettings['news_feed_image'])) {
-                            $channelImageUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
+                            $channelImageUrl = \Cx\Core\Routing\Model\Entity\Url::fromDocumentRoot();
                             $channelImageUrl->setMode('backend');
                             $channelImageUrl->setPath(substr(
                                 $this->arrSettings['news_feed_image'],
@@ -3173,7 +3173,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         foreach ($arrNews as $newsId => $arrNewsItem) {
                             list($cmdDetail, $categories) = $this->getRssNewsLinks($LangId, $arrNewsItem['categoryIds'], $categoryDetails[$LangId]);
 
-                            $itemUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                            $itemUrl = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                                 'News',
                                 $cmdDetail,
                                 $LangId,
@@ -3211,7 +3211,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         foreach ($arrNews as $newsId => $arrNewsItem) {
                             list($cmdDetail, $categories) = $this->getRssNewsLinks($LangId, $arrNewsItem['categoryIds'], $categoryDetails[$LangId]);
 
-                            $itemUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                            $itemUrl = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                                 'News',
                                 $cmdDetail,
                                 $LangId,
@@ -3282,7 +3282,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $cmdDetail = !empty($currentCmdDetail) ? $currentCmdDetail : $cmdDetail;
             $cmdOverview = $this->findCmdById('', array($newsCategoryId));
             
-            $overviewUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            $overviewUrl = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                 'News',
                 $cmdOverview,
                 $LangId,

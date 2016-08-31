@@ -495,7 +495,7 @@ class Yellowpay
             $arrFields['LANGUAGE'] = strtolower(FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)).'_'.strtoupper(FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID));
         }
 
-        $baseUri = Cx\Core\Routing\Url::fromPage($landingPage)->toString().'?result=';
+        $baseUri = Cx\Core\Routing\Model\Entity\Url::fromPage($landingPage)->toString().'?result=';
         if (empty($arrFields['ACCEPTURL'])) {
             $arrFields['ACCEPTURL'] = $baseUri.'1';
         }

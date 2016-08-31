@@ -694,7 +694,7 @@ class Counter
         if (!$page) {
             return;
         }
-        $url = \Cx\Core\Routing\Url::fromPage($page);
+        $url = \Cx\Core\Routing\Model\Entity\Url::fromPage($page);
         if ($page) {
             $objDb->Execute('
                 UPDATE `'.DBPREFIX.'stats_requests`

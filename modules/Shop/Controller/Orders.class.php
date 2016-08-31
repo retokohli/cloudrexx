@@ -279,7 +279,7 @@ class Orders
         }
         $uri = ($backend
             ? \Html::getRelativeUri_entities()
-            : \Cx\Core\Routing\Url::fromModuleAndCmd(
+            : \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                 'Shop', 'history', NULL));
 //DBG::log("Orders::view_list(): URI: $uri");
 // TODO: Better use a redirect after doing stuff!

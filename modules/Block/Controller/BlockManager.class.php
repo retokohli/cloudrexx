@@ -428,7 +428,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             if (!$page) {
                 continue;
             }
-            $selectedPages[] = sprintf($pageLinkTemplate, \Cx\Core\Routing\Url::fromPage($page)->toString(), contrexx_raw2xhtml($arrData['catname']));
+            $selectedPages[] = sprintf($pageLinkTemplate, \Cx\Core\Routing\Model\Entity\Url::fromPage($page)->toString(), contrexx_raw2xhtml($arrData['catname']));
         }
         if ($selectedPages) {
             $strSelectedPages = '<ul>'.implode($selectedPages).'</ul>';

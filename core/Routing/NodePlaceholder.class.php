@@ -211,6 +211,10 @@ class NodePlaceholder {
         if ($nodeId) {
             $node = $nodeRepo->findOneById($nodeId);
         } else {
+            if (empty($cmd) && $lang != 0) {
+                $cmd = $lang;
+                $lang = 0;
+            }
             $page = $pageRepo->findOneBy(array(
                 'module' => $module,
                 'cmd' => $cmd,
@@ -365,7 +369,7 @@ class NodePlaceholder {
      * @return \Cx\Core\Routing\Url Url pointing the same location as this placeholder
      */
     public function getUrl() {
-        $url = \Cx\Core\Routing\Url::fromNode($this->node, $this->lang);
+        $url = \Cx\Core\Routing\Model\Entity\Url::fromPage($this->node->getPage($this->lang));
         $url->setParams($this->arguments);
         return $url;
     }

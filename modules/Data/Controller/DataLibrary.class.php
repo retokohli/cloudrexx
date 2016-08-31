@@ -1140,7 +1140,7 @@ class DataLibrary
         if (intval($this->_arrSettings['data_rss_activated'])) {
 
             $strItemLink = contrexx_raw2xhtml(
-                \Cx\Core\Routing\Url::fromModuleAndCmd(
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                     'Data',
                     'details',
                     '',
@@ -1158,7 +1158,7 @@ class DataLibrary
 
                     $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                     $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_DATA_LIB_RSS_MESSAGES_TITLE'];
-                    $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    $objRSSWriter->channelLink = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                         'Data'
                     )->toString();
                     $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_DATA_LIB_RSS_MESSAGES_TITLE'];
@@ -1204,7 +1204,7 @@ class DataLibrary
         if (intval($this->_arrSettings['data_rss_activated'])) {
 
             $strItemLink = contrexx_raw2xhtml(
-                \Cx\Core\Routing\Url::fromModuleAndCmd(
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                     'Data',
                     'details',
                     '',
@@ -1233,7 +1233,7 @@ class DataLibrary
 
                     $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                     $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_DATA_LIB_RSS_COMMENTS_TITLE'];
-                    $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    $objRSSWriter->channelLink = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                         'Data'
                     )->toString();
                     $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_DATA_LIB_RSS_COMMENTS_TITLE'];
@@ -1282,7 +1282,7 @@ class DataLibrary
         if (intval($this->_arrSettings['data_rss_activated'])) {
 
             $strItemLink = contrexx_raw2xhtml(
-                \Cx\Core\Routing\Url::fromModuleAndCmd(
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                     'Data',
                     'details',
                     '',
@@ -1312,7 +1312,7 @@ class DataLibrary
                             $objRSSWriter = new \RSSWriter();
                             $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                             $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_DATA_LIB_RSS_MESSAGES_TITLE'];
-                            $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                            $objRSSWriter->channelLink = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                                 'Data'
                             )->toString();
                             $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_DATA_LIB_RSS_MESSAGES_TITLE'].' ('.$arrCategoryTranslation[$intLanguageId]['name'].')';

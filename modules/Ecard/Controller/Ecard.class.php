@@ -260,7 +260,7 @@ class Ecard
 
         // Initialize variables
         $code = substr(md5(rand()), 1, 10);
-        $url = \Cx\Core\Routing\Url::fromModuleAndCmd(
+        $url = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
             'Ecard',
             'show',
             '',

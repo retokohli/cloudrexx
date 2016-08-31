@@ -265,27 +265,27 @@ class PaymentProcessing
         switch (self::getPaymentProcessorName()) {
             case 'internal':
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '', 
+                    \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '', 
                         array('result' => 1, 'handler' => 'internal')
                     )
                 );
             case 'internal_lsv':
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
+                    \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
                         array('result' => 1, 'handler' => 'internal')
                     )
                 );
             case 'internal_creditcard':
                 // Not implemented
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
+                    \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
                         array('result' => 1, 'handler' => 'internal')
                     )
                 );
             case 'internal_debit':
                 // Not implemented
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
+                    \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
                         array('result' => 1, 'handler' => 'internal')
                     )
                 );
@@ -388,16 +388,16 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
             'CURRENCY'      => Currency::getActiveCurrencyCode(),
             'ORDERID'       => $_SESSION['shop']['order_id'],
             'ACCOUNTID'     => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id','Shop'),
-            'SUCCESSLINK'   => \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '', 
+            'SUCCESSLINK'   => \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '', 
                                    array('result' => 1, 'handler' => 'saferpay'))->toString(),
-            'FAILLINK'      => \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '', 
+            'FAILLINK'      => \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '', 
                                    array('result' => 0, 'handler' => 'saferpay'))->toString(),
-            'BACKLINK'      => \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '', 
+            'BACKLINK'      => \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '', 
                                    array('result' => 2, 'handler' => 'saferpay'))->toString(),
             'DESCRIPTION'   => '"'.$_ARRAYLANG['TXT_ORDER_NR'].
                                 ' '.$_SESSION['shop']['order_id'].'"',
             'LANGID'        => \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
-            'NOTIFYURL'     => \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '', 
+            'NOTIFYURL'     => \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '', 
                                    array('result' => '-1', 'handler' => 'saferpay'))->toString(),
             'ALLOWCOLLECT'  => 'no',
             'DELIVERY'      => 'no',

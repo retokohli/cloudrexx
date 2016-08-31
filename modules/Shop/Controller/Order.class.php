@@ -1851,7 +1851,7 @@ class Order
             // Frontend: Order history ONLY.  Repeat the Order, go to cart
             $objTemplate->setVariable(array(
                 'SHOP_ACTION_URI_ENCODED' =>
-                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'cart'),
+                    \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'cart'),
             ));
         }
         $ppName = '';

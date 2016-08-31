@@ -449,7 +449,7 @@ die("Failed to get Customer for ID $customer_id");
             }
             $objTpl->setVariable(
                 'SHOP_LOGIN_ACTION',
-                \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'login').
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'login').
                 '?redirect='.$redirect);
         }
         $objTpl->setVariable(array(
@@ -700,7 +700,7 @@ die("Failed to get Customer for ID $customer_id");
         \ContrexxJavascript::getInstance()->setVariable('TXT_SHOP_CART_IS_LOADING', $_ARRAYLANG['TXT_SHOP_CART_IS_LOADING'] ,'shop/cart');
         \ContrexxJavascript::getInstance()->setVariable('TXT_SHOP_COULD_NOT_LOAD_CART', $_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART'] ,'shop/cart');
         \ContrexxJavascript::getInstance()->setVariable('TXT_EMPTY_SHOPPING_CART', $_ARRAYLANG['TXT_EMPTY_SHOPPING_CART'] ,'shop/cart');
-        \ContrexxJavascript::getInstance()->setVariable("url", (String)\Cx\Core\Routing\URL::fromModuleAndCMd('Shop'.MODULE_INDEX, 'cart', FRONTEND_LANG_ID, array('remoteJs' => 'addProduct')), 'shop/cart');
+        \ContrexxJavascript::getInstance()->setVariable('url', (string)\Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'cart', FRONTEND_LANG_ID, array('remoteJs' => 'addProduct')), 'shop/cart');
         \JS::registerJS(substr(\Cx\Core\Core\Controller\Cx::instanciate()->getModuleFolderName() . '/Shop/View/Script/cart.js', 1));
         \JS::registerCode(
             "cartTpl = '".preg_replace(
@@ -735,7 +735,7 @@ die("Failed to get Customer for ID $customer_id");
             Currency::getActiveCurrencySymbol();
         $cartInfo =
             '<a href="'.
-            \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'cart').
+            \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'cart').
             '" title="'.$cartInfo.'">'.$cartInfo.'</a>';
         return $cartInfo;
     }
@@ -1099,7 +1099,7 @@ die("Failed to update the Cart!");
         }
         $shopMenu =
             '<form method="post" action="'.
-            \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', '').'">'.
+            \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', '').'">'.
             '<input type="text" name="term" value="'.
             htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET).
             '" style="width:150px;" />&nbsp;'.
@@ -1266,7 +1266,7 @@ die("Failed to update the Cart!");
         ));
         // Global microdata: Seller information
         $seller_url =
-            \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', '')->toString();
+            \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', '')->toString();
         $seller_name = \Cx\Core\Setting\Controller\Setting::getValue('company','Shop');
         if (empty ($seller_name)) $seller_name = $seller_url;
         self::$objTemplate->setVariable(array(
@@ -1414,7 +1414,7 @@ die("Failed to update the Cart!");
             $detailLink = null;
             // Detaillink is required for microdata (even when longdesc
             // is empty)
-            $detail_url = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            $detail_url = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                 'Shop', 'details', FRONTEND_LANG_ID,
                 array('productId' => $objProduct->id()))->toString();
             self::$objTemplate->setVariable(
@@ -2276,7 +2276,7 @@ die("Failed to update the Cart!");
         // go to the next step
         if (isset($_POST['continue']) && !\Message::have("error")) {
             \Cx\Core\Csrf\Controller\Csrf::redirect(
-                \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'login'));
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'login'));
         }
     }
 
@@ -2304,35 +2304,35 @@ die("Failed to update the Cart!");
 // be registered Customers already!
 //        if (\Cx\Core\Setting\Controller\Setting::getValue('register','Shop') == self::REGISTER_NONE) {
 //            \Cx\Core\Csrf\Controller\Csrf::redirect(
-//                \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'account'));
+//                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'account'));
 //        }
         if (   isset($_POST['baccount'])
             || isset($_POST['bnoaccount'])
             || self::verify_account(true) // Silent, no messages here!
         ) {
             \Cx\Core\Csrf\Controller\Csrf::redirect(
-                \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'account'));
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'account'));
         }
         if (isset($_POST['blogin'])) {
             \Cx\Core\Csrf\Controller\Csrf::redirect(
-                \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'login').
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'login').
                 '?redirect='.
                 base64_encode(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'account')));
+                    \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'account')));
         }
         if (self::_authenticate()) {
             \Cx\Core\Csrf\Controller\Csrf::redirect(
-                \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'account'));
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'account'));
         }
         $redirect = base64_encode(
-            \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'account'));
+            \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'account'));
         if (isset($_REQUEST['redirect'])) {
             $redirect = contrexx_input2raw($_REQUEST['redirect']);
         }
         self::$objTemplate->setGlobalVariable($_ARRAYLANG
           + array(
           'SHOP_LOGIN_REDIRECT' => base64_encode(
-            \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'account'))
+            \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'account'))
         ));
         switch (\Cx\Core\Setting\Controller\Setting::getValue('register','Shop')) {
             case self::REGISTER_MANDATORY:
@@ -2448,7 +2448,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             'SHOP_ACCOUNT_PHONE' => htmlentities($phone, ENT_QUOTES, CONTREXX_CHARSET),
             'SHOP_ACCOUNT_FAX' => htmlentities($fax, ENT_QUOTES, CONTREXX_CHARSET),
             'SHOP_ACCOUNT_ACTION' =>
-                \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'account'),
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'account'),
             // New template - since 2.1.0
             'SHOP_ACCOUNT_COUNTRY_MENUOPTIONS' =>
                 \Cx\Core\Country\Controller\Country::getMenuoptions($country_id),
@@ -2684,12 +2684,12 @@ die("Shop::processRedirect(): This method is obsolete!");
                 if ($silent) return false;
             return \Message::error(sprintf(
                 $_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER'],
-                \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'login').
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'login').
                 '?redirect='.base64_encode(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'account'))))
+                    \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'account'))))
                 || \Message::error(sprintf(
                 $_ARRAYLANG['TXT_SHOP_GOTO_SENDPASS'],
-                \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'sendpass')));
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'sendpass')));
             }
             \Message::restore();
         }
@@ -2712,7 +2712,7 @@ die("Shop::processRedirect(): This method is obsolete!");
     {
         if (Cart::is_empty()) {
             \Cx\Core\Csrf\Controller\Csrf::redirect(
-                \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', '', '',
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', '', '',
                     (intval($_SESSION['shop']['previous_category_id']) > 0
                         ? 'catId='.
                             intval($_SESSION['shop']['previous_category_id'])
@@ -2732,10 +2732,10 @@ die("Shop::processRedirect(): This method is obsolete!");
         if ($page_repository->findOneByModuleCmdLang(
             'Shop', 'payment', FRONTEND_LANG_ID)) {
             \Cx\Core\Csrf\Controller\Csrf::redirect(
-                \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'payment'));
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'payment'));
         }
         \Cx\Core\Csrf\Controller\Csrf::redirect(
-            \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'confirm'));
+            \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'confirm'));
     }
 
 
@@ -2753,7 +2753,7 @@ die("Shop::processRedirect(): This method is obsolete!");
     {
         if (!self::verifySessionAddress()) {
             \Cx\Core\Csrf\Controller\Csrf::redirect(
-                \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', ''));
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', ''));
         }
         // Call that first, because the _initPaymentDetails method requires the
         // Shipment ID which it stores in the session array.
@@ -2986,7 +2986,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         if ($status) {
             // Everything is set and valid
             \Cx\Core\Csrf\Controller\Csrf::redirect(
-                \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'confirm'));
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'confirm'));
         }
         // Something is missing od invalid
         return false;
@@ -3207,7 +3207,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         // If the cart or address is missing, return to the shop
         if (!self::verifySessionAddress()) {
             \Cx\Core\Csrf\Controller\Csrf::redirect(
-                \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', ''));
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', ''));
         }
         self::$show_currency_navbar = false;
         // The Customer clicked the confirm button; this must not be the case
@@ -3366,7 +3366,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             // Shipment is required, so
             if (empty($_SESSION['shop']['shipperId'])) {
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'payment'));
+                    \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'payment'));
             }
             self::$objTemplate->setVariable(array(
                 'SHOP_SHIPMENT_PRICE' => Currency::formatPrice(
@@ -3420,10 +3420,10 @@ die("Shop::processRedirect(): This method is obsolete!");
             if (self::$objCustomer) {
                 \Message::error($_ARRAYLANG['TXT_SHOP_CUSTOMER_REGISTERED_EMAIL']);
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'login').
+                    \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'login').
                     '?redirect='.
                     base64_encode(
-                        \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'confirm')));
+                        \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'confirm')));
             }
 // Unregistered Customers are stored as well, as their information is needed
 // nevertheless.  Their active status, however, is set to false.
@@ -3446,7 +3446,7 @@ die("Shop::processRedirect(): This method is obsolete!");
 //\DBG::log("Password: $password (session: {$_SESSION['shop']['password']})");
                 if (!self::$objCustomer->password($password)) {
                     \Message::error($_ARRAYLANG['TXT_INVALID_PASSWORD']);
-                    \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd(
+                    \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                         'Shop', 'account'));
                 }
                 self::$objCustomer->active(empty($_SESSION['shop']['dont_register']));
@@ -3472,7 +3472,7 @@ die("Shop::processRedirect(): This method is obsolete!");
 //\DBG::log("Shop::process(): ERROR: Missing reseller group");
             \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_USERGROUP_INVALID']);
             \Cx\Core\Csrf\Controller\Csrf::redirect(
-                \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', ''));
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', ''));
         }
         if (!in_array($usergroup_id, $arrGroups)) {
 //\DBG::log("Shop::process(): Customer is not in Reseller group (ID $usergroup_id)");
@@ -3482,7 +3482,7 @@ die("Shop::processRedirect(): This method is obsolete!");
 //\DBG::log("Shop::process(): ERROR: Missing final customer group");
                 \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_USERGROUP_INVALID']);
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', ''));
+                    \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', ''));
             }
             if (!in_array($usergroup_id, $arrGroups)) {
 //\DBG::log("Shop::process(): Customer is not in final customer group (ID $usergroup_id), either");
@@ -3661,7 +3661,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                 unset($_SESSION['shop']['order_id']);
                 \Message::error($_ARRAYLANG['TXT_ERROR_ACCOUNT_INFORMATION_NOT_AVAILABLE']);
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'payment'));
+                    \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'payment'));
             }
             $query = "
                 INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_lsv (
@@ -3678,7 +3678,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                 unset($_SESSION['shop']['order_id']);
                 \Message::error($_ARRAYLANG['TXT_ERROR_INSERTING_ACCOUNT_INFORMATION']);
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'payment'));
+                    \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'payment'));
             }
         }
 
@@ -3840,9 +3840,9 @@ die("Shop::processRedirect(): This method is obsolete!");
 
         if (!self::$objCustomer) {
             \Cx\Core\Csrf\Controller\Csrf::redirect(
-                \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'login').
+                \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'login').
                 '?redirect='.base64_encode(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'changepass')));
+                    \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'changepass')));
         }
         if (isset($_POST['shopNewPassword'])) {
             if (empty($_POST['shopCurrentPassword'])) {

@@ -283,9 +283,9 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
         if ($entry['mode'] == "normal") {
             if ($this->_arrSettings['data_entry_action'] == "content") {
                 $cmd = $this->_arrSettings['data_target_cmd'];
-                $url = \Cx\Core\Routing\Url::fromModuleAndCmd('Data', $cmd, '', array('id' => $id));
+                $url = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Data', $cmd, '', array('id' => $id));
             } else {
-                $url = \Cx\Core\Routing\Url::fromModuleAndCmd('Data', '', '', array('height' => $height, 'width' => $width, 'id' => $id, 'lang' => $lang ));
+                $url = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Data', '', '', array('height' => $height, 'width' => $width, 'id' => $id, 'lang' => $lang ));
             }
         } else {
             $url = $entry['translation'][$_LANGID]['forward_url'].'&amp;id='.$id;

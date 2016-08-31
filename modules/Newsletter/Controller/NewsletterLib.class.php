@@ -819,7 +819,7 @@ class NewsletterLib
                             'l'                     => $linkId,
                             ($realUser ? 'r' : 'm') => $UserId,
                         );
-                        $newUrl = \Cx\Core\Routing\Url::fromDocumentRoot(
+                        $newUrl = \Cx\Core\Routing\Model\Entity\Url::fromDocumentRoot(
                             $arrParameters, null, null)->toString();
                         $matches[$attrKey][$i] = preg_replace(
                             "/href\s*=\s*(['\"]).*?\\1/i",

@@ -141,7 +141,7 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 $publisher  = \FWUser::getParsedUserTitle($objResult->fields['publisher_id'], $objResult->fields['publisher']);
                 $newsCategories  = $this->getCategoriesByNewsId($newsid);
                 $newsUrl    = empty($objResult->fields['redirect'])
-                                ? \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($newsCategories), array($catId))), FRONTEND_LANG_ID, array('newsid' => $newsid))
+                                ? \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($newsCategories), array($catId))), FRONTEND_LANG_ID, array('newsid' => $newsid))
                                 : $objResult->fields['redirect'];
                 $htmlLink   = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle));
 

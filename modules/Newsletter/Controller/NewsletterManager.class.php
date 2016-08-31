@@ -717,7 +717,7 @@ class NewsletterManager extends NewsletterLib
 						$content = $this->_getBodyContent($this->GetTemplateSource($importTemplate, 'html'));
 						$newstext = ltrim(strip_tags($objNews->fields['newscontent']));
 						$newsteasertext = ltrim(strip_tags($objNews->fields['teaser_text']));
-						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+						$newslink = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                             'News', 'details', '',
                             array('newsid' => $objNews->fields['newsid']));
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
@@ -3675,7 +3675,7 @@ class NewsletterManager extends NewsletterLib
                 break;
         }
 
-        $unsubscribeUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+        $unsubscribeUrl = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
             'Newsletter',
             $cmd,
             $this->getUsersPreferredLanguageId(
@@ -3704,7 +3704,7 @@ class NewsletterManager extends NewsletterLib
             return '';
         }
 
-        $profileUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+        $profileUrl = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
             'Newsletter',
             'profile',
             $this->getUsersPreferredLanguageId(
@@ -3877,7 +3877,7 @@ class NewsletterManager extends NewsletterLib
 
 						$newstext = ltrim(strip_tags($objNews->fields['newscontent']));
 						$newsteasertext = ltrim(strip_tags($objNews->fields['teaser_text']));
-						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd('News', 'details', '', array('newsid' => $objNews->fields['newsid']));
+						$newslink = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('News', 'details', '', array('newsid' => $objNews->fields['newsid']));
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 						} else {
@@ -3931,7 +3931,7 @@ class NewsletterManager extends NewsletterLib
 						$content = $this->_getBodyContent($this->GetTemplateSource($importTemplate, 'html'));
 						$newstext = ltrim(strip_tags($objNews->fields['newscontent']));
 						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
-						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+						$newslink = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                             'News', 'detals', '',
                             array('newsid' => $objNews->fields['newsid']));
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {

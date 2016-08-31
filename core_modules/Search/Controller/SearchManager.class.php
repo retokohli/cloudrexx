@@ -179,7 +179,7 @@ class SearchManager
                         'SEARCH_RESULT_CONTENT_TITLE' => $originalPage->getContentTitle(),
                         'SEARCH_RESULT_SLUG'          => substr($page->getPath(), 1),
                         'SEARCH_RESULT_LANG'          => $aliasLanguages,
-                        'SEARCH_RESULT_FRONTEND_LINK' => \Cx\Core\Routing\Url::fromPage($page),
+                        'SEARCH_RESULT_FRONTEND_LINK' => \Cx\Core\Routing\Model\Entity\Url::fromPage($page),
                     ));
                     
                     $this->template->parse('search_result_row');

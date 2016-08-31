@@ -316,5 +316,12 @@ class Uri extends \Cx\Model\Base\EntityBase {
     public function setFragment($fragment) {
         $this->fragment = $fragment;
     }
+    
+    /**
+     * @todo implement a (descendant) method for relative URI/Ls
+     */
+    public function toString() {
+        return (string) $this;
+    }
 }
 

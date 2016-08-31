@@ -1021,14 +1021,14 @@ class BlogLibrary {
 
                     $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                     $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'];
-                    $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd('Blog', '', $intLanguageId)->toString();
+                    $objRSSWriter->channelLink = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Blog', '', $intLanguageId)->toString();
                     $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'];
                     //Function doesn't exist
                     //$objRSSWriter->channelLanguage = \FWLanguage::getLanguageParameter($intLanguageId, 'lang');
                     $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
                     $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
-                    $entryUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Blog', 'details', $intLanguageId);
+                    $entryUrl = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Blog', 'details', $intLanguageId);
                     foreach ($arrEntries as $intEntryId => $arrEntryValues) {
                         $entryUrl->setParam('id', $intEntryId);
                         $objRSSWriter->addItem(
@@ -1090,7 +1090,7 @@ class BlogLibrary {
 
                     $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                     $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_COMMENTS_TITLE'];
-                    $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    $objRSSWriter->channelLink = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                         'Blog',
                         '',
                         $intLanguageId
@@ -1101,7 +1101,7 @@ class BlogLibrary {
                     //$objRSSWriter->channelLanguage = \FWLanguage::getLanguageParameter($intLanguageId, 'lang');
                     $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
-                    $strItemLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    $strItemLink = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                         'Blog',
                         'details',
                         $intLanguageId,
@@ -1171,7 +1171,7 @@ class BlogLibrary {
                             $objRSSWriter = new \RSSWriter();
                             $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                             $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'];
-                            $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                            $objRSSWriter->channelLink = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                                 'Blog',
                                 '',
                                 $intLanguageId
@@ -1183,7 +1183,7 @@ class BlogLibrary {
                             $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
                             //Find assigned messages
-                            $entryUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Blog', 'details', $intLanguageId);
+                            $entryUrl = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Blog', 'details', $intLanguageId);
                             foreach ($arrEntries as $intEntryId => $arrEntryValues) {
                                 if ($this->categoryMatches($intCategoryId, $arrEntryValues['categories'][$intLanguageId])) {
                                     //Message is in category, add to feed

@@ -108,19 +108,19 @@ class PayPal
         global $_ARRAYLANG;
 
 //DBG::log("getForm($account_email, $order_id, $currency_code, $amount, $item_name): Entered");
-        $return = \Cx\Core\Routing\Url::fromModuleAndCmd(
+        $return = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
             'Shop', 'success', FRONTEND_LANG_ID, array(
                 'handler' => 'paypal',
                 'result' => '1',
                 'order_id' => $order_id,
             ))->toString();
-        $cancel_return = \Cx\Core\Routing\Url::fromModuleAndCmd(
+        $cancel_return = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
             'Shop', 'success', FRONTEND_LANG_ID, array(
                 'handler' => 'paypal',
                 'result' => '2',
                 'order_id' => $order_id,
             ))->toString();
-        $notify_url = \Cx\Core\Routing\Url::fromModuleAndCmd(
+        $notify_url = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
             'Shop', 'success', FRONTEND_LANG_ID, array(
                 'handler' => 'paypal',
                 'result' => '-1',

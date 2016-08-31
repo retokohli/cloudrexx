@@ -137,7 +137,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $newsid = intval($_GET['newsid']);
 
         if (!$newsid) {
-            header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('News'));
+            header('Location: '.\Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('News'));
             exit;
         }
 
@@ -195,7 +195,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                 
 
         if (!$objResult || $objResult->EOF) {
-            header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('News'));
+            header('Location: '.\Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('News'));
             exit;
         }
 
@@ -702,7 +702,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $newsUrl        = empty($objResult->fields['redirect'])
                                 ? (empty($objResult->fields['newscontent'])
                                     ? ''
-                                    : \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', array_keys($newsCategories)), FRONTEND_LANG_ID, array('newsid' => $newsid)))
+                                    : \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('News', $this->findCmdById('details', array_keys($newsCategories)), FRONTEND_LANG_ID, array('newsid' => $newsid)))
                                 : $objResult->fields['redirect'];
 
             $htmlLink       = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]'));
@@ -869,7 +869,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         }
 
         if ($this->_objTpl->placeholderExists('NEWS_PUBLISHER_DROPDOWNMENU')) {
-            $publisherMenu    = '<select onchange="window.location=\''.\Cx\Core\Routing\Url::fromModuleAndCmd('News', intval($_REQUEST['cmd'])).'&amp;publisher=\'+this.value" name="publisher">'."\n";
+            $publisherMenu    = '<select onchange="window.location=\''.\Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('News', intval($_REQUEST['cmd'])).'&amp;publisher=\'+this.value" name="publisher">'."\n";
             $publisherMenu   .= '<option value="" selected="selected">'.$_ARRAYLANG['TXT_NEWS_PUBLISHER'].'</option>'."\n";
             $publisherMenu   .= $this->getPublisherMenu($selectedPublisher, $selectedCat)."\n";
             $publisherMenu   .= '</select>'."\n";
@@ -996,7 +996,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $newsUrl        = empty($objResult->fields['redirect'])
                                     ? (empty($objResult->fields['newscontent'])
                                         ? ''
-                                        : \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                        : \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd(
                                                     'News', 
                                                     $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($arrNewsCategories), $categories)),
                                                     FRONTEND_LANG_ID,
@@ -1255,7 +1255,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $newsUrl        = empty($objResult->fields['redirect'])
                                     ? (empty($objResult->fields['newscontent'])
                                         ? ''
-                                        : \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', array_keys($newsCategories)), FRONTEND_LANG_ID, array('newsid' => $newsid)))
+                                        : \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('News', $this->findCmdById('details', array_keys($newsCategories)), FRONTEND_LANG_ID, array('newsid' => $newsid)))
                                     : $objResult->fields['redirect'];
 
                 $htmlLink       = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]'));
@@ -1408,7 +1408,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             }
         }
         
-        $newsEditLink = \Cx\Core\Routing\Url::fromDocumentRoot(array(
+        $newsEditLink = \Cx\Core\Routing\Model\Entity\Url::fromDocumentRoot(array(
             'cmd' => 'News',
             'act' => 'edit',
             'newsId' => $news_id,
@@ -1470,7 +1470,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         
         // redirect to the news overview page in case the submit function has been disabled
         if (!$this->arrSettings['news_submit_news'] == '1') {
-            header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('News'));
+            header('Location: '.\Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('News'));
             exit;
         }
 
@@ -1480,12 +1480,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $objFWUser = \FWUser::getFWUserObject();
             if (!$objFWUser->objUser->login()) {
                 $link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
-                header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Login', '', FRONTEND_LANG_ID, array('redirect' => $link)));
+                header('Location: '.\Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Login', '', FRONTEND_LANG_ID, array('redirect' => $link)));
                 exit;
             }
 
             if (!\Permission::checkAccess(61, 'static')) {
-                header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Login', 'noaccess', FRONTEND_LANG_ID));
+                header('Location: '.\Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Login', 'noaccess', FRONTEND_LANG_ID));
                 exit;
             }
         }
@@ -1898,7 +1898,7 @@ EOF;
     {
         global $_ARRAYLANG, $_LANGID;
 
-        $documentRoot = \Cx\Core\Routing\Url::fromDocumentRoot();
+        $documentRoot = \Cx\Core\Routing\Model\Entity\Url::fromDocumentRoot();
         $documentRoot->setMode('backend');
         
         $documentRoot->setPath('feed/news_headlines_' . \FWLanguage::getLanguageParameter($_LANGID, 'lang') . '.xml');
@@ -2108,7 +2108,7 @@ RSS2JSCODE;
         $objMail->IsHTML(false);
         $objMail->Subject   = sprintf($_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_SUBJECT'], $newsMessageTitle);
         
-        $manageCommentsUrl = \Cx\Core\Routing\Url::fromDocumentRoot(array(
+        $manageCommentsUrl = \Cx\Core\Routing\Model\Entity\Url::fromDocumentRoot(array(
             'cmd' => 'News',
             'act' => 'comments',
             'newsId' => $newsMessageId,
@@ -2212,7 +2212,7 @@ RSS2JSCODE;
                     $newsUrl        = empty($news['newsredirect'])
                                         ? (empty($news['newscontent'])
                                             ? ''
-                                            : \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($newsCategories), $categories)), FRONTEND_LANG_ID, array('newsid' => $newsid)))
+                                            : \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($newsCategories), $categories)), FRONTEND_LANG_ID, array('newsid' => $newsid)))
                                         : $news['newsredirect'];
 
                     $htmlLink       = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]'));

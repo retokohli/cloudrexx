@@ -124,11 +124,11 @@ class PostfinanceMobile
             pack('H*', $sign)
         );
         $urlsuccess =
-            Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'success')->toString().
+            Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'success')->toString().
             '?handler=mobilesolutions&amp;result=1'.
             '&amp;order_id='.$order_id;
         $urlerror =
-            Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'success')->toString().
+            Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'success')->toString().
             '?handler=mobilesolutions&amp;result=0'.
             '&amp;order_id='.$order_id;
 /*

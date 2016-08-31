@@ -145,7 +145,7 @@ class LinkSanitizer {
                         $cmd = $params['cmd'];
                         unset($params['cmd']);
                     }
-                    $ret = \Cx\Core\Routing\Url::fromModuleAndCmd($params['section'], $cmd);
+                    $ret = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd($params['section'], $cmd);
                     unset($params['section']);
                 
                 // backend case

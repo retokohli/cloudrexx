@@ -123,7 +123,7 @@ class XmlSitemapPageTree extends PageTree {
      */
     protected function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page) {
         return "\t" . '<url>' . 
-                "\n\t\t" . '<loc>' . \Cx\Core\Routing\Url::fromPage($page)->toString() . '</loc>' . 
+                "\n\t\t" . '<loc>' . \Cx\Core\Routing\Model\Entity\Url::fromPage($page)->toString() . '</loc>' . 
                 "\n\t\t" . '<lastmod>' . $this->getLastModificationDate($page) . '</lastmod>' . 
                 "\n\t\t" . '<changefreq>' . $this->getChangingFrequency($page) . '</changefreq>' .
                 "\n\t\t" . '<priority>0.5</priority>' .

@@ -975,7 +975,7 @@ class Newsletter extends NewsletterLib
             $date    = date(ASCMS_DATE_FORMAT_DATE, $dateSent);
         } else {
             // newsletter not found > redirect to homepage
-            \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromDocumentRoot());
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Model\Entity\Url::fromDocumentRoot());
             exit();
         }
         
@@ -1031,8 +1031,8 @@ class Newsletter extends NewsletterLib
             $birthday       = contrexx_raw2xhtml($objResult->fields['birthday']);
 
             // unsubscribe and profile links have been removed from browser-view - 12/20/12 TD
-            //$unsubscribe        = '<a href="'.\Cx\Core\Routing\Url::fromModuleAndCmd('Newsletter', 'unsubscribe', '', array('code' => $code, 'mail' => $email)).'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
-            //$profile            = '<a href="'.\Cx\Core\Routing\Url::fromModuleAndCmd('Newsletter', 'profile', '', array('code' => $code, 'mail' => $email)).'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
+            //$unsubscribe        = '<a href="'.\Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Newsletter', 'unsubscribe', '', array('code' => $code, 'mail' => $email)).'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
+            //$profile            = '<a href="'.\Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Newsletter', 'profile', '', array('code' => $code, 'mail' => $email)).'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
         } elseif ($objUser = \FWUser::getFWUserObject()->objUser->getUsers(array('email' => contrexx_raw2db($email), 'active' => 1), null, null, null, 1)) {
             $sex            = $objUser->objAttribute->getById($objUser->getProfileAttribute('gender'))->getName();
             $salutation     = contrexx_raw2xhtml($objUser->objAttribute->getById('title_'.$objUser->getProfileAttribute('title'))->getName());
@@ -1052,8 +1052,8 @@ class Newsletter extends NewsletterLib
             $birthday       = date(ASCMS_DATE_FORMAT_DATE, $objUser->getProfileAttribute('birthday'));
 
             // unsubscribe and profile links have been removed from browser-view - 12/20/12 TD
-            //$unsubscribe = '<a href="'.\Cx\Core\Routing\Url::fromModuleAndCmd('Newsletter', 'unsubscribe', '', array('code' => $code, 'mail' => $email)).'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
-            //$profile     = '<a href="'.\Cx\Core\Routing\Url::fromModuleAndCmd('Newsletter', 'profile', '', array('code' => $code, 'mail' => $email)).'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
+            //$unsubscribe = '<a href="'.\Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Newsletter', 'unsubscribe', '', array('code' => $code, 'mail' => $email)).'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
+            //$profile     = '<a href="'.\Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Newsletter', 'profile', '', array('code' => $code, 'mail' => $email)).'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
         } else {
             // no user found by the specified e-mail address, therefore we will unset any profile specific data to prevent leaking any privacy data
             $email  = '';

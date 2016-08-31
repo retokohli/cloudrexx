@@ -184,7 +184,7 @@ class Login
                 $objFWUser->loginUser($objFWUser->objUser->getUsers($userFilter, null, null, null, 1));
 
                 // get the url to the welcome page
-                $homeUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Home', '', FRONTEND_LANG_ID);
+                $homeUrl = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Home', '', FRONTEND_LANG_ID);
 
                 $statusMessage .= '<br />' . sprintf($_CORELANG['TXT_LOGIN_WELCOME_PAGE'], $homeUrl);
             } else {

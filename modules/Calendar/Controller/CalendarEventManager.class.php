@@ -909,7 +909,7 @@ class CalendarEventManager extends CalendarLibrary
                             'id'    => $objEvent->id,
                             'date'  => $objEvent->startDate->getTimestamp(),
                         );
-                        $regLinkSrc = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', FRONTEND_LANG_ID, $params)->toString();
+                        $regLinkSrc = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd($this->moduleName, 'register', FRONTEND_LANG_ID, $params)->toString();
                     }
 
                     $regLink = '<a href="'.$regLinkSrc.'" '.$hostTarget.'>'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION'].'</a>';
@@ -1318,7 +1318,7 @@ class CalendarEventManager extends CalendarLibrary
      */
     function _getDetailLink($objEvent)
     {
-        $url = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail');
+        $url = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd($this->moduleName, 'detail');
         $url->setParams(array(
             'id' => $objEvent->id,
             'date' => $objEvent->startDate->getTimestamp()

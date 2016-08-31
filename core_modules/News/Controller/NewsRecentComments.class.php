@@ -128,7 +128,7 @@ class NewsRecentComments extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 
                 $commentTitle = $objResult->fields['title'];
                 $newsCategories = $this->getCategoriesByNewsId($objResult->fields['id']);
-                $newsUrl  = \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', array_keys($newsCategories)), FRONTEND_LANG_ID, array('newsid' => $objResult->fields['id']));
+                $newsUrl  = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('News', $this->findCmdById('details', array_keys($newsCategories)), FRONTEND_LANG_ID, array('newsid' => $objResult->fields['id']));
                 $newsLink = self::parseLink($newsUrl, $commentTitle, contrexx_raw2xhtml($commentTitle));
                 
                 $this->_objTemplate->setVariable(array(

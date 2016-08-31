@@ -58,7 +58,7 @@ class ResolverController extends \Cx\Core\Core\Model\Entity\SystemComponentBacke
                     $page->getType() != \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS &&
                     $this->cx->getRequest()->getUrl()->getLanguageCode(false) === null
                 ) {
-                    $redirectUrl = \Cx\Core\Routing\Url::fromDocumentRoot(null, 1);
+                    $redirectUrl = \Cx\Core\Routing\Model\Entity\Url::fromDocumentRoot(null, 1);
                     \Cx\Core\Csrf\Controller\CSRF::redirect($redirectUrl);
                 }
                 
@@ -150,7 +150,7 @@ class ResolverController extends \Cx\Core\Core\Model\Entity\SystemComponentBacke
         while ($isAdjusting) {
             if (!$page->hasAccess()) {
                 $link = base64_encode($this->cx->getRequest()->getUrl()->toString());
-                \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Login', '', '', array('redirect' => $link)));
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Login', '', '', array('redirect' => $link)));
             }
             $isRedirect = in_array($page->getType(), array(
                 \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS,

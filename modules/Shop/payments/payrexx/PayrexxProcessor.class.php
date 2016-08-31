@@ -104,7 +104,7 @@ class PayrexxProcessor
             return false;
         }
 
-        $successPage = \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'success');
+        $successPage = \Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Shop', 'success');
         $successPageUrl = $successPage->toString();
 
         try {
