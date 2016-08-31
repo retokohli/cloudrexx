@@ -417,12 +417,9 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                             }
                         }
 
-                        $toolTipLabel = 'TXT_' . $this->moduleLangVar . '_'
-                            . str_replace(' ', '_', strtoupper($entryStatusClass));
                         $objTpl->setVariable(array(
                             $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
                             $this->moduleLangVar.'_ENTRY_ID' =>  $arrEntry['entryId'],
-                            $this->moduleLangVar.'_ENTRY_STATUS_TOOLTIP' => $_ARRAYLANG[$toolTipLabel],
                             $this->moduleLangVar.'_ENTRY_SWITCH_STATUS' => $intStatus,
                             $this->moduleLangVar.'_ENTRY_STATUS_CLASS' => $entryStatusClass,
                             $this->moduleLangVar.'_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),

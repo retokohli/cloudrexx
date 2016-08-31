@@ -101,6 +101,13 @@ var searchEntries = function (event) {
 // ]]>
 </script>
 
+<style type="text/css">
+    #search_mediadir {
+        padding: 0;
+        width: auto;
+    }
+</style>
+
 <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
     <tr>
         <th>{TXT_FUNCTIONS}</th>
@@ -142,9 +149,7 @@ var searchEntries = function (event) {
         <tr class="{MEDIADIR_ROW_CLASS}">
             <td valign="top"><input type="checkbox" name="entriesFormSelected[]" value="{MEDIADIR_ENTRY_ID}" />
             <td valign="middle" style="text-align: center;">
-                <a class = "entry_status {MEDIADIR_ENTRY_STATUS_CLASS}" href="javascript: void(0);" onclick="switchState({MEDIADIR_ENTRY_ID}, this, {MEDIADIR_ENTRY_SWITCH_STATUS}, 'entry')" ></a>
-                <span class="icon-info tooltip-trigger"></span>
-                <span class="tooltip-message">{MEDIADIR_ENTRY_STATUS_TOOLTIP}</span>
+                <a class="schedule_status {MEDIADIR_ENTRY_STATUS_CLASS}" href="javascript: void(0);" onclick="switchState({MEDIADIR_ENTRY_ID}, this, {MEDIADIR_ENTRY_SWITCH_STATUS}, 'entry')" ></a>
             </td>
             <td valign="top">{MEDIADIR_ENTRY_ORDER}<b><a href="index.php?cmd={MODULE_NAME}&amp;act=modify_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_NAME} {TXT_EDIT}">{MEDIADIR_ENTRY_FIELD_1_POS}</a></b></td>
             <td valign="top">{MEDIADIR_ENTRY_FORM}</td>
