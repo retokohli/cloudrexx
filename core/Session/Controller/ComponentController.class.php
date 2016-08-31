@@ -50,12 +50,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // does not exist a backend, nor a frontend controller of this component.
         return array();
     }
-      /**
+
+    /**
      * Do something before resolving is done
      * 
-     * @param \Cx\Core\Routing\Url                      $request    The URL object for this request
+     * @param \Cx\Core\Routing\Model\Entity $url The URL object for this request
      */
-    public function preResolve(\Cx\Core\Routing\Url $request) {
+    public function preResolve(\Cx\Core\Routing\Model\Entity\Url $url) {
         global $sessionObj;
 
         if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {

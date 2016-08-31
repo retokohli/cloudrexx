@@ -84,10 +84,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     /**
      * Do something before resolving is done
-     * 
-     * @param \Cx\Core\Routing\Url                      $request    The URL object for this request
+     *
+     * @param \Cx\Core\Routing\Model\Entity $url The URL object for this request 
      */
-    public function preResolve(\Cx\Core\Routing\Url $request) {
+    public function preResolve(\Cx\Core\Routing\Model\Entity\Url $url) {
         global $objDatabase;
 
         $config = \Env::get('config');

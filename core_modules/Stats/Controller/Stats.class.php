@@ -853,7 +853,7 @@ class Stats extends StatsLibrary
                 $page = \Env::get('em')->getRepository('\Cx\Core\ContentManager\Model\Entity\Page')->findOneBy(array('id' => $stats['id']));
                 if ($page) {
                     $url = \Cx\Core\Routing\Url::fromPage($page);
-                    $title = '<a href="'.$url.'" target="_blank">'.$page->getTitle().'</a> (/'.$url->getLangDir().'/'.$url->getPath().')';
+                    $title = '<a href="'.$url.'" target="_blank">'.$page->getTitle().'</a> (/'.$url->getLanguageCode().'/'.$url->getPath().')';
                 } else {
                     $title = '<span>'.$stats['title'].'</span> ('.$stats['page'].')';
                 }

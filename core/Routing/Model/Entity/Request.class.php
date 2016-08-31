@@ -67,9 +67,29 @@ class Request {
      * @param String $method
      * @param Object $resolvedUrl
      */
-    public function __construct($method, \Cx\Core\Routing\Url $resolvedUrl) {
+    public function __construct($method, \Cx\Core\Routing\Model\Entity\Url $resolvedUrl, $postData) {
         $this->httpRequestMethod = strtolower($method);
         $this->url               = $resolvedUrl;
+    }
+    
+    public static function fromCurrent() {
+        if (php_sapi_name() == 'cli') {
+            $bla = 'file://todo' . $_SERVER['PWD'];
+            $url = \Cx\Core\Routing\Model\Entity\Url::fromString($bla);
+            return new static('GET', $url, $_POST);
+        }
+        $protocol = empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off' ? 'http' : 'https';
+        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+        $host = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $domainRepository->getMainDomain()->getName();
+        $request = !empty($_GET['__cap']) ? substr($_GET['__cap'], 1) : '';
+        unset($_GET['__cap']);
+        $params = '?';
+        foreach ($_GET as $key=>$value) {
+            $params .= $key . '=' . $value . '&';
+        }
+        $params = substr($params, 0, -1);
+        $url = \Cx\Core\Routing\Model\Entity\Url::fromString($protocol . '://' . $host . '/' . $request . $params);
+        return new static($_SERVER['REQUEST_METHOD'], $url, $_POST);
     }
     
     /**

@@ -942,32 +942,24 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     }
 
     protected function cutTarget() {
-        $t = $this->getTarget();
-        $matches = array();
-        
-        if (!preg_match('/\[\['.self::NODE_URL_PCRE.'\]\](\S*)?/ix', $t, $matches)) {
+        try {
+            $nodePlaceholder = \Cx\Core\Routing\NodePlaceholder::fromPlaceholder($this->getTarget());
+            return array(
+                'nodeId'      => $nodePlaceholder->getNodeId(),
+                'module'      => $nodePlaceholder->getModule(),
+                'cmd'         => $nodePlaceholder->getCmd(),
+                'langId'      => $nodePlaceholder->getLangId(),
+                'queryString' => $nodePlaceholder->getArguments(),
+            );
+        } catch (\Cx\Core\Routing\NodePlaceholderException $e) {
             return array(
                 'nodeId'      => null,
                 'module'      => null,
                 'cmd'         => null,
                 'langId'      => null,
-                'queryString' => $t,
+                'queryString' => $this->getTarget(),
             );
         }
-        
-        $nodeId      = empty($matches[self::NODE_URL_NODE_ID]) ? 0                : $matches[self::NODE_URL_NODE_ID];
-        $module      = empty($matches[self::NODE_URL_MODULE])  ? ''               : $matches[self::NODE_URL_MODULE];
-        $cmd         = empty($matches[self::NODE_URL_CMD])     ? ''               : $matches[self::NODE_URL_CMD];
-        $langId      = empty($matches[self::NODE_URL_LANG_ID]) ? FRONTEND_LANG_ID : $matches[self::NODE_URL_LANG_ID];
-        $queryString = empty($matches[6]) ? '' : $matches[6];
-        
-        return array(
-            'nodeId'      => $nodeId,
-            'module'      => $module,
-            'cmd'         => $cmd,
-            'langId'      => $langId,
-            'queryString' => $queryString,
-        );
     }
 
     /**
@@ -2017,6 +2009,11 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      */
     public function isDraft() {
         return $this->getEditingStatus() != '';
+    }
+    
+    public function hasAccess() {
+        // TODO: Implement
+        return true;
     }
     
     public function serialize() {

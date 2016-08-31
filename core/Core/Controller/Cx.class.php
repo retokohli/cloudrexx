@@ -992,6 +992,10 @@ namespace Cx\Core\Core\Controller {
                 $documentRoot = $rootOffset;
                 $rootOffset = '';
             }
+            if (php_sapi_name() == 'cli') {
+                $rootOffset = $documentRoot;
+                $documentRoot = '';
+            }
         }
 
         /**
@@ -1295,7 +1299,8 @@ namespace Cx\Core\Core\Controller {
          */
         protected function init() {
             global $objDatabase, $objInit, $objCache, $_DBCONFIG, $_CONFIG;
-
+            
+            \Cx\Core\Setting\Controller\Setting::init('Config', null, 'Yaml', null, \Cx\Core\Setting\Controller\Setting::NOT_POPULATE);
             /**
              * Start caching with op cache, user cache and cloudrexx caching
              */
@@ -1383,28 +1388,14 @@ namespace Cx\Core\Core\Controller {
          */
         protected function postInit() {
             global $_CONFIG;
-
+            
             // if path configuration was wrong in loadConfig(), Url is not yet initialized
             if (!$this->request) {
-                // this makes \Env::get('Resolver')->getUrl() return a sensful result
-                $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
-                $offset = $this->websiteOffsetPath;
-
-                switch ($this->mode) {
-                    case self::MODE_FRONTEND:
-                    case self::MODE_BACKEND:
-                        $this->request = new \Cx\Core\Routing\Model\Entity\Request($_SERVER['REQUEST_METHOD'],
-                                                                                   \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, $_GET));
-                        break;
-                    case self::MODE_COMMAND:
-                    case self::MODE_MINIMAL:
-                        try {
-                            $this->request = new \Cx\Core\Routing\Model\Entity\Request($_SERVER['REQUEST_METHOD'], \Cx\Core\Routing\Url::fromRequest());
-                        } catch (\Cx\Core\Routing\UrlException $e) {}
-                        break;
-                }
+                //\DBG::activate(DBG_PHP);
+                $this->request = \Cx\Core\Routing\Model\Entity\Request::fromCurrent();
             }
             $this->license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $this->getDb()->getAdoDb());
+            
             //call post-init hooks
             $this->callPostInitHooks();
         }
@@ -1437,12 +1428,13 @@ namespace Cx\Core\Core\Controller {
                         $params = explode('/', $params) + $_GET;
                         unset($params['__cap']);
                     }
+                    $url = $this->getRequest()->getUrl();
+                    $command = $url->getCommandName();
+                    $params = $url->getCommandArguments();
 
                     $this->getCommands();
 
                     // find component (defaults to help)
-                    $command = current($params);
-                    $params = array_slice($params, 1);
                     if (!isset($this->commands[$command])) {
                         echo 'Command \'' . $command . '\' does not exist';
                         $command = 'help';
@@ -1533,6 +1525,8 @@ namespace Cx\Core\Core\Controller {
                     break;
 
                 case 2:
+                    \Env::set('Resolver', $this->resolver);
+                    
                     // Code to set language
                     // @todo: move this to somewhere else
                     // in backend it's in Language->postResolve
@@ -1543,23 +1537,21 @@ namespace Cx\Core\Core\Controller {
 
                         // Load interface language data
                         $_CORELANG = $objInit->loadLanguageData('core');
+
+                        // Resolver code
+                        // @todo: move to resolver
+                        //expose the virtual language directory to the rest of the cms
+                        $virtualLanguageDirectory = '/'.$url->getLanguageCode();
+                        \Env::set('virtualLanguageDirectory', $virtualLanguageDirectory);
+                        // TODO: this constanst used to be located in config/set_constants.php, but needed to be relocated to this very place,
+                        // because it depends on Env::get('virtualLanguageDirectory').
+                        // Find an other solution; probably best is to replace CONTREXX_SCRIPT_PATH by a prettier method
+                        define('CONTREXX_SCRIPT_PATH',
+                            $this->codeBaseOffsetPath.
+                            \Env::get('virtualLanguageDirectory').
+                            '/'.
+                            CONTREXX_DIRECTORY_INDEX);
                     }
-
-                    \Env::set('Resolver', $this->resolver);
-
-                    // Resolver code
-                    // @todo: move to resolver
-                    //expose the virtual language directory to the rest of the cms
-                    $virtualLanguageDirectory = '/'.$url->getLangDir();
-                    \Env::set('virtualLanguageDirectory', $virtualLanguageDirectory);
-                    // TODO: this constanst used to be located in config/set_constants.php, but needed to be relocated to this very place,
-                    // because it depends on Env::get('virtualLanguageDirectory').
-                    // Find an other solution; probably best is to replace CONTREXX_SCRIPT_PATH by a prettier method
-                    define('CONTREXX_SCRIPT_PATH',
-                        $this->codeBaseOffsetPath.
-                        \Env::get('virtualLanguageDirectory').
-                        '/'.
-                        CONTREXX_DIRECTORY_INDEX);
                     break;
             }
         }
@@ -1577,51 +1569,31 @@ namespace Cx\Core\Core\Controller {
          * For modes other than 'frontend', no actual resolving is done,
          * resolver is just initialized in order to return the correct result
          * for $resolver->getUrl()
-         * @todo Implement resolver for backend
          * @todo Is this useful in CLI mode?
          */
         protected function resolve() {
-            $this->resolver = new \Cx\Core\Routing\Resolver($this->getRequest()->getUrl(), null, $this->getDb()->getEntityManager(), null, null);
-            $this->request->getUrl()->setMode($this->mode);
-
-            if ($this->mode == self::MODE_FRONTEND) {
-
-                // TODO: Workaround for upload-component as it is loaded in preResolve-hook.
-                // Remove this workaround once the Upload-component has been replaced
-                // by the new Uploader-component which operates only through JsonData
-                // and does therefore not depend on the resolved page any longer.
-                if (isset($_GET['section']) && $_GET['section'] == 'Upload') {
-                    $this->resolvedPage = new \Cx\Core\ContentManager\Model\Entity\Page();
-                    $this->resolvedPage->setVirtual(true);
-                } else {
-                    $this->resolvedPage = $this->resolver->resolve();
-                }
-
-            } else {
-                global $cmd, $act, $isRegularPageRequest, $plainCmd;
-
-                // resolve pretty url's
-                $path = preg_replace('#^' . $this->getWebsiteOffsetPath() . '(' . $this->getBackendFolderName() . ')?/#', '', $_GET['__cap']);
-                if ($path != 'index.php' && $path != '') {
-                    $path = explode('/', $path, 2);
-                    if (!isset($_GET['cmd'])) {
-                        $_REQUEST['cmd'] = $path[0];
-                        $_GET['cmd'] = $_REQUEST['cmd'];
-                    }
-                    if (isset($path[1])) {
-                        if (substr($path[1], -1, 1) == '/') {
-                            $path[1] = substr($path[1], 0, -1);
-                        }
-                        if (!isset($_GET['act'])) {
-                            $_REQUEST['act'] = $path[1];
-                            $_GET['act'] = $_REQUEST['act'];
-                        }
-                    }
-                }
-
+            // TODO: Workaround for upload-component as it is loaded in preResolve-hook.
+            // Remove this workaround once the Upload-component has been replaced
+            // by the new Uploader-component which operates only through JsonData
+            // and does therefore not depend on the resolved page any longer.
+            if ($this->mode == self::MODE_FRONTEND && isset($_GET['section']) && $_GET['section'] == 'Upload') {
                 $this->resolvedPage = new \Cx\Core\ContentManager\Model\Entity\Page();
                 $this->resolvedPage->setVirtual(true);
-
+                return;
+            }
+            
+            $this->resolver = $this->getComponentControllerByNameAndType('Routing', 'core')->getController('Resolver');
+            $this->resolvedPage = $this->resolver->resolve();
+            
+            // legacy:
+            if ($this->mode == self::MODE_FRONTEND) {
+                global $section, $cmd;
+                $section = $this->resolvedPage->getModule();
+                $cmd = $this->resolvedPage->getCmd();
+                $_REQUEST['section'] = $_GET['section'] = $section;
+                $_REQUEST['cmd'] = $_GET['cmd'] = $cmd;
+            } else {
+                global $plainCmd, $cmd, $act, $isRegularPageRequest;
                 if (!isset($plainCmd)) {
                     $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : 'Home';
                     $act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
@@ -1653,15 +1625,15 @@ namespace Cx\Core\Core\Controller {
         protected function preContentLoad() {
             global $moduleStyleFile, $plainCmd, $plainSection, $themesPages, $page_template;
 
+            // load application content template
+            $this->loadContentTemplateOfPage();
+
             $this->ch->callPreContentLoadHooks();
 
             if ($this->mode == self::MODE_FRONTEND) {
                 // load content.html template (or customized version)
                 $this->template->setTemplate($themesPages['index']);
                 $this->template->addBlock('CONTENT_FILE', 'page_template', $page_template);
-
-                // load application content template
-                $this->loadContentTemplateOfPage();
 
                 // Set global content variables.
                 $pageContent = $this->resolvedPage->getContent();
@@ -1672,6 +1644,7 @@ namespace Cx\Core\Core\Controller {
                 $this->resolvedPage->setContent($pageContent);
 
                 $moduleStyleFile = null;
+                $plainSection = $this->resolvedPage->getModule();
             } else if ($this->mode == self::MODE_BACKEND) {
                 // Skip the nav/language bar for modules which don't make use of either.
                 // TODO: Remove language selector for modules which require navigation but bring their own language management.
@@ -1693,7 +1666,7 @@ namespace Cx\Core\Core\Controller {
             global $_CONFIG;
 
             $content = str_replace('{PAGE_URL}',        htmlspecialchars(\Env::get('init')->getPageUri()), $content);
-            $content = str_replace('{PAGE_URL_ENCODED}',urlencode(\Env::get('init')->getPageUri()->toString()), $content);
+            $content = str_replace('{PAGE_URL_ENCODED}',urlencode(\Env::get('init')->getPageUri()), $content);
             $content = str_replace('{STANDARD_URL}',    \Env::get('init')->getUriBy('smallscreen', 0),     $content);
             $content = str_replace('{MOBILE_URL}',      \Env::get('init')->getUriBy('smallscreen', 1),     $content);
             $content = str_replace('{PRINT_URL}',       \Env::get('init')->getUriBy('printview', 1),       $content);
@@ -1906,7 +1879,7 @@ namespace Cx\Core\Core\Controller {
                 'APP_URL'                        => \Env::get('init')->getUriBy('appview', 1),
                 'LOGOUT_URL'                     => \Env::get('init')->getUriBy('section', 'logout'),
                 'PAGE_URL'                       => htmlspecialchars(\Env::get('init')->getPageUri()),
-                'PAGE_URL_ENCODED'               => urlencode(\Env::get('init')->getPageUri()->toString()),
+                'PAGE_URL_ENCODED'               => urlencode(\Env::get('init')->getPageUri()),
                 'CURRENT_URL'                    => \Env::get('init')->getCurrentPageUri(),
                 'DATE'                           => showFormattedDate(),
                 'TIME'                           => date('H:i', time()),
@@ -2671,7 +2644,7 @@ namespace Cx\Core\Core\Controller {
          * @return string
          */
         public function getWebsiteOffsetPath() {
-                return $this->websiteOffsetPath;
+            return $this->websiteOffsetPath;
         }
 
         /**

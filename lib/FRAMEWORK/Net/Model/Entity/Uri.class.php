@@ -45,7 +45,7 @@ namespace Cx\Lib\Net\Model\Entity;
  * @package     cloudrexx
  * @subpackage  lib_net
  */
-class Uri {
+class Uri extends \Cx\Model\Base\EntityBase {
 
     /**
      * @var string Regular expression to split URIs from https://tools.ietf.org/html/rfc3986#page-50

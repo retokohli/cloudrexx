@@ -30,10 +30,10 @@ class UrlException extends \Cx\Lib\Net\Model\Entity\UrlException {}
  *         while ($isAdjusting) {
  *             $isAdjusting = false;
  *             if (external redirect || !$page) { // type redirect (internal or external)
- *                 redirect to $url->getTargetPage()!
+ *                 $isAdjusting = false;
+ *                 redirect to $page->getTargetPage()!
  *             }
  *             if (internal redirect) { // types symlink and fallback
- *                 $isAdjusting = false;
  *                 $page = $page->getTargetPage();
  *             }
  *         }
@@ -52,15 +52,15 @@ abstract class Url extends \Cx\Lib\Net\Model\Entity\Url {
     
     public static function fromUrl($url) {
         try {
-            switch (static::getMode($url)) {
+            switch (static::calculateMode($url)) {
                 case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-                    return new FrontendUrl($stringUrl); // resolving (incl. aliases), virtual language dirs and can be generated from pages and so
+                    return new FrontendUrl($url); // resolving (incl. aliases), virtual language dirs and can be generated from pages and so
                     break;
                 case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
-                    return new BackendUrl($stringUrl); // can be generated from component backend commands
+                    return new BackendUrl($url); // can be generated from component backend commands
                     break;
                 case \Cx\Core\Core\Controller\Cx::MODE_COMMAND:
-                    return new CommandUrl($stringUrl); // can be generated from datasource/-access and component commands
+                    return new CommandUrl($url); // can be generated from datasource/-access and component commands
                     break;
                 default;
                     throw new UrlException('Unknown Url mode');
@@ -79,15 +79,15 @@ abstract class Url extends \Cx\Lib\Net\Model\Entity\Url {
      * @throws UrlException if Url is not internal
      * @return string One of the modes defined in Cx class
      */
-    protected static function getMode($internalUrl) {
-        // sort out externals
-        if (!static::isInternal($internalUrl)) {
-            throw new UrlException('Not an internal Url');
-        }
-        
+    protected static function calculateMode($internalUrl) {
         // commmand line is always command mode
         if (php_sapi_name() == 'cli') {
             return \Cx\Core\Core\Controller\Cx::MODE_COMMAND;
+        }
+        
+        // sort out externals
+        if (!static::isInternal($internalUrl)) {
+            throw new UrlException('Not an internal Url');
         }
         
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
@@ -112,7 +112,18 @@ abstract class Url extends \Cx\Lib\Net\Model\Entity\Url {
         }
     }
     
-    public abstract function getMode();
+    public function getMode() {
+        return static::calculateMode($this);
+    }
+    
+    public function getPathWithoutOffset() {
+        $installationOffset = $this->cx->getWebsiteOffsetPath();
+        $providedOffset = $this->getPath();
+        return substr(
+            $providedOffset,
+            strlen($installationOffset)
+        );
+    }
     
     /**
      * Tells wheter the given Url points to this CLX installation
@@ -120,22 +131,22 @@ abstract class Url extends \Cx\Lib\Net\Model\Entity\Url {
      * @return boolean True if Url is internal, false otherwise
      */
     public static function isInternal($url) {
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        
         // check domain
-        $domainRepo = $cx->getDb()->getEntityManager()->getRepository(
-            'Cx\Core\Net\Model\Entity\Domain'
-        );
+        $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
         if (!$domainRepo->findOneBy(array('name' => $url->getHost()))) {
             return false;
         }
         
         // check offset
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $installationOffset = $cx->getWebsiteOffsetPath();
         $providedOffset = $url->getPath();
         if (
-            $installationOffset !=
-            substr($providedOffset, 0, strlen($installationOffset))
+            $installationOffset != substr(
+                $providedOffset,
+                0,
+                strlen($installationOffset)
+            )
         ) {
             return false;
         }

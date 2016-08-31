@@ -62,9 +62,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     
     /**
      * Sets the user's and the database timezone
-     * @param \Cx\Core\Routing\Url $request Request URL
+     * @param \Cx\Core\Routing\Model\Entity $url The URL object for this request
      */
-    public function preResolve(\Cx\Core\Routing\Url $request) {
+    public function preResolve(\Cx\Core\Routing\Model\Entity\Url $url) {
         $databaseTimezoneString = $this->cx->getDb()->getDb()->getTimezone();
         $this->databaseTimezone = new \DateTimeZone($databaseTimezoneString);
         

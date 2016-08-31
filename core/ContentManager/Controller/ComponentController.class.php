@@ -66,8 +66,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         
         $evm->addModelListener(\Doctrine\ORM\Events::onFlush, 'Cx\\Core\\ContentManager\\Model\\Entity\\LogEntry', new \Cx\Core\ContentManager\Model\Event\LogEntryEventListener());
     }
-        
-    public function preResolve(\Cx\Core\Routing\Url $request) {
+
+    /**
+     * Do something before resolving is done
+     * 
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
+     * @param \Cx\Core\Routing\Model\Entity $url The URL object for this request
+     */
+    public function preResolve(\Cx\Core\Routing\Model\Entity\Url $url) {
         $evm = \Cx\Core\Core\Controller\Cx::instanciate()->getEvents();
         $evm->addEvent('wysiwygCssReload');
     }

@@ -343,9 +343,9 @@ class SystemComponentController extends Controller {
      * 
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
      * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
-     * @param \Cx\Core\Routing\Url                      $request    The URL object for this request
+     * @param \Cx\Core\Routing\Model\Entity $url The URL object for this request
      */
-    public function preResolve(\Cx\Core\Routing\Url $request) {}
+    public function preResolve(\Cx\Core\Routing\Model\Entity\Url $url) {}
     
     /**
      * Do something after resolving is done

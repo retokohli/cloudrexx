@@ -92,7 +92,7 @@ CKEDITOR.editorConfig = function( config )
     config.protectedSource.push(/<a[^>]*><\/a>/g);
 
     config.tabSpaces = 4;
-    config.baseHref = '<?php echo $cx->getRequest()->getUrl()->getProtocol() . '://' . $mainDomain . $cx->getWebsiteOffsetPath(); ?>/';
+    config.baseHref = '<?php echo $cx->getRequest()->getUrl()->getScheme() . '://' . $mainDomain . $cx->getWebsiteOffsetPath(); ?>/';
 
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
     

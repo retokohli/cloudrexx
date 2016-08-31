@@ -698,7 +698,7 @@ class Counter
         if ($page) {
             $objDb->Execute('
                 UPDATE `'.DBPREFIX.'stats_requests`
-                SET `visits` = `visits`+1, `page` = "'.substr('/'.$url->getLangDir().'/'.$url->getPath(), 0, 255).'", `pageTitle` = "'.$page->getTitle().'", `sid` = "'.$this->md5Id.'", `timestamp` = '.$this->currentTime.'
+                SET `visits` = `visits`+1, `page` = "'.substr('/'.$url->getLanguageCode().'/'.$url->getPath(), 0, 255).'", `pageTitle` = "'.$page->getTitle().'", `sid` = "'.$this->md5Id.'", `timestamp` = '.$this->currentTime.'
                 WHERE `pageId` = '.$this->pageId.' AND ((`sid` != "'.$this->md5Id.'") OR (`timestamp` <= '.($this->currentTime - $this->arrConfig['reload_block_time']['value']).'))
             ');
             if ($objDb->Affected_Rows() == 0) {
@@ -706,7 +706,7 @@ class Counter
                 try {
                     $objDb->Execute('
                         INSERT INTO `'.DBPREFIX.'stats_requests` (`sid`, `pageId`, `page`, `timestamp`, `visits`, `pageTitle`)
-                        VALUES ("'.$this->md5Id.'", '.$this->pageId.', "'.substr('/'.$url->getLangDir().'/'.$url->getPath(), 0, 255).'", '.$this->currentTime.', 1, "'.$page->getTitle().'")
+                        VALUES ("'.$this->md5Id.'", '.$this->pageId.', "'.substr('/'.$url->getLanguageCode().'/'.$url->getPath(), 0, 255).'", '.$this->currentTime.', 1, "'.$page->getTitle().'")
                     ');
                 } catch (\PDOException $e) {}
             }

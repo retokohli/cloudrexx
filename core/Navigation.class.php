@@ -193,7 +193,7 @@ class Navigation
             $targetPage = $node->getPage($langId);
             if ($targetPage && $targetPage->isActive()) {
                 $url = clone $pageUrl;
-                $url->setLangDir($langData['lang']);
+                $url->setLanguageCode($langData['lang']);
                 $url->setPath(substr($targetPage->getPath(), 1));
 
                 $name  = contrexx_raw2xhtml($langNameContraction ? strtoupper($langData['lang']) : $langData['name']);
@@ -220,7 +220,7 @@ class Navigation
         $placeholders = array();
         foreach ($activeLanguages as $langId => $langData) {
             $url = clone $pageUrl;
-            $url->setLangDir($langData['lang']);
+            $url->setLanguageCode($langData['lang']);
 
             if (($targetPage = $node->getPage($langId)) && $targetPage->isActive()) {
                 $url->setPath(substr($targetPage->getPath(), 1));
@@ -231,7 +231,7 @@ class Navigation
             $placeholders['LANG_CHANGE_'.strtoupper($langData['lang'])] = $link;
             $placeholders['LANG_SELECTED_'.strtoupper($langData['lang'])] = '';
         }
-        $placeholders['LANG_SELECTED_'.strtoupper($pageUrl->getLangDir())] = 'selected';
+        $placeholders['LANG_SELECTED_'.strtoupper($pageUrl->getLanguageCode())] = 'selected';
         $objTemplate->setVariable($placeholders);
     }
 }

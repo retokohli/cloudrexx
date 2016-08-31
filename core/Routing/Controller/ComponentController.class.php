@@ -48,13 +48,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
-        return array('Backend');
+        return array('Backend', 'Resolver');
     }
 
-    public function preResolve(\Cx\Core\Routing\Url $url) {
+    /**
+     * Do something before resolving is done
+     * 
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
+     * @param \Cx\Core\Routing\Model\Entity $url The URL object for this request
+     */
+    public function preResolve(\Cx\Core\Routing\Model\Entity\Url $url) {
         if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             return;
         }
+        
+        // rewrite rules:
         $em = $this->cx->getDb()->getEntityManager();
         $rewriteRuleRepo = $em->getRepository($this->getNamespace() . '\\Model\\Entity\\RewriteRule');
         $rewriteRules = $rewriteRuleRepo->findAll(array(), array('order'=>'asc'));
@@ -70,9 +79,38 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 break;
             }
         }
-        if ($originalUrl->toString() != $url->toString()) {
+        if ((string) $originalUrl != (string) $url) {
             \Cx\Core\Csrf\Controller\Csrf::header('Location: ' . $url->toString(), true, $rewriteRule->getRewriteStatusCode());
             die();
         }
+        
+        // legacy resolving:
+        if (!$url->hasParam('section')) {
+            return;
+        }
+        if ($url->getParam('section') == 'logout') {
+            global $sessionObj, $objFWUser;
+            if (empty($sessionObj)) {
+                $sessionObj = \cmsSession::getInstance();
+            }
+            if ($objFWUser->objUser->login()) {
+                $objFWUser->logout();
+            }
+        }
+
+        $em = $this->cx->getDb()->getEntityManager();
+        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        // If the database uses a case insensitive collation, $section needn't be the exact component name to find a page
+        $cmd = $url->getParam('cmd');
+        if (!$cmd) {
+            $cmd = '';
+        }
+        $page = $pageRepo->findOneByModuleCmdLang($url->getParam('section'), $cmd, /*FRONTEND_LANG_ID*/1);
+        if (!$page) {
+            return;
+        }
+        // TODO: this should be an internal redirect!
+        $redirectUrl = \Cx\Core\Routing\Url::fromPage($page);
+        \Cx\Core\Csrf\Controller\CSRF::redirect($redirectUrl);
     }    
 }

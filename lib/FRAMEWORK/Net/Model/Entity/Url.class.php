@@ -256,5 +256,75 @@ class Url extends Uri {
     public function hasPort() {
         return !empty($this->getPort());
     }
+    
+    /**
+     * Returns the parsed parts of the query section based on php.ini
+     * @return array Key=>value style array
+     */
+    public function getParsedQuery() {
+        $queryParts = array();
+        parse_str($this->getQuery(), $queryParts);
+        return $queryParts;
+    }
+    
+    public function setParsedQuery($queryParts) {
+        $query = http_build_query($queryParts);
+        $this->setQuery($query);
+    }
+    
+    /**
+     * @deprecated
+     */
+    public function getParamArray() {
+        return $this->getParsedQuery();
+    }
+    
+    /**
+     * @deprecated
+     */
+    public function removeAllParams() {
+        $this->setQuery('');
+    }
+    
+    /**
+     * @todo: naming!
+     */
+    public function getParam($key) {
+        $queryParts = $this->getParsedQuery();
+        if (!isset($queryParts[$key])) {
+            return null;
+        }
+        return $queryParts[$key];
+    }
+    
+    /**
+     * @todo: naming!
+     */
+    public function setParam($key, $value) {
+        $queryParts = $this->getParsedQuery();
+        if ($value === null) {
+            unset($queryParts[$key]);
+        } else {
+            $queryParts[$key] = $value;
+        }
+        $this->setParsedQuery($queryParts);
+    }
+    
+    /**
+     * @todo: naming!
+     */
+    public function setParams($paramArray) {
+        foreach ($paramArray as $key=>$value) {
+            $this->setParam($key, $value);
+        }
+    }
+    
+    /**
+     * @todo: naming!
+     */
+    public function hasParam($key) {
+        $queryParts = $this->getParsedQuery();
+        return isset($queryParts[$key]);
+    }
 }
 

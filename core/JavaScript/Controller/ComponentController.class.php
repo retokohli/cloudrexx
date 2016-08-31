@@ -54,9 +54,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Do something before resolving is done
      * 
-     * @param \Cx\Core\Routing\Url                      $request    The URL object for this request
+     * @param \Cx\Core\Routing\Model\Entity $url The URL object for this request
      */
-    public function preResolve(\Cx\Core\Routing\Url $request) {
+    public function preResolve(\Cx\Core\Routing\Model\Entity\Url $url) {
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
                 // Load the JS helper class and set the offset
