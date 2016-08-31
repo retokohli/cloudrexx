@@ -149,6 +149,12 @@ class ResolverController extends \Cx\Core\Core\Model\Entity\Controller
                 $link = base64_encode($this->cx->getRequest()->getUrl()->toString());
                 \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Login', '', '', array('redirect' => $link)));
             }
+            if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK) {
+                $em = $this->cx->getDb()->getEntityManager();
+                $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+                $page->getFallbackContentFrom($pageRepo->getFallbackPage($page));
+                continue;
+            }
             $isRedirect = in_array($page->getType(), array(
                 \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS,
                 \Cx\Core\ContentManager\Model\Entity\Page::TYPE_REDIRECT,
@@ -174,7 +180,7 @@ class ResolverController extends \Cx\Core\Core\Model\Entity\Controller
                 die();
                 
             // internal redirect
-            } else { // types symlink and fallback
+            } else { // type symlink or alias
                 $em = $this->cx->getDb()->getEntityManager();
                 $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
                 $page = $pageRepo->getTargetPage($page);

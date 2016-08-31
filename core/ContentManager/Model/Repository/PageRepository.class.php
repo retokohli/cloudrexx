@@ -1024,4 +1024,17 @@ class PageRepository extends EntityRepository {
         $page->setUpdatedBy(\FWUser::getFWUserObject()->objUser->getUsername());
         return $page;
     }
+    
+    public function getFallbackPage($page) {
+        $fallbackPage = null;
+        $fallbackLanguages = \FWLanguage::getFallbackLanguageArray();
+        if (isset($fallbackLanguages[$page->getLang()])) {
+            $langId = $fallbackLanguages[$page->getLang()];
+            $fallbackPage = $page->getNode()->getPage($langId);
+        }
+        if (!$fallbackPage) {
+            throw new ResolverException('Followed fallback page, but couldn\'t find content of fallback Language');
+        }
+        return $fallbackPage;
+    }
 }
