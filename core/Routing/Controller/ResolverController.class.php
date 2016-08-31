@@ -143,10 +143,6 @@ class ResolverController extends \Cx\Core\Core\Model\Entity\Controller
     
     protected function adjust($page) {
         // alias, redirect and symlink resolving:
-        
-        // TODO:
-        // - Redirect to error if page not found (seems to work already somehow)
-        // - command mode / api
         $isAdjusting = true;
         while ($isAdjusting) {
             if (!$page->hasAccess()) {

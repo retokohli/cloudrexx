@@ -126,11 +126,6 @@ class FrontendUrl extends \Cx\Core\Routing\Model\Entity\Url {
                 $page = $pages['page'];
             }
         }
-        /*if ($page) {
-            var_dump($this->getPagePathWithLanguageDirectory($page));
-        } else {
-            var_dump($page);
-        }*/
         $this->page = $page;
         return $page;
     }
@@ -174,18 +169,12 @@ class FrontendUrl extends \Cx\Core\Routing\Model\Entity\Url {
     }
     
     public function setLanguageCode($langCode) {
-        // check if correct lang code
-        // get path parts
-        // get offset parts
-        // check if first non-offset part is lang dir
-            // if so: replace
-            // otherwise: add between
-    }
-    
-    protected function getPagePathWithLanguageDirectory($page) {
-        $langId = $page->getLang();
-        $lang = \FWLanguage::getLanguageCodeById($langId);
-        return '/' . $lang . $page->getPath();
+        // todo: check if correct lang code
+        // set path
+        $this->setPath(
+            $this->cx->getWebsiteOffsetPath() . '/' .
+            $langCode . $this->getPathWithoutOffsetAndLangDir()
+        );
     }
 }
 
