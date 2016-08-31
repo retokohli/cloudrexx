@@ -192,9 +192,8 @@ class Navigation
         foreach ($activeLanguages as $langId => $langData) {
             $targetPage = $node->getPage($langId);
             if ($targetPage && $targetPage->isActive()) {
-                $url = clone $pageUrl;
-                $url->setLanguageCode($langData['lang']);
-                $url->setPath(substr($targetPage->getPath(), 1));
+                $url = \Cx\Core\Routing\Model\Entity\Url::fromPage($targetPage);
+                $url->setQuery($pageUrl->getQuery());
 
                 $name  = contrexx_raw2xhtml($langNameContraction ? strtoupper($langData['lang']) : $langData['name']);
                 $class = $langId == FRONTEND_LANG_ID ? $langData['lang'].' active' : $langData['lang'];
