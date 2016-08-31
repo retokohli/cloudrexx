@@ -161,7 +161,3 @@ $_ARRAYLANG['TXT_DATA_HEIGHT'] = "Höhe";
 $_ARRAYLANG['TXT_DATA_ATTACHMENT_DESC'] = "Beschreibung des Anhangs";
 $_ARRAYLANG['TXT_SAVE'] = "Save";
 $_ARRAYLANG['TXT_DATA_LOADING'] = "Laden ...";
-$_ARRAYLANG['TXT_DATA_ACTIVE'] = "Aktiv";
-$_ARRAYLANG['TXT_DATA_INACTIVE'] = 'Inaktiv';
-$_ARRAYLANG['TXT_DATA_SCHEDULED_ACTIVE'] = 'Zeitgesteuerte Veröffentlichung aktiv';
-$_ARRAYLANG['TXT_DATA_SCHEDULED_INACTIVE'] = 'Deaktiviert aufgrund der zeitgesteuerten Veröffentlichung';

@@ -894,6 +894,7 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
 
         $this->arrEntries = $this->createEntryArray(0);
 
+        \JS::activate('schedule-publish-tooltip', array());
 
         // show categories
         $arrCategories = $this->createCategoryArray();
@@ -932,10 +933,6 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
             'TXT_ENTRIES_SUBTITLE_CATEGORY'     => $_ARRAYLANG['TXT_DATA_CATEGORY'],
             'TXT_ENTRIES_SUBTITLE_MODE'         => $_ARRAYLANG['TXT_DATA_ENTRY_MODE'],
             'TXT_DATA_LOADING'                  => $_ARRAYLANG['TXT_DATA_LOADING'],
-            'TXT_DATA_ACTIVE'                   => $_ARRAYLANG['TXT_DATA_ACTIVE'],
-	    'TXT_DATA_INACTIVE'                 => $_ARRAYLANG['TXT_DATA_INACTIVE'],
-	    'TXT_DATA_SCHEDULED_ACTIVE'		=> $_ARRAYLANG['TXT_DATA_SCHEDULED_ACTIVE'],
-	    'TXT_DATA_SCHEDULED_INACTIVE'	=> $_ARRAYLANG['TXT_DATA_SCHEDULED_INACTIVE'],
         ));
 
            if ($intSelectedCategory == 0) {

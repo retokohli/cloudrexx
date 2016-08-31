@@ -66,63 +66,8 @@ $J(document).ready(function () {
         helper: fixHelper
     }).disableSelection();
 });
-cx.ready(function(){
-    cx.jQuery('.entry_status')
-        .tooltip({
-            tip: '#tooltip_message',
-            position: 'top right',
-            track: true,
-            predelay: 200,
-            onBeforeShow: function() {
-                var statuses   = new Array();
-                var objTrigger = this.getTrigger();
-                var objTip     = this.getTip();
-                objTip.html('');
-
-                if (objTrigger.hasClass('scheduled')) {
-                    if (objTrigger.hasClass('active')) {
-                        statuses.push('{TXT_DATA_SCHEDULED_ACTIVE}');
-                    } else {
-                        statuses.push('{TXT_DATA_SCHEDULED_INACTIVE}');
-                    }
-                } else if (objTrigger.hasClass('active')) {
-                    statuses.push('{TXT_DATA_ACTIVE}');
-                } else {
-                    statuses.push('{TXT_DATA_INACTIVE}');
-                }
-
-                if (statuses.length > 0) {
-                    objTip.html(statuses.join('<br />'));
-                }
-            }
-        });
-});
 //]]>
 </script>
-<style type="text/css">
-  .entry_status {
-      width: 18px;
-      height: 16px;
-      margin-top: 3px;
-      display: inline-block;
-  }
-  .entry_status.active {
-      background: url('/core/Core/View/Media/icons/led_green.gif') no-repeat;
-  }
-  .entry_status.inactive {
-      background: url('/core/Core/View/Media/icons/led_red.gif') no-repeat;
-  }
-  .entry_status.scheduled {
-      background: url('/core/Core/View/Media/icons/status_schedule_publish.png') no-repeat;
-  }
-  .entry_status.scheduled.active {
-      background-position: -34px -5px;
-  }
-  .entry_status.scheduled.inactive {
-      background-position: -6px -5px;
-  }
-</style>
-<div id="tooltip_message" class="tooltip-message"></div>
 <table>
     <tr>
         <td style="float: left; width: 200px; padding: 0; margin-right: 15px; vertical-align: top;">
@@ -165,7 +110,7 @@ cx.ready(function(){
                         <tr class="{ENTRY_ROWCLASS}" id="entry_{ENTRY_ID}">
                             <td><input type="checkbox" name="selectedEntriesId[]" value="{ENTRY_ID}" /></td>
                             <td>
-                                <a class="entry_status {ENTRY_STATUS_CLASS}" href="javascript:void(0);" onclick="switchActive({ENTRY_ID}, this, {ACTIVE_STATE})"></a>
+                                <a class="schedule_status {ENTRY_STATUS_CLASS}" href="javascript:void(0);" onclick="switchActive({ENTRY_ID}, this, {ACTIVE_STATE})"></a>
                             </td>
                             <td>
                                 <!-- BEGIN sort_buttons -->
