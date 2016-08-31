@@ -40,15 +40,15 @@ class PresetRepository
 {
 
     /**
-     * @var \Cx\Core_Modules\TemplateEditor\Model\Storable
+     * @var \Cx\Core_Modules\TemplateEditor\Model\Entity\Storable
      */
     protected $storage;
 
     /**
-     * @param \Cx\Core_Modules\TemplateEditor\Model\Storable $storage
+     * @param \Cx\Core_Modules\TemplateEditor\Model\Entity\Storable $storage
      */
     public function __construct(
-        \Cx\Core_Modules\TemplateEditor\Model\Storable $storage
+        \Cx\Core_Modules\TemplateEditor\Model\Entity\Storable $storage
     )
     {
         $this->storage = $storage;

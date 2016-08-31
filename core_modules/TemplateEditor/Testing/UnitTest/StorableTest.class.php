@@ -38,7 +38,7 @@ namespace Cx\Core_Modules\TemplateEditor\Testing\UnitTest;
 class StorableTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
 {
     /**
-     * @var \Cx\Core_Modules\TemplateEditor\Model\TestStorage
+     * @var \Cx\Core_Modules\TemplateEditor\Model\Entity\TestStorage
      */
     protected $testStorage;
 
@@ -50,7 +50,7 @@ class StorableTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
     protected function setUp()
     {
         $this->testStorage =
-            new \Cx\Core_Modules\TemplateEditor\Model\TestStorage();
+            new \Cx\Core_Modules\TemplateEditor\Model\Entity\TestStorage();
         $this->themeOptionRepository =
             new \Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository(
                 $this->testStorage

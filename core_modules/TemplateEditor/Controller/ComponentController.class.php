@@ -75,7 +75,7 @@ class ComponentController
         }
         try {
             $fileStorage =
-                new \Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage(
+                new \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSetFileStorage(
                     $this->cx->getWebsiteThemesPath()
                 );
             $themeOptionRepository =

@@ -49,7 +49,7 @@ class ThemeOptionNotFoundException extends \Exception
  * @subpackage  core_module_templateeditor
  */
 class OptionSet extends \Cx\Model\Base\EntityBase
-    implements \Cx\Core_Modules\TemplateEditor\Model\YamlSerializable
+    implements \Cx\Core_Modules\TemplateEditor\Model\Entity\YamlSerializable
 {
 
     /**
@@ -137,7 +137,7 @@ class OptionSet extends \Cx\Model\Base\EntityBase
         }
         $this->theme = $theme;
         $presetStorage =
-            new \Cx\Core_Modules\TemplateEditor\Model\PresetFileStorage(
+            new \Cx\Core_Modules\TemplateEditor\Model\Entity\PresetFileStorage(
                 $theme->getPath()
             );
         $this->presetRepository =
