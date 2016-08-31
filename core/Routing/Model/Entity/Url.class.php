@@ -46,11 +46,12 @@ class UrlException extends \Cx\Lib\Net\Model\Entity\UrlException {}
  */
 abstract class Url extends \Cx\Lib\Net\Model\Entity\Url {
     
-    public static function fromString($stringUrl) {
-        return static::fromUrl(new \Cx\Lib\Net\Model\Entity\Url($stringUrl));
+    public static function fromString($stringUrl, $replacePorts = false) {
+        return static::fromUrl(new \Cx\Lib\Net\Model\Entity\Url($stringUrl), $replacePorts);
     }
     
-    public static function fromUrl($url) {
+    public static function fromUrl($url, $replacePorts = false) {
+        // @todo: replace ports
         try {
             switch (static::calculateMode($url)) {
                 case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
@@ -102,7 +103,7 @@ abstract class Url extends \Cx\Lib\Net\Model\Entity\Url {
      * @return \Cx\Core\Routing\Model\Entity\Url Url object for the documentRoot of the website
      */
     public static function fromDocumentRoot($arrParameters = array(), $lang = '', $scheme = '') {
-        return \Cx\Core\Routing\Model\Entity\FrontendUrl::fromModuleAndCmd(
+        return \Cx\Core\Routing\Model\Entity\FrontendUrl::fromDocumentRoot(
             $arrParameters,
             $lang,
             $scheme
@@ -117,7 +118,7 @@ abstract class Url extends \Cx\Lib\Net\Model\Entity\Url {
      * @return \Cx\Core\Routing\Model\Entity\Url Url object for the supplied page
      */
     public static function fromPage($page, $parameters = array(), $scheme = '') {
-        return \Cx\Core\Routing\Model\Entity\FrontendUrl::fromModuleAndCmd(
+        return \Cx\Core\Routing\Model\Entity\FrontendUrl::fromPage(
             $page,
             $parameters,
             $scheme

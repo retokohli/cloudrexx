@@ -312,7 +312,7 @@ class NodePlaceholder {
      */
     public function getLangId() {
         if (!$this->lang) {
-            return FRONTEND_LANG_ID;
+            return \FWLanguage::getDefaultLangId();
         }
         return $this->lang;
     }
@@ -369,7 +369,7 @@ class NodePlaceholder {
      * @return \Cx\Core\Routing\Model\Entity\Url Url pointing the same location as this placeholder
      */
     public function getUrl() {
-        $url = \Cx\Core\Routing\Model\Entity\Url::fromPage($this->node->getPage($this->lang));
+        $url = \Cx\Core\Routing\Model\Entity\Url::fromPage($this->node->getPage($this->getLangId()));
         $url->setParams($this->arguments);
         return $url;
     }

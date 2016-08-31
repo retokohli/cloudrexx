@@ -21,7 +21,7 @@ class FrontendUrl extends \Cx\Core\Routing\Model\Entity\Url {
      */
     public static function fromModuleAndCmd($module, $cmd = '', $lang = '', $parameters = array(), $scheme = '', $returnErrorPageOnError = true) {
         if ($lang == '') {
-            $lang = FRONTEND_LANG_ID;
+            $lang = \FWLanguage::getDefaultLangId();
         }
         $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         $page = $pageRepo->findOneByModuleCmdLang($module, $cmd, $lang);
@@ -67,13 +67,16 @@ class FrontendUrl extends \Cx\Core\Routing\Model\Entity\Url {
         $host = $domainRepository->getMainDomain()->getName();
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $request = $cx->getWebsiteOffsetPath();
+        if (!empty($lang)) {
+            $request .= '/' . \FWLanguage::getLanguageCodeById($lang);
+        }
         $params = '?';
         foreach ($arrParameters as $key=>$value) {
             $params .= $key . '=' . $value . '&';
         }
         $params = substr($params, 0, -1);
         $url = \Cx\Core\Routing\Model\Entity\Url::fromString(
-            $scheme . '://' . $host . '/' . $request . $params
+            $scheme . '://' . $host . $request . $params
         );
         return $url;
     }
@@ -114,7 +117,7 @@ class FrontendUrl extends \Cx\Core\Routing\Model\Entity\Url {
         $lang = $this->getLanguageCode();
         $langId = \FWLanguage::getLanguageIdByCode($lang);
         
-        if (in_array($this->getPathWithoutOffsetAndLangDir(), array('/', '/index.php'))) {
+        if (in_array($this->getPathWithoutOffsetAndLangDir(), array('', '/', '/index.php'))) {
             // home page
             $page = $pageRepo->findOneByModuleCmdLang('home', '', $langId);
         } else {

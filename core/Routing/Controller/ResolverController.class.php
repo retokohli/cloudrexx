@@ -44,7 +44,7 @@ namespace Cx\Core\Routing\Controller;
  * @package     cloudrexx
  * @subpackage  core_routing
  */
-class ResolverController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController
+class ResolverController extends \Cx\Core\Core\Model\Entity\Controller
 {
     
     public function resolve() {
@@ -58,12 +58,17 @@ class ResolverController extends \Cx\Core\Core\Model\Entity\SystemComponentBacke
                     $page->getType() != \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS &&
                     $this->cx->getRequest()->getUrl()->getLanguageCode(false) === null
                 ) {
-                    $redirectUrl = \Cx\Core\Routing\Model\Entity\Url::fromDocumentRoot(null, 1);
+                    $redirectUrl = \Cx\Core\Routing\Model\Entity\Url::fromDocumentRoot(array(), \FWLanguage::getDefaultLangId());
                     \Cx\Core\Csrf\Controller\CSRF::redirect($redirectUrl);
                 }
                 
                 $page = $this->adjust($page);
                 $this->getPreviewPage();
+                
+                // sub-resolving
+                // re-resolve if necessary
+                //$page = $this->adjust($page);
+                // canonical header
                 
                 // this is legacy:
                 define('FRONTEND_LANG_ID', $page->getLang());
@@ -75,10 +80,6 @@ class ResolverController extends \Cx\Core\Core\Model\Entity\SystemComponentBacke
                 $url->getArguments();
                 break;
         }
-        // sub-resolving
-        // re-resolve if necessary
-        //$page = $this->adjust($page);
-        // canonical header
 
         return $page;
     }
@@ -162,9 +163,19 @@ class ResolverController extends \Cx\Core\Core\Model\Entity\SystemComponentBacke
                 continue;
             }
             // external redirect
-            if (!$page || !$page->isTargetInternal()) { // type redirect (internal or external)
+            if (
+                $page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_REDIRECT ||
+                !$page->isTargetInternal()
+            ) {
                 $isAdjusting = false;
-                \Cx\Core\Csrf\Controller\CSRF::redirect($page->getTarget());
+                $target = $page->getTarget();
+                if ($page->isTargetInternal()) {
+                    $em = $this->cx->getDb()->getEntityManager();
+                    $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+                    $target = \Cx\Core\Routing\Model\Entity\Url::fromPage($pageRepo->getTargetPage($page));
+                }
+                \Cx\Core\Csrf\Controller\CSRF::redirect($target);
+                die();
                 
             // internal redirect
             } else { // types symlink and fallback
@@ -180,4 +191,3 @@ class ResolverController extends \Cx\Core\Core\Model\Entity\SystemComponentBacke
         return $this->cx->getRequest()->getUrl();
     }
 }
-

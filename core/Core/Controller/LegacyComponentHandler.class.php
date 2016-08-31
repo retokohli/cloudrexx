@@ -144,7 +144,8 @@ class LegacyComponentHandler {
         // now follows the loooooooooooong list of old code:
         $this->exceptions = array(
             'frontend' => array(
-                'preResolve' => array(
+                'preResolve' => array(),
+                'postResolve' => array(
                     'ComponentHandler' => function() {
                         global $section, $plainSection, $moduleIndex;
 
@@ -159,6 +160,8 @@ class LegacyComponentHandler {
                         if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
                             // The plain section/module name, used below
                             $plainSection = $arrMatch[1];
+                            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                            $cx->getPage()->setModule($plainSection);
                         } else {
                             $plainSection = $section;
                         }
@@ -169,7 +172,6 @@ class LegacyComponentHandler {
                         define('MODULE_INDEX', $moduleIndex);
                     },
                 ),
-                'postResolve' => array(),
                 'preContentLoad' => array(),
                 'postContentLoad' => array(),
                 'load' => array(),
