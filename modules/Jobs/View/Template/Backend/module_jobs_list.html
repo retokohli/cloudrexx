@@ -47,30 +47,6 @@ var modifyJobs = function(id, obj)
     }
 }
 </script>
-<style type="text/css">
-  .job_status {
-      width: 18px;
-      height: 16px;
-      margin-top: 3px;
-      cursor: pointer;
-      display: inline-block;
-  }
-  .job_status.active {
-      background: url('/core/Core/View/Media/icons/led_green.gif') no-repeat;
-  }
-  .job_status.inactive {
-      background: url('/core/Core/View/Media/icons/led_red.gif') no-repeat;
-  }
-  .job_status.scheduled {
-      background: url('/core/Core/View/Media/icons/status_schedule_publish.png') no-repeat;
-  }
-  .job_status.scheduled.active {
-      background-position: -34px -5px;
-  }
-  .job_status.scheduled.inactive {
-      background-position: -6px -5px;
-  }
-</style>
 <table width="100%" height="38" cellspacing="0" cellpadding="3" border="0" class="adminlist">
 <tbody>
   <tr>
@@ -126,9 +102,7 @@ var modifyJobs = function(id, obj)
   <td nowrap="nowrap"><input type="checkbox" value="{JOBS_ID}" name="selectedId[]" /></td>
   <td nowrap="nowrap">{JOBS_ID}</td>
   <td nowrap="nowrap">
-    <a class = "job_status {JOBS_STATUS_CLASS}" href="javascript: void(0);" onclick="modifyJobs({JOBS_ID}, this)"></a>
-    <span class="icon-info tooltip-trigger"></span>
-    <span class="tooltip-message">{JOBS_STATUS_TOOLTIP}</span>
+    <a class="schedule_status {JOBS_STATUS_CLASS}" href="javascript: void(0);" onclick="modifyJobs({JOBS_ID}, this)"></a>
   </td>
   <td nowrap="nowrap">{JOBS_DATE}&nbsp;</td>
   <td><a href="?cmd=Jobs&act=edit&id={JOBS_ID}">{JOBS_TITLE}</a>&nbsp;</td>

@@ -68,10 +68,6 @@ $_ARRAYLANG['TXT_STARTDATE'] = "Start date";
 $_ARRAYLANG['TXT_ENDDATE'] = "End date";
 $_ARRAYLANG['TXT_OPTIONAL'] = "Start and enddate are optional!¨";
 $_ARRAYLANG['TXT_ACTIVE'] = "Active";
-$_ARRAYLANG['TXT_JOBS_ACTIVE'] = $_ARRAYLANG['TXT_ACTIVE'];
-$_ARRAYLANG['TXT_JOBS_INACTIVE'] = 'Inactive';
-$_ARRAYLANG['TXT_JOBS_SCHEDULED_ACTIVE'] = 'Activated by scheduled publishing';
-$_ARRAYLANG['TXT_JOBS_SCHEDULED_INACTIVE'] = 'Deactivated due to scheduled publishing';
 $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'] = "The record was deleted.";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Error while performing the database query";
 $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'] = "The changes have been saved.";
@@ -114,4 +110,3 @@ $_ARRAYLANG['TXT_JOBS_SETTINGS'] = "Properties";
 $_ARRAYLANG['TXT_JOBS_SEARCH'] = "Search";
 $_ARRAYLANG['TXT_JOBS_NO_CATEGORY'] = "Select category";
 $_ARRAYLANG['TXT_JOBS_NO_TITLE'] = "Please enter a title";
-?>

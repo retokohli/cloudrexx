@@ -202,6 +202,8 @@ class JobsManager extends JobsLibrary
             'CSRF'                       => 'csrf='.\Cx\Core\Csrf\Controller\Csrf::code()
         ));
 
+        \JS::activate('schedule-publish-tooltip', array());
+
         /* check if locations are activated */
         $query = "
             SELECT `value`
@@ -292,7 +294,6 @@ class JobsManager extends JobsLibrary
                 }
             }
 
-            $toolTipLabel = 'TXT_JOBS_' . str_replace(' ', '_', strtoupper($jobsStatusClass));
             $this->_objTpl->setVariable(array(
                 'JOBS_ID'         => $objResult->fields['jobsId'],
                 'JOBS_DATE'       => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
@@ -304,7 +305,6 @@ class JobsManager extends JobsLibrary
                 'JOBS_CLASS'      => (++$i % 2 ? "row2" : "row1"),
                 'JOBS_CATEGORY'   => $objResult->fields['catname'],
                 'JOBS_STATUS_CLASS'   => $jobsStatusClass,
-                'JOBS_STATUS_TOOLTIP' => $_ARRAYLANG[$toolTipLabel],
                 'TXT_TEMPLATE'    => $_ARRAYLANG['TXT_TEMPLATE'],
                 'TXT_EDIT'    => $_ARRAYLANG['TXT_EDIT'],
             ));
