@@ -1163,25 +1163,13 @@ class Coupon
         $objCouponEdit->product_id($product_id);
         global $_CONFIG;
 
-        $todayTime = time();
+        \JS::activate('schedule-publish-tooltip', array());
         foreach ($arrCoupons as $index => $objCoupon) {
             //Get the coupon status
-            $scheduledStatus = 'scheduled inactive';
-            if (   (   !empty($objCoupon->start_time)
-                    && !empty($objCoupon->end_time)
-                    && $objCoupon->start_time < $todayTime
-                    && $objCoupon->end_time > $todayTime
-                   )
-                || (   !empty($objCoupon->start_time)
-                    && empty($objCoupon->end_time)
-                    && $objCoupon->start_time < $todayTime
-                   )
-                || (   empty($objCoupon->start_time)
-                    && !empty($objCoupon->end_time)
-                    && $objCoupon->end_time > $todayTime
-                   )
-            ) {
-                $scheduledStatus = 'scheduled active';
+            $scheduledStatus = 'active';
+            if ($objCoupon->hasScheduledPublishing()) {
+                $scheduledStatus =  $objCoupon->isActiveByScheduledPublishing()
+                                  ? 'scheduled active' : 'scheduled inactive';
             }
             $coupon_uri_id = 'coupon_uri_'.$index;
             $couponEditLink = ADMIN_SCRIPT_PATH .
@@ -1266,9 +1254,6 @@ class Coupon
                     )),
                 'SHOP_DISCOUNT_COUPON_EDIT_LINK' => $couponEditLink,
                 'SHOP_DISCOUNT_COUPON_STATUS'    => $scheduledStatus,
-                'SHOP_DISCOUNT_COUPON_STATUS_TOOLTIP' =>
-                    $_ARRAYLANG['TXT_SHOP_COUPON_'.
-                        strtoupper(str_replace(' ', '_', $scheduledStatus))]
             ));
             $objTemplate->parse('shopDiscountCouponView');
             if ($index === $edit) $objCouponEdit = $objCoupon;
@@ -1396,6 +1381,42 @@ class Coupon
         return $result;
     }
 
+    /**
+     * Get Scheduled Publishing status of the coupon
+     *
+     * @return boolean True when coupon contains the Scheduled Publishing data, false otherwise
+     */
+    public function hasScheduledPublishing()
+    {
+        return $this->start_time() || $this->end_time();
+    }
+
+    /**
+     * Check whether the coupon is active by Scheduled Publishing
+     *
+     * @return boolean True when coupon active by Scheduled Publishing, false otherwise
+     */
+    public function isActiveByScheduledPublishing()
+    {
+        $start = null;
+        if ($this->start_time()) {
+            $start = new \DateTime();
+            $start->setTimestamp($this->start_time());
+        }
+        $end = null;
+        if ($this->end_time()) {
+            $end = new \DateTime();
+            $end->setTimestamp($this->end_time());
+        }
+        if (   (!empty($start) && empty($end) && ($start->getTimestamp() > time()))
+            || (empty($start) && !empty($end) && ($end->getTimestamp() < time()))
+            || (!empty($start) && !empty($end) && !($start->getTimestamp() < time() && $end->getTimestamp() > time()))
+        ) {
+            return false;
+        }
+
+        return true;
+    }
 
     /**
      * Returns a textual representation for the discount provided by this

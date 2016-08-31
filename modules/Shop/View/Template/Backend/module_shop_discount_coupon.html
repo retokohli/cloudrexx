@@ -1,23 +1,4 @@
 <!-- START module_shop_discount_coupon.html -->
-<style>
-.entry_status {
-    width: 18px;
-    height: 16px;
-    float: left;
-    margin-top: 3px;
-    display: inline-block;
-}
-.entry_status.scheduled {
-    background: url('/core/Core/View/Media/icons/status_schedule_publish.png') no-repeat;
-}
-.entry_status.scheduled.active {
-    background-position: -34px -5px;
-}
-.entry_status.scheduled.inactive {
-    background-position: -5px -5px;
-}
-.icon-info { float: left; }
-</style>
 <ul id="tabmenu">
   <li>
     <a id="couponTab_view" class="{SHOP_DISCOUNT_COUPON_VIEW_ACTIVE}"
@@ -81,9 +62,7 @@
 <!-- BEGIN shopDiscountCouponView -->
     <tr class="{SHOP_ROWCLASS}">
         <td>
-            <a href="{SHOP_DISCOUNT_COUPON_EDIT_LINK}" class="entry_status {SHOP_DISCOUNT_COUPON_STATUS}"></a>
-            <span class="icon-info tooltip-trigger"></span>
-            <span class="tooltip-message">{SHOP_DISCOUNT_COUPON_STATUS_TOOLTIP}</span>
+            <a href="{SHOP_DISCOUNT_COUPON_EDIT_LINK}" class="schedule_status {SHOP_DISCOUNT_COUPON_STATUS}"></a>
         </td>
         <td>{SHOP_DISCOUNT_COUPON_CODE}</td>
         <td>{SHOP_DISCOUNT_COUPON_START_TIME}</td>
