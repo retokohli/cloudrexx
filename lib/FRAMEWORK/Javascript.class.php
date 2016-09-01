@@ -464,6 +464,18 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'lib/javascript/intro/intro.min.js',
             )
         ),
+        'schedule-publish-tooltip' => array(
+            'jsfiles' => array(
+                'core/Core/View/Script/ScheduledPublishing.js',
+            ),
+            'cssfiles' => array(
+                'core/Core/View/Style/ScheduledPublishing.css'
+            ),
+            'loadcallback' => 'initScheduledPublishing',
+            'dependencies' => array(
+                'cx',
+            ),
+        ),
     );
 
     /**
@@ -1116,4 +1128,20 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         return $name;
     }
 
+    /**
+     * Callback function to load related cx variables for "schedule-publish-tooltip" lib
+     *
+     * @param array $options options array
+     */
+    private static function initScheduledPublishing($options)
+    {
+        global $_CORELANG;
+
+        \ContrexxJavascript::getInstance()->setVariable(array(
+            'active'            => $_CORELANG['TXT_CORE_ACTIVE'],
+            'inactive'          => $_CORELANG['TXT_CORE_INACTIVE'],
+            'scheduledActive'   => $_CORELANG['TXT_CORE_SCHEDULED_ACTIVE'],
+            'scheduledInactive' => $_CORELANG['TXT_CORE_SCHEDULED_INACTIVE'],
+        ), 'core/View');
+    }
 }
