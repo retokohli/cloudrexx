@@ -70,7 +70,9 @@ function setCheckboxes(do_check) {
     <!-- BEGIN row -->
     <tr class="{DOCSYS_CLASS}">
       <td style="white-space: nowrap; vertical-align: top;"><input type="checkbox" value="{DOCSYS_ID}" name="selectedId[]" /></td>
-      <td style="white-space: nowrap; vertical-align: top;"><img border="0" title="{DOCSYS_STATUS}" alt="{DOCSYS_STATUS}" src="../core/Core/View/Media/icons/{DOCSYS_STATUS_PICTURE}" /></td>
+      <td style="white-space: nowrap; vertical-align: top;">
+          <span class="schedule_status {DOCSYS_STATUS_CLASS}"></span>
+      </td>
       <td style="white-space: nowrap; vertical-align: top;">{DOCSYS_DATE}&nbsp;</td>
       <td style="white-space: nowrap; vertical-align: top;"><a href="?cmd=DocSys{MODULE_INDEX}&act=edit&id={DOCSYS_ID}">{DOCSYS_TITLE}</a>&nbsp;</td>
       <td style="white-space: nowrap; vertical-align: top;">{DOCSYS_CATEGORY}&nbsp;</td>

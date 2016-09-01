@@ -124,7 +124,7 @@ class DocSysLibrary
         global $objDatabase, $_CONFIG;
 
         $query = "
-            SELECT entry.id, entry.date, entry.author, entry.title,
+            SELECT entry.id, entry.date, entry.startdate, entry.enddate, entry.author, entry.title,
                    entry.status, entry.changelog, users.username
               FROM " . DBPREFIX . "module_docsys" . MODULE_INDEX . " AS entry
               LEFT JOIN " . DBPREFIX . "access_users as users ON entry.userid=users.id
@@ -140,6 +140,8 @@ class DocSysLibrary
             $retval[$objResult->fields['id']] = array(
                 "id" => $objResult->fields['id'],
                 "date" => $objResult->fields['date'],
+                "startdate" => $objResult->fields['startdate'],
+                "enddate" => $objResult->fields['enddate'],
                 "author" => $objResult->fields['author'],
                 "title" => $objResult->fields['title'],
                 "status" => $objResult->fields['status'],

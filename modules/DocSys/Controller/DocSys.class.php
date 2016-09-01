@@ -129,12 +129,12 @@ class DocSys extends DocSysLibrary
                 $docSource = $_ARRAYLANG['TXT_SOURCE'] . '<br /><a target="new" href="' . $source . '" title="' . $source . '">' . $source . '</a><br />';
             }
             if (!empty($lastUpdate) AND $lastUpdate != $date) {
-                $docLastUpdate = $_ARRAYLANG['TXT_LAST_UPDATE'] . "<br />" . date(ASCMS_DATE_FORMAT,
+                $docLastUpdate = $_ARRAYLANG['TXT_LAST_UPDATE'] . "<br />" . date(ASCMS_DATE_FORMAT_DATETIME,
                         $lastUpdate);
             }
             $title = $objResult->fields['title'];
             $this->_objTpl->setVariable(array(
-                'DOCSYS_DATE' => date(ASCMS_DATE_FORMAT, $date),
+                'DOCSYS_DATE' => date(ASCMS_DATE_FORMAT_DATETIME, $date),
                 'DOCSYS_TITLE' => stripslashes($title),
                 'DOCSYS_AUTHOR' => stripslashes($objResult->fields['author']),
                 'DOCSYS_TEXT' => stripslashes($objResult->fields['text']),
