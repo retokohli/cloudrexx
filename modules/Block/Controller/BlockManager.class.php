@@ -418,18 +418,25 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             return array('active', 'deactivate');
         }
 
-        $currentDate = new \DateTime();
-        $startDate   = clone $currentDate;
-        $startDate->setTimestamp($arrBlock['start']);
-        $endDate = clone $startDate;
-        $endDate->setTimestamp($arrBlock['end']);
-        if (    $currentDate->getTimestamp() > $startDate->getTimestamp()
-            &&  $currentDate->getTimestamp() < $endDate->getTimestamp()
+        $start = null;
+        if ($arrBlock['start']) {
+            $start = new \DateTime();
+            $start->setTimestamp($arrBlock['start']);
+        }
+        $end = null;
+        if ($arrBlock['end']) {
+            $end = new \DateTime();
+            $end->setTimestamp($arrBlock['end']);
+        }
+        if (   (!empty($start) && empty($end) && ($start->getTimestamp() > time()))
+            || (empty($start) && !empty($end) && ($end->getTimestamp() < time()))
+            || (!empty($start) && !empty($end) && !($start->getTimestamp() < time() && $end->getTimestamp() > time()))
         ) {
-            return array('scheduled active', 'modify&show=additionalTab');
+            return array('scheduled inactive', 'modify&show=additionalTab');
         }
 
-        return array('scheduled inactive', 'modify&show=additionalTab');
+        return array('scheduled active', 'modify&show=additionalTab');
+
     }
 
     /**
@@ -894,8 +901,8 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'BLOCK_MODIFY_TITLE'                => $pageTitle,
             'BLOCK_NAME'                        => contrexx_raw2xhtml($blockName),
             'BLOCK_CATEGORIES_PARENT_DROPDOWN'  => $this->_getCategoriesDropdown($blockCat),
-            'BLOCK_START'                       => !empty($blockStart) ? strftime('%Y-%m-%d %H:%M', $blockStart) : $blockStart,
-            'BLOCK_END'                         => !empty($blockEnd) ? strftime('%Y-%m-%d %H:%M', $blockEnd) : $blockEnd,
+            'BLOCK_START'                       => !empty($blockStart) ? strftime('%Y-%m-%d %H:%M', $blockStart) : '',
+            'BLOCK_END'                         => !empty($blockEnd) ? strftime('%Y-%m-%d %H:%M', $blockEnd) : '',
             'BLOCK_WYSIWYG_EDITOR'              => $blockWysiwygEditor == 1 ? 'checked="checked"' : '',
 
             // random placeholders

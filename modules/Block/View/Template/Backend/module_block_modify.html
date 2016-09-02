@@ -386,7 +386,8 @@
                     hideInputs();
                 }
             });
-            if($inputDateEnd.val() == '0'){ //check if we display always
+            //check scheduled is active
+            if ($inputDateStart.val() == '' && $inputDateEnd.val() == '') {
                 hideInputs();
             }
 
