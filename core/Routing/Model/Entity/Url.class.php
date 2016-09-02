@@ -51,27 +51,44 @@ abstract class Url extends \Cx\Lib\Net\Model\Entity\Url {
     }
     
     public static function fromUrl($url, $replacePorts = false) {
-        // @todo: replace ports
+        \Cx\Core\Setting\Controller\Setting::init(
+            'Config',
+            null,
+            'Yaml',
+            null,
+            \Cx\Core\Setting\Controller\Setting::NOT_POPULATE
+        );
         try {
             switch (static::calculateMode($url)) {
                 case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-                    return new FrontendUrl($url); // resolving (incl. aliases), virtual language dirs and can be generated from pages and so
+                    $url = new FrontendUrl($url); // resolving (incl. aliases), virtual language dirs and can be generated from pages and so
+                    $port = \Cx\Core\Setting\Controller\Setting::getValue(
+                        'portFrontend' . $this->getScheme(),
+                        'Config'
+                    );
                     break;
                 case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
-                    return new BackendUrl($url); // can be generated from component backend commands
+                    $url = new BackendUrl($url); // can be generated from component backend commands
+                    $port = \Cx\Core\Setting\Controller\Setting::getValue(
+                        'portBackend' . $this->getScheme(),
+                        'Config'
+                    );
                     break;
                 case \Cx\Core\Core\Controller\Cx::MODE_COMMAND:
-                    return new CommandUrl($url); // can be generated from datasource/-access and component commands
+                    $url = new CommandUrl($url); // can be generated from datasource/-access and component commands
+                    $port = $url->getPort();
                     break;
                 default;
                     throw new UrlException('Unknown Url mode');
                     break;
             }
+            if ($replacePorts) {
+                $url->setPort($port);
+            }
             
         // external url
-        } catch (UrlException $e) {
-            return $url;
-        }
+        } catch (UrlException $e) {}
+        return $url;
     }
     
     /**
