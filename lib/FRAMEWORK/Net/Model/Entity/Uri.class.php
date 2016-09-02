@@ -318,7 +318,10 @@ class Uri extends \Cx\Model\Base\EntityBase {
     }
     
     /**
+     * Returns the string representation for this URI
+     * @see __toString()
      * @todo implement a (descendant) method for relative URI/Ls
+     * @return string String representation for this URI
      */
     public function toString() {
         return (string) $this;

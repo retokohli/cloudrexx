@@ -267,27 +267,37 @@ class Url extends Uri {
         return $queryParts;
     }
     
+    /**
+     * Sets the parsed query
+     * @param array $queryParts Key=>value style array
+     */
     public function setParsedQuery($queryParts) {
         $query = http_build_query($queryParts);
         $this->setQuery($query);
     }
     
     /**
-     * @deprecated
+     * Returns the parsed parts of the query section based on php.ini
+     * @deprecated Use getParsedQuery() instead
+     * @return array Key=>value style array
      */
     public function getParamArray() {
         return $this->getParsedQuery();
     }
     
     /**
-     * @deprecated
+     * Sets an empty query section to this URL
+     * @deprecated Use setQuery('') instead
      */
     public function removeAllParams() {
         $this->setQuery('');
     }
     
     /**
-     * @todo: naming!
+     * Returns a value from the query section based on given key, null if not set
+     * @todo Naming isn't consistent with RFC's expressions
+     * @param string $key Key to look for
+     * @return string|null Value for the given key or null if key is not set
      */
     public function getParam($key) {
         $queryParts = $this->getParsedQuery();
@@ -298,7 +308,10 @@ class Url extends Uri {
     }
     
     /**
-     * @todo: naming!
+     * Sets or unsets a key/value pair of the query section
+     * @todo Naming isn't consistent with RFC's expressions
+     * @param string $key Key to set/unset
+     * @param string|null $value Value to set. If null, key will be unset
      */
     public function setParam($key, $value) {
         $queryParts = $this->getParsedQuery();
@@ -311,7 +324,10 @@ class Url extends Uri {
     }
     
     /**
-     * @todo: naming!
+     * Sets or unsets key/value pairs of the query section
+     * @todo Naming isn't consistent with RFC's expressions
+     * @param array $paramArray Key=>value style array
+     * @see setParam($key, $value)
      */
     public function setParams($paramArray) {
         foreach ($paramArray as $key=>$value) {
@@ -320,7 +336,10 @@ class Url extends Uri {
     }
     
     /**
-     * @todo: naming!
+     * Checks wheter a key is present in this URL's query section
+     * @todo Naming isn't consistent with RFC's expressions
+     * @param string $key Key to look for
+     * @return boolean True if key is present, false otherwise
      */
     public function hasParam($key) {
         $queryParts = $this->getParsedQuery();
