@@ -145,7 +145,7 @@ class ResolverController extends \Cx\Core\Core\Model\Entity\Controller
         // alias, redirect and symlink resolving:
         $isAdjusting = true;
         while ($isAdjusting) {
-            if (!$page->hasAccess()) {
+            if (!$page->hasReadAccess()) {
                 $link = base64_encode($this->cx->getRequest()->getUrl()->toString());
                 \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Model\Entity\Url::fromModuleAndCmd('Login', '', '', array('redirect' => $link)));
             }

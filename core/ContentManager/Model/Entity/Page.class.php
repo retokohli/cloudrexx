@@ -2011,9 +2011,28 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         return $this->getEditingStatus() != '';
     }
     
-    public function hasAccess() {
-        // TODO: Implement
-        return true;
+    /**
+     * Tells wheter a user is allowed to see this page
+     * @param $user \User (optional) Current user is used if not specified
+     * @return boolean True if user is allowed to see this page, false otherwise
+     */
+    public function hasReadAccess() {
+        if (
+            !$this->isFrontendProtected() ||
+            $this->getModule() == 'Login' // Login pages are unprotected by design
+        ) {
+            return true;
+        }
+        
+        // make sure session/user is loaded:
+        \FWUser::getFWUserObject()->objUser->login();
+        
+        // check access
+        return \Permission::checkAccess(
+            $this->getFrontendAccessId(),
+            'dynamic',
+            true
+        );
     }
     
     public function serialize() {
