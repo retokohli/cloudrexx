@@ -72,10 +72,20 @@ class ResolverController extends \Cx\Core\Core\Model\Entity\Controller
                 $this->getPreviewPage();
                 $page = $this->adjust($page);
                 
-                // todo: sub-resolving
-                // todo: re-resolve if necessary
-                //$page = $this->adjust($page);
-                // todo: canonical header
+                // get canonical URL
+                $canonicalUrl = $this->getCanonicalUrl($page, $url);
+                
+                // sub-resolving
+                $pageBeforeSubResolve = $page;
+                $this->subResolve($page, $url, $canonicalUrl);
+                
+                // re-resolve if necessary
+                if ($pageBeforeSubResolve != $page) {
+                    $page = $this->adjust($page);
+                }
+                
+                // set canonical header
+                header('Link: <' . $canonicalUrl . '>; rel="canonical"');
                 
                 // this is legacy:
                 define('FRONTEND_LANG_ID', $page->getLang());
@@ -199,6 +209,58 @@ class ResolverController extends \Cx\Core\Core\Model\Entity\Controller
             }
         }
         return $page;
+    }
+    
+    /**
+     * Returns the canonical URL for this page
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Resolved page
+     * @param \Cx\Core\Routing\Model\Entity\Url $url Request URL
+     * @return \Cx\Core\Routing\Model\Entity\Url Canonical URL
+     */
+    protected function getCanonicalUrl($page, $url) {
+        // do not set a sensful canonical header for application pages yet
+        if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION) {
+            return $url;
+        }
+        $canonicalPage = $page;
+        if (
+            $url->getPage()->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_SYMLINK
+        ) {
+            $em = $this->cx->getDb()->getEntityManager();
+            $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            $canonicalPage = $this->pageRepo->getTargetPage($url->getPage());
+        }
+        return \Cx\Core\Routing\Model\Entity\Url::fromPage($canonicalPage);
+    }
+    
+    /**
+     * Let's current component resolve additional path parts of the request
+     *
+     * The component might do something with additional path parts (component intern resolving).
+     * Redirects can be done by changing $page. In this case, the page will be re-resolved.
+     * The canonical URL can be changed by the component by changing $canonicalUrl.
+     * @todo Does this work for fallbacks and aliases?
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Resolved page by reference
+     * @param \Cx\Core\Routing\Model\Entity\Url $url Request URL
+     * @param \Cx\Core\Routing\Model\Entity\Url $canonicalUrl Canonical URL by reference
+     */
+    protected function subResolve(&$page, $url, &$canonicalUrl) {
+        if (
+            $page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION &&
+            $page->getPath() != $url->getPathWithoutOffsetAndLangDir()
+        ) {
+            $additionalPath = substr('/' . $url->getPathWithoutOffsetAndLangDir(), strlen($page->getPath()));
+            $componentRepo = $this->em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+            $componentController = $componentRepo->findOneBy(
+                array(
+                    'name' => $page->getModule()
+                )
+            );
+            if ($componentController) {
+                $parts = explode('/', substr($additionalPath, 1));
+                $componentController->resolve($parts, $page, $canonicalUrl);
+            }
+        }
     }
     
     /**
