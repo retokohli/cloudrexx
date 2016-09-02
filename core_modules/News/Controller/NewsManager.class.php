@@ -859,7 +859,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
     public function hasScheduledPublishing($arrNews)
     {
         return   $arrNews['startdate'] != '0000-00-00 00:00:00'
-              && $arrNews['enddate'] != '0000-00-00 00:00:00';
+              || $arrNews['enddate'] != '0000-00-00 00:00:00';
     }
 
     /**
