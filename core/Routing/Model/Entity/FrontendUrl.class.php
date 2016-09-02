@@ -169,7 +169,6 @@ class FrontendUrl extends \Cx\Core\Routing\Model\Entity\Url {
     }
     
     public function setLanguageCode($langCode) {
-        // todo: check if correct lang code
         // set path
         $this->setPath(
             $this->cx->getWebsiteOffsetPath() . '/' .

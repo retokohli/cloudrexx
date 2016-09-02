@@ -63,14 +63,14 @@ abstract class Url extends \Cx\Lib\Net\Model\Entity\Url {
                 case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                     $url = new FrontendUrl($url); // resolving (incl. aliases), virtual language dirs and can be generated from pages and so
                     $port = \Cx\Core\Setting\Controller\Setting::getValue(
-                        'portFrontend' . $this->getScheme(),
+                        'portFrontend' . $url->getScheme(),
                         'Config'
                     );
                     break;
                 case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
                     $url = new BackendUrl($url); // can be generated from component backend commands
                     $port = \Cx\Core\Setting\Controller\Setting::getValue(
-                        'portBackend' . $this->getScheme(),
+                        'portBackend' . $url->getScheme(),
                         'Config'
                     );
                     break;
