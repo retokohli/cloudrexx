@@ -45,17 +45,20 @@ namespace Cx\Core\Routing\Controller;
  * @subpackage  core_routing
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
+    
+    /**
+     * Returns all Controller class names for this component (except this)
+     * 
+     * @return array List of Controller class names (without namespace)
+     */
     public function getControllerClasses() {
-        // Return an empty array here to let the component handler know that there
-        // does not exist a backend, nor a frontend controller of this component.
         return array('Backend', 'Resolver');
     }
 
     /**
      * Do something before resolving is done
      * 
-     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
-     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
+     * Used to apply rewrite rules and do legacy resolving
      * @param \Cx\Core\Routing\Model\Entity $url The URL object for this request
      */
     public function preResolve(\Cx\Core\Routing\Model\Entity\Url $url) {

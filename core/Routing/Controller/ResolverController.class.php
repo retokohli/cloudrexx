@@ -47,35 +47,41 @@ namespace Cx\Core\Routing\Controller;
 class ResolverController extends \Cx\Core\Core\Model\Entity\Controller
 {
     
-    public function resolve() {
+    /**
+     * Resolves an Url
+     *
+     * In frontend mode this does the page resolving (alias, fallback, redirect, symlink, permissions, ...)
+     * In backend and command mode this forces BackendUrl to find component name and arguments
+     * @return \Cx\Core\ContentManager\Model\Entity\Page resolved page (empty for non-frontend)
+     */
+    public function resolve($url) {
         $page = new \Cx\Core\ContentManager\Model\Entity\Page();
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-                $page = $this->cx->getRequest()->getUrl()->getPage(); // could be any type of page including alias
+                $page = $url->getPage(); // could be any type of page including alias
                 
                 // redirect to virtual language dir
                 if (
                     $page->getType() != \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS &&
-                    $this->cx->getRequest()->getUrl()->getLanguageCode(false) === null
+                    $url->getLanguageCode(false) === null
                 ) {
                     $redirectUrl = \Cx\Core\Routing\Model\Entity\Url::fromDocumentRoot(array(), \FWLanguage::getDefaultLangId());
                     \Cx\Core\Csrf\Controller\CSRF::redirect($redirectUrl);
                 }
                 
-                $page = $this->adjust($page);
                 $this->getPreviewPage();
+                $page = $this->adjust($page);
                 
-                // sub-resolving
-                // re-resolve if necessary
+                // todo: sub-resolving
+                // todo: re-resolve if necessary
                 //$page = $this->adjust($page);
-                // canonical header
+                // todo: canonical header
                 
                 // this is legacy:
                 define('FRONTEND_LANG_ID', $page->getLang());
                 break;
             case \Cx\Core\Core\Controller\Cx::MODE_COMMAND:
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
-                $url = $this->cx->getRequest()->getUrl();
                 $url->getComponent();
                 $url->getArguments();
                 break;
@@ -86,6 +92,8 @@ class ResolverController extends \Cx\Core\Core\Model\Entity\Controller
     
     /**
      * Returns the preview page built from the session page array.
+     *
+     * Also replaces the page object in entity manager with the previewed one
      * @return Cx\Core\ContentManager\Model\Entity\Page $page
      */
     protected function getPreviewPage() {
@@ -141,8 +149,12 @@ class ResolverController extends \Cx\Core\Core\Model\Entity\Controller
         return $page;
     }
     
+    /**
+     * Alias, fallback, redirect and symlink resolving while respecting permissions
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page to adjust
+     * @return \Cx\Core\ContentManager\Model\Entity\Page Adjusted page
+     */
     protected function adjust($page) {
-        // alias, redirect and symlink resolving:
         $isAdjusting = true;
         while ($isAdjusting) {
             if (!$page->hasReadAccess()) {
@@ -189,6 +201,11 @@ class ResolverController extends \Cx\Core\Core\Model\Entity\Controller
         return $page;
     }
     
+    /**
+     * Returns the resolved Url
+     * @deprecated Use $cx->getRequest()->getUrl() instead
+     * @return \Cx\Core\Routing\Model\Entity\Url Resolved URL
+     */
     public function getUrl() {
         return $this->cx->getRequest()->getUrl();
     }

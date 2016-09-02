@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Cloudrexx
  *
@@ -44,7 +43,6 @@ namespace Cx\Core\Routing\Model\Entity;
  * @package     cloudrexx
  * @subpackage  core_routing
  */
-
 class Request {
     
     /**
@@ -72,6 +70,10 @@ class Request {
         $this->url               = $resolvedUrl;
     }
     
+    /**
+     * Creates a request based on current request to server
+     * @return \Cx\Core\Routing\Model\Entity\Request Current request
+     */
     public static function fromCurrent() {
         if (php_sapi_name() == 'cli') {
             $bla = 'file://todo' . $_SERVER['PWD'];
@@ -110,4 +112,3 @@ class Request {
         return $this->url;
     }
 }
-

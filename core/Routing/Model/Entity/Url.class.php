@@ -1,55 +1,87 @@
 <?php
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * An Cloudrexx internal URL
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  core_routing
+ * @link        http://www.cloudrexx.com/ cloudrexx homepage
+ * @since       v5.0.0
+ */
 
 namespace Cx\Core\Routing\Model\Entity;
 
 /**
  * Exception from within this file
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
- * @author      Michael Ritter <drissg@gmail.com>
- * @version     1.0.0
+ * @author      Michael Ritter <michael.ritter@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  core_routing
+ * @link        http://www.cloudrexx.com/ cloudrexx homepage
+ * @since       v5.0.0
  */
 class UrlException extends \Cx\Lib\Net\Model\Entity\UrlException {}
 
 /**
- * Represents a Cloudrexx URL (knows about internal/external, frontend/backend/command, forces protocol, ports)
- * @todo add missing docblocks
- * @todo handle get and post params (contrexx_input2raw())
- * Future resolving process:
- * // to get mode:
- * $request = \Cx\Core\Routing\Model\Entity\Request::fromCurrent();
- * $url = $request->getUrl();
- * $cx->mode = $url->getMode();
- * 
- * // resolving:
- * switch ($cx->mode) {
- *     case 'frontend':
- *         $page = $url->getPage(); // could be any type of page including alias
- *         $isAdjusting = true;
- *         while ($isAdjusting) {
- *             $isAdjusting = false;
- *             if (external redirect || !$page) { // type redirect (internal or external)
- *                 $isAdjusting = false;
- *                 redirect to $page->getTargetPage()!
- *             }
- *             if (internal redirect) { // types symlink and fallback
- *                 $page = $page->getTargetPage();
- *             }
- *         }
- *         break;
- *     case 'command':
- *     case 'backend':
- *         $url->getComponent()
- *         $url->getArguments()
- * }
+ * An Cloudrexx internal URL
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  core_routing
+ * @link        http://www.cloudrexx.com/ cloudrexx homepage
+ * @since       v5.0.0
  */
 abstract class Url extends \Cx\Lib\Net\Model\Entity\Url {
     
+    /**
+     * Creates an Url instance from a string
+     * @param string $stringUrl String to create Url instance for
+     * @param boolean $replacePorts (optional) Wheter to replace ports with default ones or not, defaults to false
+     * @return \Cx\Lib\Net\Model\Entity\Url Url instance for given string
+     * @see fromUrl()
+     */
     public static function fromString($stringUrl, $replacePorts = false) {
         return static::fromUrl(new \Cx\Lib\Net\Model\Entity\Url($stringUrl), $replacePorts);
     }
     
+    /**
+     * Creates an Url instance from an existing Url instance
+     *
+     * This decides if an Url points to this installation of Cloudrexx and if yes to which mode.
+     * Depending on the results there are different return types:
+     * - Url does not point to this installation of Cloudrexx: \Cx\Lib\Net\Model\Entity\Url
+     * - Url point to this installation's frontend mode: \Cx\Core\Routing\Model\Entity\FrontendUrl
+     * - Url point to this installation's backend mode: \Cx\Core\Routing\Model\Entity\BackendUrl
+     * - Url point to this installation's command mode: \Cx\Core\Routing\Model\Entity\CommandUrl
+     * @param \Cx\Lib\Net\Model\Entity\Url $url Url instance to get Url instance for
+     * @param boolean $replacePorts (optional) Wheter to replace ports with default ones or not, defaults to false
+     * @return \Cx\Lib\Net\Model\Entity\Url Url instance for given string
+     */
     public static function fromUrl($url, $replacePorts = false) {
         \Cx\Core\Setting\Controller\Setting::init(
             'Config',
@@ -87,7 +119,9 @@ abstract class Url extends \Cx\Lib\Net\Model\Entity\Url {
             }
             
         // external url
-        } catch (UrlException $e) {}
+        } catch (UrlException $e) {
+            $url = new \Cx\Lib\Net\Model\Entity\Url((string) $url);
+        }
         return $url;
     }
     
@@ -181,10 +215,22 @@ abstract class Url extends \Cx\Lib\Net\Model\Entity\Url {
         }
     }
     
+    /**
+     * Returns the Cloudrexx mode of this Url
+     * @return string One of the MODE_* constants defined in Cx class
+     */
     public function getMode() {
         return static::calculateMode($this);
     }
     
+    /**
+     * Returns this URL's path without Cloudrexx offset
+     *
+     * Example:
+     * URL: http://localhost/cloudrexx/git/master/de/Medien/Medien-Archiv
+     * Return value: /de/Medien/Medien-Archiv
+     * @return string URL path without Cloudrexx offset
+     */
     public function getPathWithoutOffset() {
         $installationOffset = $this->cx->getWebsiteOffsetPath();
         $providedOffset = $this->getPath();
@@ -222,4 +268,3 @@ abstract class Url extends \Cx\Lib\Net\Model\Entity\Url {
         return true;
     }
 }
-

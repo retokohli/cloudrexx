@@ -1583,7 +1583,7 @@ namespace Cx\Core\Core\Controller {
             }
             
             $this->resolver = $this->getComponentControllerByNameAndType('Routing', 'core')->getController('Resolver');
-            $this->resolvedPage = $this->resolver->resolve();
+            $this->resolvedPage = $this->resolver->resolve($this->getRequest()->getUrl());
             
             // legacy:
             if ($this->mode == self::MODE_FRONTEND) {

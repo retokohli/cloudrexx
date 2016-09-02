@@ -1,12 +1,53 @@
 <?php
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
 
+/**
+ * An Cloudrexx internal URL pointing to frontend mode
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  core_routing
+ * @link        http://www.cloudrexx.com/ cloudrexx homepage
+ * @since       v5.0.0
+ */
+ 
 namespace Cx\Core\Routing\Model\Entity;
 
 /**
-// resolving (incl. aliases), virtual language dirs and can be generated from pages and so
+ * An Cloudrexx internal URL pointing to frontend mode
+ *
+ * This resolves an URL to a page and vice versa (without page resolving)
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  core_routing
+ * @link        http://www.cloudrexx.com/ cloudrexx homepage
+ * @since       v5.0.0
  */
 class FrontendUrl extends \Cx\Core\Routing\Model\Entity\Url {
-    protected $page = null;
     
     /**
      * Returns an Url object for module, cmd and lang
@@ -94,11 +135,12 @@ class FrontendUrl extends \Cx\Core\Routing\Model\Entity\Url {
         return $url;
     }
     
+    /**
+     * Returns the page this URL points to (Error page if necessary)
+     * @todo Might need some caching, but needs to be up to date if path changes
+     * @return \Cx\Core\ContentManager\Model\Entity\Page Page this URL points to
+     */
     public function getPage() {
-        if ($this->page) {
-            return $this->page;
-        }
-        
         $em = $this->cx->getDb()->getEntityManager();
         $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         $page = null;
@@ -108,7 +150,6 @@ class FrontendUrl extends \Cx\Core\Routing\Model\Entity\Url {
             $pages = $pageRepo->getPagesAtPath($this->getPathWithoutOffset(), null, null, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_ALIAS_ONLY);
             if (isset($pages['page'])) {
                 $page = current($pages['page']);
-                $this->page = $page;
                 return $page;
             }
         }
@@ -126,10 +167,17 @@ class FrontendUrl extends \Cx\Core\Routing\Model\Entity\Url {
                 $page = $pages['page'];
             }
         }
-        $this->page = $page;
         return $page;
     }
     
+    /**
+     * Returns this URL's path without Cloudrexx offset and language dir
+     *
+     * Example:
+     * URL: http://localhost/cloudrexx/git/master/de/Medien/Medien-Archiv
+     * Return value: /Medien/Medien-Archiv
+     * @return string URL path without Cloudrexx offset and language dir
+     */
     public function getPathWithoutOffsetAndLangDir() {
         $path = $this->getPathWithoutOffset();
         $languageCode = $this->getLanguageCode(false);
@@ -168,12 +216,14 @@ class FrontendUrl extends \Cx\Core\Routing\Model\Entity\Url {
         return $resolvePathParts[1];
     }
     
+    /**
+     * Sets the language code used for virtual language directory
+     * @param string $langCode ISO 639-1 language code
+     */
     public function setLanguageCode($langCode) {
-        // set path
         $this->setPath(
             $this->cx->getWebsiteOffsetPath() . '/' .
             $langCode . $this->getPathWithoutOffsetAndLangDir()
         );
     }
 }
-
