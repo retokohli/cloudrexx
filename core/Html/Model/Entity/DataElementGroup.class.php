@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Cloudrexx
  *
@@ -26,13 +25,33 @@
  */
  
 /**
+ * DataElement consisting of multiple form elements
  * 
+ * DataElements like radiobutton and checkbox make no sense alone.
+ * This class allows management of a group of such elements as one
+ * DataElement.
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  core_html
+ * @link        http://www.cloudrexx.com/ cloudrexx homepage
+ * @since       v5.0.0
  */
 
 namespace Cx\Core\Html\Model\Entity;
 
 /**
+ * DataElement consisting of multiple form elements
  * 
+ * DataElements like radiobutton and checkbox make no sense alone.
+ * This class allows management of a group of such elements as one
+ * DataElement.
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  core_html
+ * @link        http://www.cloudrexx.com/ cloudrexx homepage
+ * @since       v5.0.0
  */
 class DataElementGroup extends DataElement {
     protected static $instanceCount = 0;
@@ -100,4 +119,3 @@ class DataElementGroup extends DataElement {
         }
     }
 }
-
