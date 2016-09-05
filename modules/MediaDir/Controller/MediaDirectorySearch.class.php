@@ -136,33 +136,45 @@ EOF;
         $formId = null;
         $strPleaseChoose = $_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHOOSE'];
         $strExpandedInputfields = '';
+        $bolShowLevelSelector = false;
+        $bolShowCategorySelector = false;
+        $formDefinition = null;
 
         //get ids
         if (!empty($_GET['cmd'])) {
-            $bolShowLevelSelector = false;
-            $bolShowCategorySelector = false;
-
             $arrIds = explode('-', $_GET['cmd']);  
 
-            if ($arrIds[0] != 'search' && $arrIds[0] != 'alphabetical'){
+            if ($arrIds[0] == 'detail' || substr($arrIds[0],0,6) == 'detail') {
+                $entryId = intval($_GET['eid']);
+                $objEntry = new MediaDirectoryEntry($this->moduleName);
+                $objEntry->getEntries($entryId);
+                $formDefinition = $objEntry->getFormDefinition();
+                $formId = $formDefinition['formId'];
+            } elseif ($arrIds[0] != 'search' && $arrIds[0] != 'alphabetical'){
                 $objForms = new MediaDirectoryForm(null, $this->moduleName);
                 foreach ($objForms->arrForms as $id => $arrForm) {
                     if (!empty($arrForm['formCmd']) && ($arrForm['formCmd'] == $_GET['cmd'])) {
                         $formId = intval($id);
+                        $formDefinition = $objForms->arrForms[$formId];
+                        break;
                     }
                 }
+            }
 
-                if (($objForms->arrForms[$formId]['formUseLevel'] == 1) && ($this->arrSettings['levelSelectorExpSearch'][$formId] == 1)) {
+            if ($this->arrSettings['legacyBehavior'] || $formId) {
+                if (($formDefinition['formUseLevel'] == 1) && ($this->arrSettings['levelSelectorExpSearch'][$formId] == 1)) {
                     $bolShowLevelSelector = true;
                 }
-                if (($objForms->arrForms[$formId]['formUseCategory'] == 1) && ($this->arrSettings['categorySelectorExpSearch'][$formId] == 1)) {
+                if (($formDefinition['formUseCategory'] == 1) && ($this->arrSettings['categorySelectorExpSearch'][$formId] == 1)) {
                     $bolShowCategorySelector = true;
                 }
             } else {
+                // activate level and category selection in case they are active in any forms
                 $bolShowLevelSelector = in_array(1, $this->arrSettings['levelSelectorExpSearch']);
                 $bolShowCategorySelector = in_array(1, $this->arrSettings['categorySelectorExpSearch']);
             }
         } else {
+            // activate level and category selection in case they are active in any forms
             $bolShowLevelSelector = in_array(1, $this->arrSettings['levelSelectorExpSearch']);
             $bolShowCategorySelector = in_array(1, $this->arrSettings['categorySelectorExpSearch']);
         }

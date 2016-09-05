@@ -373,25 +373,26 @@ class MediaDirectoryLibrary
     {
         global $objDatabase;
 
-        $arrSettings = array();
+        $this->arrSettings = array();
 
         $objSettings = $objDatabase->Execute("SELECT id,name,value FROM ".DBPREFIX."module_".$this->moduleNameLC."_settings ORDER BY name ASC");
-        if ($objSettings !== false) {
-            while (!$objSettings->EOF) {
-                if($objSettings->fields['id'] == 9 || $objSettings->fields['id'] == 10) {
-                    $arrOrders = $this->getSelectorOrder($objSettings->fields['value']);
-                    $arrSettings[htmlspecialchars($objSettings->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)] = $arrOrders;
-                } else if($objSettings->fields['id'] == 42 || $objSettings->fields['id'] == 43) {
-                    $arrExpSearch = $this->getSelectorSearch($objSettings->fields['value']);
-                    $arrSettings[htmlspecialchars($objSettings->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)] = $arrExpSearch;
-                } else{
-                    $arrSettings[htmlspecialchars($objSettings->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)] = htmlspecialchars($objSettings->fields['value'], ENT_QUOTES, CONTREXX_CHARSET);
-                }
-                $objSettings->MoveNext();
-            }
+        if ($objSettings === false) {
+            return;
         }
-        // return $arrSettings;
-        $this->arrSettings = $arrSettings;
+
+        while (!$objSettings->EOF) {
+            $this->arrSettings[htmlspecialchars($objSettings->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)] = htmlspecialchars($objSettings->fields['value'], ENT_QUOTES, CONTREXX_CHARSET);
+            $objSettings->MoveNext();
+        }
+
+        // the calls to getSelectorOrder() and getSelectorSearch() must be
+        // done after the above assignment, as those methods will need the
+        // setting legacyBehavior to be loaded already
+        $this->arrSettings['categorySelectorOrder'] = $this->getSelectorOrder($this->arrSettings['categorySelectorOrder']);
+        $this->arrSettings['levelSelectorOrder'] = $this->getSelectorOrder($this->arrSettings['levelSelectorOrder']);
+
+        $this->arrSettings['categorySelectorExpSearch'] = $this->getSelectorSearch($this->arrSettings['categorySelectorExpSearch']);
+        $this->arrSettings['levelSelectorExpSearch'] = $this->getSelectorSearch($this->arrSettings['levelSelectorExpSearch']);
     }
 
 
@@ -402,7 +403,15 @@ class MediaDirectoryLibrary
 
         $arrOrder = array();
 
-        $objSelectorOrder = $objDatabase->Execute("SELECT form_id,selector_order FROM ".DBPREFIX."module_".$this->moduleNameLC."_order_rel_forms_selectors WHERE selector_id='".intval($intSelectorId)."'");
+        // only load from active forms in frontend
+        $query = "SELECT selectors.form_id, selectors.selector_order FROM ".DBPREFIX."module_".$this->moduleNameLC."_order_rel_forms_selectors AS selectors";
+        $where = array("selectors.selector_id='".intval($intSelectorId)."'");
+        if (!$this->arrSettings['legacyBehavior'] && \Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            $query .= ' INNER JOIN '.DBPREFIX.'module_'.$this->moduleNameLC.'_forms AS forms ON forms.id = selectors.form_id';
+            $where[] = 'forms.active=1';
+        }
+        $query .= " WHERE ".implode(" AND ", $where);
+        $objSelectorOrder = $objDatabase->Execute($query);
         if ($objSelectorOrder !== false) {
             while (!$objSelectorOrder->EOF) {
                 $arrOrder[intval($objSelectorOrder->fields['form_id'])] = intval($objSelectorOrder->fields['selector_order']);
@@ -415,13 +424,31 @@ class MediaDirectoryLibrary
 
 
 
+    /**
+     * Get setting if levels or categories shall be included in extended search 
+     * functionality of a specific form.
+     *
+     * @param   integer $intSelectorId  Set to 9 to get the setting for category.
+     *                                  set to 10 to get the setting for level.
+     * @return  array   Array containung the setting if the levels or categories
+     *                  shall be included in the extended seach functionality
+     *                  for each form. Format: array(<form-id> => <true or false>)
+     */
     function getSelectorSearch($intSelectorId)
     {
         global $objDatabase;
 
         $arrExpSearch = array();
 
-        $objSelectorSearch = $objDatabase->Execute("SELECT form_id, exp_search FROM ".DBPREFIX."module_".$this->moduleNameLC."_order_rel_forms_selectors WHERE selector_id='".intval($intSelectorId)."'");
+        // only load from active forms in frontend
+        $query = "SELECT selectors.form_id, selectors.exp_search FROM ".DBPREFIX."module_".$this->moduleNameLC."_order_rel_forms_selectors AS selectors";
+        $where = array("selectors.selector_id='".intval($intSelectorId)."'");
+        if (!$this->arrSettings['legacyBehavior'] && \Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            $query .= ' INNER JOIN '.DBPREFIX.'module_'.$this->moduleNameLC.'_forms AS forms ON forms.id = selectors.form_id';
+            $where[] = 'forms.active=1';
+        }
+        $query .= " WHERE ".implode(" AND ", $where);
+        $objSelectorSearch = $objDatabase->Execute($query);
         if ($objSelectorSearch !== false) {
             while (!$objSelectorSearch->EOF) {
                 $arrExpSearch[intval($objSelectorSearch->fields['form_id'])] = intval($objSelectorSearch->fields['exp_search']);
