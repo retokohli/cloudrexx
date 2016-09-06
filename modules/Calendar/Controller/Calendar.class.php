@@ -513,7 +513,7 @@ EOF;
                 $this->_objTpl->touchBlock('calendarEventOkMessage');
                 
                 // refresh event data after save
-                $objEvent->get($eventId);
+                $objEvent->get($objEvent->id);
                 $objEvent->getData();
                 $isEventLoaded  = true;
                 $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();
