@@ -160,4 +160,4 @@ $_ARRAYLANG['TXT_DATA_WIDTH'] = "Width";
 $_ARRAYLANG['TXT_DATA_HEIGHT'] = "Height";
 $_ARRAYLANG['TXT_DATA_ATTACHMENT_DESC'] = "Attachment description";
 $_ARRAYLANG['TXT_SAVE'] = "Save";
-?>
+$_ARRAYLANG['TXT_DATA_LOADING'] = "Loading ...";
