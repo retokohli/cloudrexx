@@ -302,17 +302,15 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             return;
         }
 
+        \JS::activate('schedule-publish-tooltip', array());
+
         // create new ContentTree instance
         $objContentTree = new \ContentTree();
         $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 
         $rowNr = 0;
         foreach ($arrBlocks as $blockId => $arrBlock) {
-            if ($arrBlock['active'] ==  '1') {
-                $status = '<a href="index.php?cmd=Block&amp;act=deactivate&amp;blockId='.$blockId.'" title="'.$_ARRAYLANG['TXT_BLOCK_ACTIVE'].'"><img src="../core/Core/View/Media/icons/led_green.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_ACTIVE'].'" /></a>';
-            } else {
-                $status = '<a href="index.php?cmd=Block&amp;act=activate&amp;blockId='.$blockId.'" title="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'"><img src="../core/Core/View/Media/icons/led_red.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'" /></a>';
-            }
+            list($statusName, $action) = $this->getBlockStatusAndAction($arrBlock);
 
             $blockPlaceholder = $this->blockNamePrefix . $blockId;
 
@@ -393,13 +391,52 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
                 'BLOCK_MODIFY'                => sprintf($_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
                 'BLOCK_COPY'                  => sprintf($_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
                 'BLOCK_DELETE'                => sprintf($_ARRAYLANG['TXT_BLOCK_DELETE_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
-                'BLOCK_STATUS'                => $status,
                 'BLOCK_LANGUAGES_NAME'        => $langString,
+                'BLOCK_STATUS_ICON_ACTION'    => $action,
+                'BLOCK_STATUS_ICON_CLASS'     => $statusName,
             ));
             $this->_objTpl->parse('blockBlockList');
 
             $rowNr ++;
         }
+    }
+
+    /**
+     * Get the block status and its action based on the scheduled publishing
+     *
+     * @param array $arrBlock array of Block details
+     *
+     * @return array array of block status and its action
+     */
+    public function getBlockStatusAndAction($arrBlock)
+    {
+        if (empty($arrBlock['active'])) {
+            return array('inactive', 'activate');
+        }
+
+        if (empty($arrBlock['start']) && empty($arrBlock['end'])) {
+            return array('active', 'deactivate');
+        }
+
+        $start = null;
+        if ($arrBlock['start']) {
+            $start = new \DateTime();
+            $start->setTimestamp($arrBlock['start']);
+        }
+        $end = null;
+        if ($arrBlock['end']) {
+            $end = new \DateTime();
+            $end->setTimestamp($arrBlock['end']);
+        }
+        if (   (!empty($start) && empty($end) && ($start->getTimestamp() > time()))
+            || (empty($start) && !empty($end) && ($end->getTimestamp() < time()))
+            || (!empty($start) && !empty($end) && !($start->getTimestamp() < time() && $end->getTimestamp() > time()))
+        ) {
+            return array('scheduled inactive', 'modify&show=additionalTab');
+        }
+
+        return array('scheduled active', 'modify&show=additionalTab');
+
     }
 
     /**
@@ -765,6 +802,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
 
         $targetingStatus = isset($_POST['targeting_status']) ? contrexx_input2int($_POST['targeting_status']) : 0;
         $targeting       = array();
+        $showAdditionalTab = isset($_GET['show']) && ($_GET['show'] == 'additionalTab');
         foreach ($this->availableTargeting as $targetingType) {
             $targetingArr = isset($_POST['targeting'][$targetingType]) ? $_POST['targeting'][$targetingType] : array();
             if (empty($targetingArr)) {
@@ -863,8 +901,8 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'BLOCK_MODIFY_TITLE'                => $pageTitle,
             'BLOCK_NAME'                        => contrexx_raw2xhtml($blockName),
             'BLOCK_CATEGORIES_PARENT_DROPDOWN'  => $this->_getCategoriesDropdown($blockCat),
-            'BLOCK_START'                       => !empty($blockStart) ? strftime('%Y-%m-%d %H:%M', $blockStart) : $blockStart,
-            'BLOCK_END'                         => !empty($blockEnd) ? strftime('%Y-%m-%d %H:%M', $blockEnd) : $blockEnd,
+            'BLOCK_START'                       => !empty($blockStart) ? strftime('%Y-%m-%d %H:%M', $blockStart) : '',
+            'BLOCK_END'                         => !empty($blockEnd) ? strftime('%Y-%m-%d %H:%M', $blockEnd) : '',
             'BLOCK_WYSIWYG_EDITOR'              => $blockWysiwygEditor == 1 ? 'checked="checked"' : '',
 
             // random placeholders
@@ -899,6 +937,10 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
                                                     ? 'selected="selected"' : '',
             'BLOCK_TARGETING_COUNTRY_EXCLUDE'   => !empty($targeting['country']) && $targeting['country']['filter'] == 'exclude'
                                                     ? 'selected="selected"' : '',
+            'BLOCK_MODIFY_BASIC_TAB_CLASS'      => $showAdditionalTab ? '' : 'active',
+            'BLOCK_MODIFY_ADDITIONAL_TAB_CLASS' => $showAdditionalTab ? 'active' : '',
+            'BLOCK_MODIFY_BASIC_DIV_DISPLAY'    => $showAdditionalTab ? 'display: none' : 'display: block;',
+            'BLOCK_MODIFY_ADDITIONAL_DIV_DISPLAY' => $showAdditionalTab ? 'display: block' : 'display: none;'
         ));
         
         if (!empty($targeting['country']) && !empty($targeting['country']['value'])) {

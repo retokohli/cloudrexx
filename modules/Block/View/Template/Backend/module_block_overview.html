@@ -82,7 +82,10 @@ function blockDeleteBlock(blockId, blockName)
       <!-- BEGIN blockBlockList -->
         <tr class="{BLOCK_ROW_CLASS}" style="height:20px;">
           <td style="text-align:right; font-weight:bold;"><input type="checkbox" name="selectedBlockId[]" id="selectedBlockId" value="{BLOCK_ID}" /></td>
-          <td style="text-align:center; font-weight:bold;">{BLOCK_STATUS}</td>
+          <td style="text-align:center; font-weight:bold;">
+              <a class="schedule_status {BLOCK_STATUS_ICON_CLASS}" href="index.php?cmd=Block&amp;act={BLOCK_STATUS_ICON_ACTION}&amp;blockId={BLOCK_ID}"></a>
+          </td>
+
           <td><input maxlength="5" size="1" value="{BLOCK_ORDER}" name="displayorder[{BLOCK_ID}]" /></td>
           <td><a href="index.php?cmd=Block&amp;act=modify&amp;blockId={BLOCK_ID}" title="{BLOCK_MODIFY}">{BLOCK_NAME}</a></td>
           <td style="text-align:left;">{BLOCK_CATEGORY_NAME}</td>

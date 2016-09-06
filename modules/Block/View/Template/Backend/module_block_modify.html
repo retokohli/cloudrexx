@@ -386,7 +386,8 @@
                     hideInputs();
                 }
             });
-            if($inputDateEnd.val() == '0'){ //check if we display always
+            //check scheduled is active
+            if ($inputDateStart.val() == '' && $inputDateEnd.val() == '') {
                 hideInputs();
             }
 
@@ -536,11 +537,11 @@
     </table>
     <br />
     <ul id="tabmenu">
-        <li><a class="active" href="javascript:{}" id="data_{TXT_BLOCK_BASIC_DATA}" onclick="selectDataTab(this, '{TXT_BLOCK_BASIC_DATA}')" title="{TXT_BLOCK_BASIC_DATA}">{TXT_BLOCK_BASIC_DATA}</a></li>
-        <li><a href="javascript:{}" id="data_{TXT_BLOCK_ADDITIONAL_OPTIONS}" onclick="selectDataTab(this, '{TXT_BLOCK_ADDITIONAL_OPTIONS}')" title="{TXT_BLOCK_ADDITIONAL_OPTIONS}">{TXT_BLOCK_ADDITIONAL_OPTIONS}</a></li>
+        <li><a class="{BLOCK_MODIFY_BASIC_TAB_CLASS}" href="javascript:{}" id="data_{TXT_BLOCK_BASIC_DATA}" onclick="selectDataTab(this, '{TXT_BLOCK_BASIC_DATA}')" title="{TXT_BLOCK_BASIC_DATA}">{TXT_BLOCK_BASIC_DATA}</a></li>
+        <li><a class="{BLOCK_MODIFY_ADDITIONAL_TAB_CLASS}"href="javascript:{}" id="data_{TXT_BLOCK_ADDITIONAL_OPTIONS}" onclick="selectDataTab(this, '{TXT_BLOCK_ADDITIONAL_OPTIONS}')" title="{TXT_BLOCK_ADDITIONAL_OPTIONS}">{TXT_BLOCK_ADDITIONAL_OPTIONS}</a></li>
         <li><a href="javascript:{}" id="data_targeting" onclick="selectDataTab(this, 'targeting')" title="{TXT_BLOCK_TARGETING}">{TXT_BLOCK_TARGETING}</a></li>
     </ul>
-    <div id="{TXT_BLOCK_BASIC_DATA}" class="data">
+    <div id="{TXT_BLOCK_BASIC_DATA}" class="data" style='{BLOCK_MODIFY_BASIC_DIV_DISPLAY}'>
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
             <tbody>
                 <tr>
@@ -585,7 +586,7 @@
         </div>
         <br />
     </div>
-    <div id="{TXT_BLOCK_ADDITIONAL_OPTIONS}" class="data" style="display:none;">
+    <div id="{TXT_BLOCK_ADDITIONAL_OPTIONS}" class="data" style="{BLOCK_MODIFY_ADDITIONAL_DIV_DISPLAY}">
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
             <tbody>
                 <tr>
