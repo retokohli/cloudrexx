@@ -39,6 +39,13 @@ function setCheckboxes(do_check)
     return true;
   }
 }
+var modifyJobs = function(id, obj)
+{
+    if (cx.jQuery(obj).hasClass('scheduled')) {
+      window.location.replace('index.php?cmd=Jobs&{CSRF}&act=edit&id=' + id + '#publish');
+      return;
+    }
+}
 </script>
 <table width="100%" height="38" cellspacing="0" cellpadding="3" border="0" class="adminlist">
 <tbody>
@@ -94,7 +101,9 @@ function setCheckboxes(do_check)
 <tr class="{JOBS_CLASS}">
   <td nowrap="nowrap"><input type="checkbox" value="{JOBS_ID}" name="selectedId[]" /></td>
   <td nowrap="nowrap">{JOBS_ID}</td>
-  <td nowrap="nowrap"><img border="0" title="{JOBS_STATUS}" alt="{JOBS_STATUS}" src="../core/Core/View/Media/icons/{JOBS_STATUS_PICTURE}" /></td>
+  <td nowrap="nowrap">
+    <a class="schedule_status {JOBS_STATUS_CLASS}" href="javascript: void(0);" onclick="modifyJobs({JOBS_ID}, this)"></a>
+  </td>
   <td nowrap="nowrap">{JOBS_DATE}&nbsp;</td>
   <td><a href="?cmd=Jobs&act=edit&id={JOBS_ID}">{JOBS_TITLE}</a>&nbsp;</td>
   <td nowrap="nowrap">{JOBS_CATEGORY}&nbsp;</td>

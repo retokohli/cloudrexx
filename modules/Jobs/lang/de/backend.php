@@ -110,4 +110,3 @@ $_ARRAYLANG['TXT_JOBS_SETTINGS'] = "Eigenschaften";
 $_ARRAYLANG['TXT_JOBS_SEARCH'] = "Suchen";
 $_ARRAYLANG['TXT_JOBS_NO_CATEGORY'] = "bitte Kategorie auswählen";
 $_ARRAYLANG['TXT_JOBS_NO_TITLE'] = "bitte Titel eingeben";
-?>

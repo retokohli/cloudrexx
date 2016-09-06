@@ -198,8 +198,11 @@ class JobsManager extends JobsLibrary
             'TXT_DEACTIVATE'             => $_ARRAYLANG['TXT_DEACTIVATE'],
             'TXT_STATUS'                 => $_ARRAYLANG['TXT_STATUS'],
             'TXT_AUTHOR'                 => $_ARRAYLANG['TXT_AUTHOR'],
-            'TXT_JOBS_SEARCH'            => $_ARRAYLANG['TXT_JOBS_SEARCH']
+            'TXT_JOBS_SEARCH'            => $_ARRAYLANG['TXT_JOBS_SEARCH'],
+            'CSRF'                       => 'csrf='.\Cx\Core\Csrf\Controller\Csrf::code()
         ));
+
+        \JS::activate('schedule-publish-tooltip', array());
 
         /* check if locations are activated */
         $query = "
@@ -244,7 +247,7 @@ class JobsManager extends JobsLibrary
             'TXT_DELETE'    => $_ARRAYLANG['TXT_DELETE']
         ));
         $query = "SELECT n.id AS jobsId, n.date, n.changelog,
-                         n.title, n.status, n.author,
+                         n.title, n.status, n.author, n.startdate, n.enddate,
                          l.name,
                          nc.name AS catname,
                          n.userid
@@ -266,12 +269,31 @@ class JobsManager extends JobsLibrary
             return;
         }
         while ($objResult !== false && !$objResult->EOF) {
-            $statusPicture = ($objResult->fields['status']==1) ? "status_green.gif" : "status_red.gif";
             $jobUser = \FWUser::getFWUserObject()->objUser->getUser($objResult->fields['userid']);
             $username = $_ARRAYLANG['TXT_ACCESS_UNKNOWN'];
             if ($jobUser) {
                 $username = $jobUser->getUsername();
             }
+
+            $jobsStatusClass = 'inactive';
+            if ($objResult->fields['status']) {
+                $start = strtotime($objResult->fields['startdate']);
+                $end   = strtotime($objResult->fields['enddate']);
+
+                $jobsStatusClass = 'scheduled active';
+                if (empty($start) && empty($end)) {
+                    $jobsStatusClass = 'active';
+                } else if ((!empty($start) && empty($end) && ($start > time()))
+                    || (empty($start) && !empty($end) && ($end < time()))
+                    || (   !empty($start)
+                        && !empty($end)
+                        && !($start < time() && $end > time())
+                       )
+                ) {
+                    $jobsStatusClass = 'scheduled inactive';
+                }
+            }
+
             $this->_objTpl->setVariable(array(
                 'JOBS_ID'         => $objResult->fields['jobsId'],
                 'JOBS_DATE'       => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
@@ -282,8 +304,7 @@ class JobsManager extends JobsLibrary
                 'JOBS_PAGING'     => $paging,
                 'JOBS_CLASS'      => (++$i % 2 ? "row2" : "row1"),
                 'JOBS_CATEGORY'   => $objResult->fields['catname'],
-                'JOBS_STATUS'     => $objResult->fields['status'],
-                'JOBS_STATUS_PICTURE' => $statusPicture,
+                'JOBS_STATUS_CLASS'   => $jobsStatusClass,
                 'TXT_TEMPLATE'    => $_ARRAYLANG['TXT_TEMPLATE'],
                 'TXT_EDIT'    => $_ARRAYLANG['TXT_EDIT'],
             ));
