@@ -648,12 +648,11 @@ cx.cm = function(target) {
                     return;
                 }
                 var page = cx.cm.getPageStatus(cx.cm.getNodeId(cx.jQuery("#pageId").val()), cx.cm.getCurrentLang());
-                if (publishAllowed) {
-                    page.publishing.published = true;
-                    page.publishing.hasDraft = "no";
-                } else {
-                    page.publishing.hasDraft = "waiting";
-                }
+
+                var updatedPage = response.data.page;
+                page.publishing.published = updatedPage.publishing.published;
+                page.publishing.hasDraft  = updatedPage.publishing.hasDraft;
+                page.publishing.scheduled = updatedPage.publishing.scheduled;
                 switch (cx.jQuery("[name=\"page[type]\"]:checked").attr("value")) {
                     case "content":
                         page.visibility.type = "standard";
@@ -737,7 +736,11 @@ cx.cm = function(target) {
                     return;
                 }
                 var page = cx.cm.getPageStatus(cx.cm.getNodeId(cx.jQuery("#pageId").val()), cx.cm.getCurrentLang());
-                page.publishing.hasDraft = "yes";
+
+                var updatedPage = response.data.page;
+                page.publishing.published = updatedPage.publishing.published;
+                page.publishing.hasDraft  = updatedPage.publishing.hasDraft;
+                page.publishing.scheduled = updatedPage.publishing.scheduled;
                 switch (cx.jQuery("[name=\"page[type]\"]:checked").attr("value")) {
                     case "content":
                         page.visibility.type = "standard";
@@ -1329,18 +1332,22 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     }
                 } else if (cx.jQuery(event.target).is('ins.page') ||
                         cx.jQuery(event.target).is('ins.publishing')) {
+                    var nodeId = cx.jQuery(event.target).closest("li").attr("id").split("_")[1];
                     if (cx.jQuery(event.target).is('ins.page')) {
                         action = "hide";
                         if (cx.jQuery(event.target).hasClass('invisible')) {
                             action = "show";
                         }
                     } else {
+                        if (cx.jQuery(event.target).hasClass('scheduled')) {
+                            cx.cm.loadPage(this.id, nodeId, false, 'more');
+                            return;
+                        }
                         action = "deactivate";
                         if (cx.jQuery(event.target).hasClass('unpublished')) {
                             action = "activate";
                         }
                     }
-                    var nodeId = cx.jQuery(event.target).closest("li").attr("id").split("_")[1];
                     cx.cm.performAction(action, this.id, nodeId);
                 }
             });
@@ -1585,7 +1592,13 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     var arrStatuses = new Array();
                     var arrTipMessage = new Array();
                     
-                    if (objTrigger.hasClass('unpublished')) {
+                    if (objTrigger.hasClass('scheduled')) {
+                        if (objTrigger.hasClass('unpublished')) {
+                            arrStatuses.push(cx.variables.get('TXT_CORE_CM_PUBLISHING_SCHEDULED_DEACTIVE', 'contentmanager/lang/tooltip'));
+                        } else {
+                            arrStatuses.push(cx.variables.get('TXT_CORE_CM_PUBLISHING_SCHEDULED_ACTIVE', 'contentmanager/lang/tooltip'));
+                        }
+                    } else if (objTrigger.hasClass('unpublished')) {
                         arrStatuses.push(cx.variables.get('TXT_CORE_CM_PUBLISHING_UNPUBLISHED', 'contentmanager/lang/tooltip'));
                     } else {
                         arrStatuses.push(cx.variables.get('TXT_CORE_CM_PUBLISHING_PUBLISHED', 'contentmanager/lang/tooltip'));
@@ -1919,17 +1932,8 @@ cx.cm.performAction = function(action, pageId, nodeId) {
                     page.visibility.visible = false;
                     break;
                 case "publish":
-                    if (publishAllowed) {
-                        page.publishing.published = true;
-                    } else {
-                        page.publishing.hasDraft = "waiting";
-                    }
-                    break;
                 case "activate":
-                    page.publishing.published = true;
-                    break;
                 case "deactivate":
-                    page.publishing.published = false;
                     break;
                 case "copy":
                     cx.cm.createJsTree();
@@ -1945,6 +1949,10 @@ cx.cm.performAction = function(action, pageId, nodeId) {
                     alert("Unknown action \"" + action + "\"");
                     return;
             }
+            var updatedPage = json.data.page;
+            page.publishing.published = updatedPage.publishing.published;
+            page.publishing.hasDraft  = updatedPage.publishing.hasDraft;
+            page.publishing.scheduled = updatedPage.publishing.scheduled;
             cx.cm.updateTreeEntry(page);
             cx.trigger("loadingEnd", "contentmanager", {});
         }
@@ -2060,7 +2068,8 @@ cx.cm.updateActionMenus = function(args) {
  *     publishing: {
  *         locked: true|false,
  *         published: true|false,
- *         hasDraft: no|yes|waiting
+ *         hasDraft: no|yes|waiting,
+ *         scheduled: true|false
  *     },
  *     visibility: {
  *         visible: true|false,
@@ -2165,6 +2174,9 @@ cx.cm.updateTreeEntry = function(newStatus) {
         default:
             break;
     }
+    if (newStatus.publishing.scheduled) {
+        publishing.addClass("scheduled")
+    }
     if (!newStatus.existing) {
         publishing.addClass("inexistent");
     }
@@ -2222,7 +2234,8 @@ cx.cm.updateTreeEntries = function(newStatuses) {
  *     publishing: {
  *         locked: true|false,
  *         published: true|false,
- *         hasDraft: no|yes|waiting
+ *         hasDraft: no|yes|waiting,
+ *         scheduled: true|false
  *     },
  *     visibility: {
  *         visible: true|false,
@@ -2250,7 +2263,8 @@ cx.cm.getPageStatus = function(nodeId, lang) {
             publishing: {
                 locked: false,
                 published: false,
-                hasDraft: "no"
+                hasDraft: "no",
+                scheduled: false
             },
             visibility: {
                 visible: false,
@@ -2277,6 +2291,11 @@ cx.cm.getPageStatus = function(nodeId, lang) {
         } else {
             hasDraft = "yes";
         }
+    }
+
+    var scheduled = false;
+    if (publishing.hasClass("scheduled")) {
+        scheduled = true;
     }
 
     var type = "standard";
@@ -2307,7 +2326,8 @@ cx.cm.getPageStatus = function(nodeId, lang) {
         publishing: {
             locked: publishing.hasClass("locked"),
             published: !publishing.hasClass("unpublished"),
-            hasDraft: hasDraft
+            hasDraft: hasDraft,
+            scheduled: scheduled
         },
         visibility: {
             visible: !visibility.hasClass("invisible") && !visibility.hasClass("inactive"),
