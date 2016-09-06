@@ -454,6 +454,3 @@ $_ARRAYLANG['TXT_NEWS_PREVIOUS_TITLE_DESCRITION'] = "Previous news title";
 
 $_ARRAYLANG['TXT_NEWS_NEXT_LINK_DESCRITION'] = "Next news link";
 $_ARRAYLANG['TXT_NEWS_NEXT_TITLE_DESCRITION'] = "Next news title";
-
-
-?>

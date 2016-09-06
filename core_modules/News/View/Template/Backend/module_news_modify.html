@@ -11,7 +11,14 @@
         $J('#enableTags').click(function () {
             toggleBlock($J('#enableTags'), $J('#{NEWS_TAG_ID}'));
         });
-       $J('#news_category').chosen(); 
+        $J('#news_category').chosen();
+        var showAdditionalTab = '{NEWS_MODIFY_SHOW_ADDITIONAL_TAB}';
+        if (showAdditionalTab) {
+            $J('#messageTab_news1').removeClass('active');
+            $J('#messageTab_news2').addClass('active');
+            $J('#news1').attr('style', 'display:none;');
+            $J('#news2').attr('style', 'display:block;');
+        }
     });
     cx.ready(function() {
         var dpOptions = {

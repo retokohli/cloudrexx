@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * Cloudrexx
  *
@@ -371,6 +372,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         }
 
         $objFWUser = \FWUser::getFWUserObject();
+        \JS::activate('schedule-publish-tooltip', array());
 
         // initialize variables
         $paging = "";
@@ -499,7 +501,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         // set archive list
         $query = '
-            SELECT `id`, `date`, `changelog`, `status`, `validated`, `typeid`, `frontend_access_id`, `userid`
+            SELECT `id`, `date`, `changelog`, `status`, `startdate`, `enddate`,
+                   `validated`, `typeid`, `frontend_access_id`, `userid`
               FROM `' . DBPREFIX . 'module_news`
              WHERE `validated` = "1"
                ' . $whereCategory . '
@@ -544,6 +547,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                       'validated'          => $objResult->fields['validated'],
                       'frontend_access_id' => $objResult->fields['frontend_access_id'],
                       'userid'             => $objResult->fields['userid'],
+                      'startdate'          => $objResult->fields['startdate'],
+                      'enddate'            => $objResult->fields['enddate'],
                       'catIds'             => $newsCategoryIds
                     );
                     while (!$objLangResult->EOF) {
@@ -567,7 +572,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $count = count($arrNews);
         if ($count<1) {
             $this->_objTpl->hideBlock('newstable');
-        } else {        
+        } else {
             foreach ($arrNews as $newsId => $news) {
 
                 if (isset($news['lang'][FRONTEND_LANG_ID])) {
@@ -578,11 +583,6 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     $selectedInterfaceLanguage = key($news['lang']);
                 }     
                 
-                $statusPicture = 'status_red.gif';
-                if ($news['status']==1) {
-                    $statusPicture = 'status_green.gif';
-                }
-
                 ($messageNr % 2) ? $class = 'row2' : $class = 'row1';
                 $messageNr++;
 
@@ -637,6 +637,16 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $previewLink = \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', $news['catIds']), '', array('newsid' => $newsId));
                 $previewLink .= '&newsPreview=1';
 
+                $newsStatus   = 'inactive';
+                $statusAction = 'invertStatus';
+                if ($news['status'] == 1) {
+                    $newsStatus   = 'active';
+                    if ($this->hasScheduledPublishing($news)) {
+                        $statusAction = 'edit&show=additionalTab';
+                        $newsStatus   =   $this->isActiveByScheduledPublishing($news)
+                                        ? 'scheduled active' : 'scheduled inactive';
+                    }
+                }
                 $this->_objTpl->setVariable(array(
                     'NEWS_ID'                => $newsId,
                     'NEWS_DATE'              => date(ASCMS_DATE_FORMAT, $news['date']),
@@ -647,11 +657,12 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     'NEWS_CLASS'             => $class,
                     'NEWS_CATEGORY'          => contrexx_raw2xhtml($news['lang'][$selectedInterfaceLanguage]['catname']),
                     'NEWS_STATUS'            => $news['status'],
-                    'NEWS_STATUS_PICTURE'    => $statusPicture,
                     'NEWS_LANGUAGES'         => $langString,
 // TODO: Not in use yet. From r8465@branches/contrexx_2_1
 //                        'NEWS_FACEBOOK_SHARE_BUTTON'  => $socialNetworkTemplater->getFacebookShareButton()
                     'NEWS_PREVIEW_LINK_HREF' => $previewLink,
+                    'NEWS_STATUS_CLASS'     => $newsStatus,
+                    'NEWS_STATUS_ACTION'    => $statusAction,
                 ));
 
                 $this->_objTpl->setVariable(array(
@@ -679,7 +690,9 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                  n.validated AS validated,
                  n.typeid AS typeid,
                  n.frontend_access_id,
-                 n.userid
+                 n.userid,
+                 n.startdate,
+                 n.enddate
                  FROM ".DBPREFIX."module_news AS n
                  WHERE n.validated='0'";
         $objResult = $objDatabase->Execute($query);        
@@ -708,7 +721,9 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                   'status'             => $objResult->fields['status'],
                   'validated'          => $objResult->fields['validated'],
                   'frontend_access_id' => $objResult->fields['frontend_access_id'],
-                  'userid'             => $objResult->fields['userid']
+                  'userid'             => $objResult->fields['userid'],
+                  'startdate'          => $objResult->fields['startdate'],
+                  'enddate'            => $objResult->fields['enddate']
                 );
 
                 $objLangResult = $objDatabase->Execute('SELECT nl.title as title,
@@ -768,11 +783,6 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 ($validatorNr % 2) ? $class = 'row2' : $class = 'row1';
                 $validatorNr++;
 
-                $statusPicture = 'status_red.gif';
-                if ($news['status']==1) {
-                    $statusPicture = 'status_green.gif';
-                }
-
                 if ($news['userid'] && ($objUser = $objFWUser->objUser->getUser($news['userid']))) {
                     $author = contrexx_raw2xhtml($objUser->getUsername());
                 } else {
@@ -798,7 +808,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 } else {
                     $this->_objTpl->hideBlock('txt_languages_block_invalidated');
                 }
-                
+
+                $newsStatus   = 'inactive';
+                if ($news['status'] == 1) {
+                    $newsStatus   = 'active';
+                    if ($this->hasScheduledPublishing($news)) {
+                        $newsStatus =   $this->isActiveByScheduledPublishing($news)
+                                      ? 'scheduled active' : 'scheduled inactive';
+                    }
+                }
                 $this->_objTpl->setVariable(array(
                     'NEWS_ID'               => $newsId,
                     'NEWS_DATE'             => date(ASCMS_DATE_FORMAT, $news['date']),
@@ -808,8 +826,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     'NEWS_CLASS'            => $class,
                     'NEWS_CATEGORY'         => contrexx_raw2xhtml($news['lang'][$selectedInterfaceLanguage]['catname']),
                     'NEWS_STATUS'           => $news['status'],
-                    'NEWS_STATUS_PICTURE'   => $statusPicture,
                     'NEWS_LANGUAGES'        => $langString,
+                    'NEWS_STATUS_CLASS'     => $newsStatus,
                 ));
 
                 $this->_objTpl->parse('news_validator_row');
@@ -831,6 +849,51 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         }
     }
 
+    /**
+     * Get Scheduled Publishing status of the news
+     *
+     * @param array $arrNews News details
+     *
+     * @return boolean True when news contains the Scheduled Publishing data, false otherwise
+     */
+    public function hasScheduledPublishing($arrNews)
+    {
+        return   $arrNews['startdate'] != '0000-00-00 00:00:00'
+              || $arrNews['enddate'] != '0000-00-00 00:00:00';
+    }
+
+    /**
+     * Check whether the news is active by Scheduled Publishing
+     *
+     * @param array $arrNews News details
+     *
+     * @return boolean True when news active by Scheduled Publishing, false otherwise
+     */
+    public function isActiveByScheduledPublishing($arrNews)
+    {
+        $start = null;
+        if ($arrNews['startdate'] != '0000-00-00 00:00:00') {
+            $start = \DateTime::createFromFormat(
+                ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME,
+                $arrNews['startdate']
+            );
+        }
+        $end = null;
+        if ($arrNews['enddate'] != '0000-00-00 00:00:00') {
+            $end = \DateTime::createFromFormat(
+                ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME,
+                $arrNews['enddate']
+            );
+        }
+        if (   (!empty($start) && empty($end) && ($start->getTimestamp() > time()))
+            || (empty($start) && !empty($end) && ($end->getTimestamp() < time()))
+            || (!empty($start) && !empty($end) && !($start->getTimestamp() < time() && $end->getTimestamp() > time()))
+        ) {
+            return false;
+        }
+
+        return true;
+    }
 
     /**
      * Takes a date in the format dd.mm.yyyy hh:mm and returns it's representation as mktime()-timestamp.
@@ -1503,7 +1566,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
           $catrow = 'row1';
 
         }
-
+        $showAdditionalTab = isset($_GET['show']) && ($_GET['show'] == 'additionalTab');
         $this->_objTpl->setGlobalVariable(array(
             'TXT_CATEGORY_SELECT'           => $_ARRAYLANG['TXT_CATEGORY_SELECT'],
             'TXT_COPY'                      => $_ARRAYLANG['TXT_NEWS_COPY'],
@@ -1567,6 +1630,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_TAGS'             => $_ARRAYLANG['TXT_NEWS_TAGS'],
             'TXT_NEWS_TAGS_ENABLE'      => $_ARRAYLANG['TXT_NEWS_TAGS_ENABLE'],
             'NEWS_TAG_ID'               => $newsTagId,
+            'NEWS_MODIFY_SHOW_ADDITIONAL_TAB' => $showAdditionalTab
         ));
 
         $newsid = intval($_REQUEST['newsId']);
