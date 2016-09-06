@@ -147,6 +147,10 @@ class LinkSanitizer {
                     }
                     $ret = \Cx\Core\Routing\Url::fromModuleAndCmd($params['section'], $cmd);
                     unset($params['section']);
+                    $ret->setParams($params);
+                    return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
+                    $ret .
+                    $matches[\LinkSanitizer::CLOSE_QUOTE];
                 
                 // backend case
                 } else if (isset($params['cmd'])) {

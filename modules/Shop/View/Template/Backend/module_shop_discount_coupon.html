@@ -17,7 +17,10 @@
       <th colspan="14" class="f_bold">{TXT_SHOP_DISCOUNT_COUPON_CODES}</th>
     </tr>
     <tr class="row3">
-      <td width="08%" class="f_bold">
+      <td width="02%" class="f_bold">
+        {TXT_SHOP_COUPON_SCHEDULED_STATUS}
+      </td>
+      <td width="06%" class="f_bold">
         {HEADER_SHOP_DISCOUNT_COUPON_CODE}
       </td>
       <td width="08%" class="f_bold">
@@ -58,30 +61,33 @@
     </tr>
 <!-- BEGIN shopDiscountCouponView -->
     <tr class="{SHOP_ROWCLASS}">
-      <td>{SHOP_DISCOUNT_COUPON_CODE}</td>
-      <td>{SHOP_DISCOUNT_COUPON_START_TIME}</td>
-      <td>{SHOP_DISCOUNT_COUPON_END_TIME}</td>
-      <td class="a_right">
-        {SHOP_DISCOUNT_COUPON_MINIMUM_AMOUNT}
-      </td>
-      <td class="a_right">
-        {SHOP_DISCOUNT_COUPON_RATE}
-      </td>
-      <td class="a_right">
-        {SHOP_DISCOUNT_COUPON_AMOUNT}
-      </td>
-      <td class="a_right">
-        {SHOP_DISCOUNT_COUPON_USES}
-      </td>
-      <td>{SHOP_DISCOUNT_COUPON_SCOPE}</td>
-      <td>{SHOP_DISCOUNT_COUPON_CUSTOMER}</td>
-      <td>{SHOP_DISCOUNT_COUPON_PRODUCT}</td>
-      <td>{SHOP_DISCOUNT_COUPON_PAYMENT}</td>
-      <td>
-        {SHOP_DISCOUNT_COUPON_URI_ICON}
-        {SHOP_DISCOUNT_COUPON_URI_INPUT}
-      </td>
-      <td>{SHOP_DISCOUNT_COUPON_FUNCTIONS}</td>
+        <td>
+            <a href="{SHOP_DISCOUNT_COUPON_EDIT_LINK}" class="schedule_status {SHOP_DISCOUNT_COUPON_STATUS}"></a>
+        </td>
+        <td>{SHOP_DISCOUNT_COUPON_CODE}</td>
+        <td>{SHOP_DISCOUNT_COUPON_START_TIME}</td>
+        <td>{SHOP_DISCOUNT_COUPON_END_TIME}</td>
+        <td class="a_right">
+            {SHOP_DISCOUNT_COUPON_MINIMUM_AMOUNT}
+        </td>
+        <td class="a_right">
+            {SHOP_DISCOUNT_COUPON_RATE}
+        </td>
+        <td class="a_right">
+            {SHOP_DISCOUNT_COUPON_AMOUNT}
+        </td>
+        <td class="a_right">
+            {SHOP_DISCOUNT_COUPON_USES}
+        </td>
+        <td>{SHOP_DISCOUNT_COUPON_SCOPE}</td>
+        <td>{SHOP_DISCOUNT_COUPON_CUSTOMER}</td>
+        <td>{SHOP_DISCOUNT_COUPON_PRODUCT}</td>
+        <td>{SHOP_DISCOUNT_COUPON_PAYMENT}</td>
+        <td>
+            {SHOP_DISCOUNT_COUPON_URI_ICON}
+            {SHOP_DISCOUNT_COUPON_URI_INPUT}
+        </td>
+        <td>{SHOP_DISCOUNT_COUPON_FUNCTIONS}</td>
     </tr>
 <!-- END shopDiscountCouponView -->
   </table>
