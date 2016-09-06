@@ -360,19 +360,36 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                             $strAddedBy = "unknown";
                         }
 
-                        if($arrEntry['entryActive'] == 1) {
-                		    $strStatus = '../core/Core/View/Media/icons/status_green.gif';
-                		    $intStatus = 0;
+                        $intStatus = 1;
+                        $entryStatusClass = 'inactive';
+                        if ($arrEntry['entryActive'] == 1) {
+                            $intStatus = 0;
+                            $entryStatusClass = 'active';
+                            if ($arrEntry['entryDurationType'] == 2) {
+                                $start = $arrEntry['entryDurationStart'];
+                                $end = $arrEntry['entryDurationEnd'];
+                                $entryStatusClass = 'scheduled active';
+                                if (   (   !empty($start)
+                                        && empty($end)
+                                        && ($start > $intToday)
+                                       )
+                                    || (   empty($start)
+                                        && !empty($end)
+                                        && ($end < $intToday)
+                                       )
+                                    || (   !empty($start)
+                                        && !empty($end)
+                                        && !(  $start < $intToday
+                                            && $end > $intToday
+                                            )
+                                       )
+                                ) {
+                                    $entryStatusClass = 'scheduled inactive';
+                                }
+                            }
+                        }
 
-                		    if(($arrEntry['entryDurationStart'] > $intToday || $arrEntry['entryDurationEnd'] < $intToday) && $arrEntry['entryDurationType'] == 2) {
-                		    	$strStatus = '../core/Core/View/Media/icons/status_yellow.gif';
-                		    }
-                		} else {
-                		    $strStatus = '../core/Core/View/Media/icons/status_red.gif';
-                		    $intStatus = 1;
-                		}
-
-                		$objForm = new MediaDirectoryForm($arrEntry['entryFormId'], $this->moduleName);
+                        $objForm = new MediaDirectoryForm($arrEntry['entryFormId'], $this->moduleName);
 
                         //get votes
                         if($this->arrSettings['settingsAllowVotes']) {
@@ -403,8 +420,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                         $objTpl->setVariable(array(
                             $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
                             $this->moduleLangVar.'_ENTRY_ID' =>  $arrEntry['entryId'],
-                            $this->moduleLangVar.'_ENTRY_STATUS' => $strStatus,
                             $this->moduleLangVar.'_ENTRY_SWITCH_STATUS' => $intStatus,
+                            $this->moduleLangVar.'_ENTRY_STATUS_CLASS' => $entryStatusClass,
                             $this->moduleLangVar.'_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
                             $this->moduleLangVar.'_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
                             $this->moduleLangVar.'_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),

@@ -146,6 +146,8 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleNameLC.'_overview.html',true,true);
+        \JS::activate('schedule-publish-tooltip', array());
+
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'];
         $act = isset($_GET['act']) ? $_GET['act'] : '';
         switch ($act) {
@@ -1107,6 +1109,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleNameLC.'_manage_entries.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_MANAGE_ENTRIES'];
+        \JS::activate('schedule-publish-tooltip', array());
 
         $this->initFilterSession();
         
