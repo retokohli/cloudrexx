@@ -762,7 +762,6 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
             $isTextMail  = in_array($objUserMail->getFormat(), array('multipart', 'text'));
             $isHtmlMail  = in_array($objUserMail->getFormat(), array('multipart', 'html'));
-            $protocol    = \Cx\Core\Routing\Url::fromRequest()->getProtocol();
             $searchTerms = array(
                 '[[HOST]]',
                 '[[USERNAME]]',
@@ -774,21 +773,21 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $replaceTextTerms = array(
                 $_CONFIG['domainUrl'],
                 $objUser->getUsername(),
-                $protocol.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
-                $protocol.'://'.$_CONFIG['domainUrl'],
+                'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
+                'http://'.$_CONFIG['domainUrl'],
                 $objUserMail->getSenderName(),
-                $protocol.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
+                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
             );
             $replaceHtmlTerms = array(
                 $_CONFIG['domainUrl'],
                 contrexx_raw2xhtml($objUser->getUsername()),
-                $protocol.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
-                $protocol.'://'.$_CONFIG['domainUrl'],
+                'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
+                'http://'.$_CONFIG['domainUrl'],
                 contrexx_raw2xhtml($objUserMail->getSenderName()),
-                $protocol.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
+                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
             );
             if ($mail2load == 'reg_confirm') {
-                $imagePath = $protocol.'://'.$_CONFIG['domainUrl']
+                $imagePath = 'http://'.$_CONFIG['domainUrl']
                     . \Cx\Core\Core\Controller\Cx::instanciate()
                     ->getWebsiteImagesAccessProfileWebPath().'/';
                 $objUser->objAttribute->first();
