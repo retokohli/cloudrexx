@@ -14,8 +14,6 @@ function disableDate() {
 }
 cx.ready(function() {
   var datepickerOptions = {
-    timeFormat: 'hh:mm:ss',
-    dateFormat: 'yy-mm-dd',
     onSelect: function(dateText, inst) {
       // adjust start or end date to avoid an invalid date range
       var startDate = cx.jQuery('input[name=startDate]').datepicker('getDate');
@@ -34,14 +32,11 @@ cx.ready(function() {
 });
 // -->
 </script>
-<form name="docsys" method="post" action="index.php?cmd=DocSys{MODULE_INDEX}&act={DOCSYS_FORM_ACTION}&id={DOCSYS_ID}">
+<form name="docsys" method="post">
   <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
     <tr>
       <th valign="top" colspan="2">
         {TXT_DOCSYS_MESSAGE}
-        <input type="hidden" name="docSysFormAction" value="{DOCSYS_STORED_FORM_ACTION}" />
-        <input type="hidden" name="docSysId" value="{DOCSYS_STORED_ID}" />
-        <input type="hidden" name="docSysTopTitle" value="{DOCSYS_TOP_TITLE}" />
       </th>
     </tr>
     <tr class="row1">
@@ -126,7 +121,7 @@ cx.ready(function() {
     </tr>
   </table>
   <br />
-  <input type="submit" name="Submit" value="{TXT_STORE}" />
+  <input type="submit" name="saveDocSys" value="{TXT_STORE}" />
   <br />
   <br />
 </form>

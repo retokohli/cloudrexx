@@ -101,11 +101,8 @@ class DocSysManager extends DocSysLibrary
         }
         switch ($_GET['act']) {
             case "add":
-                $this->add();
-                // $this->overview();
-                break;
             case "edit":
-                $this->edit();
+                $this->manage();
                 break;
             case "delete":
                 $this->delete();
@@ -174,25 +171,76 @@ class DocSysManager extends DocSysLibrary
                 $_ARRAYLANG['TXT_DOCSYS_DOCUMENTS'], true) : '');
         $row = 1;
         $this->_objTpl->setCurrentBlock('row');
-        if (!$entries) return;
+        if (!$entries) {
+            return;
+        }
+
+        \JS::activate('schedule-publish-tooltip', array());
         foreach ($entries as $entry) {
+            $docSysStatus   = 'inactive';
+            if ($entry['status'] == 1) {
+                $docSysStatus   = 'active';
+                if ($this->hasScheduledPublishing($entry)) {
+                    $docSysStatus =   $this->isActiveByScheduledPublishing($entry)
+                                  ? 'scheduled active' : 'scheduled inactive';
+                }
+            }
             $this->_objTpl->setVariable(array(
                 'DOCSYS_ID' => $entry['id'],
-                'DOCSYS_DATE' => date(ASCMS_DATE_FORMAT, $entry['date']),
+                'DOCSYS_DATE' => date(ASCMS_DATE_FORMAT_DATETIME, $entry['date']),
                 'DOCSYS_TITLE' => stripslashes($entry['title']),
                 'DOCSYS_AUTHOR' => stripslashes($entry['author']),
                 'DOCSYS_USER' => $entry['username'],
-                'DOCSYS_CHANGELOG' => date(ASCMS_DATE_FORMAT,
+                'DOCSYS_CHANGELOG' => date(ASCMS_DATE_FORMAT_DATETIME,
                     $entry['changelog']),
                 'DOCSYS_PAGING' => $paging,
                 'DOCSYS_CLASS' => ($row++ % 2) + 1,
                 'DOCSYS_CATEGORY' => join('<br />', $entry['categories']),
-                'DOCSYS_STATUS' => $entry['status'],
-                'DOCSYS_STATUS_PICTURE' => ($entry['status'] == 1)
-                    ? "status_green.gif" : "status_red.gif",
+                'DOCSYS_STATUS_CLASS' => $docSysStatus,
             ));
             $this->_objTpl->parseCurrentBlock("row");
         }
+    }
+
+    /**
+     * Get Scheduled Publishing status of the DocSys
+     *
+     * @param array $arrDocSys DocSys details
+     *
+     * @return boolean True when DocSys contains the Scheduled Publishing data, false otherwise
+     */
+    public function hasScheduledPublishing($arrDocSys)
+    {
+        return $arrDocSys['startdate'] || $arrDocSys['enddate'];
+    }
+
+    /**
+     * Check whether the docSys is active by Scheduled Publishing
+     *
+     * @param array $arrDocSys DocSys details
+     *
+     * @return boolean True when docSys active by Scheduled Publishing, false otherwise
+     */
+    public function isActiveByScheduledPublishing($arrDocSys)
+    {
+        $start = null;
+        if ($arrDocSys['startdate']) {
+            $start = new \DateTime();
+            $start->setTimestamp($arrDocSys['startdate']);
+        }
+        $end = null;
+        if ($arrDocSys['enddate']) {
+            $end = new \DateTime();
+            $end->setTimestamp($arrDocSys['enddate']);
+        }
+        if (   (!empty($start) && empty($end) && ($start->getTimestamp() > time()))
+            || (empty($start) && !empty($end) && ($end->getTimestamp() < time()))
+            || (!empty($start) && !empty($end) && !($start->getTimestamp() < time() && $end->getTimestamp() > time()))
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
     function _getSortingDropdown($catID, $sorting = 'alpha')
@@ -208,48 +256,6 @@ class DocSysManager extends DocSysLibrary
             == 'date_alpha' ? 'selected="selected"' : '') . '>' . $_ARRAYLANG['TXT_DOCSYS_SORTING_DATE_ALPHA'] . '</option>
             </select>
         ';
-    }
-
-    /**
-     * Add an entry
-     * @global    ADONewConnection
-     * @global    array
-     * @param     integer   $newsid -> the id of the news entry
-     * @return    boolean   result
-     */
-    function add()
-    {
-        global $_ARRAYLANG;
-
-        \JS::activate('jqueryui');
-        $objFWUser = \FWUser::getFWUserObject();
-        $this->pageTitle = $_ARRAYLANG['TXT_CREATE_DOCUMENT'];
-        $this->_objTpl->loadTemplateFile('module_docsys_modify.html', true, true);
-        // Global module index for clones
-        $this->_objTpl->setGlobalVariable($_ARRAYLANG + array(
-            'MODULE_INDEX' => MODULE_INDEX,
-            'TXT_DOCSYS_MESSAGE' => $_ARRAYLANG['TXT_ADD_DOCUMENT'],
-            'TXT_DOCSYS_CONTENT' => $_ARRAYLANG['TXT_CONTENT'],
-        ));
-        $this->_objTpl->setVariable(array(
-            'DOCSYS_TEXT' => new \Cx\Core\Wysiwyg\Wysiwyg('docSysText', null, 'full'),
-            'DOCSYS_FORM_ACTION' => "add",
-            'DOCSYS_STORED_FORM_ACTION' => "add",
-            'DOCSYS_STATUS' => "checked='checked'",
-            'DOCSYS_ID' => "",
-            'DOCSYS_TOP_TITLE' => $_ARRAYLANG['TXT_CREATE_DOCUMENT'],
-            'DOCSYS_CAT_MENU' => $this->getCategoryMenu($this->langId),
-            'DOCSYS_STARTDATE' => "",
-            'DOCSYS_ENDDATE' => "",
-            'DOCSYS_DATE' => date(ASCMS_DATE_FORMAT, time()),
-            'TXT_AUTHOR' => $_ARRAYLANG['TXT_AUTHOR'],
-            'DOCSYS_AUTHOR' => htmlentities($objFWUser->objUser->getUsername(),
-                ENT_QUOTES, CONTREXX_CHARSET),
-        ));
-        if (!empty($_POST['docSysTitle'])) {
-            $this->insert();
-            $this->createRSS();
-        }
     }
 
     /**
@@ -290,42 +296,84 @@ class DocSysManager extends DocSysLibrary
     }
 
     /**
-     * Edit an entry
-     * @global    ADONewConnection
-     * @global    array
-     * @param     string     $pageContent
+     * Manage docSys (add/edit) section
      */
-    function edit()
+    public function manage()
     {
         global $objDatabase, $_ARRAYLANG;
 
-        $status = "";
         $this->_objTpl->loadTemplateFile('module_docsys_modify.html', true, true);
-        // Global module index for clones
         $this->_objTpl->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
-        $this->pageTitle = $_ARRAYLANG['TXT_EDIT_DOCUMENTS'];
 
-        $this->_objTpl->setVariable(array(
-            'TXT_DOCSYS_MESSAGE' => $_ARRAYLANG['TXT_EDIT_DOCUMENTS'],
-            'TXT_TITLE' => $_ARRAYLANG['TXT_TITLE'],
-            'TXT_CATEGORY' => $_ARRAYLANG['TXT_CATEGORY'],
-            'TXT_HYPERLINKS' => $_ARRAYLANG['TXT_HYPERLINKS'],
-            'TXT_EXTERNAL_SOURCE' => $_ARRAYLANG['TXT_EXTERNAL_SOURCE'],
-            'TXT_LINK' => $_ARRAYLANG['TXT_LINK'],
-            'TXT_DOCSYS_CONTENT' => $_ARRAYLANG['TXT_CONTENT'],
-            'TXT_STORE' => $_ARRAYLANG['TXT_STORE'],
-            'TXT_PUBLISHING' => $_ARRAYLANG['TXT_PUBLISHING'],
-            'TXT_STARTDATE' => $_ARRAYLANG['TXT_STARTDATE'],
-            'TXT_ENDDATE' => $_ARRAYLANG['TXT_ENDDATE'],
-            'TXT_OPTIONAL' => $_ARRAYLANG['TXT_OPTIONAL'],
-            'TXT_DATE' => $_ARRAYLANG['TXT_DATE'],
-            'TXT_ACTIVE' => $_ARRAYLANG['TXT_ACTIVE'],
-            'TXT_AUTHOR' => $_ARRAYLANG['TXT_AUTHOR'],
-        ));
-        $id = intval($_REQUEST['id']);
-        $query = "SELECT   `lang`,
+        $id = !empty($_REQUEST['id']) ? contrexx_input2int($_REQUEST['id']) : 0;
+
+        $this->pageTitle = $id ? $_ARRAYLANG['TXT_EDIT_DOCUMENTS'] : $_ARRAYLANG['TXT_CREATE_DOCUMENT'];
+
+        $title      = !empty($_POST['docSysTitle']) ? contrexx_input2raw($_POST['docSysTitle']) : '';
+        $text       = !empty($_POST['docSysText'])
+                     ? $this->filterBodyTag(contrexx_input2raw($_POST['docSysText'])) : '';
+        $author     = !empty($_POST['author'])
+                     ? contrexx_input2raw($_POST['author'])
+                     : \FWUser::getFWUserObject()->objUser->getUsername();
+        $source     = !empty($_POST['docSysSource']) ? contrexx_input2raw($_POST['docSysSource']) : '';
+        $url1       = !empty($_POST['docSysUrl1']) ? contrexx_input2raw($_POST['docSysUrl1']) : '';
+        $url2       = !empty($_POST['docSysUrl2']) ? contrexx_input2raw($_POST['docSysUrl2']) : '';
+        $status     = !empty($_POST['status']) ? 1 : (!$id ? 1 : 0);
+        $categories = !empty($_POST['docSysCat']) ? contrexx_input2int($_POST['docSysCat']) : array();
+        $date       = !empty($_POST['creation_date']) ? strtotime($_POST['creation_date']) : time();
+        $startDate  = !empty($_POST['startDate']) ? strtotime($_POST['startDate']) : 0;
+        $endDate    = !empty($_POST['endDate']) ? strtotime($_POST['endDate']) : 0;
+
+        if (isset($_POST['saveDocSys'])) {
+            $docSysData = array(
+                'title'         => $title,
+                'date'          => $date,
+                'author'        => $author,
+                'text'          => $text,
+                'source'        => $source,
+                'url1'          => $url1,
+                'url2'          => $url2,
+                'lang'          => $this->langId,
+                'userid'        => \FWUser::getFWUserObject()->objUser->getId(),
+                'status'        => $status ? 1 : 0,
+                'startdate'     => $startDate,
+                'enddate'       => $endDate,
+                'changelog'     => time()
+            );
+
+            $sql = '';
+            if ($id) {
+                $sql = \SQL::update('module_docsys' . MODULE_INDEX, $docSysData) . ' WHERE `id` = ' . $id;
+            } else {
+                $sql = \SQL::insert('module_docsys' . MODULE_INDEX, $docSysData);
+            }
+            if (!$objDatabase->Execute($sql)) {
+                $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+                $this->overview();
+                return false;
+            } else {
+                $this->strOkMessage = $id
+                                     ? $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']
+                                     : $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
+                if (!$id) {
+                    $id = $objDatabase->Insert_ID();
+                }
+                $this->createRSS();
+            }
+            if (!$this->removeCategories($id)) {
+                $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']
+                        . ": " . $objDatabase->ErrorMsg();
+            } else {
+                if (!$this->assignCategories($id, $categories)) {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']
+                         . ": " . $objDatabase->ErrorMsg();
+                }
+            }
+            $this->overview();
+            return true;
+        } elseif ($id) {
+            $query = 'SELECT
                            `date`,
-                           `id`,
                            `title`,
                            `author`,
                            `text`,
@@ -335,132 +383,59 @@ class DocSysManager extends DocSysLibrary
                            `startdate`,
                            `enddate`,
                            `status`
-                      FROM `" . DBPREFIX . "module_docsys" . MODULE_INDEX . "`
-                     WHERE id = '$id'";
-        $objResult = $objDatabase->SelectLimit($query, 1);
+                      FROM
+                        `' . DBPREFIX . 'module_docsys' . MODULE_INDEX . '`
+                     WHERE
+                        `id` = '. $id;
+            $docSys     = $objDatabase->Execute($query);
 
-        if (!$objResult->EOF) {
-            $id = $objResult->fields['id'];
-            $docSysText = stripslashes($objResult->fields['text']);
-
-            if ($objResult->fields['status'] == 1) {
-                $status = "checked";
-            }
-
-            $this->_objTpl->setVariable(array(
-                'DOCSYS_ID' => $id,
-                'DOCSYS_STORED_ID' => $id,
-                'DOCSYS_TITLE' => stripslashes(htmlspecialchars($objResult->fields['title'],
-                        ENT_QUOTES, CONTREXX_CHARSET)),
-                'DOCSYS_AUTHOR' => stripslashes(htmlspecialchars($objResult->fields['author'],
-                        ENT_QUOTES, CONTREXX_CHARSET)),
-                'DOCSYS_TEXT' => new \Cx\Core\Wysiwyg\Wysiwyg('docSysText',
-                    $docSysText, 'full'),
-                'DOCSYS_SOURCE' => $objResult->fields['source'],
-                'DOCSYS_URL1' => $objResult->fields['url1'],
-                'DOCSYS_URL2' => $objResult->fields['url2'],
-                'DOCSYS_STARTDATE' => !empty($objResult->fields['startdate']) ? date(ASCMS_DATE_FORMAT,
-                        $objResult->fields['startdate']) : '',
-                'DOCSYS_ENDDATE' => !empty($objResult->fields['enddate']) ? date(ASCMS_DATE_FORMAT,
-                        $objResult->fields['enddate']) : '',
-                'DOCSYS_STATUS' => $status,
-                'DOCSYS_DATE' => date(ASCMS_DATE_FORMAT,
-                    $objResult->fields['date'])
-            ));
+            $title      = $docSys->fields['title'];
+            $text       = $docSys->fields['text'];
+            $author     = $docSys->fields['author'];
+            $source     = $docSys->fields['source'];
+            $url1       = $docSys->fields['url1'];
+            $url2       = $docSys->fields['url2'];
+            $status     = $docSys->fields['status'];
+            $date       = $docSys->fields['date'];
+            $startDate  = $docSys->fields['startdate'];
+            $endDate    = $docSys->fields['enddate'];
+            $categories = $this->getCategories($id);
         }
 
-        $categories = $this->getCategories($id);
+        $this->_objTpl->setVariable(array(
+            'DOCSYS_ID'             => $id,
+            'DOCSYS_TITLE'          => contrexx_raw2xhtml($title),
+            'DOCSYS_AUTHOR'         => contrexx_raw2xhtml($author),
+            'DOCSYS_TEXT'           => new \Cx\Core\Wysiwyg\Wysiwyg(
+                                            'docSysText',
+                                            contrexx_raw2xhtml($text),
+                                            'full'
+                                        ),
+            'DOCSYS_SOURCE'         => contrexx_raw2xhtml($source),
+            'DOCSYS_URL1'           => contrexx_raw2xhtml($url1),
+            'DOCSYS_URL2'           => contrexx_raw2xhtml($url2),
+            'DOCSYS_STATUS'         => $status ? 'checked="checked"' : '',
+            'DOCSYS_STARTDATE'      => $startDate ? date(ASCMS_DATE_FORMAT_DATETIME, $startDate) : '',
+            'DOCSYS_ENDDATE'        => $endDate ? date(ASCMS_DATE_FORMAT_DATETIME, $endDate) : '',
+            'DOCSYS_DATE'           => date(ASCMS_DATE_FORMAT_DATETIME, $date),
+            'DOCSYS_CAT_MENU'       => $this->getCategoryMenu($this->langId, $categories),
 
-        $this->_objTpl->setVariable("DOCSYS_CAT_MENU",
-            $this->getCategoryMenu($this->langId, $categories));
-        $this->_objTpl->setVariable("DOCSYS_FORM_ACTION", "update");
-        $this->_objTpl->setVariable("DOCSYS_STORED_FORM_ACTION", "update");
-        $this->_objTpl->setVariable("DOCSYS_TOP_TITLE", $_ARRAYLANG['TXT_EDIT']);
-    }
-
-    /**
-     * Update an entry
-     * @global    ADONewConnection
-     * @global    array
-     * @global    array
-     * @return    boolean   result
-     */
-    function update()
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        if (empty($_POST['docSysId'])) {
-// TODO: As this method may currently be called due to a bug in Paging::get()
-// the error message cannot be shown yet.
-//            $this->strErrMessage = $_ARRAYLANG['TXT_DOCSYS_ERROR_MISSING_ID'];
-            return;
-        }
-        $id = intval($_GET['id']);
-        $changelog = time();
-        $title = (empty($_POST['docSysTitle']) ? ''
-             : strip_tags(contrexx_input2raw($_POST['docSysTitle'])));
-//        $title = str_replace("ß", "ss", $title);
-        $text = (empty($_POST['docSysText']) ? ''
-             : contrexx_input2raw($_POST['docSysText']));
-        $text = $this->filterBodyTag($text);
-//        $text = str_replace("ß", "ss", $text);
-        $author = (empty($_POST['author']) ? ''
-             : strip_tags(contrexx_input2raw($_POST['author'])));
-        $source = (empty($_POST['docSysSource']) ? ''
-             : strip_tags(contrexx_input2raw($_POST['docSysSource'])));
-        $url1 = (empty($_POST['docSysUrl1']) ? ''
-             : strip_tags(contrexx_input2raw($_POST['docSysUrl1'])));
-        $url2 = (empty($_POST['docSysUrl2']) ? ''
-             : strip_tags(contrexx_input2raw($_POST['docSysUrl2'])));
-        $status = (empty($_POST['status']) ? 0 : 1);
-        $startDate = '';
-        $arrDate = NULL;
-        if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/',
-                $_POST['startDate'], $arrDate)) {
-            $startDate = mktime(intval($arrDate[1]), intval($arrDate[2]),
-                intval($arrDate[3]), intval($arrDate[5]),
-                intval($arrDate[4]), intval($arrDate[6]));
-        }
-        $endDate = '';
-        if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/',
-                $_POST['endDate'], $arrDate)) {
-            $endDate = mktime(intval($arrDate[1]), intval($arrDate[2]),
-                intval($arrDate[3]), intval($arrDate[5]),
-                intval($arrDate[4]), intval($arrDate[6]));
-        }
-        if (!$objDatabase->Execute("
-            UPDATE " . DBPREFIX . "module_docsys" . MODULE_INDEX . "
-               SET title=?,
-                   date=?,
-                   author=?,
-                   text=?,
-                   source=?,
-                   url1=?,
-                   url2=?,
-                   lang=?,
-                   userid=?,
-                   status=?,
-                   startdate=?,
-                   enddate=?,
-                   changelog=?
-             WHERE id=?",
-            array($title, $this->_checkDate($_POST['creation_date']),
-                $author, $text, $source, $url1, $url2, $this->langId,
-                \FWUser::getFWUserObject()->objUser->getId(),
-                $status, $startDate, $endDate, $changelog, $id))
-        ) {
-            $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
-        } else {
-            $this->createRSS();
-            $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
-        }
-        if (!$this->removeCategories($id)) {
-            $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] . ": " . $objDatabase->ErrorMsg();
-        } else {
-            if (!$this->assignCategories($id, $_POST['docSysCat'])) {
-                $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] . ": " . $objDatabase->ErrorMsg();
-            }
-        }
+            'TXT_DOCSYS_MESSAGE'    => $_ARRAYLANG['TXT_EDIT_DOCUMENTS'],
+            'TXT_TITLE'             => $_ARRAYLANG['TXT_TITLE'],
+            'TXT_CATEGORY'          => $_ARRAYLANG['TXT_CATEGORY'],
+            'TXT_HYPERLINKS'        => $_ARRAYLANG['TXT_HYPERLINKS'],
+            'TXT_EXTERNAL_SOURCE'   => $_ARRAYLANG['TXT_EXTERNAL_SOURCE'],
+            'TXT_LINK'              => $_ARRAYLANG['TXT_LINK'],
+            'TXT_DOCSYS_CONTENT'    => $_ARRAYLANG['TXT_CONTENT'],
+            'TXT_STORE'             => $_ARRAYLANG['TXT_STORE'],
+            'TXT_PUBLISHING'        => $_ARRAYLANG['TXT_PUBLISHING'],
+            'TXT_STARTDATE'         => $_ARRAYLANG['TXT_STARTDATE'],
+            'TXT_ENDDATE'           => $_ARRAYLANG['TXT_ENDDATE'],
+            'TXT_OPTIONAL'          => $_ARRAYLANG['TXT_OPTIONAL'],
+            'TXT_DATE'              => $_ARRAYLANG['TXT_DATE'],
+            'TXT_ACTIVE'            => $_ARRAYLANG['TXT_ACTIVE'],
+            'TXT_AUTHOR'            => $_ARRAYLANG['TXT_AUTHOR'],
+        ));
     }
 
     /**
@@ -493,91 +468,6 @@ class DocSysManager extends DocSysLibrary
             }
         }
     }
-
-    /**
-     * checks if date is valid
-     * @param string $date
-     * @return integer $timestamp
-     */
-    function _checkDate($date)
-    {
-        $arrDate = NULL;
-        if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/',
-                $date, $arrDate)) {
-            return mktime(intval($arrDate[1]), intval($arrDate[2]),
-                intval($arrDate[3]), intval($arrDate[5]), intval($arrDate[4]),
-                intval($arrDate[6]));
-        } else {
-            return time();
-        }
-    }
-
-    /**
-     * Insert a new entry
-     * @global    ADONewConnection
-     * @global    array
-     * @return    boolean   result
-     */
-    function insert()
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        $date = $this->_checkDate($_POST['creation_date']);
-        $title = (empty($_POST['docSysTitle']) ? ''
-             : strip_tags(contrexx_input2raw($_POST['docSysTitle'])));
-//        $title = str_replace("ß", "ss", $title);
-        $text = (empty($_POST['docSysText']) ? ''
-             : strip_tags(contrexx_input2raw($_POST['docSysText'])));
-        $text = $this->filterBodyTag($text);
-//        $text = str_replace("ß", "ss", $text);
-        $author = (empty($_POST['author']) ? ''
-             : strip_tags(contrexx_input2raw($_POST['author'])));
-        $source = (empty($_POST['docSysSource']) ? ''
-             : strip_tags(contrexx_input2raw($_POST['docSysSource'])));
-        $url1 = (empty($_POST['docSysUrl1']) ? ''
-             : strip_tags(contrexx_input2raw($_POST['docSysUrl1'])));
-        $url2 = (empty($_POST['docSysUrl2']) ? ''
-             : strip_tags(contrexx_input2raw($_POST['docSysUrl2'])));
-        $status = (empty($_POST['status']) ? 0 : 1);
-        $startDate = '';
-        $arrDate = NULL;
-        if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/',
-                $_POST['startDate'], $arrDate)) {
-            $startDate = mktime(intval($arrDate[1]), intval($arrDate[2]),
-                intval($arrDate[3]), intval($arrDate[5]),
-                intval($arrDate[4]), intval($arrDate[6]));
-        }
-        $endDate = '';
-        if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/',
-                $_POST['endDate'], $arrDate)) {
-            $endDate = mktime(intval($arrDate[1]), intval($arrDate[2]),
-                intval($arrDate[3]), intval($arrDate[5]),
-                intval($arrDate[4]), intval($arrDate[6]));
-        }
-        if ($objDatabase->Execute("
-            INSERT INTO " . DBPREFIX . "module_docsys" . MODULE_INDEX . " (
-                `date`, `title`, `author`, `text`, `source`,
-                `url1`, `url2`, `lang`, `startdate`, `enddate`,
-                `status`, `userid`, `changelog`
-            ) VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-            )",
-            array($date, $title, $author, $text, $source,
-                $url1, $url2, $this->langId, $startDate, $endDate,
-                $status, \FWUser::getFWUserObject()->objUser->getId(),
-                $date))
-        ) {
-            $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
-        } else {
-            $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
-        }
-        $id = $objDatabase->Insert_ID();
-        if (!$this->assignCategories($id, $_POST['docSysCat'])) {
-            $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] . ": " . $objDatabase->ErrorMsg();
-        }
-        $this->overview();
-    }
-
 
     /**
      * Add or edit categories
