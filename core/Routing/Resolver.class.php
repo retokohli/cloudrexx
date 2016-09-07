@@ -393,7 +393,17 @@ class Resolver {
         ) {
             $canonicalPage = $this->pageRepo->getTargetPage($this->urlPage);
         }
-        header('Link: <' . \Cx\Core\Routing\Url::fromPage($canonicalPage)->toString() . '>; rel="canonical"');
+
+        // don't set canonical page when replying with an application page
+        if ($canonicalPage->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION) {
+            return $this->page;
+        }
+
+        // set canonical page only in case it hasen't been set already
+        if (!preg_grep('/^Link:.*canonical["\']$/', headers_list())) {
+            header('Link: <' . \Cx\Core\Routing\Url::fromPage($canonicalPage)->toString() . '>; rel="canonical"');
+        }
+
         return $this->page;
     }
 
@@ -441,9 +451,11 @@ class Resolver {
             ($this->page->isTargetInternal() && preg_match('/[?&]external=permanent/', $this->page->getTarget()))
         ) {
             if ($this->page->isTargetInternal()) {
-                $params = array();
+                if (isset($params['external']) && $params['external'] == 'permanent') {
+                    unset($params['external']);
+                }
                 if (trim($this->page->getTargetQueryString()) != '') {
-                    $params = explode('&', $this->page->getTargetQueryString());
+                    $params = array_merge($params, explode('&', $this->page->getTargetQueryString()));
                 }
                 $target = \Cx\Core\Routing\Url::fromNodeId($this->page->getTargetNodeId(), $this->page->getTargetLangId(), $params);
             } else {
@@ -796,7 +808,11 @@ class Resolver {
 
             // now lets resolve the page that is referenced by our fallback page
             $this->resolvePage(true);
-            $page->getFallbackContentFrom($this->page);
+            // fallback pages use theme options of their target page, symlink use their own
+            $page->setContentOf(
+                $this->page,
+                $page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK
+            );
 
             // Important: We must assigne a copy of $page to $this->path here.
             // Otherwise, the virtual fallback page ($this->page) will also
