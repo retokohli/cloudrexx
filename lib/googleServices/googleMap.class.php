@@ -244,7 +244,7 @@ class googleMap
         $tmpGoogleMapOnLoad = "tmpGoogleMapOnLoad_".$this->mapIndex;
 
         $layer .= <<<EOF
-<script src="https://maps.googleapis.com/maps/api/js?sensor=false&v=3"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=$this->apiKey&sensor=false&v=3"></script>
 <script>
 //<![CDATA[
 var $map;
