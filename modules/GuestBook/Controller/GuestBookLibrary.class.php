@@ -83,28 +83,18 @@ class GuestBookLibrary
 		return $string;
 	}
 
-	function addHyperlinking2($string)
-	{
-	    $contents = preg_replace("/[[:alpha:]]+:\/\/[^<>[:space:]]+[[:alnum:]\/]/", "<a href=\"\\0\" target=\"_blank\">\\0</a>", $contents);
-		return $contents;
-	}
-
 	/**
 	* Checks the url
 	*
 	* @param  string  $string
 	* @return boolean result
 	*/
-	function isUrl($string)
-	{
-		if( (strlen($string)<=10) OR (  preg_match('/[!$%\'*+\\.><^_`{|}]$/', $string)) ){
-	        return false;
-		}else{
-		    return true;
-	    }
-	}
+        function isUrl($string)
+        {
+            return \FWValidator::isUri($string);
+        }
 
-	/**
+        /**
 	 * Changes the Mail address
 	 */
 	function changeMail($mail)

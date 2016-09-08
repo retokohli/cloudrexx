@@ -135,7 +135,7 @@ class Sitemap
         
         if ($this->_doSitemap && is_array($this->_sitemapPageName)) {
             $this->_sitemapBlock = trim($this->_objTpl->_blocks['sitemap']);
-            if (preg_replace('/.*{SUB_MENU}.*/', $this->_sitemapBlock)) {
+            if (preg_match('/.*{SUB_MENU}.*/', $this->_sitemapBlock)) {
                 $nestedSitemap = $this->_subTagStart.$this->_buildNestedSitemap().$this->_subTagEnd."\n";
                 return preg_replace('/<!-- BEGIN sitemap -->.*<!-- END sitemap -->/', $nestedSitemap, $this->pageContent);
             } else {

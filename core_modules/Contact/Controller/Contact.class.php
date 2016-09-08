@@ -865,7 +865,7 @@ CODE;
      * @access private
      * @global array
      * @param array Files that have been submited
-     * @see getSettings(), _cleanFileName(), errorMsg, FWSystem::getMaxUploadFileSize()
+     * @see getSettings(), errorMsg, FWSystem::getMaxUploadFileSize()
      * @return array A list of files that have been stored successfully in the system
      */
     function _uploadFilesLegacy($arrFields)
@@ -877,7 +877,9 @@ CODE;
         $arrFiles = array();
         if (isset($_FILES) && is_array($_FILES)) {
             foreach (array_keys($_FILES) as $file) {
-                $fileName = !empty($_FILES[$file]['name']) ? $this->_cleanFileName($_FILES[$file]['name']) : '';
+                $fileName    =  !empty($_FILES[$file]['name'])
+                              ? \Cx\Lib\FileSystem\FileSystem::replaceCharacters($_FILES[$file]['name'])
+                              : '';
                 $fileTmpName = !empty($_FILES[$file]['tmp_name']) ? $_FILES[$file]['tmp_name'] : '';
 
                 switch ($_FILES[$file]['error']) {
@@ -934,57 +936,6 @@ CODE;
         }
         
         return $arrFiles;
-    }
-
-    /**
-    * Format a file name to be safe
-    *
-    * Replace non valid filename chars with a undercore.
-    * @access private
-    * @param string $file   The string file name
-    * @param int    $maxlen Maximun permited string length
-    * @return string Formatted file name
-    */
-    function _cleanFileName($name, $maxlen=250){
-        $noalpha = 'áéíóúàèìòùäëïöüÁÉÍÓÚÀÈÌÒÙÄËÏÖÜâêîôûÂÊÎÔÛñçÇ@';
-        $alpha =   'aeiouaeiouaeiouAEIOUAEIOUAEIOUaeiouAEIOUncCa';
-        $name = substr ($name, 0, $maxlen);
-        $name = $this->_strtr_utf8 ($name, $noalpha, $alpha);
-        $mixChars = array('Þ' => 'th', 'þ' => 'th', 'Ð' => 'dh', 'ð' => 'dh',
-                          'ß' => 'ss', 'Œ' => 'oe', 'œ' => 'oe', 'Æ' => 'ae',
-                          'æ' => 'ae', '$' => 's',  '¥' => 'y');
-        $name = strtr($name, $mixChars);
-        // not permitted chars are replaced with "_"
-        return preg_replace('/[^a-zA-Z0-9,._\+\()\-]/', '_', $name);
-    }
-
-    /**
-     * Workaround for 3-argument-strtr with utf8 characters
-     * used like PHP's strtr() with 3 arguments
-     * @access private
-     * @param string $str where to search
-     * @param string $from which chars to look for and...
-     * @param string $to ...the chars to replace by
-     * @return the strtr()ed result
-     */
-    function _strtr_utf8($str, $from, $to) {
-        if(!isset($to))
-        {
-            //2-argument call. no need to change anything, just pass to strtr
-            return strtr($str, $from);
-        }
-
-        $keys = array();
-        $values = array();
-        
-        //let php put all the symbols into an array based on the current charset
-        //(which is utf8)
-        preg_match_all('/./u', $from, $keys);
-        preg_match_all('/./u', $to, $values);
-        //create a mapping, so strtr() doesn't get confused with the multi-byte chars
-        $mapping = array_combine($keys[0], $values[0]);
-        //finally strtr
-        return strtr($str, $mapping);
     }
 
     /**
