@@ -469,7 +469,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 ));
 
                 // parse GoogleMap
-                $this->getCurrentFetchedEntryDataObject()->listEntries($objTpl, 4, $this->moduleLangVar.'_CATEGORY_LEVEL_GOOGLE_MAP');
+                $this->parseGoogleMapPlaceholder($objTpl, $this->moduleLangVar.'_CATEGORY_LEVEL_GOOGLE_MAP');
 
                 if(!empty($arrCategories[$intCategoryId]['catPicture']) && $this->arrSettings['settingsShowCategoryImage'] == 1) {
                     $objTpl->parse($this->moduleNameLC.'CategoryLevelPicture');

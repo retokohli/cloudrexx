@@ -949,4 +949,16 @@ EOF;
     protected function getCurrentFetchedEntryDataObject() {
         return self::$currentFetchedEntryDataObject;
     }
+
+    protected function parseGoogleMapPlaceholder($template, $placeholder) {
+        if (!$template->placeholderExists($placeholder)) {
+            return false;
+        }
+
+        if (!isset(self::$currentFetchedEntryDataObject)) {
+            return false;
+        }
+
+        self::$currentFetchedEntryDataObject->listEntries($template, 4, $placeholder);
+    }
 }

@@ -468,7 +468,7 @@ class MediaDirectory extends MediaDirectoryLibrary
                 $objEntries->listEntries($this->_objTpl, 2);
 
                 // parse GoogleMap
-                $this->getCurrentFetchedEntryDataObject()->listEntries($this->_objTpl, 4, $this->moduleLangVar.'_SEARCH_GOOGLE_MAP');
+                $this->parseGoogleMapPlaceholder($this->_objTpl, $this->moduleLangVar.'_SEARCH_GOOGLE_MAP');
                 
                 $urlParams = $_GET;
                 unset($urlParams['pos']);
