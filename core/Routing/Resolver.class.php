@@ -393,7 +393,17 @@ class Resolver {
         ) {
             $canonicalPage = $this->pageRepo->getTargetPage($this->urlPage);
         }
-        header('Link: <' . \Cx\Core\Routing\Url::fromPage($canonicalPage)->toString() . '>; rel="canonical"');
+
+        // don't set canonical page when replying with an application page
+        if ($canonicalPage->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION) {
+            return $this->page;
+        }
+
+        // set canonical page only in case it hasen't been set already
+        if (!preg_grep('/^Link:.*canonical["\']$/', headers_list())) {
+            header('Link: <' . \Cx\Core\Routing\Url::fromPage($canonicalPage)->toString() . '>; rel="canonical"');
+        }
+
         return $this->page;
     }
 

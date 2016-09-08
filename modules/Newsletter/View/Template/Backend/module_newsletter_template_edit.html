@@ -13,25 +13,12 @@ function newsImportDirectoryDisplay(selected) {
 	}
 }
 </script>
-<div id="subnavbar_level2">
-<ul>
-    <li><a href="index.php?cmd=Newsletter&amp;act=dispatch" title="{TXT_DISPATCH_SETINGS}">{TXT_DISPATCH_SETINGS}</a></li>
-    <li><a href="index.php?cmd=Newsletter&amp;act=templates" title="{TXT_NEWSLETTER_TEMPLATES}">{TXT_NEWSLETTER_TEMPLATES}</a></li>
-    <li><a href="index.php?cmd=Newsletter&amp;act=interface" title="{TXT_NEWSLETTER_INTERFACE}">{TXT_NEWSLETTER_INTERFACE}</a></li>
-    <li><a href="index.php?cmd=Newsletter&amp;act=confightml" title="{TXT_GENERATE_HTML}">{TXT_GENERATE_HTML}</a></li>
-    <li><a href="index.php?cmd=Newsletter&amp;act=activatemail" title="{TXT_CONFIRM_MAIL}">{TXT_ACTIVATE_MAIL}</a></li>
-    <li><a href="index.php?cmd=Newsletter&amp;act=confirmmail" title="{TXT_CONFIRM_MAIL}">{TXT_CONFIRM_MAIL}</a></li>
-    <li><a href="index.php?cmd=Newsletter&amp;act=notificationmail" title="{TXT_NOTIFICATION_MAIL}">{TXT_NOTIFICATION_MAIL}</a></li>
-    <li><a href="index.php?cmd=Newsletter&amp;act=system" title="{TXT_DISPATCH_SETINGS}">{TXT_SYSTEM_SETINGS}</a></li>
-</ul>
-</div>
-<br />
 <ul id="tabmenu">
   <li><a id="newsletterTab_template_form" class="active" href="javascript:void();" onclick="selectTab('template_form')" title="{NEWSLETTER_TEMPLATE_TITLE_TEXT}">{NEWSLETTER_TEMPLATE_TITLE_TEXT}</a></li>
   <li><a id="newsletterTab_template_info" href="javascript:void();" onclick="selectTab('template_info')" title="{TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY}">{TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY}</a></li>
 </ul>
 <div id="template_form" class="newsletterTab" style="display:block">
-  <form action="index.php?cmd=Newsletter&amp;act=tpledit&amp;id={NEWSLETTER_TEMPLATE_ID}" method="post">
+  <form action="index.php?cmd=Newsletter&amp;act=Settings&amp;tpl=Tpledit&amp;id={NEWSLETTER_TEMPLATE_ID}" method="post">
   <table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
     <tr>
       <th colspan="2">{NEWSLETTER_TEMPLATE_TITLE_TEXT}</th>
@@ -58,7 +45,7 @@ function newsImportDirectoryDisplay(selected) {
     </tr>
   </table>
   <br />
-  <input type="button" onclick="window.location.href='index.php?cmd=Newsletter&{CSRF_PARAM}&amp;act=templates'" value="{TXT_NEWSLETTER_BACK}" />
+  <input type="button" onclick="window.location.href='index.php?cmd=Newsletter&{CSRF_PARAM}&amp;act=Settings&amp;tpl=Templates'" value="{TXT_NEWSLETTER_BACK}" />
   <input type="submit" name="newsletter_template_save"  value="{TXT_NEWSLETTER_SAVE}" />
   </form>
 </div>
@@ -202,6 +189,6 @@ function newsImportDirectoryDisplay(selected) {
 	</tbody>
   </table>
   <br />
-  <input type="button" onclick="window.location.href='index.php?cmd=Newsletter&{CSRF_PARAM}&amp;act=templates'" value="{TXT_NEWSLETTER_BACK}" />
+  <input type="button" onclick="window.location.href='index.php?cmd=Newsletter&{CSRF_PARAM}&amp;act=Settings&amp;tpl=Templates'" value="{TXT_NEWSLETTER_BACK}" />
 </div>
 <!-- END module_newsletter_template_edit.html -->
