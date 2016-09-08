@@ -78,9 +78,9 @@ class RemoveCommand extends Command {
         // Remove additional files (config, command line script)
         foreach ($this->interface->getWorkbench()->getFileList() as $file) {
             if (is_dir($file)) {
-                \Cx\Lib\FileSystem\FileSystem::delete_folder(ASCMS_DOCUMENT_ROOT . $file, true);
+                \Cx\Lib\FileSystem\FileSystem::delete_folder($this->cx->getCodeBaseDocumentRootPath() . $file, true);
             } else {
-                \Cx\Lib\FileSystem\FileSystem::delete_file(ASCMS_DOCUMENT_ROOT . $file);
+                \Cx\Lib\FileSystem\FileSystem::delete_file($this->cx->getCodeBaseDocumentRootPath() . $file);
             }
         }
         

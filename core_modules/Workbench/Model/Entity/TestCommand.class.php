@@ -125,7 +125,7 @@ class TestCommand extends Command {
             }
         }
                 
-        $this->phpUnitPath = ASCMS_LIBRARY_PATH.'/PHPUnit';
+        $this->phpUnitPath = $this->cx->getCodeBaseLibraryPath() . '/PHPUnit';
         if(!file_exists($this->phpUnitPath)) {
             $this->interface->show("PhpUnit is not found in ". $this->phpUnitPath);
             return;
@@ -259,14 +259,15 @@ class TestCommand extends Command {
      */
     private function getModuleFolder($componentName, $componentType, $allowCustomizing = true)
     {
-        $basepath      = ASCMS_DOCUMENT_ROOT . \Cx\Core\Core\Model\Entity\SystemComponent::getPathForType($componentType);
+        $basepath      = $this->cx->getCodeBaseDocumentRootPath() .
+                         \Cx\Core\Core\Model\Entity\SystemComponent::getPathForType($componentType);
         $componentPath = $basepath . '/' . $componentName;
         
         if (!$allowCustomizing) {
             return $componentPath;
         }
         
-        return \Env::get('cx')->getClassLoader()->getFilePath($componentPath);
+        return $this->cx->getClassLoader()->getFilePath($componentPath);
     }
     
     /**
@@ -279,7 +280,7 @@ class TestCommand extends Command {
      */
     private function addTestingFolderToArray($componentName, $componentFolder)
     {
-        $componentTestingFolder = $componentFolder . ASCMS_TESTING_FOLDER;
+        $componentTestingFolder = $componentFolder . $this->cx->getWebsiteTestingFolder();
         
         if (!empty($componentFolder) && self::hasTestingFiles($componentTestingFolder) && file_exists($componentFolder) && file_exists($componentTestingFolder)) {
             $this->testingFolders[$componentName] = $componentTestingFolder;
@@ -345,12 +346,11 @@ class TestCommand extends Command {
      */
     function isComponent($componentName)
     {
-        $cx = \Env::get('cx');
-        $em = $cx->getDb()->getEntityManager();
-        
+        $em = $this->cx->getDb()->getEntityManager();
+
         $componentRepo = $em->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
         $component     = $componentRepo->findOneBy(array('name' => $componentName));
-        
+
         return $component;
     }
 }

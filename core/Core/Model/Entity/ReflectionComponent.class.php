@@ -91,6 +91,11 @@ class ReflectionComponent {
     private $db = null;
 
     /**
+     * @var \Cx\Core\Core\Controller\Cx
+     */
+    protected $cx = null;
+
+    /**
      * Two different ways to instanciate this are supported:
      * 1. Supply an instance of \Cx\Core\Core\Model\Entity\Component
      * 2. Supply a install package zip filename
@@ -102,8 +107,9 @@ class ReflectionComponent {
      */
     public function __construct($arg1, $arg2 = null) {
         
-        $this->db = \Env::get('cx')->getDb()->getAdoDb();
-        
+        $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $this->db = $this->cx->getDb()->getAdoDb();
+
         if (is_a($arg1, 'Cx\Core\Core\Model\Entity\SystemComponent')) {
             $this->componentName = $arg1->getName();
             $this->componentType = $arg1->getType();
@@ -112,21 +118,21 @@ class ReflectionComponent {
         $arg1Parts = explode('.', $arg1);
 	if (file_exists($arg1) && end($arg1Parts) == 'zip') {
             // clean up tmp dir
-            \Cx\Lib\FileSystem\FileSystem::delete_folder(ASCMS_APP_CACHE_FOLDER, true);
+            \Cx\Lib\FileSystem\FileSystem::delete_folder($this->cx->getWebsiteAppCacheFolderPath(), true);
         
             // Uncompress package using PCLZip
             $file = new \PclZip($arg1);
-            $list = $file->extract(PCLZIP_OPT_PATH, ASCMS_APP_CACHE_FOLDER);
+            $list = $file->extract(PCLZIP_OPT_PATH, $this->cx->getWebsiteAppCacheFolderPath());
             
             // Check for meta.yml, if none: throw Exception
-            if (!file_exists(ASCMS_APP_CACHE_FOLDER . '/meta.yml')) {
+            if (!file_exists($this->cx->getWebsiteAppCacheFolderPath() . '/meta.yml')) {
                 throw new ReflectionComponentException('This ain\'t no package file: "' . $arg1 . '"');
             }
             
             // Read meta info
             $metaTypes = array('core'=>'core', 'core_module'=>'system', 'module'=>'application', 'lib'=>'other');
             $yaml = new \Symfony\Component\Yaml\Yaml();
-            $content = file_get_contents(ASCMS_APP_CACHE_FOLDER . '/meta.yml');
+            $content = file_get_contents($this->cx->getWebsiteAppCacheFolderPath() . '/meta.yml');
             $meta = $yaml->load($content);
             $type = array_key_exists($meta['DlcInfo']['type'], $metaTypes) ? $meta['DlcInfo']['type'] : 'lib';            
             
@@ -157,7 +163,7 @@ class ReflectionComponent {
     public function isValidComponentName($name) {
         return preg_match('/^([A-Z][a-z0-9]*)+$/', $name);
     }
-    
+
     /**
      * Returns the components name
      * @return string Component name
@@ -165,7 +171,7 @@ class ReflectionComponent {
     public function getName() {
         return $this->componentName;
     }
-    
+
     /**
      * Returns the components type
      * @return string Component type
@@ -173,17 +179,17 @@ class ReflectionComponent {
     public function getType() {
         return $this->componentType;
     }
-    
+
     /**
      * Tells wheter this component is customized or not
      * @return boolean True if customized (and customizings are active)
      */
     protected function isCustomized() {
-        $basepath = ASCMS_DOCUMENT_ROOT . SystemComponent::getPathForType($this->componentType);
+        $basepath = $this->cx->getCodeBaseDocumentRootPath() . SystemComponent::getPathForType($this->componentType);
         $componentPath = $basepath . '/' . $this->componentName;
-        return \Env::get('ClassLoader')->getFilePath($componentPath) != $componentPath;
+        return $this->cx->getClassLoader()->getFilePath($componentPath) != $componentPath;
     }
-    
+
     /**
      * Returns wheter this component exists or not in the system
      * Note : It not depends the component type
@@ -193,29 +199,25 @@ class ReflectionComponent {
      */
     public function exists($allowCustomizing = true) {
         foreach (self::$componentTypes as $componentType) {
-            $basepath      = ASCMS_DOCUMENT_ROOT . \Cx\Core\Core\Model\Entity\SystemComponent::getPathForType($componentType);
+            $basepath      = $this->cx->getCodeBaseDocumentRootPath() . SystemComponent::getPathForType($componentType);
             $componentPath = $basepath . '/' . $this->componentName;
-            
-            if (!$allowCustomizing) {
-                if (file_exists($componentPath)) {
-                    return true;
-                }
+            if (!$allowCustomizing && file_exists($componentPath)) {
+                return true;
             }
-            if (\Env::get('cx')->getClassLoader()->getFilePath($componentPath)) {
+            if ($this->cx->getClassLoader()->getFilePath($componentPath)) {
                 return true;
             }
         }
         return false;
     }
-    
+
     /**
      * Returns wheter this component installed or not
      *
      * @return boolean True if it exists, false otherwise
      */
     public function isInstalled() {
-        $cx = \Env::get('cx');
-        
+
         $query = '
             SELECT
                 `id`
@@ -224,7 +226,7 @@ class ReflectionComponent {
             WHERE
                 `name` = \'' . $this->componentName . '\'
         ';
-        $result = $cx->getDb()->getAdoDb()->query($query);
+        $result = $this->db->query($query);
         if ($result && $result->RecordCount()) {
             return true;
         }        
@@ -237,7 +239,7 @@ class ReflectionComponent {
             WHERE
                 `name` = \'' . $this->componentName . '\'
         ';
-        $result = $cx->getDb()->getAdoDb()->query($query);
+        $result = $this->db->query($query);
         
         if ($result && $result->RecordCount()) {
             return true;
@@ -286,17 +288,17 @@ class ReflectionComponent {
      * @return string Path for this component
      */
     public function getDirectory($allowCustomizing = true, $forceCustomized = false) {
-        $docRoot = ASCMS_DOCUMENT_ROOT;
+        $docRoot = $this->cx->getCodeBaseDocumentRootPath();
         if ($forceCustomized) {
             $allowCustomizing = false;
-            $docRoot = ASCMS_CUSTOMIZING_PATH;
+            $docRoot = $this->cx->getWebsiteCustomizingPath();
         }
         $basepath = $docRoot.SystemComponent::getPathForType($this->componentType);
         $componentPath = $basepath . '/' . $this->componentName;
         if (!$allowCustomizing) {
             return $componentPath;
         }
-        return \Env::get('ClassLoader')->getFilePath($componentPath);
+        return $this->cx->getClassLoader()->getFilePath($componentPath);
     }
     
     /**
@@ -310,18 +312,18 @@ class ReflectionComponent {
         if (!$this->packageFile) {
             throw new SystemComponentException('Package file not available');
         }
-        if (!file_exists(ASCMS_APP_CACHE_FOLDER . '/meta.yml')) {
+        if (!file_exists($this->cx->getWebsiteAppCacheFolderPath() . '/meta.yml')) {
             throw new ReflectionComponentException('Invalid package file');
         }
         if ($this->exists()) {
             throw new SystemComponentException('Component is already installed');
         }
         
-        $websitePath = \Env::get('cx')->getWebsiteDocumentRootPath();
+        $websitePath = $this->cx->getWebsiteDocumentRootPath();
         
         // Read meta file
         $yaml = new \Symfony\Component\Yaml\Yaml();
-        $content = file_get_contents(ASCMS_APP_CACHE_FOLDER . '/meta.yml');
+        $content = file_get_contents($this->cx->getWebsiteAppCacheFolderPath() . '/meta.yml');
         $meta = $yaml->load($content);
         
         // Check dependencies
@@ -338,8 +340,8 @@ class ReflectionComponent {
         echo "Copying files to installation ... ";
         $filesystem = new \Cx\Lib\FileSystem\FileSystem();        
         $filesystem->copyDir(
-            ASCMS_APP_CACHE_FOLDER . '/DLC_FILES',
-            ASCMS_APP_CACHE_FOLDER_WEB_PATH . '/DLC_FILES',
+            $this->cx->getWebsiteAppCacheFolderPath() . '/DLC_FILES',
+            $this->cx->getWebsiteAppCacheFolderWebPath() . '/DLC_FILES',
             '',
             $websitePath,
             '',
@@ -356,7 +358,7 @@ class ReflectionComponent {
         
         // Copy ZIP contents (also copy meta.yml into component folder if type is system or application)
         try {
-            $objFile = new \Cx\Lib\FileSystem\File(ASCMS_APP_CACHE_FOLDER . '/meta.yml');
+            $objFile = new \Cx\Lib\FileSystem\File($this->cx->getWebsiteAppCacheFolderPath() . '/meta.yml');
             $objFile->copy($this->getDirectory(false) . '/meta.yml');
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
@@ -382,16 +384,15 @@ class ReflectionComponent {
      */
     function createTablesFromYaml()
     {
+        $em  = $this->cx->getDb()->getEntityManager();
+
         $ymlDirectory = $this->getDirectory(false).'/Model/Yaml';
-        
-        $em  = \Env::get('cx')->getDb()->getEntityManager();
-        
         $classes = array();
         foreach (glob($ymlDirectory.'/*.yml') as $yml) {
             $ymlArray  = \Symfony\Component\Yaml\Yaml::load($yml);
             $classes[] = $em->getClassMetadata(key($ymlArray));
         }
-        
+
         $scm = new \Doctrine\ORM\Tools\SchemaTool($em);
         $scm->createSchema($classes);
     }
@@ -401,7 +402,9 @@ class ReflectionComponent {
      */
     function importStructureFromSql()
     {
-        $sqlDump = ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName . '/Data/Structure.sql';
+        $sqlDump = $this->cx->getWebsiteAppCacheFolderPath() . '/DLC_FILES'.
+                   SystemComponent::getPathForType($this->componentType) . '/' .
+                   $this->componentName . '/Data/Structure.sql';
         
         $fp = @fopen ($sqlDump, "r");
         if ($fp !== false) {
@@ -429,7 +432,9 @@ class ReflectionComponent {
      */
     function importDataFromSql()
     {
-        $sqlDump = ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName . '/Data/Data.sql';        
+        $sqlDump = $this->cx->getWebsiteAppCacheFolderPath() . '/DLC_FILES' .
+                   SystemComponent::getPathForType($this->componentType) .
+                   '/' . $this->componentName . '/Data/Data.sql';
         
         if (!file_exists($sqlDump)) {
             return;
@@ -546,16 +551,16 @@ class ReflectionComponent {
             throw new ReflectionComponentException('Invalid file name passed. Provide a valid zip file name');
         }
                 
-        $websitePath = \Env::get('cx')->getWebsiteDocumentRootPath();
+        $websitePath = $this->cx->getWebsiteDocumentRootPath();
         // Create temp working folder and copy ZIP contents
         $filesystem = new \Cx\Lib\FileSystem\FileSystem();
         // clean up tmp dir
-        $filesystem->delete_folder(ASCMS_APP_CACHE_FOLDER, true);
+        $filesystem->delete_folder($this->cx->getWebsiteAppCacheFolderPath(), true);
         echo "Copying files ... ";        
-        $filesystem->make_folder(ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType), true);
+        $filesystem->make_folder($this->cx->getWebsiteAppCacheFolderPath() . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType), true);
         
-        $cacheComponentFolderPath = ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName;
-        $cacheComponentFolderWebPath = ASCMS_APP_CACHE_FOLDER_WEB_PATH . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName;
+        $cacheComponentFolderPath = $this->cx->getWebsiteAppCacheFolderPath() . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName;
+        $cacheComponentFolderWebPath = $this->cx->getWebsiteAppCacheFolderWebPath() . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName;
         $filesystem->copyDir(
             $this->getDirectory(false),
             preg_replace('#' . $websitePath . '#', '', $this->getDirectory(false)),
@@ -608,16 +613,16 @@ class ReflectionComponent {
                                 $srcPath,
                                 preg_replace('#' . $websitePath . '#', '', $srcPath),
                                 '',
-                                ASCMS_APP_CACHE_FOLDER . '/DLC_FILES/' . $additionalFile,
-                                ASCMS_APP_CACHE_FOLDER_WEB_PATH . '/DLC_FILES/' . $additionalFile,
+                                $this->cx->getWebsiteAppCacheFolderPath() . '/DLC_FILES/' . $additionalFile,
+                                $this->cx->getWebsiteAppCacheFolderWebPath() . '/DLC_FILES/' . $additionalFile,
                                 '',
                                 true
                             );
                         } else {
                             $folder = dirname($srcPath);
                             $folderPath = preg_replace('#' . $websitePath . '#', '', $folder);
-                            $filesystem->make_folder(ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. $folderPath, true);
-                            $filesystem->copy_file($srcPath, ASCMS_APP_CACHE_FOLDER . '/DLC_FILES/'. $additionalFile);
+                            $filesystem->make_folder($this->cx->getWebsiteAppCacheFolderPath() . '/DLC_FILES'. $folderPath, true);
+                            $filesystem->copy_file($srcPath, $this->cx->getWebsiteAppCacheFolderPath() . '/DLC_FILES/'. $additionalFile);
                         }
                     } else {
                         echo "WARNING: File missing - ". $additionalFile;
@@ -626,13 +631,13 @@ class ReflectionComponent {
             }            
             echo "Done \n";
         }
-        $filesystem->copy_file($cacheComponentFolderPath . '/meta.yml', ASCMS_APP_CACHE_FOLDER . '/meta.yml');
-        $filesystem->copy_file($websitePath . '/core/Core/Data/README.txt', ASCMS_APP_CACHE_FOLDER . '/README.txt');
+        $filesystem->copy_file($cacheComponentFolderPath . '/meta.yml', $this->cx->getWebsiteAppCacheFolderPath() . '/meta.yml');
+        $filesystem->copy_file($websitePath . '/core/Core/Data/README.txt', $this->cx->getWebsiteAppCacheFolderPath() . '/README.txt');
         
         echo "Exporting component ... ";
         // Compress
         $file = new \PclZip($path);
-        $file->create(ASCMS_APP_CACHE_FOLDER, PCLZIP_OPT_REMOVE_PATH, ASCMS_APP_CACHE_FOLDER);
+        $file->create($this->cx->getWebsiteAppCacheFolderPath(), PCLZIP_OPT_REMOVE_PATH, $this->cx->getWebsiteAppCacheFolderPath());
         echo "Done \n";
     }
     
@@ -666,7 +671,9 @@ class ReflectionComponent {
     {
         $componentTables = $this->getComponentTables();
         
-        $dataFolder = ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName . '/Data';
+        $dataFolder = $this->cx->getWebsiteAppCacheFolderPath() . '/DLC_FILES'.
+                      SystemComponent::getPathForType($this->componentType) . '/' . 
+                      $this->componentName . '/Data';
         \Cx\Lib\FileSystem\FileSystem::make_folder($dataFolder);
         
         // check whether its a doctrine component
@@ -1059,8 +1066,11 @@ class ReflectionComponent {
         }
         
         // copy skeleton component
-        \Cx\Lib\FileSystem\FileSystem::copy_folder(ASCMS_CORE_PATH.'/Core/Data/Skeleton', $this->getDirectory(false));
-        
+        \Cx\Lib\FileSystem\FileSystem::copy_folder(
+            $this->cx->getCodeBaseCorePath() . '/Core/Data/Skeleton',
+            $this->getDirectory(false)
+        );
+
         $this->fixNamespaces('Cx\Modules\Skeleton', $this->getDirectory());
         $this->fixLanguagePlaceholders('MODULE_SKELETON', $this->getDirectory());
         $this->fixDocBlocks('modules_skeleton', $this->getDirectory());
@@ -1080,12 +1090,12 @@ class ReflectionComponent {
     public function remove() {
         // remove from db
         $this->removeFromDb();
-        
+
         // if there are no files, quit
         if (!$this->exists()) {
             return;
         }
-        
+
         // remove from fs
         \Cx\Lib\FileSystem\FileSystem::delete_folder($this->getDirectory(), true);
     }
@@ -1149,10 +1159,9 @@ class ReflectionComponent {
         if (!$this->exists()) {
             throw new \Cx\Core\Core\Controller\ComponentException('No such component: "' . $this->componentName . '" of type "' . $this->componentType . '"');
         }
-        
-        $cx = \Env::get('cx');
-        $em = $cx->getDb()->getEntityManager();
-        
+
+        $em = $this->cx->getDb()->getEntityManager();
+
         // component
         if (!$this->isLegacy()) {
             $componentRepo = $em->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
@@ -1183,7 +1192,7 @@ class ReflectionComponent {
             WHERE
                 `name` = \'' . $this->componentName . '\'
         ';
-        $result = $cx->getDb()->getAdoDb()->query($query);
+        $result = $this->db->query($query);
         if (!$result->EOF) {
             $id = $result->fields['id'];
             $query = '
@@ -1211,7 +1220,7 @@ class ReflectionComponent {
                 LIMIT 1
             ';
             $id = 900;
-            $result = $cx->getDb()->getAdoDb()->query($query);
+            $result = $this->db->query($query);
             if (!$result->EOF) {
                 $id = $result->fields['id'] + 1;
             }
@@ -1243,7 +1252,7 @@ class ReflectionComponent {
                     )
             ';
         }
-        $cx->getDb()->getAdoDb()->query($query);
+        $this->db->query($query);
         
         // backend_areas
         $query = '
@@ -1255,7 +1264,7 @@ class ReflectionComponent {
                 `uri` LIKE \'%cmd=' . contrexx_raw2db($this->componentName) . '&%\' OR
                 `uri` LIKE \'%cmd=' . contrexx_raw2db($this->componentName) . '\'
         ';
-        $result = $cx->getDb()->getAdoDb()->query($query);
+        $result = $this->db->query($query);
         if (!$result->EOF) {
             $query = '
                 UPDATE
@@ -1282,7 +1291,7 @@ class ReflectionComponent {
                     `order_id` DESC
                 LIMIT 1
             ';
-            $result = $cx->getDb()->getAdoDb()->query($query);
+            $result = $this->db->query($query);
             if (!$result->EOF) {
                 $order_id = $result->fields['order_id'] + 1;
             }
@@ -1298,7 +1307,7 @@ class ReflectionComponent {
                     `access_id` DESC
                 LIMIT 1
             ';
-            $result = $cx->getDb()->getAdoDb()->query($query);
+            $result = $this->db->query($query);
             if (!$result->EOF) {
                 $access_id = $result->fields['access_id'] + 1;
             }
@@ -1332,7 +1341,7 @@ class ReflectionComponent {
                     )
             ';
         }
-        $cx->getDb()->getAdoDb()->query($query);
+        $this->db->query($query);
         
         // pages (if necessary) from repo (if has existing entry/ies) or empty one
         if ($this->componentType != 'module') {
@@ -1395,9 +1404,8 @@ class ReflectionComponent {
      * @return boolean True on success, false if no pages found in repo
      */
     protected function loadPagesFromModuleRepository($moduleId) {
-        $cx = \Env::get('cx');
-        $em = $cx->getDb()->getEntityManager();
-        
+        $em = $this->cx->getDb()->getEntityManager();
+
         $id = $moduleId;
         
         $nodeRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Node');
@@ -1425,7 +1433,7 @@ class ReflectionComponent {
             ORDER BY
                 `parid` ASC
         ';
-        $objResult = $cx->getDb()->getAdoDb()->query($query);
+        $objResult = $this->db->query($query);
         if ($objResult->EOF) {
             // no pages
             return false;
@@ -1490,10 +1498,7 @@ class ReflectionComponent {
      * This deactivates the component (does not remove any DB entries, except for pages)
      */
     public function deactivate() {
-        $cx = \Env::get('cx');
-        
         // deactivate in modules
-        $adoDb = $cx->getDb()->getAdoDb();
         $query = '
             UPDATE
                 `' . DBPREFIX . 'modules`
@@ -1503,10 +1508,10 @@ class ReflectionComponent {
             WHERE
                 `name` = \'' . $this->componentName . '\'
         ';
-        $adoDb->execute($query);
+        $this->db->execute($query);
         
         // remove pages
-        $em = $cx->getDb()->getEntityManager();
+        $em = $this->cx->getDb()->getEntityManager();
         $pageRepo = $em->getRepository('Cx\\Core\\ContentManager\\Model\\Entity\\Page');
         $pages = $pageRepo->findBy(array(
             'module' => $this->componentName,
@@ -1522,10 +1527,8 @@ class ReflectionComponent {
      * @todo Test removing components tables (including doctrine schema)
      */
     protected function removeFromDb() {
-        $cx = \Env::get('cx');
-        
         // component
-        $em = $cx->getDb()->getEntityManager();
+        $em = $this->cx->getDb()->getEntityManager();
         $componentRepo = $em->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
         $systemComponent = $componentRepo->findOneBy(array(
             'type' => $this->componentType,
@@ -1537,7 +1540,6 @@ class ReflectionComponent {
         }
         
         // modules (legacy)
-        $adoDb = $cx->getDb()->getAdoDb();
         $query = '
             SELECT
                 `id`
@@ -1546,7 +1548,7 @@ class ReflectionComponent {
             WHERE
                 `name` = \'' . $this->componentName . '\'
         ';
-        $res = $adoDb->execute($query);
+        $res = $this->db->execute($query);
         $moduleId = $res->fields['id'];
         
         if (!empty($moduleId)) {
@@ -1556,7 +1558,7 @@ class ReflectionComponent {
                 WHERE
                     `id` = \'' . $moduleId . '\'
             ';
-            $adoDb->execute($query);
+            $this->db->execute($query);
 
             // backend_areas
             $query = '
@@ -1565,7 +1567,7 @@ class ReflectionComponent {
                 WHERE
                     `module_id` = \'' . $moduleId . '\'
             ';
-            $adoDb->execute($query);
+            $this->db->execute($query);
         }
         
         // module tables (LIKE DBPREFIX . strtolower($moduleName)%)
@@ -1574,29 +1576,29 @@ class ReflectionComponent {
             LIKE
                 \'' . DBPREFIX . 'module_' . strtolower($this->componentName) . '%\'
         ';
-        $result = $adoDb->execute($query);
+        $result = $this->db->execute($query);
         while (!$result->EOF) {
             $query = '
                 DROP TABLE
                     `' . current($result->fields) . '`
             ';
-            $adoDb->execute($query);
+            $this->db->execute($query);
             
             $result->MoveNext();
         }
         
         
         $query = 'DELETE FROM `'. DBPREFIX .'core_mail_template` WHERE `section` = "'. $this->componentName .'"';
-        $adoDb->execute($query);
+        $this->db->execute($query);
         
         $query = 'DELETE FROM `'. DBPREFIX .'core_text` WHERE `section` = "'. $this->componentName .'"';
-        $adoDb->execute($query);
+        $this->db->execute($query);
         
         $query = 'DELETE FROM `'. DBPREFIX .'core_setting` WHERE `section` = "'. $this->componentName .'"';
-        $adoDb->execute($query);
+        $this->db->execute($query);
 
         $query = 'DELETE FROM `'. DBPREFIX .'settings` WHERE `setname` LIKE "'. $this->componentName .'%"';
-        $adoDb->execute($query);
+        $this->db->execute($query);
             
         // pages
         $this->deactivate();
@@ -1684,7 +1686,7 @@ class ReflectionComponent {
         
         // fix namespaces in DB
         // at the moment, only log_entry stores namespaces so we can simply:
-        $em = \Env::get('cx')->getDb()->getEntityManager();
+        $em = $this->cx->getDb()->getEntityManager();
         $query = $em->createQuery('SELECT FROM Cx\Core\ContentManager\Model\Entity\LogEntry l WHERE l.object_class LIKE \'' . $ns . '%\'');
         foreach ($query->getResult() as $log) {
             $object_class = $log->getObjectClass();
@@ -1828,7 +1830,7 @@ class ReflectionComponent {
         }
         
         // move or copy pages before removing DB entries
-        $em = \Env::get('cx')->getDb()->getEntityManager();
+        $em       = $this->cx->getDb()->getEntityManager();
         $pageRepo = $em->getRepository('Cx\\Core\\ContentManager\\Model\\Entity\\Page');
         $pages = $pageRepo->findBy(array(
             'module' => $this->componentName,
@@ -1868,7 +1870,7 @@ class ReflectionComponent {
         $this->internalFsRelocate($newLocation, $copy);
         
         // fix namespaces
-        $baseDir = ASCMS_DOCUMENT_ROOT;
+        $baseDir = $this->cx->getCodeBaseDocumentRootPath();
         if ($copy) {
             $baseDir = $newComponent->getDirectory();
         }

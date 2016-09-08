@@ -301,6 +301,13 @@ namespace Cx\Core\Core\Controller {
         const FOLDER_NAME_PUBLIC_TEMP = '/public';
 
         /**
+         * The folder name used to store the test cases
+         *
+         * @var string
+         */
+        const FOLDER_NAME_TESTING = '/Testing';
+
+        /**
          * The webserver's DocumentRoot path.
          * Formerly known as ASCMS_PATH.
          * @var string
@@ -569,7 +576,21 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesAccessProfileWebPath;
         protected $websiteImagesAccessPhotoPath;
         protected $websiteImagesAccessPhotoWebPath;
-        
+
+        /**
+         * Webiste application cache folder path
+         *
+         * @var string
+         */
+        protected $websiteAppCacheFolderPath;
+
+        /**
+         * Webiste application cache folder web path
+         *
+         * @var string
+         */
+        protected $websiteAppCacheFolderWebPath;
+
         /**
          * @var \Cx\Core\MediaSource\Model\Entity\MediaSourceManager
          */
@@ -2681,7 +2702,9 @@ namespace Cx\Core\Core\Controller {
             $this->websiteMediaFileSharingWebPath=$this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/FileSharing';
             $this->websiteMediaMarketWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/Market';
             $this->websiteMediaDirectoryWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/Directory';
-                        
+            $this->websiteAppCacheFolderPath     = $this->websiteTempPath . '/appcache';
+            $this->websiteAppCacheFolderWebPath  = $this->websiteTempWebPath . '/appcache';
+
             $this->websitePublicTempPath        = $this->websiteTempPath    . self::FOLDER_NAME_PUBLIC_TEMP;
             $this->websitePublicTempWebPath     = $this->websiteTempWebPath . self::FOLDER_NAME_PUBLIC_TEMP;
         }
@@ -3240,6 +3263,36 @@ namespace Cx\Core\Core\Controller {
          */
         public function getWebsiteMediaDirectoryWebPath() {
             return $this->websiteMediaDirectoryWebPath;
+        }
+
+        /**
+         * Returns the testing folder name
+         *
+         * @return string
+         */
+        public function getWebsiteTestingFolder()
+        {
+            return self::FOLDER_NAME_TESTING;
+        }
+
+        /**
+         * Returns the website application cache folder path
+         *
+         * @return string
+         */
+        public function getWebsiteAppCacheFolderPath()
+        {
+            return $this->websiteAppCacheFolderPath;
+        }
+
+        /**
+         * Returns the website application cache folder web path
+         *
+         * @return string
+         */
+        public function getWebsiteAppCacheFolderWebPath()
+        {
+            return $this->websiteAppCacheFolderWebPath;
         }
 
         /**
