@@ -397,7 +397,8 @@ class Calendar extends CalendarLibrary
 cx.ready(function() {
     var options = {
         dateFormat: '$dateFormat',        
-        timeFormat: 'hh:mm'
+        timeFormat: 'hh:mm',
+        showSecond: false
     };
     cx.jQuery('input[name=from]').datepicker(options);
     cx.jQuery('input[name=till]').datepicker(options);
@@ -435,9 +436,8 @@ EOF;
             $pagingCategory = !empty($catid) ? '&amp;catid='.intval($catid) : '';
             $pagingTerm = !empty($term) ? '&amp;term='.  contrexx_raw2xhtml($term) : '';
             $pagingSearch = !empty($search) ? '&amp;search='.  contrexx_raw2xhtml($search) : '';
-            $pagingFrom = !empty($from) ? '&amp;from='.  contrexx_raw2xhtml($from) : '';
-            $pagingTill = !empty($till) ? '&amp;till='.  contrexx_raw2xhtml($till) : '';
-
+            $pagingFrom = !empty($from) ? '&amp;from='.  contrexx_raw2xhtml(urlencode($from)) : '';
+            $pagingTill = !empty($till) ? '&amp;till='.  contrexx_raw2xhtml(urlencode($till)) : '';
 
             $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_PAGING' =>  getPaging($this->objEventManager->countEvents, $this->startPos, "&section=".$this->moduleName.$pagingCmd.$pagingCategory.$pagingTerm.$pagingSearch.$pagingFrom.$pagingTill, "<b>".$_ARRAYLANG['TXT_CALENDAR_EVENTS']."</b>", true, $this->arrSettings['numPaging']),

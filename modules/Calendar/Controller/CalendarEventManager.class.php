@@ -239,14 +239,30 @@ class CalendarEventManager extends CalendarLibrary
      * @return null
      */
     function getEventList() {
-        global $objDatabase, $_ARRAYLANG, $_LANGID, $objInit; 
-        
+        global $objDatabase, $_ARRAYLANG, $_LANGID, $objInit;
+
         $this->getSettings();
-        
+
         // need for database TIMESTAMP
-        $startDate = $this->startDate ? $this->getDbDateTimeFromIntern($this->startDate)->format('Y-m-d H:i:s') : '0000-00-00 00:00:00';
-        $endDate   = $this->endDate ? $this->getDbDateTimeFromIntern($this->endDate)->format("Y-m-d H:i:s") : '0000-00-00 00:00:00';
-        
+        if (
+            $this->startDate !== null &&
+            $this->endDate !== null
+        ) {
+            $startDateObj = $this->startDate;
+            $endDateObj = $this->endDate;
+            if (
+                $this->startDate->format('H:i:s') == '00:00:00' &&
+                $this->endDate->format('H:i:s') == '00:00:00'
+            ) {
+                $endDateObj = $endDateObj->setTime('23', '59', '59');
+                $this->endDate = $this->endDate->setTime('23', '59', '59');
+                $startDateObj = $this->getDbDateTimeFromIntern($startDateObj);
+                $endDateObj = $this->getDbDateTimeFromIntern($endDateObj);
+            }
+            $startDate = $startDateObj->format('Y-m-d H:i:s');
+            $endDate = $endDateObj->format('Y-m-d H:i:s');
+        }
+
         $onlyActive_where = ($this->onlyActive == true ? ' AND event.status=1' : '');  
         $categoryId_where = ($this->categoryId != 0 ? ' AND event.catid='.$this->categoryId : '');  
         
