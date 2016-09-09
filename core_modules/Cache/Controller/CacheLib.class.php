@@ -405,14 +405,14 @@ class CacheLib
      */
     public function clearSsiCachePage($adapterName, $adapterMethod, $params = array()) {
         $url = \Cx\Core\Routing\Url::fromApi('Data', array('Plain', $adapterName, $adapterMethod), $params);
-        $this->getSsiProxy()->clearCachePage($url, $this->getDomainsAnsPorts());
+        $this->getSsiProxy()->clearCachePage($url, $this->getDomainsAndPorts());
     }
     
     /**
      * Drops all cached ESI/SSI elements
      */
     public function clearSsiCache() {
-        $this->getSsiProxy()->clearCache($this->getDomainsAnsPorts());
+        $this->getSsiProxy()->clearCache($this->getDomainsAndPorts());
     }
     
     protected function isInstalled($cacheEngine)
@@ -613,10 +613,10 @@ class CacheLib
         global $_CONFIG;
         
         // find rproxy driver
-        if (!isset($_CONFIG['cacheProxyCacheConfig']) || $_CONFIG['cacheProxyCacheConfig'] == 'none') {
-            return
+        if (!isset($_CONFIG['cacheReverseProxy']) || $_CONFIG['cacheReverseProxy'] == 'none') {
+            return;
         }
-        $reverseProxyType = $_CONFIG['cacheProxyCacheConfig'];
+        $reverseProxyType = $_CONFIG['cacheReverseProxy'];
         
         $className = '\\Cx\\Lib\\ReverseProxy\\Model\\Entity\\ReverseProxy' . ucfirst($reverseProxyType);
         $reverseProxyConfiguration = $this->getReverseProxyConfiguration();
@@ -626,7 +626,7 @@ class CacheLib
         );
         
         // advise driver to drop page for HTTP and HTTPS ports on all domain aliases
-        $reverseProxy->clearCachePage($urlPattern, $this->getDomainsAnsPorts());
+        $reverseProxy->clearCachePage($urlPattern, $this->getDomainsAndPorts());
     }
     
     /**
