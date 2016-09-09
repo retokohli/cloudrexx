@@ -2059,10 +2059,8 @@ namespace Cx\Core\Core\Controller {
                     $this->codeBaseOffsetPath . \Env::get('virtualLanguageDirectory').'/',
                     $endcode);
                 $endcode = $ls->replace();
-
-                echo $objCache->internalEsiParsing($endcode);
-
-                $objCache->endContrexxCaching($this->resolvedPage);
+                
+                echo $objCache->endContrexxCaching($this->resolvedPage, $endcode);
             } else {
                 // backend meta navigation
                 if ($this->template->blockExists('backend_metanavigation')) {

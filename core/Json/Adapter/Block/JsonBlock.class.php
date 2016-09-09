@@ -91,7 +91,15 @@ class JsonBlock implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('getBlocks', 'getBlockContent', 'saveBlockContent');
+        return array(
+            'getBlocks',
+            'getBlockContent' => new \Cx\Core_Modules\Access\Model\Entity\Permission(
+                null,
+                array('get', 'cli'),
+                false
+            ),
+            'saveBlockContent',
+        );
     }
 
     /**
@@ -148,10 +156,10 @@ class JsonBlock implements JsonAdapter {
         global $_CORELANG, $objDatabase;
         
         // security check
-        if (   !\FWUser::getFWUserObject()->objUser->login()
+        /*if (   !\FWUser::getFWUserObject()->objUser->login()
             || !\Permission::checkAccess(76, 'static', true)) {
             throw new \Cx\Core\Json\Adapter\Block\NoPermissionException($_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']);
-        }
+        }*/
         
         // check for necessary arguments
         if (empty($params['get']['block']) || empty($params['get']['lang'])) {

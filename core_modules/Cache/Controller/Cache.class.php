@@ -98,6 +98,11 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             $this->boolIsEnabled = false;
             return;
         }*/
+        
+        if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_MINIMAL) {
+            $this->boolIsEnabled = false;
+            return;
+        }
 
         $this->boolIsEnabled = true;
 
@@ -140,39 +145,36 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         foreach ($files as $file) {
             if (filemtime($file) > (time() - $this->intCachingTime)) {
                 //file was cached before, load it
-                readfile($file);
+                $endcode = file_get_contents($file);
+
+                echo $this->internalEsiParsing($endcode, true);
                 exit;
             } else {
                 $File = new \Cx\Lib\FileSystem\File($file);
                 $File->delete();
             }
         }
-
-        //if there is no cached file, start recording
-        ob_start();
     }
 
 
     /**
      * End caching functions. Check for a sessionId: if not set, write pagecontent to a file.
      */
-    public function endContrexxCaching($page)
+    public function endContrexxCaching($page, $endcode)
     {
         if (!$this->boolIsEnabled) {
-            return null;
+            return $this->internalEsiParsing($endcode);
         }
         if (session_id() != '' && \FWUser::getFWUserObject()->objUser->login()) {
-            return null;
+            return $this->internalEsiParsing($endcode);
         }
         if (!$page->getCaching()) {
-            return null;
+            return $this->internalEsiParsing($endcode);
         }
-
-        $strCacheContents = ob_get_contents();
-        ob_end_flush();
         $handleFile = $this->strCachePath . $this->strCacheFilename . "_" . $page->getId();
         $File = new \Cx\Lib\FileSystem\File($handleFile);
-        $File->write($strCacheContents);
+        $File->write($endcode);
+        return $this->internalEsiParsing($endcode);
     }
 
     /**
@@ -180,33 +182,81 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      * @param string $htmlCode HTML code to replace ESI directives in
      * @return string Parsed HTML code
      */
-    public function internalEsiParsing($htmlCode) {
+    public function internalEsiParsing($htmlCode, $cxNotYetInitialized = false) {
         global $objCache;
         
-        if ($objCache->getEsiMode() != \Cx\Core_Modules\Cache\Controller\CacheLib::ESI_MODE_INTERN) {
+        if (!is_a($objCache->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx')) {
             return $htmlCode;
         }
         
+        // Cannot be initialized yet, if Contrexx caching is active DB is not
+        // present yet, which means that Url::from* does not work
+        $apiUrlString = '';
+        
+        // Random include tags
+        $htmlCode = preg_replace_callback(
+            '#<!-- ESI_RANDOM_START -->[\s\S]*<esi:assign name="content_list">\s*\[([^\]]+)\]\s*</esi:assign>[\s\S]*<!-- ESI_RANDOM_END -->#',
+            function($matches) {
+                $uris = explode('\',\'', substr($matches[1], 1, -1));
+                $randomNumber = rand(0, count($uris) - 1);
+                $uri = $uris[$randomNumber];
+                
+                // this needs to match the format below!
+                return '<esi:include src="' . $uri . '" onerror="continue"/>';
+            },
+            $htmlCode
+        );
+        
+        // Replace include tags
         $htmlCode = preg_replace_callback(
             '#<esi:include src="([^"]+)" onerror="continue"/>#',
-            function($matches) {
+            function($matches) use (&$apiUrlString, &$cxNotYetInitialized) {
+                // return cached content if available
+                $cacheFile = md5($matches[1]);
+                if (file_exists($this->strCachePath . $cacheFile)) {
+                    if (filemtime($this->strCachePath . $cacheFile) > (time() - $this->intCachingTime)) {
+                        return file_get_contents($this->strCachePath . $cacheFile);
+                    } else {
+                        $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
+                        $file->delete();
+                    }
+                }
+                
+                if ($cxNotYetInitialized) {
+                    \Cx\Core\Core\Controller\Cx::instanciate(
+                        \Cx\Core\Core\Controller\Cx::MODE_MINIMAL,
+                        true,
+                        null,
+                        true
+                    );
+                    $cxNotYetInitialized = false;
+                }
+                
+                // Initialize only when needed, we need DB for this!
+                if (empty($apiUrlString)) {
+                    $apiUrlString = substr(\Cx\Core\Routing\Url::fromApi('', '', array()), 0, -1);
+                }
+                
                 $query = parse_url($matches[1], PHP_URL_QUERY);
+                $path = parse_url($matches[1], PHP_URL_PATH);
                 $params = array();
                 parse_str($query, $params);
+                
+                $pathParts = explode('/', str_replace($apiUrlString, '', $path));
                 if (
-                    !isset($params['cmd']) ||
-                    $params['cmd'] != 'JsonData' ||
-                    !isset($params['object']) ||
-                    !isset($params['act'])
+                    count($pathParts) != 4 ||
+                    $pathParts[0] != 'Data' ||
+                    $pathParts[1] != 'Plain'
                 ) {
                     return $matches[0];
                 }
-                $adapter = contrexx_input2raw($params['object']);
-                $method = contrexx_input2raw($params['act']);
+                $adapter = contrexx_input2raw($pathParts[2]);
+                $method = contrexx_input2raw($pathParts[3]);
                 unset($params['cmd']);
                 unset($params['object']);
                 unset($params['act']);
                 $arguments = array('get' => contrexx_input2raw($params));
+                
                 $json = new \Cx\Core\Json\JsonData();
                 $response = $json->data($adapter, $method, $arguments);
                 if (
@@ -217,10 +267,16 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 ) {
                     return $matches[0];
                 }
-                return $response['data']['content'];
+                $content = $response['data']['content'];
+                
+                $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
+                $file->write($content);
+
+                return $content;
             },
             $htmlCode
         );
+        
         return $htmlCode;
     }
 

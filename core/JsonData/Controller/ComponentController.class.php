@@ -45,6 +45,64 @@ namespace Cx\Core\JsonData\Controller;
  * @subpackage core_jsondata
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
+    const ARGUMENT_INDEX_OUTPUT_MODULE = 0;
+    const ARGUMENT_INDEX_DATA_ADAPTER = 1;
+    const ARGUMENT_INDEX_DATA_METHOD = 2;
+    
+    public function getCommandsForCommandMode() {
+        return array('Data');
+    }
+    
+    public function getCommandDescription($command, $short = false) {
+        switch ($command) {
+            case 'Data':
+                return 'Return data from a data source';
+                break;
+        }
+    }
+
+    public function executeCommand($command, $arguments) {
+        switch ($command) {
+            case 'Data':
+                if (
+                    !isset($arguments[static::ARGUMENT_INDEX_OUTPUT_MODULE]) ||
+                    !isset($arguments[static::ARGUMENT_INDEX_DATA_ADAPTER]) ||
+                    !isset($arguments[static::ARGUMENT_INDEX_DATA_METHOD])
+                ) {
+                    throw new \Exception('Not enough arguments');
+                }
+                $outputModule = $arguments[static::ARGUMENT_INDEX_OUTPUT_MODULE];
+                $dataAdapter = $arguments[static::ARGUMENT_INDEX_DATA_ADAPTER];
+                $dataMethod = $arguments[static::ARGUMENT_INDEX_DATA_METHOD];
+                unset($arguments[static::ARGUMENT_INDEX_OUTPUT_MODULE]);
+                unset($arguments[static::ARGUMENT_INDEX_DATA_ADAPTER]);
+                unset($arguments[static::ARGUMENT_INDEX_DATA_METHOD]);
+                $dataArguments = array('get' => $arguments);
+                
+                $json = new \Cx\Core\Json\JsonData();
+                $data = $json->data($dataAdapter, $dataMethod, $dataArguments);
+                if ($data['status'] != 'success') {
+                    if (empty($data['message'])) {
+                        throw new \Exception('Fetching data failed without message');
+                    }
+                    throw new \Exception($data['message']);
+                }
+                
+                switch ($outputModule) {
+                    case 'Plain':
+                        echo $data['data']['content'];
+                        break;
+                    case 'Json':
+                        $json->json($data, true);
+                        break;
+                    default:
+                        throw new \Exception('No such output module: "' . $outputModule . '"');
+                        break;
+                }
+                break;
+        }
+    }
+    
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.

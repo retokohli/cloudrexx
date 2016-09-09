@@ -811,6 +811,14 @@ class Url {
         }
         return new Url($protocol.'://'.$host.$offset.'/'.$langDir.$path.$getParams, true);
     }
+    
+    public static function fromApi($command, $arguments, $parameters) {
+        $url = \Cx\Core\Routing\Url::fromDocumentRoot();
+        $url->setMode('backend');
+        $url->setPath('api/' . $command . '/' . implode('/', $arguments));
+        $url->setParams($parameters);
+        return $url;
+    }
 
     /**
      * Returns an absolute or relative link
