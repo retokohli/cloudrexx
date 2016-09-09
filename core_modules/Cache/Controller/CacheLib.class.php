@@ -602,6 +602,7 @@ class CacheLib
         }
         
         $this->clearReverseProxyCache('*');
+        $this->clearSsiCache();
     }
     
     /**

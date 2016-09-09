@@ -59,7 +59,7 @@ class YamlSettingEventListenerException extends \Exception {}
  */
 class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     public function preUpdate($eventArgs) {
-        global $_CONFIG,$_ARRAYLANG;
+        global $_CONFIG,$_ARRAYLANG, $objCache;
         try {
             $objSetting = $eventArgs->getEntity();
             $value = $objSetting->getValue();
@@ -107,6 +107,23 @@ class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListe
                     }
                     $value = \Cx\Core\Config\Controller\Config::checkAccessibility($protocol) ? $value : 'off';
                     $objSetting->setValue($value);
+                    break;
+                
+                case 'cacheReverseProxy':
+                case 'cacheProxyCacheConfig':
+                    if ($value != $_CONFIG[$objSetting->getName()]) {
+                        // drop reverse proxy cache
+                        $objCache->clearReverseProxyCache('*');
+                    }
+                    break;
+                
+                case 'cacheSsiOutput':
+                case 'cacheSsiType':
+                case 'cacheSsiProcessorConfig':
+                    if ($value != $_CONFIG[$objSetting->getName()]) {
+                        // drop esi/ssi cache
+                        $objCache->clearSsiCache();
+                    }
                     break;
             }
         } catch (YamlSettingEventListenerException $e) {
