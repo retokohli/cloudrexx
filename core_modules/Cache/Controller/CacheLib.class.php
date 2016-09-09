@@ -403,9 +403,16 @@ class CacheLib
      * @param array $params (optional) params for (Json)Data method call
      * @todo Only drop this specific content instead of complete cache
      */
-    public function clearSsiCache($adapterName, $adapterMethod, $params = array()) {
+    public function clearSsiCachePage($adapterName, $adapterMethod, $params = array()) {
         $url = \Cx\Core\Routing\Url::fromApi('Data', array('Plain', $adapterName, $adapterMethod), $params);
-        $this->getSsiProxy()->clearCachePage($url, $domainsAndPorts);
+        $this->getSsiProxy()->clearCachePage($url, $this->getDomainsAnsPorts());
+    }
+    
+    /**
+     * Drops all cached ESI/SSI elements
+     */
+    public function clearSsiCache() {
+        $this->getSsiProxy()->clearCache($this->getDomainsAnsPorts());
     }
     
     protected function isInstalled($cacheEngine)
@@ -618,6 +625,14 @@ class CacheLib
         );
         
         // advise driver to drop page for HTTP and HTTPS ports on all domain aliases
+        $reverseProxy->clearCachePage($urlPattern, $this->getDomainsAnsPorts());
+    }
+    
+    /**
+     * Returns all domains and ports this instance of cloudrexx can be reached at
+     * @return array List of domains and ports (array(array(0=>{domain}, 1=>{port})))
+     */
+    protected function getDomainsAndPorts() {
         $domainsAndPorts = array();
         foreach (array('http', 'https') as $protocol) {
             foreach ($domains as $domain) {
@@ -627,7 +642,7 @@ class CacheLib
                 );
             }
         }
-        $reverseProxy->clearCachePage($urlPattern, $domainsAndPorts)
+        return $domainsAndPorts;
     }
     
     /**

@@ -350,7 +350,7 @@ class BlockLibrary
                                                    active='".intval((isset($arrLangActive[$langId]) ? $arrLangActive[$langId] : 0))."'",
                                                   $blockId));
             global $objCache;
-            $objCache->clearSsiCache(
+            $objCache->clearSsiCachePage(
                 'Block',
                 'getBlockContent',
                 array(
