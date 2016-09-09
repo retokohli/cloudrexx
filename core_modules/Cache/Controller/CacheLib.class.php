@@ -277,7 +277,7 @@ class CacheLib
         ) {
             $this->opCacheEngine = $_CONFIG['cacheOPCache'];
         }
-
+        
         $proxySettings = json_decode($_CONFIG['cacheSsiProcessorConfig']);
         if ($_CONFIG['cacheSsiOutput'] == 'intern') {
             $className = '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx';
@@ -594,59 +594,40 @@ class CacheLib
                 break;
         }
         
-        $this->clearVarnishCache();
+        $this->clearReverseProxyCache('*');
     }
     
     /**
      * Drops a cache page on reverse proxy cache
-     * @todo Implement!
      * @param string $urlPatter URL pattern to drop on reverse cache proxy
      */
     public function clearReverseProxyCache($urlPattern) {
         global $_CONFIG;
         
-        $reverseProxy = 'none';
-        if (!isset($_CONFIG['cacheVarnishStatus']) || $_CONFIG['cacheVarnishStatus'] != 'on') {
-            $reverseProxy = 'Varnish';
-        }
-        
         // find rproxy driver
+        if (!isset($_CONFIG['cacheProxyCacheConfig']) || $_CONFIG['cacheProxyCacheConfig'] == 'none') {
+            return
+        }
+        $reverseProxyType = $_CONFIG['cacheProxyCacheConfig'];
+        
+        $className = '\\Cx\\Lib\\ReverseProxy\\Model\\Entity\\ReverseProxy' . ucfirst($reverseProxyType);
+        $reverseProxyConfiguration = $this->getReverseProxyConfiguration();
+        $reverseProxy = new $className(
+            $reverseProxyConfiguration['ip'],
+            $reverseProxyConfiguration['port']
+        );
         
         // advise driver to drop page for HTTP and HTTPS ports on all domain aliases
+        $domainsAndPorts = array();
         foreach (array('http', 'https') as $protocol) {
             foreach ($domains as $domain) {
-                $reverseProxyDriver->clearCachePage($urlPattern, $domain, $port);
+                $domainsAndPorts[] = array(
+                    $domain,
+                    \Cx\Core\Setting\Controller\Setting::getValue('portFrontend' . strtoupper($protocol), 'Config')
+                );
             }
         }
-    }
-    
-    /**
-     * Clears Varnish cache
-     */
-    private function clearVarnishCache()
-    {
-        global $_CONFIG;
-
-        if (!isset($_CONFIG['cacheVarnishStatus']) || $_CONFIG['cacheVarnishStatus'] != 'on') {
-            return;
-        }
-
-        $varnishConfiguration = $this->getReverseProxyConfiguration();
-        $varnishSocket = fsockopen($varnishConfiguration['ip'], $varnishConfiguration['port'], $errno, $errstr);
-
-        if (!$varnishSocket) {
-            \DBG::log("Varnish error: $errstr ($errno) on server {$varnishConfiguration['ip']}:{$varnishConfiguration['port']}");
-        }
-
-        $domainOffset  = ASCMS_PATH_OFFSET;
-
-        $request  = "BAN $domainOffset HTTP/1.0\r\n";
-        $request .= 'Host: ' . $varnishConfiguration['ip'] . ':' . \Cx\Core\Setting\Controller\Setting::getValue('portFrontendHTTP', 'Config') . "\r\n";
-        $request .= "User-Agent: Cloudrexx Varnish Cache Clear\r\n";
-        $request .= "Connection: Close\r\n\r\n";
-
-        fwrite($varnishSocket, $request);
-        fclose($varnishSocket);
+        $reverseProxy->clearCachePage($urlPattern, $domainsAndPorts)
     }
     
     /**
