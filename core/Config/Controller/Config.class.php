@@ -1729,6 +1729,10 @@ class Config
         return implode(',', $display);
     }
     
+    /**
+     * Gets the list of reverse proxy types
+     * @return string Comma separated list of reverse proxy types
+     */
     public static function getReverseProxyTypes() {
         $reverseProxyTypes = array(
             'none',
@@ -1742,6 +1746,10 @@ class Config
         return implode(',', $reverseProxyTypeTexts);
     }
     
+    /**
+     * Gets the list of ESI/SSI output modes
+     * @return string Comma separated list of ESI/SSI output modes
+     */
     public static function getSsiOutputModes() {
         $ssiModes = array(
             'intern',
@@ -1755,6 +1763,12 @@ class Config
         return implode(',', $ssiModeTexts);
     }
     
+    /**
+     * Gets the list of supported system types for external ESI/SSI processing
+     * 
+     * This is important in order to drop invalid cache objects!
+     * @return string Comma separated list of supported system types for external ESI/SSI processing
+     */
     public static function getSsiTypes() {
         $ssiTypes = array(
             'varnish',

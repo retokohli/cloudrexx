@@ -560,12 +560,18 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $this->objTpl->setVariable('MEMCACHED_USERCACHE_CONFIG_PORT', contrexx_raw2xhtml($configuration['port']));
     }
     
+    /**
+     * Parses reverse proxy settings to current template
+     */
     protected function parseReverseProxySettings(){
         $configuration = $this->getReverseProxyConfiguration();
         $this->objTpl->setVariable('PROXYCACHE_CONFIG_IP', contrexx_raw2xhtml($configuration['ip']));
         $this->objTpl->setVariable('PROXYCACHE_CONFIG_PORT', contrexx_raw2xhtml($configuration['port']));
     }
     
+    /**
+     * Parses reverse ESI/SSI processor settings to current template
+     */
     protected function parseSsiProcessorSettings(){
         $configuration = $this->getSsiProcessorConfiguration();
         $this->objTpl->setVariable('SSI_PROCESSOR_CONFIG_IP', contrexx_raw2xhtml($configuration['ip']));

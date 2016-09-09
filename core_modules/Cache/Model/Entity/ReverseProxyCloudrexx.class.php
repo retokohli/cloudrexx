@@ -59,6 +59,12 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
         $this->ssiProcessor = new \Cx\Lib\ReverseProxy\Model\Entity\SsiProcessorEsi();
     }
     
+    /**
+     * Clears a cache page
+     * @param string $urlPattern Drop all pages that match the pattern, for exact format, make educated guesses
+     * @param string $domain Domain name to drop cache page of
+     * @param int $port Port to drop cache page of
+     */
     protected function clearCachePageForDomainAndPort($urlPattern, $domain, $port) {
         $strCachePath = ASCMS_CACHE_PATH . '/';
         

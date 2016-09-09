@@ -49,10 +49,24 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     const ARGUMENT_INDEX_DATA_ADAPTER = 1;
     const ARGUMENT_INDEX_DATA_METHOD = 2;
     
+    /**
+     * Returns a list of command mode commands provided by this component
+     *
+     * Data command is deprecated. Use /api/v1/ instead
+     * @return array List of command names
+     */
     public function getCommandsForCommandMode() {
         return array('Data');
     }
     
+    /**
+     * Returns the description for a command provided by this component
+     *
+     * Data command is deprecated. Use /api/v1/ instead
+     * @param string $command The name of the command to fetch the description from
+     * @param boolean $short Wheter to return short or long description
+     * @return string Command description
+     */
     public function getCommandDescription($command, $short = false) {
         switch ($command) {
             case 'Data':
@@ -61,6 +75,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
 
+    /**
+     * Execute one of the commands listed in getCommandsForCommandMode()
+     *
+     * Data command is deprecated. Use /api/v1/ instead
+     * @see getCommandsForCommandMode()
+     * @param string $command Name of command to execute
+     * @param array $arguments List of arguments for the command
+     * @param array  $dataArguments (optional) List of data arguments for the command
+     * @return void
+     */
     public function executeCommand($command, $arguments) {
         switch ($command) {
             case 'Data':

@@ -47,31 +47,63 @@ namespace Cx\Lib\ReverseProxy\Model\Entity;
  * @since       v5.0.0
  */
 abstract class SsiProcessor {
+    
+    /**
+     * @var string SsiProcessor name (currently either 'esi' or 'ssi'), case insensitive
+     */
     protected $parseMode;
+    
+    /**
+     * @var string Library base dir (defaults to ../../ (relative to this file's path))
+     */
     protected $dirname;
     
+    /**
+     * Instanciates this SsiProcessor
+     * Sets $this->dirname
+     */
     public function __construct() {
         $this->dirname = dirname(dirname(dirname(__FILE__)));
     }
     
+    /**
+     * Gets the ESI/SSI include code for an URL
+     * @param string $url URL to get include tag for
+     * @return string ESI/SSI include tag
+     */
     public function getIncludeCode($url) {
         $template = $this->getTemplateFile('IncludeTag');
         $template->setVariable('INCLUDE_FILE', $url);
         return $template->get();
     }
     
+    /**
+     * Gets the ESI/SSI random include code for a set of URLs
+     * @param array $urls List of URLs to get random include tag for
+     * @return string ESI/SSI random include tag
+     */
     public function getRandomizedIncludeCode($urls) {
         $template = $this->getTemplateFile('RandomIncludeTag');
         $this->parseRandomizedIncludeCode($template, $urls);
         return $template->get();
     }
     
+    /**
+     * Loads a template file based on $this->parseMode and $this->dirname
+     * @param string $filename Template base filename
+     * @return \HTML_Template_Sigma Requested template
+     */
     protected function getTemplateFile($filename) {
         $template = new \HTML_Template_Sigma($this->dirname . '/View/Template/Global');
         $template->loadTemplateFile($filename . strtoupper($this->parseMode) . '.html');
         return $template;
     }
     
+    /**
+     * Parses randomized include code
+     * @param \HTML_Template_Sigma $template Template to parse
+     * @param array $urls List of URLs to get random include tag for
+     */
     protected abstract function parseRandomizedIncludeCode($template, $urls);
 }
 

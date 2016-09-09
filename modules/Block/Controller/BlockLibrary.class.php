@@ -946,6 +946,14 @@ class BlockLibrary
         );
     }
     
+    /**
+     * Replaces a placeholder with block content
+     * @param string $placeholerName Name of placeholder to replace
+     * @param string $query SQL query used to fetch blocks
+     * @param string $code (by reference) Code to replace placeholder in
+     * @param string $separator (optional) Separator used to separate the blocks
+     * @param boolean $randomize (optional) Wheter to randomize the blocks or not, default false
+     */
     protected function replaceBlocks($placeholderName, $query, &$code, $separator = '', $randomize = false) {
         global $objDatabase, $objCache;
         

@@ -48,6 +48,12 @@ namespace Cx\Lib\ReverseProxy\Model\Entity;
  */
 class ReverseProxyVarnish extends ReverseProxy {
     
+    /**
+     * Clears a cache page
+     * @param string $urlPattern Drop all pages that match the pattern, for exact format, make educated guesses
+     * @param string $domain Domain name to drop cache page of
+     * @param int $port Port to drop cache page of
+     */
     protected function clearCachePageForDomainAndPort($urlPattern, $domain, $port) {
         $errno = 0;
         $errstr = '';

@@ -515,6 +515,10 @@ class CacheLib
         return array('ip' => $ip, 'port' => $port);
     }
     
+    /**
+     * Gets the configuration value for reverse proxy
+     * @return array 'ip' and 'port' of reverse proxy
+     */
     protected function getReverseProxyConfiguration()
     {
         global $_CONFIG;
@@ -530,6 +534,10 @@ class CacheLib
         return array('ip' => $ip, 'port' => $port);
     }
     
+    /**
+     * Gets the configuration value for external ESI/SSI processor
+     * @return array 'ip' and 'port' of external ESI/SSI processor
+     */
     protected function getSsiProcessorConfiguration()
     {
         global $_CONFIG;
@@ -589,6 +597,11 @@ class CacheLib
         $this->clearVarnishCache();
     }
     
+    /**
+     * Drops a cache page on reverse proxy cache
+     * @todo Implement!
+     * @param string $urlPatter URL pattern to drop on reverse cache proxy
+     */
     public function clearReverseProxyCache($urlPattern) {
         global $_CONFIG;
         

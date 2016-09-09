@@ -87,6 +87,12 @@ abstract class ReverseProxy {
         }
     }
     
+    /**
+     * Clears a cache page
+     * @param string $urlPattern Drop all pages that match the pattern, for exact format, make educated guesses
+     * @param string $domain Domain name to drop cache page of
+     * @param int $port Port to drop cache page of
+     */
     protected abstract function clearCachePageForDomainAndPort($urlPattern, $domain, $port);
     
     /**
@@ -100,10 +106,18 @@ abstract class ReverseProxy {
         $this->clearCachePage('*', $domainsAndPorts);
     }
     
+    /**
+     * Sets SSI processor used for this proxy
+     * @param \Cx\Lib\ReverseProxy\Model\Entity\SsiProcessor $ssiProcessor New SSI processor
+     */
     public function setSsiProcessor($ssiProcessor) {
         $this->ssiProcessor = $ssiProcessor;
     }
     
+    /**
+     * Gets SSI processor used for this proxy
+     * @return \Cx\Lib\ReverseProxy\Model\Entity\SsiProcessor SSI processor used for this proxy
+     */
     public function getSsiProcessor() {
         return $this->ssiProcessor;
     }
