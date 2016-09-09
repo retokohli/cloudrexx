@@ -198,12 +198,6 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
     public function getBlockContent($params) {
         global $_CORELANG, $objDatabase;
 
-        // security check
-        if (   !\FWUser::getFWUserObject()->objUser->login()
-            || !\Permission::checkAccess(76, 'static', true)) {
-            throw new NoPermissionException($_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']);
-        }
-
         // check for necessary arguments
         if (empty($params['get']['block']) || empty($params['get']['lang'])) {
             throw new NotEnoughArgumentsException('not enough arguments');
