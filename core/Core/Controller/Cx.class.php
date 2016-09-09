@@ -2080,11 +2080,6 @@ namespace Cx\Core\Core\Controller {
                     exit;
                 }
 
-                //enable gzip compressing of the output - up to 75% smaller responses!
-                //commented out because of certain php.inis generating a
-                //WARNING: ob_start(): output handler 'ob_gzhandler' cannot be used after 'URL-Rewriter
-                //ob_start("ob_gzhandler");
-
                 // fetch the parsed webpage
                 $this->template->setVariable('JAVASCRIPT', 'javascript_inserting_here');
                 $endcode = $this->template->get();
@@ -2214,12 +2209,6 @@ namespace Cx\Core\Core\Controller {
                 } else {
                     $this->template->hideBlock('additional_style');
                 }
-
-
-                //enable gzip compressing of the output - up to 75% smaller responses!
-                //commented out because of certain php.inis generating a
-                //WARNING: ob_start(): output handler 'ob_gzhandler' cannot be used after 'URL-Rewriter
-                //ob_start("ob_gzhandler");
 
                 /*echo '<pre>';
                 print_r($_SESSION);
