@@ -58,7 +58,11 @@ class DbCommand extends Command {
     update({component type} ({component name}))|
     cleanup|
     doctrine {doctrine syntax}
-]';
+]
+
+`update`    Updates the model of a component, a component type or all components (set component type and name to generate YAML files)
+`cleanup`   Removes cached files
+`doctrine`  Gives access to doctrine command line tools';
     
     /**
      * Command help text
@@ -86,26 +90,37 @@ class DbCommand extends Command {
                 
                 // prepare component filter
                 $componentFilter = '';
+                $componentType = '';
+                $componentName = '';
                 if (isset($arguments[2])) {
                     switch (strtolower($arguments[2])) {
                         case 'core':
+                            $componentType = strtolower('core');
                             $componentFilter .= 'Cx\\Core\\';
                             break;
                         case 'core_module':
                         case 'core_modules':
+                            $componentType = strtolower('core_module');
                             $componentFilter .= 'Cx\\Core_Modules\\';
                             break;
                         case 'module':
                         case 'modules':
+                            $componentType = strtolower('module');
                             $componentFilter .= 'Cx\\Modules\\';
                             break;
                     }
                     if (isset($arguments[3])) {
+                        $componentName = $arguments[3];
                         $componentFilter .= $arguments[3] . '\\';
                     }
                 }
                 if (!empty($componentFilter)) {
                     $componentFilter = '--filter=' . $componentFilter;
+                }
+                
+                // check for mwb file
+                if (!empty($componentType) && !empty($componentName)) {
+                    $this->tryYamlGeneration($componentType, $componentName);
                 }
                 
                 // doctrine orm:generate-entities --filter="{component filter}" entities
@@ -322,6 +337,44 @@ class DbCommand extends Command {
             echo '[Database] OK - The database schema is in sync with the mapping files.' . "\n";
         }
         return $exit;
+    }
+    
+    protected function tryYamlGeneration($componentType, $componentName) {
+        $component = new \Cx\Core\Core\Model\Entity\ReflectionComponent($componentName, $componentType);
+        if (!$component->exists()) {
+            return;
+        }
+        if (!file_exists($component->getDirectory() . '/Doc')) {
+            return;
+        }
+        $dir = new \RecursiveDirectoryIterator($component->getDirectory() . '/Doc');
+        $iterator = new \RecursiveIteratorIterator($dir);
+        $regex = new \RegexIterator($iterator, '/^.+\.mwb$/i', \RecursiveRegexIterator::GET_MATCH);
+        $mwbFiles = array();
+        foreach ($regex as $file) {
+            $mwbFiles[] = $file[0];
+        }
+        while (true) {
+            if (!count($mwbFiles)) {
+                return;
+            }
+            $this->interface->show('The component has the following MySQL Workbench files:');
+            foreach ($mwbFiles as $index=>$file) {
+                $fileParts = explode('/', $file);
+                $this->interface->show(($index + 1) . ' - ' . end($fileParts));
+            }
+            $retVal = trim($this->interface->input('Enter the file\'s number in order to generate YAML files for it:'));
+            if (empty($retVal) || !isset($mwbFiles[$retVal - 1])) {
+                return;
+            }
+            $mwbFile = $mwbFiles[$retVal - 1];
+            $this->generateYamlFromMySqlWorkbenchFile($component, $mwbFile);
+            unset($mwbFiles[$retVal - 1]);
+        }
+    }
+    
+    protected function generateYamlFromMySqlWorkbenchFile($component, $mwbFile) {
+        // generate yaml files to component's yaml directory based on file $mwbFile
     }
 }
 
