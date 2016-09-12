@@ -75,19 +75,20 @@ abstract class UserInterface {
         $this->commands = array(
             /* EXISTING COMMANDS */
             'db' => new DbCommand($this), // wrapper for doctrine commandline tools
-            'import' => new ImportCommand($this), // install component from zip, todo: install from repo
+            //'import' => new ImportCommand($this), // install component from zip, todo: install from repo
             'create' => new CreateCommand($this), // create new component
-            'uninstall' => new UninstallCommand($this), // delete a component            
+            //'uninstall' => new UninstallCommand($this), // delete a component            
             'activate' => new ActivateCommand($this), // activate a component
             'deactivate' => new DeactivateCommand($this), // deactivate a component
-            'move' => new MoveCommand($this), // convert component types (core to core_module, etc.) and rename components
-            'copy' => new CopyCommand($this), // copy components
-            'remove' => new RemoveCommand($this), // remove workbench from installation
+            //'move' => new MoveCommand($this), // convert component types (core to core_module, etc.) and rename components
+            //'copy' => new CopyCommand($this), // copy components
+            //'remove' => new RemoveCommand($this), // remove workbench from installation
+            //'test' => new TestCommand($this), // run UnitTests
+            //'export' => new ExportCommand($this), // Create install/update package of current installation
             
             /* FUTURE COMMANDS */
             //'get' => new GetCommand($this), // Get workbench configuration variables
             //'set' => new SetCommand($this), // Set workbench configuration variables
-            'test' => new TestCommand($this), // run UnitTests
             //'treenav' => new TreeNavCommand($this), // recursive tree view of backend navigation
             //'addnav' => new AddNavCommand($this), // add a backend navigation entry
             //'rmnav' => new RmNavCommand($this), // remove a backend navigation entry
@@ -97,7 +98,6 @@ abstract class UserInterface {
             //'update' => new UpdateCommand($this), // port a component to this version of cloudrexx
             //'upgrade' => new UpgradeCommand($this), // upgrade a component to current or current beta version
             //'push' => new PushCommand($this), // Pushes this installation to a FTP server
-            'export' => new ExportCommand($this), // Create install/update package of current installation
         );
     }
     
