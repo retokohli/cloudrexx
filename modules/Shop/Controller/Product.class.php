@@ -637,6 +637,8 @@ class Product
 
     /**
      * Get the status of the product based on the scheduled publishing
+     * Note: This function does not check whether the product is in scheduled publishing,
+     * So make sure the product is in scheduled before calling this method
      *
      * @return boolean TRUE|FALSE True when product is active by scheduled publishing
      */
@@ -648,6 +650,7 @@ class Product
                 ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME,
                 $this->date_start()
             );
+            $start->setTime(0, 0, 0);
         }
         $end = null;
         if ($this->date_end() != '0000-00-00 00:00:00') {
@@ -655,6 +658,7 @@ class Product
                 ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME,
                 $this->date_end()
             );
+            $end->setTime(23, 59, 59);
         }
         if (   (!empty($start) && empty($end) && ($start->getTimestamp() > time()))
             || (empty($start) && !empty($end) && ($end->getTimestamp() < time()))
