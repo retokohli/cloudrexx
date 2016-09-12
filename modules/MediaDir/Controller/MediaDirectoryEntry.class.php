@@ -734,52 +734,74 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 $objGoogleMap->setMapCenter($arrValues[1], $arrValues[0]);
 
                 foreach ($this->arrEntries as $key => $arrEntry) {
-                	if(($arrEntry['entryDurationStart'] < $intToday && $arrEntry['entryDurationEnd'] > $intToday) || $arrEntry['entryDurationType'] == 1) {
-	                    $arrValues = array();
+                    if (
+                        (
+                            $arrEntry['entryDurationStart'] < $intToday &&
+                            $arrEntry['entryDurationEnd'] > $intToday
+                        ) ||
+                        $arrEntry['entryDurationType'] == 1
+                    ) {
+                        $intEntryId     = intval($arrEntry['entryId']);
+                        $intEntryFormId = intval($arrEntry['entryFormId']);
+                        $query = "
+                            SELECT
+                                inputfield.`id` AS `id`,
+                                rel_inputfield.`value` AS `value`
+                            FROM
+                                ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS inputfield,
+                                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield
+                            WHERE
+                                inputfield.`form` = '".$intEntryFormId."'
+                            AND
+                                inputfield.`type`= '15'
+                            AND
+                                rel_inputfield.`field_id` = inputfield.`id`
+                            AND
+                                rel_inputfield.`entry_id` = '".$intEntryId."'
+                            LIMIT 1
+                        ";
 
-	                    if($this->checkPageCmd('detail'.intval($arrEntry['entryFormId']))) {
-	                        $strDetailCmd = 'detail'.intval($arrEntry['entryFormId']);
-	                    } else {
-	                        $strDetailCmd = 'detail';
-	                    }
+                        $objRSMapKoordinates = $objDatabase->Execute($query);
 
-	                    $strEntryLink = '<a href="index.php?section='.$this->moduleName.'&amp;cmd='.$strDetailCmd.'&amp;eid='.$arrEntry['entryId'].'">'.$_ARRAYLANG['TXT_MEDIADIR_DETAIL'].'</a>';
-	                    $strEntryTitle = '<b>'.contrexx_raw2xhtml($arrEntry['entryFields']['0']).'</b>';
-	                    $intEntryId = intval($arrEntry['entryId']);
-	                    $intEntryFormId = intval($arrEntry['entryFormId']);
+                        if (
+                            $objRSMapKoordinates === false ||
+                            empty($objRSMapKoordinates->fields['value'])
+                        ) {
+                            continue;
+                        }
+                        $arrValues = explode(',', $objRSMapKoordinates->fields['value']);
+                        $strValueLon = empty($arrValues[1]) ? 0 : $arrValues[1];
+                        $strValueLat = empty($arrValues[0]) ? 0 : $arrValues[0];
 
-	                    $query = "
-	                        SELECT
-	                            inputfield.`id` AS `id`,
-	                            rel_inputfield.`value` AS `value`
-	                        FROM
-	                            ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS inputfield,
-	                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield
-	                        WHERE
-	                            inputfield.`form` = '".$intEntryFormId."'
-	                        AND
-	                            inputfield.`type`= '15'
-	                        AND
-	                            rel_inputfield.`field_id` = inputfield.`id`
-	                        AND
-	                            rel_inputfield.`entry_id` = '".$intEntryId."'
-	                        LIMIT 1
-	                    ";
+                        if (empty($strValueLon) && empty($strValueLat)) {
+                            continue;
+                        }
 
-	                    $objRSMapKoordinates = $objDatabase->Execute($query);
+                        if ($this->checkPageCmd('detail'.intval($arrEntry['entryFormId']))) {
+                            $strDetailCmd = 'detail'.intval($arrEntry['entryFormId']);
+                        } else {
+                            $strDetailCmd = 'detail';
+                        }
 
-	                    if($objRSMapKoordinates !== false) {
-	                        $arrValues = explode(',', $objRSMapKoordinates->fields['value']);
-	                    }
+                        $strEntryLink  = '<a href="index.php?section='
+                            . $this->moduleName . '&amp;cmd=' . $strDetailCmd
+                            . '&amp;eid=' . $arrEntry['entryId'] . '">'
+                            . $_ARRAYLANG['TXT_MEDIADIR_DETAIL'] .'</a>';
+                        $strEntryTitle = '<b>'.contrexx_raw2xhtml($arrEntry['entryFields']['0']).'</b>';
 
-	                    $strValueLon = empty($arrValues[1]) ? 0 : $arrValues[1];
-                            $strValueLat = empty($arrValues[0]) ? 0 : $arrValues[0];
-                           
-                            $mapIndex      = $objGoogleMap->getMapIndex();
-                            $clickFunction = "if (infowindow_$mapIndex) { infowindow_$mapIndex.close(); }
-                                infowindow_$mapIndex.setContent(info$intEntryId);
-                                infowindow_$mapIndex.open(map_$mapIndex, marker$intEntryId)";
-	                    $objGoogleMap->addMapMarker($intEntryId, $strValueLon, $strValueLat, $strEntryTitle."<br />".$strEntryLink, true, $clickFunction);
+                        $mapIndex      = $objGoogleMap->getMapIndex();
+                        $clickFunction =
+                            "if (infowindow_$mapIndex) { infowindow_$mapIndex.close(); }
+                            infowindow_$mapIndex.setContent(info$intEntryId);
+                            infowindow_$mapIndex.open(map_$mapIndex, marker$intEntryId)";
+                        $objGoogleMap->addMapMarker(
+                            $intEntryId,
+                            $strValueLon,
+                            $strValueLat,
+                            $strEntryTitle . "<br />" . $strEntryLink,
+                            true,
+                            $clickFunction
+                        );
                     }
                 }
 
