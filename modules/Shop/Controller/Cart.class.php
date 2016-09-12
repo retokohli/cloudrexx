@@ -138,6 +138,40 @@ class Cart
         die($objJson->encode($arrCart));
     }
 
+    /**
+     * Check the cart product stock status
+     * If any of the product is out of stock then return error message
+     *
+     * @return mixed null|string
+     */
+    static function checkProductStockStatus()
+    {
+        global $_ARRAYLANG;
+
+        if (empty(Cart::get_products_array())) {
+            return;
+        }
+
+        $outOfStockProducts = array();
+        foreach (Cart::get_products_array() as $product) {
+            $objProduct = Product::getById($product['id']);
+            if ($objProduct && !$objProduct->getStatus()) {
+                $outOfStockProducts[] = contrexx_raw2xhtml($objProduct->name());
+            }
+        }
+
+        if (empty($outOfStockProducts)) {
+            return;
+        }
+
+        return sprintf(
+            (   count($outOfStockProducts) > 1
+             ? $_ARRAYLANG['TXT_SHOP_PRODUCT_MULTIPLE_CART_STOCK_OUTOFF_ERROR']
+             : $_ARRAYLANG['TXT_SHOP_PRODUCT_SINGLE_CART_STOCK_OUTOFF_ERROR']
+            ),
+            implode(', ', $outOfStockProducts)
+        );
+    }
 
     /**
      * Gets a product that has been sent through a POST request

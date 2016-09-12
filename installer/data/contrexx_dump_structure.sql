@@ -1498,14 +1498,6 @@ CREATE TABLE `contrexx_module_directory_settings` (
   PRIMARY KEY (`setid`),
   KEY `setname` (`setname`)
 ) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_directory_settings_google` (
-  `setid` int(6) unsigned NOT NULL AUTO_INCREMENT,
-  `setname` varchar(250) NOT NULL DEFAULT '',
-  `setvalue` text NOT NULL,
-  `settyp` int(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`setid`),
-  KEY `setname` (`setname`)
-) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_directory_vote` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
   `feed_id` int(7) NOT NULL DEFAULT '0',
@@ -2800,13 +2792,6 @@ CREATE TABLE `contrexx_module_newsletter_category` (
   `notification_email` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `name` (`name`)
-) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_newsletter_confirm_mail` (
-  `id` int(1) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL DEFAULT '',
-  `content` longtext NOT NULL,
-  `recipients` text NOT NULL,
-  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_newsletter_email_link` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
