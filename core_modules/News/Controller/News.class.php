@@ -384,7 +384,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
     private function countNewsMessageView($newsMessageId)
     {
-        global $objDatabase, $objCounter;
+        global $objDatabase;
 
         /*
          * count stat if option "top news" is activated
@@ -400,7 +400,15 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $objDatabase->Execute(' DELETE FROM `'.DBPREFIX.'module_news_stats_view`
                                 WHERE `time` < "'.date_format(date_sub(date_create('now'), date_interval_create_from_date_string(intval($this->arrSettings['news_top_days']).' days')), 'Y-m-d H:i:s').'"');
         
-        $uniqueUserId = $objCounter->getUniqueUserId();
+        $componentRepo = \Cx\Core\Core\Controller\Cx::instanciate()
+                            ->getDb()
+                            ->getEntityManager()
+                            ->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $statsComponentContoller = $componentRepo->findOneBy(array('name' => 'Stats'));
+        if (!$statsComponentContoller) {
+            return;
+        }
+        $uniqueUserId = $statsComponentContoller->getCounterInstance()->getUniqueUserId();
 
         $query = '
             SELECT 1
@@ -1399,13 +1407,24 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $line = $words[$idx];
             }
         }
+        
+        $newsEditLink = \Cx\Core\Routing\Url::fromDocumentRoot(array(
+            'cmd' => 'News',
+            'act' => 'edit',
+            'newsId' => $news_id,
+            'validate' => 'true',
+        ));
+        $newsEditLink->setPath(
+            substr(
+                \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName(),
+                1
+            ) .                 
+            '/index.php'
+        );
+        $newsEditLink->setMode('backend');
+        
         $msg .= "$line\n";
-        $msg .= ' '
-                .ASCMS_PROTOCOL.'://'
-                .$_CONFIG['domainUrl']
-                .($_SERVER['SERVER_PORT'] == 80 ? NULL : ':'.intval($_SERVER['SERVER_PORT']))
-                .ASCMS_PATH_OFFSET . '/cadmin/index.php?cmd=News'
-            . "&act=edit&newsId=$news_id&validate=true";
+        $msg .= ' ' . $newsEditLink->toString();
         $msg .= "\n\n";
         $msg .= $_CONFIG['coreAdminName'];
 
@@ -1424,8 +1443,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $_CONFIG['coreAdminEmail'];
-            $objMail->FromName = $_CONFIG['coreAdminName'];
+            $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreAdminName']);
             $objMail->Subject = $_ARRAYLANG['TXT_NOTIFY_SUBJECT'];
             $objMail->IsHTML(false);
             $objMail->Body = $msg;
@@ -1880,10 +1898,16 @@ EOF;
     {
         global $_ARRAYLANG, $_LANGID;
 
-        $serverPort = $_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT']);
-        $rssFeedUrl = 'http://'.$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET.'/feed/news_headlines_'.\FWLanguage::getLanguageParameter($_LANGID, 'lang').'.xml';
-        $jsFeedUrl = 'http://'.$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET.'/feed/news_'.\FWLanguage::getLanguageParameter($_LANGID, 'lang').'.js';
-        $hostname = addslashes(htmlspecialchars($_SERVER['SERVER_NAME'], ENT_QUOTES, CONTREXX_CHARSET));
+        $documentRoot = \Cx\Core\Routing\Url::fromDocumentRoot();
+        $documentRoot->setMode('backend');
+        
+        $documentRoot->setPath('feed/news_headlines_' . \FWLanguage::getLanguageParameter($_LANGID, 'lang') . '.xml');
+        $rssFeedUrl = $documentRoot->toString();
+        
+        $documentRoot->setPath('feed/news_' . \FWLanguage::getLanguageParameter($_LANGID, 'lang') . '.js');
+        $jsFeedUrl = $documentRoot->toString();
+        
+        $hostname = addslashes(htmlspecialchars(\Env::get('config')['domainUrl'], ENT_QUOTES, CONTREXX_CHARSET));
 
         $rss2jsCode = <<<RSS2JSCODE
 &lt;script language="JavaScript" type="text/javascript"&gt;
@@ -2080,14 +2104,25 @@ RSS2JSCODE;
         }
 
         $objMail->CharSet   = CONTREXX_CHARSET;
-        $objMail->From      = $_CONFIG['coreAdminEmail'];
-        $objMail->FromName  = $_CONFIG['coreGlobalPageTitle'];
+        $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
         $objMail->IsHTML(false);
         $objMail->Subject   = sprintf($_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_SUBJECT'], $newsMessageTitle);
-        $manageCommentsUrl  = ASCMS_PROTOCOL.'://'
-                              .$_CONFIG['domainUrl']
-                              .($_SERVER['SERVER_PORT'] == 80 ? NULL : ':'.intval($_SERVER['SERVER_PORT']))
-                              .ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=News&act=comments&newsId='.$newsMessageId;
+        
+        $manageCommentsUrl = \Cx\Core\Routing\Url::fromDocumentRoot(array(
+            'cmd' => 'News',
+            'act' => 'comments',
+            'newsId' => $newsMessageId,
+        ));
+        $manageCommentsUrl->setPath(
+            substr(
+                \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName(),
+                1
+            ) .                 
+            '/index.php'
+        );
+        $manageCommentsUrl->setMode('backend');
+        $manageCommentsUrl = $manageCommentsUrl->toString();
+        
         $activateCommentTxt = $this->arrSettings['news_comments_autoactivate']
                               ? ''
                               : sprintf($_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_LINK'], $manageCommentsUrl);
