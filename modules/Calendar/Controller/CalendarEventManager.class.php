@@ -534,27 +534,35 @@ class CalendarEventManager extends CalendarLibrary
     /**
      * Get the event using calendar event class and assign it into $this->eventList
      * 
-     * @param integer $eventId        Event id
+     * @param mixed   $event         \Cx\Modules\Calendar\Controller\CalendarEvent
+     *                                or Event id
      * @param integer $eventStartDate Unix timestamp of start date
-     * 
+     * @param boolean $forceCalculateSeries  Whether or not to calculate the event's next serie's occurrence. Default to FALSE to only perform the calculation in FRONTEND-Mode
+     *
      * @return null
      */
-    function getEvent($eventId, $eventStartDate) {
+    function getEvent($event, $eventStartDate, $forceCalculateSeries = false) {
         global $objInit;
-        
-        $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($eventId));
-        
+
+        if ($event instanceof \Cx\Modules\Calendar\Controller\CalendarEvent) {
+            $objEvent = $event;
+        } else {
+            $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($event));
+        }
+
         $this->eventList[] = $objEvent;
-        
-        if($objEvent->seriesStatus == 1 && $objInit->mode == 'frontend') {
-            self::_setNextSeriesElement($objEvent); 
+
+        if (   $objEvent->seriesStatus == 1
+            && ($forceCalculateSeries || $objInit->mode == 'frontend')
+        ) {
+            self::_setNextSeriesElement($objEvent);
         }
         foreach ($this->eventList as $tmpKey => $tmpObjEvent) {
             if (!$tmpObjEvent->startDate || $tmpObjEvent->startDate->getTimestamp() != $eventStartDate) {
                 unset($this->eventList[$tmpKey]);
             }
         }
-        
+
         sort($this->eventList);
     }
     
@@ -597,8 +605,13 @@ class CalendarEventManager extends CalendarLibrary
         if($objInit->mode == 'frontend' && ($eventId != null && $eventStartDate != null)) {   
             $objEvent = $this->eventList[0];
             
-            if(empty($objEvent)) {
-                \Cx\Core\Csrf\Controller\Csrf::redirect("index.php?section=".$this->moduleName);
+            if (empty($objEvent)) {
+                \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
+                return;
+            }
+
+            if (!$objEvent->status) {
+                \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
                 return;   
             }
             
@@ -1706,6 +1719,12 @@ class CalendarEventManager extends CalendarLibrary
                 }
                 break;
         }
+        
+        $objCloneEvent->registrationExternalLink = str_replace(
+            '[[SERIES_ELEMENT_STARTDATE]]',
+            $objCloneEvent->startDate->getTimestamp(),
+            $objCloneEvent->registrationExternalLink
+        );
         
         if (   $isAllowedEvent
             && !$this->isDateExists($objCloneEvent->startDate, $objCloneEvent->seriesData['seriesPatternExceptions'])

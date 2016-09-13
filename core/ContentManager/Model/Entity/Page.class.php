@@ -1197,10 +1197,10 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         foreach ($this->getNode()->getParent()->getChildren() as $child) {
             $page = $child->getPage($this->getLang());
             if ($page && $page !== $this) {
-                $slugs[] = $page->getSlug();
+                $slugs[] = strtolower($page->getSlug());
             }
         }
-        while ($this->getSlug() == '' || in_array($this->getSlug(), $slugs)) {
+        while ($this->getSlug() == '' || in_array(strtolower($this->getSlug()), $slugs)) {
             $this->nextSlug();
         }
         // Alias slugs must not be equal to an existing file or folder
@@ -1732,15 +1732,19 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     /**
      * Copies the content from the other page given.
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page
+     * @param boolean $includeThemeOptions (optional) Wheter to adopt theme options as well (default false)
      */
-    public function getFallbackContentFrom($page) {
+    public function setContentOf($page, $includeThemeOptions = false) {
         $this->isVirtual = true;
         $this->content = $page->getContent();
         $this->module = $page->getModule();
         $this->cmd = $page->getCmd();
-        $this->skin = $page->getSkin();
-        $this->customContent = $page->getCustomContent();
-        $this->cssName = $page->getCssName();
+        if ($includeThemeOptions) {
+            $this->skin = $page->getSkin();
+            $this->customContent = $page->getCustomContent();
+            $this->applicationTemplate = $page->getApplicationTemplate();
+            $this->cssName = $page->getCssName();
+        }
         $this->cssNavName = $page->getCssNavName();
         
         $this->type = $page->getType();

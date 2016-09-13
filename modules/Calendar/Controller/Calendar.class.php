@@ -498,6 +498,7 @@ EOF;
         $showFrom = true;
         
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent();
+        $isEventLoaded = false;
         
         if (isset($_POST['submitFormModifyEvent'])) {
             $arrData = array();
@@ -511,14 +512,18 @@ EOF;
                 $this->_objTpl->hideBlock('calendarEventModifyForm');
                 $this->_objTpl->touchBlock('calendarEventOkMessage');
                 
+                // refresh event data after save
+                $objEvent->get($objEvent->id);
+                $objEvent->getData();
+                $isEventLoaded  = true;
                 $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();
-                $objMailManager->sendMail($objEvent->id, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_NOTFY_NEW_APP);
+                $objMailManager->sendMail($objEvent, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_NOTFY_NEW_APP);
             } else {
                 $this->_objTpl->touchBlock('calendarEventErrMessage');
             }
         }
         
-        if ($eventId) {
+        if ($eventId && !$isEventLoaded) {
             $objEvent->get($eventId);
             $objEvent->getData();
         }
@@ -925,9 +930,14 @@ UPLOADER;
 
         $objEvent = $this->objEventManager->eventList[0];
 
-        if(empty($objEvent)) {
-            \Cx\Core\Csrf\Controller\Csrf::redirect("index.php?section=".$this->moduleName);
+        if (empty($objEvent)) {
+            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
             return;
+        }
+
+        if(!$objEvent->status) {
+            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
+            return;   
         }
 
         if($objEvent->access == 1 && !\FWUser::getFWUserObject()->objUser->login()){
