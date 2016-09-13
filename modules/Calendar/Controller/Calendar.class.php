@@ -365,7 +365,7 @@ class Calendar extends CalendarLibrary
             $this->startDate->format('H:i:s') == '00:00:00' &&
             $this->endDate->format('H:i:s') == '00:00:00'
         ) {
-            $this->endDate = $this->endDate->setTime('23', '59', '59');
+            $this->endDate->setTime('23', '59', '59');
         }
         $internDateTime = new \DateTime('now');
         $dbDateTime = $this->getComponent('DateTime')->createDateTimeForDb('now');
