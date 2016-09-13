@@ -382,7 +382,7 @@ class FileSystem
 
         // media library special changes; code depends on those
         // replace $change with ''
-        $change = array('+');
+        $change = array('+', '#');
 
         // replace $signs1 with $signs
         $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
