@@ -3494,7 +3494,7 @@ $strFileNew = '';
         //check if file exists
         $boolChecker = false;
 
-        $strImportedImageName = $strFile;
+        $strImportedImageName = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($strFile);
         while ($boolChecker == false) {
             if (self::fileExists($this->strImagePath.$strImportedImageName, false)) {
                 $info     = pathinfo($strImportedImageName);
