@@ -360,6 +360,30 @@ class Calendar extends CalendarLibrary
         } else {
             $this->author = null;
         }
+
+        if (
+            $this->startDate->format('H:i:s') == '00:00:00' &&
+            $this->endDate->format('H:i:s') == '00:00:00'
+        ) {
+            $this->endDate->setTime('23', '59', '59');
+        }
+        $internDateTime = new \DateTime('now');
+        $dbDateTime = $this->getComponent('DateTime')->createDateTimeForDb('now');
+        $internDateTimeOffset = $internDateTime->getOffset();
+        $dbDateTimeOffset = $dbDateTime->getOffset();
+        if ($internDateTimeOffset > $dbDateTimeOffset) {
+            $timeOffset = $internDateTimeOffset - $dbDateTimeOffset;
+        } else {
+            $timeOffset = $dbDateTimeOffset - $internDateTimeOffset;
+        }
+        if ($timeOffset > 0) {
+            $this->startDate->add(new \DateInterval('PT' . $timeOffset . 'S'));
+            $this->endDate->add(new \DateInterval('PT' . $timeOffset . 'S'));
+        } else {
+            $this->startDate->sub(new \DateInterval('PT' . $timeOffset . 'S'));
+            $this->endDate->sub(new \DateInterval('PT' . $timeOffset . 'S'));
+        }
+
         $this->objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($this->startDate,$this->endDate,$this->categoryId,$this->searchTerm,true,$this->needAuth,true,$this->startPos,$this->numEvents,$this->sortDirection,true,$this->author);
         
         if (!in_array($cmd, array('detail', 'register'))) {
@@ -397,7 +421,8 @@ class Calendar extends CalendarLibrary
 cx.ready(function() {
     var options = {
         dateFormat: '$dateFormat',        
-        timeFormat: 'hh:mm'
+        timeFormat: 'hh:mm',
+        showSecond: false
     };
     cx.jQuery('input[name=from]').datepicker(options);
     cx.jQuery('input[name=till]').datepicker(options);
@@ -435,9 +460,8 @@ EOF;
             $pagingCategory = !empty($catid) ? '&amp;catid='.intval($catid) : '';
             $pagingTerm = !empty($term) ? '&amp;term='.  contrexx_raw2xhtml($term) : '';
             $pagingSearch = !empty($search) ? '&amp;search='.  contrexx_raw2xhtml($search) : '';
-            $pagingFrom = !empty($from) ? '&amp;from='.  contrexx_raw2xhtml($from) : '';
-            $pagingTill = !empty($till) ? '&amp;till='.  contrexx_raw2xhtml($till) : '';
-
+            $pagingFrom = !empty($from) ? '&amp;from='.  contrexx_raw2xhtml(urlencode($from)) : '';
+            $pagingTill = !empty($till) ? '&amp;till='.  contrexx_raw2xhtml(urlencode($till)) : '';
 
             $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_PAGING' =>  getPaging($this->objEventManager->countEvents, $this->startPos, "&section=".$this->moduleName.$pagingCmd.$pagingCategory.$pagingTerm.$pagingSearch.$pagingFrom.$pagingTill, "<b>".$_ARRAYLANG['TXT_CALENDAR_EVENTS']."</b>", true, $this->arrSettings['numPaging']),
