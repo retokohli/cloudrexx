@@ -1197,10 +1197,10 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         foreach ($this->getNode()->getParent()->getChildren() as $child) {
             $page = $child->getPage($this->getLang());
             if ($page && $page !== $this) {
-                $slugs[] = $page->getSlug();
+                $slugs[] = strtolower($page->getSlug());
             }
         }
-        while ($this->getSlug() == '' || in_array($this->getSlug(), $slugs)) {
+        while ($this->getSlug() == '' || in_array(strtolower($this->getSlug()), $slugs)) {
             $this->nextSlug();
         }
         // Alias slugs must not be equal to an existing file or folder

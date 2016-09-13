@@ -970,6 +970,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $enableRelatedNews      = empty($_POST) || !empty($_POST['enableRelatedNews']) ? 1 : 0;
         $newsTags               = !empty($_POST['newsTags']) ? contrexx_input2raw($_POST['newsTags']) : array();
         $enableTags             = !empty($_POST['enableTags']) ? intval($_POST['enableTags']) : 0;
+        $redirectNewWindow      = !empty($_POST['redirect_new_window']) ? intval($_POST['redirect_new_window']) : 0;
 
         if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {
             foreach ($_POST['newsTeaserFramesAsso'] as $frameId) {
@@ -1050,7 +1051,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                 changelog="'.$date.'",
                                                 allow_comments='.$newsCommentActive.',
                                                 enable_related_news='.$enableRelatedNews.',
-                                                enable_tags='.$enableTags
+                                                enable_tags='.$enableTags.',
+                                                redirect_new_window='.$redirectNewWindow
                                         );
 
                 if ($objResult !== false) {
@@ -1309,6 +1311,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 'TXT_SELECT_ALL'                => $_ARRAYLANG['TXT_SELECT_ALL'],
                 'TXT_DESELECT_ALL'              => $_ARRAYLANG['TXT_DESELECT_ALL'],
                 'TXT_ASSOCIATED_BOXES'          => $_ARRAYLANG['TXT_ASSOCIATED_BOXES'],
+                'TXT_NEWS_REDIRECT_NEW_WINDOW'       => $_ARRAYLANG['TXT_NEWS_REDIRECT_NEW_WINDOW'],
+                'TXT_NEWS_REDIRECT_NEW_WINDOW_HELP'  => $_ARRAYLANG['TXT_NEWS_REDIRECT_NEW_WINDOW_HELP'],
                 'NEWS_HEADLINES_TEASERS_TXT'    => $_ARRAYLANG['TXT_HEADLINES'].' / '.$_ARRAYLANG['TXT_TEASERS'],
                 'NEWS_USE_ONLY_TEASER_CHECKED'  => $newsTeaserOnly ? 'checked="checked"' : '',
                 'NEWS_TEASER_FRAMES'            => $frameIds,
@@ -1517,6 +1521,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_TYPE'                 => $_ARRAYLANG['TXT_NEWS_TYPE'],            
             'TXT_EXTERNAL_SOURCE'           => $_ARRAYLANG['TXT_EXTERNAL_SOURCE'],
             'TXT_LINK'                      => $_ARRAYLANG['TXT_LINK'],
+            'TXT_NEWS_REDIRECT_NEW_WINDOW'      => $_ARRAYLANG['TXT_NEWS_REDIRECT_NEW_WINDOW'],
+            'TXT_NEWS_REDIRECT_NEW_WINDOW_HELP' => $_ARRAYLANG['TXT_NEWS_REDIRECT_NEW_WINDOW_HELP'],
             'TXT_NEWS_NEWS_CONTENT'         => $_ARRAYLANG['TXT_NEWS_NEWS_CONTENT'],
             'TXT_PUBLISHING'                => $_ARRAYLANG['TXT_PUBLISHING'],
             'TXT_STARTDATE'                 => $_ARRAYLANG['TXT_STARTDATE'],
@@ -1593,6 +1599,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                         teaser_image_thumbnail_path,
                                                         allow_comments,
                                                         enable_related_news,
+                                                        redirect_new_window,
                                                         enable_tags
                                                 FROM    ".DBPREFIX."module_news
                                                 WHERE   id = '".$newsid."'", 1);
@@ -1818,7 +1825,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                                                     'style' => 'display:none;'
                                                                                   ),'SetUrl'),
                 'NEWS_RELATED_NEWS_ENABLED_CHECKED' => !empty($objResult->fields['enable_related_news']) ? 'checked="checked"' : '',
-                'NEWS_TAGS_ENABLED_CHECKED' => !empty($objResult->fields['enable_tags']) ? 'checked="checked"' : ''
+                'NEWS_TAGS_ENABLED_CHECKED' => !empty($objResult->fields['enable_tags']) ? 'checked="checked"' : '',
+                'NEWS_REDIRECT_NEW_WINDOW_CHECKED' => !empty($objResult->fields['redirect_new_window']) ? 'checked="checked"' : ''
             ));
 
             if ($this->arrSettings['news_message_protection'] == '1') {
@@ -2310,6 +2318,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $newsCategories         = !empty($_POST['newsCat']) ? contrexx_input2raw($_POST['newsCat']) : array();
             $typeId                 = !empty($_POST['newsType']) ? intval($_POST['newsType']) : 0;
             $newsScheduledActive    = !empty($_POST['newsScheduled']) ? intval($_POST['newsScheduled']) : 0;
+            $redirectNewWindow      = !empty($_POST['redirect_new_window']) ? intval($_POST['redirect_new_window']) : 0;
 
             $status     = empty($_POST['status']) ? $status = 0 : intval($_POST['status']);
 
@@ -2542,7 +2551,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                         changelog = '".$changelog."',
                                                         allow_comments = '".$newsComments."',
                                                         enable_related_news='".$enableRelatedNews."',
-                                                        enable_tags='".$enableTags."'
+                                                        enable_tags='".$enableTags."',
+                                                        redirect_new_window='".$redirectNewWindow."'
                                                 WHERE   id = '".$id."'");
            if (     $objResult === false 
                ||   $localesSaving === false
