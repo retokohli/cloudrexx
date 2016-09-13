@@ -155,7 +155,9 @@ class NewsLibrary
             
             $html  = '<ul class="news_archive">';
             foreach ($monthlyStats as $key => $value) {
-                $html .= '<li><a href="'.$newsArchiveLink.'#'.$key.'" title="'.$value['name'].'">'.$value['name'].'</a></li>';
+                $redirectNewWindow = !empty($value['redirect']) && !empty($value['redirectNewWindow']);
+                $linkTarget = $redirectNewWindow ? '_blank' : '_self';
+                $html .= '<li><a href="' . $newsArchiveLink . '#' . $key . '" title="' . $value['name'] . '" target="' . $linkTarget . '">' . $value['name'] . '</a></li>';
             }
             $html .= '</ul>';
         }
@@ -1217,13 +1219,17 @@ class NewsLibrary
         return array($image, $imageLink, $source);
     }
 
-    protected static function parseLink($href, $title, $innerHtml, $class=null)
+    protected static function parseLink($href, $title, $innerHtml, $target=null)
     {
-        static $htmlLinkTag = '<a href="%1$s" title="%2$s">%3$s</a>';
-
         if (empty($href)) return '';
 
-        return sprintf($htmlLinkTag, contrexx_raw2xhtml($href), contrexx_raw2xhtml($title), $innerHtml);
+        $targetAttribute = '';
+        if ($target == 1) {
+            $targetAttribute = 'target=\'_blank\'';
+        }
+        $htmlLinkTag = '<a href="%1$s" title="%2$s" ' . $targetAttribute . '>%3$s</a>';
+
+        return sprintf($htmlLinkTag, contrexx_raw2xhtml($href), contrexx_raw2xhtml($title), $innerHtml, $target);
     }
 
     /**
@@ -1356,6 +1362,7 @@ class NewsLibrary
                                 n.author         AS author,
                                 n.author_id      AS author_id,
                                 n.allow_comments AS commentactive,
+                                n.redirect_new_window AS redirectNewWindow,
                                 nl.title         AS newstitle,
                                 nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
                                 nl.teaser_text
@@ -1818,6 +1825,7 @@ class NewsLibrary
                             tblNews.`author`,
                             tblNews.`author_id`,
                             tblNews.allow_comments AS commentactive,
+                            tblNews.redirect_new_window AS redirectNewWindow,
                             tblLocale.`lang_id`,
                             tblLocale.`title`,
                             tblLocale.`text`,
@@ -2001,17 +2009,10 @@ class NewsLibrary
                     : $currentRelatedDetails['redirect'];
 
                 $newstitle = $currentRelatedDetails['title'];
-                $htmlLink  = self::parseLink(
-                    $newsUrl,
-                    $newstitle,
-                    contrexx_raw2xhtml('[' . $_ARRAYLANG['TXT_NEWS_MORE'] . '...]')
-                );
-                $htmlLinkTitle = self::parseLink(
-                    $newsUrl,
-                    $newstitle,
-                    contrexx_raw2xhtml($newstitle)
-                );
-
+                $redirectNewWindow = !empty($currentRelatedDetails['redirect']) && !empty($currentRelatedDetails['redirectNewWindow']);
+                $htmlLink = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('[' . $_ARRAYLANG['TXT_NEWS_MORE'] . '...]'), $redirectNewWindow);
+                $htmlLinkTitle = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle), $redirectNewWindow);
+                $linkTarget = $redirectNewWindow ? '_blank' : '_self';
                 // in case that the message is a stub,
                 // we shall just display the news title instead of a html-a-tag
                 // with no href target
@@ -2063,6 +2064,7 @@ class NewsLibrary
                         'NEWS_RELATED_NEWS_ID'             => contrexx_raw2xhtml($relatedNewsId),
                         'NEWS_RELATED_NEWS_URL'            => contrexx_raw2xhtml($newsUrl),
                         'NEWS_RELATED_NEWS_LINK'           => $htmlLink,
+                        'NEWS_RELATED_NEWS_LINK_TARGET'    => $linkTarget,
 
                         'NEWS_RELATED_NEWS_TITLE'          => contrexx_raw2xhtml($currentRelatedDetails['title']),
                         'NEWS_RELATED_NEWS_TITLE_SHORT'    =>
