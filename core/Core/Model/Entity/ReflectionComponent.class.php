@@ -1080,12 +1080,14 @@ class ReflectionComponent {
     public function remove() {
         // remove from db
         $this->removeFromDb();
-        
         // if there are no files, quit
         if (!$this->exists()) {
             return;
         }
-        
+        // if the directory path can not resolved, quit
+        if (!$this->getDirectory()) {
+            return;
+        }
         // remove from fs
         \Cx\Lib\FileSystem\FileSystem::delete_folder($this->getDirectory(), true);
     }
