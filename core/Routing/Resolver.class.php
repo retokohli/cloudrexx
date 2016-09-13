@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Resolver
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -164,11 +161,7 @@ class Resolver {
         $this->fallbackLanguages = $fallbackLanguages;
         $this->pagePreview = !empty($_GET['pagePreview']) && ($_GET['pagePreview'] == 1) ? 1 : 0;
         $this->historyId = !empty($_GET['history']) ? $_GET['history'] : 0;
-<<<<<<< HEAD
         $this->sessionPage = !empty($_SESSION['page']) ? $_SESSION['page']->toArray() : array();
-=======
-        $this->sessionPage = !empty($_SESSION['page']) ? $_SESSION['page'] : array();
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     }
     
     public function resolve() {
@@ -472,11 +465,7 @@ class Resolver {
 
         if (!$this->page || $internal) {
             if ($this->pagePreview) {
-<<<<<<< HEAD
                 if (!empty($this->sessionPage) && !empty($this->sessionPage['pageId'])) {
-=======
-                if (!empty($this->sessionPage)) {
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                     $this->getPreviewPage();
                 }
             }
@@ -639,11 +628,7 @@ class Resolver {
         //if we followed one or more redirections, the user shall be redirected by 302.
         if ($this->isRedirection && !$this->forceInternalRedirection) {
             $params = $this->url->getSuggestedParams();
-<<<<<<< HEAD
             header('Location: '.$this->page->getURL($this->pathOffset, $params) . $this->url->getFragment());
-=======
-            header('Location: '.$this->page->getURL($this->pathOffset, $params));
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             exit;
         }
 

@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * User Profile
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
@@ -221,17 +218,10 @@ class User_Profile
                 $newValue = !isset($this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId]);
                 if ($newValue || $value != $this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId]) {
                     $query = $this->objAttribute->isCoreAttribute($attributeId) ?
-<<<<<<< HEAD
                         "UPDATE `".DBPREFIX."access_user_profile` SET `".$attributeId."` = '".contrexx_raw2db($value)."' WHERE `user_id` = ".$this->id :
                         ($newValue ?
                             "INSERT INTO `".DBPREFIX."access_user_attribute_value` (`user_id`, `attribute_id`, `history_id`, `value`) VALUES (".$this->id.", ".$attributeId.", ".$historyId.", '".contrexx_raw2db($value)."')" :
                             "UPDATE `".DBPREFIX."access_user_attribute_value` SET `value` = '". contrexx_raw2db($value)."' WHERE `user_id` = ".$this->id." AND `attribute_id` = ".$attributeId." AND `history_id` = ".$historyId
-=======
-                        "UPDATE `".DBPREFIX."access_user_profile` SET `".$attributeId."` = '".addslashes($value)."' WHERE `user_id` = ".$this->id :
-                        ($newValue ?
-                            "INSERT INTO `".DBPREFIX."access_user_attribute_value` (`user_id`, `attribute_id`, `history_id`, `value`) VALUES (".$this->id.", ".$attributeId.", ".$historyId.", '".addslashes($value)."')" :
-                            "UPDATE `".DBPREFIX."access_user_attribute_value` SET `value` = '".addslashes($value)."' WHERE `user_id` = ".$this->id." AND `attribute_id` = ".$attributeId." AND `history_id` = ".$historyId
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                         );
 
                     if ($objDatabase->Execute($query) === false) {
@@ -416,15 +406,9 @@ class User_Profile
 
 
             } elseif ($attribute == 'birthday_day') {
-<<<<<<< HEAD
                 $arrConditions[] = "(DATE_FORMAT(DATE_ADD(FROM_UNIXTIME(0), interval `tblP`.`birthday` second), '%e') = '".intval($condition)."')";
             } elseif ($attribute == 'birthday_month') {
                 $arrConditions[] = "(DATE_FORMAT(DATE_ADD(FROM_UNIXTIME(0), interval `tblP`.`birthday` second), '%c') = '".intval($condition)."')";
-=======
-                $arrConditions[] = "(FROM_UNIXTIME(tblP.`birthday`, '%e') = '".intval($condition)."')";
-            } elseif ($attribute == 'birthday_month') {
-                $arrConditions[] = "(FROM_UNIXTIME(tblP.`birthday`, '%c') = '".intval($condition)."')";
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             }
         }
 

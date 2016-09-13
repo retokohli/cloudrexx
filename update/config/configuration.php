@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -27,8 +26,6 @@
  * our trademarks remain entirely with us.
  */
 
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 define('UPDATE_PATH', dirname(dirname(__FILE__)));
 define('UPDATE_TIME', time());
 define('UPDATE_TIMEOUT_TIME', UPDATE_TIME + 55);

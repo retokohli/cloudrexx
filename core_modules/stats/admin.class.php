@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Stats
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Christian Wehrli <christian.wehrli@astalavista.ch>
@@ -1049,12 +1046,8 @@ class stats extends statsLibrary
             'TXT_EXTERNAL_SEARCH_QUERIES'    => $_ARRAYLANG['TXT_EXTERNAL_SEARCH_QUERIES'],
             'TXT_SEARCH_TERMS'    => $_ARRAYLANG['TXT_SEARCH_TERMS'],
             'TXT_SEARCH_TERM'    => $_ARRAYLANG['TXT_SEARCH_TERM'],
-<<<<<<< HEAD
             'TXT_FREQUENCY'        => $_ARRAYLANG['TXT_FREQUENCY'],
             'TXT_NO_DATA_AVAILABLE' => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
-=======
-            'TXT_FREQUENCY'        => $_ARRAYLANG['TXT_FREQUENCY']
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         ));
 
         if (isset($this->arrSearchTerms['internal']) && count($this->arrSearchTerms['internal'])>0) {
@@ -1071,13 +1064,7 @@ class stats extends statsLibrary
             $this->_objTpl->hideBlock('stats_search_internal_nodata');
         } else {
             $this->_objTpl->hideBlock('stats_search_internal');
-<<<<<<< HEAD
             $this->_objTpl->touchBlock('stats_search_internal_nodata');
-=======
-            $this->_objTpl->setVariable(array(
-                'TXT_NO_DATA_AVAILABLE'                => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
-            ));
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
 
         if (isset($this->arrSearchTerms['external']) && count($this->arrSearchTerms['external'])>0) {
@@ -1094,13 +1081,7 @@ class stats extends statsLibrary
             $this->_objTpl->hideBlock('stats_search_external_nodata');
         } else {
             $this->_objTpl->hideBlock('stats_search_external');
-<<<<<<< HEAD
             $this->_objTpl->touchBlock('stats_search_external_nodata');
-=======
-            $this->_objTpl->setVariable(array(
-                'TXT_NO_DATA_AVAILABLE'                => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
-            ));
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
 
         if (isset($this->arrSearchTerms['summary']) && count($this->arrSearchTerms['summary'])>0) {
@@ -1117,13 +1098,7 @@ class stats extends statsLibrary
             $this->_objTpl->hideBlock('stats_search_summary_nodata');
         } else {
             $this->_objTpl->hideBlock('stats_search_summary');
-<<<<<<< HEAD
             $this->_objTpl->touchBlock('stats_search_summary_nodata');
-=======
-            $this->_objTpl->setVariable(array(
-                'TXT_NO_DATA_AVAILABLE'                => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
-            ));
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
     }
 

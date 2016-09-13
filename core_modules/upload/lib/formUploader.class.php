@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * FormUploader
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -79,7 +76,6 @@ class FormUploader extends Uploader
                 // remember the "raw" file name, we want to store all original
                 // file names in the session.
                 $originalFileName = $name;
-<<<<<<< HEAD
 
                 // Clean the fileName for security reasons
                 // we're using a-zA-Z0-9 instead of \w because of the umlauts.
@@ -87,10 +83,6 @@ class FormUploader extends Uploader
                 // behaviours on different operating systems.
                 $name = preg_replace('/[^a-zA-Z0-9\._-]+/', '', $name);
 
-=======
-                // Clean the fileName for security reasons
-                $name = preg_replace('/[^\w\._]+/', '', $name);
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                 $originalFileNames = array();
                 if(isset($_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames']))
                     $originalFileNames = $_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames'];

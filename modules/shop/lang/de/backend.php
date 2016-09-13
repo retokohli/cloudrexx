@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -27,8 +26,6 @@
  * our trademarks remain entirely with us.
  */
 
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 global $_ARRAYLANG;
 $_ARRAYLANG['SHOP_SHIPMENT_TOO_HEAVY'] = "Das Gesamtgewicht der Bestellung übersteigt die verfügbaren Versandmöglichkeiten.";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Änderungen übernehmen";
@@ -1005,7 +1002,4 @@ $_ARRAYLANG['TXT_SHOP_PAYMILL_LIVE_ACCOUNT'] = "Einstellungen Live-Konto";
 $_ARRAYLANG['TXT_SHOP_MODE'] = "Modus";
 $_ARRAYLANG['TXT_SHOP_TEST'] = "Test";
 $_ARRAYLANG['TXT_SHOP_LIVE'] = "Live";
-<<<<<<< HEAD
 $_ARRAYLANG['TXT_SHOP_SETTING_NUMOF_PRODUCTS_PER_PAGE_FRONTEND'] = "Anzahl Produkte pro Seite im Frontend";
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211

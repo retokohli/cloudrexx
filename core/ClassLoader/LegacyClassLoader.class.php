@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * LegacyClassLoader
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -183,7 +180,6 @@ class LegacyClassLoader {
     }
 
     private function testLoad($path, $name) {
-<<<<<<< HEAD
         if (!file_exists($path) || !$this->checkClassExistsInFile($name, $path)) {
             return false;
         }
@@ -197,21 +193,6 @@ class LegacyClassLoader {
             \DBG::msg($e->getMessage());
         }
         return true;
-=======
-        if (file_exists($path)) {
-            $path = substr($path, strlen(ASCMS_DOCUMENT_ROOT));
-            $this->loadClass($path, $name);
-            $this->mapTable[$name] = $path;
-            try {
-                $objFile = new \Cx\Lib\FileSystem\File(ASCMS_TEMP_PATH.'/legacyClassCache.tmp');
-                $objFile->write(serialize($this->mapTable));
-            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                \DBG::msg($e->getMessage());
-            }
-            return true;
-        }
-        return false;
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     }
 
     /**
@@ -270,21 +251,9 @@ class LegacyClassLoader {
             if (defined('BACKEND_LANG_ID') && substr($file, strlen($file) - strlen($indexClass)) == $indexClass) {
                 continue;
             }
-<<<<<<< HEAD
             // match namespace too
             if ($this->checkClassExistsInFile($name, $file, $namespace)) {
                 return $file;
-=======
-            $fcontent = file_get_contents($file);
-            // match namespace too
-            $matches = array();
-
-            //if (preg_match('/(?:namespace\s+([\\\\\w]+);[.\n\r]*?)?(?:class|interface)\s+' . $name . '\s+(?:extends|implements)?[\\\\\s\w,\n\t\r]*?\{/', $fcontent, $matches)) {
-            if (preg_match('/(?:namespace ([\\\\a-zA-Z0-9_]*);[\w\W]*)?(?:class|interface) ' . $name . '(?:[ \n\r\t])(?:[a-zA-Z0-9\\\\_ \n\r\t])*\{/', $fcontent, $matches)) {
-                if (isset($matches[0]) && (!isset($matches[1]) || $matches[1] == $namespace)) {
-                    return $file;
-                }
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             }
         }
         foreach (glob($path.'/*', GLOB_ONLYDIR|GLOB_NOSORT) as $dir) {
@@ -300,7 +269,6 @@ class LegacyClassLoader {
         return false;
     }
 
-<<<<<<< HEAD
     /**
      * This function checks if the class exists in the given file. The namespace will also be check if isset
      *
@@ -322,8 +290,6 @@ class LegacyClassLoader {
         return false;
     }
 
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     private function loadClass($path, $name) {
         global $_CONFIG;
 
@@ -334,12 +300,9 @@ class LegacyClassLoader {
         } else {
             require_once ASCMS_DOCUMENT_ROOT . '/' . $path;
         }
-<<<<<<< HEAD
         if ( ! class_exists($name, false) ) {
             return false;
         }
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $bytes = memory_get_peak_usage()-$bytes;
         $this->tab--;
         $ownBytes = '';

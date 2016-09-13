@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -27,8 +26,6 @@
  * our trademarks remain entirely with us.
  */
 
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * This is the english language file for frontend mode.
  * This file is included by Contrexx and all entries are set as placeholder

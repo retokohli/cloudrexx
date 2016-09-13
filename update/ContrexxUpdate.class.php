@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -27,8 +26,6 @@
  * our trademarks remain entirely with us.
  */
 
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 class ContrexxUpdate
 {
     public $arrStatusMsg = array('title' => '', 'button' => '', 'msg' => array(), 'error' => array());
@@ -138,12 +135,9 @@ class ContrexxUpdate
     
     private function setStep()
     {
-<<<<<<< HEAD
         if (!isset($_SESSION['contrexx_update'])) {
             $_SESSION['contrexx_update'] = array();
         }
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         if (empty($_SESSION['contrexx_update']['step'])) {
             $_SESSION['contrexx_update']['step'] = 0;
         }
@@ -179,12 +173,9 @@ class ContrexxUpdate
     
     private function setNextStep()
     {
-<<<<<<< HEAD
         if (!isset($_SESSION['contrexx_update'])) {
             $_SESSION['contrexx_update'] = array();
         }
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $_SESSION['contrexx_update']['step'] = $_SESSION['contrexx_update']['step'] + 1;
     }
     
@@ -231,12 +222,9 @@ class ContrexxUpdate
     private function getOverview()
     {
         $arrVersions = $this->getAvailabeVersions();
-<<<<<<< HEAD
         if (!isset($_SESSION['contrexx_update'])) {
             $_SESSION['contrexx_update'] = array();
         }
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $_SESSION['contrexx_update']['countAvailableVersions'] = count($arrVersions);
         
         if (count($arrVersions) === 1) {
@@ -427,7 +415,6 @@ class ContrexxUpdate
 
         $licenseFile = UPDATE_UPDATES.'/'.$arrUpdate['cmsVersion'].'/data/contrexx_lizenz_de.txt';
         $license = @file_get_contents($licenseFile);
-<<<<<<< HEAD
         $license = htmlentities($license, ENT_COMPAT | ENT_XML1);
 
         // replace I. and II. titles
@@ -438,18 +425,11 @@ class ContrexxUpdate
         $license = preg_replace('/^(Section [0-9]+:\s[^\n]+)$/im', '<strong>\1</strong>', $license);
         // turn urls into hyperlinks
         $licenseTxt = preg_replace('/(http(s)?:\/\/(?:[^\s])*(?:[^\s\.)]))/im', '<a target="_blank" href="\1">\1</a>', $license);
-=======
-        $licenseTxt = nl2br(preg_replace('/^([0-9]\.[0-9]?\s[^\n]+)\n$/im', '<strong>\1</strong>', $license));
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
         $this->objTemplate->setVariable(array(
             'TXT_UPDATE_LICENSE_CONDITIONS' => $_CORELANG['TXT_UPDATE_LICENSE_CONDITIONS'],
             'TXT_UPDATE_ACCEPT_LICENSE'     => $_CORELANG['TXT_UPDATE_ACCEPT_LICENSE'],
-<<<<<<< HEAD
             'UPDATE_LICENSE_LICENSE_TXT'    => nl2br($licenseTxt),
-=======
-            'UPDATE_LICENSE_LICENSE_TXT'    => $licenseTxt,
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             'UPDATE_LICENSE_CHECKED'        => !empty($_SESSION['contrexx_update']['license_agreement']) ? 'checked="checked"' : '',
         ));
         
@@ -465,7 +445,6 @@ class ContrexxUpdate
     private function showInfoAboutLicense()
     {
         global $_CONFIG;
-<<<<<<< HEAD
         // process sent form
             // create message and push to license server
             // HTTP POST http://updatesrv1.contrexx.com/register
@@ -516,17 +495,6 @@ class ContrexxUpdate
         }
         
         if ((isset($_POST['updateNext']) && !empty($_POST['update_license_info'])) || $_SESSION['contrexx_update']['license_info'] || !$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '4.0.0')) {
-=======
-        if (isset($_POST['updateNext'])) {
-            if (empty($_POST['update_license_info'])) {
-                $_SESSION['contrexx_update']['license_info'] = false;
-            } else {
-                $_SESSION['contrexx_update']['license_info'] = true;
-            }
-        }
-
-        if ((isset($_POST['updateNext']) && (!empty($_POST['update_license_info']))) || !$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             $_SESSION['contrexx_update']['license_info'] = true;
             
             $this->setNextStep();
@@ -550,19 +518,12 @@ class ContrexxUpdate
             'UPDATE_VERSION'                    => $this->getLiteralRepresentationOfVersion($_CONFIG['coreCmsVersion']),
         ));
 
-<<<<<<< HEAD
         if (in_array($_CONFIG['coreCmsEdition'], array('OpenSource', 'Trial', 'Free', 'Basic', 'Premium'))) {
             $this->objTemplate->touchBlock('update_license_new');
             $this->objTemplate->hideBlock('update_license_existing');
         } else {
             $this->objTemplate->touchBlock('update_license_existing');
             $this->objTemplate->hideBlock('update_license_new');
-=======
-        if ($_CONFIG['coreCmsEdition'] == 'OpenSource') {
-            $this->objTemplate->touchBlock('update_license_info_free');
-        } else {
-            $this->objTemplate->hideBlock('update_license_info_free');
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
         
         $this->objTemplate->parse('license_info');
@@ -1199,12 +1160,9 @@ class ContrexxUpdate
         $authFailed = false;
         if (isset($_POST['updateNext'])) {
             if (!empty($_POST['updateUser']) && !empty($_POST['updatePass']) && ($userId = $this->auth($username = $this->addslashes($_POST['updateUser']), $password = md5($this->stripslashes($_POST['updatePass']))))) {
-<<<<<<< HEAD
                 if (!isset($_SESSION['contrexx_update'])) {
                     $_SESSION['contrexx_update'] = array();
                 }
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                 $_SESSION['contrexx_update']['step'] = 0;
                 $_SESSION['contrexx_update']['username'] = $username;
                 $_SESSION['contrexx_update']['password'] = $password;
@@ -1327,12 +1285,9 @@ class ContrexxUpdate
         }
         if (@file_exists(UPDATE_LANG.'/'.$lang.'.lang.php')) {
             require_once(UPDATE_LANG.'/'.$lang.'.lang.php');
-<<<<<<< HEAD
             if (!isset($_SESSION['contrexx_update'])) {
                 $_SESSION['contrexx_update'] = array();
             }
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             $_SESSION['contrexx_update']['lang'] = $lang;
             $this->lang = $_SESSION['contrexx_update']['lang'];
         } else {

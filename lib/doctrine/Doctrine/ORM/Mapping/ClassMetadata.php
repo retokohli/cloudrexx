@@ -369,7 +369,6 @@ class ClassMetadata extends ClassMetadataInfo
     public function newInstance()
     {
         if ($this->_prototype === null) {
-<<<<<<< HEAD
             $prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
             // fix: see https://github.com/doctrine/doctrine2/pull/1045
             if (!is_object($prototype)) {
@@ -377,15 +376,6 @@ class ClassMetadata extends ClassMetadataInfo
             }
             $this->_prototype = $prototype;
 
-=======
-            // see https://github.com/doctrine/doctrine2/pull/1045
-            // $this->_prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
-            if (PHP_VERSION_ID === 50429 || PHP_VERSION_ID === 50513) {
-                $this->_prototype = $this->reflClass->newInstanceWithoutConstructor();
-            } else {
-                $this->_prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
-            }
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
         return clone $this->_prototype;
     }

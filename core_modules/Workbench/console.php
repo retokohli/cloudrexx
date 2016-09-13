@@ -1,6 +1,5 @@
 <?php
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,8 +26,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * This is a temporary wrapper-script to access Workbench from console.
  * The nice way for this would be to directly access Cx from console like
  * > cx Workbench ....

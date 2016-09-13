@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Media  Directory Library
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -614,14 +611,11 @@ function selectAll(control){
     for (i = 0; i < control.length; ++i) {
         control.options[i].selected = true;
     }
-<<<<<<< HEAD
     if ( typeof(CKEDITOR) !== "undefined" ) {
         \$J.each(instancesToManipulate, function(i, v) {
             v.setData(CKEDITOR.instances['mediadirInputfield['+ wysiwygId +'][0]'].getData());
         });
     }
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 }
 
 function deselectAll(control){
@@ -630,11 +624,7 @@ function deselectAll(control){
     }
 }
 var defaultLang = '$_LANGID';
-<<<<<<< HEAD
 var activeLang = [$arrActiveLang];
-=======
-var activeLang = new Array($arrActiveLang);
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 \$J(function(){
     \$J('.mediadirInputfieldDefault').each(function(){
         id = \$J(this).data('id');
@@ -644,11 +634,7 @@ var activeLang = new Array($arrActiveLang);
             var that = \$J(this);
             var id = \$J(this).data('id');
             
-<<<<<<< HEAD
             \$J.each(activeLang, function(i, v) {
-=======
-            \$J.each(activeLang, function(i, v) {                
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                 if (\$J('#mediadirInputfield_'+ id +'_'+ v).val() == that.data('lastDefaultValue')) {
                     \$J('#mediadirInputfield_'+ id +'_'+ v).val(that.val());
                 }
@@ -665,7 +651,6 @@ var activeLang = new Array($arrActiveLang);
                 
 });
 
-<<<<<<< HEAD
 function rememberWysiwygFields(ev) {
     fieldArr   = ev.editor.name.split(/\[(\d+)\]/);
     wysiwygId     = fieldArr[1];                
@@ -695,11 +680,6 @@ if ( typeof(CKEDITOR) !== "undefined" ) {
     var processedCKeditorInstances = new Array();
     var instancesToManipulate = new Array();
     var wysiwygId = 0;
-=======
-if ( typeof(CKEDITOR) !== "undefined" ) {
-    var lastCKeditorValues = new Array();
-    var processedCKeditorInstances = new Array();
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     CKEDITOR.on("instanceReady", function(event)
     {
         for ( instance in CKEDITOR.instances )
@@ -710,7 +690,6 @@ if ( typeof(CKEDITOR) !== "undefined" ) {
                 langId   = fieldArr[3];                
 
                 if (langId == '0') {
-<<<<<<< HEAD
                     lastCKeditorValues[id] = CKEDITOR.instances[instance].getData();
                     CKEDITOR.instances[instance].on('focus', function (ev) {
                         rememberWysiwygFields(ev);
@@ -722,22 +701,6 @@ if ( typeof(CKEDITOR) !== "undefined" ) {
                         if ( this.mode == 'source' ) {
                             rememberWysiwygFields(ev);
                         }
-=======
-                   lastCKeditorValues[id] = CKEDITOR.instances[instance].getData();
-                   CKEDITOR.instances[instance].on('change', function (ev) {                
-                        fieldArr   = ev.editor.name.split(/\[(\d+)\]/);
-                        var id     = fieldArr[1];                
-                        \$minimized = \$J('#mediadirInputfield_' + id + '_ELEMENT_Minimized');
-
-                        if (\$minimized.is(":visible")) {                            
-                            \$J.each(activeLang, function(i, v) {                    
-                                if (CKEDITOR.instances['mediadirInputfield['+ id +']['+ v +']'].getData() == lastCKeditorValues[id]) {
-                                    CKEDITOR.instances['mediadirInputfield['+ id +']['+ v +']'].setData(CKEDITOR.instances['mediadirInputfield['+ id +'][0]'].getData());
-                                }
-                            });
-                            lastCKeditorValues[id] = CKEDITOR.instances[instance].getData();
-                        }                
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                    });
                 }
                 if (langId == defaultLang) {           
@@ -745,10 +708,6 @@ if ( typeof(CKEDITOR) !== "undefined" ) {
                         fieldArr   = ev.editor.name.split(/\[(\d+)\]/);
                         var id     = fieldArr[1];
                         \$expand    = \$J('#mediadirInputfield_' + id + '_ELEMENT_Expanded');
-<<<<<<< HEAD
-=======
-
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                         if (\$expand.is(":visible")) {
                             CKEDITOR.instances['mediadirInputfield['+ id +'][0]'].setData(ev.editor.getData());
                             lastCKeditorValues[id] = ev.editor.getData();
@@ -769,7 +728,6 @@ function ExpandMinimize(toggle){
     elm2.style.display = (elm2.style.display=='none') ? 'block' : 'none';
 }                                                                          
 
-<<<<<<< HEAD
 function ExpandMinimizeMultiple(toggleId, toggleKey){
     if ( typeof(CKEDITOR) !== "undefined" ) {
         \$J.each(instancesToManipulate, function(i, v) {
@@ -777,9 +735,6 @@ function ExpandMinimizeMultiple(toggleId, toggleKey){
         });
     }
 
-=======
-function ExpandMinimizeMultiple(toggleId, toggleKey){   
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     elm1 = document.getElementById('mediadirInputfield_' + toggleId +  '_' + toggleKey + '_Minimized');  
     elm2 = document.getElementById('mediadirInputfield_' + toggleId +  '_' + toggleKey + '_Expanded');
     

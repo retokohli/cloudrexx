@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 /**
  * Contrexx
  *
@@ -26,8 +25,6 @@
  * our trademarks remain entirely with us.
  */
 
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 $_ARRAYLANG['TXT_DIV_THUMBNAIL_TYPE'] = "Thumbnail des Bildes verwenden";
 /**
  * Data

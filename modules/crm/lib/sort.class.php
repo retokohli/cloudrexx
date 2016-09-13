@@ -1,6 +1,5 @@
 <?php
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,8 +26,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Sorter Class CRM
  *
  * PHP version 5.3 or >
@@ -140,8 +137,4 @@ class Sorter
         }
     return 0;
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211

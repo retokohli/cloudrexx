@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * JSON Adapter for Cx\Core\ContentManager\Model\Entity\Page
  * @copyright   Comvation AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
@@ -183,12 +180,7 @@ class JsonPage implements JsonAdapter {
      * @return type 
      */
     public function set($params) {
-<<<<<<< HEAD
         global $_CORELANG;
-=======
-        global $_CORELANG, $objCache;
-        $objCache->clearCache();
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         
         // Global access check
         if (!\Permission::checkAccess(6, 'static', true) || !\Permission::checkAccess(35, 'static', true)) {
@@ -213,12 +205,9 @@ class JsonPage implements JsonAdapter {
         }
         $action = !empty($dataPost['action']) ? contrexx_input2raw($dataPost['action']) : '';
         
-<<<<<<< HEAD
         $cacheManager = new \CacheManager();
         $cacheManager->deleteSingleFile($pageId);
         
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         if (!empty($pageArray)) {
             if (!empty($pageArray['target']) && !empty($pageArray['target_protocol'])) {
                 $pageArray['target'] = $pageArray['target_protocol'] . $pageArray['target'];
@@ -1227,7 +1216,6 @@ class JsonPage implements JsonAdapter {
         }
 
         if (isset($arguments['get']['pageRedirectPlaceholder'])) {
-<<<<<<< HEAD
             $filePath = \Env::get('cx')->getClassLoader()->getFilePath($arguments['get']['pageRedirectPlaceholder']);
             //do not break the page, if the redirection shows to a valid file
              if (is_file($filePath)) {
@@ -1235,9 +1223,6 @@ class JsonPage implements JsonAdapter {
             }
             try {
                 //break the page, when the file or the placeholder does not exist
-=======
-            try {
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                 if (!\Cx\Core\Routing\NodePlaceholder::fromPlaceholder($arguments['get']['pageRedirectPlaceholder'])->getPage()) {
                     return true;
                 }

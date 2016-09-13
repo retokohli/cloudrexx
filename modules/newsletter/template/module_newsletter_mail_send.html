@@ -119,16 +119,11 @@
 					newsletterSendStatus = false;
 				}
 
-<<<<<<< HEAD
 				//check to prevent bug that progressbar gets to 0 when we finish and wait for result
                                 if(data.count > 0 && data.progressbarStatus > 0) {
                                     $J('#newsletter_sent_count').html(data.count);
                                     $J('#newsletter_statusbar').progressbar({value:data.progressbarStatus});
                                 }
-=======
-				$J('#newsletter_sent_count').html(data.count);
-				$J('#newsletter_statusbar').progressbar({value:data.progressbarStatus});
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 				if (newsletterSendStatus) {
 					newsletterCycleAmount = data.count - newsletterSentCountBeforeCycle;
 					newsletterSentCountBeforeCycle = parseInt(data.count, 10);
@@ -140,7 +135,6 @@
 				} else {
 					newsletterSendRunning = false;
 
-<<<<<<< HEAD
                                         // show sent complete info
                                         if (data.sentComplete) {
                                             $J('#newsletter_send_button').hide();
@@ -148,15 +142,6 @@
                                             $J('#newsletter_sent_status').html(data.message);
                                             $J('#newsletter_sent_status').show();
                                         }
-=======
-                    // show sent complete info
-                    if (data.sentComplete) {
-                        $J('#newsletter_send_button').hide();
-                        $J('#newsletter_send_info').hide();
-                        $J('#newsletter_sent_status').html(data.message);
-                        $J('#newsletter_sent_status').show();
-                    }
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
 					$J('#newsletter_statusbar .ui-progressbar-value').css({'background-image': ''});
 					$J('#newsletter_send_button').attr('value', 'E-Mail versenden');
@@ -168,11 +153,7 @@
 
 	function newsletterAnimateCycle()
 	{
-<<<<<<< HEAD
 		if (!newsletterSendRunning || newsletterTotalEmailAmount <= newsletterSentCountGuess) return;
-=======
-		if (!newsletterSendRunning) return;
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
 		newsletterSentCountGuess += newsletterCycleIncrement;
 		$J('#newsletter_sent_count').html(Math.floor(newsletterSentCountGuess));

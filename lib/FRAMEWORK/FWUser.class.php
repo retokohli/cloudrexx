@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Framework user
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -645,11 +642,7 @@ class FWUser extends User_Setting
      * @param   mixed  $objTemplate Template
      * @global  array  Core language array
      */
-<<<<<<< HEAD
     function resetPassword($email, $restoreKey, $password = null, $confirmedPassword = null, $store = false)
-=======
-    function resetPassword($username, $restoreKey, $password = null, $confirmedPassword = null, $store = false)
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     {
         global $_CORELANG;
 
@@ -668,21 +661,9 @@ class FWUser extends User_Setting
                 '=' => time(),
             ),
             'active'           => 1,
-<<<<<<< HEAD
             'email'            => $email,
         );
 
-=======
-        );
-
-        $arrSettings = User_Setting::getSettings();
-        if ($arrSettings['use_usernames']['status']) {
-            $userFilter['username'] = $username;
-        } else {
-            $userFilter['email'] = $username;
-        }
-
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $objUser = $this->objUser->getUsers($userFilter, null, null, null, 1);
         if ($objUser) {
             if ($store) {

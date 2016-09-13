@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -27,8 +26,6 @@
  * our trademarks remain entirely with us.
  */
 
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * Login
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -207,11 +204,7 @@ class Login
 
         $this->_objTpl->setVariable(array(
             'LOGIN_STATUS_MESSAGE'	=> $statusMessage,
-<<<<<<< HEAD
             'LOGIN_EMAIL'		    => htmlentities($email, ENT_QUOTES, CONTREXX_CHARSET),
-=======
-            'LOGIN_USERNAME'		=> htmlentities($email, ENT_QUOTES, CONTREXX_CHARSET),
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             'LOGIN_RESTORE_KEY'		=> htmlentities($restoreKey, ENT_QUOTES, CONTREXX_CHARSET)
         ));
 

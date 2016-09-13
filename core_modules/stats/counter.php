@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Statistics
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author Comvation Development Team <info@comvation.com>
@@ -362,11 +359,7 @@ class counter
     */
     function _getProxyInformations() {
         if (isset($_SERVER['HTTP_VIA']) && $_SERVER['HTTP_VIA']) { // client does use a proxy
-<<<<<<< HEAD
             $this->arrProxy['ip'] = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
-=======
-            $this->arrProxy['ip'] = $_SERVER['REMOTE_ADDR'];
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             $this->arrProxy['host'] = @gethostbyaddr($this->arrProxy['ip']);
             $proxyUseragent = trim(addslashes(urldecode(strstr($_SERVER['HTTP_VIA'],' '))));
             $startPos = strpos($proxyUseragent,"(");
@@ -391,19 +384,11 @@ class counter
                 if (isset($_SERVER['HTTP_CLIENT_IP']) && !empty($_SERVER['HTTP_CLIENT_IP'])) {
                     $this->arrClient['ip'] = $_SERVER['HTTP_CLIENT_IP'];
                 } else {
-<<<<<<< HEAD
                     $this->arrClient['ip'] = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
                 }
             }
         } else { // Client does not use proxy
             $this->arrClient['ip'] = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];    
-=======
-                    $this->arrClient['ip'] = $_SERVER['REMOTE_ADDR'];
-                }
-            }
-        } else { // Client does not use proxy
-            $this->arrClient['ip'] = $_SERVER['REMOTE_ADDR'];
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             $this->arrProxy['type'] = 0; // No proxy
             $this->arrProxy['ip'] = "";
             $this->arrProxy['host'] = "";

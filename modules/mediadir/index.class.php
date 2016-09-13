@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Media  Directory
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -298,11 +295,7 @@ class mediaDirectory extends mediaDirectoryLibrary
                 $this->_objTpl->parse($this->moduleName.'CategoriesLevelsList');
             }
 
-<<<<<<< HEAD
             if((($objLevel->arrLevels[$intLevelId]['levelShowCategories'] == 1 || $intLevelId === 0) || $this->arrSettings['settingsShowLevels'] == 0 || $intCategoryId != 0) || ($bolFormUseCategory && !$bolFormUseLevel)) {
-=======
-            if(($objLevel->arrLevels[$intLevelId]['levelShowCategories'] == 1 || $this->arrSettings['settingsShowLevels'] == 0 || $intCategoryId != 0) || ($bolFormUseCategory && !$bolFormUseLevel)) {
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                 $objCategories = new mediaDirectoryCategory(null, $intCategoryId, 1);
                 $objCategories->listCategories($this->_objTpl, 2, null, null, null, $arrExistingBlocks);
                 $this->_objTpl->clearVariables();

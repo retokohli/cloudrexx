@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -27,8 +26,6 @@
  * our trademarks remain entirely with us.
  */
 
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * Calendar Language variables
  * 
@@ -47,11 +44,7 @@ $_ARRAYLANG['TXT_CALENDAR_STD_CAT_NONE'] = "Aucune catégorie";
 $_ARRAYLANG['TXT_CALENDAR'] = "Manifestations";
 $_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW'] = "Aperçu";
 $_ARRAYLANG['TXT_CALENDAR_MENU_ENTRY'] = "Nouvelle manifestation";
-<<<<<<< HEAD
 $_ARRAYLANG['TXT_CALENDAR_CATEGORIES'] = "Catégories";
-=======
-$_ARRAYLANG['TXT_CALENDAR_CATEGORIES'] = "Kategorien";
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 $_ARRAYLANG['TXT_CALENDAR_MENU_SETTINGS'] = "Paramètres";
 $_ARRAYLANG['TXT_CALENDAR_SHOW'] = "Afficher";
 $_ARRAYLANG['TXT_CALENDAR_EVENTS_NO'] = "Aucun élément ne correspond...";
@@ -465,17 +458,10 @@ $_ARRAYLANG['TXT_CALENDAR_MAKE_SELECTION'] = "S’il vous plaît: veuillez saisi
 $_ARRAYLANG['TXT_CALENDAR_COPY'] = "copier"; 
 
 $_ARRAYLANG['TXT_CALENDAR_CATEGORY_COUNT_ENTRIES'] = "Anzahl Einträge im Dropdown anzeigen";
-<<<<<<< HEAD
 $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE'] = "Type d'événement";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_EVENT'] = "Evénement";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'] = "Redirection";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'] = "Evénement enregistré";
-=======
-$_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE'] = "Veranstaltungstyp";
-$_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_EVENT'] = "Veranstaltung";
-$_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'] = "Weiterleitung";
-$_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'] = "Event successfull saved";
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_SAVED'] = "Corrupt save";
 $_ARRAYLANG['TXT_CALENDAR_USE_DATEPICKER'] = "Plugin für Datumauswahl";
 $_ARRAYLANG['TXT_CALENDAR_DATEPICKER'] = "JS DatePickerControl";
@@ -489,24 +475,15 @@ $_ARRAYLANG['TXT_PAYMENT_INCOMPLETED'] = "Not paid";
 $_ARRAYLANG['TXT_CALENDAR_ADD_EVENTS_FRONTEND'] = "Besuchern können Termine erfassen";
 $_ARRAYLANG['TXT_CALENDAR_ACTIVATE_ALL'] = "Aktivieren für alle Besucher";
 $_ARRAYLANG['TXT_CALENDAR_ACTIVATE_ONLY_COMMUNITY'] = "Aktivieren nur für angemeldete Besucher (Community)";
-<<<<<<< HEAD
 $_ARRAYLANG['TXT_CALENDAR_CONFIRM_FRONTEND_EVENTS'] = "Nouveau rendez-vous doit être confirmer";
 $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA'] = "Indication du lieu";
 $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_STATUS_INFO'] = "Einerseits können die Angaben zur Ortschaft manuell erfasst werden, oder mit dem Medienverzeichnis Modul verknüpft werden. Möchten Sie dies mit dem Medienverzeichnis verknüpfen, wählen Sie bitte die entsprechende Formularvolage aus, aus welcher Sie die Daten auslesen möchten.";
 $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_DEFAULT'] = "Saisir manuelle";    
 $_ARRAYLANG['TXT_CALENDAR_CONFIRMLIST'] = "Liste de confirmation";
-=======
-$_ARRAYLANG['TXT_CALENDAR_CONFIRM_FRONTEND_EVENTS'] = "Neue Termine müssen bestätigt werden";
-$_ARRAYLANG['TXT_CALENDAR_PLACE_DATA'] = "Angaben zur Ortschaft";
-$_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_STATUS_INFO'] = "Einerseits können die Angaben zur Ortschaft manuell erfasst werden, oder mit dem Medienverzeichnis Modul verknüpft werden. Möchten Sie dies mit dem Medienverzeichnis verknüpfen, wählen Sie bitte die entsprechende Formularvolage aus, aus welcher Sie die Daten auslesen möchten.";
-$_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_DEFAULT'] = "Manuell erfassen";    
-$_ARRAYLANG['TXT_CALENDAR_CONFIRMLIST'] = "Bestätigungsliste";
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 $_ARRAYLANG['TXT_PAYMENT_METHODS'] = "Vor Ort,Rechnung,Yellowpay";
 $_ARRAYLANG['TXT_PAYMENT_COMPLETED'] = "Bezahlt";
 $_ARRAYLANG['TXT_PAYMENT_INCOMPLETED'] = "Nicht Bezahlt";
 
-<<<<<<< HEAD
 $_ARRAYLANG['TXT_CALENDAR_LIST'] = "Affichage de liste";
 $_ARRAYLANG['TXT_CALENDAR_DETAIL'] = "Affichage détaillé";
 $_ARRAYLANG['TXT_CALENDAR_DATE_DISPLAY'] = "Date";
@@ -560,59 +537,4 @@ $_ARRAYLANG['TXT_CALENDAR_TYPE'] = "Type";
 $_ARRAYLANG['TXT_CALENDAR_FIRST_EXPORT'] = "Exportiert am";   
 $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'] = "Tous les catégories";  
 $_ARRAYLANG['TXT_CALENDAR_SHOW_EVENTS_ONLY_IN_ACTIVE_LANGUAGE'] = "Afficher uniquement les rendez-vous de la langue active";  
-=======
-$_ARRAYLANG['TXT_CALENDAR_LIST'] = "Listenansicht";
-$_ARRAYLANG['TXT_CALENDAR_DETAIL'] = "Detailansicht";
-$_ARRAYLANG['TXT_CALENDAR_DATE_DISPLAY'] = "Datum";
-$_ARRAYLANG['TXT_CALENDAR_DATE_DISPLAY_LIST'] = "Liste";
-$_ARRAYLANG['TXT_CALENDAR_DATE_DISPLAY_DETAIL'] = "Detailseite";
-$_ARRAYLANG['TXT_CALENDAR_SEPARATOR_NOTHING'] = " ";
-$_ARRAYLANG['TXT_CALENDAR_SEPARATOR_SPACE'] = "Leerzeichen";
-$_ARRAYLANG['TXT_CALENDAR_SEPARATOR_HYPHEN'] = "-";
-$_ARRAYLANG['TXT_CALENDAR_SEPARATOR_COLON'] = ":";
-$_ARRAYLANG['TXT_CALENDAR_SEPARATOR_TO'] = "bis";
-$_ARRAYLANG['TXT_CALENDAR_SEPARATOR_BREAK'] = "Zeilenumbruch";
-$_ARRAYLANG['TXT_CALENDAR_SEPARATOR_DATE'] = "Trennzeichen Datum";
-$_ARRAYLANG['TXT_CALENDAR_SEPARATOR_TIME'] = "Trennzeichen Zeit";
-$_ARRAYLANG['TXT_CALENDAR_SEPARATOR_DATE_TIME'] = "Trennzeichen Datum - Zeit";
-$_ARRAYLANG['TXT_CALENDAR_SEPARATOR_SEVERAL_DAYS'] = "Trennzeichen bei mehrtägigen Veranstaltungen";
-$_ARRAYLANG['TXT_CALENDAR_SHOW_CLOCK'] = "Zeit (Uhr) anzeigen";
-$_ARRAYLANG['TXT_CALENDAR_SHOW_START_DATE'] = "Startdatum anzeigen";
-$_ARRAYLANG['TXT_CALENDAR_SHOW_END_DATE'] = "Endatum anzeigen";
-$_ARRAYLANG['TXT_CALENDAR_SHOW_START_TIME'] = "Startzeit anzeigen";
-$_ARRAYLANG['TXT_CALENDAR_SHOW_END_TIME'] = "Endzeit anzeigen";
-$_ARRAYLANG['TXT_CALENDAR_SHOW_TIME_TYPE'] = "Individuelle Datums- und Zeitanzeige";
-$_ARRAYLANG['TXT_CALENDAR_TIME_TYPE_NOTHING'] = "Zeit nicht anzeigen";
-$_ARRAYLANG['TXT_CALENDAR_TIME_TYPE_TIME'] = "Start- und/oder Endzeit";
-$_ARRAYLANG['TXT_CALENDAR_TIME_TYPE_FULLTIME'] = "Ganztägig";
-$_ARRAYLANG['TXT_CALENDAR_SEPARATOR_DATE_INFO'] = "Definieren Sie hier das Trennzeichen für das Datum.";
-$_ARRAYLANG['TXT_CALENDAR_SEPARATOR_TIME_INFO'] = "Definieren Sie hier das Trennzeichen für die Zeit.";
-$_ARRAYLANG['TXT_CALENDAR_SEPARATOR_DATE_TIME_INFO'] = "Definieren Sie hier das Trennzeichen zwischen Datum und Zeit.";
-$_ARRAYLANG['TXT_CALENDAR_SEPARATOR_SEVERAL_DAYS_INFO'] = "Mehrtägige Ereignisse werden anders als eintägige dargestellt. Definieren Sie hier das Trennzeichen zwischen dem ersten und zweiten Teil der Datumsanzeige bei mehrtägigen Ereignissen.";
-$_ARRAYLANG['TXT_CALENDAR_SEPARATOR_SHOW_CLOCK_INFO'] = "Zeitbezeichnung ein- oder ausblenden.";
-$_ARRAYLANG['TXT_CALENDAR_SHOW_START_DATE_INFO'] = "Grundeinstellung für das Startdatum wählen.";
-$_ARRAYLANG['TXT_CALENDAR_SHOW_END_DATE_INFO'] = "Grundeinstellung für das Enddatum wählen.";
-$_ARRAYLANG['TXT_CALENDAR_SHOW_START_TIME_INFO'] = "Grundeinstellung für die Startzeit wählen.";
-$_ARRAYLANG['TXT_CALENDAR_SHOW_END_TIME_INFO'] = "Grundeinstellung für die Endzeit wählen.";
-
-$_ARRAYLANG['TXT_CALENDAR_MAX_SERIES_ENDS_YEAR'] = "Endlose Serien vorgängig auflisten";
-$_ARRAYLANG['TXT_CALENDAR_MAX_SERIES_ENDS_YEAR_INFO'] = "Serienelemente, welche kein Enddatum besitzen werden maximal bis zum angegebenen Wert im Voraus aufgelistet.";
-$_ARRAYLANG['TXT_CALENDAR_MAX_SERIES_ENDS_YEAR_1_YEARS'] = "1 Jahr";
-$_ARRAYLANG['TXT_CALENDAR_MAX_SERIES_ENDS_YEAR_2_YEARS'] = "2 Jahre";
-$_ARRAYLANG['TXT_CALENDAR_MAX_SERIES_ENDS_YEAR_3_YEARS'] = "3 Jahre";
-$_ARRAYLANG['TXT_CALENDAR_MAX_SERIES_ENDS_YEAR_4_YEARS'] = "4 Jahre";
-$_ARRAYLANG['TXT_CALENDAR_MAX_SERIES_ENDS_YEAR_5_YEARS'] = "5 Jahre";
-
-$_ARRAYLANG['TXT_CALENDAR_FORM_FIELD_SELECTBILLINGADDRESS'] = "Auswahl Rechungsadresse";
-$_ARRAYLANG['TXT_CALENDAR_FIELD_AFFILIATION'] = "Zugehörigkeit";
-$_ARRAYLANG['TXT_CALENDAR_FORM_FIELD_AFFILIATION_FORM'] = "Anmeldeformular";
-$_ARRAYLANG['TXT_CALENDAR_FORM_FIELD_AFFILIATION_CONTACT'] = "Kontaktadresse";
-$_ARRAYLANG['TXT_CALENDAR_FORM_FIELD_AFFILIATION_BILLING'] = "Rechungsadresse";
-$_ARRAYLANG['TXT_CALENDAR_FORM_FIELD_TITLE'] = "Überschrift";
-        
-$_ARRAYLANG['TXT_CALENDAR_TYPE'] = "Typ";   
-$_ARRAYLANG['TXT_CALENDAR_FIRST_EXPORT'] = "Exportiert am";   
-$_ARRAYLANG['TXT_CALENDAR_ALL_CAT'] = "Alle Kategorien";  
-$_ARRAYLANG['TXT_CALENDAR_SHOW_EVENTS_ONLY_IN_ACTIVE_LANGUAGE'] = "Nur Termine der aktiven Sprache auflisten";  
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 ?>

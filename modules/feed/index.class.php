@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Feed
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
@@ -291,14 +288,10 @@ class feed extends feedLibrary
                                filename,
                                time,
                                articles,
-<<<<<<< HEAD
                                image,
                                `channel_link`,
                                `channel_description`,
                                `channel_build_date`
-=======
-                               image
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                           FROM ".DBPREFIX."module_feed_news
                          WHERE id = '".$getNews."'
                            AND subid = '".$getCat."'
@@ -316,11 +309,7 @@ class feed extends feedLibrary
             $filename = $this->feedpath.$objResult->fields['filename'];
 
             //rss class
-<<<<<<< HEAD
             $rss = new RSSFeedParser($filename);
-=======
-            $rss = new XML_RSS($filename);
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             $rss->parse();
             //channel info
             $out_title = strip_tags($rss->channel['title']);
@@ -338,7 +327,6 @@ class feed extends feedLibrary
                 'FEED_IMAGE'            => $out_image,
                 'FEED_TITLE'            => $out_title,
                 'FEED_TIME'             => $out_time,
-<<<<<<< HEAD
                 'TXT_FEED_LAST_UPTDATE' => $_ARRAYLANG['TXT_FEED_LAST_UPDATE'],
                 'FEED_CHANNEL_LINK'             => contrexx_raw2xhtml($objResult->fields['channel_link']),
                 'FEED_CHANNEL_DESCRIPTION'      => contrexx_raw2xhtml($objResult->fields['channel_description']),
@@ -346,15 +334,11 @@ class feed extends feedLibrary
                 'FEED_CHANNEL_IMAGE'            => !empty($out_image) ? $out_image : '',
                 'FEED_CHANNEL_TITLE'            => contrexx_raw2xhtml($rss->channel['title']),
                 'FEED_FETCH_TIME'               => $out_time,
-=======
-                'TXT_FEED_LAST_UPTDATE' => $_ARRAYLANG['TXT_FEED_LAST_UPDATE']
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             ));
 
             //items
             $x = 0;
             foreach ($rss->getItems() as $value){
-<<<<<<< HEAD
                 if ($x < $objResult->fields['articles']) {
                     $rowClass        = $x % 2 ? 'row2' : 'row1';
                     $publicationDate = date('d.m.Y', strtotime($value['pubdate']));
@@ -391,14 +375,6 @@ class feed extends feedLibrary
                         'FEED_ITEM_DC_RELATION'     => $value['dc:relation'] ? contrexx_raw2xhtml($value['dc:relation']) : '',
                         'FEED_ITEM_DC_COVERAGE'     => $value['dc:coverage'] ? contrexx_raw2xhtml($value['dc:coverage']) : '',
                         'FEED_ITEM_DC_RIGHTS'       => $value['dc:rights'] ? contrexx_raw2xhtml($value['dc:rights']) : '',
-=======
-                if($x < $objResult->fields['articles']){
-                    $this->_objTpl->setVariable(array(
-                        'FEED_ROWCLASS' => $x % 2 ? 'row2' : 'row1',
-                        'FEED_DATE'     => date('d.m.Y', strtotime($value['pubdate'])),
-                        'FEED_LINK'     => $value['link'],
-                        'FEED_NAME'     => $value['title'],
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                     ));
                     $this->_objTpl->parse('feed_output_news');
                     $x++;

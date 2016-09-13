@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Initialize the CMS
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -335,7 +332,6 @@ class InitCMS
     {
         $arrLanguages = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
         $arrAcceptedLanguages = array();
-<<<<<<< HEAD
         $q = 1;
         foreach ($arrLanguages as $languageString) {
             $arrLanguage = explode(';q=', trim($languageString));
@@ -347,15 +343,6 @@ class InitCMS
         }
         arsort($arrAcceptedLanguages, SORT_NUMERIC);
         
-=======
-        foreach ($arrLanguages as $languageString) {
-            $arrLanguage = explode(';q=', trim($languageString));
-            $language = trim($arrLanguage[0]);
-            $quality = isset($arrLanguage[1]) ? trim($arrLanguage[1]) : 1;
-            $arrAcceptedLanguages[$language] = (float) $quality;
-        }
-        arsort($arrAcceptedLanguages, SORT_NUMERIC);
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         return $arrAcceptedLanguages;
     }
 
@@ -572,15 +559,11 @@ class InitCMS
         
         $themeRepository   = new \Cx\Core\View\Model\Repository\ThemeRepository();        
         if ($page->getUseCustomContentForAllChannels()) {
-<<<<<<< HEAD
             $themeId = $page->getSkin();
             if ($themeId === 0) {
                 $themeId = $this->channelThemeId;
             }
             $themeFolder = $themeRepository->findById($themeId)->getFoldername();
-=======
-            $themeFolder = $themeRepository->findById($page->getSkin())->getFoldername();
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             if (file_exists(ASCMS_THEMES_PATH.'/'.$themeFolder.'/'.$page->getCustomContent())) {
                 $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themeFolder.'/'.$page->getCustomContent());
                 return true;
@@ -760,7 +743,6 @@ class InitCMS
         // check whether the language file exists
         $mode = in_array($this->mode, array('backend', 'update')) ? 'backend' : 'frontend';
 
-<<<<<<< HEAD
         if (!isset($this->arrLang[$langId])) {
             $langId = $mode == 'backend' ? $this->getBackendDefaultLangId() : $this->getFrontendDefaultLangId();
         }
@@ -773,23 +755,6 @@ class InitCMS
             }
         }
         return $path;
-=======
-        $defaultLangId = $mode == 'backend' ? $this->getBackendDefaultLangId() : $this->getFrontendDefaultLangId();
-        if (!isset($this->arrLang[$langId])) {
-            $langId = $defaultLangId;
-        }
-
-        // file path with requested language ($langId parameter)
-        $path = \Env::get('ClassLoader')->getFilePath($this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$mode.'.php');
-        if ($path) {
-            return $path;
-        }
-        // file path of default language (if not yet requested)
-        if ($langId == $defaultLangId) {
-            return '';
-        }
-        return $this->getLangFilePath($module, $defaultLangId);
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     }
 
 

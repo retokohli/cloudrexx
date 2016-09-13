@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Shop settings
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
@@ -199,7 +196,6 @@ class ShopSettings
                 intval($_POST['numof_coupon_per_page_backend']), 58,
                 SettingDb::TYPE_TEXT, null, 'config');
         }
-<<<<<<< HEAD
         if (!SettingDb::set(
             'numof_products_per_page_frontend',
             intval($_POST['numof_products_per_page_frontend'])
@@ -211,8 +207,6 @@ class ShopSettings
                 SettingDb::TYPE_TEXT, null, 'config'
             );
         }
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     }
 
 

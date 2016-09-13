@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Media  Directory Inputfield Class
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -518,15 +515,12 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
                                 }
 
                                 if(!empty($arrInputfieldContent)) {
-<<<<<<< HEAD
                                     $config = \Env::get('config');
                                     $cx = \Env::get('cx');
                                     if ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND && $config['blockStatus']) {
                                         $arrInputfieldContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = preg_replace('/\\[\\[([A-Z][A-Z0-9_-]+)\\]\\]/', '{\\1}', $arrInputfieldContent[$this->moduleLangVar.'_INPUTFIELD_VALUE']);
                                         \block::setBlocks($arrInputfieldContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'], $cx->getPage());
                                     }
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                                     foreach ($arrInputfieldContent as $strPlaceHolder => $strContent) {
                                         $objTpl->setVariable(array(
                                             strtoupper($strPlaceHolder) => $strContent

@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * @ignore
  */
 require_once(ASCMS_FRAMEWORK_PATH.'/Validator.class.php');
@@ -424,16 +421,11 @@ class Installer
     * @global   array   $_CONFIG
     */
     function _getLicensePage() {
-<<<<<<< HEAD
         global $objTpl, $licenseFileCommerce, $licenseFileOpenSource, $_CONFIG, $language;
-=======
-        global $objTpl, $licenseFileCommerce, $licenseFileOpenSource, $_CONFIG;
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
         // load content tempalte
         $objTpl->addBlockfile('CONTENT', 'CONTENT_BLOCK', "license.html");
 
-<<<<<<< HEAD
         // get license for current language
         $licenseFile = 'data/contrexx_lizenz_' . $language . '.txt';
         $license = @file_get_contents($licenseFile);
@@ -450,19 +442,6 @@ class Installer
         // set template variables
         $objTpl->setVariable(array(
             'LICENSE'   => nl2br($license),
-=======
-        // get license
-        if ($_CONFIG['coreCmsEdition'] != "OpenSource") {
-            $licenseFile = $licenseFileCommerce;
-        } else {
-            $licenseFile = $licenseFileOpenSource;
-        }
-        $license = @file_get_contents($licenseFile);
-
-        // set template variables
-        $objTpl->setVariable(array(
-            'LICENSE'   => nl2br(preg_replace('/^([0-9]\.[0-9]?\s[^\n]+)\n$/im', '<strong>\1</strong>', $license)),
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             'CHECKED'   => (isset($_SESSION['installer']['license']) && $_SESSION['installer']['license']) ? "checked=\"checked\"" : ""
         ));
 

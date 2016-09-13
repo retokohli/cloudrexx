@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -27,8 +26,6 @@
  * our trademarks remain entirely with us.
  */
 
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * Class podcast library
  *
@@ -66,7 +63,6 @@ class cacheLib
     const CACHE_ENGINE_APC = 'apc';
     
     /**
-<<<<<<< HEAD
      * memcache extension
      */
     const CACHE_ENGINE_MEMCACHE = 'memcache';
@@ -75,11 +71,6 @@ class cacheLib
      * memcache(d) extension
      */
     const CACHE_ENGINE_MEMCACHED = 'memcached';
-=======
-     * memcache(d) extension
-     */
-    const CACHE_ENGINE_MEMCACHE = 'memcache';
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     
     /**
      * xcache extension
@@ -228,7 +219,6 @@ class cacheLib
                 $this->userCacheEngines[] = self::CACHE_ENGINE_MEMCACHE;
             }
         }
-<<<<<<< HEAD
         
         // Memcached
         if (   $this->isInstalled(self::CACHE_ENGINE_MEMCACHED)
@@ -247,8 +237,6 @@ class cacheLib
                 $this->userCacheEngines[] = self::CACHE_ENGINE_MEMCACHED;
             }
         }
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
         // XCache
         if (
@@ -351,13 +339,9 @@ class cacheLib
             case self::CACHE_ENGINE_ZEND_OPCACHE:
                 return extension_loaded('opcache') || extension_loaded('Zend OPcache');
             case self::CACHE_ENGINE_MEMCACHE:
-<<<<<<< HEAD
                 return extension_loaded('memcache');
             case self::CACHE_ENGINE_MEMCACHED:
                 return extension_loaded('memcached');
-=======
-                return extension_loaded('memcache') || extension_loaded('memcached');
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             case self::CACHE_ENGINE_XCACHE:
                 return extension_loaded('xcache');
             case self::CACHE_ENGINE_FILESYSTEM:
@@ -404,11 +388,8 @@ class cacheLib
                 return ini_get('opcache.save_comments') && ini_get('opcache.load_comments');
             case self::CACHE_ENGINE_MEMCACHE:
                 return $this->memcache ? true : false;
-<<<<<<< HEAD
             case self::CACHE_ENGINE_MEMCACHED:
                 return $this->memcache ? true : false;
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             case self::CACHE_ENGINE_XCACHE:
                 if ($user) {
                     return (
@@ -436,7 +417,6 @@ class cacheLib
         
         return array('ip' => $ip, 'port' => $port);
     }
-<<<<<<< HEAD
 
     protected function getMemcachedConfiguration() {
         global $_CONFIG;
@@ -451,8 +431,6 @@ class cacheLib
         
         return array('ip' => $ip, 'port' => $port);
     }
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     
     protected function getVarnishConfiguration(){
         global $_CONFIG;
@@ -493,12 +471,9 @@ class cacheLib
             case self::CACHE_ENGINE_MEMCACHE:
                 $this->clearMemcache();
                 break;
-<<<<<<< HEAD
             case self::CACHE_ENGINE_MEMCACHED:
                 $this->clearMemcached();
                 break;
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             case self::CACHE_ENGINE_XCACHE:
                 $this->clearXcache();
                 break;
@@ -591,7 +566,6 @@ class cacheLib
     }
     
     /**
-<<<<<<< HEAD
      * Clears all Memcacheddata related to this Domain if Memcache is installed
      */
     private function clearMemcached()
@@ -625,8 +599,6 @@ class cacheLib
     }
     
     /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
      * Clears XCache if configured. Configuration is needed to clear.
      */
     private function clearXcache(){

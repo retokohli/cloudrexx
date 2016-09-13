@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Installer language file
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Comvation Development Team <info@comvation.com>
@@ -75,11 +72,7 @@ $_ARRLANG['TXT_FILL_OUT_ALL_FIELDS'] = "You have to fill in all fields!";
 // license
 $_ARRLANG['TXT_READ_LICENCE'] = "Please read/accept license to continue installation";
 $_ARRLANG['TXT_MUST_ACCEPT_LICENCE'] = "You have to accept the license agreement to proceed with the installation!";
-<<<<<<< HEAD
 $_ARRLANG['TXT_ACCEPT_LICENSE'] = "I accept the Contrexx license terms";
-=======
-$_ARRLANG['TXT_ACCEPT_LICENSE'] = "I accept the Contrexx license";
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
 // requirements
 $_ARRLANG['TXT_SOFTWARE_REQUIREMENTS'] = "Software requirements";

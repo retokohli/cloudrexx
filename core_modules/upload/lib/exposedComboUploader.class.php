@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * ExposedComboUploader
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -48,7 +45,6 @@
  */
 class ExposedComboUploader extends ComboUploader
 {
-<<<<<<< HEAD
     protected $starterSelector = '#exposedComboUploaderStarter:first';
     
     public function __construct($backend) {
@@ -58,11 +54,6 @@ class ExposedComboUploader extends ComboUploader
     public function setStarterSelector($starterSelector) {
         $this->starterSelector = $starterSelector;
     }
-=======
-    public function __construct($backend) {
-        parent::__construct($backend);
-    }
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
     public function getXHtml(){
         global $_CORELANG;
@@ -83,10 +74,7 @@ class ExposedComboUploader extends ComboUploader
 
         $tpl->setVariable(array(
             'COMBO_CODE' => $comboXHtml,
-<<<<<<< HEAD
             'STARTER_SELECTOR' => $this->starterSelector,
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             'DIALOG_TITLE' => $_CORELANG['UPLOAD_EXPOSED_DIALOG_TITLE']
         ));
 

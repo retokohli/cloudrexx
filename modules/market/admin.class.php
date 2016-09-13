@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -27,8 +26,6 @@
  * our trademarks remain entirely with us.
  */
 
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * Market
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -505,11 +502,7 @@ class Market extends marketLibrary
 
         if (!isset($_SESSION['market'])) {
             $_SESSION['market'] = array();
-<<<<<<< HEAD
             //$_SESSION['market']['sort'] = array();
-=======
-            $_SESSION['market']['sort'] = array();
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
         
         // Sort

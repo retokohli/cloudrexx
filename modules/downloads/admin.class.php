@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Digital Asset Management
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
@@ -924,14 +921,10 @@ class downloads extends DownloadsLibrary
             'TXT_DOWNLOADS_SEARCH'          => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
         ));
 
-<<<<<<< HEAD
         $filter = null;
         if($objCategory->getId() > 0) {
             $filter = array('category_id' => $objCategory->getId());
         }
-=======
-        $filter = array('category_id' => $objCategory->getId());
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
         $objDownload = new Download();
         $objDownload->loadDownloads(
@@ -2363,26 +2356,17 @@ class downloads extends DownloadsLibrary
                 ));
                 $this->objTemplate->parse('downloads_download_orderbox');
                 $this->objTemplate->hideBlock('downloads_download_no_orderbox');
-<<<<<<< HEAD
                 $this->objTemplate->parse('downloads_download_no_save_button');
             } else {
                 // select checkbox
                 $this->objTemplate->hideBlock('downloads_download_checkbox');
                 $this->objTemplate->hideBlock('downloads_download_action_dropdown');
-=======
-            } else {
-                // select checkbox
-                $this->objTemplate->hideBlock('downloads_download_checkbox');
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
                 // order box
                 $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_ORDER', $objCategory->getId() ? $arrDownloadOrder[$objDownload->getId()] : $objDownload->getOrder());
                 $this->objTemplate->parse('downloads_download_no_orderbox');
                 $this->objTemplate->hideBlock('downloads_download_orderbox');
-<<<<<<< HEAD
                 $this->objTemplate->hideBlock('downloads_download_no_save_button');
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             }
 
             // parse status link and modify button

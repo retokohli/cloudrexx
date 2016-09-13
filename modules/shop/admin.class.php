@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Shop Manager
  *
  * Administration of the Shop
@@ -1580,11 +1577,8 @@ if ($test === NULL) {
                     'style="width: 270px;"'),
             'SHOP_SETTING_NUMOF_PRODUCTS_PER_PAGE_BACKEND' =>
                 SettingDb::getValue('numof_products_per_page_backend'),
-<<<<<<< HEAD
             'SHOP_SETTING_NUMOF_PRODUCTS_PER_PAGE_FRONTEND' =>
                 SettingDb::getValue('numof_products_per_page_frontend'),
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             'SHOP_SETTING_NUMOF_ORDERS_PER_PAGE_BACKEND' =>
                 SettingDb::getValue('numof_orders_per_page_backend'),
             'SHOP_SETTING_NUMOF_CUSTOMERS_PER_PAGE_BACKEND' =>
@@ -3586,36 +3580,23 @@ if ($test === NULL) {
             self::$objTemplate->setVariable(
                 'SHOP_PRICELIST_CATEGORY_ALL_CHECKED', Html::ATTRIBUTE_CHECKED);
         }
-<<<<<<< HEAD
         // Get all categories
         $arrCategories = ShopCategories::getTreeArray(true, false);
-=======
-        $arrCategories = ShopCategories::getChildCategoriesById(0, false);
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         if (empty($arrCategories)) {
             Message::warning($_ARRAYLANG['TXT_SHOP_WARNING_NO_CATEGORIES']);
         }
         $i = 0;
         foreach ($arrCategories as $objCategory) {
-<<<<<<< HEAD
             $category_id = $objCategory['id'];
-=======
-            $category_id = $objCategory->id();
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             $selected =
                 (   $category_all
                  || preg_match('/(?:^|,)\s*'.$category_id.'\s*(?:,|$)/',
                         $category_ids));
 //DBG::log("Category ID $category_id, ".($selected ? "selected" : "NOT"));
             self::$objTemplate->setVariable(array(
-<<<<<<< HEAD
                 'SHOP_CATEGORY_ID' => contrexx_raw2xhtml($category_id),
                 'SHOP_CATEGORY_NAME' => contrexx_raw2xhtml($objCategory['name']),
                 'SHOP_CATEGORY_LEVELSPACE' => str_repeat('|----', $objCategory['level']),
-=======
-                'SHOP_CATEGORY_ID' => $category_id,
-                'SHOP_CATEGORY_NAME' => $objCategory->name(),
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                 'SHOP_CATEGORY_DISABLED' => ($category_all
                     ? Html::ATTRIBUTE_DISABLED : ''),
                 'SHOP_CATEGORY_CHECKED' => ($selected ? Html::ATTRIBUTE_CHECKED : ''),

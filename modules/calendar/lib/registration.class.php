@@ -1,6 +1,5 @@
 <?php
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -27,8 +26,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Calendar
  *  
  * @package    contrexx
@@ -510,8 +507,4 @@ class CalendarRegistration extends CalendarLibrary
                 ';
         $objResult = $objDatabase->Execute($query, array($payStatus, $this->id));
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211

@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * JSON Adapter for Block module
  * @copyright   Comvation AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
@@ -122,11 +119,7 @@ class JsonBlock implements JsonAdapter {
         $data = array();
         foreach ($blocks as $id=>$block) {
             $data[$id] = array(
-<<<<<<< HEAD
                 'id' => $id,
-=======
-                'id' => $block['id'],
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                 'name' => $block['name'],
                 'disabled' => $block['global'] == 1,
                 'selected' => $block['global'] == 1,

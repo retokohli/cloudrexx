@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Page
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -1850,13 +1847,10 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      * @throws PageException If parent page can not be found
      */
     public function getParent() {
-<<<<<<< HEAD
         // virtual pages may not have a node. Throw an exception instead of dying.
         if (!$this->getNode() && $this->isVirtual()) {
             throw new PageException('Virtual page has no node');
         }
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $parentNode = $this->getNode()->getParent();
         if (!$parentNode) {
             throw new PageException('Parent node not found (my page id is ' . $this->getId() . ')');
@@ -1997,11 +1991,8 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
                 $this->type,
                 $this->updatedAt,
                 $this->updatedBy,
-<<<<<<< HEAD
                 $this->metadesc,
                 $this->metakeys
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             )
         );
     }
@@ -2041,10 +2032,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         $this->type = $unserialized[31];
         $this->updatedAt = $unserialized[32];
         $this->updatedBy = $unserialized[33];
-<<<<<<< HEAD
         $this->metadesc = $unserialized[34];
         $this->metakeys = $unserialized[35];
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     }
 }

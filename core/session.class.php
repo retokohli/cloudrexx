@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Module Session
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -56,7 +53,6 @@ use \Cx\Core\Model\RecursiveArrayAccess as RecursiveArrayAccess;
 class cmsSession extends RecursiveArrayAccess {
 
     /**
-<<<<<<< HEAD
      * Instance of class for use in the singelton pattern.
      *
      * @var self
@@ -147,98 +143,6 @@ class cmsSession extends RecursiveArrayAccess {
     /**
      * Session Lock time
      *
-=======
-     * class instance
-     * 
-     * @var object
-     */
-    public static $instance;
-    
-    /**
-     * session id
-     * 
-     * @var string 
-     */
-    public $sessionid;
-    
-    /**
-     * session status
-     * available options (frontend or backend)
-     * 
-     * @var string 
-     */
-    public $status;
-    
-    /**
-     * User Id of logged user
-     * 
-     * @var integer
-     */
-    public $userId;
-    
-    /**
-     * temp session storage path
-     * 
-     * @var string 
-     */
-    private $sessionPath;    
-    
-    /**
-     * session prefix
-     * 
-     * @var string
-     */
-    private $sessionPathPrefix = 'session_';    
-    
-    /**
-     * session lifetime
-     * session will expire after inactivity of given lifetime
-     * 
-     * @var integer
-     */
-    private $lifetime;
-    
-    /**
-     * Default life time of server
-     * Configurable from $_CONFIG
-     * 
-     * @var integer
-     */
-    private $defaultLifetime;
-    
-    /**
-     * Default rememver me time limit
-     * Configurable from $_CONFIG
-     * 
-     * @var integer
-     */
-    private $defaultLifetimeRememberMe;
-    
-    /**
-     * Remember me
-     * 
-     * @var boolean
-     */
-    private $rememberMe = false;
-    
-    /**
-     * Do not write session data into database when its true
-     * 
-     * @var boolean
-     */
-    private $discardChanges = false;
-    
-    /**
-     * Created session locks 
-     * 
-     * @var array
-     */
-    private $locks = array();
-    
-    /**
-     * Session Lock time
-     * 
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
      * @var integer
      */
     private static $sessionLockTime = 10;
@@ -249,14 +153,9 @@ class cmsSession extends RecursiveArrayAccess {
      * @var integer
      */
     const VARIABLE_KEY_MAX_LENGTH = 100;
-<<<<<<< HEAD
 
     /**
      * @return self
-=======
-    
-    /*
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
      * Get instance of the class from the out side world
      */
     public static function getInstance()
@@ -265,32 +164,20 @@ class cmsSession extends RecursiveArrayAccess {
         {
             self::$instance = new static();
             $_SESSION = self::$instance;
-<<<<<<< HEAD
 
             // read the session data
             $_SESSION->readData();
 
-=======
-                                    
-            // read the session data
-            $_SESSION->readData();
-            
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             //earliest possible point to set debugging according to session.
             $_SESSION->restoreDebuggingParams();
 
             $_SESSION->cmsSessionExpand();
         }
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         return self::$instance;
     }
 
     /**
-<<<<<<< HEAD
      * Callable on session destroy
      *
      * @param string $aKey
@@ -325,10 +212,6 @@ class cmsSession extends RecursiveArrayAccess {
     /**
      * Return true if the session is initialized and false otherwise.
      *
-=======
-     * Return true if the session is initialized and false otherwise.
-     * 
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
      * @return boolean true if the session is initialized and false otherwise.
      */
     public static function isInitialized()
@@ -337,11 +220,7 @@ class cmsSession extends RecursiveArrayAccess {
         {
             return false;
         }
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         return true;
     }
 
@@ -355,15 +234,9 @@ class cmsSession extends RecursiveArrayAccess {
     }
 
     /**
-<<<<<<< HEAD
      * Default object constructor.
      */
     public function __construct()
-=======
-     * Default object constructor.          
-     */    
-    protected function __construct()
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     {
 
         if (ini_get('session.auto_start')) {
@@ -371,7 +244,6 @@ class cmsSession extends RecursiveArrayAccess {
         }
 
         register_shutdown_function(array(& $this, 'releaseLocks'));
-<<<<<<< HEAD
 
         $this->initDatabase();
         $this->initRememberMe();
@@ -384,40 +256,17 @@ class cmsSession extends RecursiveArrayAccess {
             array(& $this, 'write'),
             array(& $this, 'destroy'),
             array(& $this, 'gc')))
-=======
-        
-            $this->initDatabase();
-            $this->initRememberMe();
-            $this->initSessionLifetime();
-
-        if (session_set_save_handler(
-            array(& $this, 'cmsSessionOpen'),
-            array(& $this, 'cmsSessionClose'),
-            array(& $this, 'cmsSessionRead'),
-            array(& $this, 'cmsSessionWrite'),
-            array(& $this, 'cmsSessionDestroy'),
-            array(& $this, 'cmsSessionGc')))
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         {
             session_start();
 
         } else {
             $this->cmsSessionError();
-<<<<<<< HEAD
         }
     }
 
     /**
      * It release all created locks
      */
-=======
-        }        
-    }
-    
-    /**
-     * It release all created locks
-     */  
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     function releaseLocks() {
         // release all locks
         if (!empty($this->locks)) {
@@ -427,7 +276,6 @@ class cmsSession extends RecursiveArrayAccess {
                     if (is_a($sessionValue, 'Cx\Core\Model\RecursiveArrayAccess')) {
                         self::updateToDb($sessionValue);
                     } else {
-<<<<<<< HEAD
                         if ($this->isDirty($lockKey)){
                             $serializedValue = contrexx_input2db(serialize($sessionValue));
 
@@ -446,33 +294,11 @@ class cmsSession extends RecursiveArrayAccess {
                         }
                     }
                 }
-=======
-                        $serializedValue = contrexx_input2db(serialize($sessionValue));
-                        $query = 'INSERT INTO 
-                                        '. DBPREFIX .'session_variable
-                                    SET
-                                    `parent_id` = "0",
-                                    `sessionid` = "'. $_SESSION->sessionid .'",
-                                    `key` = "'. contrexx_input2db($lockKey) .'",
-                                    `value` = "'. $serializedValue .'"
-                                  ON DUPLICATE KEY UPDATE 
-                                     `value` = "'. $serializedValue .'"';
-
-                        \Env::get('db')->Execute($query);
-                    }
-                }
-                
-                $this->releaseLock($lockKey);
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             }
         }
         $this->updateTimeStamp();
     }
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     /**
      * Update the lastupdated timestamp value in database
      */
@@ -481,13 +307,8 @@ class cmsSession extends RecursiveArrayAccess {
         // Don't write session data to databse.
         // This is used to prevent an unwanted session overwrite by a continuous
         // script request (javascript) that only checks for a certain event to happen.
-<<<<<<< HEAD
         if ($this->discardChanges) return;
 
-=======
-        if ($this->discardChanges) return true;
-                
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $query = "UPDATE " . DBPREFIX . "sessions SET lastupdated = '" . time() . "' WHERE sessionid = '" . $_SESSION->sessionid . "'";
 
         \Env::get('db')->Execute($query);
@@ -501,7 +322,6 @@ class cmsSession extends RecursiveArrayAccess {
         $this->data = self::getDataFromKey(0);
         $this->callableOnUnset = array('\cmsSession', 'removeFromSession');
     }
-<<<<<<< HEAD
 
     /**
      * Read the data from database using variable id
@@ -513,24 +333,10 @@ class cmsSession extends RecursiveArrayAccess {
     public static function getDataFromKey($varId)
     {
         $query = "SELECT
-=======
-    
-    /**
-     * Read the data from database using variable id
-     * 
-     * @param integer $varId
-     * 
-     * @return \Cx\Core\Model\RecursiveArrayAccess
-     */
-    public static function getDataFromKey($varId) 
-    {
-        $query = "SELECT 
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                     `id`,
                     `key`,
                     `value`,
                     `lastused`
-<<<<<<< HEAD
                   FROM
                     `". DBPREFIX ."session_variable`
                   WHERE
@@ -541,17 +347,6 @@ class cmsSession extends RecursiveArrayAccess {
         /** @var $objResult ADORecordSet */
         $objResult = \Env::get('db')->Execute($query);
 
-=======
-                  FROM 
-                    `". DBPREFIX ."session_variable` 
-                  WHERE 
-                    `sessionid` = '{$_SESSION->sessionid}' 
-                  AND 
-                    `parent_id` = '$varId'";
-                    
-        $objResult = \Env::get('db')->Execute($query);
-        
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $data = array();
         if ($objResult !== false && $objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
@@ -572,22 +367,14 @@ class cmsSession extends RecursiveArrayAccess {
 
         return $data;
     }
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     /**
      * Initializes the database.
      *
      * @access  private
      */
     private function initDatabase()
-<<<<<<< HEAD
     {
-=======
-    {        
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $this->setAdodbDebugMode();
     }
 
@@ -613,11 +400,7 @@ class cmsSession extends RecursiveArrayAccess {
      * @access  private
      */
     private function restoreDebuggingParams()
-<<<<<<< HEAD
     {
-=======
-    {                
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         if (isset($_SESSION['debugging']) && $_SESSION['debugging']) {
             DBG::activate(DBG::getMode() | $_SESSION['debugging_flags']);
         }
@@ -630,19 +413,12 @@ class cmsSession extends RecursiveArrayAccess {
      */
     private function initRememberMe()
     {
-<<<<<<< HEAD
         /** @var $objResult ADORecordSet */
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $sessionId = !empty($_COOKIE[session_name()]) ? $_COOKIE[session_name()] : null;
         if (isset($_POST['remember_me'])) {
             $this->rememberMe = true;
             if ($this->sessionExists($sessionId)) {//remember me status for new sessions will be stored in cmsSessionRead() (when creating the appropriate db entry)
-<<<<<<< HEAD
                 \Env::get('db')->Execute('UPDATE `' . DBPREFIX . 'sessions` SET `remember_me` = 1 WHERE `sessionid` = "' . contrexx_input2db($sessionId) . '"');
-=======
-                $objResult = \Env::get('db')->Execute('UPDATE `' . DBPREFIX . 'sessions` SET `remember_me` = 1 WHERE `sessionid` = "' . contrexx_input2db($sessionId) . '"');
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             }
         } else {
             $objResult = \Env::get('db')->Execute('SELECT `remember_me` FROM `' . DBPREFIX . 'sessions` WHERE `sessionid` = "' . contrexx_input2db($sessionId) . '"');
@@ -658,18 +434,11 @@ class cmsSession extends RecursiveArrayAccess {
      * Checks if the passed session exists.
      *
      * @access  private
-<<<<<<< HEAD
      * @param   string     $sessionId
      * @return  boolean
      */
     private function sessionExists($sessionId) {
         /** @var $objResult ADORecordSet */
-=======
-     * @param   string      $session
-     * @return  boolean
-     */
-    private function sessionExists($sessionId) {
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $objResult = \Env::get('db')->Execute('SELECT 1 FROM `' . DBPREFIX . 'sessions` WHERE `sessionid` = "' . contrexx_input2db($sessionId) . '"');
         if ($objResult && ($objResult->RecordCount() > 0)) {
             return true;
@@ -716,7 +485,6 @@ class cmsSession extends RecursiveArrayAccess {
 
     /**
      * Callable method on session open
-<<<<<<< HEAD
      *
      * @param string $save_path
      * @param string $session_id
@@ -726,37 +494,21 @@ class cmsSession extends RecursiveArrayAccess {
     function open($save_path, $session_id)
     {
         $this->gc(null);
-=======
-     *      
-     * @return boolean
-     */
-    function cmsSessionOpen($aSavaPath, $aSessionName)
-    {
-        $this->cmsSessionGc();
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         return true;
     }
 
     /**
      * Callable on session close
-<<<<<<< HEAD
      *
      * @return boolean
      */
     function close()
-=======
-     * 
-     * @return boolean
-     */
-    function cmsSessionClose()
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     {
         return true;
     }
 
     /**
      * Callable on session read
-<<<<<<< HEAD
      *
      * @param string $aKey
      * @return string
@@ -766,18 +518,6 @@ class cmsSession extends RecursiveArrayAccess {
         $this->sessionid = $aKey;
         $this->sessionPath = ASCMS_TEMP_WEB_PATH . '/' . $this->sessionPathPrefix . $this->sessionid;
         /** @var $objResult ADORecordSet */
-=======
-     * 
-     * @param type $aKey
-     * @return string
-     */
-    function cmsSessionRead( $aKey )
-    {        
-        
-        $this->sessionid = $aKey;        
-        $this->sessionPath = ASCMS_TEMP_WEB_PATH . '/' . $this->sessionPathPrefix . $this->sessionid;
-        
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $objResult = \Env::get('db')->Execute('SELECT `user_id`, `status` FROM `' . DBPREFIX . 'sessions` WHERE `sessionid` = "' . $aKey . '"');
         if ($objResult !== false) {
             if ($objResult->RecordCount() == 1) {
@@ -788,11 +528,7 @@ class cmsSession extends RecursiveArrayAccess {
                     INSERT INTO `' . DBPREFIX . 'sessions` (`sessionid`, `remember_me`, `startdate`, `lastupdated`, `status`, `user_id`)
                     VALUES ("' . $aKey . '", ' . ($this->rememberMe ? 1 : 0) . ', "' . time() . '", "' . time() . '", "' . $this->status . '", ' . intval($this->userId) . ')
                 ');
-<<<<<<< HEAD
 
-=======
-                
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                 return '';
             }
         }
@@ -802,7 +538,6 @@ class cmsSession extends RecursiveArrayAccess {
 
     /**
      * Callable on session write
-<<<<<<< HEAD
      *
      * @param string $session_id
      * @param string $session_data
@@ -817,65 +552,16 @@ class cmsSession extends RecursiveArrayAccess {
     /**
      * Destroy session by given user id
      *
-=======
-     * 
-     * @param type $aKey
-     * @param type $aVal
-     * @return boolean
-     */
-    function cmsSessionWrite($aKey, $aVal) {
-        
-        return true;
-    }
-
-    /**
-     * Callable on session destroy
-     * 
-     * @param type $aKey
-     * @param type $destroyCookie
-     * @return boolean
-     */
-    function cmsSessionDestroy($aKey, $destroyCookie = true) {          
-        $query = "DELETE FROM " . DBPREFIX . "sessions WHERE sessionid = '" . $aKey . "'";
-        \Env::get('db')->Execute($query);
-
-        $query = "DELETE FROM " . DBPREFIX . "session_variable WHERE sessionid = '" . $aKey . "'";
-        \Env::get('db')->Execute($query);
-
-        if (\Cx\Lib\FileSystem\FileSystem::exists($this->sessionPath)) {
-            \Cx\Lib\FileSystem\FileSystem::delete_folder($this->sessionPath, true);
-        }
-
-        if ($destroyCookie) {
-            setcookie("PHPSESSID", '', time() - 3600, '/');
-        }
-        // do not write the session data
-        $this->discardChanges = true;
-        
-        return true;
-    }
-
-    /**
-     * Destroy session by given user id
-     * 
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
      * @param integer $userId
      * @return boolean
      */
     function cmsSessionDestroyByUserId($userId) {
-<<<<<<< HEAD
         /** @var $objResult ADORecordSet */
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $objResult = \Env::get('db')->Execute('SELECT `sessionid` FROM `' . DBPREFIX . 'sessions` WHERE `user_id` = ' . intval($userId));
         if ($objResult) {
             while (!$objResult->EOF) {
                 if ($objResult->fields['sessionid'] != $this->sessionid) {
-<<<<<<< HEAD
                     $this->destroy($objResult->fields['sessionid'], false);
-=======
-                    $this->cmsSessionDestroy($objResult->fields['sessionid'], false);
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                 }
                 $objResult->MoveNext();
             }
@@ -886,19 +572,12 @@ class cmsSession extends RecursiveArrayAccess {
 
     /**
      * Clear expired session
-<<<<<<< HEAD
      *
      * @param int $maxlifetime
      *
      * @return bool
      */
     function gc($maxlifetime) {
-=======
-     * 
-     * @return boolean
-     */
-    function cmsSessionGc() {
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         \Env::get('db')->Execute('DELETE s.*, v.* FROM `' . DBPREFIX . 'sessions` AS s, `' . DBPREFIX . 'session_variable` AS v WHERE s.sessionid = v.sessionid AND ((`s`.`remember_me` = 0) AND (`s`.`lastupdated` < ' . (time() - $this->defaultLifetime) . '))');
         \Env::get('db')->Execute('DELETE s.*, v.* FROM `' . DBPREFIX . 'sessions` AS s, `' . DBPREFIX . 'session_variable` AS v WHERE s.sessionid = v.sessionid AND ((`s`.`remember_me` = 1) AND (`s`.`lastupdated` < ' . (time() - $this->defaultLifetimeRememberMe) . '))');
         return true;
@@ -906,11 +585,7 @@ class cmsSession extends RecursiveArrayAccess {
 
     /**
      * Update the user id of the current session
-<<<<<<< HEAD
      *
-=======
-     * 
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
      * @param integer $userId
      * @return boolean
      */
@@ -923,11 +598,7 @@ class cmsSession extends RecursiveArrayAccess {
 
     /**
      * Update user status (frontend or backend)
-<<<<<<< HEAD
      *
-=======
-     * 
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
      * @param string $status
      * @return boolean
      */
@@ -947,11 +618,7 @@ class cmsSession extends RecursiveArrayAccess {
 
     /**
      * Returns current session's temp path
-<<<<<<< HEAD
      *
-=======
-     * 
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
      * @return string
      */
     public function getTempPath()
@@ -966,22 +633,14 @@ class cmsSession extends RecursiveArrayAccess {
             return false;
         }
 
-<<<<<<< HEAD
         return ASCMS_INSTANCE_PATH . $this->sessionPath;
-=======
-        return ASCMS_PATH . $this->sessionPath;
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     }
 
     /**
      * Gets a web temp path.
      * This path is needed to work with the File-class from the framework.
      *
-<<<<<<< HEAD
      * @return string
-=======
-     * @return string 
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
      */
     public function getWebTempPath() {
         $tp = $this->getTempPath();
@@ -1009,10 +668,7 @@ class cmsSession extends RecursiveArrayAccess {
         $sessionPaths = preg_grep('#^' . $this->sessionPathPrefix . '[0-9A-Z,-]{22,40}$#i', $dirs);
         $sessions = array();
         $query = 'SELECT `sessionid` FROM `' . DBPREFIX . 'sessions`';
-<<<<<<< HEAD
         /** @var $objResult ADORecordSet */
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $objResult = \Env::get('db')->Execute($query);
         while (!$objResult->EOF) {
             $sessions[] = $objResult->fields['sessionid'];
@@ -1025,27 +681,17 @@ class cmsSession extends RecursiveArrayAccess {
             }
         }
     }
-<<<<<<< HEAD
 
     /**
      * Return's mysql lock name
      *
      * @param string $key lock key
      *
-=======
-    
-    /**
-     * Return's mysql lock name
-     *      
-     * @param string $key lock key
-     * 
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
      * @return string lock name
      */
     static function getLockName($key)
     {
         global $_DBCONFIG;
-<<<<<<< HEAD
 
         // MySQL 5.7.5 and later enforces a maximum length on lock names of 64 characters. Previously, no limit was enforced.
         return substr(md5($_DBCONFIG['database'].DBPREFIX), 16)
@@ -1053,40 +699,23 @@ class cmsSession extends RecursiveArrayAccess {
               .substr(md5($_SESSION->sessionid), 15)
               .'_'
               .substr(md5($key), 31);
-=======
-        
-        return $_DBCONFIG['database'].DBPREFIX."sessions_".$_SESSION->sessionid.'_'.$key;
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     }
 
     /**
      * Create's the lock in database
-<<<<<<< HEAD
      *
-=======
-     * 
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
      * @param string  $lockName Lock name
      * @param integer $lifeTime Lock time
      */
     public static function getLock($lockName, $lifeTime = 60)
     {
         $objLock = \Env::get('db')->Execute('SELECT GET_LOCK("' . $lockName . '", ' . $lifeTime . ')');
-<<<<<<< HEAD
         /** @var $objLock ADORecordSet */
         if (!$objLock || $objLock->fields['GET_LOCK("' . $lockName . '", ' . $lifeTime . ')'] != 1) {
             die('Could not obtain session lock!');
         }
     }
 
-=======
-
-        if (!$objLock || $objLock->fields['GET_LOCK("' . $lockName . '", ' . $lifeTime . ')'] != 1) {
-            die('Could not obtain session lock!');
-        }     
-    }
-    
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     /**
      * Release the mysql lock
      * @param string $key Lock name to released
@@ -1096,11 +725,7 @@ class cmsSession extends RecursiveArrayAccess {
         unset($_SESSION->locks[$key]);
         \Env::get('db')->Execute('SELECT RELEASE_LOCK("' . self::getLockName($key) . '")');
     }
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     /**
      * Discard changes made to the $_SESSION-array.
      *
@@ -1112,39 +737,26 @@ class cmsSession extends RecursiveArrayAccess {
     public function discardChanges() {
         $this->discardChanges = true;
     }
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     /**
      * {@inheritdoc}
      */
     public function offsetSet($offset, $data) {
         self::validateSessionKeyLength($offset);
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         if (!isset($_SESSION->locks[$offset])) {
             $_SESSION->locks[$offset] = 1;
             self::getLock(self::getLockName($offset), self::$sessionLockTime);
         }
         parent::offsetSet($offset, $data, null, null, array('\cmsSession', 'removeFromSession'), array('\cmsSession', 'validateSessionKeyLength'));
     }
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     /**
      * {@inheritdoc}
      */
     public function offsetGet($offset) {
         return self::getFromDb($offset, $this);
     }
-<<<<<<< HEAD
 
     /**
      * Remove the session variable and its sub entries from database by given id
@@ -1164,37 +776,13 @@ class cmsSession extends RecursiveArrayAccess {
 
         /** @var $objResult ADORecordSet */
         $objResult = \Env::get('db')->Execute($query);
-=======
-    
-    /**
-     * Remove the session variable and its sub entries from database by given id
-     * 
-     * @param integer $keyId 
-     */
-    public static function removeKeyFromDb($keyId) {
-        
-        $query = "SELECT 
-                    `id`
-                  FROM 
-                    `". DBPREFIX ."session_variable` 
-                  WHERE 
-                    `sessionid` = '{$_SESSION->sessionid}' 
-                  AND 
-                    `parent_id` = '" . intval($keyId) ."'";
-        $objResult = \Env::get('db')->Execute($query);
-        
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         if ($objResult && $objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
                 self::removeKeyFromDb($objResult->fields['id']);
                 $objResult->MoveNext();
             }
         }
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $query = "DELETE FROM `". DBPREFIX ."session_variable` WHERE id = ". intval($keyId);
         \Env::get('db')->Execute($query);
     }
@@ -1202,24 +790,17 @@ class cmsSession extends RecursiveArrayAccess {
     /**
      * Get lock and retrive the values from database
      * Callable from Recursive array access class on offsetGet
-<<<<<<< HEAD
      *
      * @param string $offset Offset
      * @param object $arrObj object array
      *
      * @return null|RecursiveArrayAccess|string|int Whatever the value of the offset is.
-=======
-     * 
-     * @param string $offset Offset
-     * @param object $arrObj object array
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
      */
     public static function getFromDb($offset, $arrObj) {
         if (isset($arrObj->data[$offset])) {
             if (!isset($_SESSION->locks[$offset])) {
                 $_SESSION->locks[$offset] = 1;
                 self::getLock(self::getLockName($offset), self::$sessionLockTime);
-<<<<<<< HEAD
 
                 $query = 'SELECT
                             `id`,
@@ -1237,23 +818,6 @@ class cmsSession extends RecursiveArrayAccess {
                 /** @var $objResult ADORecordSet */
                 $objResult = \Env::get('db')->Execute($query);
 
-=======
-                
-                $query = 'SELECT 
-                            `id`,
-                            `value`
-                          FROM 
-                            `'. DBPREFIX .'session_variable` 
-                          WHERE 
-                            `sessionid` = "'. $_SESSION->sessionid .'"
-                          AND
-                            `parent_id` = "'. intval($arrObj->id).'" 
-                          AND 
-                            `key` = "'. contrexx_input2db($offset) .'" 
-                          LIMIT 0, 1';            
-                $objResult = \Env::get('db')->Execute($query);
-                
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                 if ($objResult && $objResult->RecordCount()) {
                     if ($objResult->fields['value'] === '') {
                         $data       = new RecursiveArrayAccess(null, $offset, $arrObj->id);
@@ -1267,11 +831,7 @@ class cmsSession extends RecursiveArrayAccess {
                         $dataValue = unserialize($objResult->fields['value']);
                         $arrObj->data[$offset] = $dataValue;
                     }
-<<<<<<< HEAD
                 }
-=======
-                } 
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             }
 
             return $arrObj->data[$offset];
@@ -1282,7 +842,6 @@ class cmsSession extends RecursiveArrayAccess {
     /**
      * Update given object to database
      * Callable from RecursiveArrayAccess class on offsetSet
-<<<<<<< HEAD
      *
      * @param RecursiveArrayAccess $recursiveArrayAccess session object array
      */
@@ -1330,61 +889,10 @@ class cmsSession extends RecursiveArrayAccess {
      * Remove the session key and sub keys by given offset and parent id
      * Callable from RecursiveArrayAccess class on offsetUnset
      *
-=======
-     * 
-     * @param object $arrObj session object array
-     */
-    public static function updateToDb($arrObj) {
-        if (empty($arrObj->id) && (string) $arrObj->offset != '') {
-            $query = 'INSERT INTO 
-                            '. DBPREFIX .'session_variable
-                        SET 
-                        `parent_id` = "'. intval($arrObj->parentId) .'",
-                        `sessionid` = "'. $_SESSION->sessionid .'",
-                        `key` = "'. contrexx_input2db($arrObj->offset) .'",
-                        `value` = ""';
-            \Env::get('db')->Execute($query);
-
-            $arrObj->id = \Env::get('db')->Insert_ID();
-        }
-        
-        foreach ($arrObj->data as $key => $value) {
-
-            if (is_a($value, 'Cx\Core\Model\RecursiveArrayAccess')) {
-                $serializedValue = '';
-            } else {
-                $serializedValue = contrexx_input2db(serialize($value));
-            }
-
-            $query = 'INSERT INTO 
-                            '. DBPREFIX .'session_variable
-                        SET 
-                        `parent_id` = "'. intval($arrObj->id) .'",
-                        `sessionid` = "'. $_SESSION->sessionid .'",
-                        `key` = "'. contrexx_input2db($key) .'",
-                        `value` = "'. $serializedValue .'"
-                      ON DUPLICATE KEY UPDATE 
-                         `value` = "'. $serializedValue .'"';
-
-            \Env::get('db')->Execute($query);            
-            
-            if (is_a($value, 'Cx\Core\Model\RecursiveArrayAccess')) {
-                $value->parentId = intval($arrObj->id);
-                self::updateToDb($value);
-            }
-        }        
-    }
-    
-        /**
-     * Remove the session key and sub keys by given offset and parent id
-     * Callable from RecursiveArrayAccess class on offsetUnset
-     * 
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
      * @param string  $offset   session key name
      * @param integer $parentId parent id of the given session offset
      */
     public static function removeFromSession($offset, $parentId) {
-<<<<<<< HEAD
         $query = "SELECT
                     `id`
                   FROM
@@ -1398,21 +906,6 @@ class cmsSession extends RecursiveArrayAccess {
 
         /** @var $objResult ADORecordSet */
         $objResult = \Env::get('db')->Execute($query);
-=======
-        $query = "SELECT 
-                    `id`
-                  FROM 
-                    `". DBPREFIX ."session_variable` 
-                  WHERE 
-                    `sessionid` = '{$_SESSION->sessionid}' 
-                  AND 
-                    `parent_id` = '". intval($parentId) ."'
-                  AND 
-                    `key` = '". contrexx_input2db($offset) ."'";
-
-        $objResult = \Env::get('db')->Execute($query);
-        
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         if ($objResult && $objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
                 self::removeKeyFromDb($objResult->fields['id']);
@@ -1420,16 +913,11 @@ class cmsSession extends RecursiveArrayAccess {
             }
         }
     }
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     /**
      * Ensure that the used parameter name complies with the session
      * restrictions defined for variable keys, as the parameter name
      * is being used as a sesison-variable-key.
-<<<<<<< HEAD
      *
      * @param string $sessionKey The name of the session-variable-key used to store the current paging position.
      *
@@ -1445,20 +933,6 @@ class cmsSession extends RecursiveArrayAccess {
             throw new \Exception('Session variable key must be less than '. self::VARIABLE_KEY_MAX_LENGTH.' But given '. strlen($sessionKey));
         }
 
-=======
-     * @param string $sessionKey The name of the session-variable-key used to store the current paging position.
-     * @return string $sessionKey The sanitized session-variable-key.
-     */
-    public static function validateSessionKeyLength($sessionKey)
-    {
-        
-        // Important: As the parameter name is used as a session-variable-key,
-        // it must not exceed the allowed session-variable-key-length.        
-        if (strlen($sessionKey) > self::getVariableKeyMaxLength()) {
-            throw new \Exception('Session variable key must be less than '. self::VARIABLE_KEY_MAX_LENGTH.' But given '. strlen($sessionKey));
-        }
-        
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         return true;
     }
 }

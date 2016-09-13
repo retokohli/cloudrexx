@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * RSSWriter
  *
  * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
@@ -101,18 +98,6 @@ class RSSWriter {
     var $_currentItem = 0;
 
     /**
-<<<<<<< HEAD
-=======
-     * PHP4 Contructor
-     *
-     */
-    function RSSWriter()
-    {
-        $this->__construct();
-    }
-
-    /**
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
      * PHP5 contructor
      *
      */

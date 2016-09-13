@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -27,8 +26,6 @@
  * our trademarks remain entirely with us.
  */
 
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * Cache
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -144,10 +141,7 @@ class CacheManager extends cacheLib
             'TXT_CACHE_ZEND_OPCACHE' => $_CORELANG['TXT_CACHE_ZEND_OPCACHE'],
             'TXT_CACHE_XCACHE' => $_CORELANG['TXT_CACHE_XCACHE'],
             'TXT_CACHE_MEMCACHE' => $_CORELANG['TXT_CACHE_MEMCACHE'],
-<<<<<<< HEAD
             'TXT_CACHE_MEMCACHED' => $_CORELANG['TXT_CACHE_MEMCACHED'],
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             'TXT_CACHE_FILESYSTEM' => $_CORELANG['TXT_CACHE_FILESYSTEM'],
             'TXT_CACHE_APC_ACTIVE_INFO' => $_CORELANG['TXT_CACHE_APC_ACTIVE_INFO'],
             'TXT_CACHE_APC_CONFIG_INFO' => $_CORELANG['TXT_CACHE_APC_CONFIG_INFO'],
@@ -157,11 +151,8 @@ class CacheManager extends cacheLib
             'TXT_CACHE_XCACHE_CONFIG_INFO' => $_CORELANG['TXT_CACHE_XCACHE_CONFIG_INFO'],
             'TXT_CACHE_MEMCACHE_ACTIVE_INFO' => $_CORELANG['TXT_CACHE_MEMCACHE_ACTIVE_INFO'],
             'TXT_CACHE_MEMCACHE_CONFIG_INFO' => $_CORELANG['TXT_CACHE_MEMCACHE_CONFIG_INFO'],
-<<<<<<< HEAD
             'TXT_CACHE_MEMCACHED_ACTIVE_INFO' => $_CORELANG['TXT_CACHE_MEMCACHED_ACTIVE_INFO'],
             'TXT_CACHE_MEMCACHED_CONFIG_INFO' => $_CORELANG['TXT_CACHE_MEMCACHED_CONFIG_INFO'],
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             'TXT_CACHE_ENGINE' => $_CORELANG['TXT_CACHE_ENGINE'],
             'TXT_CACHE_INSTALLATION_STATE' => $_CORELANG['TXT_CACHE_INSTALLATION_STATE'],
             'TXT_CACHE_ACTIVE_STATE' => $_CORELANG['TXT_CACHE_ACTIVE_STATE'],
@@ -206,10 +197,7 @@ class CacheManager extends cacheLib
         $this->parseUserCacheEngines();
 
         $this->parseMemcacheSettings();
-<<<<<<< HEAD
         $this->parseMemcachedSettings();
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $this->parseVarnishSettings();
 
         $intFoldersizePages = 0;
@@ -479,10 +467,7 @@ class CacheManager extends cacheLib
         $cachingEngines = array(
             self::CACHE_ENGINE_APC => array(),
             self::CACHE_ENGINE_MEMCACHE => array(),
-<<<<<<< HEAD
             self::CACHE_ENGINE_MEMCACHED => array(),
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             self::CACHE_ENGINE_XCACHE => array(),
             self::CACHE_ENGINE_FILESYSTEM => array(),
         );
@@ -507,7 +492,6 @@ class CacheManager extends cacheLib
             $cachingEngines[self::CACHE_ENGINE_MEMCACHE]['configured'] = true;
         }
         
-<<<<<<< HEAD
         if ($this->isInstalled(self::CACHE_ENGINE_MEMCACHED)) {
             $cachingEngines[self::CACHE_ENGINE_MEMCACHED]['installed'] = true;
         }
@@ -518,8 +502,6 @@ class CacheManager extends cacheLib
             $cachingEngines[self::CACHE_ENGINE_MEMCACHED]['configured'] = true;
         }
         
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         if ($this->isInstalled(self::CACHE_ENGINE_XCACHE)) {
             $cachingEngines[self::CACHE_ENGINE_XCACHE]['installed'] = true;
         }
@@ -565,15 +547,12 @@ class CacheManager extends cacheLib
         $this->objTpl->setVariable('MEMCACHE_USERCACHE_CONFIG_IP', contrexx_raw2xhtml($configuration['ip']));
         $this->objTpl->setVariable('MEMCACHE_USERCACHE_CONFIG_PORT', contrexx_raw2xhtml($configuration['port']));
     }
-<<<<<<< HEAD
 
     protected function parseMemcachedSettings() {
         $configuration = $this->getMemcacheConfiguration();
         $this->objTpl->setVariable('MEMCACHED_USERCACHE_CONFIG_IP', contrexx_raw2xhtml($configuration['ip']));
         $this->objTpl->setVariable('MEMCACHED_USERCACHE_CONFIG_PORT', contrexx_raw2xhtml($configuration['port']));
     }
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     
     protected function parseVarnishSettings(){
         $configuration = $this->getVarnishConfiguration();
@@ -645,49 +624,11 @@ class CacheManager extends cacheLib
         global $objDatabase;
 
         $intPageId = intval($intPageId);
-<<<<<<< HEAD
         if ( 0 < $intPageId ) {
             $files = glob( $this->strCachePath . '*_' . $intPageId );
             if ( count( $files ) ) {
                 foreach ( $files as $file ) {
                     @unlink( $file );
-=======
-        if ($intPageId > 0) {
-            $arrPageContent = array('url' => '/index.php?page=' . $intPageId,
-                'request' => array('page' => strval($intPageId))
-            );
-            $arrFileNames[0] = md5(serialize($arrPageContent));
-
-            $objResult = $objDatabase->Execute('SELECT		id
-												FROM		' . DBPREFIX . 'languages
-												ORDER BY	id ASC
-											');
-            while (!$objResult->EOF) {
-                $arrLanguages[$objResult->fields['id']] = $objResult->fields['id'];
-                $objResult->MoveNext();
-            }
-
-
-            $i = 2;
-            foreach ($arrLanguages as $intKey1 => $intLangId1) {
-                foreach ($arrLanguages as $intKey2 => $intLangId2) {
-                    unset($arrPageContent);
-                    $arrPageContent = array('url' => '/index.php?page=' . $intPageId,
-                        'request' => array('backendLangId' => $intLangId1,
-                            'langId' => $intLangId2,
-                            'page' => strval($intPageId)
-
-                        )
-                    );
-                    $arrFileNames[$i] = md5(serialize($arrPageContent));
-                    $i++;
-                }
-            }
-
-            foreach ($arrFileNames as $intKey => $strFileName) {
-                if (is_file($this->strCachePath . $strFileName)) {
-                    @unlink($this->strCachePath . $strFileName);
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                 }
             }
         }

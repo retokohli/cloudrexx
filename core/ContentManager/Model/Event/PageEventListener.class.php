@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * This listener ensures slug consistency on Page objects.
  * On Flushing, all entities are scanned and changed where needed.
  * After persist, the XMLSitemap is rewritten
@@ -126,14 +123,6 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     }
 
     public function postUpdate($eventArgs) {
-<<<<<<< HEAD
-=======
-        global $objCache;
-        if ($objCache) {
-            $objCache->clearCache();
-        }
-        
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         $this->writeXmlSitemap($eventArgs);
     }
 
@@ -162,11 +151,7 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
         global $objCache;
         if ($objCache) {
-<<<<<<< HEAD
             //$objCache->clearCache();
-=======
-            $objCache->clearCache();
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
         
         foreach ($uow->getScheduledEntityUpdates() AS $entity) {            

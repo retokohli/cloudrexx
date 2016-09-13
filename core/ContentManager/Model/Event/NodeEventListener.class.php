@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * This listener ensures tree consistency on Node objects.
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -92,14 +89,7 @@ class NodeEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $nodeRepo->removeFromTree($entity);
     }
     
-<<<<<<< HEAD
     public function onFlush($eventArgs) {}
-=======
-    public function onFlush($eventArgs) {
-        global $objCache;
-        $objCache->clearCache();
-    }
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
     public function onEvent($eventName, $eventArgs) {
         $this->$eventName(current($eventArgs));

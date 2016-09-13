@@ -87,11 +87,7 @@ h1{ font-size: 20px }
 .ie7 #input1{ float:left; }
 .ie7 .space{ margin-bottom: 10px; }
 
-<<<<<<< HEAD
 #subnav {
-=======
-#site-language {
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     float: left;
     width: 100%;
     border-right: 1px solid #e5e5e5;
@@ -100,13 +96,10 @@ h1{ font-size: 20px }
     min-height: 31px;
 }
 
-<<<<<<< HEAD
 #site-language {
     float: right;
 }
 
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 #content-manager.edit_view #site-language {
     border: 0;
     margin: 0;
@@ -484,12 +477,9 @@ h1{ font-size: 20px }
     float: left;
     overflow: hidden;
 }
-<<<<<<< HEAD
 #content-manager.edit_view #site-tree .name {
     max-width: 202px;
 }
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 
 #site-tree .jstree-move {
     display: none;
@@ -500,7 +490,6 @@ h1{ font-size: 20px }
     background: url(../Media/Move.png) no-repeat right bottom;
 }
 
-<<<<<<< HEAD
 #content-manager.edit_view #site-tree .jstree-move {
     float: none;
     right: 33px;
@@ -513,8 +502,6 @@ li.jstree-closed, li.jstree-leaf {
     height: auto !important;
 }
 
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 *+html #site-tree .jstree-move {
     position: relative;
     top: 7px;

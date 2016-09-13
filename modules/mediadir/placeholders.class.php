@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,18 +27,12 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Media Directory Placeholders
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.0
-<<<<<<< HEAD
  * @subpackage  module_mediadir
-=======
- * @subpackage  module_marketplace
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * @todo        Edit PHP DocBlocks!
  */
 

@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * PageRepository
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -264,11 +261,7 @@ class PageRepository extends EntityRepository {
         // 3. We found a page in our language!
         // Now lets do a final check if this page is of type fallback.
         // If so, we were unlucky and have to stop here.
-<<<<<<< HEAD
         if ($page->getType() != \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK && !$page->isVirtual()) {
-=======
-        if ($page->getType() != \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK) {
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             return null;
         }
 

@@ -36,7 +36,6 @@ var FolderWidget = function(options) {
         if (!restrictUpload2SingleFile) {
             var ul = $('<ul></ul>').appendTo(container);
         }
-<<<<<<< HEAD
         var links = cx.variables.get('fileLinks', 'uploader/folderWidget');
         $.each(files, function(i, file) {
             var li = $('<li></li>');
@@ -44,11 +43,6 @@ var FolderWidget = function(options) {
             if (links && links[file] != undefined) {
                 span = $('<span></span>').html('<a href="' + links[file] + '" target="_blank">' + file + '</a>');
             }
-=======
-        $.each(files, function(i, file) {
-            var li = $('<li></li>');
-            var span = $('<span></span>').html(file);
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             var del = $(' &nbsp; <a></a>');
             del.addClass('deleteIcon');
             del.attr('href','');

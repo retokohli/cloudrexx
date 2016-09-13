@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -27,8 +26,6 @@
  * our trademarks remain entirely with us.
  */
 
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 //those tests were broken by making all methods static and introducing constants to the code.
 //left below for reference purposes.
 include_once(ASCMS_TEST_PATH.'/testCases/DoctrineTestCase.php');

@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * News library
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author Comvation Development Team <info@comvation.com>
@@ -1044,11 +1041,8 @@ class newsLibrary
                                     AND n.status = 1
                                     AND nl.lang_id = ".FRONTEND_LANG_ID."
                                     AND nl.is_active=1
-<<<<<<< HEAD
                                     AND (n.startdate <='" . date('Y-m-d H:i:s') . "' OR n.startdate='0000-00-00 00:00:00')
                                     AND (n.enddate >='" . date('Y-m-d H:i:s') . "' OR n.enddate='0000-00-00 00:00:00')
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                                     ".$categoryFilter."
                                     " .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
                                     ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?

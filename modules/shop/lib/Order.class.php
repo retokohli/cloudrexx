@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Shop Order
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
@@ -1975,11 +1972,7 @@ class Order
      * @return  float                               The net item sum on success,
      *                                              false otherwise
      */
-<<<<<<< HEAD
     function view_items($objTemplate, $edit, &$total_weight=0, $i=0)
-=======
-    function view_items($objTemplate, $edit, $total_weight=0, $i=0)
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
     {
         global $objDatabase, $_ARRAYLANG;
 

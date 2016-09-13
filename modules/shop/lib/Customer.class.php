@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Shop Customer
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
@@ -663,13 +660,7 @@ class Customer extends User
      */
     static function updatePassword($email, $password)
     {
-<<<<<<< HEAD
         $objUser = \FWUser::getFWUserObject()->objUser->getUsers( 
-=======
-        global $objFWUser;
-
-        $objUser = $objFWUser->objUser->getUsers(
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             array('email' => $email));
         if (!$objUser) return false;
         $objUser->setPassword($password);

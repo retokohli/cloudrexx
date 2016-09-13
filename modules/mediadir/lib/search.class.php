@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Media Directory Search Class
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -94,15 +91,9 @@ class mediaDirectorySearch extends mediaDirectoryLibrary
 <form method="get" action="$strSearchFormAction">
 <input name="section" value="$strSectionValue" type="hidden" />
 <input name="type" value="normal" type="hidden" />
-<<<<<<< HEAD
 $strSearchFormCmd
 <input name="term" class="$strInputfieldSearch" value="$strSearchFormTerm" onfocus="this.select();" type="text" />
 <input class="$strButtonSearch" value="$strTextSearch" name="search" type="submit">
-=======
-<input type="hidden" value="Suchen" name="search">
-$strSearchFormCmd
-<input name="term" class="$strInputfieldSearch" value="$strSearchFormTerm" onfocus="this.select();" type="text" /><input class="$strButtonSearch" value="$strTextSearch" name="search" type="submit">
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 </form>
 </div>
 EOF;
@@ -114,15 +105,9 @@ EOF;
 <div class="normal">
 <input name="section" value="$strSectionValue" type="hidden" />
 <input name="type" value="exp" type="hidden" />
-<<<<<<< HEAD
 $strSearchFormCmd
 <p><label>$strTextSearchterm</label>
 <input name="term" class="$strInputfieldSearch" value="$strSearchFormTerm" onfocus="this.select();" type="text" /></p>
-=======
-<input type="hidden" value="Suchen" name="search">
-$strSearchFormCmd
-<p><label>$strTextSearchterm</label><input name="term" class="$strInputfieldSearch" value="$strSearchFormTerm" onfocus="this.select();" type="text" /></p>
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 </div>
 <div class="expanded">
 $strExpandedInputfields

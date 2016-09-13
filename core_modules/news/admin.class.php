@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * News manager
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author Comvation Development Team <info@comvation.com>
@@ -2903,13 +2900,8 @@ class newsManager extends newsLibrary {
                                 AND     tblLocale.is_active = 1
                                 AND     tblLocale.lang_id = " . $LangId . "                                
                                 AND     tblCategory.lang_id = " . $LangId . "                                
-<<<<<<< HEAD
                                 AND     (tblNews.startdate <= '".date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME)."' OR tblNews.startdate = '0000-00-00 00:00:00')
                                 AND     (tblNews.enddate >= '".date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME)."' OR tblNews.enddate = '0000-00-00 00:00:00')"
-=======
-                                AND     (tblNews.startdate <= '".date('Y-m-d')."' OR tblNews.startdate = '0000-00-00 00:00:00')
-                                AND     (tblNews.enddate >= '".date('Y-m-d')."' OR tblNews.enddate = '0000-00-00 00:00:00')"
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                                 .($this->arrSettings['news_message_protection'] == '1' ? " AND tblNews.frontend_access_id=0 " : '')
                                         ."ORDER BY tblNews.date DESC";
 

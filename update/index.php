@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 
 /**
  * Contrexx
@@ -27,8 +26,6 @@
  * our trademarks remain entirely with us.
  */
 
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * Contrexx Update System
  *
@@ -166,13 +163,9 @@ if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'session_variable')) {
     $sessionObj = \cmsSession::getInstance();
 }
 $sessionObj->cmsSessionStatusUpdate('backend');
-<<<<<<< HEAD
 if (!isset($_SESSION['contrexx_update'])) {
     $_SESSION['contrexx_update'] = array();
 }
-=======
-
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 // Initialize base system
 $objInit = new InitCMS('update', Env::em());
 Env::set('init', $objInit);

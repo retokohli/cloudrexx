@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?php
 
 /**
@@ -28,9 +27,6 @@
  */
 
 
-=======
-<?php
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
 /**
  * Contrexx CMS
  * generated date Tue, 30 Aug 2005 14:11:18 +0200

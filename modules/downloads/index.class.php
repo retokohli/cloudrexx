@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Digital Asset Management
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
@@ -1174,14 +1171,11 @@ JS_CODE;
                 'TXT_DOWNLOADS_SIZE'                => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
                 'DOWNLOADS_FILE_SIZE'               => $this->getFormatedFileSize($objDownload->getSize())
             ));
-<<<<<<< HEAD
             $this->objTemplate->touchBlock('download_size_information');
             $this->objTemplate->touchBlock('download_size_list');
         } else {
             $this->objTemplate->hideBlock('download_size_information');
             $this->objTemplate->hideBlock('download_size_list');
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
 
         // parse license
@@ -1190,14 +1184,11 @@ JS_CODE;
                 'TXT_DOWNLOADS_LICENSE'             => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
                 'DOWNLOADS_FILE_LICENSE'            => htmlentities($objDownload->getLicense(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
-<<<<<<< HEAD
             $this->objTemplate->touchBlock('download_license_information');
             $this->objTemplate->touchBlock('download_license_list');
         } else {
             $this->objTemplate->hideBlock('download_license_information');
             $this->objTemplate->hideBlock('download_license_list');
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
 
         // parse version
@@ -1206,14 +1197,11 @@ JS_CODE;
                 'TXT_DOWNLOADS_VERSION'             => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
                 'DOWNLOADS_FILE_VERSION'            => htmlentities($objDownload->getVersion(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
-<<<<<<< HEAD
             $this->objTemplate->touchBlock('download_version_information');
             $this->objTemplate->touchBlock('download_version_list');
         } else {
             $this->objTemplate->hideBlock('download_version_information');
             $this->objTemplate->hideBlock('download_version_list');
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
 
         // parse author
@@ -1222,14 +1210,11 @@ JS_CODE;
                 'TXT_DOWNLOADS_AUTHOR'              => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
                 'DOWNLOADS_FILE_AUTHOR'             => htmlentities($objDownload->getAuthor(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
-<<<<<<< HEAD
             $this->objTemplate->touchBlock('download_author_information');
             $this->objTemplate->touchBlock('download_author_list');
         } else {
             $this->objTemplate->hideBlock('download_author_information');
             $this->objTemplate->hideBlock('download_author_list');
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
 
         // parse website
@@ -1239,14 +1224,11 @@ JS_CODE;
                 'DOWNLOADS_FILE_WEBSITE'            => $this->getHtmlLinkTag(htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET)),
                 'DOWNLOADS_FILE_WEBSITE_SRC'        => htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
-<<<<<<< HEAD
             $this->objTemplate->touchBlock('download_website_information');
             $this->objTemplate->touchBlock('download_website_list');
         } else {
             $this->objTemplate->hideBlock('download_website_information');
             $this->objTemplate->hideBlock('download_website_list');
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
     }
 

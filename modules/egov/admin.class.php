@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * E-Government
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
@@ -512,7 +509,6 @@ class eGov extends eGovLibrary
         $NewPosition = 0;
         if (isset($_REQUEST['Direction'])) {
             $query = "
-<<<<<<< HEAD
                 SELECT product_id
                   FROM ".DBPREFIX."module_egov_products
                  ORDER BY product_orderby";
@@ -538,52 +534,6 @@ class eGov extends eGovLibrary
             }
             // TODO: implement proper status message
             $this->_strOkMessage = $_ARRAYLANG['TXT_EGOV_PRODUCT_SUCCESSFULLY_SAVED'];
-=======
-                SELECT count(*) AS anzahl
-                  FROM ".DBPREFIX."module_egov_products";
-            $objResult = $objDatabase->Execute($query);
-            $anzahl = $objResult->fields['anzahl'];
-            if ($_REQUEST['Direction'] == 'up') {
-                $NewPosition = eGovLibrary::GetProduktValue(
-                    'product_orderby', $_REQUEST['id'])-1;
-            }
-            if ($_REQUEST['Direction'] == 'down') {
-                $NewPosition = eGovLibrary::GetProduktValue(
-                    'product_orderby', $_REQUEST['id'])+1;
-            }
-            if ($NewPosition < 0) {
-                $NewPosition = 0;
-            }
-            if ($NewPosition > $anzahl) {
-                $NewPosition = $anzahl;
-            }
-            $query = "
-                SELECT product_id
-                  FROM ".DBPREFIX."module_egov_products
-                 WHERE product_orderby=$NewPosition";
-            $objResult = $objDatabase->Execute($query);
-            $TauschID = $objResult->fields['product_id'];
-            $query = "
-                SELECT product_orderby
-                  FROM ".DBPREFIX."module_egov_products
-                 WHERE product_id=".$_REQUEST['id'];
-            $objResult = $objDatabase->Execute($query);
-            $TauschPosition = $objResult->fields['product_orderby'];
-            $query = "
-                UPDATE ".DBPREFIX."module_egov_products
-                   SET product_orderby=".$TauschPosition."
-                 WHERE product_id=$TauschID";
-            if ($objDatabase->Execute($query)) {
-                $this->_strOkMessage = $_ARRAYLANG['TXT_EGOV_PRODUCT_SUCCESSFULLY_SAVED'];
-            }
-            $query = "
-                UPDATE ".DBPREFIX."module_egov_products
-                   SET product_orderby=$NewPosition
-                 WHERE product_id=".$_REQUEST['id'];
-            if ($objDatabase->Execute($query)) {
-                $this->_strOkMessage = $_ARRAYLANG['TXT_EGOV_PRODUCT_SUCCESSFULLY_SAVED'];
-            }
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
         $this->objTemplate->setVariable(array(
             'TXT_PRODUCTS' => $_ARRAYLANG['TXT_PRODUCTS'],

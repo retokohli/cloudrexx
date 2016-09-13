@@ -1,7 +1,6 @@
 <?php
 
 /**
-<<<<<<< HEAD
  * Contrexx
  *
  * @link      http://www.contrexx.com
@@ -28,8 +27,6 @@
  */
 
 /**
-=======
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
  * Gallery
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
@@ -2290,11 +2287,7 @@ class galleryManager extends GalleryLibrary
 
                 //check if file needs to be renamed
                 $newName = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($file);
-<<<<<<< HEAD
                 if (self::fileExists($path.'/'.$newName, false)) {
-=======
-                if (file_exists($path.'/'.$newName)) {
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
                     $info     = pathinfo($newName);
                     $exte     = $info['extension'];
                     $exte     = (!empty($exte)) ? '.'.$exte : '';
@@ -3507,7 +3500,6 @@ $strFileNew = '';
 
         //check if file exists
         $boolChecker = false;
-<<<<<<< HEAD
         $strImportedImageName = $strFile;
         while ($boolChecker == false) {
             if (self::fileExists($this->strImagePath.$strImportedImageName, false)) {
@@ -3519,15 +3511,6 @@ $strFileNew = '';
             } else {
                 $boolChecker = true;
             }
-=======
-        while ($boolChecker == false) {
-            if (file_exists($this->strImagePath.$strFile)) {
-                $strImportedImageName = time().'_'.$strFile;
-            } else {
-                $strImportedImageName = $strFile;
-            }
-            $boolChecker = true;
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
         }
 
         // gets the quality
@@ -3959,7 +3942,6 @@ $strFileNew = '';
             $objSettings = new settingsManager();
             $objSettings->writeSettingsFile();
     }
-<<<<<<< HEAD
 
 
     public static function fileExists($fileName, $caseSensitive = true) {
@@ -3982,8 +3964,3 @@ $strFileNew = '';
         return false;
     }
 }
-=======
-}
-
-?>
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211

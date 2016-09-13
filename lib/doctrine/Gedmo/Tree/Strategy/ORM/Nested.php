@@ -253,11 +253,7 @@ class Nested implements Strategy
         $newRootId = null;
         if ($parent) {
             if ($parent instanceof Proxy && !$parent->__isInitialized__) {
-<<<<<<< HEAD
                 $em->merge($parent);
-=======
-                $em->refresh($parent);
->>>>>>> f7ee35166c3ea0314d3113cfac8fc8894c4d0211
             }
 
             $parentRootId = isset($config['root']) ? $meta->getReflectionProperty($config['root'])->getValue($parent) : null;
