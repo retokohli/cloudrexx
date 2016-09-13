@@ -1,10 +1,35 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
 * User Management
-* @copyright    CONTREXX CMS - COMVATION AG
-* @author       COMVATION Development Team <info@comvation.com>
-* @package      contrexx
+* @copyright    CLOUDREXX CMS - CLOUDREXX AG
+* @author       CLOUDREXX Development Team <info@cloudrexx.com>
+* @package      cloudrexx
 * @subpackage   coremodule_access
 * @version      1.0.0
 */
@@ -13,9 +38,9 @@ namespace Cx\Core_Modules\Access\Controller;
 
 /**
 * User Management Backend
-* @copyright    CONTREXX CMS - COMVATION AG
-* @author       COMVATION Development Team <info@comvation.com>
-* @package      contrexx
+* @copyright    CLOUDREXX CMS - CLOUDREXX AG
+* @author       CLOUDREXX Development Team <info@cloudrexx.com>
+* @package      cloudrexx
 * @subpackage   coremodule_access
 * @version      1.0.0
 */
@@ -82,7 +107,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
     */
     function _exportUsers($groupId = 0, $langId = null)
     {
-        global $_CORELANG, $objInit;
+        global $_CORELANG, $_ARRAYLANG, $objInit;
 
         $csvSeparator = ";";
         $groupId = intval($groupId);
@@ -104,9 +129,26 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             ($langId != null ? '_lang_'.$arrLangs[$langId]['lang'] : '').
             '.csv"', true);
 
-        $arrFields = array ('active', 'frontend lang', 'backend lang', 'gender', 'title', 'firstname', 'lastname', 'username', 'email', 'regdate');
+        $arrFields = array (
+            'active'            => $_ARRAYLANG['TXT_ACCESS_ACTIVE'],
+            'frontend_lang_id'  => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] . ' ('.$_CORELANG['TXT_LANGUAGE_FRONTEND'].')',
+            'backend_lang_id'   => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] . ' ('.$_CORELANG['TXT_LANGUAGE_BACKEND'].')',
+            'username'          => $_ARRAYLANG['TXT_ACCESS_USERNAME'],
+            'email'             => $_ARRAYLANG['TXT_ACCESS_EMAIL'],
+            'regdate'           => $_ARRAYLANG['TXT_ACCESS_REGISTERED_SINCE'],
+        );
+
+        // fetch profile attributes
+        $arrProfileFields = array_merge(
+            $objFWUser->objUser->objAttribute->getCoreAttributeIds(),
+            $objFWUser->objUser->objAttribute->getCustomAttributeIds()
+        );
         foreach ($arrFields as $field) {
             print $this->_escapeCsvValue($field).$csvSeparator;
+        }
+        foreach ($arrProfileFields as $profileField) {
+            $arrFields[$profileField] = $objFWUser->objUser->objAttribute->getById($profileField)->getName();
+            print $this->_escapeCsvValue($arrFields[$profileField]).$csvSeparator;
         }
         print "\n";
 
@@ -121,7 +163,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $filter['frontend_lang_id'] = $langId;
             }
         }
-        $objUser = $objFWUser->objUser->getUsers($filter, null, array('username'), array('active', 'frontend_lang_id', 'backend_lang_id', 'gender', 'title', 'firstname', 'lastname', 'username', 'email', 'regdate'));
+        $objUser = $objFWUser->objUser->getUsers($filter, null, array('username'), array_keys($arrFields));
         if ($objUser) {
             while (!$objUser->EOF) {
                 $activeStatus = $objUser->getActiveStatus() ? $_CORELANG['TXT_YES'] : $_CORELANG['TXT_NO'];
@@ -138,42 +180,64 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 }
                 $backendLang = $arrLangs[$backendLangId]['name']." (".$arrLangs[$backendLangId]['lang'].")";
 
-                // gender
-                switch ($objUser->getProfileAttribute('gender')) {
-                    case 'gender_male':
-                       $gender = $_CORELANG['TXT_ACCESS_MALE'];
-                    break;
-
-                    case 'gender_female':
-                       $gender = $_CORELANG['TXT_ACCESS_FEMALE'];
-                    break;
-
-                    default:
-                       $gender = $_CORELANG['TXT_ACCESS_NOT_SPECIFIED'];
-                    break;
-                }
-
-                // title
-                $title = '';
-                $objAttribute = $objFWUser->objUser->objAttribute->getById('title');
-                foreach ($objAttribute->getChildren() as $childAttributeId) {
-                    $objChildAtrribute = $objAttribute->getById($childAttributeId);
-                    if ($objChildAtrribute->getMenuOptionValue() == $objUser->getProfileAttribute('title')) {
-                        $title = $objChildAtrribute->getName();
-                        break;
-                    }
-                }
-
+                // active
                 print $this->_escapeCsvValue($activeStatus).$csvSeparator;
+
+                // frontend_lang_id
                 print $this->_escapeCsvValue($frontendLang).$csvSeparator;
+
+                // backend_lang_id
                 print $this->_escapeCsvValue($backendLang).$csvSeparator;
-                print $this->_escapeCsvValue($gender).$csvSeparator;
-                print $this->_escapeCsvValue($title).$csvSeparator;
-                print $this->_escapeCsvValue($objUser->getProfileAttribute('firstname')).$csvSeparator;
-                print $this->_escapeCsvValue($objUser->getProfileAttribute('lastname')).$csvSeparator;
+
+                // username
                 print $this->_escapeCsvValue($objUser->getUsername()).$csvSeparator;
+
+                // email
                 print $this->_escapeCsvValue($objUser->getEmail()).$csvSeparator;
+
+                // regdate
                 print $this->_escapeCsvValue(date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate())).$csvSeparator;
+
+                // profile attributes
+                foreach ($arrProfileFields as $field) {
+                    $value = $objUser->getProfileAttribute($field);
+
+                    switch ($field) {
+                        case 'gender':
+                            switch ($value) {
+                                case 'gender_male':
+                                   $value = $_CORELANG['TXT_ACCESS_MALE'];
+                                break;
+
+                                case 'gender_female':
+                                   $value = $_CORELANG['TXT_ACCESS_FEMALE'];
+                                break;
+
+                                default:
+                                   $value = $_CORELANG['TXT_ACCESS_NOT_SPECIFIED'];
+                                break;
+                            }
+                            break; 
+
+                        case 'title':
+                        case 'country':
+                            $title = '';
+                            $value = $objUser->objAttribute->getById($field . '_' . $value)->getName();
+                            break; 
+
+                        default:
+                            $objAttribute = $objUser->objAttribute->getById($field);
+                            if (!empty($value) && $objAttribute->getType() == 'date') {
+                                $date = new \DateTime();
+                                $date ->setTimestamp($value);
+                                $value = $date->format(ASCMS_DATE_FORMAT_DATE);
+                            }
+                            break; 
+                    }
+                    print $this->_escapeCsvValue($value).$csvSeparator;
+                }
+
+                // add line break at end of row
                 print "\n";
 
                 $objUser->next();
@@ -639,24 +703,50 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $objResult = $objDatabase->Execute("
             SELECT
-                `area_id`,
-                `area_name`,
-                `access_id`,
-                `is_active`,
-                `type`,
-                `scope`,
-                `parent_area_id`
-            FROM `".DBPREFIX."backend_areas`
-            WHERE `is_active` = 1 AND `access_id` != '0'
-            ORDER BY `parent_area_id`, `order_id`
-            ");
+                `areas`.`area_id`,
+                `areas`.`area_name`,
+                `areas`.`access_id`,
+                `areas`.`module_id`,
+                `areas`.`is_active`,
+                `areas`.`type`,
+                `areas`.`scope`,
+                `areas`.`parent_area_id`,
+                `modules`.`name` AS `module_name`
+            FROM
+                `".DBPREFIX."backend_areas` AS `areas`
+            INNER JOIN
+                `".DBPREFIX."modules` AS `modules`
+            ON
+                `modules`.`id` = `areas`.`module_id`
+            WHERE
+                `areas`.`is_active` = 1 AND
+                `areas`.`access_id` != '0'
+            ORDER BY
+                `areas`.`parent_area_id`,
+                `areas`.`order_id`
+        ");
         if ($objResult) {
             while (!$objResult->EOF) {
+
+                if (isset($_CORELANG[$objResult->fields['area_name']])) {
+                    $areaName = $_CORELANG[$objResult->fields['area_name']];
+                } else {
+                    // load language file
+                    $objInit = \Env::get('init');
+                    $moduleLanguageData = $objInit->getComponentSpecificLanguageData($objResult->fields['module_name'], false, $objInit->backendLangId);
+                    if (isset($moduleLanguageData[$objResult->fields['area_name']])) {
+                        $areaName = $moduleLanguageData[$objResult->fields['area_name']];
+                    } else {
+                        $areaName = $objResult->fields['area_name'];
+                    }
+                }
+
                 $arrAreas[$objResult->fields['area_id']] = array(
-                    'name'      => $objResult->fields['area_name'],
+                    'name'      => $areaName,
                     'access_id' => $objResult->fields['access_id'],
                     'status'    => $objResult->fields['is_active'],
                     'type'      => $objResult->fields['type'],
+                    'module_id' => $objResult->fields['module_id'],
                     'scope'     => $objResult->fields['scope'],
                     'group_id'  => $objResult->fields['parent_area_id'],
                     'allowed'   => in_array($objResult->fields['access_id'], $objGroup->getStaticPermissionIds()) ? 1 : 0
@@ -854,13 +944,23 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
     function _parsePermissionAreas($arrAreas, $areaId, $scope)
     {
         global $_CORELANG;
-
+        
+        // hide access areas of inactive modules
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+        $componentRepository = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $component = $componentRepository->findOneBy(array('id' => $arrAreas[$areaId]['module_id']));
+        $areaHidden = '';
+        if ($component && !$component->isActive()) {
+            $areaHidden = 'display:none;';
+        }
+        
         $this->_objTpl->setVariable(array(
             'ACCESS_AREA_ID'            => $arrAreas[$areaId]['access_id'],
             'ACCESS_AREA_NAME'          => isset($_CORELANG[$arrAreas[$areaId]['name']]) ? htmlentities($_CORELANG[$arrAreas[$areaId]['name']], ENT_QUOTES, CONTREXX_CHARSET) : $arrAreas[$areaId]['name'],
             'ACCESS_AREA_STYLE_NR'      => $arrAreas[$areaId]['type'] == 'group' ? 3 : ($arrAreas[$areaId]['type'] == 'navigation' ? 1 : 2),
             'ACCESS_AREA_TEXT_INDENT'   => $arrAreas[$areaId]['type'] == 'group' ? 0 : ($arrAreas[$areaId]['type'] == 'navigation' ? 20 : 40),
             'ACCESS_AREA_EXTRA_STYLE'   => $arrAreas[$areaId]['type'] == 'group' ? 'font-weight:bold;' : '',
+            'ACCESS_AREA_HIDDEN'        => $areaHidden,
         ));
 
         if ($arrAreas[$areaId]['scope'] == $scope || $arrAreas[$areaId]['scope'] == 'global') {
@@ -1207,6 +1307,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
 
         if (isset($_POST['access_save_user'])) {
+            $arrSettings = \User_Setting::getSettings();
+
             // only administrators are allowed to change a users account. or users may be allowed to change their own account
             if (!\Permission::hasAllAccess() && ($objUser->getId() != $objFWUser->objUser->getId() || !\Permission::checkAccess(31, 'static', true))) {
                 \Permission::noAccess();
@@ -1227,9 +1329,11 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
             if (isset($_POST['access_profile_attribute']) && is_array($_POST['access_profile_attribute'])) {
                 $arrProfile = $_POST['access_profile_attribute'];
-
-                if (isset($_FILES['access_profile_attribute_images']) && is_array($_FILES['access_profile_attribute_images'])) {
-                    $upload_res = $this->addUploadedImagesToProfile($objUser, $arrProfile, $_FILES['access_profile_attribute_images']);
+                if (   !empty($_POST['access_image_uploader_id']) 
+                    && isset($_POST['access_profile_attribute_images']) 
+                    && is_array($_POST['access_profile_attribute_images'])
+                ) {
+                    $upload_res = $this->addUploadedImagesToProfile($objUser, $arrProfile, $_POST['access_profile_attribute_images'], $_POST['access_image_uploader_id']);
                     if (is_array($upload_res)) {
                         self::$arrStatusMsg['error'] = array_merge(self::$arrStatusMsg['error'], $upload_res);
                     }
@@ -1256,7 +1360,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     (!isset($_POST['access_user_validity']) || $_REQUEST['access_user_validity'] == 'current' || $objUser->setValidityTimePeriod(intval($_POST['access_user_validity'])))
                 )) &&
                 // administrators aren't forced to fill out all mandatory profile attributes
-                (\Permission::hasAllAccess() || $objUser->checkMandatoryCompliance()) &&
+                (\Permission::hasAllAccess() || !$arrSettings['user_account_verification']['value'] || $objUser->checkMandatoryCompliance()) &&
                 $objUser->store()
             ) {
                 self::$arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'];
@@ -1390,6 +1494,9 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 break;
         }
 
+        $this->attachJavaScriptFunction('addHistoryField');
+        
+        $uploader = $this->getImageUploader();
         $this->_objTpl->setVariable(array(
             'ACCESS_USER_ID'                       => $objUser->getId(),
             'ACCESS_USER_IS_ADMIN'                 => $objUser->getAdminStatus() ? 'checked="checked"' : '',
@@ -1406,6 +1513,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'SOURCE'                               => $source, //if source was newletter for ex.
             'CANCEL_URL'                           => $cancelUrl,
             'URL_PARAMS'                           => $urlParams,
+            'ACCESS_IMAGE_UPLOADER_ID'             => $uploader->getId(),
+            'ACCESS_IMAGE_UPLOADER_CODE'           => $uploader->getXHtml(),
         ));
 
         $rowNr = 0;
@@ -1606,9 +1715,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $objUserMail->getSenderMail();
-            $objMail->FromName = $objUserMail->getSenderName();
-            $objMail->AddReplyTo($objUserMail->getSenderMail());
+            $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
             $objMail->Subject = $objUserMail->getSubject();
 
             if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
@@ -2022,7 +2129,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'TXT_ACCESS_USER_ACCOUNT_VERIFICATION_TEXT'         => $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION_TEXT'],
         ));
         $this->_objTpl->setGlobalVariable(array(
-            'TXT_ACCESS_SOCIALLOGIN_MANUAL'                     => sprintf($_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_MANUAL'], "http://www.contrexx.com/wiki/de/index.php?title=Social_Login"),
+            'TXT_ACCESS_SOCIALLOGIN_MANUAL'                     => sprintf($_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_MANUAL'], "http://www.cloudrexx.com/wiki/de/index.php?title=Social_Login"),
         ));
 
         if (isset($_POST['access_save_settings'])) {

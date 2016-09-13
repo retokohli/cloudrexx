@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lang
  */
 global $_ARRAYLANG;
@@ -12,8 +38,8 @@ $_ARRAYLANG['TXT_CORE_SEARCH_USER_INFO'] = "Enter at least %s character(s).";
 $_ARRAYLANG['TXT_CORE_SEARCH_USER'] = "Search user";
 $_ARRAYLANG['TXT_CORE_FILTER'] = "Filter";
 $_ARRAYLANG['TXT_CORE_WHOIS'] = "Whois";
-$_ARRAYLANG['TXT_CORE_EMAIL_MARKETING'] = "E-Mail Marketing";
-$_ARRAYLANG['TXT_CORE_EMAIL_CAMPAIGNS'] = "E-Mail Campaigns";
+$_ARRAYLANG['TXT_CORE_EMAIL_MARKETING'] = "Email Marketing";
+$_ARRAYLANG['TXT_CORE_EMAIL_CAMPAIGNS'] = "Email Campaigns";
 $_ARRAYLANG['TXT_CORE_LISTS'] = "Lists";
 $_ARRAYLANG['TXT_CORE_TEMPLATES'] = "Templates";
 $_ARRAYLANG['TXT_CORE_RECIPIENTS'] = "Recipients";
@@ -181,7 +207,7 @@ $_ARRAYLANG['TXT_LICENSE'] = "License Management";
 $_ARRAYLANG['TXT_LICENSE_LICENSE'] = 'License';
 $_ARRAYLANG['TXT_LICENSE_UPDATED'] = 'The license was updated.';
 $_ARRAYLANG['TXT_LICENSE_SAVED'] = 'Settings saved successfully.';
-$_ARRAYLANG['TXT_LICENSE_NO_TEMPLATE'] = "Could not fetch template and none present. Please report to your system administrator or Contrexx support.";
+$_ARRAYLANG['TXT_LICENSE_NO_TEMPLATE'] = "Could not fetch template and none present. Please report to your system administrator or Cloudrexx support.";
 $_ARRAYLANG['TXT_LICENSE_OVERVIEW'] = "Overview";
 $_ARRAYLANG['TXT_LICENSE_STATE'] = "State";
 $_ARRAYLANG['TXT_LICENSE_EDITION'] = "Edition";
@@ -191,7 +217,7 @@ $_ARRAYLANG['TXT_LICENSE_VALID_TO'] = "Valid to";
 $_ARRAYLANG['TXT_LICENSE_CREATED_AT'] = "Created at";
 $_ARRAYLANG['TXT_INSTALLATION_ID'] = "Installation key";
 $_ARRAYLANG['TXT_LICENSE_KEY'] = "License key";
-$_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = "Enter here your license key to activate this Contrexx© installation.";
+$_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = "Enter here your license key to activate this Cloudrexx© installation.";
 $_ARRAYLANG['TXT_LICENSE_STATE_NOK'] = 'Invalid';
 $_ARRAYLANG['TXT_LICENSE_STATE_OK'] = 'Valid';
 $_ARRAYLANG['TXT_LICENSE_STATE_DEMO'] = 'Trial';
@@ -207,7 +233,7 @@ $_ARRAYLANG['TXT_WELCOME_MESSAGE'] = "Welcome";
 $_ARRAYLANG['TXT_ADMINISTSRATORS_ONLINE'] = "Administrators online";
 $_ARRAYLANG['TXT_LAST_LOGIN'] = "Last login";
 $_ARRAYLANG['TXT_LAST_LOGINS'] = "Last logins";
-$_ARRAYLANG['TXT_CONTREXX_NEWS'] = "Contrexx News";
+$_ARRAYLANG['TXT_CONTREXX_NEWS'] = "Cloudrexx News";
 $_ARRAYLANG['TXT_CREATING_AND_PUBLISHING'] = "Creating and publishing";
 $_ARRAYLANG['TXT_EVALUATE_AND_VIEW'] = "Evaluate and view";
 $_ARRAYLANG['TXT_MANAGE'] = "Manage";
@@ -344,7 +370,7 @@ $_ARRAYLANG['TXT_CHANGE'] = "Change";
 $_ARRAYLANG['TXT_CONFIRM_PASSWORD'] = "Confirm Password";
 $_ARRAYLANG['TXT_RESTORE_PASSWORD'] = "Restore password";
 $_ARRAYLANG['TXT_PW_RESTORE_SUCCESS'] = "Password successfully restored. An email is sent";
-$_ARRAYLANG['TXT_WRONG_EMAIL'] = "Wrong E-Mail Address";
+$_ARRAYLANG['TXT_WRONG_EMAIL'] = "Wrong Email Address";
 $_ARRAYLANG['TXT_ENTER_NEW_PW'] = "Restore successfully. Please enter new Password";
 $_ARRAYLANG['TXT_NO_DATA_FOUND'] = "No data found";
 $_ARRAYLANG['TXT_WRONG_KEY'] = "Wrong Key";
@@ -354,7 +380,7 @@ $_ARRAYLANG['TXT_NEW_PW_ERROR'] = "Password could not be changed";
 $_ARRAYLANG['TXT_RESTORE_MAIL_TITLE'] = "Restore your password";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART1'] = "Someone has for your";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART2'] = " CMS User Account, Username: ";
-$_ARRAYLANG['TXT_RESTORE_MAIL_PART3'] = ", have requested a reset of your password. You can ignore this e-mail if you haven't requested this password change. This e-mail was only sent to the above user account.";
+$_ARRAYLANG['TXT_RESTORE_MAIL_PART3'] = ", have requested a reset of your password. You can ignore this email if you haven't requested this password change. This email was only sent to the above user account.";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART4'] = "You don't have to worry about your user account. Please use the follwing link to get a new password:";
 $_ARRAYLANG['TXT_RESTORE_MAIL_PART5'] = "The postpone was requested by:";
 $_ARRAYLANG['TXT_NEWPW_MAIL_TITLE'] = "Your password was changed";
@@ -549,7 +575,7 @@ $_ARRAYLANG['TXT_HOTEL_MODULE_DESCRIPTION'] = "Hotel management";
 $_ARRAYLANG['TXT_IMPRINT_MODULE_DESCRIPTION'] = "Imprint";
 $_ARRAYLANG['TXT_AGB_MODULE_DESCRIPTION'] = "General Terms and Conditions";
 $_ARRAYLANG['TXT_PRIVACY_MODULE_DESCRIPTION'] = "Privacy";
-$_ARRAYLANG['TXT_SETTINGS_EMAIL'] = "E-Mail address";
+$_ARRAYLANG['TXT_SETTINGS_EMAIL'] = "Email address";
 $_ARRAYLANG['TXT_SETTINGS_SERVER_CONFIGURATION'] = "Server Configuration";
 $_ARRAYLANG['TXT_SETTINGS_SAVE'] = "Save";
 $_ARRAYLANG['TXT_SETTINGS_SMTP_SERVER_DAEMON'] = "This server's SMTP Service";
@@ -610,7 +636,7 @@ $_ARRAYLANG['TXT_USER_GROUP_FILTER'] = "Group filter";
 $_ARRAYLANG['TXT_USER_SEARCH_TERM'] = "Search term";
 $_ARRAYLANG['TXT_USER_ALL'] = "All";
 $_ARRAYLANG['TXT_USER_USERNAME'] = "Username";
-$_ARRAYLANG['TXT_USER_EMAIL'] = "E-Mail";
+$_ARRAYLANG['TXT_USER_EMAIL'] = "Email";
 $_ARRAYLANG['TXT_USER_FIRSTNAME'] = "First name";
 $_ARRAYLANG['TXT_USER_LASTNAME'] = "Last name";
 $_ARRAYLANG['TXT_USER_NOTIFICATION_EMAIL'] = "Determine password";
@@ -646,7 +672,7 @@ $_ARRAYLANG['TXT_ACCESS_ACTIVATION_LINK_DESC'] = "Activation link";
 $_ARRAYLANG['TXT_ACCESS_COULD_NOT_SET_PERMISSIONS'] = "The access rights could not be set. Please try to repeat the operation.";
 $_ARRAYLANG['TXT_ACCESS_COULD_NOT_SET_USER_ASSOCIATIONS'] = "The user membership could not be saved. Please try to repeat the operation.";
 $_ARRAYLANG['TXT_ACCESS_DUPLICATE_GROUP_NAME'] = "The given group name is already in use. Please choose another name for the group!";
-$_ARRAYLANG['TXT_ACCESS_EMAIL_DEL_FAILED'] = "An error occurred while deleting the e-mail address";
+$_ARRAYLANG['TXT_ACCESS_EMAIL_DEL_FAILED'] = "An error occurred while deleting the email address";
 $_ARRAYLANG['TXT_ACCESS_EMPTY_GROUP_NAME'] = "You need to give a name for the user group!";
 $_ARRAYLANG['TXT_ACCESS_FAILED_TO_CREATE_GROUP'] = "An error occurred while creating the group! Please try to repeat the operation.";
 $_ARRAYLANG['TXT_ACCESS_FAILED_TO_UPDATE_GROUP'] = "An error occurred while updating the group! Please try to repeat the operation.";
@@ -654,9 +680,9 @@ $_ARRAYLANG['TXT_ACCESS_GROUP_DELETE_FAILED'] = "An error occurred while trying 
 $_ARRAYLANG['TXT_ACCESS_HOST_DESC'] = "Hostname of the web server";
 $_ARRAYLANG['TXT_ACCESS_HOST_LINK_DESC'] = "Link to the web portal";
 $_ARRAYLANG['TXT_ACCESS_HTML_UC'] = "HTML";
-$_ARRAYLANG['TXT_ACCESS_INVALID_SENDER_ADDRESS'] = "The given sender e-mail address is invalid!";
-$_ARRAYLANG['TXT_ACCESS_MAIL_ADDED_FAILED'] = "An error occurred while adding the e-mail address.";
-$_ARRAYLANG['TXT_ACCESS_MAIL_UPDATED_FAILED'] = "An error occurred while updating the e-mail!";
+$_ARRAYLANG['TXT_ACCESS_INVALID_SENDER_ADDRESS'] = "The given sender email address is invalid!";
+$_ARRAYLANG['TXT_ACCESS_MAIL_ADDED_FAILED'] = "An error occurred while adding the email address.";
+$_ARRAYLANG['TXT_ACCESS_MAIL_UPDATED_FAILED'] = "An error occurred while updating the email!";
 $_ARRAYLANG['TXT_ACCESS_MANAGE_USER_LINK_DESC'] = "Link to manage freshly registered users.";
 $_ARRAYLANG['TXT_ACCESS_MULTIPART'] = "Multipart (Text/HTML)";
 $_ARRAYLANG['TXT_ACCESS_NEW_USER_REGISTRATION'] = "New user registration";
@@ -672,14 +698,14 @@ $_ARRAYLANG['TXT_ACCESS_RESET_PW_URL_DESC'] = "Link to reset the password";
 $_ARRAYLANG['TXT_ACCESS_SENDER_DESC'] = "Name of the sender";
 $_ARRAYLANG['TXT_ACCESS_SET_SENDER_NAME'] = "You need to enter a name to be used as sender!";
 $_ARRAYLANG['TXT_ACCESS_UNKNOWN'] = "unknown";
-$_ARRAYLANG['TXT_ACCESS_UNKNOWN_TYPE_SPECIFIED'] = "The selected e-mail type is not known";
-$_ARRAYLANG['TXT_ACCESS_UNKOWN_FORMAT_SPECIFIED'] = "The selected e-mail format is not known.";
+$_ARRAYLANG['TXT_ACCESS_UNKNOWN_TYPE_SPECIFIED'] = "The selected email type is not known";
+$_ARRAYLANG['TXT_ACCESS_UNKOWN_FORMAT_SPECIFIED'] = "The selected email format is not known.";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_ACTIVATED'] = "Account activated";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_DEACTIVATED'] = "Account inactive";
 $_ARRAYLANG['TXT_ACCESS_USERNAME_DESC'] = "Username";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_INVITATION'] = "Set up user account";
 $_ARRAYLANG['TXT_ACCESS_LINK_DESC'] = "Website Admin-URL";
-$_ARRAYLANG['TXT_ACCESS_EMAIL_DESC'] = "E-mail address of the new user";
+$_ARRAYLANG['TXT_ACCESS_EMAIL_DESC'] = "Email address of the new user";
 $_ARRAYLANG['TXT_ACCESS_ADDRESS'] = "Address";
 $_ARRAYLANG['TXT_ACCESS_ALL'] = "All";
 $_ARRAYLANG['TXT_ACCESS_BIRTHDAY'] = "Birthday";
@@ -695,9 +721,9 @@ $_ARRAYLANG['TXT_ACCESS_DEFAULT'] = "Standard";
 $_ARRAYLANG['TXT_ACCESS_DELETE_DATE'] = "Delete date";
 $_ARRAYLANG['TXT_ACCESS_DELETE_ENTRY'] = "Delete entry";
 $_ARRAYLANG['TXT_ACCESS_DELETE_IMAGE'] = "Delete image";
-$_ARRAYLANG['TXT_ACCESS_EMAIL'] = "E-mail";
-$_ARRAYLANG['TXT_ACCESS_EMAIL_ALREADY_USED'] = "This e-mail address is already in use by another account!";
-$_ARRAYLANG['TXT_ACCESS_EVERYONE_ALLOWED_SEEING_EMAIL'] = "Everyone may see the e-mail address";
+$_ARRAYLANG['TXT_ACCESS_EMAIL'] = "Email";
+$_ARRAYLANG['TXT_ACCESS_EMAIL_ALREADY_USED'] = "This email address is already in use by another account!";
+$_ARRAYLANG['TXT_ACCESS_EVERYONE_ALLOWED_SEEING_EMAIL'] = "Everyone may see the email address";
 $_ARRAYLANG['TXT_ACCESS_EVERYONE_ALLOWED_SEEING_PROFILE'] = "Everyone may see the profile data";
 $_ARRAYLANG['TXT_ACCESS_FAILED_STORE_PROFILE'] = "An error occurred while saving the profile data!";
 $_ARRAYLANG['TXT_ACCESS_FAILED_TO_ADD_USER_ACCOUNT'] = "An error occurred while creating the account! Please try to repeat the operation.";
@@ -705,9 +731,9 @@ $_ARRAYLANG['TXT_ACCESS_FAILED_TO_UPDATE_USER_ACCOUNT'] = "An error occurred whi
 $_ARRAYLANG['TXT_ACCESS_FEMALE'] = "Female";
 $_ARRAYLANG['TXT_ACCESS_FILL_OUT_ALL_REQUIRED_FIELDS'] = "You need to fill every required field!";
 $_ARRAYLANG['TXT_ACCESS_FIRSTNAME'] = "First name";
-$_ARRAYLANG['TXT_ACCESS_GENDER'] = "Sex";
+$_ARRAYLANG['TXT_ACCESS_GENDER'] = "Gender";
 $_ARRAYLANG['TXT_ACCESS_INTERESTS'] = "Interests";
-$_ARRAYLANG['TXT_ACCESS_INVALID_EMAIL_ADDRESS'] = "You need to enter a valid e-mail address";
+$_ARRAYLANG['TXT_ACCESS_INVALID_EMAIL_ADDRESS'] = "You need to enter a valid email address";
 $_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "The password is invalid. It must contain at least 6 characters.";
 $_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "The password is invalid. It must be at least 6 characters long as well as contain at least one upper and one lower case character and one number.";
 $_ARRAYLANG['TXT_ACCESS_INVALID_USERNAME'] = "The username may only contain alphanumeric characters (a-z, A-Z, 0-9) and the following special characters: -_";
@@ -715,9 +741,9 @@ $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] = "Language";
 $_ARRAYLANG['TXT_ACCESS_LAST_ADMIN_USER'] = "The user account %s could not be deleted as it is the only administrator account";
 $_ARRAYLANG['TXT_ACCESS_LASTNAME'] = "Last name";
 $_ARRAYLANG['TXT_ACCESS_MALE'] = "Male";
-$_ARRAYLANG['TXT_ACCESS_MEMBERS_ONLY_ALLOWED_SEEING_EMAIL'] = "Only members can see the e-mail address";
+$_ARRAYLANG['TXT_ACCESS_MEMBERS_ONLY_ALLOWED_SEEING_EMAIL'] = "Only members can see the email address";
 $_ARRAYLANG['TXT_ACCESS_MEMBERS_ONLY_ALLOWED_SEEING_PROFILE'] = "Only members can see the profile data";
-$_ARRAYLANG['TXT_ACCESS_NOBODY_ALLOWED_SEEING_EMAIL'] = "Nobody may see the e-mail address";
+$_ARRAYLANG['TXT_ACCESS_NOBODY_ALLOWED_SEEING_EMAIL'] = "Nobody may see the email address";
 $_ARRAYLANG['TXT_ACCESS_NOBODY_ALLOWED_SEEING_PROFILE'] = "Nobody may see the profile data";
 $_ARRAYLANG['TXT_ACCESS_NO_PICTURE'] = "No picture";
 $_ARRAYLANG['TXT_ACCESS_NO_SPECIFIED'] = "None specified";
@@ -745,6 +771,7 @@ $_ARRAYLANG['TXT_ACCESS_USERNAME_ALREADY_USED'] = "The chosen username is alread
 $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = "visit website";
 $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Website";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "ZIP";
+$_ARRAYLANG['TXT_ACCESS_USER_CHOOSE_FILE'] = 'Choose file';
 $_ARRAYLANG['CONTENT_ALIAS_HELPTEXT'] = "Using the alias funcionality, you may assign an URL to the page that is easier to recognize by both humans and search engines. Instead of using e.g. <b>www.yourdomain.com/index.php?page=9934</b> you may use an URL in the form <b>www.yourdomain.com/services</b>";
 $_ARRAYLANG['TXT_ERROR_NO_TITLE'] = "This page does not have a link name. It has not been saved.";
 $_ARRAYLANG['TXT_CREATE_BACKUPS'] = "Create backup";
@@ -810,7 +837,7 @@ $_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auctions";
 $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auctions";
 $_ARRAYLANG['TXT_CORE_XML_SITEMAP_NOT_WRITABLE'] = "Unable to update the XML sitemap %s due it's write-protected!";
 $_ARRAYLANG['TXT_CORE_HTACCESS_FILE_NOT_WRITABLE'] = "The file %s can't be updated due it's write-protected! Please remove the write-protection for letting the system working properly.";
-$_ARRAYLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Unable to read the HtAccess file %s due to invalid Contrexx specific directives!";
+$_ARRAYLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Unable to read the HtAccess file %s due to invalid Cloudrexx specific directives!";
 $_ARRAYLANG['TXT_CORE_APACHE_MOD_REWRITE_REQUIRED'] = "This function depends on a system running on an Apache web server. As well does it require the Apache module mod_rewrite. The system was unable to determine if those requirements are fulfilled!";
 $_ARRAYLANG['TXT_DBM_ERROR_GETTING_TABLES_INFO'] = "Error: Could not get information about existing tables.";
 $_ARRAYLANG['TXT_DBM_CSV_FOLDER'] = "Folder: '%1\$s'";
@@ -846,8 +873,8 @@ $_ARRAYLANG['TXT_CORE_SETTINGS_ERROR_RETRIEVING'] = "Error while retrieving the 
 $_ARRAYLANG['TXT_CORE_SETTINGS_NONE_FOUND'] = "No settings found";
 $_ARRAYLANG['TXT_ACCESS_PRIMARY_GROUP'] = "Primary User Group";
 $_ARRAYLANG['TXT_ECARD_MODULE_DESCRIPTION'] = "Digital Postcards";
-$_ARRAYLANG['TXT_CSRF_TITLE'] = "Contrexx security information";
-$_ARRAYLANG['TXT_CSRF_DESCR'] = 'You are changing the system configuration. If you see this message<ul><li>after clicking a link in the administration interface, click <a href="%1$s">save changes</a></li><li>after clicking a link inside an e-mail message or outside the administration interface, click <a href="%2$s">discard changes</a></li></ul>';
+$_ARRAYLANG['TXT_CSRF_TITLE'] = "Cloudrexx security information";
+$_ARRAYLANG['TXT_CSRF_DESCR'] = 'You are changing the system configuration. If you see this message<ul><li>after clicking a link in the administration interface, click <a href="%1$s">save changes</a></li><li>after clicking a link inside an email message or outside the administration interface, click <a href="%2$s">discard changes</a></li></ul>';
 $_ARRAYLANG['TXT_CSRF_ABORT'] = "discard changes";
 $_ARRAYLANG['TXT_CSRF_CONTINUE'] = "save changes";
 $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "The alias %s couldn't be used, because it is physically present!";
@@ -925,7 +952,7 @@ $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_REDIRECT_TARGET'] = "Wollen Sie das Zielfens
 $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_ROBOTS'] = "Wollen Sie den Meta Robot Status wirklich für alle Seiten (%s) setzen?";
 $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_THEMES_ID'] = "Wollen Sie die Design Vorlage %s wirklich für alle Seiten (%s) übernehmen?";
 $_ARRAYLANG['TXT_CONNECT_ACCT_EXPIRED_OR_INACTIVE'] = "Ihr Account ist abgelaufen oder wurde deaktiviert. Bitte wenden Sie sich an Ihren Administrator.";
-$_ARRAYLANG['TXT_CONNECT_DISABLED'] = "Diese Seite erlaub keine Anmeldungen über ContrexxConnect.";
+$_ARRAYLANG['TXT_CONNECT_DISABLED'] = "Diese Seite erlaub keine Anmeldungen über CloudrexxConnect.";
 $_ARRAYLANG['TXT_CONNECT_IDENTITY_NOT_REGISTERED'] = "Ihre Identität wurde von Ihrem IdP bestätigt, ist aber mit keinem Account in unserem System verbunden.";
 $_ARRAYLANG['TXT_CONNECT_IDP_RETURNED'] = "Ihr IdP hat folgende Fehlermeldung zurückgegeben: ";
 $_ARRAYLANG['TXT_CONNECT_OPENID_LOG_IN_CANCELLED'] = "Anmeldung vom Benutzer abgebrochen.";
@@ -995,6 +1022,7 @@ $_ARRAYLANG['TXT_CORE_HTML_MARK_UNDELETED'] = "Wiederherstellen";
 $_ARRAYLANG['TXT_CORE_HTML_TOGGLE_CLOSE'] = "schliessen";
 $_ARRAYLANG['TXT_CORE_HTML_TOGGLE_OPEN'] = "öffnen";
 $_ARRAYLANG['TXT_CORE_HTML_VIEW'] = "Details";
+$_ARRAYLANG['TXT_CORE_HTML_FORM_VALIDATION_ERROR'] = 'Validation of at least one field failed!';
 $_ARRAYLANG['TXT_CORE_IMAGETYPES_EDIT'] = "Bildtypen";
 $_ARRAYLANG['TXT_CORE_IMAGETYPE_ACTION_IS_IRREVERSIBLE'] = "Diese Aktion kann nicht rückgängig gemacht werden!";
 $_ARRAYLANG['TXT_CORE_IMAGETYPE_CONFIRM_DELETE_IMAGETYPE'] = "Wollen Sie diesen Bildtyp wirklich löschen?";
@@ -1017,51 +1045,51 @@ $_ARRAYLANG['TXT_CORE_IMAGETYPE_STORED_SUCCESSFULLY'] = "Die Bildtypen wurden er
 $_ARRAYLANG['TXT_CORE_IMAGETYPE_WARNING_NONE_FOUND_FOR_MODULE'] = "Hinweis: Es sind keine Bildtypen für dieses Modul (ID %1\$u) vorhanden";
 $_ARRAYLANG['TXT_CORE_IMAGETYPE_WIDTH'] = "Breite";
 $_ARRAYLANG['TXT_CORE_IMAGETYPE_WIDTH_THUMB'] = "Breite Vorschau";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATES'] = "Mailvorlagen";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ADD'] = "Mailvorlage hinzufügen";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ATTACHMENTS'] = "Anhänge";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ATTACHMENT_UPLOAD'] = "Datei hochladen:";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_BACK_TO_OVERVIEW'] = "&lt;&lt; Zurück zur Übersicht";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_BCC'] = "E-Mail Adresse für Blindkopie (bcc:)";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_CANCEL'] = "Abbrechen und zurück zur Übersicht";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_CC'] = "E-Mail Adresse für Kopie (cc:)";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_DELETED_SUCCESSFULLY'] = "Die Mailvorlage wurde erfolgreich gelöscht.";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_DELETE_CONFIRM'] = "Wollen Sie diese Vorlage wirklich löschen?\n\nDiese Aktion kann nicht rückgängig gemacht werden.";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_DELETING_FAILED'] = "Die Mailvorlage konnte nicht gelöscht werden.";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_EDIT'] = "Mailvorlage bearbeiten";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ERROR_NO_KEY'] = "Es ist kein Schlüssel für die Mailvorlage angegeben";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ERROR_NO_NAME'] = "Es ist kein Name für die Mailvorlage angegeben";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ERROR_SENDING_KEY_TO'] = "Die Mailvorlage \"%1\$s\" konnte nicht an %2\$s gesendet werden";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_FROM'] = "Absender E-Mail Adresse (from:)";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_FUNCTIONS'] = "Funktionen";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_HTML'] = "HTML Format verwenden";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_INLINE'] = "Eingebettete Bilder";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATES'] = "Email template";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ADD'] = "Add email template";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ATTACHMENTS'] = "Attachments";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ATTACHMENT_UPLOAD'] = "Upload file:";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_BACK_TO_OVERVIEW'] = "&lt;&lt; Back to overview";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_BCC'] = "Email address for blind copy (bcc:)";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_CANCEL'] = "Cancel and back to overview";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_CC'] = "Email address for copy (cc:)";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_DELETED_SUCCESSFULLY'] = "The email template was successfully deleted.";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_DELETE_CONFIRM'] = "Please confirm to delete the selected template.\\n\\nThis operation is irreversible.";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_DELETING_FAILED'] = "Failed to delete the email template.";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_EDIT'] = "Modify email template";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ERROR_NO_KEY'] = "Please provide a key for this email template";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ERROR_NO_NAME'] = "Please provide a name for this email template";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ERROR_SENDING_KEY_TO'] = "Failed to send the email template \"%1\$s\" to %2\$s";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_FROM'] = "Sender email address (from:)";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_FUNCTIONS'] = "Functions";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_HTML'] = "Use HTML format";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_INLINE'] = "Embedded images";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_IS_HTML'] = "HTML";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_IS_PROTECTED'] = "Diese Vorlage ist geschützt und kann nicht gelöscht werden.";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_KEY'] = "Schlüssel";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_KEY_SENT_SUCCESSFULLY_TO'] = "Die Mailvorlage \"%1\$s\" wurde erfolgreich an %2\$s gesendet";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_MESSAGE'] = "Nachricht";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_MESSAGE_HTML'] = "Nachricht (HTML)";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NAME'] = "Name der Vorlage";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NEW'] = "Neue Mailvorlage hinzufügen";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_BCC'] = "Trennen Sie mehrere E-Mail Adressen durch Kommas.";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_CC'] = "Trennen Sie mehrere E-Mail Adressen durch Kommas.";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_FROM'] = "Nur eine E-Mail Adresse.";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_PLACEHOLDERS'] = "Verwenden Sie für die Felder einen fixen Wert, sofern dieser bekannt und immer gültig ist. Setzen Sie einen Platzhalter ein, wenn er automatisch eingesetzt wird.";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_REPLY'] = "Nur eine E-Mail Adresse.";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_TO'] = "Trennen Sie mehrere E-Mail Adressen durch Kommas.";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NO_MESSAGE'] = "(Kein Inhalt)";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NO_SUBJECT'] = "(Kein Betreff)";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_OVERVIEW'] = "Übersicht";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_PAGING'] = "Mailvorlagen";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_PROTECTED'] = "Geschützt";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_REPLY'] = "Antwort E-Mail Adresse (reply-to:)";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_SENDER'] = "Absender Name";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_STORE'] = "Speichern";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_STORED_SUCCESSFULLY'] = "Die Mailvorlage wurde erfolgreich gespeichert";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_STORE_TO_SWITCH_EDITOR'] = "(Speichern Sie die Vorlage, um den Bearbeitungsmodus zu wechseln)";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_STORING_FAILED'] = "Die Mailvorlage konnte nicht gespeichert werden.";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_SUBJECT'] = "Betreff";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_IS_PROTECTED'] = "This template is protected and can therefore not be deleted.";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_KEY'] = "Key";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_KEY_SENT_SUCCESSFULLY_TO'] = "The email template \"%1\$s\" was successfully sent to %2\$s";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_MESSAGE'] = "Message";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_MESSAGE_HTML'] = "Message (HTML)";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NAME'] = "Template name";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NEW'] = "Add new email template";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_BCC'] = "Separate multiple email addresses by comma.";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_CC'] = "Separate multiple email addresses by comma.";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_FROM'] = "Only one email address.";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_PLACEHOLDERS'] = "Use a fixed value if there's a value that is always known and correct. Use a placeholder for automatic value-generation.";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_REPLY'] = "Nur eine Email Adresse.";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_TO'] = "Separate multiple email addresses by comma.";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NO_MESSAGE'] = "(No content)";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NO_SUBJECT'] = "(No subject)";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_OVERVIEW'] = "Overview";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_PAGING'] = "Mail templates";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_PROTECTED'] = "Protected";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_REPLY'] = "Reply email address (reply-to:)";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_SENDER'] = "Sender name";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_STORE'] = "Save";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_STORED_SUCCESSFULLY'] = "The email template was successfully saved";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_STORE_TO_SWITCH_EDITOR'] = "(Save this template in order to change the edit mode)";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_STORING_FAILED'] = "Failed to save the email template.";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_SUBJECT'] = "Subject";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_TEXT_ATTACHMENTS_ID'] = "";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_TEXT_BCC_ID'] = "";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_TEXT_CC_ID'] = "";
@@ -1073,9 +1101,10 @@ $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_TEXT_REPLY_ID'] = "";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_TEXT_SENDER_ID'] = "";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_TEXT_SUBJECT_ID'] = "";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_TEXT_TO_ID'] = "";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_TO'] = "Empfänger E-Mail Adresse (to:)";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_TO_TEST'] = "Geben Sie hier Ihre E-Mail Adresse an, um nach dem Speichern einen Testversand auszulösen:";
-$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_WARNING_NONE'] = "Es sind keine Mailvorlagen vorhanden";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_TO'] = "Recipient email address (to:)";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_TO_TEST'] = "Please provide your email address in order to send a test-email after saving:";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_WARNING_NONE'] = "There are no email template present";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ERROR_NO_SECTION_OR_GROUP'] = "No value has been assigned to this language placeholder.";
 $_ARRAYLANG['TXT_CORE_MONTH_ABBREV3_ARRAY'] = "M_0,Jan,Feb,Mär,Apr,Mai,Jun,Jul,Aug,Sep,Okt,Nov,Dez";
 $_ARRAYLANG['TXT_CORE_MONTH_ARRAY'] = "MONTH_0,Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember";
 $_ARRAYLANG['TXT_CORE_SETTING'] = "Einstellungen";
@@ -1099,7 +1128,7 @@ $_ARRAYLANG['TXT_CSRF_BUTTON'] = "Klicken Sie hier, um fortzufahren.";
 $_ARRAYLANG['TXT_ELEARNING'] = "e-Learning";
 $_ARRAYLANG['TXT_ELEARNING_ADMINISTRATION'] = "e-Learning Administration";
 $_ARRAYLANG['TXT_ELEARNING_MODULE_DESCRIPTION'] = "e-Learning";
-$_ARRAYLANG['TXT_ENABLE_CONNECT'] = "Logins über ContrexxConnect erlauben.";
+$_ARRAYLANG['TXT_ENABLE_CONNECT'] = "Logins über CloudrexxConnect erlauben.";
 $_ARRAYLANG['TXT_LANGUAGE_ANY'] = "beliebig";
 $_ARRAYLANG['TXT_LANGUAGE_BACKEND'] = "Backend";
 $_ARRAYLANG['TXT_LANGUAGE_BACKEND_COLON'] = "Backend (admin.class.php):";
@@ -1140,7 +1169,7 @@ $_ARRAYLANG['TXT_LANGUAGE_WRITE_FILES'] = "Sprachdateien schreiben";
 $_ARRAYLANG['TXT_LINKCHECKER'] = "Link Checker";
 $_ARRAYLANG['TXT_LINKCHECKER_MODULE_DESCRIPTION'] = "Das Modul zur automatischen Link-Prüfung.";
 $_ARRAYLANG['TXT_LOGIN_OPENID'] = "OpenID";
-$_ARRAYLANG['TXT_LOGIN_SIGN_UP'] = "Haben Sie noch kein Account? Jetzt registrieren";
+$_ARRAYLANG['TXT_CORE_SIGN_UP'] = "Not yet a member? Sign up now";
 $_ARRAYLANG['TXT_LOGIN_SUBMIT_OPENID'] = "Mit OpenID anmelden";
 $_ARRAYLANG['TXT_MEDIADIR_MODULE_DESCTIPTION'] = "Nach Kategorien und Ebenen strukturiertes Medien Verzeichnis";
 $_ARRAYLANG['TXT_MODULE_MISSING'] = "Das Modul %1\$s ist nicht vorhanden";
@@ -1173,6 +1202,7 @@ $_ARRAYLANG['TXT_CORE_CM_PAGE_TITLE_INFO'] = 'Displayed on the content page and 
 $_ARRAYLANG['TXT_CORE_CM_TYPE'] = 'Type';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_CONTENT'] = 'Content Page';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_REDIRECT'] = 'Redirection';
+$_ARRAYLANG['TXT_CORE_CM_TYPE_SYMLINK'] = 'Reference';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_APPLICATION'] = 'Application';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_FALLBACK'] = 'Use fallback Version:';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_CONTENT_INFO'] = 'Use the content editor below to manage this page\'s contents.';
@@ -1180,6 +1210,9 @@ $_ARRAYLANG['TXT_CORE_CM_TYPE_REDIRECT_TARGET'] = 'Target';
 $_ARRAYLANG['TXT_CORE_CM_BROWSE'] = 'Find...';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_REDIRECT_INFO'] = 'Redirect to another page or any other target.';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_REDIRECT_INFO_ACTION'] = 'Enter an external URL or select a page.';
+$_ARRAYLANG['TXT_CORE_CM_TYPE_SYMLINK_TARGET'] = 'Target';
+$_ARRAYLANG['TXT_CORE_CM_TYPE_SYMLINK_INFO'] = 'Reference to another page.';
+$_ARRAYLANG['TXT_CORE_CM_TYPE_SYMLINK_INFO_ACTION'] = 'Select a page.';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_APPLICATION_AREA'] = 'Area';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_APPLICATION_INFO'] = 'Select the desired application and area. For more information, refer to the application documentation.';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_FALLBACK_INFO'] = 'Use the contents and settings of another language version of this page.';
@@ -1251,6 +1284,7 @@ $_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_HOME'] = "homepage";
 $_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_CONTENT_SITE'] = "content page";
 $_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_APPLICATION'] = "application";
 $_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_REDIRECTION'] = "redirection";
+$_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_SYMLINK'] = "reference";
 $_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_FALLBACK'] = "fallback";
 $_ARRAYLANG['TXT_CORE_CM_PAGE_MOVE_INFO'] = "Move the page by use of drag and drop.";
 $_ARRAYLANG['TXT_CORE_CM_TRANSLATION_INFO'] = "Click here to edit the page in this language.";
@@ -1326,6 +1360,13 @@ $_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL'] ='The entry has been removed s
 $_ARRAYLANG['TXT_CORE_RECORD_DELETE_CONFIRM'] ='Please confirm to remove the selected entry.';
 $_ARRAYLANG['TXT_CORE_RECORD_EDIT_TITLE'] ='Edit entry';
 $_ARRAYLANG['TXT_CORE_RECORD_DELETE_TITLE'] ='Delete entry';
+$_ARRAYLANG['TXT_CORE_RECORD_FILL_OUT_AT_LEAST_ONE_FILED'] = "Couldn't save entry, please fill out at least one field!";
+$_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'] = "Couldn't save entry, validation failed";
+$_ARRAYLANG['TXT_CORE_RECORD_ONE_TO_N_ASSOCCIATION'] = "These entries will be saved/deleted as soon as the main formular is submitted.";
+$_ARRAYLANG['TXT_CORE_RECORD_NO_SUCH_ENTRY'] = "Couldn't save entry, no such entry";
+$_ARRAYLANG['TXT_CORE_RECORD_FUNCTION_NOT_FOUND'] = "Could not save the '%s', because the function '%s' was not found. Please contact your System-Administrator";
+$_ARRAYLANG['TXT_CORE_RECORD_CLASS_NOT_FOUND'] = "Could not save the '%s', because the class was not found. Please contact your System-Administrator";
+$_ARRAYLANG['TXT_CORE_RECORD_UNKNOWN_ERROR'] = "Couldn't save entry, please check your input and try it again";
 $_ARRAYLANG['TXT_SETTINGS_UPDATED'] = 'Settings have been updated.';
 $_ARRAYLANG['TXT_ACTIVATED'] = "Activated";
 $_ARRAYLANG['TXT_DEACTIVATED'] = "Deactivated";
@@ -1345,3 +1386,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SYSTEM_MANAGEMENT']        = "System Mana
 
 $_ARRAYLANG['TXT_CORE_EDIT_USER_CRM_ACCOUNT'] = 'This user is a crm contact, click to open the crm contact.';
 $_ARRAYLANG['TXT_CORE_NONE'] = 'None';
+
+$_ARRAYLANG['TXT_CORE_ACTIVE'] = "Active";
+$_ARRAYLANG['TXT_CORE_INACTIVE'] = 'Inactive';
+$_ARRAYLANG['TXT_CORE_SCHEDULED_ACTIVE'] = 'Activated by scheduled publishing';
+$_ARRAYLANG['TXT_CORE_SCHEDULED_INACTIVE'] = 'Deactivated due to scheduled publishing';

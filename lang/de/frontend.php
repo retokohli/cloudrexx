@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lang
  */
 $_ARRAYLANG['TXT_CORE_SUBMIT'] = "Absenden";
@@ -187,6 +213,7 @@ $_ARRAYLANG['TXT_ACCESS_USERNAME_ALREADY_USED'] = "Der gewählte Benutzername wi
 $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = "Webseite besuchen";
 $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Webseite";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "PLZ";
+$_ARRAYLANG['TXT_ACCESS_USER_CHOOSE_FILE'] = 'Datei wählen';
 $_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partner";
 $_ARRAYLANG['TXT_U2U_MODULE'] = "User to User Nachrichten";
 $_ARRAYLANG['TXT_ACCESS_ADD_NEW_ENTRY'] = "Neuen Eintrag hinzufügen";
@@ -199,7 +226,7 @@ $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auktionen";
 $_ARRAYLANG['TXT_MARKET_LATEST'] = "Neuste Inserate";
 $_ARRAYLANG['TXT_CORE_LAST_MODIFIED_PAGE'] = "Geändert am";
 $_ARRAYLANG['TXT_ACCESS_PRIMARY_GROUP'] = "Primäre Benutzergruppe";
-$_ARRAYLANG['TXT_CSRF_TITLE'] = "Contrexx Sicherheitshinweis";
+$_ARRAYLANG['TXT_CSRF_TITLE'] = "Cloudrexx Sicherheitshinweis";
 $_ARRAYLANG['TXT_CSRF_DESCR'] = 'Sie sind dabei, &Auml;nderungen am System herbeizuf&uuml;hren. Falls Sie diese Meldung<ul><li>nach einem Klick auf einen Link in der Administrationsoberfl&auml;che sehen, klicken Sie auf <a href="%1$s">&Auml;nderungen &uuml;bernehmen</a></li><li>nach einem Klick auf einen Link in einer E-Mail oder ausserhalb der Administrationsoberfl&auml;che sehen, klicken Sie auf <a href="%2$s">&Auml;nderungen verwerfen</a></li></ul>';
 $_ARRAYLANG['TXT_CSRF_ABORT'] = "&Auml;nderungen verwerfen";
 $_ARRAYLANG['TXT_CSRF_CONTINUE'] = "&Auml;nderungen &uuml;bernehmen";
@@ -292,3 +319,6 @@ $_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Einige Datei(en) konnte(n) nicht h
 $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "Die Dateiendung ist nicht erlaubt.";
 
 $_ARRAYLANG['TXT_LOGIN_WELCOME_PAGE'] = 'Weiter zur <a href="%s" title="Website">Website</a>';
+$_ARRAYLANG['TXT_BROWSE'] = 'Durchsuchen';
+
+$_ARRAYLANG['TXT_CORE_SIGN_UP'] = "Haben Sie noch kein Konto? Jetzt registrieren";

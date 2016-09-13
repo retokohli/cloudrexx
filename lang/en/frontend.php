@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lang
  */
 $_ARRAYLANG['TXT_CORE_SUBMIT'] = "Submit";
@@ -19,7 +45,7 @@ $_ARRAYLANG['TXT_ADD_USER'] = "Add User";
 $_ARRAYLANG['TXT_USERNAME'] = "Username";
 $_ARRAYLANG['TXT_DESCRIPTION'] = "Description";
 $_ARRAYLANG['TXT_DATE'] = "Date";
-$_ARRAYLANG['TXT_EMAIL'] = "E-Mail address";
+$_ARRAYLANG['TXT_EMAIL'] = "Email address";
 $_ARRAYLANG['TXT_END_DATE'] = "End date";
 $_ARRAYLANG['TXT_ADD'] = "Add";
 $_ARRAYLANG['TXT_MODULE'] = "Module";
@@ -138,9 +164,9 @@ $_ARRAYLANG['TXT_ACCESS_DEFAULT'] = "Standard";
 $_ARRAYLANG['TXT_ACCESS_DELETE_DATE'] = "Delete date";
 $_ARRAYLANG['TXT_ACCESS_DELETE_ENTRY'] = "Delete entry";
 $_ARRAYLANG['TXT_ACCESS_DELETE_IMAGE'] = "Delete image";
-$_ARRAYLANG['TXT_ACCESS_EMAIL'] = "E-mail";
-$_ARRAYLANG['TXT_ACCESS_EMAIL_ALREADY_USED'] = "This e-mail address is already in use by another account!";
-$_ARRAYLANG['TXT_ACCESS_EVERYONE_ALLOWED_SEEING_EMAIL'] = "Everyone may see the e-mail address";
+$_ARRAYLANG['TXT_ACCESS_EMAIL'] = "Email";
+$_ARRAYLANG['TXT_ACCESS_EMAIL_ALREADY_USED'] = "This email address is already in use by another account!";
+$_ARRAYLANG['TXT_ACCESS_EVERYONE_ALLOWED_SEEING_EMAIL'] = "Everyone may see the email address";
 $_ARRAYLANG['TXT_ACCESS_EVERYONE_ALLOWED_SEEING_PROFILE'] = "Everyone may see the profile data";
 $_ARRAYLANG['TXT_ACCESS_FAILED_STORE_PROFILE'] = "An error occurred while saving the profile data!";
 $_ARRAYLANG['TXT_ACCESS_FAILED_TO_ADD_USER_ACCOUNT'] = "An error occurred while creating the account! Please try to repeat the operation.";
@@ -148,9 +174,9 @@ $_ARRAYLANG['TXT_ACCESS_FAILED_TO_UPDATE_USER_ACCOUNT'] = "An error occurred whi
 $_ARRAYLANG['TXT_ACCESS_FEMALE'] = "Female";
 $_ARRAYLANG['TXT_ACCESS_FILL_OUT_ALL_REQUIRED_FIELDS'] = "You need to fill every required field!";
 $_ARRAYLANG['TXT_ACCESS_FIRSTNAME'] = "First name";
-$_ARRAYLANG['TXT_ACCESS_GENDER'] = "Sex";
+$_ARRAYLANG['TXT_ACCESS_GENDER'] = "Gender";
 $_ARRAYLANG['TXT_ACCESS_INTERESTS'] = "Interests";
-$_ARRAYLANG['TXT_ACCESS_INVALID_EMAIL_ADDRESS'] = "You need to enter a valid e-mail address";
+$_ARRAYLANG['TXT_ACCESS_INVALID_EMAIL_ADDRESS'] = "You need to enter a valid email address";
 $_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "The password is invalid. It must contain at least 6 characters.";
 $_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "The password is invalid. It must be at least 6 characters long as well as contain at least one upper and one lower case character and one number.";
 $_ARRAYLANG['TXT_ACCESS_INVALID_USERNAME'] = "The username may only contain alphanumeric characters (a-z, A-Z, 0-9) and the following special characters: -_";
@@ -158,9 +184,9 @@ $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] = "Language";
 $_ARRAYLANG['TXT_ACCESS_LAST_ADMIN_USER'] = "The user account %s could not be deleted as it is the only administrator account";
 $_ARRAYLANG['TXT_ACCESS_LASTNAME'] = "Last name";
 $_ARRAYLANG['TXT_ACCESS_MALE'] = "Male";
-$_ARRAYLANG['TXT_ACCESS_MEMBERS_ONLY_ALLOWED_SEEING_EMAIL'] = "Only members can see the e-mail address";
+$_ARRAYLANG['TXT_ACCESS_MEMBERS_ONLY_ALLOWED_SEEING_EMAIL'] = "Only members can see the email address";
 $_ARRAYLANG['TXT_ACCESS_MEMBERS_ONLY_ALLOWED_SEEING_PROFILE'] = "Only members can see the profile data";
-$_ARRAYLANG['TXT_ACCESS_NOBODY_ALLOWED_SEEING_EMAIL'] = "Nobody may see the e-mail address";
+$_ARRAYLANG['TXT_ACCESS_NOBODY_ALLOWED_SEEING_EMAIL'] = "Nobody may see the email address";
 $_ARRAYLANG['TXT_ACCESS_NOBODY_ALLOWED_SEEING_PROFILE'] = "Nobody may see the profile data";
 $_ARRAYLANG['TXT_ACCESS_NO_PICTURE'] = "No picture";
 $_ARRAYLANG['TXT_ACCESS_NO_SPECIFIED'] = "None specified";
@@ -188,6 +214,7 @@ $_ARRAYLANG['TXT_ACCESS_USERNAME_ALREADY_USED'] = "The chosen username is alread
 $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = "visit website";
 $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Website";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "ZIP";
+$_ARRAYLANG['TXT_ACCESS_USER_CHOOSE_FILE'] = 'Choose file';
 $_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partners";
 $_ARRAYLANG['TXT_U2U_MODULE'] = "U2U messaging";
 $_ARRAYLANG['TXT_ACCESS_ADD_NEW_ENTRY'] = "Add new entry";
@@ -200,8 +227,8 @@ $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auctions";
 $_ARRAYLANG['TXT_MARKET_LATEST'] = "Latest Ads";
 $_ARRAYLANG['TXT_CORE_LAST_MODIFIED_PAGE'] = "Last modified";
 $_ARRAYLANG['TXT_ACCESS_PRIMARY_GROUP'] = "Primary User Group";
-$_ARRAYLANG['TXT_CSRF_TITLE'] = "Contrexx security information";
-$_ARRAYLANG['TXT_CSRF_DESCR'] = 'You are changing the system configuration. If you see this message<ul><li>after clicking a link in the administration interface, click <a href="%1$s">save changes</a></li><li>after clicking a link inside an e-mail message or outside the administration interface, click <a href="%2$s">discard changes</a></li></ul>';
+$_ARRAYLANG['TXT_CSRF_TITLE'] = "Cloudrexx security information";
+$_ARRAYLANG['TXT_CSRF_DESCR'] = 'You are changing the system configuration. If you see this message<ul><li>after clicking a link in the administration interface, click <a href="%1$s">save changes</a></li><li>after clicking a link inside an email message or outside the administration interface, click <a href="%2$s">discard changes</a></li></ul>';
 $_ARRAYLANG['TXT_CSRF_ABORT'] = "discard changes";
 $_ARRAYLANG['TXT_CSRF_CONTINUE'] = "save changes";
 $_ARRAYLANG['UPLOAD'] = 'Upload';
@@ -286,3 +313,6 @@ $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "The file extension is not allow
 $_ARRAYLANG['TXT_ACCESS_UNKNOWN'] = "unknown";
 
 $_ARRAYLANG['TXT_LOGIN_WELCOME_PAGE'] = 'Forward to the <a href="%s" title="Website">Website</a>';
+$_ARRAYLANG['TXT_BROWSE'] = 'Browse';
+
+$_ARRAYLANG['TXT_CORE_SIGN_UP'] = "Not yet a member? Sign up now";

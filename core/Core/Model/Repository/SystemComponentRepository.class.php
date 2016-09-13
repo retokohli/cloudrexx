@@ -1,12 +1,38 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
 /**
  * Repository for SystemComponents
  *
  * This decorates SystemComponents with SystemComponentController class
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
  * @version     3.1.0
  */
@@ -18,9 +44,9 @@ namespace Cx\Core\Core\Model\Repository;
  * 
  * This decorates SystemComponents with SystemComponentController class
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
  * @version     3.1.0
  */
@@ -124,11 +150,15 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
         }
         
         if (!is_array($components)) {
+            if (isset($this->loadedComponents[$components->getId()])) {
+                return $this->loadedComponents[$components->getId()];
+            }
             $yamlDir = $this->cx->getClassLoader()->getFilePath($components->getDirectory(false).'/Model/Yaml');
             if (file_exists($yamlDir)) {
                 $this->cx->getDb()->addSchemaFileDirectories(array($yamlDir));
             }
             $entity = $this->decorateEntity($components);
+            \Cx\Core\Json\JsonData::addAdapter($entity->getControllersAccessableByJson(), $entity->getNamespace() . '\\Controller');
             return $entity;
         }
         
@@ -187,57 +217,104 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
     }
     
     /**
+     * Calls a hook on all components
+     * @param string $hookMethodName Method name of the hook to call
+     * @param array $arguments Arguments for the hook
+     */
+    protected function callHooks($hookName, $arguments) {
+        foreach ($this->findActive() as $component) {
+            $this->cx->getEvents()->triggerEvent(
+                'preComponent',
+                array(
+                    'componentName' => $component->getName(),
+                    'component' => $component,
+                    'hook' => $hookName,
+                )
+            );
+            call_user_func_array(
+                array(
+                    $component,
+                    $hookName,
+                ),
+                $arguments
+            );
+            $this->cx->getEvents()->triggerEvent(
+                'postComponent',
+                array(
+                    'componentName' => $component->getName(),
+                    'component' => $component,
+                    'hook' => $hookName,
+                )
+            );
+        }
+    }
+    
+    /**
      * Call hook script of all SystemComponents to register events
      */
     public function callRegisterEventsHooks() {
-        foreach ($this->findActive() as $component) {
-            $component->registerEvents();
-        }
+        $this->callHooks(
+            'registerEvents',
+            array()
+        );
     }
     
     /**
      * Call hook script of all SystemComponents to register event listeners
      */
     public function callRegisterEventListenersHooks() {
-        foreach ($this->findActive() as $component) {
-            $component->registerEventListeners();
-        }
+        $this->callHooks(
+            'registerEventListeners',
+            array()
+        );
     }
     
     /**
      * Call hook script of all SystemComponents before resolving
      */
     public function callPreResolveHooks() {
-        foreach ($this->findActive() as $component) {
-            $component->preResolve($this->cx->getRequest()->getUrl());
-        }
+        $this->callHooks(
+            'preResolve',
+            array(
+                $this->cx->getRequest()->getUrl(),
+            )
+        );
     }
     
     /**
      * Call hook script of all SystemComponents after resolving
      */
     public function callPostResolveHooks() {
-        foreach ($this->findActive() as $component) {
-            $component->postResolve($this->cx->getPage());
-        }
+        $this->callHooks(
+            'postResolve',
+            array(
+                $this->cx->getPage(),
+            )
+        );
     }
     
     /**
      * Call hook script of all SystemComponents before loading content
      */
     public function callPreContentLoadHooks() {
-        foreach ($this->findActive() as $component) {
-            $component->preContentLoad($this->cx->getPage());
-        }
+        $this->callHooks(
+            'preContentLoad',
+            array(
+                $this->cx->getPage(),
+            )
+        );
     }
     
     /**
      * Call hook script of all SystemComponents before loading module content
      */
     public function callPreContentParseHooks() {
-        foreach ($this->findActive() as $component) {
-            $component->preContentParse($this->cx->getPage());
-        }
+        $this->callHooks(
+            'preContentParse',
+            array(
+                $this->cx->getPage(),
+            )
+        );
     }
     
     /**
@@ -245,42 +322,69 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      * @param string $componentName Name of component to load
      */
     public function loadComponent($componentName) {
-        $this->findOneBy(array('name'=>$componentName))->load($this->cx->getPage());
+        $component = $this->findOneBy(array('name' => $componentName));
+        $this->cx->getEvents()->triggerEvent(
+            'preComponent',
+            array(
+                'componentName' => $component->getName(),
+                'component' => $component,
+                'hook' => 'load',
+            )
+        );
+        $component->load($this->cx->getPage());
+        $this->cx->getEvents()->triggerEvent(
+            'postComponent',
+            array(
+                'componentName' => $component->getName(),
+                'component' => $component,
+                'hook' => 'load',
+            )
+        );
     }
     
     /**
      * Call hook script of all SystemComponents after loading module content
      */
     public function callPostContentParseHooks() {
-        foreach ($this->findActive() as $component) {
-            $component->postContentParse($this->cx->getPage());
-        }
+        $this->callHooks(
+            'postContentParse',
+            array(
+                $this->cx->getPage(),
+            )
+        );
     }
     
     /**
      * Call hook script of all SystemComponents after loading content
      */
     public function callPostContentLoadHooks() {
-        foreach ($this->findActive() as $component) {
-            $component->postContentLoad($this->cx->getPage());
-        }
+        $this->callHooks(
+            'postContentLoad',
+            array(
+                $this->cx->getPage(),
+            )
+        );
     }
     
     /**
      * Call hook script of all SystemComponents before finalization
      */
     public function callPreFinalizeHooks() {
-        foreach ($this->findActive() as $component) {
-            $component->preFinalize($this->cx->getTemplate());
-        }
+        $this->callHooks(
+            'preFinalize',
+            array(
+                $this->cx->getTemplate(),
+            )
+        );
     }
     
     /**
      * Call hook script of all SystemComponents after finalization
      */
     public function callPostFinalizeHooks() {
-        foreach ($this->findActive() as $component) {
-            $component->postFinalize();
-        }
+        $this->callHooks(
+            'postFinalize',
+            array()
+        );
     }
 }

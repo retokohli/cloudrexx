@@ -1,11 +1,37 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Market
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @access        public
  * @version        1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_market
  * @todo        Edit PHP DocBlocks!
  */
@@ -16,11 +42,11 @@ namespace Cx\Modules\Market\Controller;
  * Market
  *
  * Demo market class
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @access        public
  * @version        1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_market
  */
 class MarketManager extends MarketLibrary
@@ -60,8 +86,9 @@ class MarketManager extends MarketLibrary
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Market/View/Template/Backend');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-        $this->mediaPath = ASCMS_MARKET_MEDIA_PATH . '/';
-        $this->mediaWebPath = ASCMS_MARKET_MEDIA_WEB_PATH . '/';
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $this->mediaPath = $cx->getWebsiteMediaMarketPath() . '/';
+        $this->mediaWebPath = $cx->getWebsiteMediaMarketWebPath() . '/';
         $this->settings = $this->getSettings();
     }
     private function setNavigation()
@@ -620,6 +647,8 @@ class MarketManager extends MarketLibrary
                        }
                        ';
         }
+        //initialize and get uploader object
+        $uploader = $this->getUploader();
 
         $this->_objTpl->setVariable(array(
             'TXT_TITLE'                        =>    $_ARRAYLANG['TXT_NEW_ENTRY'],
@@ -645,7 +674,10 @@ class MarketManager extends MarketLibrary
             'TXT_USER_DETAIL'                =>    $_ARRAYLANG['TXT_MARKET_USERDETAILS'],
             'TXT_DETAIL_SHOW'                =>    $_ARRAYLANG['TXT_MARKET_SHOW_IN_ADVERTISEMENT'],
             'TXT_DETAIL_HIDE'                =>    $_ARRAYLANG['TXT_MARKET_NO_SHOW_IN_ADVERTISEMENT'],
-            'TXT_PREMIUM'                    =>    $_ARRAYLANG['TXT_MARKET_MARK_ADVERTISEMENT']
+            'TXT_PREMIUM'                    =>    $_ARRAYLANG['TXT_MARKET_MARK_ADVERTISEMENT'],
+            'TXT_MARKET_CHOOSE_FILE'         => $_ARRAYLANG['TXT_MARKET_CHOOSE_FILE'],
+            'MARKET_UPLOADER_CODE'           => $uploader->getXHtml(),
+            'MARKET_UPLOADER_ID'             => $uploader->getId()
         ));
 
         if ($this->settings['maxdayStatus'] != 1) {
@@ -783,7 +815,8 @@ class MarketManager extends MarketLibrary
 
         $this->_pageTitle = $copy ? $_ARRAYLANG['TXT_COPY_ADVERTISEMENT'] : $_ARRAYLANG['TXT_EDIT_ADVERTISEMENT'];
         $this->_objTpl->loadTemplateFile('module_market_entry.html',true,true);
-
+        //initialize and get uploader object
+        $uploader = $this->getUploader();
         $this->_objTpl->setVariable(array(
             'TXT_TITLE'                        =>    $_ARRAYLANG['TXT_EDIT_ADVERTISEMENT'],
             'TXT_TITLE_ENTRY'                =>    $_ARRAYLANG['TXT_MARKET_TITLE'],
@@ -812,6 +845,9 @@ class MarketManager extends MarketLibrary
             'TXT_PREMIUM'                    =>    $_ARRAYLANG['TXT_MARKET_MARK_ADVERTISEMENT'],
             'FORM_ACTION'                    =>    $copy ? "addEntry" : "editEntry",
             'TXT_DAYS'                        =>    $_ARRAYLANG['TXT_MARKET_DAYS'],
+            'TXT_MARKET_CHOOSE_FILE'         =>  $_ARRAYLANG['TXT_MARKET_CHOOSE_FILE'],
+            'MARKET_UPLOADER_CODE'           => $uploader->getXHtml(),
+            'MARKET_UPLOADER_ID'             => $uploader->getId()
         ));
 
         if (isset($_REQUEST['id'])) {
@@ -950,7 +986,7 @@ class MarketManager extends MarketLibrary
             if ($copy) {
                 return $this->insertEntry(1);
             }
-            if ($_FILES['pic']['name'] != "") {
+            if ($_POST['uploadImage'] != "") {
                 $picture = $this->uploadPicture();
 /* TODO: Never used
                 if ($picture != "error") {

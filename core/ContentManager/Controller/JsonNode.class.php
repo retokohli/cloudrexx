@@ -1,10 +1,36 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
 /**
  * JSON Adapter for Cx\Core\ContentManager\Model\Entity\Node
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 
@@ -14,10 +40,10 @@ use \Cx\Core\ContentManager\Controller\ContentManagerException;
 
 /**
  * JSON Adapter for Cx\Core\ContentManager\Model\Entity\Node
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 class JsonNode implements JsonAdapter {
@@ -193,27 +219,34 @@ class JsonNode implements JsonAdapter {
         $moved_node = $this->nodeRepo->find($arguments['post']['id']);
         $parent_node = $this->nodeRepo->find($arguments['post']['ref']);
 
-        $moved_node->setParent($parent_node);
-        $this->em->persist($parent_node);
-        $this->em->persist($moved_node);
-        $this->em->flush();
+        $this->em->getConnection()->beginTransaction();
+        try {
+            $moved_node->setParent($parent_node);
+            $this->em->persist($parent_node);
+            $this->em->persist($moved_node);
+            $this->em->flush();
 
 
-        $this->nodeRepo->moveUp($moved_node, true);
-        if ($arguments['post']['position']) {
-            $this->nodeRepo->moveDown($moved_node, $arguments['post']['position'], true);
+            $this->nodeRepo->moveUp($moved_node, true);
+            if ($arguments['post']['position']) {
+                $this->nodeRepo->moveDown($moved_node, $arguments['post']['position'], true);
+            }
+            \Env::get('cx')->getEvents()->triggerEvent('model/onFlush', array(new \Doctrine\ORM\Event\LifecycleEventArgs($moved_node, $this->em)));
+
+            foreach ($moved_node->getPages() as $page) {
+                $page->setupPath($page->getLang());
+                $this->em->persist($page);
+            }
+            
+            $this->em->persist($moved_node);
+            $this->em->persist($parent_node);
+
+            $this->em->flush();
+            $this->em->getConnection()->commit();
+        } catch (\Exception $e) {
+            $this->em->getConnection()->rollback();
+            throw $e;
         }
-        \Env::get('cx')->getEvents()->triggerEvent('model/onFlush', array(new \Doctrine\ORM\Event\LifecycleEventArgs($moved_node, $this->em)));
-
-        foreach ($moved_node->getPages() as $page) {
-            $page->setupPath($page->getLang());
-            $this->em->persist($page);
-        }
-        
-        $this->em->persist($moved_node);
-        $this->em->persist($parent_node);
-
-        $this->em->flush();
         
         $nodeLevels = array();
         $nodeStack = array();

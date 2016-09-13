@@ -1,15 +1,40 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Class newsletter library
  *
  * Newsletter module class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @access        public
  * @version        1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_newsletter
  * @todo        Edit PHP DocBlocks!
  */
@@ -21,11 +46,11 @@ namespace Cx\Modules\Newsletter\Controller;
  *
  * Newsletter module class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @access        public
  * @version        1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_newsletter
  * @todo        Edit PHP DocBlocks!
  */
@@ -110,6 +135,54 @@ class NewsletterLib
             }
         }
         return $arrLists;
+    }
+    
+    
+    /**
+     * Returns the Language ID for a newsletter user
+     * 
+     * If the user's preferred language can not be found, the default language
+     * ID is returned.
+     * @param string $email E-mail address of the user
+     * @param string $type User type (see constants)
+     * @return integer Language ID
+     */
+    public function getUsersPreferredLanguageId($email, $type) {
+        global $objDatabase;
+        
+        $userLanguage = \FWLanguage::getDefaultLangId();
+        switch ($type) {
+            case self::USER_TYPE_CORE:
+            case self::USER_TYPE_ACCESS:
+                // get user's language by email
+                $user = \FWUser::getFWUserObject()->objUser->getUsers(
+                    array(
+                        'email' => $email,
+                    )
+                );
+                if ($user && $user->getFrontendLanguage()) {
+                    $userLanguage = $user->getFrontendLanguage();
+                }
+                break;
+
+            case self::USER_TYPE_NEWSLETTER:
+            default:
+                // get user's language by email
+                $query = '
+                    SELECT
+                        `language`
+                    FROM
+                        `' . DBPREFIX . 'module_newsletter_user`
+                    WHERE
+                        `email` = \'' . contrexx_raw2db($email) . '\'
+                ';
+                $result = $objDatabase->Execute($query);
+                if (!empty($result->fields['language'])) {
+                    $userLanguage = $result->fields['language'];
+                }
+                break;
+        }
+        return $userLanguage;
     }
 
 
@@ -639,6 +712,23 @@ class NewsletterLib
         return null;
     }
 
+    /**
+     * Get newsletter list name by given id
+     *
+     * @param integer $listId List id
+     *
+     * @return mixed string or null
+     */
+    public function getListNameById($listId)
+    {
+        if (!isset(self::$arrLists)) {
+            self::$arrLists = self::getLists(false, true);
+        }
+        if (isset(self::$arrLists[$listId])) {
+            return self::$arrLists[$listId]['name'];
+        }
+        return null;
+    }
 
     /**
      * Add a list with the given name and status

@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_mediabrowser
  */
 
@@ -18,7 +43,7 @@ use Cx\Core_Modules\Uploader\Model\Entity\Uploader;
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  *              Robin Glauser <robin.glauser@comvation.com>
  */
@@ -65,6 +90,7 @@ class BackendController extends SystemComponentBackendController
         );
 
         $uploader2 = new Uploader();
+        $uploader2->setUploadLimit(1);
         $uploader2->setFinishedCallback(
             '\Cx\Core_Modules\Uploader\Model\DefaultUploadCallback'
         );
@@ -74,15 +100,55 @@ class BackendController extends SystemComponentBackendController
             'UPLOADER_CODE2', $uploader2->getXHtml('Open Uploader 2')
         );
 
-        $mediaBrowser = new MediaBrowser();
-        $mediaBrowser->setCallback('gallery.fancyCallback');
-        $template->setVariable(
-            'MEDIABROWSER_CODE1', $mediaBrowser->getXHtml('MediaBrowser')
+        $configurations = array(
+            array(),
+            array(
+                'startview' => 'sitestructure',
+                'views' => 'sitestructure'
+            ),
+            array(
+                'views' => 'uploader'
+            ),
+            array(
+                'views' => 'sitestructure'
+            ),
+            array(
+                'views' => 'filebrowser'
+            ),
+            array(
+                'startmediatype' => 'gallery'
+            ),
+            array(
+                'mediatypes' => 'gallery, files'
+            ),
+            array(
+                'multipleselect' => true
+            ),
+            array(
+                'data-cx-Mb-Cb-Js-modalopened' => 'testfunction'
+            )
         );
-        $template->setVariable(
-            'MEDIABROWSER_CODE1_RAW',
-            htmlspecialchars($mediaBrowser->getXHtml('MediaBrowser'))
-        );
+
+        foreach ($configurations as $configuration){
+            $mediaBrowser = new MediaBrowser();
+            $mediaBrowser->setOptions($configuration);
+            $mediaBrowser->setCallback('gallery.fancyCallback');
+            $template->setVariable(
+                'MEDIABROWSER_CODE', $mediaBrowser->getXHtml('MediaBrowser')
+            );
+            $template->setVariable(
+                'MEDIABROWSER_OPTIONS', var_export($configuration,true)
+            );
+            $template->setVariable(
+                'MEDIABROWSER_CODE_RAW',
+                htmlspecialchars($mediaBrowser->getXHtml('MediaBrowser'))
+            );
+
+            $template->parse('mediabrowser_demo');
+        }
+
+
+
         $template->setVariable(
             'MEDIABROWSER_FOLDER_WIDGET',
             new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget($this->cx->getWebsiteImagesContentPath())

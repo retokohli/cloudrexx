@@ -1,6 +1,32 @@
 <?php
+
 /**
-* Contrexx CMS
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+* Cloudrexx CMS
 * generated date Tue, 23 Jan 2007 16:34:47 +0100
 **/
 
@@ -63,7 +89,6 @@ $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'] = "Geburtstag";
 $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE'] = "Abonnieren";
 $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'] = "Firma";
 $_ARRAYLANG['TXT_NEWSLETTER_MONTHS_ARRAY'] = "Januar,Februar,M&auml;rz,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember";
-$_ARRAYLANG['TXT_NEWSLETTER_MUST_SELECT_LIST'] = "Sie müssen mindestens eine Liste auswählen!";
 $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED'] = "Ihre Daten wurden erfolgreich aktualisiert.";
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA'] = "Beim aktualisieren Ihrer Daten trat ein Fehler auf!";
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU'] = "Beim hinzufügen zum Newsletter-System trat ein Fehler auf!";

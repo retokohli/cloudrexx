@@ -1,22 +1,47 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * E-Government
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_egov
  * @todo        Edit PHP DocBlocks!
  */
 namespace Cx\Modules\Egov\Controller;
 /**
  * E-Government
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_egov
  */
 class EgovManager extends EgovLibrary
@@ -125,7 +150,7 @@ class EgovManager extends EgovLibrary
         if (!isset($_REQUEST['id'])) {
             return false;
         }
-        $product_id = $_REQUEST['id'];
+        $product_id = intval($_REQUEST['id']);
         $product_autostatus =
             EgovLibrary::GetProduktValue("product_autostatus", $product_id);
         $product_name =
@@ -180,7 +205,7 @@ class EgovManager extends EgovLibrary
         ")) {
             $_REQUEST['id'] = $objDatabase->Insert_ID();
             foreach ($arrFields as $arrField) {
-                $this->_addFormField($_REQUEST['id'], $arrField['name'],
+                $this->_addFormField(intval($_REQUEST['id']), $arrField['name'],
                     $arrField['type'], $arrField['attributes'],
                     $arrField['order_id'], $arrField['is_required'],
                     $arrField['check_type']);
@@ -483,50 +508,31 @@ class EgovManager extends EgovLibrary
         $NewPosition = 0;
         if (isset($_REQUEST['Direction'])) {
             $query = "
-                SELECT count(*) AS anzahl
-                  FROM ".DBPREFIX."module_egov_products";
-            $objResult = $objDatabase->Execute($query);
-            $anzahl = $objResult->fields['anzahl'];
-            if ($_REQUEST['Direction'] == 'up') {
-                $NewPosition = EgovLibrary::GetProduktValue(
-                    'product_orderby', $_REQUEST['id'])-1;
-            }
-            if ($_REQUEST['Direction'] == 'down') {
-                $NewPosition = EgovLibrary::GetProduktValue(
-                    'product_orderby', $_REQUEST['id'])+1;
-            }
-            if ($NewPosition < 0) {
-                $NewPosition = 0;
-            }
-            if ($NewPosition > $anzahl) {
-                $NewPosition = $anzahl;
-            }
-            $query = "
                 SELECT product_id
                   FROM ".DBPREFIX."module_egov_products
-                 WHERE product_orderby=$NewPosition";
+                 ORDER BY product_orderby";
             $objResult = $objDatabase->Execute($query);
-            $TauschID = $objResult->fields['product_id'];
-            $query = "
-                SELECT product_orderby
-                  FROM ".DBPREFIX."module_egov_products
-                 WHERE product_id=".$_REQUEST['id'];
-            $objResult = $objDatabase->Execute($query);
-            $TauschPosition = $objResult->fields['product_orderby'];
-            $query = "
-                UPDATE ".DBPREFIX."module_egov_products
-                   SET product_orderby=".$TauschPosition."
-                 WHERE product_id=$TauschID";
-            if ($objDatabase->Execute($query)) {
-                $this->_strOkMessage = $_ARRAYLANG['TXT_EGOV_PRODUCT_SUCCESSFULLY_SAVED'];
+            $arrProducts = array();
+            while (!$objResult->EOF) {
+                $arrProducts[] = $objResult->fields['product_id'];
+                $objResult->MoveNext();
             }
-            $query = "
-                UPDATE ".DBPREFIX."module_egov_products
-                   SET product_orderby=$NewPosition
-                 WHERE product_id=".$_REQUEST['id'];
-            if ($objDatabase->Execute($query)) {
-                $this->_strOkMessage = $_ARRAYLANG['TXT_EGOV_PRODUCT_SUCCESSFULLY_SAVED'];
+            $productId = intval($_REQUEST['id']);
+            $productIdx = array_search($productId, $arrProducts);
+            $idxOffset = $_REQUEST['Direction'] == 'up' ? -1 : 1;
+            $productSwitchIdx = $productIdx + $idxOffset;
+            if (isset($arrProducts[$productSwitchIdx])) {
+                $arrProducts[$productIdx] = $arrProducts[$productSwitchIdx];
+                $arrProducts[$productSwitchIdx] = $productId;
             }
+
+            $orderIdx = 0;
+            foreach ($arrProducts as $productId) {
+                $query = 'UPDATE `'.DBPREFIX.'module_egov_products` SET `product_orderby`='.$orderIdx++.' WHERE `product_id`='.$productId;
+                $objDatabase->Execute($query);
+            }
+            // TODO: implement proper status message
+            $this->_strOkMessage = $_ARRAYLANG['TXT_EGOV_PRODUCT_SUCCESSFULLY_SAVED'];
         }
         $this->objTemplate->setVariable(array(
             'TXT_PRODUCTS' => $_ARRAYLANG['TXT_PRODUCTS'],
@@ -736,9 +742,7 @@ class EgovManager extends EgovLibrary
                             }
                         }
                         $objMail->CharSet = CONTREXX_CHARSET;
-                        $objMail->From = $FromEmail;
-                        $objMail->FromName = $FromName;
-                        $objMail->AddReplyTo($FromEmail);
+                        $objMail->SetFrom($FromEmail, $FromName);
                         $objMail->Subject = $SubjectText;
                         $objMail->Priority = 3;
                         $objMail->IsHTML(false);
@@ -1613,9 +1617,10 @@ class EgovManager extends EgovLibrary
                     }
                 }
                 $objMail->CharSet = CONTREXX_CHARSET;
-                $objMail->From = EgovLibrary::GetSettings('set_orderentry_sender');
-                $objMail->FromName = EgovLibrary::GetSettings('set_orderentry_name');
+                $from = EgovLibrary::GetSettings('set_orderentry_sender');
+                $fromName = EgovLibrary::GetSettings('set_orderentry_name');
                 $objMail->AddReplyTo($replyAddress);
+                $objMail->SetFrom($from, $fromName);
                 $objMail->Subject = $SubjectText;
                 $objMail->Priority = 3;
                 $objMail->IsHTML(false);
@@ -1666,9 +1671,7 @@ class EgovManager extends EgovLibrary
                         }
                     }
                     $objMail->CharSet = CONTREXX_CHARSET;
-                    $objMail->From = $FromEmail;
-                    $objMail->FromName = $FromName;
-                    $objMail->AddReplyTo($FromEmail);
+                    $objMail->SetFrom($FromEmail, $FromName);
                     $objMail->Subject = $SubjectText;
                     $objMail->Priority = 3;
                     $objMail->IsHTML(false);

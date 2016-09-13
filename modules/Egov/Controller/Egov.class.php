@@ -1,22 +1,47 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * E-Government
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_egov
  * @todo        Edit PHP DocBlocks!
  */
 namespace Cx\Modules\Egov\Controller;
 /**
  * E-Government
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_egov
  */
 class Egov extends EgovLibrary
@@ -101,15 +126,15 @@ class Egov extends EgovLibrary
             )");
         $order_id = $objDatabase->Insert_ID();
         if (self::GetProduktValue('product_per_day', $product_id) == 'yes') {
-            list ($calD, $calM, $calY) = explode('[.]', $_REQUEST['contactFormField_1000']);
+            list ($calD, $calM, $calY) = explode('[.]', contrexx_input2raw($_REQUEST['contactFormField_1000']));
             for($x = 0; $x < $quantity; ++$x) {
                 $objDatabase->Execute("
                     INSERT INTO ".DBPREFIX."module_egov_product_calendar (
                         calendar_product, calendar_order, calendar_day,
                         calendar_month, calendar_year
                     ) VALUES (
-                        '$product_id', '$order_id', '$calD',
-                        '$calM', '$calY'
+                        '$product_id', '$order_id', '".intval($calD)."',
+                        '".intval($calM)."', '".intval($calY)."'
                     )
                 ");
             }
@@ -208,9 +233,10 @@ class Egov extends EgovLibrary
                     }
                 }
                 $objMail->CharSet = CONTREXX_CHARSET;
-                $objMail->From = self::GetSettings('set_orderentry_sender');
-                $objMail->FromName = self::GetSettings('set_orderentry_name');
+                $from = self::GetSettings('set_orderentry_sender');
+                $fromName = self::GetSettings('set_orderentry_name');
                 $objMail->AddReplyTo($replyAddress);
+                $objMail->SetFrom($from, $fromName);
                 $objMail->Subject = $SubjectText;
                 $objMail->Priority = 3;
                 $objMail->IsHTML(false);
@@ -261,9 +287,7 @@ class Egov extends EgovLibrary
                         }
                     }
                     $objMail->CharSet = CONTREXX_CHARSET;
-                    $objMail->From = $FromEmail;
-                    $objMail->FromName = $FromName;
-                    $objMail->AddReplyTo($FromEmail);
+                    $objMail->SetFrom($FromEmail, $FromName);
                     $objMail->Subject = $SubjectText;
                     $objMail->Priority = 3;
                     $objMail->IsHTML(false);
@@ -286,7 +310,7 @@ class Egov extends EgovLibrary
         switch ($handler) {
           case 'paypal':
             $order_id =
-                (!empty($_POST['custom']) ? $_POST['custom'] : $order_id);
+                (!empty($_POST['custom']) ? intval($_POST['custom']) : $order_id);
             return $this->paymentPaypal($order_id, $amount);
           // Payment requests
           // The following are all handled by Yellowpay.
@@ -367,7 +391,7 @@ class Egov extends EgovLibrary
         $product_amount = self::GetProduktValue('product_price', $product_id);
         $quantity =
             (self::GetProduktValue('product_per_day', $product_id) == 'yes'
-                ? $_REQUEST['contactFormField_Quantity'] : 1
+                ? intval($_REQUEST['contactFormField_Quantity']) : 1
             );
         if ($product_amount <= 0) {
             return '';
@@ -432,22 +456,13 @@ class Egov extends EgovLibrary
         }
         $quantity =
             (self::GetProduktValue('product_per_day', $product_id) == 'yes'
-                ? $_REQUEST['contactFormField_Quantity'] : 1
+                ? intval($_REQUEST['contactFormField_Quantity']) : 1
             );
         $product_amount = (!empty($amount)
             ? $amount
             :   self::GetProduktValue('product_price', $product_id)
               * $quantity
         );
-        $FormFields = "id=$product_id&send=1&";
-        $arrFields = $this->getFormFields($product_id);
-        foreach (array_keys($arrFields) as $fieldId) {
-            $FormFields .= 'contactFormField_'.$fieldId.'='.strip_tags(contrexx_addslashes($_REQUEST['contactFormField_'.$fieldId])).'&';
-        }
-        if (self::GetProduktValue('product_per_day', $product_id) == 'yes') {
-            $FormFields .= 'contactFormField_1000='.$_REQUEST['contactFormField_1000'].'&';
-            $FormFields .= 'contactFormField_Quantity='.$_REQUEST['contactFormField_Quantity'];
-        }
 
         \Cx\Core\Setting\Controller\Setting::init('Egov', 'config');
 
@@ -628,7 +643,7 @@ $yellowpayForm
         $query = "
             SELECT product_id, product_name, product_desc, product_price ".
              "FROM ".DBPREFIX."module_egov_products
-             WHERE product_id=".$_REQUEST['id'];
+             WHERE product_id=".intval($_REQUEST['id']);
         $objResult = $objDatabase->Execute($query);
         if ($objResult && $objResult->RecordCount()) {
             $product_id = $objResult->fields['product_id'];

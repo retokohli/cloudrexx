@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Search and view results from the DB
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     2.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_search
  * @todo: add namespace
  */
@@ -14,11 +39,11 @@ namespace Cx\Core_Modules\Search\Controller;
 
 /**
  * Search and view results from the DB
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @version     3.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_search
- * @author      Comvation Development Team <info@comvation.com>
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @author      Reto Kohli <reto.kohli@comvation.com> (class)
  */
 class Search
@@ -34,6 +59,41 @@ class Search
      * @var \Cx\Core_Modules\Listing\Model\Entity\DataSet
      */
     private $result;
+    
+    /**
+     * Root page for search. If specified only results from this page's branch
+     * are delivered
+     * @var \Cx\Core\ContentManger\Model\Entity\Page $page
+     */
+    protected $rootPage = null;
+    
+    /**
+     * Resolves cmd. If it's a node placeholder, search is limited to the node's
+     * branch
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Current page
+     */
+    public function __construct($page = null) {
+        if (!$page) {
+            $page = \Cx\Core\Core\Controller\Cx::instanciate()->getPage();
+        }
+        if (!empty($page->getCmd())) {
+            // Try to resolve node placeholder
+            try {
+                $nodePlaceholder = \Cx\Core\Routing\NodePlaceholder::fromPlaceholder(
+                    $page->getCmd()
+                );
+                $this->rootPage = $nodePlaceholder->getPage();
+            } catch (\Cx\Core\Routing\NodePlaceholderException $e) {}
+        }
+    }
+    
+    /**
+     * Returns the specified root page (if any)
+     * @return \Cx\Core\ContentManger\Model\Entity\Page The specified root page
+     */
+    public function getRootPage() {
+        return $this->rootPage;
+    }
 
     /**
      * Return the term to search by
@@ -76,6 +136,17 @@ class Search
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $objTpl->setTemplate($page_content);
         $objTpl->setGlobalVariable($_ARRAYLANG);
+        // Load main template even if we have a cmd set
+        if ($objTpl->placeholderExists('APPLICATION_DATA')) {
+            $page = new \Cx\Core\ContentManager\Model\Entity\Page();
+            $page->setVirtual(true);
+            $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
+            $page->setModule('Search');
+            // load source code
+            $applicationTemplate = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
+            \LinkGenerator::parseTemplate($applicationTemplate);
+            $objTpl->addBlock('APPLICATION_DATA', 'application_data', $applicationTemplate);
+        }
         $term = (isset($_REQUEST['term'])
             ? trim(contrexx_input2raw($_REQUEST['term'])) : '');
         if (strlen($term) >= 3) {
@@ -141,10 +212,20 @@ class Search
                 $arraySearchOut = array_slice($arraySearchResults, $pos,
                                               $_CONFIG['corePagingLimit']);
                 foreach ($arraySearchOut as $details) {
+                    // append search term to result link
+                    $link = $details['Link'];
+                    if (strpos($link, '?') === false) {
+                        $link .= '?';
+                    } else {
+                        $link .= '&';
+                    }
+                    $link .= 'searchTerm='.urlencode($term);
+
+                    // parse result into template
                     $objTpl->setVariable(array(
                         'COUNT_MATCH' =>
                         $_ARRAYLANG['TXT_RELEVANCE'].' '.$details['Score'].'%',
-                        'LINK' => '<b><a href="'.$details['Link'].
+                        'LINK' => '<b><a href="'.$link.
                         '" title="'.contrexx_raw2xhtml($details['Title']).'">'.
                         contrexx_raw2xhtml($details['Title']).'</a></b>',
                         'SHORT_CONTENT' => contrexx_raw2xhtml($details['Content']),
@@ -160,33 +241,18 @@ class Search
         $objTpl->setVariable('SEARCH_TITLE', $noresult);
         return $objTpl->get();
     }
-
-
+    
     /**
-     * Returns search results
-     *
-     * The entries in the array returned contain the following indices:
-     *  'Score':    The matching score ([0..100])
-     *  'Title':    The object or content title
-     *  'Content':  The content
-     *  'Link':     The link to the (detailed) view of the result
-     *  'Date':     The change date, optional
-     * Mind that the date is not available for all types of results.
-     * Note that the $term parameter is not currently used, but may be useful
-     * i.e. for hilighting matches in the results.
-     * @author  Christian Wehrli <christian.wehrli@astalavista.ch>
-     * @param   string  $query          The query
-     * @param   string  $module_var     The module (empty for core/content?)
-     * @param   string  $cmd_var        The cmd (or empty)
-     * @param   string  $pagevar        The ID parameter name for referencing
-     *                                  found objects in the URL
-     * @param   string  $term           The search term
-     * @return  array                   The search results array
+     * Returns an accessable page of this module (if any)
+     * 
+     * This should be called by all search event handlers that do not call
+     * getResultArray(). If it returns null, no search results should be
+     * returned!
+     * @param string $module Module name to find page for
+     * @param string $command (optional) Command limitation
+     * @return \Cx\Core\ContentManager\Model\Entity\Page Page of module
      */
-    public static function getResultArray($query, $module, $command, $pagevar, $term, $parseSearchData = null)
-    {
-        global $_ARRAYLANG;
-
+    public function getAccessablePage($module, $command = '') {
         $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         $criteria = array(
             'module' => $module,
@@ -199,7 +265,7 @@ class Search
         // only list results in case the associated page of the module is active
         $page = $pageRepo->findOneBy($criteria);
         if (!$page || !$page->isActive()) {
-            return array();
+            return null;
         }
         // don't list results in case the user doesn't have sufficient rights to access the page
         // and the option to list only unprotected pages is set (coreListProtectedPages)
@@ -210,7 +276,14 @@ class Search
                     $page->getFrontendAccessId(), 'dynamic', true);
         }
         if (!$hasPageAccess) {
-            return array();
+            return null;
+        }
+        // In case a root node was specified, we have to check if the page is in
+        // the root page's branch.
+        if ($this->rootPage) {
+            if (strpos($page->getPath(), $this->rootPage->getPath()) !== 0) {
+                return null;
+            }
         }
         // In case we are handling the search result of a module ($module is not empty),
         // we have to check if we are allowed to list the results even when the associated module
@@ -236,15 +309,48 @@ class Search
                         || !$mainModulePage->isActive()
                         || !$mainModulePage->isVisible()) {
                         // main module page is also invisible
-                        return array();
+                        return null;
                     }
                 } else {
                     // page is invisible
-                    return array();
+                    return null;
                 }
             }
         }
-        $pagePath = $pageRepo->getPath($page);
+        return $page;
+    }
+
+
+    /**
+     * Returns search results
+     *
+     * The entries in the array returned contain the following indices:
+     *  'Score':    The matching score ([0..100])
+     *  'Title':    The object or content title
+     *  'Content':  The content
+     *  'Link':     The link to the (detailed) view of the result
+     *  'Date':     The change date, optional
+     * Mind that the date is not available for all types of results.
+     * Note that the $term parameter is not currently used, but may be useful
+     * i.e. for hilighting matches in the results.
+     * @author  Christian Wehrli <christian.wehrli@astalavista.ch>
+     * @param   string  $query          The query
+     * @param   string  $module_var     The module (empty for core/content?)
+     * @param   string  $cmd_var        The cmd (or empty)
+     * @param   string  $pagevar        The ID parameter name for referencing
+     *                                  found objects in the URL
+     * @param   string  $term           The search term
+     * @return  array                   The search results array
+     */
+    public function getResultArray($query, $module, $command, $pagevar, $term, $parseSearchData = null)
+    {
+        global $_ARRAYLANG;
+
+        $page = $this->getAccessablePage($module, $command);
+        if (!$page) {
+            return array();
+        }
+        $pagePath = $page->getPath();
         $objDatabase = \Env::get('db');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->EOF) {

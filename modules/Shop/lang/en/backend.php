@@ -1,4 +1,30 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 global $_ARRAYLANG;
 $_ARRAYLANG['SHOP_SHIPMENT_TOO_HEAVY'] = "The total weight of your order exceeds the available shipment conditions";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Accept changes";
@@ -55,6 +81,8 @@ $_ARRAYLANG['TXT_CONFIRM_DELETE_CUSTOMER'] = "Do you want to delete this custome
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "Do you want to delete this record?";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_OPTION'] = "Do you want to delete this option?";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_ORDER'] = "Do you want to delete this/these order(s)?";
+$_ARRAYLANG['TXT_SHOP_CONFIRM_RESET_STOCK'] = 'Do you want to re-increase the product stock count?';
+$_ARRAYLANG['TXT_SHOP_CONFIRM_REDUCE_STOCK'] = 'Do you want to decrease the product stock count?';
 $_ARRAYLANG['TXT_CONFIRM_DELETE_PAYMENT'] = "Do you want to delete this payment method?";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_PRODUCT'] = "Do you want to delete this/these product(s)?";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_SHIPMENT'] = "Do you want to delete this shipment method?";

@@ -363,7 +363,7 @@ abstract class AbstractQuery
      */
     public function getResult($hydrationMode = self::HYDRATE_OBJECT)
     {
-        // START: Contrexx customizing for DBG
+        // START: Cloudrexx customizing for DBG
         try {
             return $this->execute(array(), $hydrationMode);
         } catch (QueryException $e) {
@@ -371,7 +371,7 @@ abstract class AbstractQuery
             \DBG::logSQL('0: '.$e->getMessage());
             return null;
         }
-        // END: Contrexx customizing for DBG
+        // END: Cloudrexx customizing for DBG
     }
 
     /**

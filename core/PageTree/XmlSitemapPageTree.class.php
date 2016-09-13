@@ -1,12 +1,37 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * Class XmlSitemapPageTree
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_pagetree
  */
 
@@ -15,11 +40,11 @@ namespace Cx\Core\PageTree;
 /**
  * Class XmlSitemapPageTree
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @access      public
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_pagetree
  */
 class XmlSitemapPageTree extends PageTree {
@@ -39,13 +64,17 @@ class XmlSitemapPageTree extends PageTree {
      * @param type $currentPage
      * @param type $skipInvisible
      * @param type $considerLogin
+     * @param boolean $skipInactive           Skip inactive pages
+     * @param boolean $considerSeoEnabledOnly Consider seo enabled pages alone
      */
     public function __construct($entityManager, $license, $maxDepth = 0, $rootNode = null, 
-                                $lang = null, $currentPage = null, $skipInvisible = true, 
-                                $considerLogin = false
+                                $lang = null, $currentPage = null, $skipInvisible = false,
+                                $considerLogin = false,
+                                $skipInactive = true,
+                                $considerSeoEnabledOnly = true
     ) {
         parent::__construct($entityManager, $license, $maxDepth, $rootNode, $lang,
-                            $currentPage, $skipInvisible, $considerLogin);
+                            $currentPage, $skipInvisible, $considerLogin, $skipInactive, $considerSeoEnabledOnly);
     }
     
     /**
@@ -93,18 +122,8 @@ class XmlSitemapPageTree extends PageTree {
      * @return type 
      */
     protected function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page) {
-        global $_CONFIG;
-        $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
-        $mainDn = $domainRepo->getMainDomain()->getName();
-        
-        $location = \Env::get('cx')->getRequest()->getUrl()->getProtocol() . '://'
-                . $mainDn
-                . ($_SERVER['SERVER_PORT'] == 80 ? null : ':' . intval($_SERVER['SERVER_PORT']))
-                . \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()
-                . '/' . \FWLanguage::getLanguageCodeById($this->lang)
-                . $page->getPath();
         return "\t" . '<url>' . 
-                "\n\t\t" . '<loc>' . $location . '</loc>' . 
+                "\n\t\t" . '<loc>' . \Cx\Core\Routing\Url::fromPage($page)->toString() . '</loc>' . 
                 "\n\t\t" . '<lastmod>' . $this->getLastModificationDate($page) . '</lastmod>' . 
                 "\n\t\t" . '<changefreq>' . $this->getChangingFrequency($page) . '</changefreq>' .
                 "\n\t\t" . '<priority>0.5</priority>' .

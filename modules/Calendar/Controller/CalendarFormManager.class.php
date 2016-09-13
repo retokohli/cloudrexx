@@ -1,11 +1,37 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
 /**
  * Calendar 
  * 
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_calendar
- * @author     Comvation <info@comvation.com>
- * @copyright  CONTREXX CMS - COMVATION AG
+ * @author     Cloudrexx <info@cloudrexx.com>
+ * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */
 namespace Cx\Modules\Calendar\Controller;
@@ -13,13 +39,13 @@ namespace Cx\Modules\Calendar\Controller;
 /**
  * Calendar Class Form manager
  * 
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_calendar
- * @author     Comvation <info@comvation.com>
- * @copyright  CONTREXX CMS - COMVATION AG
+ * @author     Cloudrexx <info@cloudrexx.com>
+ * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */
-class CalendarFormManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary 
+class CalendarFormManager extends CalendarLibrary
 {
     /**
      * Form list
@@ -85,6 +111,13 @@ class CalendarFormManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
             </div>';
 
     /**
+     * Instance of Event
+     *
+     * @var CalendarEvent
+     */
+    protected $event = null;
+
+    /**
      * Form manager constructor
      * 
      * @param boolean $onlyActive get only active forms
@@ -101,23 +134,37 @@ class CalendarFormManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
      * @return null
      */
     function getFormList() {
-        global $objDatabase,$_ARRAYLANG,$_LANGID;    
-        
-        $onlyActive_where = ($this->onlyActive == true ? ' WHERE status=1' : '');
-        
-        $query = "SELECT id AS id
-                    FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form
-                         ".$onlyActive_where."
-                ORDER BY `order`";
-        
+        global $objDatabase;
+
+        $where = array();
+        if ($this->onlyActive) {
+            $where[] = 'status = 1';
+        }
+        if ($this->event) {
+            $where[] = 'id = '. contrexx_input2int($this->event->registrationForm);
+        }
+        $whereCondition = '';
+        if (!empty($where)) {
+            $whereCondition = 'WHERE '. implode(' AND ', $where);
+        }
+
+        $query = '
+            SELECT
+                `id` AS id
+            FROM
+                `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form`
+                ' . $whereCondition . '
+            ORDER BY `order`
+        ';
         $objResult = $objDatabase->Execute($query);
-        
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $objForm = new \Cx\Modules\Calendar\Controller\CalendarForm(intval($objResult->fields['id']));
-                $this->formList[] = $objForm;   
-                $objResult->MoveNext();
-            }
+        if (!$objResult) {
+            return;
+        }
+
+        while (!$objResult->EOF) {
+            $objForm = new \Cx\Modules\Calendar\Controller\CalendarForm(intval($objResult->fields['id']));
+            $this->formList[] = $objForm;
+            $objResult->MoveNext();
         }
     }
     
@@ -167,14 +214,14 @@ class CalendarFormManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
     function getFormDorpdown($selectedId=null) {
         global $_ARRAYLANG;
         
-        parent::getSettings();
+        $this->getSettings();
         $arrOptions = array();
         
         foreach ($this->formList as $key => $objForm) {       
             $arrOptions[$objForm->id] = $objForm->title;
         }      
         
-        $options .= parent::buildDropdownmenu($arrOptions, $selectedId);
+        $options .= $this->buildDropdownmenu($arrOptions, $selectedId);
         
         return $options;
     }
@@ -199,7 +246,7 @@ class CalendarFormManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
         
         switch($intView) {
                 case 1:
-                    parent::getFrontendLanguages();
+                    $this->getFrontendLanguages();
 
                     $objTpl->setGlobalVariable(array(
                         $this->moduleLangVar.'_FORM_ID'    => !empty($formId) ? $objForm->id : '',
@@ -209,22 +256,28 @@ class CalendarFormManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
                     $i          = 0;
                     $formFields = array();
                     if (!empty($formId)) {
+                        $defaultLangId = $_LANGID;
+                        if (!in_array($defaultLangId, \FWLanguage::getIdArray())) {
+                            $defaultLangId = \FWLanguage::getDefaultLangId();
+                        }
                         foreach ($objForm->inputfields as $key => $arrInputfield) {
                             $i++;
 
                             $fieldValue = array();
                             $defaultFieldValue = array();
                             foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-                                $fieldValue[$arrLang['id']]        = $arrInputfield['name'][$arrLang['id']];
-                                $defaultFieldValue[$arrLang['id']] = $arrInputfield['default_value'][$arrLang['id']];
+                                $fieldValue[$arrLang['id']]        =  isset($arrInputfield['name'][$arrLang['id']])
+                                                                     ? $arrInputfield['name'][$arrLang['id']] : '';
+                                $defaultFieldValue[$arrLang['id']] =  isset($arrInputfield['default_value'][$arrLang['id']])
+                                                                     ? $arrInputfield['default_value'][$arrLang['id']] : '';
                             }
                             $formFields[] = array(
                                 'type'                 => $arrInputfield['type'],
                                 'id'                   => $arrInputfield['id'],
                                 'row'                  => $i%2 == 0 ? 'row2' : 'row1',
                                 'order'                => $arrInputfield['order'],
-                                'name_master'          => $arrInputfield['name'][0],
-                                'default_value_master' => $arrInputfield['default_value'][0],
+                                'name_master'          => $fieldValue[$defaultLangId],
+                                'default_value_master' => $defaultFieldValue[$defaultLangId],
                                 'required'             => $arrInputfield['required'],
                                 'affiliation'          => $arrInputfield['affiliation'],
                                 'field_value'          => json_encode($fieldValue),
@@ -303,6 +356,8 @@ class CalendarFormManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
                     $inputfield = null;
                     $hide = false;
                     $optionSelect = true;
+                    $availableSeat = 0;
+                    $checkSeating  = false;
 
                     if(isset($_POST['registrationField'][$arrInputfield['id']])) {
                         $value = $_POST['registrationField'][$arrInputfield['id']];
@@ -346,15 +401,23 @@ class CalendarFormManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
                                 $hide = true;
                             }
                             $optionSelect = false;
+
+                            if ($this->event) {
+                                $checkSeating  = $this->event->registration && $this->event->numSubscriber;
+                                $availableSeat = $this->event->getFreePlaces();
+                            }
                         case 'select':
                         case 'salutation':
                             $inputfield = '<select class="calendarSelect" name="registrationField['.$arrInputfield['id'].']">';
                             $selected =  empty($_POST) ? 'selected="selected"' : '';  
                             $inputfield .= $optionSelect ? '<option value="" '.$selected.'>'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>' : '';
 
-                            foreach($options as $key => $name)  {
-                                $selected =  ($key+1 == $value)  ? 'selected="selected"' : '';        
-                                $inputfield .= '<option value="'.intval($key+1).'" '.$selected.'>'.$name.'</option>';       
+                            foreach ($options as $key => $name) {
+                                if ($checkSeating && contrexx_input2int($name) > $availableSeat) {
+                                    continue;
+                                }
+                                $selected    = ($key + 1 == $value) ? 'selected="selected"' : '';
+                                $inputfield .= '<option value="' . intval($key + 1) . '" ' . $selected . '>' . $name . '</option>';
                             }
 
                             $inputfield .= '</select>'; 
@@ -426,5 +489,25 @@ class CalendarFormManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
                 }
                 break;
         }        
+    }
+
+    /**
+     * Returns the CalendarEvent instance if set, null otherwise
+     *
+     * @return CalendarEvent
+     */
+    public function getEvent()
+    {
+        return $this->event;
+    }
+
+    /**
+     * Set the Event
+     *
+     * @param \Cx\Modules\Calendar\Controller\CalendarEvent $event
+     */
+    public function setEvent(CalendarEvent $event)
+    {
+        $this->event = $event;
     }
 }

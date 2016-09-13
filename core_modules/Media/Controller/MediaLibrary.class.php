@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Media Library
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version       1.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_media
  * @todo        Edit PHP DocBlocks!
  */
@@ -14,11 +39,11 @@ namespace Cx\Core_Modules\Media\Controller;
  * Media Library
  *
  * LibClass to manage cms media manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @access        public
  * @version       1.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_media
  */
 class MediaLibrary
@@ -38,7 +63,7 @@ class MediaLibrary
         $dirName = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($dirName);
         $status = \Cx\Lib\FileSystem\FileSystem::make_folder($this->path.$dirName);
         if ($status) {
-            $this->highlightName[] = $this->dirLog;
+            $this->highlightName[] = $dirName;
             $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_NEW_DIR']);
         } else {
             $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_NEW_DIR']);
@@ -91,7 +116,7 @@ class MediaLibrary
     function _downloadMediaOLD()
     {
         if (is_file($this->path.$this->getFile)) {
-            \Cx\Core\Csrf\Controller\Csrf::header("Location: ".$this->webPath.$this->getFile);
+            \Cx\Core\Csrf\Controller\Csrf::redirect($this->webPath.$this->getFile);
             exit;
         }
     }
@@ -286,14 +311,13 @@ class MediaLibrary
     // deletes a file or an directory
     function _deleteMedia()
     {
-        global $objTemplate;
-
         if (!empty($this->getFile)) {
-            $objTemplate->setVariable('CONTENT_OK_MESSAGE', $this->_deleteMedia2($this->getFile));
+            \Message::ok($this->_deleteMedia2($this->getFile));
         } elseif (!empty($_POST['formSelected'])) {
             foreach ($_POST['formSelected'] as $file) {
-                $objTemplate->setVariable('CONTENT_OK_MESSAGE', $this->_deleteMedia2($file));
+                $status = $this->_deleteMedia2($file);
             }
+            \Message::ok($status);
         }
     }
 
@@ -315,7 +339,7 @@ class MediaLibrary
             }
          } else {
             if ($this->_isImage($this->path.$file)) {
-                $thumb_name = \ImageManager::getThumbnailFilename($file);
+                $thumb_name = basename(\ImageManager::getThumbnailFilename($this->path . $file));
                 if (file_exists($this->path.$thumb_name)) {
                     $this->dirLog=$obj_file->delFile($this->path, $this->webPath, $thumb_name);
                 }
@@ -336,68 +360,52 @@ class MediaLibrary
      */
     function renMedia()
     {
-        global $_ARRAYLANG, $objTemplate;
+        global $_ARRAYLANG;
 
-        $obj_file = new \File();
+        $objFile = new \File();
         // file or dir
         $fileName = !empty($_POST['renName']) ? $_POST['renName'] : 'empty';
-        if (empty($_POST['oldExt'])) {
-            $oldName  = $_POST['oldName'];
-        } else {
-            $oldName  = $_POST['oldName'].'.'.$_POST['oldExt'];
+        $oldName  =   empty($_POST['oldExt'])
+                    ? contrexx_input2raw($_POST['oldName'])
+                    : contrexx_input2raw($_POST['oldName'] . '.' . $_POST['oldExt']);
+
+        if (!is_dir($this->path . $oldName)) {
+            $ext      =   !empty($_POST['renExt']) && \FWValidator::is_file_ending_harmless($_POST['renName'] . '.' . $_POST['renExt'])
+                        ? $_POST['renExt'] : 'txt';
+            $fileName = $fileName . '.' . $ext;
         }
-        $ext      =
-            (   !empty($_POST['renExt'])
-            && \FWValidator::is_file_ending_harmless(
-                $_POST['renName'].'.'.$_POST['renExt'])
-                ? $_POST['renExt'] : 'txt');
-        $fileName = $fileName.'.'.$ext;
-        
+
         \Cx\Lib\FileSystem\FileSystem::clean_path($fileName);
 
-        if (!isset($_POST['mediaInputAsCopy']) || $_POST['mediaInputAsCopy'] != 1) {
+        $makeCopy = (isset($_POST['mediaInputAsCopy']) && $_POST['mediaInputAsCopy'] == 1);
+
+        if (!$makeCopy) {
             // rename old to new
-            if (is_dir($this->path.$oldName)) {
-                $this->dirLog=$obj_file->renameDir($this->path, $this->webPath, $oldName, $fileName);
-                if ($this->dirLog == "error") {
-                    $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT']);
-                } else {
-                    $this->highlightName[] = $this->dirLog;
-                    $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_EDIT']);
-                }
+            if (is_dir($this->path . $oldName)) {
+                $result = $objFile->renameDir($this->path, $this->webPath, $oldName, $fileName);
             } else {
-                $this->dirLog=$obj_file->renameFile($this->path, $this->webPath, $oldName, $fileName);
-                if ($this->dirLog == "error") {
-                    $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT']);
-                } else {
-                    $this->highlightName[] = $this->dirLog;
-                    $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_EDIT']);
-                }
+                $result = $objFile->renameFile($this->path, $this->webPath, $oldName, $fileName);
             }
-        } elseif (isset($_POST['mediaInputAsCopy']) && $_POST['mediaInputAsCopy'] == 1) {
+        } else {
             // copy old to new
-            if (is_dir($this->path.$oldName)) {
-                $this->dirLog=$obj_file->copyDir($this->path, $this->webPath, $oldName, $this->path, $this->webPath, $fileName);
-                if ($this->dirLog == "error") {
-                    $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT']);
-                } else {
-                    $this->highlightName[] = $this->dirLog;
-                     $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_EDIT']);
-                }
+            if (is_dir($this->path . $oldName)) {
+                $result = $objFile->copyDir($this->path, $this->webPath, $oldName, $this->path, $this->webPath, $fileName);
             } else {
-                $this->dirLog=$obj_file->copyFile($this->path, $oldName, $this->path, $fileName);
-                if ($this->dirLog == "error") {
-                    $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT']);
-                } else {
-                    $this->highlightName[] = $this->dirLog;
-                    $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_EDIT']);
-                }
+                $result = $objFile->copyFile($this->path, $oldName, $this->path, $fileName);
             }
+        }
+
+        if ($result == 'error') {
+            \Message::error($_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT']);
+            return;
+        } else {
+            $_SESSION['media_highlight_name'] = array($result);
+            \Message::ok($_ARRAYLANG['TXT_MEDIA_MSG_EDIT']);
         }
 
         // save image
-        $this->_objImage->loadImage($this->path.$this->dirLog);
-        $this->_objImage->saveNewImage($this->path.$this->dirLog, true);
+        $this->_objImage->loadImage($this->path . $result);
+        $this->_objImage->saveNewImage($this->path . $result, true);
     }
     
     /**
@@ -497,9 +505,7 @@ class MediaLibrary
             if (!$this->_objImage->saveNewImage($this->path.$this->fileLog, true)) {
                 throw new \Exception('Is not a valid image or image type');
             }
-            
-            // Update (overwrite) thumbnail
-            $this->_createThumbnail($this->path.$this->fileLog, true);
+
             
             // If no error occured, return true
             return $this->fileLog;
@@ -560,32 +566,6 @@ class MediaLibrary
     }
 
 
-    // creates an image thumbnail
-    function _createThumbnail($file, $overwrite = false)
-    {
-        global $_ARRAYLANG;
-
-        $tmpSize    = getimagesize($file);
-        $thumbWidth = $this->thumbHeight / $tmpSize[1] * $tmpSize[0];
-        $thumb_name = \ImageManager::getThumbnailFilename($file);
-
-        $tmp = new \ImageManager();
-        $tmp->loadImage($file);
-        $tmp->resizeImage($thumbWidth, $this->thumbHeight, $this->thumbQuality);
-        $tmp->saveNewImage($thumb_name, $overwrite);
-
-        if (!file_exists($thumb_name)) {
-            $img     = imagecreate(100, 50);
-            $colBody = imagecolorallocate($img, 255, 255, 255);
-            ImageFilledRectangle($img, 0, 0, 100, 50, $colBody);
-            $colFont = imagecolorallocate($img, 0, 0, 0);
-            imagettftext($img, 10, 0, 18, 29, $colFont, self::_getIconPath().'arial.ttf', 'no preview');
-            imagerectangle($img, 0, 0, 99, 49, $colFont);
-            imagejpeg($img, $thumb_name, $this->thumbQuality);
-        }
-    }
-
-
     // check for manual input in $_GET['path']
     function _pathCheck($path) {
         $check = false;
@@ -605,64 +585,6 @@ class MediaLibrary
         return $path;
     }
 
-
-    // makes the dir tree with variables: icon, name, size, type, date, perm
-    function _dirTree($path)
-    {
-        $dir  = array();
-        $file = array();
-        $forbidden_files = array('.', '..', '.svn', '.htaccess', 'index.php');
-        if (is_dir($path)) {
-            $fd = @opendir($path);
-            $name = @readdir($fd);
-            while ($name !== false) {
-                if (!in_array($name, $forbidden_files)) {
-                    if (is_dir($path.$name)) {
-                        $dirName = $name;
-                        if (!\FWSystem::detectUtf8($dirName)) {
-                            $dirName = utf8_encode($dirName);
-                        }
-
-                        $dir['icon'][] = self::getFileTypeIconWebPath($path.$name);
-                        $dir['name'][] = $dirName;
-                        $dir['size'][] = $this->_getSize($path.$name);
-                        $dir['type'][] = $this->_getType($path.$name);
-                        $dir['date'][] = $this->_getDate($path.$name);
-                        $dir['perm'][] = $this->_getPerm($path.$name);
-                    } elseif (is_file($path.$name)) {
-// TODO
-// This won't work for .jpg thumbnails made from .png images and other
-// ways to create thumbnail file names.  See the Image class.
-                        if (preg_match("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)\.[^.]+$)|(?:\.thumb)$/i", $name)) {
-                            $originalFileName = preg_replace("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)(\.[^.]+)$)|(?:\.thumb)$/mi", "$1", $name);
-                            if (!file_exists($path . $originalFileName)) {
-                                @unlink($path . $name);
-                            }
-                        } else {
-                            $fileName = $name;
-                            if (!\FWSystem::detectUtf8($fileName)) {
-                                $fileName = utf8_encode($fileName);
-                            }
-                                $file['icon'][] = self::getFileTypeIconWebPath($path.$name);
-                                $file['name'][] = $fileName;
-                                $file['size'][] = $this->_getSize($path . $name);
-                                $file['type'][] = $this->_getType($path . $name);
-                                $file['date'][] = $this->_getDate($path . $name);
-                                $file['perm'][] = $this->_getPerm($path . $name);
-                            }
-                    }
-                }
-                $name = @readdir($fd);
-            }
-            @closedir($fd);
-            clearstatcache();
-        }
-        $dirTree['dir']  = $dir;
-        $dirTree['file'] = $file;
-        return $dirTree;
-    }
-
-
     function _sortDirTree($tree)
     {
         $d    = $tree['dir'];
@@ -672,30 +594,30 @@ class MediaLibrary
         switch ($this->sortBy) {
             // sort by size
             case 'size':
-                @array_multisort($d['size'], $direction, $d['name'], $d['type'], $d['date'], $d['perm'], $d['icon']);
-                @array_multisort($f['size'], $direction, $f['name'], $f['type'], $f['date'], $f['perm'], $f['icon']);
+                @array_multisort($d['size'], $direction, $d['name'], $d['type'], $d['date'], $d['perm'], $d['icon'], $d['path']);
+                @array_multisort($f['size'], $direction, $f['name'], $f['type'], $f['date'], $f['perm'], $f['icon'], $f['path']);
                 break;
             // sort by type
             case 'type':
-                @array_multisort($d['type'], $direction, $d['name'], $d['size'], $d['date'], $d['perm'], $d['icon']);
-                @array_multisort($f['type'], $direction, $f['name'], $f['size'], $f['date'], $f['perm'], $f['icon']);
+                @array_multisort($d['type'], $direction, $d['name'], $d['size'], $d['date'], $d['perm'], $d['icon'], $d['path']);
+                @array_multisort($f['type'], $direction, $f['name'], $f['size'], $f['date'], $f['perm'], $f['icon'], $f['path']);
                 break;
             //sort by date
             case 'date':
-                @array_multisort($d['date'], $direction, $d['name'], $d['size'], $d['type'], $d['perm'], $d['icon']);
-                @array_multisort($f['date'], $direction, $f['name'], $f['size'], $f['type'], $f['perm'], $f['icon']);
+                @array_multisort($d['date'], $direction, $d['name'], $d['size'], $d['type'], $d['perm'], $d['icon'], $d['path']);
+                @array_multisort($f['date'], $direction, $f['name'], $f['size'], $f['type'], $f['perm'], $f['icon'], $f['path']);
                 break;
             //sort by perm
             case 'perm':
                 $direction = !$this->sortDesc ? SORT_DESC : SORT_ASC;
-                @array_multisort($d['perm'], $direction, $d['name'], $d['size'], $d['type'], $d['date'], $d['icon']);
-                @array_multisort($f['perm'], $direction, $f['name'], $f['size'], $f['type'], $f['date'], $f['icon']);
+                @array_multisort($d['perm'], $direction, $d['name'], $d['size'], $d['type'], $d['date'], $d['icon'], $d['path']);
+                @array_multisort($f['perm'], $direction, $f['name'], $f['size'], $f['type'], $f['date'], $f['icon'], $f['path']);
                 break;
             // sort by name
             case 'name':
             default:
-                @array_multisort($d['name'], $direction, SORT_NATURAL | SORT_FLAG_CASE, $d['size'], $d['type'], $d['date'], $d['perm'], $d['icon']);
-                @array_multisort($f['name'], $direction, SORT_NATURAL | SORT_FLAG_CASE, $f['size'], $f['type'], $f['date'], $f['perm'], $f['icon']);
+                @array_multisort($d['name'], $direction, SORT_NATURAL | SORT_FLAG_CASE, $d['size'], $d['type'], $d['date'], $d['perm'], $d['icon'], $d['path']);
+                @array_multisort($f['name'], $direction, SORT_NATURAL | SORT_FLAG_CASE, $f['size'], $f['type'], $f['date'], $f['perm'], $f['icon'], $f['path']);
                 break;
         }
         
@@ -1068,11 +990,10 @@ class MediaLibrary
 
                         function mediaConfirmDelete(file)
                         {
-                            if(confirm('$delete_msg')) {
-                                \$J(document.fileList.deleteMedia).attr('value', '1');
-                                \$J(document.fileList.file).attr('value', file);
-                                document.fileList.action = 'index.php?cmd=Media&archive=$this->archive&path=$this->webPath&csrf=$csrfCode';
-                                document.fileList.submit();
+                            if (confirm('$delete_msg')) {
+                                return true;
+                            } else {
+                                return false;
                             }
                         }
         
@@ -1152,11 +1073,8 @@ class MediaLibrary
                                         file_name += i > 0 ? "." : "";
                                         file_name += file.split('.')[i];
                                     }
-                                    actionPath = 'index.php?section=$this->archive&act=rename&path=$this->webPath&file='+file_name;
+                                    actionPath = \$J(this).data('actionUrl');
 
-                                    if (\$J(this).parent().parent().find('.file_size').html() != '&nbsp;-') {
-                                        actionPath += file_ext;
-                                    }
                                     //Rename Form
                                     \$J(this).parent().parent().find('.file_name')
                                     .append('<div id="insertform"><input type="text" id="filename" name="filename" style="padding:0px;" value="'+file_name+'"/>'+file_ext
@@ -1209,75 +1127,87 @@ END;
      * 
      * @return string the directory to move to
      */
-    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response){
-        $path = $data['path'];
+    public static function uploadFinished(
+        $tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response
+    ) {
+        $path    = $data['path'];
         $webPath = $data['webPath'];
 
         //we remember the names of the uploaded files here. they are stored in the session afterwards,
         //so we can later display them highlighted.
-        $arrFiles = array(); 
-        
+        $arrFiles = array();
+
         //rename files, delete unwanted
         $arrFilesToRename = array(); //used to remember the files we need to rename
-        $h = opendir($tempPath);
+        $h                = opendir($tempPath);
         if ($h) {
-            while(false !== ($file = readdir($h))) {
+            while (false !== ($file = readdir($h))) {
                 //delete potentially malicious files
 // TODO: this is probably an overhead, because the uploader might already to this. doesn't it?
-                if(!\FWValidator::is_file_ending_harmless($file)) {
+                if (!\FWValidator::is_file_ending_harmless($file)) {
                     @unlink($file);
                     continue;
                 }
-                
+
                 if (self::isIllegalFileName($file)) {
                     $response->addMessage(
                         \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
                         "You are not able to create the requested file."
                     );
-                    \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
+                    \Cx\Lib\FileSystem\FileSystem::delete_file(
+                        $tempPath . '/' . $file
+                    );
                     continue;
                 }
-                
-                //skip . and ..           
-                if($file == '.' || $file == '..')
+
+                //skip . and ..
+                if ($file == '.' || $file == '..') {
                     continue;
+                }
 
                 //clean file name
                 $newName = $file;
                 \Cx\Lib\FileSystem\FileSystem::clean_path($newName);
 
                 //check if file needs to be renamed
-                if (file_exists($path.$newName)) {
-                    $info     = pathinfo($newName);
-                    $exte     = $info['extension'];
-                    $exte     = (!empty($exte)) ? '.'.$exte : '';
-                    $part1    = $info['filename'];
-                    if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
-                        $newName = $part1.'_'.time().$exte;
+                if (file_exists($path . $newName)) {
+                    $info  = pathinfo($newName);
+                    $exte  = $info['extension'];
+                    $exte  = (!empty($exte)) ? '.' . $exte : '';
+                    $part1 = $info['filename'];
+                    if (empty($_REQUEST['uploadForceOverwrite'])
+                        || !intval(
+                            $_REQUEST['uploadForceOverwrite'] > 0
+                        )
+                    ) {
+                        $newName = $part1 . '_' . time() . $exte;
                     }
                 }
-     
+
                 //if the name has changed, the file needs to be renamed afterwards
-                if($newName != $file)
+                if ($newName != $file) {
                     $arrFilesToRename[$file] = $newName;
+                }
 
                 array_push($arrFiles, $newName);
             }
         }
 
         //rename files where needed
-        foreach($arrFilesToRename as $oldName => $newName){
-            rename($tempPath.'/'.$oldName, $tempPath.'/'.$newName);
+        foreach ($arrFilesToRename as $oldName => $newName) {
+            rename($tempPath . '/' . $oldName, $tempPath . '/' . $newName);
         }
 
         //remeber the uploaded files
-        $_SESSION["media_upload_files_$uploadId"] = $arrFiles;
-
+        $files                                    = $_SESSION["media_upload_files_$uploadId"];
+        $_SESSION["media_upload_files_$uploadId"] = array_merge(
+            $arrFiles, ($files ? $files->toArray() : [])
+        );
         /* unwanted files have been deleted, unallowed filenames corrected.
            we can now simply return the desired target path, as only valid
            files are present in $tempPath                                   */
-	 
-        return array($data['path'],$data['webPath']);
+
+        return array($data['path'], $data['webPath']);
     }
     
     /**
@@ -1315,10 +1245,107 @@ END;
      * @return boolean
      */
     public static function isIllegalFileName($file) {
-        if (preg_match('#^(\.htaccess|\.ftpaccess|\.passwd|web\.config)$#i', $file)) {
+        if (preg_match('#^(\index.php|\.htaccess|\.ftpaccess|\.passwd|web\.config)$#i', $file)) {
             return true;
         }
         return false;
     }
+
+    /**
+     * Get files by search term
+     *
+     * @param string    $path           Path to search files
+     * @param string    $searchTerm     Search term
+     * @param array     $result         Result files and directory array
+     * @param boolean   $recursive      True to search recursive
+     *
+     * @return array   Files array by given search term
+     */
+    public function getDirectoryTree($path = '', $searchTerm = '', & $result = array(), $recursive = false)
+    {
+        if (empty($path)) {
+            return array();
+        }
+
+        if (!is_dir($path)) {
+            return array();
+        }
+
+        if (empty($result)) {
+            $result = array(
+                'dir'  => array(),
+                'file' => array(),
+            );
+        }
+
+        $mediaArray = glob($path . '*');
+        foreach ($mediaArray as $media) {
+            $mediaName = basename($media);
+            if (!\FWSystem::detectUtf8($mediaName)) {
+                $mediaName = utf8_encode($mediaName);
+            }
+            if (!empty($searchTerm) && !preg_match('/'. preg_quote($searchTerm) .'/i', $mediaName)) {
+                continue;
+            }
+            $mediaType = is_dir($media) ? 'dir' : 'file';
+            $mediaPath = dirname($media);
+            if ($mediaType == 'file' && !$this->isFileValidToShow($mediaPath, $mediaName)) {
+                continue;
+            }
+
+            $result[$mediaType]['icon'][] = self::getFileTypeIconWebPath($media);
+            $result[$mediaType]['name'][] = $mediaName;
+            $result[$mediaType]['size'][] = $this->_getSize($media);
+            $result[$mediaType]['type'][] = $this->_getType($media);
+            $result[$mediaType]['date'][] = $this->_getDate($media);
+            $result[$mediaType]['perm'][] = $this->_getPerm($media);
+            $result[$mediaType]['path'][] = $mediaPath;
+        }
+        if ($recursive) {
+            foreach (glob($path .'*', GLOB_ONLYDIR | GLOB_MARK) as $dir) {
+                $this->getDirectoryTree($dir, $searchTerm, $result, $recursive);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Return whether file is valid to show or not
+     *
+     * @param string $filePath  Folder path to the file
+     * @param string $fileName  File name
+     *
+     * @return boolean True when file is valid to show, False otherwise
+     */
+    public function isFileValidToShow($filePath, $fileName)
+    {
+        if (   empty($filePath)
+            || empty($fileName)
+            || self::isIllegalFileName($fileName)
+        ) {
+            return false;
+        }
+        if (preg_match("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)\.[^.]+$)|(?:\.thumb)$/i", $fileName)) {
+            $originalFileName = preg_replace("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)(\.[^.]+)$)|(?:\.thumb)$/mi", "$1", $fileName);
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($filePath . '/' . $originalFileName)) {
+                \Cx\Lib\FileSystem\FileSystem::delete_file($filePath . '/'. $fileName);
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Redirect to the page by requested redirect url
+     */
+    public function handleRedirect()
+    {
+        if (empty($_REQUEST['redirect'])) {
+            return;
+        }
+        $redirect = \FWUser::getRedirectUrl(urlencode(base64_decode(urldecode($_REQUEST['redirect']))));
+        \Cx\Core\Csrf\Controller\Csrf::redirect($redirect);
+        exit;
+    }
 }
-?>

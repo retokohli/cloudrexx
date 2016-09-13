@@ -1,9 +1,35 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
 /**
 * User Management
-* @copyright    CONTREXX CMS - COMVATION AG
-* @author       COMVATION Development Team <info@comvation.com>
-* @package      contrexx
+* @copyright    CLOUDREXX CMS - CLOUDREXX AG
+* @author       CLOUDREXX Development Team <info@cloudrexx.com>
+* @package      cloudrexx
 * @subpackage   coremodule_access
 * @version      1.0.0
 */
@@ -12,9 +38,9 @@ namespace Cx\Core_Modules\Access\Controller;
 
 /**
 * Frontend for the user management
-* @copyright    CONTREXX CMS - COMVATION AG
-* @author       COMVATION Development Team <info@comvation.com>
-* @package      contrexx
+* @copyright    CLOUDREXX CMS - CLOUDREXX AG
+* @author       CLOUDREXX Development Team <info@cloudrexx.com>
+* @package      cloudrexx
 * @subpackage   coremodule_access
 * @version      1.0.0
 */
@@ -37,6 +63,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $cmd = isset($_REQUEST['cmd']) ? explode('_', $_REQUEST['cmd']) : array(0 => null);
         $groupId = isset($cmd[1]) ? intval($cmd[1]) : null;
 
+        // add whole component's language data to every application page of component
+        $this->_objTpl->setVariable(\Env::get('init')->getComponentSpecificLanguageData('Access'));
         \Cx\Lib\SocialLogin::parseSociallogin($this->_objTpl, 'access_');
         \Cx\Core\Csrf\Controller\Csrf::add_code();
         switch ($cmd[0]) {
@@ -152,7 +180,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         if ($objGroup->getType() == 'frontend' && $objGroup->getUserCount() > 0 && ($objUser = $objFWUser->objUser->getUsers($userFilter, $search, array('username' => 'asc'), null, $_CONFIG['corePagingLimit'], $limitOffset)) && $userCount = $objUser->getFilteredSearchUserCount()) {
 
             if ($userCount > $_CONFIG['corePagingLimit']) {
-                $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, "&section=Access&cmd=members&groupId=".$groupId."&search=".htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET)."&username_filter=".$usernameFilter, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
+                $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, "&groupId=".$groupId."&search=".htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET)."&username_filter=".$usernameFilter, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
             }
 
             $this->_objTpl->setVariable('ACCESS_GROUP_NAME', (($objGroup = $objFWUser->objGroup->getGroup($groupId)) && $objGroup->getId()) ? htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET) : $_ARRAYLANG['TXT_ACCESS_MEMBERS']);
@@ -274,9 +302,10 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             if (isset($_POST['access_profile_attribute']) && is_array($_POST['access_profile_attribute'])) {
                 $arrProfile = $_POST['access_profile_attribute'];
 
-                if (isset($_FILES['access_profile_attribute_images'])
-                    && is_array($_FILES['access_profile_attribute_images'])
-                    && ($result = $this->addUploadedImagesToProfile($objFWUser->objUser, $arrProfile, $_FILES['access_profile_attribute_images'])) !== true
+                if (   !empty($_POST['access_image_uploader_id'])
+                    && isset($_POST['access_profile_attribute_images'])
+                    && is_array($_POST['access_profile_attribute_images'])
+                    && ($result = $this->addUploadedImagesToProfile($objFWUser->objUser, $arrProfile, $_POST['access_profile_attribute_images'], $_POST['access_image_uploader_id'])) !== true
                 ) {
                     $status = false;
                 }
@@ -287,7 +316,15 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $objFWUser->objUser->setSubscribedNewsletterListIDs(isset($_POST['access_user_newsletters']) && is_array($_POST['access_user_newsletters']) ? $_POST['access_user_newsletters'] : array());
 
             if ($status) {
-                if ($objFWUser->objUser->checkMandatoryCompliance()
+                $arrSettings = \User_Setting::getSettings();
+                if (
+                    // if user_account_verification is false (0), then we do not need to do checkMandatoryCompliance(), because
+                    // the required fields do not need to be set. This means its not necessary in signup that the required fields are already set
+                    // this is a setting which you can set in the user management backend
+                    (
+                        !$arrSettings['user_account_verification']['value']
+                        || $objFWUser->objUser->checkMandatoryCompliance()
+                    )
                     && $objFWUser->objUser->store()
                 ) {
                     $msg = $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'];
@@ -311,6 +348,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             exit;
         }
 
+        $uploader = $this->getImageUploader();
+        
         $this->parseAccountAttributes($objFWUser->objUser, true);
         $this->parseNewsletterLists($objFWUser->objUser);
 
@@ -335,6 +374,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             'ACCESS_STORE_BUTTON'           => '<input type="submit" name="access_store" value="'.$_ARRAYLANG['TXT_ACCESS_SAVE'].'" />',
             'ACCESS_CHANGE_PASSWORD_BUTTON' => '<input type="submit" name="access_change_password" value="'.$_ARRAYLANG['TXT_ACCESS_CHANGE_PASSWORD'].'" />',
             'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
+            'ACCESS_IMAGE_UPLOADER_ID'      => $uploader->getId(),
+            'ACCESS_IMAGE_UPLOADER_CODE'    => $uploader->getXHtml(),
         ));
 
         $arrSettings = \User_Setting::getSettings();
@@ -528,10 +569,10 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                         ($arrProfile = $_POST['access_profile_attribute'])
                         && (
                             // either no profile images are set
-                            (!isset($_FILES['access_profile_attribute_images']) || !is_array($_FILES['access_profile_attribute_images']))
+                            (!isset($_POST['access_profile_attribute_images']) || !is_array($_POST['access_profile_attribute_images']))
                             ||
                             // otherwise try to upload them
-                            ($uploadImageError = $this->addUploadedImagesToProfile($objUser, $arrProfile, $_FILES['access_profile_attribute_images'])) === true
+                            ($uploadImageError = $this->addUploadedImagesToProfile($objUser, $arrProfile, $_POST['access_profile_attribute_images'], $_POST['access_image_uploader_id'])) === true
                         )
                         && $objUser->setProfile($arrProfile)
                     )
@@ -549,7 +590,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 // the required fields do not need to be set. This means its not necessary in signup that the required fields are already set
                 // this is a setting which you can set in the user management backend
                 (
-                    $arrSettings['user_account_verification']['value'] === 0
+                    !$arrSettings['user_account_verification']['value']
                     || $objUser->checkMandatoryCompliance()
                 )
                 && $this->checkCaptcha()
@@ -606,9 +647,12 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $this->attachJavaScriptFunction('accessSetWebsite');
 
+        $uploader = $this->getImageUploader();
         $this->_objTpl->setVariable(array(
             'ACCESS_SIGNUP_BUTTON'          => '<input type="submit" name="access_signup" value="'.$_ARRAYLANG['TXT_ACCESS_CREATE_ACCOUNT'].'" />',
             'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
+            'ACCESS_IMAGE_UPLOADER_ID'      => $uploader->getId(),
+            'ACCESS_IMAGE_UPLOADER_CODE'    => $uploader->getXHtml(),
             'ACCESS_SIGNUP_MESSAGE'         => implode("<br />\n", $this->arrStatusMsg['error'])
         ));
 
@@ -713,52 +757,86 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $objUserMail->getSenderMail();
-            $objMail->FromName = $objUserMail->getSenderName();
-            $objMail->AddReplyTo($objUserMail->getSenderMail());
+            $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
             $objMail->Subject = $objUserMail->getSubject();
 
-            if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
+            $isTextMail  = in_array($objUserMail->getFormat(), array('multipart', 'text'));
+            $isHtmlMail  = in_array($objUserMail->getFormat(), array('multipart', 'html'));
+            $searchTerms = array(
+                '[[HOST]]',
+                '[[USERNAME]]',
+                '[[ACTIVATION_LINK]]',
+                '[[HOST_LINK]]',
+                '[[SENDER]]',
+                '[[LINK]]'
+            );
+            $replaceTextTerms = array(
+                $_CONFIG['domainUrl'],
+                $objUser->getUsername(),
+                'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
+                'http://'.$_CONFIG['domainUrl'],
+                $objUserMail->getSenderName(),
+                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
+            );
+            $replaceHtmlTerms = array(
+                $_CONFIG['domainUrl'],
+                contrexx_raw2xhtml($objUser->getUsername()),
+                'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
+                'http://'.$_CONFIG['domainUrl'],
+                contrexx_raw2xhtml($objUserMail->getSenderName()),
+                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
+            );
+            if ($mail2load == 'reg_confirm') {
+                $imagePath = 'http://'.$_CONFIG['domainUrl']
+                    . \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getWebsiteImagesAccessProfileWebPath().'/';
+                $objUser->objAttribute->first();
+                while (!$objUser->objAttribute->EOF) {
+                    $objAttribute = $objUser->objAttribute->getById(
+                        $objUser->objAttribute->getId()
+                    );
+
+                    $placeholderName  = strtoupper($objUser->objAttribute->getId());
+                    $searchTerms[]    = '[[USER_' . $placeholderName . ']]';
+                    $placeholderValue = $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, true);
+                    if (
+                        $objAttribute->getType() == 'image' &&
+                        $objAttribute->getId() == 'picture'
+                    ) {
+                        $path = $imagePath.'0_noavatar.gif';
+                        $imgName = $objUser->getProfileAttribute($objAttribute->getId());
+                        if (\Cx\Lib\FileSystem\FileSystem::exists($imagePath . $imgName)) {
+                            $path = $imagePath . $imgName;
+                        }
+                        $replaceHtmlTerms[] = \Html::getImageByPath($path, 'alt="'.$objUser->getEmail().'"');
+                        $replaceTextTerms[] = $path;
+                    } else {
+                        if (in_array($objUser->objAttribute->getType(), array('text', 'menu'))) {
+                            $replaceTextTerms[] = html_entity_decode($placeholderValue, ENT_QUOTES, CONTREXX_CHARSET);
+                            $replaceHtmlTerms[] = html_entity_decode($placeholderValue, ENT_QUOTES, CONTREXX_CHARSET);
+                        } else {
+                            $replaceTextTerms[] = $placeholderValue;
+                            $replaceHtmlTerms[] = $placeholderValue;
+                        }
+                    }
+                    $objUser->objAttribute->next();
+                }
+            }
+
+            if ($isTextMail) {
                 $objUserMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
                 $objMail->{($objUserMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = str_replace(
-                    array(
-                        '[[HOST]]',
-                        '[[USERNAME]]',
-                        '[[ACTIVATION_LINK]]',
-                        '[[HOST_LINK]]',
-                        '[[SENDER]]',
-                        '[[LINK]]'
-                    ),
-                    array(
-                        $_CONFIG['domainUrl'],
-                        $objUser->getUsername(),
-                        'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
-                        'http://'.$_CONFIG['domainUrl'],
-                        $objUserMail->getSenderName(),
-                        'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
-                    ),
+                    $searchTerms,
+                    $replaceTextTerms,
                     $objUserMail->getBodyText()
                 );
             }
-            if (in_array($objUserMail->getFormat(), array('multipart', 'html'))) {
+
+            if ($isHtmlMail) {
                 $objUserMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
                 $objMail->Body = str_replace(
-                    array(
-                        '[[HOST]]',
-                        '[[USERNAME]]',
-                        '[[ACTIVATION_LINK]]',
-                        '[[HOST_LINK]]',
-                        '[[SENDER]]',
-                        '[[LINK]]'
-                    ),
-                    array(
-                        $_CONFIG['domainUrl'],
-                        htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-                        'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
-                        'http://'.$_CONFIG['domainUrl'],
-                        htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET),
-                        'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
-                    ),
+                    $searchTerms,
+                    $replaceHtmlTerms,
                     $objUserMail->getBodyHtml()
                 );
             }
@@ -792,4 +870,3 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         return false;
     }
 }
-?>

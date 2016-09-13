@@ -1,10 +1,36 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Livecam
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version        1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_livecam
  * @todo        Edit PHP DocBlocks!
  */
@@ -13,11 +39,11 @@ namespace Cx\Modules\Livecam\Controller;
 
 /**
  * Livecam
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @access        public
  * @version        1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_livecam
  */
 class Livecam extends LivecamLibrary
@@ -231,24 +257,29 @@ class Livecam extends LivecamLibrary
         if ($this->camSettings['shadowboxActivate'] == 1) {
             $imageLink = $this->camSettings['currentImagePath'];
         } else {
+            // reset archive file path in case the current picture has been requested
+            if ($this->_action == 'current') {
+                unset($_GET['file']);
+            }
+
             if (isset($_GET['file'])) {
                 $archiveDate = substr($_GET['file'], 0, 10);
-                $imageLink = 'index.php?section=Livecam&act=archive&date='.$archiveDate;
+                $imageLink = '[[NODE_LIVECAM]]?act=archive&date='.$archiveDate;
             } else {
                 $cmd = '';
                 if (!empty($_GET['cmd'])) {
                     $cmd = '&amp;cmd='.intval($_GET['cmd']);
                 }
-                $imageLink = "?section=Livecam$cmd&amp;act=today";
+                $imageLink = '[[NODE_LIVECAM]]?act=today';
             }
         }
 
         $this->_objTpl->setVariable(array(
-            'LIVECAM_CURRENT_IMAGE'      => isset($_GET['file']) ? ASCMS_PATH_OFFSET.$this->camSettings['archivePath'].'/'.$_GET['file'] : $this->camSettings['currentImagePath'],
+            'LIVECAM_CURRENT_IMAGE'     => isset($_GET['file']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath().$this->camSettings['archivePath'].'/'.$_GET['file'] : $this->camSettings['currentImagePath'],
             'LIVECAM_IMAGE_TEXT'        => isset($_GET['file']) ? contrexx_strip_tags($_GET['file']) : 'Aktuelles Webcam Bild',
             'LIVECAM_IMAGE_SHADOWBOX'   => $this->camSettings['shadowboxActivate'] == 1 ? 'shadowboxgallery' : '',
             'LIVECAM_IMAGE_LINK'        => $imageLink,
-            'LIVECAM_IMAGE_SIZE'        => $this->camSettings['currentMaxSize'],
+            'LIVECAM_IMAGE_SIZE'        => $this->camSettings['maxImageWidth'],
         ));
     }
 
@@ -337,88 +368,101 @@ class Livecam extends LivecamLibrary
      * Get the thumbnails from a day in the archive.
      * Create the thumbnails if they don't already exists.
      *
-     * @access private
+     * @return  boolean TRUE if the thumbs have been loaded, otherwise FALSE
      */
-    function _getThumbs()
+    protected function _getThumbs()
     {
+        // set and sanitize the archive path
+        $path = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath().$this->camSettings['archivePath'].'/'.$this->date.'/';
+        $path = \Cx\Lib\FileSystem\FileSystem::sanitizePath($path);
 
-        $path = ASCMS_DOCUMENT_ROOT."/".$this->camSettings['archivePath'].'/'.$this->date.'/';
+        // set and sanitize the thumbnail path
+        $thumbPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath().$this->camSettings['thumbnailPath'];
+        $thumbPath = \Cx\Lib\FileSystem\FileSystem::sanitizePath($thumbPath);
+
+        if (!$path || !$thumbPath) {
+            return false;
+        }
+
         $objDirectory = @opendir($path);
         $chmoded = false;
 
-        if ($objDirectory) {
-            while ($file = readdir ($objDirectory)) {
-                if ($file != "." && $file != "..") {
-                    //check and create thumbs
-                    $thumb = ASCMS_DOCUMENT_ROOT.$this->camSettings['thumbnailPath'].'/tn_'.$this->date.'_'.$file;
+        if (!$objDirectory) {
+            return false;
+        }
 
-                    if(!\Cx\Lib\FileSystem\FileSystem::exists($thumb)){
-                        if (!$chmoded) {
-                            \Cx\Lib\FileSystem\FileSystem::chmod($this->camSettings['thumbnailPath'], '777');
-                            $chmoded = true;
-                        }
+        while ($file = readdir ($objDirectory)) {
+            if ($file != "." && $file != "..") {
+                //check and create thumbs
+                $thumb = $thumbPath.'/tn_'.$this->date.'_'.$file;
 
-                        //create thumb
-                        $im1 = @imagecreatefromjpeg($path.$file); //erstellt ein Abbild im Speicher
-                        if ($im1) {  /* Pr�fen, ob fehlgeschlagen */
-                            // check_jpeg($thumb, $fix=false );
-                            $size = getimagesize($path.$file); //ermittelt die Gr��e des Bildes
-                            $breite = $size[0]; //die Breite des Bildes
-                            $hoehe = $size[1]; //die H�he des Bildes
-
-
-                            $breite_neu = $this->camSettings['thumbMaxSize']; //die breite des Thumbnails
-                            $factor = $breite/$this->camSettings['thumbMaxSize']; //berechnungsfaktor
-                            $hoehe_neu = $size[1]/$factor; //die H�he des Thumbnails
-
-                            //$im2=imagecreate($breite_neu,$hoehe_neu); //Thumbnail im Speicher erstellen
-                            $im2 = @imagecreatetruecolor($breite_neu,$hoehe_neu);
-
-                            imagecopyresized($im2, $im1, 0,0, 0,0,$breite_neu,$hoehe_neu, $breite,$hoehe);
-                            imagejpeg($im2, $thumb); //Thumbnail speichern
-
-                            imagedestroy($im1); //Speicherabbild wieder l�schen
-                            imagedestroy($im2); //Speicherabbild wieder l�schen
-                        }
+                if(!\Cx\Lib\FileSystem\FileSystem::exists($thumb)){
+                    if (!$chmoded) {
+                        \Cx\Lib\FileSystem\FileSystem::makeWritable($this->camSettings['thumbnailPath']);
+                        $chmoded = true;
                     }
 
-                    //show pictures
-                    $minHour = date('G',$this->camSettings['showFrom']);
-                    $minMinutes = date('i',$this->camSettings['showFrom']);
-                    $maxHour = date('G',$this->camSettings['showTill']);
-                    $maxMinutes = date('i',$this->camSettings['showTill']);
+                    //create thumb
+                    $im1 = @imagecreatefromjpeg($path.$file); //erstellt ein Abbild im Speicher
+                    if ($im1) {  /* Pr�fen, ob fehlgeschlagen */
+                        // check_jpeg($thumb, $fix=false );
+                        $size = getimagesize($path.$file); //ermittelt die Gr��e des Bildes
+                        $breite = $size[0]; //die Breite des Bildes
+                        $hoehe = $size[1]; //die H�he des Bildes
 
 
-                    $hour = substr($file,4,2);
-                    $min = substr($file,13,2);
-                    $min = !empty($min) ? $min : "00";
-                    $time = $hour.":".$min."&nbsp;Uhr";
+                        $breite_neu = $this->camSettings['thumbMaxSize']; //die breite des Thumbnails
+                        $factor = $breite/$this->camSettings['thumbMaxSize']; //berechnungsfaktor
+                        $hoehe_neu = $size[1]/$factor; //die H�he des Thumbnails
 
-                    $minTime = mktime($minHour, $minMinutes);
-                    $maxTime = mktime($maxHour, $maxMinutes);
-                    $nowTime = mktime($hour, $min);
+                        //$im2=imagecreate($breite_neu,$hoehe_neu); //Thumbnail im Speicher erstellen
+                        $im2 = @imagecreatetruecolor($breite_neu,$hoehe_neu);
 
-                    /*
-                    * only show archive images if they are in range
-                    */
-                    if($nowTime <= $maxTime && $nowTime >= $minTime) {
+                        imagecopyresized($im2, $im1, 0,0, 0,0,$breite_neu,$hoehe_neu, $breite,$hoehe);
+                        imagejpeg($im2, $thumb); //Thumbnail speichern
 
-                        if($this->camSettings['shadowboxActivate'] == 1) {
-                            $linkUrl = ASCMS_PATH_OFFSET.$this->camSettings['archivePath'].'/'.$this->date.'/'.$file;
-                        } else {
-                            $linkUrl = '?section=Livecam&amp;file='.$this->date.'/'.$file;
-                        }
-
-                        $arrThumbnail = array(
-                            'link_url'    => $linkUrl,
-                            'image_url'    => $this->camSettings['thumbnailPath']."/tn_".$this->date."_".$file,
-                            'time'        => $time
-                        );
-                        array_push($this->_arrArchiveThumbs, $arrThumbnail);
+                        imagedestroy($im1); //Speicherabbild wieder l�schen
+                        imagedestroy($im2); //Speicherabbild wieder l�schen
                     }
                 }
+
+                //show pictures
+                $minHour = date('G',$this->camSettings['showFrom']);
+                $minMinutes = date('i',$this->camSettings['showFrom']);
+                $maxHour = date('G',$this->camSettings['showTill']);
+                $maxMinutes = date('i',$this->camSettings['showTill']);
+
+
+                $hour = substr($file,4,2);
+                $min = substr($file,13,2);
+                $min = !empty($min) ? $min : "00";
+                $time = $hour.":".$min."&nbsp;Uhr";
+
+                $minTime = mktime($minHour, $minMinutes);
+                $maxTime = mktime($maxHour, $maxMinutes);
+                $nowTime = mktime($hour, $min);
+
+                /*
+                * only show archive images if they are in range
+                */
+                if($nowTime <= $maxTime && $nowTime >= $minTime) {
+
+                    if($this->camSettings['shadowboxActivate'] == 1) {
+                        $linkUrl = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath().$this->camSettings['archivePath'].'/'.$this->date.'/'.$file;
+                    } else {
+                        $linkUrl = '[[NODE_LIVECAM]]?file='.$this->date.'/'.$file;
+                    }
+
+                    $arrThumbnail = array(
+                        'link_url'    => $linkUrl,
+                        'image_url'   => $this->camSettings['thumbnailPath']."/tn_".$this->date."_".$file,
+                        'time'        => $time
+                    );
+                    array_push($this->_arrArchiveThumbs, $arrThumbnail);
+                }
             }
-            closedir($objDirectory);
         }
+        closedir($objDirectory);
+        return true;
     }
 }

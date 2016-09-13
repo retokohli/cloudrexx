@@ -1,10 +1,35 @@
-<?php 
+<?php
 
- /** 
- * @copyright   CONTREXX CMS - COMVATION AG 
- * @author      Comvation Development Team <info@comvation.com>
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/** 
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public 
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_viewmanager
  */ 
 global $_ARRAYLANG; 
@@ -95,7 +120,7 @@ $_ARRAYLANG['TXT_REPLACEMENT_LIST'] = 'Platzhalter Liste';
 $_ARRAYLANG['TXT_FILES'] = 'Dateien';
 $_ARRAYLANG['TXT_CONTENTS'] = 'Inhalte';
 $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'] = 'Platzhalter Verzeichnis';
-$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION'] = 'Eine detaillierte Platzhalter-Liste finden Sie im <a href="http://www.contrexx.com/wiki/de/index.php?title=Platzhalterverzeichnis" target="_blank">Contrexx&reg; Platzhalterverzeichnis</a>.';
+$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION'] = 'Eine detaillierte Platzhalter-Liste finden Sie im <a href="http://www.cloudrexx.com/wiki/de/index.php?title=Platzhalterverzeichnis" target="_blank">Cloudrexx&reg; Platzhalterverzeichnis</a>.';
 $_ARRAYLANG['TXT_CHANNELS'] = 'Ansichten';
 $_ARRAYLANG['TXT_MODULE_URLS'] = 'Verlinkungen Grundanwendungen';
 $_ARRAYLANG['TXT_CONTACT'] = 'Kontakt';
@@ -187,5 +212,8 @@ $_ARRAYLANG['TXT_THEME_FOLDER_RESET_SUCCESS'] = 'Das Verzeichnis wurde erfolgrei
 $_ARRAYLANG['TXT_THEME_RESET_FAILED']      = "Die Rücksetzung ist fehl geschlagen. Bitte versuchen Sie es erneut.";
 $_ARRAYLANG['TXT_THEME_FULLSCREEN'] = 'Vollbild';
 $_ARRAYLANG['TXT_THEME_EXIT_FULLSCREEN'] = 'Vollbild Modus verlassen';
+$_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_USABLE'] = 'Editor';
+$_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_UNUSABLE'] = 'Code only';
+$_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_EDIT'] = 'Anpassen';
 $_ARRAYLANG['TXT_THEME_ERROR_IN_INSERT_THEME'] = 'Das Template konnte nicht in der Datenbank gespeichert werden.';
 $_ARRAYLANG['TXT_UNABLE_TO_CONVERT_THEME_TO_COMPONENT'] = 'Das Template konnte nicht korrekt eingelesen werden. Stellen Sie sicher das auf das Verzeichnis im Dateisystem Schreibzugriff besteht.';

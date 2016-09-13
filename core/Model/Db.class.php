@@ -1,11 +1,37 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
 /**
  * Db Class
  *
  * Database connection handler
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_db
  * @todo        make class a pure library
  */
@@ -31,9 +57,9 @@ namespace Cx\Core\Model {
     /**
      * DB Exception
      *
-     * @copyright   Comvation AG
+     * @copyright   Cloudrexx AG
      * @author      Michael Ritter <michael.ritter@comvation.com>
-     * @package     contrexx
+     * @package     cloudrexx
      * @subpackage  core_db
      */
     class DbException extends \Exception {}
@@ -42,15 +68,15 @@ namespace Cx\Core\Model {
      * Db Class
      *
      * Database connection handler
-     * @copyright   Comvation AG
+     * @copyright   Cloudrexx AG
      * @author      Michael Ritter <michael.ritter@comvation.com>
-     * @package     contrexx
+     * @package     cloudrexx
      * @subpackage  core_db
      */
     class Db {
         
         /**
-         * Contrexx instance
+         * Cloudrexx instance
          * @var \Cx\Core\Core\Controller\Cx
          */
         protected $cx = null;
@@ -100,6 +126,26 @@ namespace Cx\Core\Model {
             $this->db = $db;
             $this->dbUser = $dbUser;
         }
+
+        /**
+         * Creates a new instance by using an existing database connection
+         * @return  \Cx\Core\Model\Model\Entity\Db  $dbInfo Database connection infos
+         * @return  \Cx\Core\Model\Model\Entity\DbUser  $dbUser Database user connection infos
+         * @param   \PDO    $pdo    Existing PDO connection
+         * @param   \ADONewConnection   $adoDb  Existing AdoDb connection based on $pdo
+         * @param   \Cx\Core\Model\Controller\EntityManager $em Existing Entity Manager object based on $pdo
+         * @return  \Cx\Core\Model\Db   Instance based on existing database connection
+         */
+        public static function fromExistingConnection(\Cx\Core\Model\Model\Entity\Db $dbInfo, \Cx\Core\Model\Model\Entity\DbUser $dbUser,
+                                                      \PDO $pdo, \ADONewConnection $adoDb, \Cx\Core\Model\Controller\EntityManager $em
+        ) {
+            // Bind database connection
+            $db = new static($dbConnection, $dbUser);
+            $db->setPdoConnection($pdo);
+            $db->setAdoDb($adoDb);
+            $db->setEntityManager($em);
+            return $db;
+        }
         
         /**
          * Sets the username for loggable listener
@@ -137,8 +183,35 @@ namespace Cx\Core\Model {
                 )
             );
             $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
+
+            // disable ONLY_FULL_GROUP_BY, STRICT_TRANS_TABLES mode
+            // this is a temporary fix to ensure MySQL 5.7 compatability
+            $statement = $this->pdo->query('SELECT @@SESSION.sql_mode');
+            $modes = $statement->fetch(\PDO::FETCH_NUM);
+            $sqlModes = explode(',', $modes[0]);
+            $sqlModes = array_filter(
+                $sqlModes,
+                function($e) {
+                    if (in_array(trim($e), array('ONLY_FULL_GROUP_BY', 'STRICT_TRANS_TABLES'))) {
+                        return false;
+                    }
+                    return true;
+                }
+            );
+            $this->pdo->exec('SET SESSION sql_mode = \'' . implode(',', $sqlModes) . '\'');
+
             \Env::set('pdo', $this->pdo);
             return $this->pdo;
+        }
+
+        /**
+         * Bind initialized PDO connection
+         * @param   \PDO    $pdo    Initialized PDO connection to be used as
+         *                          database connection.
+         */
+        public function setPdoConnection($pdo) {
+            $this->pdo = $pdo;
+            \Env::set('pdo', $this->pdo);
         }
 
         /**
@@ -173,6 +246,23 @@ namespace Cx\Core\Model {
                 return false;
             }
             return $this->adodb;
+        }
+
+        /**
+         * Sets the AdoDB connection
+         * @param \ADONewConnection $adoDb Initialized AdoDB connection to be
+         *                                 used for legacy database queries.
+         */
+        public function setAdoDb($adoDb) {
+            $this->adodb = $adoDb;
+        }
+
+        /**
+         * Returns the database info object
+         * @return \Cx\Core\Model\Model\Entity\Db Database info object
+         */
+        public function getDb() {
+            return $this->db;
         }
         
         /**
@@ -296,6 +386,15 @@ namespace Cx\Core\Model {
             
             $this->em = $em;
             return $this->em;
+        }
+
+        /**
+         * Bind initialized Entity Manager
+         * @param \Doctrine\ORM\EntityManager   $em Initialized Entity Manager
+         *                                          to be used by doctrine.
+         */
+        public function setEntityManager($em) {
+            $this->em = $em;
         }
     }
 }

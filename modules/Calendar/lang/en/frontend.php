@@ -1,11 +1,37 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Calendar Language variables
  * 
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_calendar
- * @author     Comvation <info@comvation.com>
- * @copyright  CONTREXX CMS - COMVATION AG
+ * @author     Cloudrexx <info@cloudrexx.com>
+ * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */
 $_ARRAYLANG['TXT_CALENDAR_YES'] = "Yes";
@@ -113,6 +139,8 @@ $_ARRAYLANG['TXT_CALENDAR_EVENT_STREET'] = "Street / Nr.";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_ZIP'] = "Zip";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_CITY'] = "City";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_COUNTRY'] = "Country";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_WEBSITE'] = "Website";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_PHONE'] = "Phone";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_MAP'] = "Map";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_USE_GOOGLEMAPS'] = "Use Google Maps";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_LINK'] = "Link";
@@ -125,7 +153,7 @@ $_ARRAYLANG['TXT_CALENDAR_EDIT'] = "Edit";
 $_ARRAYLANG['TXT_CALENDAR_PAYMENT_METHOD'] = "Payment method";
 $_ARRAYLANG['TXT_CALENDAR_PAYMENT_BILL'] = "Bill";
 $_ARRAYLANG['TXT_CALENDAR_PAYMENT_YELLOWPAY'] = "Yellowpay";
-$_ARRAYLANG['TXT_CALENDAR_AGB'] = "I accept the <a href=\"index.php?section=Agb\" target=\"_blank\"> cancellation </a>";
+$_ARRAYLANG['TXT_CALENDAR_AGB'] = "I accept the <a href=\"index.php?section=Agb\" target=\"_blank\">general terms and conditions</a>";
 $_ARRAYLANG['TXT_CALENDAR_SAVE_IN_WAITLIST'] = "Registrations will be added to the waiting list";
 $_ARRAYLANG['TXT_CALENDAR_SEPARATOR_NOTHING'] = "";
 $_ARRAYLANG['TXT_CALENDAR_SEPARATOR_SPACE'] = " ";
@@ -172,3 +200,7 @@ $_ARRAYLANG['TXT_CALENDAR_ACTIVE'] = "active";
 $_ARRAYLANG['TXT_CALENDAR_COMMENT'] = "Comment";
 $_ARRAYLANG['TXT_CALENDAR_HOST'] = "website";
 $_ARRAYLANG['TXT_CALENDAR_NO_SERIES'] = "No repeat";
+$_ARRAYLANG['TXT_CALENDAR_NOT_SPECIFIED'] = "Not specified";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_FREE'] = "free";
+$_ARRAYLANG['TXT_CALENDAR_MORE'] = "More";
+$_ARRAYLANG['TXT_CALENDAR_MINIMIZE'] = "Minimize";

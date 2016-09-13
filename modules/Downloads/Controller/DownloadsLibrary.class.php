@@ -1,19 +1,44 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Digital Asset Management
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_downloads
  * @version     1.0.0
  */
 namespace Cx\Modules\Downloads\Controller;
 /**
  * Digital Asset Management Library
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_downloads
  * @version     1.0.0
  */
@@ -48,6 +73,47 @@ class DownloadsLibrary
         'associate_user_to_groups'      => ''
     );
 
+    /**
+     * Downloads setting option
+     * 
+     * @var array
+     */
+    protected $downloadsSortingOptions = array(
+        'custom' => array(
+            'order' => 'ASC',
+            'name'  => 'ASC',
+            'id'    => 'ASC'
+        ),
+        'alphabetic' => array(
+            'name' => 'ASC',
+            'id'   => 'ASC'
+        ),
+        'newestToOldest' => array(
+            'ctime' => 'DESC',
+            'id'    => 'ASC'
+        ),
+        'oldestToNewest' => array(
+            'ctime' => 'ASC',
+            'id'    => 'ASC'
+        )
+    );
+
+    /**
+     * Categories setting option
+     * 
+     * @var array
+     */
+    protected $categoriesSortingOptions = array(
+        'custom' => array(
+            'order' => 'ASC',
+            'name'  => 'ASC',
+            'id'    => 'ASC'
+        ),
+        'alphabetic' => array(
+            'name' => 'ASC',
+            'id'   => 'ASC'
+        )
+    );
 
     public function __construct()
     {
@@ -80,13 +146,9 @@ class DownloadsLibrary
 
     protected function initDefaultCategoryImage()
     {
-        $this->defaultCategoryImage['src'] = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/no_picture.gif';
-        if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$this->defaultCategoryImage['src'])) {
-            $imageSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$this->defaultCategoryImage['src']);
-        } else {
-            $imageSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseDocumentRootPath().$this->defaultCategoryImage['src']);
-        }
-
+        $this->defaultCategoryImage['src'] = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getWebFilePath(\Cx\Core\Core\Controller\Cx::instanciate()->getModuleFolderName() . '/Downloads/View/Media/no_picture.gif');
+        $imageSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBasePath().$this->defaultCategoryImage['src']);
+        
         $this->defaultCategoryImage['width'] = $imageSize[0];
         $this->defaultCategoryImage['height'] = $imageSize[1];
     }
@@ -118,7 +180,8 @@ class DownloadsLibrary
     {
         global $_LANGID;
 
-        $objCategory = Category::getCategories(null, null, array('order' => 'ASC', 'name' => 'ASC', 'id' => 'ASC'));
+        $sortOrder   = $this->categoriesSortingOptions[$this->arrConfig['categories_sorting_order']];
+        $objCategory = Category::getCategories(null, null, $sortOrder);
         $arrCategories = array();
 
         switch ($accessType) {
@@ -201,7 +264,8 @@ class DownloadsLibrary
     {
         global $_LANGID;
 
-        $objCategory = Category::getCategories(null, null, array('order' => 'ASC', 'name' => 'ASC', 'id' => 'ASC'));
+        $sortOrder   = $this->categoriesSortingOptions[$this->arrConfig['categories_sorting_order']];
+        $objCategory = Category::getCategories(null, null, $sortOrder);
         $arrCategories = array();
 
         while (!$objCategory->EOF) {
@@ -314,11 +378,11 @@ class DownloadsLibrary
     {
         global $_LANGID;
 
-        $objGroup = Group::getGroups(array('id' => $arrGroups));
-
+        $objGroup  = Group::getGroups(array('id' => $arrGroups));
+        $sortOrder = $this->categoriesSortingOptions[$this->arrConfig['categories_sorting_order']];
         while (!$objGroup->EOF) {
             $output = "<ul>\n";
-            $objCategory = Category::getCategories(array('id' => $objGroup->getAssociatedCategoryIds()), null, array( 'order' => 'asc', 'name' => 'asc'));
+            $objCategory = Category::getCategories(array('id' => $objGroup->getAssociatedCategoryIds()), null, $sortOrder);
             while (!$objCategory->EOF) {
                 $output .= '<li><a href="'.CONTREXX_SCRIPT_PATH.'?section=Downloads&amp;category='.$objCategory->getId().'" title="'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'">'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
                 $objCategory->next();
@@ -329,5 +393,37 @@ class DownloadsLibrary
             $objGroup->next();
         }
     }
+    
+    /**
+     * parse the settings dropdown
+     * 
+     * @param object $objTemplate   template object
+     * @param array  $settingValues array of setting values
+     * @param string $selected      selected dropdown value
+     * @param string $blockName     block name for template parsing
+     * 
+     * @return null
+     */
+    public function parseSettingsDropDown(  
+        \Cx\Core\Html\Sigma $objTemplate, 
+        $settingValues, 
+        $selected,
+        $blockName
+    ) {
+        global $_ARRAYLANG;
 
+        if (empty($settingValues)) {
+            return;
+        }
+
+        foreach (array_keys($settingValues) as $key) {
+            $selectedOption = ($selected == $key) ? 'selected="selected"' : '';
+            $objTemplate->setVariable(array(
+                'DOWNLOADS_SETTINGS_DROPDOWN_OPTION_VALUE'    => $key,
+                'DOWNLOADS_SETTINGS_DROPDOWN_OPTION_NAME'     => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_'.  strtoupper($key).'_LABEL'],
+                'DOWNLOADS_SETTINGS_DROPDOWN_SELECTED_OPTION' => $selectedOption,
+            ));
+            $objTemplate->parse('downloads_settings_sorting_dropdown_' . $blockName);
+        }
+    }
 }

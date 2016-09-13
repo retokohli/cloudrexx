@@ -1,21 +1,46 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * LinkSanitizer
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core
  */
 
 /**
- * This class replaces any links from Contrexx < 3.0 on the fly.
+ * This class replaces any links from Cloudrexx < 3.0 on the fly.
  * Handles the [[NODE_<ID>_<LANGID>]] placeholders.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core
  */
 class LinkSanitizer {
@@ -23,13 +48,15 @@ class LinkSanitizer {
     const FILE_PATH                = 3;
     const CLOSE_QUOTE              = 4;
     
+    protected $cx;
     protected $offset;
     protected $content;
 
     /**
      * @param string $offset the path offset to prepend, e.g. '/' or '/cms/'
      */
-    public function __construct($offset, &$content) {
+    public function __construct($cx, $offset, &$content) {
+        $this->cx = $cx;
         $this->content = &$content;
         $this->offset  = $offset;
     }
@@ -70,6 +97,7 @@ class LinkSanitizer {
             $content = preg_replace_callback("/
                 (\<(?:a|form)[^>]*?\s+(?:href|action)\s*=\s*)
                 (['\"])
+                (?!\#)
                 ((?![a-zA-Z]+?:|\\\\).+?)
                 \\2
                 ([^>]*\>)
@@ -90,9 +118,15 @@ class LinkSanitizer {
         // For this reason, we replace escaped slashes by slashes.
         $matches[\LinkSanitizer::FILE_PATH] = str_replace('\\/', '/', $matches[\LinkSanitizer::FILE_PATH]);
 
+        // fix empty urls like empty form-action tags
+        if (empty($matches[\LinkSanitizer::FILE_PATH])) {
+            return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
+            $this->cx->getRequest()->getUrl() .
+            $matches[\LinkSanitizer::CLOSE_QUOTE];
+        }
         $testPath = explode('?', $matches[\LinkSanitizer::FILE_PATH], 2);
         if ($testPath[0] == 'index.php' || $testPath[0] == '' || $testPath[0] == './') {
-            $ret = ASCMS_INSTANCE_OFFSET;
+            $ret = $this->cx->getWebsiteOffsetPath();
             if (\Env::get('cx')->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
                 $ret .= \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName();
             }
@@ -104,7 +138,22 @@ class LinkSanitizer {
                     $split = explode('=', $arg, 2);
                     $params[$split[0]] = $split[1];
                 }
-                if (isset($params['cmd'])) {
+                // frontend case
+                if (isset($params['section'])) {
+                    $cmd = '';
+                    if (isset($params['cmd'])) {
+                        $cmd = $params['cmd'];
+                        unset($params['cmd']);
+                    }
+                    $ret = \Cx\Core\Routing\Url::fromModuleAndCmd($params['section'], $cmd);
+                    unset($params['section']);
+                    $ret->setParams($params);
+                    return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
+                    $ret .
+                    $matches[\LinkSanitizer::CLOSE_QUOTE];
+                
+                // backend case
+                } else if (isset($params['cmd'])) {
                     $ret .= $params['cmd'];
                     unset($params['cmd']);
                     if (isset($params['act'])) {
@@ -113,17 +162,27 @@ class LinkSanitizer {
                     }
                 }
                 if (count($params)) {
-                    $ret .= '?' . http_build_query($params);
+                    array_walk(
+                        $params,
+                        function(&$value, $key) {
+                            $value = $key . '=' . $value;
+                        }
+                    );
+                    $ret .= '?' . implode('&', $params);
                 }
             }
             return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
             $ret .
             $matches[\LinkSanitizer::CLOSE_QUOTE];
-        } else if ($this->fileExists(ASCMS_DOCUMENT_ROOT . '/' . $matches[\LinkSanitizer::FILE_PATH])) {
+        } else if (
+            $localFile = $this->cx->getClassLoader()->getWebFilePath(
+                $this->cx->getCodeBaseDocumentRootPath() . '/' .
+                $matches[\LinkSanitizer::FILE_PATH]
+            )
+        ) {
             // this is an existing file, do not add virtual language dir
             return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
-            ASCMS_INSTANCE_OFFSET .
-            '/' . $matches[\LinkSanitizer::FILE_PATH] .
+            $localFile .
             $matches[\LinkSanitizer::CLOSE_QUOTE];
         } else {
             // this is a link to a page, add virtual language dir
@@ -185,6 +244,9 @@ class LinkSanitizer {
 
         if (!empty($_GET['preview']) && !isset($query['preview'])) {
             $query['preview'] = $_GET['preview'];
+        }
+        if (!empty($_GET['templateEditor']) && !isset($query['templateEditor'])) {
+            $query['templateEditor'] = $_GET['templateEditor'];
         }
         if ((isset($_GET['appview']) && ($_GET['appview'] == 1)) && !isset($query['appview'])) {
             $query['appview'] = $_GET['appview'];

@@ -915,15 +915,16 @@ function OpenTag($tag,$attr)
                 $srcpath = html_entity_decode($attr['SRC'], ENT_QUOTES, CONTREXX_CHARSET);
 
                 if (!FWValidator::isUri($srcpath)) { 
+                    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                     // Set absolute path of image source
                     /*if (strpos($srcpath, ASCMS_DOCUMENT_ROOT) === 0) {
                         // probably impossible that the $srcpath would contain ASCMS_DOCUMENT_ROOT, therefore we can ignore this case
-                    } else*/if (ASCMS_PATH_OFFSET && strpos($srcpath, ASCMS_PATH_OFFSET) === 0) {
-                        $srcpath = ASCMS_PATH.$srcpath;
+                    } else*/if ($cx->getWebsiteOffsetPath() && strpos($srcpath, $cx->getWebsiteOffsetPath()) === 0) {
+                        $srcpath = $cx->getWebsitePath().$srcpath;
                     } elseif (strpos($srcpath, '/') === 0) {
-                        $srcpath = ASCMS_DOCUMENT_ROOT.$srcpath;
+                        $srcpath = $cx->getWebsiteDocumentRootPath().$srcpath;
                     } else {
-                        $srcpath = ASCMS_DOCUMENT_ROOT.'/'.$srcpath;
+                        $srcpath = $cx->getWebsiteDocumentRootPath().'/'.$srcpath;
                     }
                 }
 
@@ -2335,7 +2336,7 @@ function ReadCSS($html)
     $CSSextblock = file_get_contents($path);	
     
     /**
-     * @author: COMVATION
+     * @author: CLOUDREXX
      * only tags bug
      */
     $CSSextblock = str_replace('h1', '.h1', $CSSextblock);

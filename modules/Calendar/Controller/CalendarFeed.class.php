@@ -1,23 +1,49 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
 /**
  * Calendar Class RSS Feed
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx <info@cloudrexx.com>
  * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_calendar
  */
 namespace Cx\Modules\Calendar\Controller;
 
 /**
  * CalendarFeed
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx <info@cloudrexx.com>
  * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_calendar
  */
-class CalendarFeed extends \Cx\Modules\Calendar\Controller\CalendarLibrary {
+class CalendarFeed extends CalendarLibrary {
     /**
      * Object Event manager
      * 
@@ -49,8 +75,8 @@ class CalendarFeed extends \Cx\Modules\Calendar\Controller\CalendarLibrary {
     function creatFeed(){
         global $_CONFIG, $objDatabase;
         
-        parent::getFrontendLanguages();
-        parent::getSettings();
+        $this->getFrontendLanguages();
+        $this->getSettings();
         
         $this->objEventManager->getEventlist();
         
@@ -70,7 +96,7 @@ class CalendarFeed extends \Cx\Modules\Calendar\Controller\CalendarLibrary {
             }
             
             $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
-            $objRSSWriter->channelLastBuildDate = date('r', mktime());
+            $objRSSWriter->channelLastBuildDate = date('r', time());
             
             foreach($this->objEventManager->eventList as $eventKey => $objEvent) {
                 $objFWUser = \FWUser::getFWUserObject();
@@ -99,7 +125,7 @@ class CalendarFeed extends \Cx\Modules\Calendar\Controller\CalendarLibrary {
                     $itemComments = null;
                     $itemEnclosure = array();
                     $itemGuid = array(); 
-                    $itemPubDate = contrexx_raw2xml($objEvent->startDate);
+                    $itemPubDate = $objEvent->startDate->getTimestamp();
                     $itemSource = array();
                     
                     

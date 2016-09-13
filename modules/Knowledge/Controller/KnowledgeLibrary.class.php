@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * knowledgeLib
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_knowledge
  */
 
@@ -15,9 +40,9 @@ namespace Cx\Modules\Knowledge\Controller;
 /**
  * Some basic operations for the knowledge module.
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @package contrexx
+ * @package cloudrexx
  * @subpackage  module_knowledge
  */
 class KnowledgeLibrary {
@@ -54,8 +79,8 @@ class KnowledgeLibrary {
      */
 	public function __construct() {
 		$this->categories = new KnowledgeCategory();
-		$this->articles = new KnowledgeArticles();
 		$this->settings = new KnowledgeSettings();
+		$this->articles = new KnowledgeArticles($this->isAllLangsActive());
 		$this->tags = new KnowledgeTags();
 		
 		$this->_arrLanguages 	= $this->createLanguageArray();
@@ -126,5 +151,25 @@ class KnowledgeLibrary {
 		}
 
 		return $arrReturn;
+	}
+	
+	/**
+	 * Tells whether the allLangs setting is active or not
+	 * @return boolean True if setting is enabled
+	 */
+	public function isAllLangsActive() {
+	    return $this->settings->get("show_all_langs") == 1;
+	}
+	
+	/**
+	 * Returns lang ID based on allLangs setting
+	 * @return int|null lang ID
+	 */
+	public function getLangId() {
+	    if ($this->isAllLangsActive()) {
+	        return null;
+	    }
+	    global $_LANGID;
+	    return $_LANGID;
 	}
 }

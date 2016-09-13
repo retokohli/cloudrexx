@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_access
  */
 $_ARRAYLANG['TXT_LOGIN_NAME'] = "Login Benutzername";
@@ -61,7 +87,7 @@ $_ARRAYLANG['TXT_ACCESS_ACTIVATION_TIMEOUT'] = " innerhalb von %TIMEOUT%";
 $_ARRAYLANG['TXT_ACCESS_CHANGE_PASSWORD'] = "Kennwort ändern";
 $_ARRAYLANG['TXT_ACCESS_COULD_NOT_SEND_ACTIVATION_MAIL'] = "Registrierungsfehler: Konnte kein Bestätigungsmail schicken";
 $_ARRAYLANG['TXT_ACCESS_COULD_NOT_SEND_EMAIL'] = "Konnte keine Bestätigung per Mail senden.<br />Für weitere Informationen wenden Sie sich bitte an den Administrator %EMAIL%. ";
-$_ARRAYLANG['TXT_ACCESS_CREATE_ACCOUNT'] = "Konto erstellen";
+$_ARRAYLANG['TXT_ACCESS_CREATE_ACCOUNT'] = "allestire account";
 $_ARRAYLANG['TXT_ACCESS_DELETE_ACCOUNT'] = "Konto löschen";
 $_ARRAYLANG['TXT_ACCESS_HOUR_IN_STR'] = "einer Stunde";
 $_ARRAYLANG['TXT_ACCESS_HOURS_IN_STR'] = "Stunden";

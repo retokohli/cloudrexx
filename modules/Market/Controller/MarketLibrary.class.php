@@ -1,10 +1,35 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Market library
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_market
  * @todo        Edit PHP DocBlocks!
  */
@@ -15,9 +40,9 @@ namespace Cx\Modules\Market\Controller;
  * Market library
  *
  * External functions for the market
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_market
  * @todo        Edit PHP DocBlocks!
  */
@@ -125,16 +150,22 @@ class MarketLibrary
         return $settings;
     }
 
+    /**
+     * Insert the advertisement entry
+     *
+     * @param integer $backend
+     * 
+     * @return null
+     */
 
-
-    function insertEntry($backend){
+    public function insertEntry($backend){
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
-        if($_FILES['pic']['name'] != ""){
+        if ($_POST['uploadImage'] != "") {
             $picture = $this->uploadPicture();
-        }elseif (isset($_POST['picOld'])) {
+        } elseif (isset($_POST['picOld'])) {
             $picture = $this->copyPicture($_POST['picOld']);
-        }else{
+        } else{
             $picture = "";
         }
 
@@ -284,9 +315,7 @@ class MarketLibrary
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $fromMail;
-            $objMail->FromName = $fromName;
-            $objMail->AddReplyTo($fromMail);
+            $objMail->SetFrom($fromMail, $fromName);
             $objMail->Subject = $subject;
             $objMail->IsHTML(false);
             $objMail->Body = $message;
@@ -398,9 +427,7 @@ class MarketLibrary
                 }
 
                 $objMail->CharSet = CONTREXX_CHARSET;
-                $objMail->From = $fromMail;
-                $objMail->FromName = $fromName;
-                $objMail->AddReplyTo($fromMail);
+                $objMail->SetFrom($fromMail, $fromName);
                 $objMail->Subject = $subject;
                 $objMail->IsHTML(false);
                 $objMail->Body = $message;
@@ -420,48 +447,68 @@ class MarketLibrary
         }
     }
 
+    /**
+     * Move the uploaded image to destination path from the temp path
+     *
+     * @return mixed $status | false
+     */
 
+    public function uploadPicture()
+    {
 
-    function uploadPicture(){
-
-        $status            = "";
-        $path            = "pictures/";
+        $status = "";
+        $path   = "pictures/";
 
         //check file array
-        if(isset($_FILES) && !empty($_FILES))
-        {
-            //get file info
-            $tmpFile          = $_FILES['pic']['tmp_name'];
-           $fileName         = $_FILES['pic']['name'];
+        $uploaderId = isset($_POST['marketUploaderId']) 
+                      ? contrexx_input2raw($_POST['marketUploaderId'])
+                      : 0;
+        $fileName   = isset($_POST['uploadImage'])
+                      ? contrexx_input2raw($_POST['uploadImage'])
+                      : 0;
+        if (empty($uploaderId) || empty($fileName)) {
+            return false;
+        }
+        //get file info
+        $objSession = \cmsSession::getInstance();
+        $tmpFile    = $objSession->getTempPath() . '/' . $uploaderId . '/' . $fileName;
 
-           if($fileName != "" && \FWValidator::is_file_ending_harmless($fileName)){
-                //check extension
-                   $info     = pathinfo($fileName);
-                $exte     = $info['extension'];
-                $exte     = (!empty($exte)) ? '.' . $exte : '';
-                $part1    = substr($fileName, 0, strlen($fileName) - strlen($exte));
-                $rand      = rand(10, 99);
-                $fileName = md5($rand.$fileName).$exte;
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($tmpFile)) {
+            return false;
+        }
 
-                //check file
+        if ($fileName != '' && \FWValidator::is_file_ending_harmless($fileName)) {
+            //check extension
+            $info = pathinfo($fileName);
+            $exte = $info['extension'];
+            $exte = (!empty($exte)) ? '.' . $exte : '';
+            $part1 = substr($fileName, 0, strlen($fileName) - strlen($exte));
+            $rand = rand(10, 99);
+            $fileName = md5($rand . $fileName) . $exte;
+
+            //check file
 // TODO: $x is not defined
-                $x = 0;
-                if(file_exists($this->mediaPath.$path.$fileName)){
-                    $fileName = $rand.$part1 . '_' . (time() + $x) . $exte;
-                    $fileName = md5($fileName).$exte;
-                }
+            $x = 0;
+            if (file_exists($this->mediaPath . $path . $fileName)) {
+                $fileName = $rand . $part1 . '_' . (time() + $x) . $exte;
+                $fileName = md5($fileName) . $exte;
+            }
 
-                //upload file
-                if(@move_uploaded_file($tmpFile, $this->mediaPath.$path.$fileName)) {
+            //Move the uploaded file to the path specified in the variable $this->mediaPath
+            try {
+                $objFile = new \Cx\Lib\FileSystem\File($tmpFile);
+                if ($objFile->move($this->mediaPath . $path . $fileName, false)) {
                     $objFile = new \File();
-                    $objFile->setChmod($this->mediaPath, $this->mediaWebPath, $path.$fileName);
+                    $objFile->setChmod($this->mediaPath, $this->mediaWebPath, $path . $fileName);
                     $status = $fileName;
-                }else{
+                } else {
                     $status = "error";
                 }
-            }else {
-                $status = "error";
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::msg($e->getMessage());
             }
+        } else {
+            $status = "error";
         }
 
         return $status;
@@ -526,4 +573,23 @@ class MarketLibrary
             }
         }
     }
+
+    /**
+     * Get the uploader object
+     *
+     * @return \Cx\Core_Modules\Uploader\Model\Entity\Uploader
+     */
+    public function getUploader() {
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+        //set instance name so we are able to catch the instance with js
+        $uploader->setCallback('marketUploaderCallback');
+        $uploader->setOptions(array(
+            'id' => 'marketUploader',
+            'allowed-extensions' => array('jpg', 'jpeg', 'png', 'gif'),
+            'data-upload-limit' => 1,
+            'style' => 'display:none'
+        ));
+        return $uploader;
+    }
+
 }

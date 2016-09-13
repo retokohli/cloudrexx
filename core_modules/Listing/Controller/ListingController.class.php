@@ -1,10 +1,36 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Listing controller
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_listing
  */
 
@@ -13,9 +39,9 @@ namespace Cx\Core_Modules\Listing\Controller;
 /**
  * Listing exception
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_listing
  */
 class ListingException extends \Exception {}
@@ -23,7 +49,7 @@ class ListingException extends \Exception {}
 /**
  * Creates rendered lists (paging, filtering, sorting)
  * @author ritt0r <drissg@gmail.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_listing
  */
 class ListingController {
@@ -107,6 +133,13 @@ class ListingController {
     
     
     private $paging;
+    
+    /**
+     * Entity name
+     * @var String
+     */
+    private $entityName = '';
+    
     /**
      * Handles a list
      * @param mixed $entities Entity class name as string or callback function
@@ -118,7 +151,13 @@ class ListingController {
             $this->paging = $options['paging'];
         }
         if (isset($options['order'])) {
-            $this->order = $options['order'];
+            $this->order  = $options['order'];
+        }
+        if (isset($options['sortBy']['field'])) {
+            $this->order  = $options['sortBy']['field'];
+        }
+        if (isset($options['sortBy']['entity'])) {
+            $this->entityName = $options['sortBy']['entity'];
         }
         // init handlers (filtering, paging and sorting)
         $this->handlers[] = new FilteringController();
@@ -155,6 +194,7 @@ class ListingController {
             'count'     => $this->count,
             'order'     => $this->order,
             'criteria'  => $this->criteria,
+            'entity'    => $this->entityName,
         );
         foreach ($this->handlers as $handler) {
             $params = $handler->handle($params, $this->args);
@@ -284,11 +324,11 @@ class ListingController {
         echo 'Active page: ' . $activePageNumber . '<br />';*/
         
         
-        
+        $paramName = !empty($this->entityName) ? $this->entityName . 'Pos' : 'pos';
         if ($this->offset) {
             // render goto start
             $url = clone \Env::get('cx')->getRequest()->getUrl();
-            $url->setParam('pos', 0);
+            $url->setParam($paramName, 0);
             $html .= '<a href="' . $url . '">&lt;&lt;</a>&nbsp;';
 
             // render goto previous
@@ -297,7 +337,7 @@ class ListingController {
                 $pagePos = 0;
             }
             $url = clone \Env::get('cx')->getRequest()->getUrl();
-            $url->setParam('pos', $pagePos);
+            $url->setParam($paramName, $pagePos);
             $html .= '<a href="' . $url . '">&lt;</a>&nbsp;';
         } else {
             $html .= '&lt;&lt;&nbsp;&lt;&nbsp;';
@@ -312,7 +352,7 @@ class ListingController {
             // render page with link
             $pagePos = ($pageNumber - 1) * $this->count;
             $url = clone \Env::get('cx')->getRequest()->getUrl();
-            $url->setParam('pos', $pagePos);
+            $url->setParam($paramName, $pagePos);
             $html .= '<a href="' . $url . '">' . $pageNumber . '</a>&nbsp;';
         }
         
@@ -323,12 +363,12 @@ class ListingController {
                 $pagePos = 0;
             }
             $url = clone \Env::get('cx')->getRequest()->getUrl();
-            $url->setParam('pos', $pagePos);
+            $url->setParam($paramName, $pagePos);
             $html .= '<a href="' . $url . '">&gt;</a>&nbsp;';
             
             // render goto last page
             $url = clone \Env::get('cx')->getRequest()->getUrl();
-            $url->setParam('pos', ($numberOfPages - 1) * $this->count);
+            $url->setParam($paramName, ($numberOfPages - 1) * $this->count);
             $html .= '<a href="' . $url . '">&gt;&gt;</a>';
         } else {
             $html .= '&gt;&nbsp;&gt;&gt;';

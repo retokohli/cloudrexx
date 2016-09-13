@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Shop Order Helpers
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 
@@ -13,10 +38,10 @@ namespace Cx\Modules\Shop\Controller;
 
 /**
  * Shop Order Helpers
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 class Orders
@@ -465,6 +490,7 @@ if (!$limit) {
                         'changeOrderStatus('.
                           $order_id.','.$status.',this.value)')
                     : $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$status]),
+                'SHOP_ORDER_STATUS_ID' => contrexx_input2int($status),
                 // Protected download account validity end date
 // TODO (still unused in the view)
 //                'SHOP_VALIDITY' => $endDate,
@@ -925,6 +951,15 @@ if (!$limit) {
             \Cx\Core\Csrf\Controller\Csrf::redirect('index.php?cmd=Shop&act=orders');
         }
         $objUser = \FWUser::getFWUserObject()->objUser;
+
+        $oldStatus = $objDatabase->getOne('
+            SELECT
+                `status`
+            FROM
+                `'.DBPREFIX.'module_shop'.MODULE_INDEX.'_orders`
+            WHERE
+                `id`=' . contrexx_input2int($order_id));
+
         $query = "
             UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_orders`
                SET `status`=$status,
@@ -934,6 +969,20 @@ if (!$limit) {
         if (!$objDatabase->Execute($query)) {
             \Message::error($_ARRAYLANG['TXT_SHOP_ORDER_ERROR_UPDATING_STATUS']);
             \Cx\Core\Csrf\Controller\Csrf::redirect('index.php?cmd=Shop&act=orders');
+        }
+
+        $order = new Order();
+        $order->setId($order_id);
+        if (   !empty($_GET['stock_update'])
+            && $_GET['stock_update'] == 1
+            && (
+                   $order->isStockIncreasable($oldStatus, $status)
+                || $order->isStockDecreasable($oldStatus, $status)
+            )
+        ) {
+            $order->updateStock(
+                $order->isStockIncreasable($oldStatus, $status)
+            );
         }
         // Send an email to the customer
         if (   !empty($_GET['sendMail'])
@@ -1472,7 +1521,6 @@ if (!$limit) {
         } else {
 //\DBG::log("Orders::getSubstitutionArray(): No Coupon for Order ID $order_id");
         }
-        Products::deactivate_soldout();
         if (Vat::isEnabled()) {
 //DBG::log("Orders::getSubstitutionArray(): VAT amount: ".$objOrder->vat_amount());
             $arrSubstitution['VAT'] = array(0 => array(

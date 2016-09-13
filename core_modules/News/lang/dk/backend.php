@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  */
 $_ARRAYLANG['TXT_DELETE_MARKED'] = "Slet markerede";
@@ -40,7 +66,7 @@ $_ARRAYLANG['TXT_ENDDATE'] = "Slutdato";
 $_ARRAYLANG['TXT_OPTIONAL'] = "Start- og slutdato er skal ikke nødvendighvis indtastes!";
 $_ARRAYLANG['TXT_ACTIVE'] = "Aktiv";
 $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'] = "Dataene blev slettet med succes!";
-$_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Fejl i databasen! Hvis fejlen viser sig tit, kontakt venligst Comvation Development Team";
+$_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Fejl i databasen! Hvis fejlen viser sig tit, kontakt venligst Cloudrexx Development Team";
 $_ARRAYLANG['TXT_EDIT_NEWS_CONTENT'] = "Bearbejd nyheden";
 $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'] = "Dataene blev optdatered med succes";
 $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'] = "Dataene blev tilføjet med succes";

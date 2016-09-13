@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_newsletter
  */
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL'] = "Conferma ricevuta! Da d'esso riciverà la Newsletter.";
@@ -48,10 +74,10 @@ $_ARRAYLANG['TXT_NEWSLETTER_ALL'] = "All";
 $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'] = "Bausteine &amp; Vorlagen";
 $_ARRAYLANG['TXT_USER_TITLE'] = "Title";
 $_ARRAYLANG['TXT_EDIT_PROFILE'] = "Profil bearbeiten";
-$_ARRAYLANG['TXT_NEWSLETTER_FEMALE'] = "Frau";
-$_ARRAYLANG['TXT_NEWSLETTER_MALE'] = "Herr";
+$_ARRAYLANG['TXT_NEWSLETTER_FEMALE'] = "Donna";
+$_ARRAYLANG['TXT_NEWSLETTER_MALE'] = "Mr.";
 $_ARRAYLANG['TXT_NEWSLETTER_LISTS'] = "Listen";
-$_ARRAYLANG['TXT_NEWSLETTER_SAVE'] = "Speichern";
+$_ARRAYLANG['TXT_NEWSLETTER_SAVE'] = "Salva";
 $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'] = "E-Mail Adresse";
 $_ARRAYLANG['TXT_NEWSLETTER_TITLE'] = "Anrede";
 $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'] = "Nachname";
@@ -65,7 +91,6 @@ $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'] = "Geburtstag";
 $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE'] = "Abonnieren";
 $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'] = "Firma";
 $_ARRAYLANG['TXT_NEWSLETTER_MONTHS_ARRAY'] = "January,February,March,April,May,June,July,August,September,October,November,December";
-$_ARRAYLANG['TXT_NEWSLETTER_MUST_SELECT_LIST'] = "Sie müssen mindestens eine Liste auswählen!";
 $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED'] = "Ihre Daten wurden erfolgreich aktualisiert.";
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA'] = "Dispiacevolmente nelle sue datte c'è un errore!";
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU'] = "Nella sua Newsletter c'è entrato un errore!";
@@ -73,7 +98,7 @@ $_ARRAYLANG['TXT_NEWSLETTER_AUTHENTICATION_FAILED'] = "Authentifizierung fehlges
 $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL'] = "Dispiacevolmente la sua registrazione è stata interotta, l'E-Mail non è stata spedita!";
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'] = "Mentre la cancellazzione del suo indirizzo E-Mail c'è stato uno sbaglio!";
 $_ARRAYLANG['TXT_NEWSLETTER_SEX'] = "Sex";
-$_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN'] = "Unknown";
+$_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN'] = "Sconosciuto";
 $_ARRAYLANG['TXT_NEWSLETTER_URI'] = "Website";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SUBSCRIBE'] = "Eintragung";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_UNSUBSCRIBE'] = "Abmeldung";

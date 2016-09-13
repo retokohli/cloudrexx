@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Forum library
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_forum
  */
 
@@ -13,10 +38,10 @@ namespace Cx\Modules\Forum\Controller;
 
 /**
  * Forum library
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_forum
  */
 class ForumLibrary
@@ -122,9 +147,10 @@ class ForumLibrary
             die('Database error: '.$objDatabase->ErrorMsg());
         }
 
+        $filePath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteMediaForumUploadPath() . '/';
         foreach ($deleteAttachments as $file) {
-            if (!empty($file) && file_exists(ASCMS_FORUM_UPLOAD_PATH.'/'.$file)) {
-                unlink(ASCMS_FORUM_UPLOAD_PATH.'/'.$file);
+            if (!empty($file) && file_exists($filePath . $file)) {
+                unlink($filePath . $file);
             }
         }
 
@@ -240,8 +266,9 @@ class ForumLibrary
             if ($objRS->RecordCount() > 0) {
                 $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_POST_STILL_ASSOCIATED'].' '.$_ARRAYLANG['TXT_FORUM_DELETE_ASSOCIATED_POSTS_FIRST']);
             } else {
-                if (!empty($objRS->fields['attachment']) && file_exists(ASCMS_FORUM_UPLOAD_PATH.'/'.$objRS->fields['attachment'])) {
-                    unlink(ASCMS_FORUM_UPLOAD_PATH.'/'.$objRS->fields['attachment']);
+                $filePath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteMediaForumUploadPath() . '/';
+                if (!empty($objRS->fields['attachment']) && file_exists($filePath . $objRS->fields['attachment'])) {
+                    unlink($filePath . $objRS->fields['attachment']);
                 }
                 $query = '  DELETE FROM '.DBPREFIX.'module_forum_postings
                             WHERE id='.$intPostId;
@@ -476,19 +503,21 @@ class ForumLibrary
      * @return array $arrReturn 'path','webpath','extension', false if attachment doesn't exist in filesystem
      */
     function _getAttachment($file) {
-        $file = addslashes($file);
-        if (!file_exists(ASCMS_FORUM_UPLOAD_PATH.'/'.$file) || empty($file)) {
+        $file = contrexx_addslashes($file);
+        $cx   = \Cx\Core\Core\Controller\Cx::instanciate();
+        $path = $cx->getWebsiteMediaForumUploadPath() . '/';
+        if (!file_exists($path . $file) || empty($file)) {
             return false;
         }
         $pathinfo = pathinfo($file);
-        $icon = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($file);
+        $icon = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($path . $file) . '.png';
         return array(
-            'name' => $file,
-            'path' => ASCMS_FORUM_UPLOAD_PATH.'/'.$file,
-            'webpath' => ASCMS_FORUM_UPLOAD_WEB_PATH.'/'.$file,
+            'name'      => $file,
+            'path'      => $path . $file,
+            'webpath'   => $cx->getWebsiteMediaForumUploadWebPath() . '/' . $file,
             'extension' => $pathinfo['extension'],
-            'icon' => $icon,
-            'size' => filesize(ASCMS_FORUM_UPLOAD_PATH.'/'.$file),
+            'icon'      => $icon,
+            'size'      => filesize($path . $file),
         );
     }
 
@@ -496,52 +525,56 @@ class ForumLibrary
      * handles the upload of a file
      *
      * @param string $inputName name of the HTML input element used to upload the file
-     * @return array $uploadedFileInfo array containing the properties for the uploaded file, false when upload has failed
+     * 
+     * @return array $uploadedFileInfo array containing the properties for the uploaded file, 
+     *                                 false when upload has failed
      */
     function _handleUpload($inputName)
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $sessionObj;
 
-        if (isset($_FILES[$inputName])) {
-            switch($_FILES[$inputName]['error']) {
-                case UPLOAD_ERR_OK:
-                    $pathinfo = pathinfo($_FILES[$inputName]['name']);
-                    $arrExtensions = explode(',', $this->_arrSettings['allowed_extensions']);
-                    if (!in_array($pathinfo['extension'], $arrExtensions)) {
-                        $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf($_ARRAYLANG['TXT_FORUM_EXTENSION_NOT_ALLOWED'], $pathinfo['extension'], str_replace(',', ', ', $this->_arrSettings['allowed_extensions'])));
-                        return false;
-                    }
-                    $newPath = ASCMS_FORUM_UPLOAD_PATH.'/';
-                    $newName = $_FILES[$inputName]['name'];
-                    $i=1;
-                    while(file_exists($newPath.$newName)) {
-                        $newName = $pathinfo['filename'].'_'.$i++.'.'.$pathinfo['extension'];
-                    }
-                    if (!move_uploaded_file($_FILES[$inputName]['tmp_name'], $newPath.$newName)) {
-                        $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_UPLOAD_NOT_MOVABLE']);
-                        return false;
-                    }
-                    return array(
-                        'name'      => contrexx_addslashes($newName),
-                        'path'      => $newPath,
-                        'size'      => $_FILES[$inputName]['size'],
+        $fileName = isset($_POST[$inputName]) ? contrexx_input2raw($_POST[$inputName]) : '';
+        if (empty($fileName)) {
+            return array(
+                    'name'      => '',
+                    'path'      => '',
+                    'size'      => 0,
                     );
-                case UPLOAD_ERR_INI_SIZE:
-                case UPLOAD_ERR_FORM_SIZE:
-                    $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_UPLOAD_TOO_BIG']);
-                    return false;
-                case UPLOAD_ERR_PARTIAL:
-                    $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_UPLOAD_PARTIAL']);
-                    return false;
-                case UPLOAD_ERR_NO_FILE:
-            }
         }
 
-        // default:
+        $uploaderId = isset($_POST['forumUploaderId']) ? contrexx_input2raw($_POST['forumUploaderId']) : '';
+        if (empty($uploaderId)) {
+            \DBG::log('Uploader id is empty');
+            return false;
+        }
+
+        //Re-initialize the $sessionObj if it is empty
+        if (empty($sessionObj)) {
+            $sessionObj = \cmsSession::getInstance();
+        }
+        $tempPath = $sessionObj->getTempPath() . '/' . $uploaderId . '/' . $fileName;
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($tempPath)) {
+            return false;
+        }
+
+        $cx       = \Cx\Core\Core\Controller\Cx::instanciate();
+        $filePath = $cx->getWebsiteMediaForumUploadPath() . '/';
+        $pathinfo = pathinfo($fileName);
+
+        $i = 1;
+        while (\Cx\Lib\FileSystem\FileSystem::exists($filePath . $fileName)) {
+            $fileName = $pathinfo['filename'] . '_' . $i++ . '.' . $pathinfo['extension'];
+        }
+
+        if (\Cx\Lib\FileSystem\FileSystem::move($tempPath, $filePath . $fileName, true) === false) {
+            $this->_objTpl->setVariable('TXT_FORUM_ERROR', $filePath . $fileName . ': ' . $_ARRAYLANG['TXT_FORUM_UPLOAD_NOT_MOVABLE']);
+            return false;
+        }
+
         return array(
-            'name'      => '',
-            'path'      => '',
-            'size'      => 0,
+            'name'      => contrexx_addslashes($fileName),
+            'path'      => $filePath,
+            'size'      => filesize($filePath . $fileName),
         );
     }
 
@@ -1462,4 +1495,34 @@ class ForumLibrary
         }
     }
 
+    /**
+     * Initialize the uploader
+     *
+     * @return null
+     */
+    public function initForumUploader()
+    {
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+        $uploader->setCallback('forumFileUploaderCallback');
+
+        $options = array(
+            'id'                 => 'forum-attachment-uploader',
+            'allowed-extensions' => explode(',', $this->_arrSettings['allowed_extensions']),
+            'style'              => 'display:none',
+            'data-upload-limit'  => 1,
+        );
+
+        $uploader->setOptions($options);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $uploader->setFinishedCallback(array(
+            $cx->getCodeBaseModulePath().'/Forum/Controller/Forum.class.php',
+            '\Cx\Modules\Forum\Controller\Forum',
+            'uploadFinished'
+        ));
+
+        $this->_objTpl->setVariable(array(
+            'FORUM_UPLOADER'    => $uploader->getXhtml(),
+            'FORUM_UPLOADER_ID' => $uploader->getId()
+        ));
+    }
 }

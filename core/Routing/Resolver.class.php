@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * Resolver
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_routing
  */
 
@@ -14,9 +39,9 @@ namespace Cx\Core\Routing;
 /**
  * ResolverException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_routing
  */
 class ResolverException extends \Exception {};
@@ -24,9 +49,9 @@ class ResolverException extends \Exception {};
 /**
  * Takes an URL and tries to find the Page.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_routing
  */
 class Resolver {
@@ -43,6 +68,11 @@ class Resolver {
      * @var Cx\Core\ContentManager\Model\Entity\Page
      */
     protected $page = null;
+
+    /**
+     * @var Cx\Core\ContentManager\Model\Entity\Page
+     */
+    protected $urlPage = null;
 
     /**
      * Doctrine Cx\Core\ContentManager\Model\Repository\PageRepository
@@ -300,6 +330,11 @@ class Resolver {
                         // Backwards compatibility for code pre Contrexx 3.0 (update)
                         $_GET['cmd']     = $_POST['cmd']     = $_REQUEST['cmd']     = $command;
                         $_GET['section'] = $_POST['section'] = $_REQUEST['section'] = $section;
+                        // the system should directly use $this->url->getParamArray() instead of using the super globals
+                        $qsArr = $this->url->getParamArray();
+                        foreach ($qsArr as $qsParam => $qsArgument) {
+                            $_GET[$qsParam] = $_REQUEST[$qsParam] = $qsArgument;
+                        }
 
                         // To clone any module, use an optional integer cmd suffix.
                         // E.g.: "shop2", "gallery5", etc.
@@ -351,6 +386,24 @@ class Resolver {
                 $componentController->resolve($parts, $this->page);
             }
         }
+        $canonicalPage = $this->page;
+        if (
+            $this->urlPage &&
+            $this->urlPage->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_SYMLINK
+        ) {
+            $canonicalPage = $this->pageRepo->getTargetPage($this->urlPage);
+        }
+
+        // don't set canonical page when replying with an application page
+        if ($canonicalPage->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION) {
+            return $this->page;
+        }
+
+        // set canonical page only in case it hasen't been set already
+        if (!preg_grep('/^Link:.*canonical["\']$/', headers_list())) {
+            header('Link: <' . \Cx\Core\Routing\Url::fromPage($canonicalPage)->toString() . '>; rel="canonical"');
+        }
+
         return $this->page;
     }
 
@@ -398,9 +451,11 @@ class Resolver {
             ($this->page->isTargetInternal() && preg_match('/[?&]external=permanent/', $this->page->getTarget()))
         ) {
             if ($this->page->isTargetInternal()) {
-                $params = array();
+                if (isset($params['external']) && $params['external'] == 'permanent') {
+                    unset($params['external']);
+                }
                 if (trim($this->page->getTargetQueryString()) != '') {
-                    $params = explode('&', $this->page->getTargetQueryString());
+                    $params = array_merge($params, explode('&', $this->page->getTargetQueryString()));
                 }
                 $target = \Cx\Core\Routing\Url::fromNodeId($this->page->getTargetNodeId(), $this->page->getTargetLangId(), $params);
             } else {
@@ -485,6 +540,9 @@ class Resolver {
             $this->url->setParams($this->url->getSuggestedParams());
 
             $this->page = $result['page'];
+        }
+        if (!$this->urlPage) {
+            $this->urlPage = clone $this->page;
         }
         /*
           the page we found could be a redirection.
@@ -654,6 +712,7 @@ class Resolver {
             }
 
             $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            // If the database uses a case insensitive collation, $section needn't be the exact component name to find a page
             $this->page = $pageRepo->findOneByModuleCmdLang($section, $command, FRONTEND_LANG_ID);
 
             //fallback content
@@ -661,6 +720,9 @@ class Resolver {
                 return;
             }
 
+            // make legacy-requests case insensitive works only if database-collation is case insensitive as well
+            $this->setSection($this->page->getModule(), $this->page->getCmd());
+            
             $this->checkPageFrontendProtection($this->page);
 
             $this->handleFallbackContent($this->page);
@@ -716,7 +778,10 @@ class Resolver {
         // See bug-report #1536
         $page = $this->pageRepo->findOneById($page->getId());
 
-        if($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK) {
+        if (
+            $page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK ||
+            $page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_SYMLINK
+        ) {
             // in case the first resolved page (= original requested page) is a fallback page
             // we must check here if this very page is active.
             // If we miss this check, we would only check if the referenced fallback page is active!
@@ -727,7 +792,11 @@ class Resolver {
             // if this page is protected, we do not follow fallback
             $this->checkPageFrontendProtection($page);
 
-            $fallbackPage = $this->getFallbackPage($page);
+            if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_SYMLINK) {
+                $fallbackPage = $this->pageRepo->getTargetPage($page);
+            } else {
+                $fallbackPage = $this->getFallbackPage($page);
+            }
 
             // due that the fallback is located within a different language
             // we must set $this->lang to the fallback's language.
@@ -739,7 +808,11 @@ class Resolver {
 
             // now lets resolve the page that is referenced by our fallback page
             $this->resolvePage(true);
-            $page->getFallbackContentFrom($this->page);
+            // fallback pages use theme options of their target page, symlink use their own
+            $page->setContentOf(
+                $this->page,
+                $page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK
+            );
 
             // Important: We must assigne a copy of $page to $this->path here.
             // Otherwise, the virtual fallback page ($this->page) will also

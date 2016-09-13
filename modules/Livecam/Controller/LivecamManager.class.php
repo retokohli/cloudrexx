@@ -1,10 +1,36 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Livecam
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version        1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_livecam
  * @todo        Edit PHP DocBlocks!
  */
@@ -13,11 +39,11 @@ namespace Cx\Modules\Livecam\Controller;
 
 /**
  * Livecam
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @access        public
  * @version        1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_livecam
  */
 class LivecamManager extends LivecamLibrary
@@ -53,16 +79,6 @@ class LivecamManager extends LivecamLibrary
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->getSettings();
-/*
-        what the fuck is this?
-        if (isset($_POST['saveSettings'])) {
-            $arrSettings = array(
-                'blockStatus'    => isset($_POST['blockUseBlockSystem']) ? intval($_POST['blockUseBlockSystem']) : 0
-            );
-            $this->_saveSettings($arrSettings);
-        }
-        */
-
     }
     private function setNavigation()
     {
@@ -96,10 +112,6 @@ class LivecamManager extends LivecamLibrary
         }
 
         switch ($_REQUEST['act']) {
-            case 'saveSettings':
-                $this->saveSettings();
-                \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=Livecam&act=settings");
-                break;
             case 'settings':
                 $this->settings();
                 break;
@@ -156,9 +168,6 @@ class LivecamManager extends LivecamLibrary
             'TXT_CURRENT_IMAGE_MAX_SIZE'    => $_ARRAYLANG['TXT_CURRENT_IMAGE_MAX_SIZE'],
             'TXT_THUMBNAIL_MAX_SIZE'        => $_ARRAYLANG['TXT_THUMBNAIL_MAX_SIZE'],
             'TXT_CAM'                 => $_ARRAYLANG['TXT_CAM'],
-            'MODULE_PATH'             => ASCMS_MODULE_WEB_PATH,
-            'ASCMS_PATH_OFFSET'       => ASCMS_PATH_OFFSET,
-            'ASCMS_PATH_OFFSET'       => ASCMS_PATH_OFFSET,
             'TXT_SUCCESS'             => $_CORELANG['TXT_SETTINGS_UPDATED'],
             'TXT_TO_MODULE'           => $_ARRAYLANG['TXT_LIVECAM_TO_MODULE'],
             'TXT_SHOWFROM'            => $_ARRAYLANG['TXT_LIVECAM_SHOWFROM'],
@@ -175,8 +184,17 @@ class LivecamManager extends LivecamLibrary
                 $shadowboxInctive = 'checked="checked"';
             }
 
+            try {
+                // fetch CMD specific livecam page
+                $camUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Livecam', $i, FRONTEND_LANG_ID, array(), '', false);
+            } catch (\Cx\Core\Routing\UrlException $e) {
+                // fetch generic livecam page
+                $camUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Livecam');
+            }
+
             $this->_objTpl->setVariable(array(
                 'CAM_NUMBER'             => $i,
+                'LIVECAM_CAM_URL'        => $camUrl,
                 'CURRENT_IMAGE_URL'      => $cams[$i]['currentImagePath'],
                 'ARCHIVE_PATH'           => $cams[$i]['archivePath'],
                 'THUMBNAIL_PATH'         => $cams[$i]['thumbnailPath'],
@@ -195,7 +213,7 @@ class LivecamManager extends LivecamLibrary
                 $this->_objTpl->setVariable("PATH", $filepath);
                 $this->_objTpl->parse("current_image");
             } else {
-                $filepath = ASCMS_PATH.$cams[$i]['currentImagePath'];
+                $filepath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath().$cams[$i]['currentImagePath'];
                 if (\Cx\Lib\FileSystem\FileSystem::exists($filepath) && is_file($filepath)) {
                     $this->_objTpl->setVariable("PATH", $cams[$i]['currentImagePath']);
                     $this->_objTpl->parse("current_image");
@@ -225,10 +243,24 @@ class LivecamManager extends LivecamLibrary
         if (!$id) {
             return false;
         }
-        $currentImagePath = $_POST['currentImagePath'];
+
+        $currentImagePath = \Cx\Lib\FileSystem\FileSystem::sanitizePath(contrexx_input2raw($_POST['currentImagePath']));
+        if (!\FWValidator::isUri($currentImagePath) && strpos($currentImagePath, '/') !== 0) {
+            $currentImagePath = '/'.$currentImagePath;
+        }
+
         $maxImageWidth = intval($_POST['maxImageWidth']);
-        $archivePath = $_POST['archivePath'];
-        $thumbnailPath = $_POST['thumbnailPath'];
+
+        $archivePath = \Cx\Lib\FileSystem\FileSystem::sanitizePath(contrexx_input2raw($_POST['archivePath']));
+        if (!\FWValidator::isUri($archivePath) && strpos($archivePath, '/') !== 0) {
+            $archivePath = '/'.$archivePath;
+        }
+
+        $thumbnailPath = \Cx\Lib\FileSystem\FileSystem::sanitizePath(contrexx_input2raw($_POST['thumbnailPath']));
+        if (!\FWValidator::isUri($thumbnailPath) && strpos($thumbnailPath, '/') !== 0) {
+            $thumbnailPath = '/'.$thumbnailPath;
+        }
+
         $thumbMaxSize = intval($_POST['thumbMaxSize']);
         $shadowboxActivate = intval($_POST['shadowboxActivate']);
         $hourFrom = intval($_POST['hourFrom']);
@@ -239,10 +271,10 @@ class LivecamManager extends LivecamLibrary
         $showTill = mktime($hourTill, $minuteTill);
 
         $query = " UPDATE ".DBPREFIX."module_livecam
-                   SET currentImagePath = '".$currentImagePath."',
+                   SET currentImagePath = '".contrexx_raw2db($currentImagePath)."',
                        maxImageWidth = ".$maxImageWidth.",
-                       archivePath = '".$archivePath."',
-                       thumbnailPath = '".$thumbnailPath."',
+                       archivePath = '".contrexx_raw2db($archivePath)."',
+                       thumbnailPath = '".contrexx_raw2db($thumbnailPath)."',
                        thumbMaxSize = ".$thumbMaxSize.",
                        shadowboxActivate = '".$shadowboxActivate."',
                        showFrom = $showFrom,
@@ -266,6 +298,11 @@ class LivecamManager extends LivecamLibrary
 
         $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
         $this->_objTpl->loadTemplateFile('module_livecam_settings.html');
+
+        if (isset($_POST['store'])) {
+            $this->saveSettings();
+            $this->getSettings();
+        }
 
         /*
             i'd do this differently if i had the time and since there's

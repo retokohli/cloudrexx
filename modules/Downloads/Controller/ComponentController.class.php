@@ -1,10 +1,36 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Main controller for Downloads
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_downloads
  */
 
@@ -14,9 +40,9 @@ use Cx\Modules\Downloads\Model\Event\DownloadsEventListener;
 /**
  * Main controller for Downloads
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_downloads
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
@@ -64,7 +90,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $arrMatches, $cl, $objDownloadLib, $downloadBlock, $matches, $objDownloadsModule;;
+        global $arrMatches, $cl, $objDownloadLib, $downloadBlock, $matches, $objDownloadsModule, $themesPages, $page_template;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 // Set download groups
@@ -79,18 +105,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 //--------------------------------------------------------
                 // Parse the download block 'downloads_category_#ID_list'
                 //--------------------------------------------------------
-                $content = \Env::get('cx')->getPage()->getContent();
-                $downloadBlock = preg_replace_callback(
-                    "/<!--\s+BEGIN\s+downloads_category_(\d+)_list\s+-->(.*)<!--\s+END\s+downloads_category_\g1_list\s+-->/s",
-                    function($matches) {
-                        \Env::get('init')->loadLanguageData('Downloads');
-                        if (isset($matches[2])) {
-                            $objDownloadsModule = new Downloads($matches[2], array('category' => $matches[1]));
-                            return $objDownloadsModule->getPage();
-                        }
-                    },
-                    $content);
-                \Env::get('cx')->getPage()->setContent($downloadBlock);
+                $content = $this->cx->getPage()->getContent();
+                $this->cx->getPage()->setContent($this->parseDownloadsForTemplate($content));
+                $themesPages['index']   = $this->parseDownloadsForTemplate($themesPages['index']);
+                $themesPages['sidebar'] = $this->parseDownloadsForTemplate($themesPages['sidebar']);
+                $page_template          = $this->parseDownloadsForTemplate($page_template);
                 break;
 
             default:
@@ -100,7 +119,40 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         
     }
 
-    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+    /**
+     * Parse the downloads by category, used to replace downloads in template
+     *
+     * @param string $content  Template Content to parse
+     *
+     * @return string
+     */
+    public function parseDownloadsForTemplate($content)
+    {
+        $downloadBlock = preg_replace_callback(
+            "/<!--\s+BEGIN\s+downloads_category_(\d+)_list\s+-->(.*)<!--\s+END\s+downloads_category_\g1_list\s+-->/s",
+            function($matches) {
+                \Env::get('init')->loadLanguageData('Downloads');
+                if (isset($matches[2])) {
+                    $downloads = new Downloads($matches[2], array('category' => $matches[1]));
+                    return $downloads->getPage();
+                }
+            },
+            $content
+        );
+        return $downloadBlock;
+    }
+
+    /**
+     * Register your event listeners here
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * Keep in mind, that you can also register your events later.
+     * Do not do anything else here than initializing your event listeners and
+     * list statements like
+     * $this->cx->getEvents()->addEventListener($eventName, $listener);
+     */
+    public function registerEventListeners() {
         $eventListener = new DownloadsEventListener($this->cx);
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
     }

@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_downloads
  */
 $_ARRAYLANG['TXT_DOWNLOADS_NO_DOWNLOADS_AVAILABLE'] = "No downloads present.";
@@ -234,7 +260,6 @@ $_ARRAYLANG['TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT'] = "Durée pendant laquelle 
 $_ARRAYLANG['TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT_DESC'] = "Définit la durée en secondes pendant laquelle une ressource est considérée comme \"Récemment modifiée\".";
 $_ARRAYLANG['TXT_DOWNLOADS_SECONDS_COMB_EXAMPLES'] = "Exemples: 1 jour = 86400 secondes / 1 semaine = 604800 secondes";
 $_ARRAYLANG['TXT_DOWNLOADS_BLOCKS'] = "Briques";
-$_ARRAYLANG['TXT_DOWNLOADS_MISCELLANEOUS'] = "Divers";
 $_ARRAYLANG['TXT_DOWNLOADS_START'] = "Début";
 $_ARRAYLANG['TXT_DOWNLOADS_MORE'] = "plus";
 $_ARRAYLANG['TXT_DOWNLOADS_KBYTE'] = "Ko";
@@ -283,4 +308,5 @@ $_ARRAYLANG['TXT_DOWNLOADS_INTERFACES'] = "Interfaces";
 $_ARRAYLANG['TXT_DOWNLOADS_USER_ADMIN'] = "User Admin";
 $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION'] = "Automatic Category Creation";
 $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION_DESC'] = "Set the user groups to which a newly created user should be assigned to, if the option to automatically create a category within the Digital Asset Management module has been selected.";
-?>
+$_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_LISTING'] = "Listing";
+$_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_STATISTICS'] = "Statistiques";

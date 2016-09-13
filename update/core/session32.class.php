@@ -1,13 +1,38 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Module Session
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Leandro Nery <nery@astalavista.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @version     $Id:    Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
@@ -17,11 +42,11 @@ use \Cx\Core\Model\RecursiveArrayAccess as RecursiveArrayAccess;
 /**
  * Session
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Leandro Nery <nery@astalavista.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @version     $Id:    Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  */
 class cmsSession extends RecursiveArrayAccess {
@@ -648,7 +673,8 @@ class cmsSession extends RecursiveArrayAccess {
     {
         global $_DBCONFIG;
         
-        return $_DBCONFIG['database'].DBPREFIX."sessions_".$_SESSION->sessionid.'_'.$key;
+        // MySQL 5.7.5 and later enforces a maximum length on lock names of 64 characters. Previously, no limit was enforced.
+        return md5($_DBCONFIG['database'] . DBPREFIX . $_SESSION->sessionid) .md5($key);
     }
 
     /**

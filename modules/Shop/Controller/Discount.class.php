@@ -1,15 +1,40 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Discount
  *
  * Optional calculation of discounts in the Shop.
  * Note: This is to be customized for individual online shops.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.ch>
  * @access      public
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 
@@ -20,11 +45,11 @@ namespace Cx\Modules\Shop\Controller;
  *
  * Processes many kinds of discounts - as long as you can express the
  * rules in the terms used here.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.ch>
  * @access      public
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 class Discount

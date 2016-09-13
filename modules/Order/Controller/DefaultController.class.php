@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * DefaultController
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_order
  */
 
@@ -15,9 +40,9 @@ namespace Cx\Modules\Order\Controller;
  * 
  * DefaultController for displaying all the orders.
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_order
  */
 class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
@@ -93,69 +118,11 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
         } else {
             $orders = $this->orderRepository->getAllByDesc();
         }
-        
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($orders, array(
-            'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_DEFAULT'],
-            'functions' => array(
-                'add'       => true,
-                'edit'      => true,
-                'delete'    => true,
-                'sorting'   => true,
-                'paging'    => true,
-                'filtering' => false,
-            ),
-            'fields' => array(
-                'contactId' => array(
-                    'header' => 'contactId',
-                    'table' => array(
-                        'parse' => function($value) {
-                            global $_ARRAYLANG;
-                            $userId   = \Cx\Modules\Crm\Controller\CrmLibrary::getUserIdByCrmUserId($value);
-                            $userName = \FWUser::getParsedUserTitle($userId);
-                            $crmDetailLink = "<a href='index.php?cmd=Crm&amp;act=customers&amp;tpl=showcustdetail&amp;id={$value}' 
-                                                    title='{$_ARRAYLANG['TXT_MODULE_ORDER_CRM_CONTACT']}'>
-                                                    <img 
-                                                        src='".\Env::get('cx')->getCodeBaseCoreWebPath()."/Core/View/Media/navigation_level_1_189.png' 
-                                                        width='16' height='16' 
-                                                        alt='{$_ARRAYLANG['TXT_MODULE_ORDER_CRM_CONTACT']}'
-                                                    />
-                                                </a>";
-                                                        
-                            $url = "<a href='index.php?cmd=Access&amp;act=user&amp;tpl=modify&amp;id={$userId}'
-                                       title='{$_ARRAYLANG['TXT_MODULE_ORDER_MODIY_USER_ACCOUNT']}'>" .
-                                       $userName .
-                                    "</a>" . 
-                                    $crmDetailLink;
-                            return $url;
-                        },
-                    ),
-                ),
-                'subscriptions' => array(
-                    'header' => 'subscriptions',
-                    'table'  => array(
-                        'parse' => function ($subscriptions) {
-                            $result = array();
-                            foreach ($subscriptions as $subscription) {
-                                $productEntity     = $subscription->getProductEntity();
-                                $productEntityName = $subscription->getProduct()->getName();
-                                if(!$productEntity) {
-                                    continue;
-                                }
-                                $productEditLink = $productEntity;
-                                if (method_exists($productEntity, 'getEditLink')) {
-                                    $productEditLink = $productEntity->getEditLink();
-                                }
-                                $subscriptionEditUrl = '<a href=​index.php?cmd=Order&act=subscription&editid='. $subscription->getId() .'>' . $productEntityName . '</a>';
-                                
-                                $result[] = $subscriptionEditUrl . ' (' . $productEditLink . ')';
-                            }
-                            
-                            return implode(', ', $result);
-                        }
-                    )
-                ),
-            ),
-        ));
+        $orders = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($orders);
+        // setDataType is used to make the ViewGenerator load the proper options if $orders is empty
+        $orders->setDataType('Cx\Modules\Order\Model\Entity\Order');
+        $options = $this->getController('Backend')->getAllViewGeneratorOptions();
+        $view = new \Cx\Core\Html\Controller\ViewGenerator($orders, $options);
 
         if ((isset($_GET['editid']) && !empty($_GET['editid'])) || (isset($_GET['add']) && !empty($_GET['add']))) {
             $this->template->hideBlock("order_filter");

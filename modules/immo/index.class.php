@@ -1,21 +1,46 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Immo management
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_immo
  * @todo        Edit PHP DocBlocks!
  */
 
 /**
  * Real-Estate management module
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_immo
  * @version     1.0.0
  * @todo        Extend the module_immo_settings table for even more
@@ -385,8 +410,7 @@ class Immo extends ImmoLib
             }
 
             $mailer->CharSet = CONTREXX_CHARSET;
-            $mailer->From = contrexx_addslashes($_REQUEST['contactFormField_email']);
-            $mailer->FromName = 'Interessent';
+            $mailer->SetFrom(contrexx_addslashes($_REQUEST['contactFormField_email']), 'Interessent');
             $mailer->Subject = 'Neuer Interessent für '.$ref_note.' Ref-Nr.: '.$reference;
             $mailer->IsHTML(false);
             $mailer->Body = 'Jemand interessiert sich für das Objekt '.$ref_note.' Ref-Nr.: '.$reference."\n \nhttp://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/admin/index.php?cmd=immo&act=stats\n";
@@ -407,8 +431,7 @@ class Immo extends ImmoLib
 
             //mail for interested customer
             $mailer->ClearAddresses();
-            $mailer->From = $this->arrSettings['sender_email'];
-            $mailer->FromName = $this->arrSettings['sender_name'];
+            $mailer->SetFrom($this->arrSettings['sender_email'], $this->arrSettings['sender_name']);
             $mailer->AddAddress($_REQUEST['contactFormField_email']);
             $mailer->Subject = $this->arrSettings['interest_confirm_subject'];
             $message = str_replace('[[IMMO_OBJECT]]', $address.', '.$location." (Ref.Nr.: $reference)", $this->arrSettings['interest_confirm_message']);
@@ -684,8 +707,7 @@ class Immo extends ImmoLib
 
                         $mailer->CharSet = CONTREXX_CHARSET;
                         $mailer->IsHTML(false);
-                        $mailer->From = $this->arrSettings['sender_email'];
-                        $mailer->FromName = $this->arrSettings['sender_name'];
+                        $mailer->SetFrom($this->arrSettings['sender_email'], $this->arrSettings['sender_name']);
                         $mailer->Subject = $this->arrSettings['prot_link_message_subject'];
                         $mailer->Body = str_replace('[[IMMO_PROTECTED_LINK]]', $link, $this->arrSettings['prot_link_message_body'])."\n\n";
                         $mailer->AddAddress($email);

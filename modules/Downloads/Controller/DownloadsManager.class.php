@@ -1,10 +1,35 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * DownloadsManager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_downloads
  * @version     1.0.0
  * @todo        Document methods in PHPdoc blocks
@@ -12,9 +37,9 @@
 namespace Cx\Modules\Downloads\Controller;
 /**
  * DownloadsManager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_downloads
  * @version     1.0.0
  */
@@ -233,7 +258,7 @@ class DownloadsManager extends DownloadsLibrary
 
         $categoryLimitOffset = isset($_GET['category_pos']) ? intval($_GET['category_pos']) : $pos;
         $categoryOrderDirection = !empty($_GET['category_sort']) ? $_GET['category_sort'] : 'asc';
-        $categoryOrderBy = !empty($_GET['category_by']) ? $_GET['category_by'] : 'order';
+        $categoryOrderBy = !empty($_GET['category_by']) ? $_GET['category_by'] : '';
 
         $downloadLimitOffset = isset($_GET['download_pos']) ? intval($_GET['download_pos']) : $pos;
         $downloadOrderDirection = !empty($_GET['download_sort']) ? $_GET['download_sort'] : 'asc';
@@ -751,9 +776,9 @@ class DownloadsManager extends DownloadsLibrary
 
         // parse image attribute
         $image = $objCategory->getImage();
-        if (!empty($image) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$image)) {
+        if (!empty($image) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$image)) {
             $thumb_name = \ImageManager::getThumbnailFilename($image);
-            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$thumb_name)) {
+            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$thumb_name)) {
                 $imageSrc = $thumb_name;
             } else {
                 $imageSrc = $image;
@@ -810,7 +835,8 @@ class DownloadsManager extends DownloadsLibrary
         $associatedDownloads = '';
         $notAssociatedDownloads = '';
         $objDownload = new Download();
-        $objDownload->loadDownloads();
+        $sortOrder   = $this->downloadsSortingOptions[$this->arrConfig['downloads_sorting_order']];
+        $objDownload->loadDownloads(null, null, $sortOrder);
         while (!$objDownload->EOF) {
             $option = '<option value="'.$objDownload->getId().'">'.htmlentities($objDownload->getName(), ENT_QUOTES, CONTREXX_CHARSET).'</option>';
             if (in_array($objDownload->getId(), $arrAssociatedDownloads)) {
@@ -870,8 +896,12 @@ class DownloadsManager extends DownloadsLibrary
 
         $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $orderDirection = !empty($_GET['sort']) ? $_GET['sort'] : 'asc';
-        $orderBy = !empty($_GET['by']) ? $_GET['by'] : 'order';
-        $arrOrder['special'] = 'tblD.`'.$orderBy.'` '.$orderDirection;
+        $orderBy = !empty($_GET['by']) ? $_GET['by'] : '';
+        $sortOrder = $this->downloadsSortingOptions[$this->arrConfig['downloads_sorting_order']];
+        $arrOrder  = empty($orderBy)
+                    ? $sortOrder
+                    : array_merge(array($orderBy => $orderDirection), $sortOrder);
+
         //$categoryId = !empty($_REQUEST['category_id']) ? intval($_REQUEST['category_id']) : 0;
         $actualSearchTerm = !empty($_GET['search_term']) ? $_GET['search_term'] : Null;
         $searchTerm = ($actualSearchTerm == $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD']) ? Null : $actualSearchTerm;
@@ -898,9 +928,12 @@ class DownloadsManager extends DownloadsLibrary
             'DOWNLOADS_CATEGORY_MENU'       => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES']),
             'TXT_DOWNLOADS_SEARCH'          => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
         ));
-
-        $filter = array('category_id' => $objCategory->getId());
-
+        
+        $filter = null;
+        if($objCategory->getId() > 0) {
+            $filter = array('category_id' => $objCategory->getId());
+        }
+        
         $objDownload = new Download();
         $objDownload->loadDownloads(
             $filter, $searchTerm, $arrOrder, null,
@@ -1232,7 +1265,8 @@ class DownloadsManager extends DownloadsLibrary
         $associatedDownloads = '';
         $notAssociatedDownloads = '';
         $objDownload = new Download();
-        $objDownload->loadDownloads();
+        $sortOrder   = $this->downloadsSortingOptions[$this->arrConfig['downloads_sorting_order']];
+        $objDownload->loadDownloads(null, null, $sortOrder);
         while (!$objDownload->EOF) {
             if (!\Permission::checkAccess(143, 'static', true) && !$objDownload->getVisibility() && $objDownload->getOwnerId() != $objFWUser->objUser->getId()) {
                 $objDownload->next();
@@ -1577,9 +1611,9 @@ class DownloadsManager extends DownloadsLibrary
 
         // parse image attribute
         $image = $objDownload->getImage();
-        if (!empty($image) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$image)) {
+        if (!empty($image) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$image)) {
             $thumb_name = \ImageManager::getThumbnailFilename($image);
-            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$thumb_name)) {
+            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$thumb_name)) {
                 $imageSrc = $thumb_name;
             } else {
                 $imageSrc = $image;
@@ -1646,7 +1680,8 @@ class DownloadsManager extends DownloadsLibrary
         // parse related downloads
         $arrRelatedDownloads = $objDownload->getRelatedDownloadIds();
         $objAvailableDownload = new Download();
-        $objAvailableDownload->loadDownloads(null, null, array('order' => 'ASC', 'name' => 'ASC', 'id' => 'ASC'));
+        $sortOrder = $this->downloadsSortingOptions[$this->arrConfig['downloads_sorting_order']];
+        $objAvailableDownload->loadDownloads(null, null, $sortOrder);
         while (!$objAvailableDownload->EOF) {
             if ($objAvailableDownload->getId() == $objDownload->getId()) {
                 $objAvailableDownload->next();
@@ -1870,11 +1905,11 @@ class DownloadsManager extends DownloadsLibrary
 
         $categoryLimitOffset = isset($_GET['category_pos']) ? intval($_GET['category_pos']) : $pos;
         $categoryOrderDirection = !empty($_GET['category_sort']) ? $_GET['category_sort'] : 'asc';
-        $categoryOrderBy = !empty($_GET['category_by']) ? $_GET['category_by'] : 'order';
+        $categoryOrderBy = !empty($_GET['category_by']) ? $_GET['category_by'] : '';
 
         $downloadLimitOffset = isset($_GET['download_pos']) ? intval($_GET['download_pos']) : $pos;
         $downloadOrderDirection = !empty($_GET['download_sort']) ? $_GET['download_sort'] : 'asc';
-        $downloadOrderBy = !empty($_GET['download_by']) ? $_GET['download_by'] : 'order';
+        $downloadOrderBy = !empty($_GET['download_by']) ? $_GET['download_by'] : '';
 
         $searchTerm = !empty($_GET['search_term']) ? $_GET['search_term'] : '';
         $searchTerm = $searchTerm == $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'] ? '' : $searchTerm;
@@ -2022,16 +2057,10 @@ class DownloadsManager extends DownloadsLibrary
 
         $objFWUser = \FWUser::getFWUserObject();
 
-        $arrCategoryOrder[$categoryOrderBy] = $categoryOrderDirection;
-        if ($categoryOrderBy != 'order') {
-            $arrCategoryOrder['order'] = 'asc';
-        }
-        if ($categoryOrderBy != 'name') {
-            $arrCategoryOrder['name'] = 'asc';
-        }
-        if ($categoryOrderBy != 'id') {
-            $arrCategoryOrder['id'] = 'asc';
-        }
+        $sortOrder = $this->categoriesSortingOptions[$this->arrConfig['categories_sorting_order']];
+        $arrOrder  = empty($categoryOrderBy)
+                    ? $sortOrder
+                    : array_merge(array($categoryOrderBy => $categoryOrderDirection), $sortOrder);
 
         $minColspan = 7;
 
@@ -2069,7 +2098,7 @@ class DownloadsManager extends DownloadsLibrary
             $operateOnSubcategories = false;
         }
 
-        $objSubcategory = Category::getCategories(array('parent_id' => $objCategory->getId()), null, $arrCategoryOrder, null, $_CONFIG['corePagingLimit'], $categoryLimitOffset);
+        $objSubcategory = Category::getCategories(array('parent_id' => $objCategory->getId()), null, $arrOrder, null, $_CONFIG['corePagingLimit'], $categoryLimitOffset);
 
         $nr = 0;
         if ($objSubcategory->EOF) {
@@ -2328,8 +2357,12 @@ class DownloadsManager extends DownloadsLibrary
         $arrDownloadOrder = $objCategory->getAssociatedDownloadIds();
         $objFWUser = \FWUser::getFWUserObject();
 
+        $sortOrder = $this->downloadsSortingOptions[$this->arrConfig['downloads_sorting_order']];
+        $arrSort   = empty($downloadOrderBy)
+                    ? $sortOrder
+                    : array_merge(array($downloadOrderBy => $downloadOrderDirection), $sortOrder);
         $objDownload = new Download();
-        $objDownload->loadDownloads(array('category_id' => $objCategory->getId()), $searchTerm, array($downloadOrderBy => $downloadOrderDirection), null, $_CONFIG['corePagingLimit'], $downloadLimitOffset, true);
+        $objDownload->loadDownloads(array('category_id' => $objCategory->getId()), $searchTerm, $arrSort, null, $_CONFIG['corePagingLimit'], $downloadLimitOffset, true);
         $downloadsAvailable = $objDownload->EOF ? false : true;
         while (!$objDownload->EOF) {
 //            if (!\Permission::checkAccess(143, 'static', true) && !$objDownload->getVisibility() && $objDownload->getOwnerId() != $objFWUser->objUser->getId()) {
@@ -2358,14 +2391,17 @@ class DownloadsManager extends DownloadsLibrary
                 ));
                 $this->objTemplate->parse('downloads_download_orderbox');
                 $this->objTemplate->hideBlock('downloads_download_no_orderbox');
+                $this->objTemplate->parse('downloads_download_no_save_button');
             } else {
                 // select checkbox
                 $this->objTemplate->hideBlock('downloads_download_checkbox');
+                $this->objTemplate->hideBlock('downloads_download_action_dropdown');
 
                 // order box
                 $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_ORDER', $objCategory->getId() ? $arrDownloadOrder[$objDownload->getId()] : $objDownload->getOrder());
                 $this->objTemplate->parse('downloads_download_no_orderbox');
                 $this->objTemplate->hideBlock('downloads_download_orderbox');
+                $this->objTemplate->hideBlock('downloads_download_no_save_button');
             }
 
             // parse status link and modify button
@@ -2632,6 +2668,12 @@ class DownloadsManager extends DownloadsLibrary
             $this->arrConfig['new_file_time_limit']         = !empty($_POST['downloads_settings_new_file_time_limit']) ? intval($_POST['downloads_settings_new_file_time_limit']) : $this->arrConfig['new_file_time_limit'];
             $this->arrConfig['updated_file_time_limit']     = !empty($_POST['downloads_settings_updated_file_time_limit']) ? intval($_POST['downloads_settings_updated_file_time_limit']) : $this->arrConfig['updated_file_time_limit'];
             $this->arrConfig['associate_user_to_groups']    = !empty($_POST['downloads_settings_associate_user_to_groups_associated_groups']) ? implode(',', array_map('intval', $_POST['downloads_settings_associate_user_to_groups_associated_groups'])) : $this->arrConfig['associate_user_to_groups'];
+            $this->arrConfig['downloads_sorting_order']     = (     !empty($_POST['downloads_settings_sorting_downloads']) 
+                                                                && array_key_exists($_POST['downloads_settings_sorting_downloads'], $this->downloadsSortingOptions) 
+                                                              ) ? contrexx_input2db($_POST['downloads_settings_sorting_downloads']) : $this->arrConfig['downloads_sorting_order'];
+            $this->arrConfig['categories_sorting_order']    = (     !empty($_POST['downloads_settings_sorting_categories'])
+                                                                &&  array_key_exists($_POST['downloads_settings_sorting_categories'], $this->categoriesSortingOptions) 
+                                                              ) ? contrexx_input2db($_POST['downloads_settings_sorting_categories']) : $this->arrConfig['categories_sorting_order'];
 
             $this->updateSettings();
         }
@@ -2653,9 +2695,12 @@ class DownloadsManager extends DownloadsLibrary
             $objGroup->next();
         }
 
-
+        //Parse the option 'Downloads' and 'Categories' dropdown in the 'Sorting' section
+        $this->parseSettingsDropDown($this->objTemplate, $this->downloadsSortingOptions, $this->arrConfig['downloads_sorting_order'], 'downloads');
+        $this->parseSettingsDropDown($this->objTemplate, $this->categoriesSortingOptions, $this->arrConfig['categories_sorting_order'], 'categories');
+        
         $this->objTemplate->setVariable(array(
-            'TXT_DOWNLOADS_SETTINGS'                        => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'],
+            'TXT_DOWNLOADS_SETTINGS_LISTING'                => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_LISTING'],
             'TXT_DOWNLOADS_OVERVIEW_PAGE'                   => $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW_PAGE'],
             'TXT_DOWNLOADS_COL_COUNT'                       => $_ARRAYLANG['TXT_DOWNLOADS_COL_COUNT'],
             'TXT_DOWNLOADS_COL_COUNT_DESC'                  => $_ARRAYLANG['TXT_DOWNLOADS_COL_COUNT_DESC'],
@@ -2672,13 +2717,13 @@ class DownloadsManager extends DownloadsLibrary
             'TXT_DOWNLOADS_NEWEST_FILE_COUNT_DESC'          => $_ARRAYLANG['TXT_DOWNLOADS_NEWEST_FILE_COUNT_DESC'],
             'TXT_DOWNLOADS_UPDATE_FILE_COUNT'               => $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_FILE_COUNT'],
             'TXT_DOWNLOADS_UPDATE_FILE_COUNT_DESC'          => $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_FILE_COUNT_DESC'],
-            'TXT_DOWNLOADS_MISCELLANEOUS'                   => $_ARRAYLANG['TXT_DOWNLOADS_MISCELLANEOUS'],
+            'TXT_DOWNLOADS_SETTINGS_STATISTICS'             => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_STATISTICS'],
             'TXT_DOWNLOADS_NEW_FILE_TIME_LIMIT'             => $_ARRAYLANG['TXT_DOWNLOADS_NEW_FILE_TIME_LIMIT'],
             'TXT_DOWNLOADS_NEW_FILE_TIME_LIMIT_DESC'        => $_ARRAYLANG['TXT_DOWNLOADS_NEW_FILE_TIME_LIMIT_DESC'],
             'TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT'         => $_ARRAYLANG['TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT'],
             'TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT_DESC'    => $_ARRAYLANG['TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT_DESC'],
             'TXT_DOWNLOADS_SECONDS_COMB_EXAMPLES'           => $_ARRAYLANG['TXT_DOWNLOADS_SECONDS_COMB_EXAMPLES'],
-            'TXT_DOWNLOADS_ATTRIBUTES'                      => $_ARRAYLANG['TXT_DOWNLOADS_ATTRIBUTES'],
+            'TXT_DOWNLOADS_SETTINGS_ATTRIBUTES'             => $_ARRAYLANG['TXT_DOWNLOADS_ATTRIBUTES'],
             'TXT_DOWNLOADS_ATTRIBUTES_DESC'                 => $_ARRAYLANG['TXT_DOWNLOADS_ATTRIBUTES_DESC'],
             'TXT_DOWNLOADS_METAKEYS'                        => $_ARRAYLANG['TXT_DOWNLOADS_METAKEYS'],
             'TXT_DOWNLOADS_SIZE'                            => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
@@ -2696,6 +2741,14 @@ class DownloadsManager extends DownloadsLibrary
             'TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION_DESC'=> $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION_DESC'],
             'TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'           => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'],
             'TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'            => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'],
+            'TXT_DOWNLOADS_SETTINGS_SORTING'                => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_SORTING'],
+            'TXT_DOWNLOADS_SETTINGS_OPTION_DOWNLOADS'       => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_OPTION_DOWNLOADS'],
+            'TXT_DOWNLOADS_SETTINGS_OPTION_CATEGORIES'      => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'],
+            'TXT_DOWNLOADS_SETTINGS_OPTION_SORTING_DESC'    => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_OPTION_SORTING_DESC'],
+            'TXT_DOWNLOADS_SETTINGS_CUSTOM_LABEL'           => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_CUSTOM_LABEL'],
+            'TXT_DOWNLOADS_SETTINGS_ALPHABETIC_LABEL'       => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_ALPHABETIC_LABEL'],
+            'TXT_DOWNLOADS_SETTINGS_NEWEST_TO_OLDEST_LABEL' => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_NEWEST_TO_OLDEST_LABEL'],
+            'TXT_DOWNLOADS_SETTINGS_OLDEST_TO_NEWEST_LABEL' => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_OLDEST_TO_NEWEST_LABEL'],
             'DOWNLOADS_SETTINGS_COL_COUNT'                  => $this->arrConfig['overview_cols_count'],
             'DOWNLOADS_SETTINGS_SUBCAT_COUNT'               => $this->arrConfig['overview_max_subcats'],
             'DOWNLOADS_SETTINGS_ATTRIBUTE_METAKEYS_CHECKED' => $this->arrConfig['use_attr_metakeys'] ? 'checked="checked"' : '',

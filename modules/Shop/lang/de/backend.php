@@ -1,4 +1,30 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 global $_ARRAYLANG;
 $_ARRAYLANG['SHOP_SHIPMENT_TOO_HEAVY'] = "Das Gesamtgewicht der Bestellung übersteigt die verfügbaren Versandmöglichkeiten.";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Änderungen übernehmen";
@@ -55,6 +81,8 @@ $_ARRAYLANG['TXT_CONFIRM_DELETE_CUSTOMER'] = "Möchten Sie diese(n) Kunden wirkl
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "Datensatz wirklich löschen?";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_OPTION'] = "Möchten Sie diese Option wirklich löschen?";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_ORDER'] = "Möchten Sie diese Bestellung(en) wirklich löschen?";
+$_ARRAYLANG['TXT_SHOP_CONFIRM_RESET_STOCK'] = 'Soll der Lagerbestand zurückgesetzt werden?';
+$_ARRAYLANG['TXT_SHOP_CONFIRM_REDUCE_STOCK'] = 'Möchten Sie den Lagerbestand entsprechend vermindern?';
 $_ARRAYLANG['TXT_CONFIRM_DELETE_PAYMENT'] = "Diese Zahlungsart wirklich löschen?";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_PRODUCT'] = "Möchten Sie diese(s) Produkt(e) wirklich löschen?";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_SHIPMENT'] = "Diese Versandart wirklich löschen?";
@@ -814,7 +842,7 @@ $_ARRAYLANG['TXT_SHOP_VAT_CONFIRM_SET_UNSET'] = "Diese Aktion setzt den Mehrwert
 $_ARRAYLANG['TXT_SHOP_VAT_COUNTRY_FOREIGN'] = "Ausland";
 $_ARRAYLANG['TXT_SHOP_VAT_COUNTRY_HOME'] = "Inland";
 $_ARRAYLANG['TXT_SHOP_VAT_CUSTOMER'] = "Endkunden";
-$_ARRAYLANG['TXT_SHOP_VAT_DEFAULT'] = "Standart Mehrwertsteuersatz";
+$_ARRAYLANG['TXT_SHOP_VAT_DEFAULT'] = "Standard Mehrwertsteuersatz";
 $_ARRAYLANG['TXT_SHOP_VAT_DETAILS'] = "Mehrwertsteuer Details";
 $_ARRAYLANG['TXT_SHOP_VAT_ENABLED'] = "aktiv";
 $_ARRAYLANG['TXT_SHOP_VAT_NEW'] = "Mehrwertsteuer Satz hinzufügen";
@@ -878,7 +906,7 @@ $_ARRAYLANG['TXT_TAX_CLASS_NEW'] = "Neue Steuerklasse";
 $_ARRAYLANG['TXT_TAX_CONFIRM_DELETE'] = "Mehrwertsteuersatz löschen?";
 $_ARRAYLANG['TXT_TAX_CONFIRM_SET_ALL'] = "Diese Aktion überschreibt den Mehrwertsteuer Satz ALLER eingetragenen Produkte!";
 $_ARRAYLANG['TXT_TAX_CONFIRM_SET_UNSET'] = "Diese Aktion setzt den Mehrwertsteuer Satz aller Produkte, bei dem noch keiner definiert ist!";
-$_ARRAYLANG['TXT_TAX_DEFAULT'] = "Standart Mehrwertsteuersatz";
+$_ARRAYLANG['TXT_TAX_DEFAULT'] = "Standard Mehrwertsteuersatz";
 $_ARRAYLANG['TXT_TAX_DETAILS'] = "Mehrwertsteuer Details";
 $_ARRAYLANG['TXT_TAX_NEW'] = "Mehrwertsteuer Satz hinzufügen";
 $_ARRAYLANG['TXT_TAX_NOT_SET'] = "Kein MwSt. Satz zugeordnet";
@@ -985,3 +1013,4 @@ $_ARRAYLANG['TXT_SHOP_PAYMENT_PAYREXX_INSTANCE_NAME'] = "Instanz Name";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_PAYREXX_API_SECRET'] = "API Secret";
 $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_PAYREXX'] = "Payrexx konnte auf Grund eines Konfigurationsfehlers nicht initialisiert werden.";
 $_ARRAYLANG['TXT_SHOP_SETTING_NUMOF_PRODUCTS_PER_PAGE_FRONTEND'] = "Anzahl Produkte pro Seite im Frontend";
+$_ARRAYLANG['TXT_SHOP_CHOOSE_FILE'] = 'Datei wählen';

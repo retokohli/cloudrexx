@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lang
  */
 $_ARRAYLANG['TXT_CORE_SUBMIT'] = "Submit";
@@ -148,7 +174,6 @@ $_ARRAYLANG['TXT_ACCESS_FAILED_TO_UPDATE_USER_ACCOUNT'] = "An error occurred whi
 $_ARRAYLANG['TXT_ACCESS_FEMALE'] = "Female";
 $_ARRAYLANG['TXT_ACCESS_FILL_OUT_ALL_REQUIRED_FIELDS'] = "You need to fill every required field!";
 $_ARRAYLANG['TXT_ACCESS_FIRSTNAME'] = "First name";
-$_ARRAYLANG['TXT_ACCESS_GENDER'] = "Sex";
 $_ARRAYLANG['TXT_ACCESS_INTERESTS'] = "Interests";
 $_ARRAYLANG['TXT_ACCESS_INVALID_EMAIL_ADDRESS'] = "You need to enter a valid e-mail address";
 $_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "The password is invalid. It must contain at least 6 characters.";
@@ -200,7 +225,7 @@ $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auctions";
 $_ARRAYLANG['TXT_MARKET_LATEST'] = "Latest Ads";
 $_ARRAYLANG['TXT_CORE_LAST_MODIFIED_PAGE'] = "Last modified";
 $_ARRAYLANG['TXT_ACCESS_PRIMARY_GROUP'] = "Primary User Group";
-$_ARRAYLANG['TXT_CSRF_TITLE'] = "Contrexx security information";
+$_ARRAYLANG['TXT_CSRF_TITLE'] = "Cloudrexx security information";
 $_ARRAYLANG['TXT_CSRF_DESCR'] = 'You are changing the system configuration. If you see this message<ul><li>after clicking a link in the administration interface, click <a href="%1$s">save changes</a></li><li>after clicking a link inside an e-mail message or outside the administration interface, click <a href="%2$s">discard changes</a></li></ul>';
 $_ARRAYLANG['TXT_CSRF_ABORT'] = "discard changes";
 $_ARRAYLANG['TXT_CSRF_CONTINUE'] = "save changes";

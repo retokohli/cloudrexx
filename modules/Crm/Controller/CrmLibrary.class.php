@@ -1,15 +1,41 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Library Class CRM
  * CrmLibrary class
  *
  * @category   CrmLibrary
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
- * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @copyright  2012 and CLOUDREXX CMS - CLOUDREXX AG
  * @license    trial license
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 
 namespace Cx\Modules\Crm\Controller;
@@ -23,12 +49,12 @@ define('CRM_EVENT_ON_ACCOUNT_UPDATED', 'crm_notify_staff_on_contact_added');
  * CrmLibrary class
  *
  * @category   CrmLibrary
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
- * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @copyright  2012 and CLOUDREXX CMS - CLOUDREXX AG
  * @license    trial license
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 class CrmLibrary
 {
@@ -1354,42 +1380,49 @@ class CrmLibrary
         if (isset($filter['term']) && !empty($filter['term'])) {
             $gender     = ($filter['term'] == 'male' || $filter['term'] == 'Männlich') ? 2 : (($filter['term'] == 'female' || $filter['term'] == 'Weiblich') ? 1 : '');
             switch (true) {
-            case (preg_match("/(^|[\n ])([a-z0-9&\-_\.]+?)@([\w\-]+\.([\w\-\.]+)+)/i", $filter['term'])):
-                $filter['term'] = '"'.$filter['term'].'"';
-                break;
-            case (preg_match("/(^|[\n ])([\w]*?)((ht|f)tp(s)?:\/\/[\w]+[^ \,\"\n\r\t<]*)/is", $filter['term']) || preg_match("/(^|[\n ])([\w]*?)((www|ftp)\.[^ \,\"\t\n\r<]*)/is", $filter['term'])):
-                $filter['term'] = '"'.$filter['term'].'"';
-                break;
-            case (preg_match('/[^a-z0-9 _]+/i', $filter['term'])):
+            case (   preg_match("/(^|[\n ])([\w]*?)((ht|f)tp(s)?:\/\/[\w]+[^ \,\"\n\r\t<]*)/is", $filter['term']) 
+                  || preg_match("/(^|[\n ])([\w]*?)((www|ftp)\.[^ \,\"\t\n\r<]*)/is", $filter['term'])
+                  || preg_match("/(^|[\n ])([a-z0-9&\-_\.]+?)@([\w\-]+\.([\w\-\.]+)+)/i", $filter['term'])  
+                 ):
                 $filter['term'] = '"'.$filter['term'].'"';
                 break;
             case (preg_match('/(\w+[+-.]\w+[\w]+[^ \,\"\n\r\t<]*)/is', $filter['term'])):
                 $filter['term'] = preg_replace('/(\w+[+-.]\w+[\w]+[^ \,\"\n\r\t<]*)/is', '+"$0"', $filter['term']);
                 break;
-//            case (!preg_match('/[\+|\-]/', $filter['term'])):
-//                $filter['term'] = preg_replace('/\s+/', ' +', "+".$filter['term']);
-//                break;
-            default:
-                $filter['term'] = '"'.$filter['term'].'"';
+            case preg_match('/[\*|\?]/', $filter['term']):
+                $filter['term'] = preg_replace('/[\*|\?]/', '*', $filter['term']);
                 break;
-            } 
+            case (preg_match('/[^a-z0-9 _~]+/i', $filter['term'])):
+                $filter['term'] = '"'.$filter['term'].'*"';
+                break;
+            case preg_match('/[\~]/', $filter['term']):
+                $filter['term'] = preg_replace('/[\~]/', '', $filter['term']);
+            case (!preg_match('/[\+|\-]/', $filter['term'])):
+                $filter['term'] = preg_replace('/\s+/', ' +', "+".$filter['term']) . '*';
+                break;
+            default:
+                $filter['term'] = '"'.$filter['term'].'*"';
+                break;
+            }
             if (!empty($gender)) {
                 $genderQuery = "OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_contacts` WHERE id = c.id AND gender = '".$gender."' LIMIT 1)";
             } 
             $orderBy    = "nameRelevance DESC, familyNameRelevance DESC, c.customer_name ASC";
-            $orderQuery = "MATCH (c.customer_name) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) AS nameRelevance,
-                           MATCH (c.contact_familyname) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) AS familyNameRelevance,";
-            $where[]    = "((SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_emails` WHERE c.id = contact_id AND MATCH (email) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
-                            OR MATCH (c.customer_id, c.customer_name, c.contact_familyname, c.contact_role, c.notes) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) 
-                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_websites` WHERE c.id = contact_id AND MATCH (url) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
-                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_social_network` WHERE c.id = contact_id AND MATCH (url) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
-                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_phone` WHERE c.id = contact_id AND MATCH (phone) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
-                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_comment` WHERE c.id = customer_id AND MATCH (comment) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
-                            OR MATCH (t.label) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) 
-                            OR (select 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_membership` as m JOIN `".DBPREFIX."module_{$this->moduleNameLC}_membership_local` As ml ON (ml.entry_id=m.membership_id AND ml.lang_id = '".$_LANGID."') WHERE c.id = m.contact_id AND MATCH (ml.value) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
-                            OR MATCH (Inloc.value) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) 
-                            OR MATCH (lang.name) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) 
-                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_address` WHERE c.id = contact_id AND MATCH (address, city, state, zip, country) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) {$genderQuery})";
+            $orderQuery = "MATCH (c.customer_name) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) AS nameRelevance,
+                           MATCH (c.contact_familyname) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) AS familyNameRelevance,";
+            $where[]    = "((SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_emails` WHERE c.id = contact_id AND MATCH (email) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) LIMIT 1) 
+                            OR MATCH (c.customer_id, c.customer_name, c.contact_familyname, c.contact_role, c.notes) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) 
+                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_websites` WHERE c.id = contact_id AND MATCH (url) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) LIMIT 1) 
+                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_social_network` WHERE c.id = contact_id AND MATCH (url) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) LIMIT 1) 
+                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_phone` WHERE c.id = contact_id AND MATCH (phone) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) LIMIT 1) 
+                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_comment` WHERE c.id = customer_id AND MATCH (comment) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) LIMIT 1) 
+                            OR MATCH (t.label) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) 
+                            OR (select 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_membership` as m JOIN `".DBPREFIX."module_{$this->moduleNameLC}_membership_local` As ml ON (ml.entry_id=m.membership_id AND ml.lang_id = '".$_LANGID."') WHERE c.id = m.contact_id AND MATCH (ml.value) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) LIMIT 1) 
+                            OR MATCH (Inloc.value) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) 
+                            OR MATCH (lang.name) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) 
+                            OR MATCH (cur.name) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) 
+                            OR MATCH (cmpySize.company_size) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) 
+                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_address` WHERE c.id = contact_id AND MATCH (address, city, state, zip, country) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) LIMIT 1) {$genderQuery})";
         }
 
         //  Join where conditions
@@ -1426,6 +1459,8 @@ class CrmLibrary
                      ON c.contact_customer =con.id
                    LEFT JOIN `".DBPREFIX."module_{$this->moduleNameLC}_currency` As cur 
                      ON (cur.id=c.customer_currency)
+                   LEFT JOIN `".DBPREFIX."module_{$this->moduleNameLC}_company_size` As cmpySize 
+                     ON (cmpySize.id=c.company_size)
                    LEFT JOIN `".DBPREFIX."languages` As lang 
                      ON (lang.id=c.contact_language)  
                    LEFT JOIN ".DBPREFIX."module_{$this->moduleNameLC}_customer_types AS t
@@ -1854,7 +1889,7 @@ class CrmLibrary
     }
 
     /**
-     * Populates the Contrexx user Filter Drop Down
+     * Populates the Cloudrexx user Filter Drop Down
      *
      * @param String  $block      The name of the template block to parse
      * @param Integer $selectedId The ID of the selected user
@@ -2483,8 +2518,8 @@ class CrmLibrary
     }
     /**
      * Make the url string's into clickable link's.
-     * Example: <p> http://www.contrexx.com </p> will be
-     * <p> <a href="http://www.contrexx.com" rel="nofollow"> http://www.contrexx.com </a> </p>
+     * Example: <p> http://www.cloudrexx.com </p> will be
+     * <p> <a href="http://www.cloudrexx.com" rel="nofollow"> http://www.cloudrexx.com </a> </p>
      *
      * @param String $html
      *
@@ -2758,11 +2793,18 @@ class CrmLibrary
                     if(isset($arrFormData["phone_office"])){
                         $crmCompany->phone = $arrFormData["phone_office"];
                     }
-                    if($this->contact->email != $crmCompany->email){
+
+                    // store/update the company profile
+                    $crmCompany->save();
+
+                    // setting & storing the primary email address must be done after
+                    // the company has been saved for the case where the company is
+                    // being added as a new object without having an ID yet
+                    if (empty($crmCompany->email)) {
                         $crmCompany->email = $this->contact->email;
                         $crmCompany->storeEMail();
                     }
-                    $crmCompany->save();
+
                     $this->contact->contact_customer = $crmCompany->id;
                 }
 
@@ -3210,15 +3252,19 @@ class CrmLibrary
      */
     function getUserName($userId)
     {
-        if (!empty ($userId)) {
-            $objFWUser  = \FWUser::getFWUserObject();
-            $objUser    = $objFWUser->objUser->getUser($userId);
-            $userName   = $objUser->getRealUsername();
-            if ($userName) {
-                return $userName;
-            } else {
-                return $objUser->getUsername();
-            }
+        if (empty($userId)) {
+            return '';
+        }
+
+        $objUser = \FWUser::getFWUserObject()->objUser->getUser($userId);
+        if (!$objUser) {
+            return '';
+        }
+        $userName = $objUser->getRealUsername();
+        if ($userName) {
+            return $userName;
+        } else {
+            return $objUser->getUsername();
         }
     }
 

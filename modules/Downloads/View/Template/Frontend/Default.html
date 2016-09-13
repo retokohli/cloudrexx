@@ -61,8 +61,25 @@
             <div class="file {DOWNLOADS_FILE_ROW_CLASS}">
                 <div class="infos">
                     <h3><a href="{DOWNLOADS_FILE_DETAIL_SRC}">{DOWNLOADS_FILE_NAME}</a></h3>
-                    <div class="shortdetail_top"><img src="modules/Downloads/View/Media/pie_chart.png" alt="{TXT_DOWNLOADS_VIEWED}" /> {TXT_DOWNLOADS_VIEWED}: {DOWNLOADS_FILE_VIEWS}&nbsp;&nbsp;<img src="modules/Downloads/View/Media/bar_chart.png" alt="{TXT_DOWNLOADS_DOWNLOADED}" /> {TXT_DOWNLOADS_DOWNLOADED}: {DOWNLOADS_FILE_DOWNLOAD_COUNT}<br /></div>{DOWNLOADS_FILE_SHORT_DESCRIPTION}<br /><br />
-                    <div class="shortdetail_bottom"><img src="modules/Downloads/View/Media/license.gif" alt="{TXT_DOWNLOADS_LICENSE}" /> {TXT_DOWNLOADS_LICENSE}: {DOWNLOADS_FILE_LICENSE}&nbsp;&nbsp;<img src="modules/Downloads/View/Media/modify.png" alt="{TXT_DOWNLOADS_VERSION}" /> {TXT_DOWNLOADS_VERSION}: {DOWNLOADS_FILE_VERSION}&nbsp;&nbsp;<img src="modules/Downloads/View/Media/profile.png" alt="{TXT_DOWNLOADS_AUTHOR}" /> {TXT_DOWNLOADS_AUTHOR}: {DOWNLOADS_FILE_AUTHOR}&nbsp;&nbsp;<img src="modules/Downloads/View/Media/info.png" alt="{TXT_DOWNLOADS_WEBSITE}" /> {TXT_DOWNLOADS_WEBSITE}: {DOWNLOADS_FILE_WEBSITE}</div>
+                    <div class="shortdetail_top">
+                        <img src="modules/Downloads/View/Media/pie_chart.png" alt="{TXT_DOWNLOADS_VIEWED}" /> {TXT_DOWNLOADS_VIEWED}: {DOWNLOADS_FILE_VIEWS}&nbsp;&nbsp;
+                        <img src="modules/Downloads/View/Media/bar_chart.png" alt="{TXT_DOWNLOADS_DOWNLOADED}" /> {TXT_DOWNLOADS_DOWNLOADED}: {DOWNLOADS_FILE_DOWNLOAD_COUNT}<br />
+                    </div>
+                    {DOWNLOADS_FILE_SHORT_DESCRIPTION}<br /><br />
+                    <div class="shortdetail_bottom">
+                        <!-- BEGIN download_license_list -->
+                        <img src="modules/Downloads/View/Media/license.gif" alt="{TXT_DOWNLOADS_LICENSE}" /> {TXT_DOWNLOADS_LICENSE}: {DOWNLOADS_FILE_LICENSE}&nbsp;&nbsp;
+                        <!-- END download_license_list -->
+                        <!-- BEGIN download_version_list -->
+                        <img src="modules/Downloads/View/Media/modify.png" alt="{TXT_DOWNLOADS_VERSION}" /> {TXT_DOWNLOADS_VERSION}: {DOWNLOADS_FILE_VERSION}&nbsp;&nbsp;
+                        <!-- END download_version_list -->
+                        <!-- BEGIN download_author_list -->
+                        <img src="modules/Downloads/View/Media/profile.png" alt="{TXT_DOWNLOADS_AUTHOR}" /> {TXT_DOWNLOADS_AUTHOR}: {DOWNLOADS_FILE_AUTHOR}&nbsp;&nbsp;
+                        <!-- END download_author_list -->
+                        <!-- BEGIN download_website_list -->
+                        <img src="modules/Downloads/View/Media/info.png" alt="{TXT_DOWNLOADS_WEBSITE}" /> {TXT_DOWNLOADS_WEBSITE}: {DOWNLOADS_FILE_WEBSITE}
+                        <!-- END download_website_list -->
+                    </div>
                 </div>
                 <div class="image"><a href="{DOWNLOADS_FILE_DETAIL_SRC}">{DOWNLOADS_FILE_THUMBNAIL}</a></div>
                 <div class="delete">{DOWNLOADS_FILE_DELETE_ICON}</div>
@@ -84,30 +101,40 @@
                 <div class="download"><h3><a href="{DOWNLOADS_FILE_DOWNLOAD_LINK_SRC}">{DOWNLOADS_FILE_ICON} {TXT_DOWNLOADS_DOWNLOAD}</a></h3></div>
                 <div class="file_info">
                     <table summary="download infomations">
+                        <!-- BEGIN download_version_information -->
                         <tr class="row2">
                             <td class="title"><img src="modules/Downloads/View/Media/modify.png" alt="{TXT_DOWNLOADS_VERSION}" /> {TXT_DOWNLOADS_VERSION}:</td>
                             <td>{DOWNLOADS_FILE_VERSION}</td>
                         </tr>
+                        <!-- END download_version_information -->
+                        <!-- BEGIN download_website_information -->
                         <tr class="row1">
                             <td class="title"><img src="modules/Downloads/View/Media/info.png" alt="{TXT_DOWNLOADS_WEBSITE}" /> {TXT_DOWNLOADS_WEBSITE}:</td>
                             <td>{DOWNLOADS_FILE_WEBSITE}</td>
                         </tr>
+                        <!-- END download_website_information -->
+                        <!-- BEGIN download_author_information -->
                         <tr class="row2">
                             <td class="title"><img src="modules/Downloads/View/Media/profile.png" alt="{TXT_DOWNLOADS_AUTHOR}" /> {TXT_DOWNLOADS_AUTHOR}:</td>
                             <td>{DOWNLOADS_FILE_AUTHOR}</td>
                         </tr>
+                        <!-- END download_author_information -->
                         <tr class="row1">
                             <td class="title"><img src="modules/Downloads/View/Media/mtime.gif" alt="{TXT_DOWNLOADS_LAST_UPDATED}" /> {TXT_DOWNLOADS_LAST_UPDATED}:</td>
                             <td>{DOWNLOADS_FILE_LAST_UPDATED}</td>
                         </tr>
+                        <!-- BEGIN download_size_information -->
                         <tr class="row2">
                             <td class="title"><img src="modules/Downloads/View/Media/size.gif" alt="{TXT_DOWNLOADS_SIZE}" /> {TXT_DOWNLOADS_SIZE}:</td>
                             <td>{DOWNLOADS_FILE_SIZE}</td>
                         </tr>
+                        <!-- END download_size_information -->
+                        <!-- BEGIN download_license_information -->
                         <tr class="row1">
                             <td class="title"><img src="modules/Downloads/View/Media/license.gif" alt="{TXT_DOWNLOADS_LICENSE}" /> {TXT_DOWNLOADS_LICENSE}:</td>
                             <td>{DOWNLOADS_FILE_LICENSE}</td>
                         </tr>
+                        <!-- END download_license_information -->
                         <tr class="row2">
                             <td class="title"><img src="modules/Downloads/View/Media/bar_chart.png" alt="{TXT_DOWNLOADS_DOWNLOADED}" /> {TXT_DOWNLOADS_DOWNLOADED}:</td>
                             <td>{DOWNLOADS_FILE_DOWNLOAD_COUNT}</td>
@@ -148,17 +175,11 @@
         <!-- END downloads_file_detail -->
         <div style="clear:both;">
             <!-- BEGIN downloads_simple_file_upload -->
-            <form action="">
-                <input class="btn btn-default" type="button" value="{TXT_DOWNLOADS_UPLOAD_FILE}" name="exposedComboUploaderStarter" id="exposedComboUploaderStarter" />
-            </form>
-            {COMBO_UPLOADER_CODE}
+            {UPLOADER_CODE}
             <script type="text/javascript">
-                cx.ready(function() {
-                    var uploader = cx.instances.get('exposed_combo_uploader', 'uploader');
-                    uploader.dialog().bind('close', function() {
-                        window.location = '{DOWNLOADS_UPLOAD_REDIRECT_URL}';
-                    });
-                }, true);
+              function uploadFinishedCallbackJs(){
+                    window.location = '{DOWNLOADS_UPLOAD_REDIRECT_URL}';
+              }
             </script>
             <!-- END downloads_simple_file_upload -->
             <!-- BEGIN downloads_advanced_file_upload -->

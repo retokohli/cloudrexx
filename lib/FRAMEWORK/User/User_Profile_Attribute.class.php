@@ -1,19 +1,44 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * User Profile Attribute Object
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
  * @version     2.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 /**
  * User Profile Attribute Object
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
  * @version     2.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 
@@ -498,7 +523,7 @@ class User_Profile_Attribute
 
 // TODO: In the backend, this always results in the empty string!
 // The core language is not loaded yet when this is run!
-            $this->arrAttributes[$attributeId]['names'][$this->langId] = $_CORELANG[$arrAttribute['desc']];
+            $this->arrAttributes[$attributeId]['names'][$this->langId] = isset($_CORELANG[$arrAttribute['desc']]) ? $_CORELANG[$arrAttribute['desc']] : null;
 // See:
 //die(var_export($_CORELANG, true));
 // and

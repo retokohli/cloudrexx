@@ -1,6 +1,31 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * @ignore
  */
 require_once(ASCMS_FRAMEWORK_PATH.'/DBG/DBG.php');
@@ -12,10 +37,10 @@ require_once(ASCMS_FRAMEWORK_PATH.'/FileSystem/FileSystem.class.php');
 
 /**
  * Install Wizard Controller
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version       $Id:     Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  installer
  * @todo        Edit PHP DocBlocks!
  */
@@ -37,10 +62,10 @@ function cxupdateAdodbPdoConnectionFactory() {
  *
  * The Install Wizard
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version       $Id:     Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  installer
  */
 class CommonFunctions
@@ -978,7 +1003,7 @@ class CommonFunctions
     {
         $pathOffset = $_SESSION['installer']['config']['offsetPath'];
         
-        // in case no offset path is set (contrexx runs directly in the document root)
+        // in case no offset path is set (cloudrexx runs directly in the document root)
         // then, we must set pathOffset to /. Path offset is used as RewriteBase.
         // Otherwise, an empty RewriteBase would be invalid
         if (empty($pathOffset)) {
@@ -1513,7 +1538,7 @@ class CommonFunctions
     }
 
     /**
-     * Configure the Contrexx caching so it fits the server configuration
+     * Configure the Cloudrexx caching so it fits the server configuration
      */
     protected function configureCaching() {
         $_CONFIG = array();

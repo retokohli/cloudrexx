@@ -1,13 +1,38 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * Module Session
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Leandro Nery <nery@astalavista.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @version     $Id:    Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
@@ -17,11 +42,11 @@ use \Cx\Core\Model\RecursiveArrayAccess as RecursiveArrayAccess;
 /**
  * Session
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Leandro Nery <nery@astalavista.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @version     $Id:    Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  */
 class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface {
@@ -250,7 +275,13 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
                     if (is_a($sessionValue, 'Cx\Core\Model\RecursiveArrayAccess')) {
                         self::updateToDb($sessionValue);
                     } else {
-                        if ($this->isDirty($lockKey)){
+                        if ($this->isDirty($lockKey)) {
+                            // is_callable() can return true for type array, so we need to check that it is not an array
+                            if (!is_array($sessionValue) && !is_string($sessionValue) && is_callable($sessionValue)) {
+                                \DBG::dump('Function for session index '. $lockKey .' can not be stored, saving functions in session is not supported. Please use json instead');
+                                $this->releaseLock($lockKey);
+                                continue;
+                            }
                             $serializedValue = contrexx_input2db(serialize($sessionValue));
 
                             $query = 'INSERT INTO
@@ -467,7 +498,7 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
      */
     function open($save_path, $session_id)
     {
-        $this->gc(null);
+        $this->gc();
         return true;
     }
 
@@ -546,12 +577,10 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
 
     /**
      * Clear expired session
-     *
-     * @param int $maxlifetime
-     *
-     * @return bool
+     * 
+     * @return boolean
      */
-    function gc($maxlifetime) {
+    function gc() {
         $db = \Env::get('db');
         $sessoinIds = array();
         $objResult  = $db->Execute('
@@ -590,6 +619,13 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
                           IN
                           ("' . implode('", "', $sessoinIds) . '")');
         }
+
+        // clear expired sessions that were broken (no valid relation between
+        // contrexx_sessions and contrexx_session_variable
+        $db->Execute('DELETE FROM `' . DBPREFIX . 'sessions` WHERE `remember_me` = 0 AND `lastupdated` < ' . (time() - $this->defaultLifetime));
+        $db->Execute('DELETE FROM `' . DBPREFIX . 'sessions` WHERE `remember_me` = 1 AND `lastupdated` < ' . (time() - $this->defaultLifetimeRememberMe));
+        $db->Execute('DELETE FROM `' . DBPREFIX . 'session_variable` WHERE sessionid NOT IN (SELECT sessionid FROM `' . DBPREFIX . 'sessions`)');
+
         return true;
     }
 
@@ -703,7 +739,8 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
     {
         global $_DBCONFIG;
         
-        return $_DBCONFIG['database'].DBPREFIX."sessions_".$_SESSION->sessionid.'_'.$key;
+        // MySQL 5.7.5 and later enforces a maximum length on lock names of 64 characters. Previously, no limit was enforced.
+        return md5($_DBCONFIG['database'] . DBPREFIX . $_SESSION->sessionid) .md5($key);
     }
 
     /**
@@ -869,6 +906,11 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
                 if (is_a($value, 'Cx\Core\Model\RecursiveArrayAccess')) {
                     $serializedValue = '';
                 } else {
+                    // is_callable() can return true for type array, so we need to check that it is not an array
+                    if (!is_array($value) && !is_string($value) && is_callable($value)) {
+                        \DBG::dump('Function for session index '. $key .' can not be stored, saving functions in session is not supported. Please use json instead');
+                        continue;
+                    }
                     $serializedValue = contrexx_input2db(serialize($value));
                 }
 

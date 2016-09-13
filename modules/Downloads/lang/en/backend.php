@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_downloads
  */
 $_ARRAYLANG['TXT_DOWNLOADS_NO_DOWNLOADS_AVAILABLE'] = "No downloads present.";
@@ -218,6 +244,13 @@ $_ARRAYLANG['TXT_DOWNLOADS_SUBCAT_COUNT'] = "Maximum number of subcategories";
 $_ARRAYLANG['TXT_DOWNLOADS_SUBCAT_COUNT_DESC'] = "Maximum number of subcategories of each category that should be listed on the overview page.";
 $_ARRAYLANG['TXT_DOWNLOADS_ATTRIBUTES'] = "Attributes";
 $_ARRAYLANG['TXT_DOWNLOADS_ATTRIBUTES_DESC'] = "Select the attritubes that you want to use for the downloads.";
+$_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_SORTING'] = "Sorting";
+$_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_OPTION_DOWNLOADS'] = "Downloads";
+$_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_OPTION_SORTING_DESC'] = "Define the default order behavior";
+$_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_CUSTOM_LABEL'] = "Custom";
+$_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_ALPHABETIC_LABEL'] = "Alphabetically";
+$_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_NEWESTTOOLDEST_LABEL'] = "From newest to oldest";
+$_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_OLDESTTONEWEST_LABEL'] = "From oldest to newest";
 $_ARRAYLANG['TXT_DOWNLOADS_MOST_VIEWED_FILE_COUNT'] = "Number of most viewed downloads";
 $_ARRAYLANG['TXT_DOWNLOADS_MOST_VIEWED_FILE_COUNT_DESC'] = "Maximum number of downloads that shoud be listed in the block 'Most viewed downloads'.";
 $_ARRAYLANG['TXT_DOWNLOADS_MOST_DOWNLOADED_FILE_COUNT'] = "Number of most downloaded downloads";
@@ -234,7 +267,6 @@ $_ARRAYLANG['TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT'] = "Timelimit to mark update
 $_ARRAYLANG['TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT_DESC'] = "Defines how long (in seconds) a updated download should be marked as recently updated.";
 $_ARRAYLANG['TXT_DOWNLOADS_SECONDS_COMB_EXAMPLES'] = "Examples: 1 day = 86400 seconds / 1 week = 604800 seconds";
 $_ARRAYLANG['TXT_DOWNLOADS_BLOCKS'] = "Template blocks";
-$_ARRAYLANG['TXT_DOWNLOADS_MISCELLANEOUS'] = "Miscellaneous";
 $_ARRAYLANG['TXT_DOWNLOADS_START'] = "Start";
 $_ARRAYLANG['TXT_DOWNLOADS_MORE'] = "more";
 $_ARRAYLANG['TXT_DOWNLOADS_KBYTE'] = "KB";
@@ -283,4 +315,5 @@ $_ARRAYLANG['TXT_DOWNLOADS_INTERFACES'] = "Interfaces";
 $_ARRAYLANG['TXT_DOWNLOADS_USER_ADMIN'] = "User Admin";
 $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION'] = "Automatic Category Creation";
 $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION_DESC'] = "Set the user groups to which a newly created user should be assigned to, if the option to automatically create a category within the Digital Asset Management module has been selected.";
-?>
+$_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_LISTING'] = "Listing";
+$_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_STATISTICS'] = "Statistics";

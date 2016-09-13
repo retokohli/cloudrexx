@@ -22,7 +22,7 @@
                         <br />{SHOP_PRODUCT_OPTIONS}
                         <!-- END attributes --><!-- BEGIN minimumOrderQuantity -->
                         <br />{TXT_SHOP_MINIMUM_ORDER_QUANTITY}: {SHOP_PRODUCT_MINIMUM_ORDER_QUANTITY}
-                        <!-- END minimumOrderQuantity-->
+                        <!-- END minimumOrderQuantity -->
                     </td>
                     <td>
                         {SHOP_PRODUCT_ITEMPRICE}&nbsp;{SHOP_PRODUCT_ITEMPRICE_UNIT}
@@ -120,7 +120,6 @@
     <!-- END shopCartEmpty -->
 
     <!-- BEGIN products -->
-    <div style="clear: both;">
     <h2>{TXT_SHOP_PRODUCTS_LAST_VISITED}</h2>
     <!-- BEGIN shopProductRow -->
     <div class="product">
@@ -172,9 +171,9 @@
               <span itemprop="priceCurrency">{SHOP_PRODUCT_PRICE_UNIT}</span> <span itemprop="price">{SHOP_PRODUCT_PRICE}</span>
               <!-- END price -->
               <!-- BEGIN price_discount -->
-              statt <span itemprop="price">{SHOP_PRODUCT_PRICE}</span>
+              {SHOP_PRODUCT_DISCOUNTPRICE_TEXTBLOCK_1} <span itemprop="price">{SHOP_PRODUCT_PRICE}</span>
               <span class="discount">
-                nur <span itemprop="priceCurrency">{SHOP_PRODUCT_DISCOUNTPRICE_UNIT}</span> <span itemprop="price">{SHOP_PRODUCT_DISCOUNTPRICE}</span>
+                  {SHOP_PRODUCT_DISCOUNTPRICE_TEXTBLOCK_2} <span itemprop="priceCurrency">{SHOP_PRODUCT_DISCOUNTPRICE_UNIT}</span> <span itemprop="price">{SHOP_PRODUCT_DISCOUNTPRICE}</span>
               </span>
               <!-- END price_discount -->
             </div>

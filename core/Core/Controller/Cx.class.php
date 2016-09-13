@@ -1,12 +1,37 @@
 <?php
 
 /**
- * Main script for Contrexx
- * @copyright   CONTREXX CMS - COMVATION AG
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
+ * Main script for Cloudrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
- * @link        http://www.contrexx.com/ contrexx homepage
+ * @link        http://www.cloudrexx.com/ cloudrexx homepage
  * @since       v3.1.0
  */
 
@@ -20,7 +45,7 @@ namespace {
      * This is necessary, because we cannot use namespaces in index.php
      * in order to catch errors with PHP versions prior to 5.3
      * @param string $mode (optional) One of 'frontend', 'backend', 'cli', 'minimal'
-     * @return \Cx\Core\Core\Controller\Cx Instance of Contrexx
+     * @return \Cx\Core\Core\Controller\Cx Instance of Cloudrexx
      */
     function init($mode = null, $checkInstallationStatus = true) {
         return \Cx\Core\Core\Controller\Cx::instanciate($mode,  false, null, false, $checkInstallationStatus);
@@ -35,11 +60,11 @@ namespace Cx\Core\Core\Controller {
 
     /**
      * This loads and controls everything
-     * @copyright   CONTREXX CMS - COMVATION AG
+     * @copyright   CLOUDREXX CMS - CLOUDREXX AG
      * @author      Michael Ritter <michael.ritter@comvation.com>
-     * @package     contrexx
+     * @package     cloudrexx
      * @subpackage  core
-     * @link        http://www.contrexx.com/ contrexx homepage
+     * @link        http://www.cloudrexx.com/ cloudrexx homepage
      * @since       v3.1.0
      * @todo Remove all instances of "global" or at least move them to a single place
      */
@@ -49,7 +74,7 @@ namespace Cx\Core\Core\Controller {
         /**
          * Commandline interface mode
          *
-         * In this mode, Contrexx is initialized for commandline usage
+         * In this mode, Cloudrexx is initialized for commandline usage
          * This mode is BETA at this time
          */
         const MODE_COMMAND = 'command';
@@ -57,14 +82,14 @@ namespace Cx\Core\Core\Controller {
         /**
          * Frontend mode
          *
-         * In this mode, Contrexx shows the frontend
+         * In this mode, Cloudrexx shows the frontend
          */
         const MODE_FRONTEND = 'frontend';
 
         /**
          * Backend mode
          *
-         * In this mode, Contrexx show the administrative backend
+         * In this mode, Cloudrexx show the administrative backend
          */
         const MODE_BACKEND = 'backend';
 
@@ -84,7 +109,7 @@ namespace Cx\Core\Core\Controller {
          * The first one is the normally used one, all others are special.
          * This is a two dimensional array. The first level key is the
          * configuration file path. Each of these entries contains a list of
-         * all Contrexx instances for this config file.
+         * all Cloudrexx instances for this config file.
          * @var array
          */
         protected static $instances = array();
@@ -180,14 +205,14 @@ namespace Cx\Core\Core\Controller {
         protected $license = null;
 
         /**
-         * Contrexx toolbox
+         * Cloudrexx toolbox
          * @todo Update FWSystem
          * @var \FWSystem
          */
         protected $toolbox = null;
 
         /**
-         * Contrexx event manager
+         * Cloudrexx event manager
          * @var \Cx\Core\Event\Controller\EventManager
          */
         protected $eventManager = null;
@@ -265,6 +290,12 @@ namespace Cx\Core\Core\Controller {
         const FOLDER_NAME_THEMES = '/themes';
 
         /**
+         * The folder name used for the application feeds (/feed).
+         * @var string
+         */
+        const FOLDER_NAME_FEED = '/feed';
+
+        /**
          * @var string
          */
         const FOLDER_NAME_PUBLIC_TEMP = '/public';
@@ -278,14 +309,14 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The offset path from the webserver's DocumentRoot to the
-         * location of the Code Base of the Contrexx installation.
+         * location of the Code Base of the Cloudrexx installation.
          * Formerly known as ASCMS_PATH_OFFSET.
          * @var string
          */
         protected $codeBaseOffsetPath = null;
 
         /**
-         * The absolute path to the Code Base of the Contrexx installation.
+         * The absolute path to the Code Base of the Cloudrexx installation.
          * Formerly known as ASCMS_DOCUMENT_ROOT.
          * @var string
          */
@@ -294,14 +325,14 @@ namespace Cx\Core\Core\Controller {
         /**
          * The absolute path to the storage location of the
          * configuration files (/config) of the Code Base of the
-         * Contrexx installation.
+         * Cloudrexx installation.
          * @var string
          */
         protected $codeBaseConfigPath = null;
 
         /**
          * The absolute path to the core components (/core)
-         * of the Code Base of the Contrexx installation.
+         * of the Code Base of the Cloudrexx installation.
          * Formerly known as ASCMS_CORE_PATH.
          * @var string
          */
@@ -309,14 +340,14 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The offset path to the core components (/core)
-         * of the Code Base of the Contrexx installation.
+         * of the Code Base of the Cloudrexx installation.
          * @var string
          */
         protected $codeBaseCoreWebPath = null;
 
         /**
          * The absolute path used to access the backend template
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_ADMIN_TEMPLATE_PATH
          * @var string
          */
@@ -324,7 +355,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The offset path used to access the backend template
-         * of the Code Base of the Contrexx installation.
+         * of the Code Base of the Cloudrexx installation.
          * Formerly known as ASCMS_ADMIN_TEMPLATE_WEB_PATH.
          * @var string
          */
@@ -332,7 +363,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The absolute path of the core modules(core_modules) folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_CORE_MODULE_PATH
          * @var string
          */
@@ -340,7 +371,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The offset path of the core modules(core_modules) folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_CORE_MODULE_WEB_PATH
          * @var string
          */
@@ -348,7 +379,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The absolute path of the lib folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_LIBRARY_PATH
          * @var string
          */
@@ -356,7 +387,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The absolute path of the FRAMEWORK folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_FRAMEWORK_PATH
          * @var string
          */
@@ -364,7 +395,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The absolute path of the model folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_MODEL_PATH
          * @var string
          */
@@ -372,7 +403,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The absolute path of the module folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_MODULE_PATH
          * @var string
          */
@@ -380,7 +411,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The offset path of the module folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_MODULE_WEB_PATH
          * @var string
          */
@@ -388,7 +419,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The absolute path to the themes storage location (/themes)
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * @var string
          */
         protected $codeBaseThemesPath = null;
@@ -402,14 +433,14 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The offset path from the website's data repository to the
-         * location of the Contrexx installation if it is run in a subdirectory.
+         * location of the Cloudrexx installation if it is run in a subdirectory.
          * Formerly known as ASCMS_INSTANCE_OFFSET.
          * @var string
          */
         protected $websiteOffsetPath = null;
 
         /**
-         * The absolute path to the data repository of the Contrexx installation.
+         * The absolute path to the data repository of the Cloudrexx installation.
          * Formerly known as ASCMS_INSTANCE_DOCUMENT_ROOT.
          * @var string
          */
@@ -497,11 +528,14 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesCalendarPath;
         protected $websiteImagesPodcastPath;
         protected $websiteImagesBlogPath;
+        protected $websiteImagesDataPath;
+        protected $websiteMediaForumUploadPath;
         protected $websiteMediaarchive1Path;
         protected $websiteMediaarchive2Path;
         protected $websiteMediaarchive4Path;
         protected $websiteMediaarchive3Path;
         protected $websiteMediaFileSharingPath;
+        protected $websiteMediaMarketPath;
         protected $websiteImagesContentWebPath;
         protected $websiteImagesAttachWebPath;
         protected $websiteImagesShopWebPath;
@@ -512,11 +546,14 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesCalendarWebPath;
         protected $websiteImagesPodcastWebPath;
         protected $websiteImagesBlogWebPath;
+        protected $websiteImagesDataWebPath;
+        protected $websiteMediaForumUploadWebPath;
         protected $websiteMediaarchive1WebPath;
         protected $websiteMediaarchive2WebPath;
         protected $websiteMediaarchive3WebPath;
         protected $websiteMediaarchive4WebPath;
         protected $websiteMediaFileSharingWebPath;
+        protected $websiteMediaMarketWebPath;
         protected $websiteImagesPath;
         protected $websiteImagesWebPath;
         protected $websitePublicTempPath;
@@ -526,9 +563,12 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesCrmProfilePath;
         protected $websiteImagesCrmProfileWebPath;
         protected $websiteMediaCrmPath;
+        protected $websiteMediaDirectoryPath;
+        protected $websiteMediaDirectoryWebPath;
         protected $websiteImagesAccessProfilePath;
         protected $websiteImagesAccessProfileWebPath;
         protected $websiteImagesAccessPhotoPath;
+        protected $websiteImagesAccessPhotoWebPath;
         
         /**
          * @var \Cx\Core\MediaSource\Model\Entity\MediaSourceManager
@@ -542,7 +582,7 @@ namespace Cx\Core\Core\Controller {
          * to be the preferred one using the $setAsPreferred argument.
          * @param string $mode (optional) One of the modes listed in constants above
          * @param boolean $forceNew (optional) Wheter to force a new instance or not, default false
-         * @param string $configFilePath (optional) The absolute path to a Contrexx configuration
+         * @param string $configFilePath (optional) The absolute path to a Cloudrexx configuration
          *                               file (configuration.php) that shall be loaded
          *                               instead of the default one.
          * @param boolean $setAsPreferred (optional) Sets this instance as the preferred one for later
@@ -576,28 +616,47 @@ namespace Cx\Core\Core\Controller {
             return self::$preferredInstance;
         }
 
-        /* STAGE 2: __construct(), early initializations */
-
         /**
-         * Initializes the Cx class
-         * This does everything related to Contrexx.
-         * @param string $mode (optional) Use constants, one of self::MODE_[FRONTEND|BACKEND|CLI|MINIMAL]
-         * @param string $configFilePath The absolute path to a Contrexx configuration
-         *                               file (configuration.php) that shall be loaded
-         *                               instead of the default one.
+         * Register a \Cx\Core\Core\Controller\Cx compatible object as new instance
+         *
+         * @param   \Cx\Core\Core\Controller\Cx $cx Instanciated Cx object
+         * @param   string $configFilePath The absolute path to a Cloudrexx configuration file (configuration.php).
+         * @param   boolean $setAsPreferred Whether or not to set the Cx instance as preferred instance to be used
          */
-        protected function __construct($mode = null, $configFilePath = null, $setAsPreferred = false, $checkInstallationStatus = true) {
-            /** setting up id of new initialized object**/
+        public static function registerInstance($cx, $configFilePath = null, $setAsPreferred = false) {
+            if (!isset(self::$instances[null])) {
+                $key = null;
+            } else {
+                $key = spl_object_hash($cx);
+            }
+
             self::$autoIncrementValueOfId++;
-            $this->id = self::$autoIncrementValueOfId;
+            $cx->setId(self::$autoIncrementValueOfId);
 
             if (!count(self::$instances) || $setAsPreferred) {
-                self::$preferredInstance = $this;
+                self::$preferredInstance = $cx;
             }
             if (!isset(self::$instances[$configFilePath])) {
                 self::$instances[$configFilePath] = array();
             }
-            self::$instances[$configFilePath][] = $this;
+            self::$instances[$configFilePath][] = $cx;
+        }
+
+        /* STAGE 2: __construct(), early initializations */
+
+        /**
+         * Initializes the Cx class
+         * This does everything related to Cloudrexx.
+         * @param string $mode (optional) Use constants, one of self::MODE_[FRONTEND|BACKEND|CLI|MINIMAL]
+         * @param string $configFilePath The absolute path to a Cloudrexx configuration
+         *                               file (configuration.php) that shall be loaded
+         *                               instead of the default one.
+         * @param   boolean $setAsPreferred Whether or not to set the Cx instance as preferred instance to be used
+         */
+        protected function __construct($mode = null, $configFilePath = null, $setAsPreferred = false, $checkInstallationStatus = true) {
+            // register this new Cx instance
+            // will be used by \Cx\Core\Core\Controller\Cx::instanciate()
+            self::registerInstance($this, $configFilePath, $setAsPreferred);
 
             try {
                 /**
@@ -637,7 +696,7 @@ namespace Cx\Core\Core\Controller {
                 $this->setCustomizingPath();
 
                 /**
-                 * Sets the mode Contrexx runs in
+                 * Sets the mode Cloudrexx runs in
                  * One of self::MODE_[FRONTEND|BACKEND|CLI|MINIMAL]
                  */
                 $this->setMode($mode);
@@ -650,7 +709,7 @@ namespace Cx\Core\Core\Controller {
                 $this->preInit();
 
                 /**
-                 * Defines the core constants (ASCMS_*) of Contrexx as defined in config/set_constants.php
+                 * Defines the core constants (ASCMS_*) of Cloudrexx as defined in config/set_constants.php
                  * and config/SetCustomizableConstants.php.
                  */
                 $this->defineLegacyConstants();
@@ -749,7 +808,7 @@ namespace Cx\Core\Core\Controller {
                     $offlinePath = $this->codeBaseDocumentRootPath;
                 }
                 echo file_get_contents($offlinePath . '/offline.html');
-                \DBG::msg('Contrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
+                \DBG::msg('Cloudrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
                 \DBG::msg('In file ' . $e->getFile() . ' on Line ' . $e->getLine());
                 \DBG::dump($e->getTrace());
                 die();
@@ -843,7 +902,7 @@ namespace Cx\Core\Core\Controller {
             @ini_set('url_rewriter.tags', 'a=href,area=href,frame=src,iframe=src,input=src,form=,fieldset=');
 
             // Set timezone
-            @ini_set('date.timezone', (empty($_CONFIG['timezone'])?$_DBCONFIG['timezone']:$_CONFIG['timezone']));
+            @ini_set('date.timezone', $_CONFIG['timezone']);
         }
 
         /**
@@ -855,7 +914,7 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Checks if the Contrexx installation has been set up yet (CONTREXX_INSTALLED).
+         * Checks if the Cloudrexx installation has been set up yet (CONTEXX_INSTALLED).
          * If not, the user will be redirected (through a HTTP-Location redirect) to
          * the web-installer (/installer).
          */
@@ -936,7 +995,7 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Set the mode Contrexx is used in
+         * Set the mode Cloudrexx is used in
          * @param mixed $mode Mode as string or true for front- or false for backend
          */
         protected function setMode($mode) {
@@ -1071,8 +1130,24 @@ namespace Cx\Core\Core\Controller {
                 $filename = $this->getWebsiteConfigPath() . '/postInitHooks.yml';
                 $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename);
                 foreach ($objDataSet as $componentDefinition) {
+                    $this->eventManager->triggerEvent(
+                        'preComponent',
+                        array(
+                            'componentName' => $componentDefinition['name'],
+                            'component' => null,
+                            'hook' => 'postInit',
+                        )
+                    );
                     $componentController = $this->getComponentControllerByNameAndType($componentDefinition['name'], $componentDefinition['type']);
                     $componentController->postInit($this);
+                    $this->eventManager->triggerEvent(
+                        'postComponent',
+                        array(
+                            'componentName' => $componentDefinition['name'],
+                            'component' => null,
+                            'hook' => 'postInit',
+                        )
+                    );
                 }
             } catch (\Cx\Core_Modules\Listing\Model\Entity\DataSetException $e) {
                 throw new \Exception('Error in processing postInit-hooks: '.$e->getMessage());
@@ -1168,7 +1243,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Check whether the requested url is correct or not
-         * there is a settings option in the general settings section of contrexx which allows
+         * there is a settings option in the general settings section of cloudrexx which allows
          * to force the domain url which is provided
          * @return null|string the correct domain url
          */
@@ -1189,7 +1264,7 @@ namespace Cx\Core\Core\Controller {
          */
         protected function adjustProtocol() {
             global $_CONFIG;
-            // check whether Contrexx has to redirect to the correct protocol
+            // check whether Cloudrexx has to redirect to the correct protocol
 
             $configOption = 'forceProtocolFrontend';
             if ($this->mode == self::MODE_BACKEND) {
@@ -1222,7 +1297,7 @@ namespace Cx\Core\Core\Controller {
             global $objDatabase, $objInit, $objCache, $_DBCONFIG, $_CONFIG;
 
             /**
-             * Start caching with op cache, user cache and contrexx caching
+             * Start caching with op cache, user cache and cloudrexx caching
              */
             $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
             if ($this->mode == self::MODE_FRONTEND) {
@@ -1232,7 +1307,7 @@ namespace Cx\Core\Core\Controller {
             }
             $this->tryToSetMemoryLimit();
 
-            // start contrexx caching
+            // start cloudrexx caching
             $objCache->startContrexxCaching();
 
             /**
@@ -1253,7 +1328,7 @@ namespace Cx\Core\Core\Controller {
             $objDb->setDbType($_DBCONFIG['dbType']);
             $objDb->setCharset($_DBCONFIG['charset']);
             $objDb->setCollation($_DBCONFIG['collation']);
-            $objDb->setTimezone((empty($_CONFIG['timezone'])?$_DBCONFIG['timezone']:$_CONFIG['timezone']));
+            $objDb->setTimezone($_DBCONFIG['timezone']);
 
             // Set database user details
             $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
@@ -1270,8 +1345,10 @@ namespace Cx\Core\Core\Controller {
 
             \DBG::set_adodb_debug_mode();
 
-            $this->eventManager = new \Cx\Core\Event\Controller\EventManager();
+            $this->eventManager = new \Cx\Core\Event\Controller\EventManager($this);
             new \Cx\Core\Event\Controller\ModelEventWrapper($this);
+            $this->eventManager->addEvent('preComponent');
+            $this->eventManager->addEvent('postComponent');
 
             // Initialize base system
             // TODO: Get rid of InitCMS class, merge it with this class instead
@@ -1355,11 +1432,31 @@ namespace Cx\Core\Core\Controller {
                     $params = array();
                     if (isset($argv)) {
                         $params = array_slice($argv, 1);
+                        foreach ($params as $key=>$value) {
+                            $argParts = explode('=', $value, 2);
+                            if (count($argParts) == 2) {
+                                $params[$argParts[0]] = $argParts[1];
+                                unset($params[$key]);
+                            }
+                        }
                     } else {
                         $params = preg_replace('#' . $this->getWebsiteOffsetPath() . static::FOLDER_NAME_COMMAND_MODE . '(/)?#', '', $_GET['__cap']);
                         $params = explode('/', $params) + $_GET;
                         unset($params['__cap']);
                     }
+                    $params = contrexx_input2raw($params);
+                    
+                    // parse body arguments:
+                    // todo: this does not work for form-data encoded body (boundary...)
+                    $dataArguments = array();
+                    if (php_sapi_name() == 'cli') {
+                        // the following does block if there's no data:
+                        //$input = trim(stream_get_contents(STDIN));
+                    } else {
+                        $input = file_get_contents('php://input');
+                    }
+                    parse_str($input, $dataArguments);
+                    $dataArguments = contrexx_input2raw($dataArguments);
 
                     $this->getCommands();
 
@@ -1381,7 +1478,7 @@ namespace Cx\Core\Core\Controller {
                         throw new \Exception('The command ' . $command . ' has been rejected by not complying to the permission requirements of the requested method.');
                     }
                     // execute command
-                    $objCommand->executeCommand($command, $params);
+                    $objCommand->executeCommand($command, $params, $dataArguments);
                     return;
                 } catch (\Exception $e) {
                     throw new \Exception($e);
@@ -1396,14 +1493,12 @@ namespace Cx\Core\Core\Controller {
 
             // resolve
             $this->preResolve();                        // Call pre resolve hook scripts
+            $this->adjustRequest();                     // Adjust the protocol and the domain
             $this->resolve();                           // Resolving, Language
 
             // @TODO: remove this
             $this->legacyGlobalsHook(2);                // $objInit, $_LANGID, $_CORELANG, $url;
-
             $this->postResolve();                       // Call post resolve hook scripts
-
-            $this->adjustRequest();
 
             // load content
             $this->preContentLoad();                    // Call pre content load hook scripts
@@ -1617,22 +1712,24 @@ namespace Cx\Core\Core\Controller {
         public function parseGlobalPlaceholders(&$content) {
             global $_CONFIG;
 
-            $content = str_replace('{PAGE_URL}',        htmlspecialchars(\Env::get('init')->getPageUri()), $content);
-            $content = str_replace('{STANDARD_URL}',    \Env::get('init')->getUriBy('smallscreen', 0),     $content);
-            $content = str_replace('{MOBILE_URL}',      \Env::get('init')->getUriBy('smallscreen', 1),     $content);
-            $content = str_replace('{PRINT_URL}',       \Env::get('init')->getUriBy('printview', 1),       $content);
-            $content = str_replace('{PDF_URL}',         \Env::get('init')->getUriBy('pdfview', 1),         $content);
-            $content = str_replace('{APP_URL}',         \Env::get('init')->getUriBy('appview', 1),         $content);
-            $content = str_replace('{LOGOUT_URL}',      \Env::get('init')->getUriBy('section', 'logout'),  $content);
-            $content = str_replace('{CONTACT_EMAIL}',   isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $content);
-            $content = str_replace('{CONTACT_COMPANY}', isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $content);
-            $content = str_replace('{CONTACT_ADDRESS}', isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '', $content);
-            $content = str_replace('{CONTACT_ZIP}',     isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '', $content);
-            $content = str_replace('{CONTACT_PLACE}',   isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '', $content);
-            $content = str_replace('{CONTACT_COUNTRY}', isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '', $content);
-            $content = str_replace('{CONTACT_PHONE}',   isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '', $content);
-            $content = str_replace('{CONTACT_FAX}',     isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '', $content);
-            $content = str_replace('{CONTACT_NAME}',    isset($_CONFIG['coreAdminName'])    ? contrexx_raw2xhtml($_CONFIG['coreAdminName'])    : '', $content);
+            $content = str_replace('{PAGE_URL}',            htmlspecialchars(\Env::get('init')->getPageUri()), $content);
+            $content = str_replace('{PAGE_URL_ENCODED}',    urlencode(\Env::get('init')->getPageUri()->toString()), $content);
+            $content = str_replace('{STANDARD_URL}',        contrexx_raw2xhtml(\Env::get('init')->getUriBy('smallscreen', 0)),     $content);
+            $content = str_replace('{MOBILE_URL}',          contrexx_raw2xhtml(\Env::get('init')->getUriBy('smallscreen', 1)),     $content);
+            $content = str_replace('{PRINT_URL}',           contrexx_raw2xhtml(\Env::get('init')->getUriBy('printview', 1)),       $content);
+            $content = str_replace('{PDF_URL}',             contrexx_raw2xhtml(\Env::get('init')->getUriBy('pdfview', 1)),         $content);
+            $content = str_replace('{APP_URL}',             contrexx_raw2xhtml(\Env::get('init')->getUriBy('appview', 1)),         $content);
+            $content = str_replace('{LOGOUT_URL}',          contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'logout')),  $content);
+            $content = str_replace('{CONTACT_EMAIL}',       isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $content);
+            $content = str_replace('{CONTACT_COMPANY}',     isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $content);
+            $content = str_replace('{CONTACT_ADDRESS}',     isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '', $content);
+            $content = str_replace('{CONTACT_ZIP}',         isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '', $content);
+            $content = str_replace('{CONTACT_PLACE}',       isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '', $content);
+            $content = str_replace('{CONTACT_COUNTRY}',     isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '', $content);
+            $content = str_replace('{CONTACT_PHONE}',       isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '', $content);
+            $content = str_replace('{CONTACT_FAX}',         isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '', $content);
+            $content = str_replace('{CONTACT_NAME}',        isset($_CONFIG['coreAdminName'])    ? contrexx_raw2xhtml($_CONFIG['coreAdminName'])    : '', $content);
+            $content = str_replace('{GOOGLE_MAPS_API_KEY}', isset($_CONFIG['googleMapsAPIKey']) ? contrexx_raw2xhtml($_CONFIG['googleMapsAPIKey']) : '', $content);
         }
 
         /**
@@ -1713,15 +1810,24 @@ namespace Cx\Core\Core\Controller {
                     $themeFolderName = $themeRepo->getDefaultTheme($themeType, $page->getLang())->getFoldername();
                 }
 
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                 // load custom application template from page's theme
-                $themePath = \Env::get('cx')->getWebsiteThemesPath() .'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$component.'/Template/Frontend/'.$customAppTemplate;
-                if (file_exists($themePath)) {
+                $themePath = $cx->getClassLoader()->getFilePath($cx->getWebsiteThemesPath() .'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$component.'/Template/Frontend/'.$customAppTemplate);
+                if ($themePath) {
                     return file_get_contents($themePath);
                 }
 
+                // load default application template from page's theme
+                if ($customAppTemplate != $cmd.'.html') {
+                    $themePath = $cx->getClassLoader()->getFilePath($cx->getWebsiteThemesPath() .'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$component.'/Template/Frontend/'.$cmd.'.html');
+                    if ($themePath) {
+                        return file_get_contents($themePath);
+                    }
+                }
+
                 // load default application template from component
-                $modulePath = \Env::get('ClassLoader')->getFilePath(\Env::get('cx')->getCodeBaseDocumentRootPath() . '/'.$moduleFolderName.'/'.$component.'/View/Template/Frontend/'.$cmd.'.html');
-                if (file_exists($modulePath)) {
+                $modulePath = $cx->getClassLoader()->getFilePath($cx->getCodeBaseDocumentRootPath() . '/'.$moduleFolderName.'/'.$component.'/View/Template/Frontend/'.$cmd.'.html');
+                if ($modulePath) {
                     return file_get_contents($modulePath);
                 }
                 return;
@@ -1743,13 +1849,12 @@ namespace Cx\Core\Core\Controller {
          * @todo Remove usage of globals
          * @global array $_CONFIG
          * @global type $themesPages
-         * @global type $objCounter
          * @global type $objBanner
          * @global type $_CORELANG
          * @return type
          */
         protected function setPostContentLoadPlaceholders() {
-            global $_CONFIG, $themesPages, $objCounter, $objBanner, $_CORELANG;
+            global $_CONFIG, $themesPages, $objBanner, $_CORELANG;
 
             if ($this->mode == self::MODE_BACKEND) {
                 $formattedVersion = htmlentities(
@@ -1797,6 +1902,13 @@ namespace Cx\Core\Core\Controller {
                 return;
             }
 
+            $objCounter              = null;
+            $componentRepo           = $this->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+            $statsComponentContoller = $componentRepo->findOneBy(array('name' => 'Stats'));
+            if ($statsComponentContoller) {
+                $objCounter = $statsComponentContoller->getCounterInstance();
+            }
+
             // set global template variables
             $boolShop = \Cx\Modules\Shop\Controller\Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
@@ -1817,14 +1929,15 @@ namespace Cx\Core\Core\Controller {
                 'CONTENT_TITLE'                  => $this->resolvedPage->getContentTitle(),
                 'CONTENT_TEXT'                   => $this->resolvedPage->getContent(),
                 'CSS_NAME'                       => contrexx_raw2xhtml($this->resolvedPage->getCssName()),
-                'STANDARD_URL'                   => \Env::get('init')->getUriBy('smallscreen', 0),
-                'MOBILE_URL'                     => \Env::get('init')->getUriBy('smallscreen', 1),
-                'PRINT_URL'                      => \Env::get('init')->getUriBy('printview', 1),
-                'PDF_URL'                        => \Env::get('init')->getUriBy('pdfview', 1),
-                'APP_URL'                        => \Env::get('init')->getUriBy('appview', 1),
-                'LOGOUT_URL'                     => \Env::get('init')->getUriBy('section', 'logout'),
+                'STANDARD_URL'                   => contrexx_raw2xhtml(\Env::get('init')->getUriBy('smallscreen', 0)),
+                'MOBILE_URL'                     => contrexx_raw2xhtml(\Env::get('init')->getUriBy('smallscreen', 1)),
+                'PRINT_URL'                      => contrexx_raw2xhtml(\Env::get('init')->getUriBy('printview', 1)),
+                'PDF_URL'                        => contrexx_raw2xhtml(\Env::get('init')->getUriBy('pdfview', 1)),
+                'APP_URL'                        => contrexx_raw2xhtml(\Env::get('init')->getUriBy('appview', 1)),
+                'LOGOUT_URL'                     => contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'logout')),
                 'PAGE_URL'                       => htmlspecialchars(\Env::get('init')->getPageUri()),
-                'CURRENT_URL'                    => \Env::get('init')->getCurrentPageUri(),
+                'PAGE_URL_ENCODED'               => urlencode(\Env::get('init')->getPageUri()->toString()),
+                'CURRENT_URL'                    => contrexx_raw2xhtml(\Env::get('init')->getCurrentPageUri()),
                 'DATE'                           => showFormattedDate(),
                 'TIME'                           => date('H:i', time()),
                 'NAVTREE'                        => $objNavbar->getTrail(),
@@ -1834,9 +1947,9 @@ namespace Cx\Core\Core\Controller {
                 'NAVBAR_FILE'                    => $objNavbar->getNavigation($themesPages['navbar'], $this->license, $boolShop),
                 'NAVBAR2_FILE'                   => $objNavbar->getNavigation($themesPages['navbar2'], $this->license, $boolShop),
                 'NAVBAR3_FILE'                   => $objNavbar->getNavigation($themesPages['navbar3'], $this->license, $boolShop),
-                'ONLINE_USERS'                   => $objCounter->getOnlineUsers(),
-                'VISITOR_NUMBER'                 => $objCounter->getVisitorNumber(),
-                'COUNTER'                        => $objCounter->getCounterTag(),
+                'ONLINE_USERS'                   => $objCounter ? $objCounter->getOnlineUsers() : '',
+                'VISITOR_NUMBER'                 => $objCounter ? $objCounter->getVisitorNumber() : '',
+                'COUNTER'                        => $objCounter ? $objCounter->getCounterTag() : '',
                 'BANNER'                         => isset($objBanner) ? $objBanner->getBannerJS() : '',
                 'VERSION'                        => contrexx_raw2xhtml($_CONFIG['coreCmsName']),
                 'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl()),
@@ -1845,7 +1958,7 @@ namespace Cx\Core\Core\Controller {
                 'RANDOM'                         => md5(microtime()),
                 'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
                 'MODULE_INDEX'                   => MODULE_INDEX,
-                'LOGIN_URL'                      => '<a href="' . \Env::get('init')->getUriBy('section', 'Login') . '" class="start-frontend-editing">' . $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'] . '</a>',
+                'LOGIN_URL'                      => '<a href="' . contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'Login')) . '" class="start-frontend-editing">' . $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'] . '</a>',
                 'TXT_CORE_LAST_MODIFIED_PAGE'    => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
                 'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_FORMAT_DATE, $this->resolvedPage->getUpdatedAt()->getTimestamp()),
                 'CONTACT_EMAIL'                  => isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '',
@@ -1857,20 +1970,21 @@ namespace Cx\Core\Core\Controller {
                 'CONTACT_COUNTRY'                => isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '',
                 'CONTACT_PHONE'                  => isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '',
                 'CONTACT_FAX'                    => isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '',
+                'GOOGLE_MAPS_API_KEY'            => isset($_CONFIG['googleMapsAPIKey']) ? contrexx_raw2xhtml($_CONFIG['googleMapsAPIKey']) : '',
                 'FACEBOOK_LIKE_IFRAME'           => '<div id="fb-root"></div>
                                                     <script type="text/javascript">
                                                         (function(d, s, id) {
                                                             var js, fjs = d.getElementsByTagName(s)[0];
                                                             if (d.getElementById(id)) return;
                                                             js = d.createElement(s); js.id = id;
-                                                            js.src = "//connect.facebook.net/de_DE/all.js#xfbml=1";
+                                                            js.src = "//connect.facebook.net/'.\FWLanguage::getLanguageCodeById(LANG_ID).'_'.strtoupper(\FWLanguage::getLanguageCodeById(LANG_ID)).'/all.js#xfbml=1";
                                                             fjs.parentNode.insertBefore(js, fjs);
                                                         }(document, \'script\', \'facebook-jssdk\'));
                                                     </script>
-                                                    <div class="fb-like" data-href="'.ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri().'" data-send="false" data-layout="button_count" data-show-faces="false" data-font="segoe ui"></div>',
-                'GOOGLE_PLUSONE'                 => '<div class="g-plusone" data-href="'.ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri().'"></div>
+                                                    <div class="fb-like" data-href="'.ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].contrexx_raw2xhtml(\Env::get('init')->getCurrentPageUri()).'" data-send="false" data-layout="button_count" data-show-faces="false" data-font="segoe ui"></div>',
+                'GOOGLE_PLUSONE'                 => '<div class="g-plusone" data-href="'.ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].contrexx_raw2xhtml(\Env::get('init')->getCurrentPageUri()).'"></div>
                                                     <script type="text/javascript">
-                                                        window.___gcfg = {lang: \'de\'};
+                                                        window.___gcfg = {lang: \''.\FWLanguage::getLanguageCodeById(LANG_ID).'\'};
 
                                                         (function() {
                                                             var po = document.createElement(\'script\'); po.type = \'text/javascript\'; po.async = true;
@@ -1879,9 +1993,9 @@ namespace Cx\Core\Core\Controller {
                                                         })();
                                                     </script>',
                 'TWITTER_SHARE'                  => '<a href="https://twitter.com/share" class="twitter-share-button"
-                                                    data-url="'.ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri().'" data-lang="de">Twittern</a>
+                                                    data-url="'.ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].contrexx_raw2xhtml(\Env::get('init')->getCurrentPageUri()).'" data-lang="'.\FWLanguage::getLanguageCodeById(LANG_ID).'">Twittern</a>
                                                     <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+\'://platform.twitter.com/widgets.js\';fjs.parentNode.insertBefore(js,fjs);}}(document, \'script\', \'twitter-wjs\');</script>',
-                'XING_SHARE'                     => '<div data-type="XING/Share" data-counter="right"></div>
+                'XING_SHARE'                     => '<div data-type="XING/Share" data-counter="right" data-lang="'.\FWLanguage::getLanguageCodeById(LANG_ID).'"></div>
                                                     <script>
                                                         ;(function (d, s) {
                                                             var x = d.createElement(s),
@@ -1929,8 +2043,8 @@ namespace Cx\Core\Core\Controller {
 
             if ($this->mode == self::MODE_FRONTEND) {
                 // parse system
-                $time = $this->stopTimer();
-                $this->template->setVariable('PARSING_TIME', $time);
+                $parsingTime = $this->stopTimer();
+                $this->template->setVariable('PARSING_TIME', $parsingTime);
 
                 $this->parseGlobalPlaceholders($themesPages['sidebar']);
 
@@ -2005,8 +2119,10 @@ namespace Cx\Core\Core\Controller {
 
                 // replace links from before contrexx 3
                 $ls = new \LinkSanitizer(
-                    $this->codeBaseOffsetPath . \Env::get('virtualLanguageDirectory').'/',
-                    $endcode);
+                    $this,
+                    $this->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
+                    $endcode
+                );
                 $endcode = $ls->replace();
 
                 echo $endcode;
@@ -2023,7 +2139,7 @@ namespace Cx\Core\Core\Controller {
                             foreach ($backendLanguage as $language) {
                                 $languageUrl = \Env::get('init')->getUriBy('setLang', $language['id']);
                                 $this->template->setVariable(array(
-                                    'LANGUAGE_URL' => $languageUrl,
+                                    'LANGUAGE_URL' => contrexx_raw2xhtml($languageUrl),
                                     'LANGUAGE_NAME' => $language['name'],
                                     'LANGUAGE_CSS' => \Env::get('init')->getBackendLangId() == $language['id'] ? 'active' : '',
                                 ));
@@ -2115,12 +2231,16 @@ namespace Cx\Core\Core\Controller {
 
                 // replace links from before contrexx 3
                 $ls = new \LinkSanitizer(
-                    ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/',
-                    $endcode);
+                    $this,
+                    $this->getCodeBaseOffsetPath() . $this->getBackendFolderName() . '/',
+                    $endcode
+                );
                 $endcode = $ls->replace();
 
                 echo $endcode;
             }
+
+            \DBG::log("(Cx: {$this->id}) Request parsing completed after $parsingTime");
         }
 
         /**
@@ -2176,7 +2296,7 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Returns the Contrexx event manager instance
+         * Returns the Cloudrexx event manager instance
          * @return \Cx\Core\Event\Controller\EventManager
          */
         public function getEvents() {
@@ -2314,7 +2434,7 @@ namespace Cx\Core\Core\Controller {
          * Set the path to the location of the website's Code Base in the file system.
          * @param string The base path of the Code Base (webserver's DocumentRoot path).
          * @param string The offset path from the webserver's DocumentRoot to the
-         *               location of the Code Base of the Contrexx installation.
+         *               location of the Code Base of the Cloudrexx installation.
          */
         public function setCodeBaseRepository($codeBasePath, $codeBaseOffsetPath) {
             $this->codeBasePath                 = $codeBasePath;
@@ -2346,7 +2466,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the offset path from the webserver's DocumentRoot to the
-         * location of the Code Base of the Contrexx installation.
+         * location of the Code Base of the Cloudrexx installation.
          * Formerly known as ASCMS_PATH_OFFSET.
          * @return string
          */
@@ -2355,7 +2475,7 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Return the absolute path to the Code Base of the Contrexx installation.
+         * Return the absolute path to the Code Base of the Cloudrexx installation.
          * Formerly known as ASCMS_DOCUMENT_ROOT.
          * @return string
          */
@@ -2366,7 +2486,7 @@ namespace Cx\Core\Core\Controller {
         /**
          * Return the absolute path to the storage location of the
          * configuration files (/config) of the Code Base of the
-         * Contrexx installation.
+         * Cloudrexx installation.
          * @return string
          */
         public function getCodeBaseConfigPath() {
@@ -2375,7 +2495,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the absolute path to the core components (/core)
-         * of the Code Base of the Contrexx installation.
+         * of the Code Base of the Cloudrexx installation.
          * Formerly known as ASCMS_CORE_PATH.
          * @return string
          */
@@ -2385,7 +2505,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the offset path to the core components (/core)
-         * of the Code Base of the Contrexx installation.
+         * of the Code Base of the Cloudrexx installation.
          * @return string
          */
         public function getCodeBaseCoreWebPath() {
@@ -2394,7 +2514,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the absolute path used to access the backend template
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_ADMIN_TEMPLATE_PATH
          * @return string
          */
@@ -2404,7 +2524,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the offset path used to access the backend template
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_ADMIN_TEMPLATE_WEB_PATH
          * @return string
          */
@@ -2414,7 +2534,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the absolute path of the core modules(core_modules) folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_CORE_MODULE_PATH
          * @return string
          */
@@ -2424,7 +2544,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the offset path of the core modules(core_modules) folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_CORE_MODULE_WEB_PATH
          * @return string
          */
@@ -2434,7 +2554,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The absolute path of the lib folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_LIBRARY_PATH
          * @return string
          */
@@ -2443,7 +2563,7 @@ namespace Cx\Core\Core\Controller {
         }
         /**
          * Return the absolute path of the FRAMEWORK folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_FRAMEWORK_PATH
          * @return string
          */
@@ -2452,7 +2572,7 @@ namespace Cx\Core\Core\Controller {
         }
         /**
          * Return the absolute path of the lib folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_MODEL_PATH
          * @return string
          */
@@ -2462,7 +2582,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the absolute path of the module folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_MODULE_PATH
          * @return string
          */
@@ -2472,7 +2592,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the offset path of the module folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_MODULE_WEB_PATH
          * @return string
          */
@@ -2482,7 +2602,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the absolute path to the themes storage location (/themes)
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * @return string
          */
         public function getCodeBaseThemesPath() {
@@ -2493,7 +2613,7 @@ namespace Cx\Core\Core\Controller {
          * Set the path to the location of the website's data repository in the file system.
          * @param string $websitePath The absolute path to the website's data repository.
          * @param string $websiteOffsetPath The offset path from the website's data repository to the
-         *               location of the Contrexx installation if it is run in a subdirectory.
+         *               location of the Cloudrexx installation if it is run in a subdirectory.
          */
         public function setWebsiteRepository($websitePath, $websiteOffsetPath) {
             $this->websitePath                  = $websitePath;
@@ -2507,7 +2627,8 @@ namespace Cx\Core\Core\Controller {
             $this->websiteTempWebPath           = $this->websiteOffsetPath       . self::FOLDER_NAME_TEMP;
             $this->websiteThemesPath            = $this->websiteDocumentRootPath . self::FOLDER_NAME_THEMES;
             $this->websiteThemesWebPath         = $this->websiteOffsetPath       . self::FOLDER_NAME_THEMES;
-            $this->websiteFeedPath              = $this->websiteDocumentRootPath . '/feed';
+            $this->websiteFeedPath              = $this->websiteDocumentRootPath . self::FOLDER_NAME_FEED;
+            $this->websiteFeedWebPath           = $this->websiteOffsetPath       . self::FOLDER_NAME_FEED;
 
             $this->websiteImagesPath            = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES;
             $this->websiteImagesWebPath         = $this->websiteOffsetPath       . self::FOLDER_NAME_IMAGES;
@@ -2523,15 +2644,19 @@ namespace Cx\Core\Core\Controller {
             $this->websiteImagesPodcastPath     = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Podcast';
             $this->websiteImagesBlogPath        = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Blog';
             $this->websiteImagesCrmPath         = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Crm';
+            $this->websiteImagesDataPath        = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Data';
             $this->websiteImagesCrmProfilePath  = $this->websiteImagesCrmPath . '/profile';
             $this->websiteImagesAccessProfilePath = $this->websiteImagesAccessPath .'/profile';
             $this->websiteImagesAccessPhotoPath = $this->websiteImagesAccessPath .'/photo';
+            $this->websiteMediaForumUploadPath  = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Forum/upload';
             $this->websiteMediaarchive1Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive1';
             $this->websiteMediaarchive2Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive2';
             $this->websiteMediaarchive3Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive3';
             $this->websiteMediaarchive4Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive4';
             $this->websiteMediaFileSharingPath  = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/FileSharing';
+            $this->websiteMediaMarketPath       = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Market';
             $this->websiteMediaCrmPath          = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Crm';
+            $this->websiteMediaDirectoryPath    = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Directory';
             
             $this->websiteImagesContentWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/content';
             $this->websiteImagesAttachWebPath   = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/attach';
@@ -2544,13 +2669,18 @@ namespace Cx\Core\Core\Controller {
             $this->websiteImagesPodcastWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Podcast';
             $this->websiteImagesBlogWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Blog';
             $this->websiteImagesCrmWebPath      = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Crm';
+            $this->websiteImagesDataWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Data';
             $this->websiteImagesCrmProfileWebPath = $this->websiteImagesCrmWebPath . '/profile';
             $this->websiteImagesAccessProfileWebPath = $this->websiteImagesAccessWebPath . '/profile';
+            $this->websiteImagesAccessPhotoWebPath   = $this->websiteImagesAccessWebPath . '/photo';
+            $this->websiteMediaForumUploadWebPath    = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/Forum/upload';
             $this->websiteMediaarchive1WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive1';
             $this->websiteMediaarchive2WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive2';
             $this->websiteMediaarchive3WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive3';
             $this->websiteMediaarchive4WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive4';
             $this->websiteMediaFileSharingWebPath=$this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/FileSharing';
+            $this->websiteMediaMarketWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/Market';
+            $this->websiteMediaDirectoryWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/Directory';
                         
             $this->websitePublicTempPath        = $this->websiteTempPath    . self::FOLDER_NAME_PUBLIC_TEMP;
             $this->websitePublicTempWebPath     = $this->websiteTempWebPath . self::FOLDER_NAME_PUBLIC_TEMP;
@@ -2567,7 +2697,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the offset path from the website's data repository to the
-         * location of the Contrexx installation if it is run in a subdirectory.
+         * location of the Cloudrexx installation if it is run in a subdirectory.
          * Formerly known as ASCMS_INSTANCE_OFFSET.
          * @return string
          */
@@ -2576,7 +2706,7 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Return the absolute path to the data repository of the Contrexx installation.
+         * Return the absolute path to the data repository of the Cloudrexx installation.
          * Formerly known as ASCMS_INSTANCE_DOCUMENT_ROOT.
          * @return string
          */
@@ -2661,12 +2791,22 @@ namespace Cx\Core\Core\Controller {
 
          /**
          * Return the absolute path to the feed storage location (/feed)
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_FEED_PATH
          * @return string
          */
         public function getWebsiteFeedPath() {
             return $this->websiteFeedPath;
+        }
+
+         /**
+         * Return the offset path to the feed storage location (/feed)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_FEED_WEB_PATH
+         * @return string
+         */
+        public function getWebsiteFeedWebPath() {
+            return $this->websiteFeedWebPath;
         }
 
         /**
@@ -2731,6 +2871,22 @@ namespace Cx\Core\Core\Controller {
         public function getWebsiteImagesBlogWebPath()
         {
             return $this->websiteImagesBlogWebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesDataPath()
+        {
+            return $this->websiteImagesDataPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesDataWebPath()
+        {
+            return $this->websiteImagesDataWebPath;
         }
 
         /**
@@ -2848,6 +3004,22 @@ namespace Cx\Core\Core\Controller {
         /**
          * @return string
          */
+        public function getWebsiteMediaForumUploadPath()
+        {
+            return $this->websiteMediaForumUploadPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteMediaForumUploadWebPath()
+        {
+            return $this->websiteMediaForumUploadWebPath;
+        }
+
+        /**
+         * @return string
+         */
         public function getWebsiteMediaarchive2Path()
         {
             return $this->websiteMediaarchive2Path;
@@ -2918,6 +3090,30 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
+         * Return the absolute path to the media Market location (/Market)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_MARKET_MEDIA_PATH.
+         *
+         * @return string
+         */
+        public function getWebsiteMediaMarketPath()
+        {
+            return $this->websiteMediaMarketPath;
+        }
+
+        /**
+         * Return the offset path to the media Market location (/Market)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_MARKET_MEDIA_WEB_PATH.
+         *
+         * @return string
+         */
+        public function getWebsiteMediaMarketWebPath()
+        {
+            return $this->websiteMediaMarketWebPath;
+        }
+
+        /**
          * @return string
          */
         public function getWebsiteImagesPath()
@@ -2985,11 +3181,20 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the absolute path from the website's data repository to the
-         * location of the /madia/Crm
+         * location of the /media/Crm
          * @return string
          */
         public function getWebsiteMediaCrmPath() {
             return $this->websiteMediaCrmPath;
+        }
+
+        /**
+         * Return the absolute path from the website's data repository to the
+         * location of the /media/Directory
+         * @return string
+         */
+        public function getWebsiteMediaDirectoryPath() {
+            return $this->websiteMediaDirectoryPath;
         }
 
         /**
@@ -3018,7 +3223,36 @@ namespace Cx\Core\Core\Controller {
         public function getWebsiteImagesAccessPhotoPath() {
             return $this->websiteImagesAccessPhotoPath;
         }
+        
+        /**
+         * Return the offset path to the data repository of the access photo.
+         * Formerly known as ASCMS_ACCESS_PHOTO_IMG_WEB_PATH.
+         * @return string
+         */
+        public function getWebsiteImagesAccessPhotoWebPath() {
+            return $this->websiteImagesAccessPhotoWebPath;
+        }
 
+        /**
+         * Return the offset path from the website's data repository to the
+         * location of the /media/Downloads
+         * @return string
+         */
+        public function getWebsiteMediaDirectoryWebPath() {
+            return $this->websiteMediaDirectoryWebPath;
+        }
+
+        /**
+         * Set the ID of the object
+         *
+         * WARNING: Setting the ID manually might break the system!
+         *          Only do it in respect to self::$autoIncrementValueOfId.
+         *
+         * @param int   ID this object shall be identified by
+         */
+        public function setId($id) {
+            $this->id = $id;
+        }
 
         /**
          * @return int
