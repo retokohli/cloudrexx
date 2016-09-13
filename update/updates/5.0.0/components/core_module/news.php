@@ -543,6 +543,7 @@ function _newsUpdate() {
                     'allow_comments'                 => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'changelog'),
                     'enable_related_news'            => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'allow_comments'),
                     'enable_tags'                    => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'enable_related_news'),
+                    'redirect_new_window'            => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'enable_tags'),
                 ),
                 array(
                     'newsindex'                      => array('fields' => array('text','title','teaser_text'), 'type' => 'FULLTEXT')
@@ -962,6 +963,7 @@ NEWS;
                     'allow_comments'                 => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'changelog'),
                     'enable_related_news'            => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'allow_comments'),
                     'enable_tags'                    => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'enable_related_news'),
+                    'redirect_new_window'            => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'enable_tags'),
                 )
             );
 
