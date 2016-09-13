@@ -360,6 +360,30 @@ class Calendar extends CalendarLibrary
         } else {
             $this->author = null;
         }
+
+        if (
+            $this->startDate->format('H:i:s') == '00:00:00' &&
+            $this->endDate->format('H:i:s') == '00:00:00'
+        ) {
+            $this->endDate = $this->endDate->setTime('23', '59', '59');
+        }
+        $internDateTime = new \DateTime('now');
+        $dbDateTime = $this->getComponent('DateTime')->createDateTimeForDb('now');
+        $internDateTimeOffset = $internDateTime->getOffset();
+        $dbDateTimeOffset = $dbDateTime->getOffset();
+        if ($internDateTimeOffset > $dbDateTimeOffset) {
+            $timeOffset = $internDateTimeOffset - $dbDateTimeOffset;
+        } else {
+            $timeOffset = $dbDateTimeOffset - $internDateTimeOffset;
+        }
+        if ($timeOffset > 0) {
+            $this->startDate->add(new \DateInterval('PT' . $timeOffset . 'S'));
+            $this->endDate->add(new \DateInterval('PT' . $timeOffset . 'S'));
+        } else {
+            $this->startDate->sub(new \DateInterval('PT' . $timeOffset . 'S'));
+            $this->endDate->sub(new \DateInterval('PT' . $timeOffset . 'S'));
+        }
+
         $this->objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($this->startDate,$this->endDate,$this->categoryId,$this->searchTerm,true,$this->needAuth,true,$this->startPos,$this->numEvents,$this->sortDirection,true,$this->author);
         
         if (!in_array($cmd, array('detail', 'register'))) {
