@@ -77,14 +77,15 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $this->arrSettings = $this->getSettings();
         $this->objSettings = new \Cx\Core\Config\Controller\Config();
 
-        if (is_dir(ASCMS_CACHE_PATH)) {
-            if (is_writable(ASCMS_CACHE_PATH)) {
-                $this->strCachePath = ASCMS_CACHE_PATH . '/';
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (is_dir($cx->getWebsiteCachePath())) {
+            if (is_writable($cx->getWebsiteCachePath())) {
+                $this->strCachePath = $cx->getWebsiteCachePath() . '/';
             } else {
-                $objTemplate->SetVariable('CONTENT_STATUS_MESSAGE', $_ARRAYLANG['TXT_CACHE_ERR_NOTWRITABLE'] . ASCMS_CACHE_PATH);
+                $objTemplate->SetVariable('CONTENT_STATUS_MESSAGE', $_ARRAYLANG['TXT_CACHE_ERR_NOTWRITABLE'] . $cx->getWebsiteCachePath());
             }
         } else {
-            $objTemplate->SetVariable('CONTENT_STATUS_MESSAGE', $_ARRAYLANG['TXT_CACHE_ERR_NOTEXIST'] . ASCMS_CACHE_PATH);
+            $objTemplate->SetVariable('CONTENT_STATUS_MESSAGE', $_ARRAYLANG['TXT_CACHE_ERR_NOTEXIST'] . $cx->getWebsiteCachePath());
         }
 
         $this->initOPCaching();

@@ -505,7 +505,8 @@ class CacheLib
                 }
                 return ini_get('xcache.size') > 0;
             case self::CACHE_ENGINE_FILESYSTEM:
-                return is_writable(ASCMS_CACHE_PATH);
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                return is_writable($cx->getWebsiteCachePath());
         }
     }
 
@@ -584,9 +585,10 @@ class CacheLib
     public function clearCache($cacheEngine = null)
     {
         if (!$this->strCachePath) {
-            if (is_dir(ASCMS_CACHE_PATH)) {
-                if (is_writable(ASCMS_CACHE_PATH)) {
-                    $this->strCachePath = ASCMS_CACHE_PATH . '/';
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            if (is_dir($cx->getWebsiteCachePath())) {
+                if (is_writable($cx->getWebsiteCachePath())) {
+                    $this->strCachePath = $cx->getWebsiteCachePath() . '/';
                 }
             }
         }
