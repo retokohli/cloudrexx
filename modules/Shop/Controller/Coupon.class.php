@@ -1393,6 +1393,8 @@ class Coupon
 
     /**
      * Check whether the coupon is active by Scheduled Publishing
+     * Note: This function does not check whether the product is in scheduled publishing,
+     * So make sure the product is in scheduled before calling this method
      *
      * @return boolean True when coupon active by Scheduled Publishing, false otherwise
      */
@@ -1402,11 +1404,13 @@ class Coupon
         if ($this->start_time()) {
             $start = new \DateTime();
             $start->setTimestamp($this->start_time());
+            $start->setTime(0, 0, 0);
         }
         $end = null;
         if ($this->end_time()) {
             $end = new \DateTime();
             $end->setTimestamp($this->end_time());
+            $end->setTime(23, 59, 59);
         }
         if (   (!empty($start) && empty($end) && ($start->getTimestamp() > time()))
             || (empty($start) && !empty($end) && ($end->getTimestamp() < time()))
