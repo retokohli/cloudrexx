@@ -126,15 +126,15 @@ class eGov extends eGovLibrary
             )");
         $order_id = $objDatabase->Insert_ID();
         if (self::GetProduktValue('product_per_day', $product_id) == 'yes') {
-            list ($calD, $calM, $calY) = explode('[.]', $_REQUEST['contactFormField_1000']);
+            list ($calD, $calM, $calY) = explode('[.]', contrexx_input2raw($_REQUEST['contactFormField_1000']));
             for($x = 0; $x < $quantity; ++$x) {
                 $objDatabase->Execute("
                     INSERT INTO ".DBPREFIX."module_egov_product_calendar (
                         calendar_product, calendar_order, calendar_day,
                         calendar_month, calendar_year
                     ) VALUES (
-                        '$product_id', '$order_id', '$calD',
-                        '$calM', '$calY'
+                        '$product_id', '$order_id', '".intval($calD)."',
+                        '".intval($calM)."', '".intval($calY)."'
                     )
                 ");
             }
@@ -311,7 +311,7 @@ class eGov extends eGovLibrary
         switch ($handler) {
           case 'paypal':
             $order_id =
-                (!empty($_POST['custom']) ? $_POST['custom'] : $order_id);
+                (!empty($_POST['custom']) ? intval($_POST['custom']) : $order_id);
             return $this->paymentPaypal($order_id, $amount);
           // Payment requests
           // The following are all handled by Yellowpay.
@@ -392,7 +392,7 @@ class eGov extends eGovLibrary
         $product_amount = self::GetProduktValue('product_price', $product_id);
         $quantity =
             (self::GetProduktValue('product_per_day', $product_id) == 'yes'
-                ? $_REQUEST['contactFormField_Quantity'] : 1
+                ? intval($_REQUEST['contactFormField_Quantity']) : 1
             );
         if ($product_amount <= 0) {
             return '';
@@ -457,22 +457,13 @@ class eGov extends eGovLibrary
         }
         $quantity =
             (self::GetProduktValue('product_per_day', $product_id) == 'yes'
-                ? $_REQUEST['contactFormField_Quantity'] : 1
+                ? intval($_REQUEST['contactFormField_Quantity']) : 1
             );
         $product_amount = (!empty($amount)
             ? $amount
             :   self::GetProduktValue('product_price', $product_id)
               * $quantity
         );
-        $FormFields = "id=$product_id&send=1&";
-        $arrFields = $this->getFormFields($product_id);
-        foreach (array_keys($arrFields) as $fieldId) {
-            $FormFields .= 'contactFormField_'.$fieldId.'='.strip_tags(contrexx_addslashes($_REQUEST['contactFormField_'.$fieldId])).'&';
-        }
-        if (self::GetProduktValue('product_per_day', $product_id) == 'yes') {
-            $FormFields .= 'contactFormField_1000='.$_REQUEST['contactFormField_1000'].'&';
-            $FormFields .= 'contactFormField_Quantity='.$_REQUEST['contactFormField_Quantity'];
-        }
 
         SettingDb::init('egov', 'config');
 
@@ -653,7 +644,7 @@ $yellowpayForm
         $query = "
             SELECT product_id, product_name, product_desc, product_price ".
              "FROM ".DBPREFIX."module_egov_products
-             WHERE product_id=".$_REQUEST['id'];
+             WHERE product_id=".intval($_REQUEST['id']);
         $objResult = $objDatabase->Execute($query);
         if ($objResult && $objResult->RecordCount()) {
             $product_id = $objResult->fields['product_id'];
