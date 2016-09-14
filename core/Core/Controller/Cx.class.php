@@ -237,6 +237,12 @@ namespace Cx\Core\Core\Controller {
         const FOLDER_NAME_TEMP = '/tmp';
 
         /**
+         * The folder name used for the cache storage location in temp (/cache).
+         * @var string
+         */
+        const FOLDER_NAME_CACHE = '/cache';
+
+        /**
          * The folder name used to access the backend of the website (/cadmin).
          * Formerly known as ASCMS_BACKEND_PATH
          * @var string
@@ -2757,6 +2763,16 @@ namespace Cx\Core\Core\Controller {
          */
         public function getWebsiteTempWebPath() {
             return $this->websiteTempWebPath;
+        }
+
+        /**
+         * Return the absolute path to the temp storage location (/tmp)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_CACHE_PATH.
+         * @return string
+         */
+        public function getWebsiteCachePath() {
+            return $this->websiteTempPath . self::FOLDER_NAME_CACHE;
         }
 
         /**
