@@ -278,12 +278,29 @@ class CacheLib
             $this->opCacheEngine = $_CONFIG['cacheOPCache'];
         }
         
-        $proxySettings = json_decode($_CONFIG['cacheSsiProcessorConfig']);
-        if ($_CONFIG['cacheSsiOutput'] == 'intern') {
-            $className = '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx';
-            $this->ssiProxy = new $className(
-                $proxySettings->ip,
-                $proxySettings->port
+        // if system is configured for "intern" or not correctly configured
+        $proxySettings = $this->getSsiProcessorConfiguration();
+        if (
+            !isset($_CONFIG['cacheSsiOutput']) ||
+            $_CONFIG['cacheSsiOutput'] == 'intern' ||
+            !in_array(
+                $_CONFIG['cacheSsiOutput'],
+                explode(
+                    ',',
+                    \Cx\Core\Config\Controller\Config::getSsiOutputModes()
+                )
+            ) ||
+            !in_array(
+                $_CONFIG['cacheSsiType'],
+                explode(
+                    ',',
+                    \Cx\Core\Config\Controller\Config::getSsiTypes()
+                )
+            )
+        ) {
+            $this->ssiProxy = new \Cx\Core_Modules\Cache\Model\Entity\ReverseProxyCloudrexx(
+                $proxySettings['ip'],
+                $proxySettings['port']
             );
             return;
         }
@@ -291,8 +308,8 @@ class CacheLib
         $ssiProcessor = new $className();
         $className = '\\Cx\\Lib\\ReverseProxy\\Model\\Entity\\ReverseProxy' . ucfirst($_CONFIG['cacheSsiType']);
         $this->ssiProxy = new $className(
-            $proxySettings->ip,
-            $proxySettings->port,
+            $proxySettings['ip'],
+            $proxySettings['port'],
             $ssiProcessor
         );
     }
