@@ -173,9 +173,6 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             'TXT_DEACTIVATED' => $_ARRAYLANG['TXT_DEACTIVATED'],
             'TXT_DISPLAY_CONFIGURATION' => $_ARRAYLANG['TXT_DISPLAY_CONFIGURATION'],
             'TXT_HIDE_CONFIGURATION' => $_ARRAYLANG['TXT_HIDE_CONFIGURATION'],
-            'TXT_CACHE_VARNISH'    => $_ARRAYLANG['TXT_CACHE_VARNISH'],
-            'TXT_CACHE_PROXY_IP'    => $_ARRAYLANG['TXT_CACHE_PROXY_IP'],
-            'TXT_CACHE_PROXY_PORT'  => $_ARRAYLANG['TXT_CACHE_PROXY_PORT']
         ));
 
         if ($this->objSettings->isWritable()) {
@@ -192,7 +189,8 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
         $this->parseMemcacheSettings();
         $this->parseMemcachedSettings();
-        $this->parseVarnishSettings();
+        $this->parseReverseProxySettings();
+        $this->parseSsiProcessorSettings();
 
         $intFoldersizePages = 0;
         $intFoldersizeEntries = 0;
@@ -293,11 +291,14 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             'SETTINGS_OP_CACHE_STATUS_OFF'  => ($this->arrSettings['cacheOpStatus'] == 'off') ? 'checked' : '',
             'SETTINGS_DB_CACHE_STATUS_ON'   => ($this->arrSettings['cacheDbStatus'] == 'on') ? 'checked' : '',
             'SETTINGS_DB_CACHE_STATUS_OFF'  => ($this->arrSettings['cacheDbStatus'] == 'off') ? 'checked' : '',
-            'SETTINGS_VARNISH_CACHE_STATUS_ON'  => ($this->arrSettings['cacheVarnishStatus'] == 'on') ? 'checked' : '',
-            'SETTINGS_VARNISH_CACHE_STATUS_OFF' => ($this->arrSettings['cacheVarnishStatus'] == 'off') ? 'checked' : '',    
-            'SETTINGS_ESI_CACHE_STATUS_INTERN'  => ($this->arrSettings['cacheEsiStatus'] == 'intern') ? 'selected' : '',
-            'SETTINGS_ESI_CACHE_STATUS_ESI' => ($this->arrSettings['cacheEsiStatus'] == 'esi') ? 'selected' : '',
-            'SETTINGS_ESI_CACHE_STATUS_SSI' => ($this->arrSettings['cacheEsiStatus'] == 'ssi') ? 'selected' : '',
+            'SETTINGS_CACHE_REVERSE_PROXY_NONE'  => ($this->arrSettings['cacheReverseProxy'] == 'none') ? 'selected' : '',
+            'SETTINGS_CACHE_REVERSE_PROXY_VARNISH' => ($this->arrSettings['cacheReverseProxy'] == 'varnish') ? 'selected' : '',
+            'SETTINGS_CACHE_REVERSE_PROXY_NGINX' => ($this->arrSettings['cacheReverseProxy'] == 'nginx') ? 'selected' : '',
+            'SETTINGS_SSI_CACHE_STATUS_INTERN'  => ($this->arrSettings['cacheSsiOutput'] == 'intern') ? 'selected' : '',
+            'SETTINGS_SSI_CACHE_STATUS_SSI' => ($this->arrSettings['cacheSsiOutput'] == 'ssi') ? 'selected' : '',
+            'SETTINGS_SSI_CACHE_STATUS_ESI' => ($this->arrSettings['cacheSsiOutput'] == 'esi') ? 'selected' : '',
+            'SETTINGS_SSI_CACHE_TYPE_VARNISH' => ($this->arrSettings['cacheSsiType'] == 'varnish') ? 'selected' : '',
+            'SETTINGS_SSI_CACHE_TYPE_NGINX' => ($this->arrSettings['cacheSsiType'] == 'nginx') ? 'selected' : '',
             'SETTINGS_EXPIRATION' => intval($this->arrSettings['cacheExpiration']),
             'STATS_CONTREXX_FILESYSTEM_CHACHE_PAGES_COUNT' => $intFilesPages,
             'STATS_FOLDERSIZE_PAGES'                => number_format($intFoldersizePages / 1024, 2, '.', '\''),
@@ -344,27 +345,50 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         \Cx\Core\Setting\Controller\Setting::set('cacheOpStatus', contrexx_input2db($_POST['cacheOpStatus']));
         \Cx\Core\Setting\Controller\Setting::set('cacheOpStatus', contrexx_input2db($_POST['cacheOpStatus']));
         \Cx\Core\Setting\Controller\Setting::set('cacheDbStatus', contrexx_input2db($_POST['cacheDbStatus']));
-        \Cx\Core\Setting\Controller\Setting::set('cacheVarnishStatus', contrexx_input2db($_POST['cacheVarnishStatus']));
-        \Cx\Core\Setting\Controller\Setting::set('cacheEsiStatus', contrexx_input2db($_POST['cacheEsiStatus']));
+        \Cx\Core\Setting\Controller\Setting::set('cacheReverseProxy', contrexx_input2db($_POST['cacheReverseProxy']));
+        $oldSsiValue = $_CONFIG['cacheSsiOutput'];
+        \Cx\Core\Setting\Controller\Setting::set('cacheSsiOutput', contrexx_input2db($_POST['cacheSsiOutput']));
+        \Cx\Core\Setting\Controller\Setting::set('cacheSsiType', contrexx_input2db($_POST['cacheSsiType']));
 
-        if(!empty($_POST['memcacheSettingIp']) || !empty($_POST['memcacheSettingPort'])){
-            $settings = json_encode(
-                array(
-                    'ip'   => !empty($_POST['memcacheSettingIp']) ? contrexx_input2raw($_POST['memcacheSettingIp']) : '127.0.0.1',
-                    'port' => !empty($_POST['memcacheSettingPort']) ? intval($_POST['memcacheSettingPort']) : '11211',
-                )
-            );
-            \Cx\Core\Setting\Controller\Setting::set('cacheUserCacheMemcacheConfig', $settings);
-        }
-        
-        if(!empty($_POST['varnishCachingIp']) || !empty($_POST['varnishCachingPort'])){
-            $settings = json_encode(
-                array(
-                    'ip'   => !empty($_POST['varnishCachingIp']) ? contrexx_input2raw($_POST['varnishCachingIp']) : '127.0.0.1',
-                    'port' => !empty($_POST['varnishCachingPort']) ? intval($_POST['varnishCachingPort']) : '8080',
-                )
-            );
-            \Cx\Core\Setting\Controller\Setting::set('cacheProxyCacheVarnishConfig', $settings);
+        foreach (
+            array(
+                'cacheUserCacheMemcacheConfig' => array(
+                    'key' => 'memcacheSetting',
+                    'defaultPort' => 11211,
+                ),
+                'cacheProxyCacheConfig' => array(
+                    'key' => 'reverseProxy',
+                    'defaultPort' => 8080,
+                ),
+                'cacheSsiProcessorConfig' => array(
+                    'key' => 'ssiProcessor',
+                    'defaultPort' => 8080,
+                ),
+            )
+            as
+            $settingName => $settings
+        ) {
+            $hostnamePortSetting = $settings['key'];
+            if (
+                !empty($_POST[$hostnamePortSetting . 'Ip']) ||
+                !empty($_POST[$hostnamePortSetting . 'Port'])
+            ) {
+                $settings = json_encode(
+                    array(
+                        'ip'   => (
+                            !empty($_POST[$hostnamePortSetting . 'Ip']) ?
+                            contrexx_input2raw($_POST[$hostnamePortSetting . 'Ip']) :
+                            '127.0.0.1'
+                        ),
+                        'port' => (
+                            !empty($_POST[$hostnamePortSetting . 'Port']) ?
+                            intval($_POST[$hostnamePortSetting . 'Port']) :
+                            $defaultPort
+                        ),
+                    )
+                );
+                \Cx\Core\Setting\Controller\Setting::set($settingName, $settings);
+            }
         }
         
         \Cx\Core\Setting\Controller\Setting::updateAll();
@@ -373,6 +397,10 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $this->initOPCaching(); // reinit opcaches
         $this->getActivatedCacheEngines();
         $this->clearCache($this->getOpCacheEngine());
+        
+        if ($oldSsiValue != contrexx_input2db($_POST['cacheSsiOutput'])) {
+            $this->_deleteAllFiles('cxPages');
+        }
 
         if (!count($this->objSettings->strErrMessage)) {
             $objTemplate->SetVariable('CONTENT_OK_MESSAGE', $_ARRAYLANG['TXT_SETTINGS_UPDATED']);
@@ -532,10 +560,22 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $this->objTpl->setVariable('MEMCACHED_USERCACHE_CONFIG_PORT', contrexx_raw2xhtml($configuration['port']));
     }
     
-    protected function parseVarnishSettings(){
-        $configuration = $this->getVarnishConfiguration();
-        $this->objTpl->setVariable('VARNISH_PROXYCACHE_CONFIG_IP', contrexx_raw2xhtml($configuration['ip']));
-        $this->objTpl->setVariable('VARNISH_PROXYCACHE_CONFIG_PORT', contrexx_raw2xhtml($configuration['port']));
+    /**
+     * Parses reverse proxy settings to current template
+     */
+    protected function parseReverseProxySettings(){
+        $configuration = $this->getReverseProxyConfiguration();
+        $this->objTpl->setVariable('PROXYCACHE_CONFIG_IP', contrexx_raw2xhtml($configuration['ip']));
+        $this->objTpl->setVariable('PROXYCACHE_CONFIG_PORT', contrexx_raw2xhtml($configuration['port']));
+    }
+    
+    /**
+     * Parses reverse ESI/SSI processor settings to current template
+     */
+    protected function parseSsiProcessorSettings(){
+        $configuration = $this->getSsiProcessorConfiguration();
+        $this->objTpl->setVariable('SSI_PROCESSOR_CONFIG_IP', contrexx_raw2xhtml($configuration['ip']));
+        $this->objTpl->setVariable('SSI_PROCESSOR_CONFIG_PORT', contrexx_raw2xhtml($configuration['port']));
     }
 
     /**

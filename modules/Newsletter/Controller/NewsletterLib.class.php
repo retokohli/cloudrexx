@@ -160,7 +160,7 @@ class NewsletterLib
                         'email' => $email,
                     )
                 );
-                if ($user) {
+                if ($user && $user->getFrontendLanguage()) {
                     $userLanguage = $user->getFrontendLanguage();
                 }
                 break;
@@ -177,7 +177,7 @@ class NewsletterLib
                         `email` = \'' . contrexx_raw2db($email) . '\'
                 ';
                 $result = $objDatabase->Execute($query);
-                if (isset($result->fields['language'])) {
+                if (!empty($result->fields['language'])) {
                     $userLanguage = $result->fields['language'];
                 }
                 break;
@@ -712,6 +712,23 @@ class NewsletterLib
         return null;
     }
 
+    /**
+     * Get newsletter list name by given id
+     *
+     * @param integer $listId List id
+     *
+     * @return mixed string or null
+     */
+    public function getListNameById($listId)
+    {
+        if (!isset(self::$arrLists)) {
+            self::$arrLists = self::getLists(false, true);
+        }
+        if (isset(self::$arrLists[$listId])) {
+            return self::$arrLists[$listId]['name'];
+        }
+        return null;
+    }
 
     /**
      * Add a list with the given name and status

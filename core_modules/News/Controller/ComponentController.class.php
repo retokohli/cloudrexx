@@ -72,8 +72,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * 
      * @param string $command Name of command to execute
      * @param array  $arguments List of arguments for the command
+     * @param array  $dataArguments (optional) List of data arguments for the command
      */
-    public function executeCommand($command, $arguments) {
+    public function executeCommand($command, $arguments, $dataArguments = array()) {
         $subcommand = null;
         if (!empty($arguments[0])) {
             $subcommand = $arguments[0];
@@ -104,21 +105,23 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $_CORELANG, $page, $objTemplate, $subMenuTitle;
+        global $_CORELANG, $objTemplate, $subMenuTitle;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-                $newsObj = new News(\Env::get('cx')->getPage()->getContent());
-                \Env::get('cx')->getPage()->setContent($newsObj->getNewsPage());
-                $newsObj->getPageTitle(\Env::get('cx')->getPage()->getTitle());
+                $newsObj = new News($page->getContent());
+                $page->setContent($newsObj->getNewsPage());
+                $newsObj->getPageTitle($page->getTitle());
                 
-                // Set the meta page description to the teaser text if displaying news details
-                $teaser = $newsObj->getTeaser();
-                if ($teaser !== null) //news details, else getTeaser would return null
-                    $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET))));
                 if (substr($page->getCmd(), 0, 7) == 'details') {
-                    \Env::get('cx')->getPage()->setTitle($newsObj->newsTitle);
-                    \Env::get('cx')->getPage()->setContentTitle($newsObj->newsTitle);
-                    \Env::get('cx')->getPage()->setMetaTitle($newsObj->newsTitle);
+                    $page->setTitle($newsObj->newsTitle);
+                    $page->setContentTitle($newsObj->newsTitle);
+                    $page->setMetaTitle($newsObj->newsTitle);
+
+                    // Set the meta page description to the teaser text if displaying news details
+                    $teaser = $newsObj->getTeaser();
+                    if ($teaser !== null) {
+                        $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET))));
+                    }
                 }
                 break;
 
@@ -149,14 +152,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // Get Headlines
                 $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsHeadlines.class.php';
                 if (file_exists($modulespath)) {
-                    for ($i = 0; $i < 5; $i++) {
+                    for ($i = 0; $i < 10; $i++) {
                         $visibleI = '';
                         if ($i > 0) {
                             $visibleI = (string) $i;
                         }
                         $headlinesNewsPlaceholder = '{HEADLINES' . $visibleI . '_FILE}';
                         if (
-                            strpos(\Env::get('cx')->getPage()->getContent(), $headlinesNewsPlaceholder) !== false
+                            strpos($page->getContent(), $headlinesNewsPlaceholder) !== false
                             || strpos($themesPages['index'], $headlinesNewsPlaceholder) !== false
                             || strpos($themesPages['sidebar'], $headlinesNewsPlaceholder) !== false
                             || strpos($page_template, $headlinesNewsPlaceholder) !== false
@@ -176,7 +179,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                         'langId'     => $_LANGID,
                                     )
                                 );
-                                \Env::get('cx')->getPage()->setContent(str_replace($headlinesNewsPlaceholder, $homeHeadlines, \Env::get('cx')->getPage()->getContent()));
+                                $page->setContent(str_replace($headlinesNewsPlaceholder, $homeHeadlines, $page->getContent()));
                                 $themesPages['index']   = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['index']);
                                 $themesPages['sidebar'] = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['sidebar']);
                                 $page_template          = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $page_template);
@@ -188,7 +191,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsTop.class.php';
                 $topNewsPlaceholder = '{TOP_NEWS_FILE}';
                 if ( file_exists($modulespath)
-                     && (   strpos(\Env::get('cx')->getPage()->getContent(), $topNewsPlaceholder) !== false
+                     && (   strpos($page->getContent(), $topNewsPlaceholder) !== false
                             || strpos($themesPages['index'], $topNewsPlaceholder) !== false
                             || strpos($themesPages['sidebar'], $topNewsPlaceholder) !== false
                             || strpos($page_template, $topNewsPlaceholder) !== false)
@@ -200,7 +203,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 'template'   => \Env::get('init')->getCurrentThemeId(),
                             )
                         );
-                        \Env::get('cx')->getPage()->setContent(str_replace($topNewsPlaceholder, $homeTopNews, \Env::get('cx')->getPage()->getContent()));
+                        $page->setContent(str_replace($topNewsPlaceholder, $homeTopNews, $page->getContent()));
                         $themesPages['index']   = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['index']);
                         $themesPages['sidebar'] = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['sidebar']);
                         $page_template          = str_replace($topNewsPlaceholder, $homeTopNews, $page_template);
@@ -210,7 +213,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsLibrary.class.php';
                 $newsCategoriesPlaceholder = '{NEWS_CATEGORIES}';
                 if ( file_exists($modulespath)
-                     && (   strpos(\Env::get('cx')->getPage()->getContent(), $newsCategoriesPlaceholder) !== false
+                     && (   strpos($page->getContent(), $newsCategoriesPlaceholder) !== false
                             || strpos($themesPages['index'], $newsCategoriesPlaceholder) !== false
                             || strpos($themesPages['sidebar'], $newsCategoriesPlaceholder) !== false
                             || strpos($page_template, $newsCategoriesPlaceholder) !== false)
@@ -219,7 +222,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'News',
                             'getNewsCategories'
                         );
-                        \Env::get('cx')->getPage()->setContent(str_replace($newsCategoriesPlaceholder, $newsCategories, \Env::get('cx')->getPage()->getContent()));
+                        $page->setContent(str_replace($newsCategoriesPlaceholder, $newsCategories, $page->getContent()));
                         $themesPages['index']   = str_replace($newsCategoriesPlaceholder, $newsCategories, $themesPages['index']);
                         $themesPages['sidebar'] = str_replace($newsCategoriesPlaceholder, $newsCategories, $themesPages['sidebar']);
                         $page_template          = str_replace($newsCategoriesPlaceholder, $newsCategories, $page_template);
@@ -229,7 +232,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsLibrary.class.php';
                 $newsArchivePlaceholder = '{NEWS_ARCHIVES}';
                 if ( file_exists($modulespath)
-                     && (  strpos(\Env::get('cx')->getPage()->getContent(), $newsArchivePlaceholder) !== false
+                     && (  strpos($page->getContent(), $newsArchivePlaceholder) !== false
                            || strpos($themesPages['index'], $newsArchivePlaceholder) !== false
                            || strpos($themesPages['sidebar'], $newsArchivePlaceholder) !== false
                            || strpos($page_template, $newsArchivePlaceholder) !== false)
@@ -238,7 +241,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'News',
                             'getNewsArchiveList'
                         );
-                        \Env::get('cx')->getPage()->setContent(str_replace($newsArchivePlaceholder, $newsArchive, \Env::get('cx')->getPage()->getContent()));
+                        $page->setContent(str_replace($newsArchivePlaceholder, $newsArchive, $page->getContent()));
                         $themesPages['index']   = str_replace($newsArchivePlaceholder, $newsArchive, $themesPages['index']);
                         $themesPages['sidebar'] = str_replace($newsArchivePlaceholder, $newsArchive, $themesPages['sidebar']);
                         $page_template          = str_replace($newsArchivePlaceholder, $newsArchive, $page_template);
@@ -249,7 +252,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $newsCommentsPlaceholder = '{NEWS_RECENT_COMMENTS_FILE}';
                         
                 if ( file_exists($modulespath)
-                     && (  strpos(\Env::get('cx')->getPage()->getContent(), $newsCommentsPlaceholder) !== false
+                     && (  strpos($page->getContent(), $newsCommentsPlaceholder) !== false
                            || strpos($themesPages['index'], $newsCommentsPlaceholder) !== false
                            || strpos($themesPages['sidebar'], $newsCommentsPlaceholder) !== false
                            || strpos($page_template, $newsCommentsPlaceholder) !== false)
@@ -262,7 +265,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 'langId'   => $_LANGID,
                             )
                         );
-                        \Env::get('cx')->getPage()->setContent(str_replace($newsCommentsPlaceholder, $newsComments, \Env::get('cx')->getPage()->getContent()));
+                        $page->setContent(str_replace($newsCommentsPlaceholder, $newsComments, $page->getContent()));
                         $themesPages['index']   = str_replace($newsCommentsPlaceholder, $newsComments, $themesPages['index']);
                         $themesPages['sidebar'] = str_replace($newsCommentsPlaceholder, $newsComments, $themesPages['sidebar']);
                         $page_template          = str_replace($newsCommentsPlaceholder, $newsComments, $page_template);
@@ -274,12 +277,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                  $config = \Env::get('config');
                 if ($config['newsTeasersStatus'] == '1') {
                     // set news teasers in the content
-                    if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', \Env::get('cx')->getPage()->getContent(), $arrMatches)) {
+                    if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $page->getContent(), $arrMatches)) {
                         /** @ignore */
                             $objTeasers = new Teasers();
-                            $content = \Env::get('cx')->getPage()->getContent();
+                            $content = $page->getContent();
                             $objTeasers->setTeaserFrames($arrMatches[1], $content);
-                            \Env::get('cx')->getPage()->setContent($content);
+                            $page->setContent($content);
                     }
                     // set news teasers in the page design
                     if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $page_template, $arrMatches)) {
@@ -309,5 +312,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         $this->cx->getEvents()->addEventListener('SearchFindContent', new \Cx\Core_Modules\News\Model\Event\NewsEventListener());
+    }
+
+    /**
+     * Register the Event listeners
+     */
+    public function registerEventListeners() {
+        $this->cx->getEvents()->addEventListener('languageStatusUpdate', new \Cx\Core_Modules\News\Model\Event\NewsEventListener());
     }
 }

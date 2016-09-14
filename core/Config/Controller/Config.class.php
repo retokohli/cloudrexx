@@ -1666,15 +1666,20 @@ class Config
                     \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'cache')){
                         throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheDbStatus");
                 }
-                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheVarnishStatus')
-                    && !\Cx\Core\Setting\Controller\Setting::add('cacheVarnishStatus', isset($existingConfig['cacheVarnishStatus']) ? $existingConfig['cacheVarnishStatus'] : 'off', 1,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'cache')){
-                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheVarnishStatus");
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheReverseProxy')
+                    && !\Cx\Core\Setting\Controller\Setting::add('cacheReverseProxy', isset($existingConfig['cacheReverseProxy']) ? $existingConfig['cacheReverseProxy'] : 'none', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '{src:\\' . __CLASS__ . '::getReverseProxyTypes()}', 'cache')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheReverseProxy");
                 }
-                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheEsiStatus')
-                    && !\Cx\Core\Setting\Controller\Setting::add('cacheEsiStatus', isset($existingConfig['cacheEsiStatus']) ? $existingConfig['cacheEsiStatus'] : 'intern', 1,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getEsiModes()}', 'cache')){
-                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheEsiStatus");
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheSsiOutput')
+                    && !\Cx\Core\Setting\Controller\Setting::add('cacheSsiOutput', isset($existingConfig['cacheSsiOutput']) ? $existingConfig['cacheSsiOutput'] : 'intern', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getSsiOutputModes()}', 'cache')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheSsiOutput");
+                }
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheSsiType')
+                    && !\Cx\Core\Setting\Controller\Setting::add('cacheSsiType', isset($existingConfig['cacheSsiType']) ? $existingConfig['cacheSsiType'] : 'varnish', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getSsiTypes()}', 'cache')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheSsiType");
                 }
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheUserCache')
                     && !\Cx\Core\Setting\Controller\Setting::add('cacheUserCache', isset($existingConfig['cacheUserCache']) ? $existingConfig['cacheUserCache'] : 'off', 1,
@@ -1686,10 +1691,15 @@ class Config
                     \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'cache')){
                         throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheOPCache");
                 }
-                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheProxyCacheVarnishConfig')
-                    && !\Cx\Core\Setting\Controller\Setting::add('cacheProxyCacheVarnishConfig', isset($existingConfig['cacheProxyCacheVarnishConfig']) ? $existingConfig['cacheProxyCacheVarnishConfig'] : '{"ip":"127.0.0.1","port":"8080"}', 1,
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheProxyCacheConfig')
+                    && !\Cx\Core\Setting\Controller\Setting::add('cacheProxyCacheConfig', isset($existingConfig['cacheProxyCacheConfig']) ? $existingConfig['cacheProxyCacheConfig'] : '{"ip":"127.0.0.1","port":"8080"}', 1,
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'cache')){
-                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheProxyCacheVarnishConfig");
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheProxyCacheConfig");
+                }
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheSsiProcessorConfig')
+                    && !\Cx\Core\Setting\Controller\Setting::add('cacheSsiProcessorConfig', isset($existingConfig['cacheSsiProcessorConfig']) ? $existingConfig['cacheSsiProcessorConfig'] : '{"ip":"127.0.0.1","port":"8080"}', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'cache')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheSsiProcessorConfig");
                 }
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheUserCacheMemcacheConfig')
                     && !\Cx\Core\Setting\Controller\Setting::add('cacheUserCacheMemcacheConfig', isset($existingConfig['cacheUserCacheMemcacheConfig']) ? $existingConfig['cacheUserCacheMemcacheConfig'] : '{"ip":"127.0.0.1","port":11211}', 1,
@@ -1719,17 +1729,56 @@ class Config
         return implode(',', $display);
     }
     
-    public static function getEsiModes() {
-        $esiModes = array(
-            \Cx\Core_Modules\Cache\Controller\CacheLib::ESI_MODE_INTERN,
-            \Cx\Core_Modules\Cache\Controller\CacheLib::ESI_MODE_ESI,
-            \Cx\Core_Modules\Cache\Controller\CacheLib::ESI_MODE_SSI,
+    /**
+     * Gets the list of reverse proxy types
+     * @return string Comma separated list of reverse proxy types
+     */
+    public static function getReverseProxyTypes() {
+        $reverseProxyTypes = array(
+            'none',
+            'varnish',
+            'nginx',
         );
-        $esiModeTexts = array();
-        foreach ($esiModes as $esiMode) {
-            $esiModeTexts[$esiMode] = 'SETTINGS_ESI_CACHE_STATUS_' . strtoupper($esiMode);
+        $reverseProxyTypeTexts = array();
+        foreach ($reverseProxyTypes as $reverseProxyType) {
+            $reverseProxyTypeTexts[$reverseProxyType] = 'SETTINGS_REVERSE_PROXY_CACHE_STATUS_' . strtoupper($reverseProxyType);
         }
-        return $esiModeTexts;
+        return implode(',', $reverseProxyTypeTexts);
+    }
+    
+    /**
+     * Gets the list of ESI/SSI output modes
+     * @return string Comma separated list of ESI/SSI output modes
+     */
+    public static function getSsiOutputModes() {
+        $ssiModes = array(
+            'intern',
+            'ssi',
+            'esi',
+        );
+        $ssiModeTexts = array();
+        foreach ($ssiModes as $ssiMode) {
+            $ssiModeTexts[$ssiMode] = 'SETTINGS_SSI_CACHE_STATUS_' . strtoupper($ssiMode);
+        }
+        return implode(',', $ssiModeTexts);
+    }
+    
+    /**
+     * Gets the list of supported system types for external ESI/SSI processing
+     * 
+     * This is important in order to drop invalid cache objects!
+     * @return string Comma separated list of supported system types for external ESI/SSI processing
+     */
+    public static function getSsiTypes() {
+        $ssiTypes = array(
+            'varnish',
+            'nginx',
+        );
+        $ssiTypeTexts = array();
+        foreach ($ssiTypes as $ssiType) {
+            $ssiTypeTexts[$ssiType] = 'SETTINGS_SSI_CACHE_TYPE_' . strtoupper($ssiType);
+        }
+        return implode(',', $ssiTypeTexts);
     }
     
     public function showFtp() {
