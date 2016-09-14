@@ -71,6 +71,15 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
     {
         global $_CONFIG;
 
+        // check the cache directory
+        if (!is_dir(ASCMS_CACHE_PATH)) {
+            \Cx\Lib\FileSystem\FileSystem::make_folder(ASCMS_CACHE_PATH);
+        }
+        if (!is_writable(ASCMS_CACHE_PATH)) {
+            \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_CACHE_PATH);
+        }
+        $this->strCachePath = ASCMS_CACHE_PATH . '/';
+
         // in case the request's origin is from a mobile devie
         // and this is the first request (the InitCMS object wasn't yet
         // able to determine of the mobile device wishes to be served
@@ -105,15 +114,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         }
 
         $this->boolIsEnabled = true;
-
-        // check the cache directory
-        if (!is_dir(ASCMS_CACHE_PATH)) {
-            \Cx\Lib\FileSystem\FileSystem::make_folder(ASCMS_CACHE_PATH);
-        }
-        if (!is_writable(ASCMS_CACHE_PATH)) {
-            \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_CACHE_PATH);
-        }
-        $this->strCachePath = ASCMS_CACHE_PATH . '/';
 
         $this->intCachingTime = intval($_CONFIG['cacheExpiration']);
 
