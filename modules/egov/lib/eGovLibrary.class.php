@@ -104,9 +104,9 @@ class eGovLibrary {
         global $objDatabase;
 
         $query = "
-            SELECT `$FieldName`
+            SELECT `".contrexx_raw2db($FieldName)."`
               FROM `".DBPREFIX."module_egov_products`
-             WHERE `product_id`=$ProductID";
+             WHERE `product_id`=".intval($ProductID);
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->EOF) {
             return '';
@@ -129,10 +129,9 @@ class eGovLibrary {
         global $objDatabase;
 
         $query = "
-            SELECT $FieldName
+            SELECT ".contrexx_raw2db($FieldName)."
               FROM ".DBPREFIX."module_egov_orders
-             WHERE order_id=$order_id
-        ";
+             WHERE order_id=".intval($order_id);
         $objResult = $objDatabase->Execute($query);
         if ($objResult && $objResult->RecordCount() == 1) {
             return $objResult->fields[$FieldName];
@@ -261,7 +260,7 @@ class eGovLibrary {
         $objResult  = $objDatabase->Execute("
             SELECT id, name, type, attributes, is_required, check_type, order_id
               FROM ".DBPREFIX."module_egov_product_fields
-             WHERE product=$id
+             WHERE product=".intval($id)."
              ORDER BY order_id
         ");
         if (!$objResult) {
@@ -394,11 +393,11 @@ class eGovLibrary {
         $query = "
             SELECT count(*) AS anzahl
               FROM ".DBPREFIX."module_egov_product_calendar
-             WHERE calendar_day=$day
-               AND calendar_month=$month
-               AND calendar_year=$year
+             WHERE calendar_day=".intval($day)."
+               AND calendar_month=".intval($month)."
+               AND calendar_year=".intval($year)."
                AND calendar_act=1
-               AND calendar_product=$id
+               AND calendar_product=".intval($id)."
         ";
         $objResult = $objDatabase->Execute($query);
         return $objResult->fields['anzahl'];
@@ -812,10 +811,9 @@ class eGovLibrary {
             SELECT calendar_product, calendar_order, calendar_day,
                    calendar_month, calendar_year
               FROM ".DBPREFIX."module_egov_product_calendar
-             WHERE calendar_product=$product_id
+             WHERE calendar_product=".intval($product_id)."
                AND calendar_act=1
-               AND calendar_year>$last_y
-        ";
+               AND calendar_year>".intval($last_y);
         $objResult = $objDatabase->Execute($query);
         $ArrayRD = array();
         if ($objResult) {
@@ -1209,10 +1207,9 @@ class eGovLibrary {
             SELECT calendar_product, calendar_order, calendar_day,
                    calendar_month, calendar_year
               FROM ".DBPREFIX."module_egov_product_calendar
-             WHERE calendar_product=$product_id
+             WHERE calendar_product=".intval($product_id)."
                AND calendar_act=1
-               AND calendar_year>$last_y
-        ";
+               AND calendar_year>".intval($last_y);
         $objResult = $objDatabase->Execute($query);
         $ArrayRD = array();
         if ($objResult) {
@@ -1262,6 +1259,8 @@ class eGovLibrary {
     {
         global $objDatabase;
 
+        $order_id = intval($order_id);
+        $status = intval($status);
         $query = "
             UPDATE ".DBPREFIX."module_egov_orders
                SET order_state=$status
