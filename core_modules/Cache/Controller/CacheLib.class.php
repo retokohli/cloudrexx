@@ -108,6 +108,11 @@ class CacheLib
     protected $memcache = null;
 
     /**
+     * @var \Cx\Lib\ReverseProxy\Model\Entity\ReverseProxyProxy SSI proxy
+     */
+    protected $ssiProxy;
+
+    /**
      * Delete all cached file's of the cache system
      */
     function _deleteAllFiles($cacheEngine = null)
@@ -272,6 +277,41 @@ class CacheLib
         ) {
             $this->opCacheEngine = $_CONFIG['cacheOPCache'];
         }
+
+        // if system is configured for "intern" or not correctly configured
+        $proxySettings = $this->getSsiProcessorConfiguration();
+        if (
+            !isset($_CONFIG['cacheSsiOutput']) ||
+            $_CONFIG['cacheSsiOutput'] == 'intern' ||
+            !in_array(
+                $_CONFIG['cacheSsiOutput'],
+                explode(
+                    ',',
+                    \Cx\Core\Config\Controller\Config::getSsiOutputModes()
+                )
+            ) ||
+            !in_array(
+                $_CONFIG['cacheSsiType'],
+                explode(
+                    ',',
+                    \Cx\Core\Config\Controller\Config::getSsiTypes()
+                )
+            )
+        ) {
+            $this->ssiProxy = new \Cx\Core_Modules\Cache\Model\Entity\ReverseProxyCloudrexx(
+                $proxySettings['ip'],
+                $proxySettings['port']
+            );
+            return;
+        }
+        $className = '\\Cx\\Lib\\ReverseProxy\\Model\\Entity\\SsiProcessor' . ucfirst($_CONFIG['cacheSsiOutput']);
+        $ssiProcessor = new $className();
+        $className = '\\Cx\\Lib\\ReverseProxy\\Model\\Entity\\ReverseProxy' . ucfirst($_CONFIG['cacheSsiType']);
+        $this->ssiProxy = new $className(
+            $proxySettings['ip'],
+            $proxySettings['port'],
+            $ssiProcessor
+        );
     }
 
     public function deactivateNotUsedOpCaches()
@@ -335,6 +375,61 @@ class CacheLib
 
     public function getAllOpCacheEngines() {
         return array(self::CACHE_ENGINE_APC, self::CACHE_ENGINE_ZEND_OPCACHE);
+    }
+
+    /**
+     * Returns the current SSI proxy
+     * @return \Cx\Lib\ReverseProxy\Model\Entity\ReverseProxy SSI proxy
+     */
+    public function getSsiProxy() {
+        return $this->ssiProxy;
+    }
+
+    /**
+     * Returns the ESI/SSI content for a (json)data call
+     * @param string $adapterName (Json)Data adapter name
+     * @param string $adapterMethod (Json)Data method name
+     * @param array $params (optional) params for (Json)Data method call
+     * @return string ESI/SSI directives to put into HTML code
+     */
+    public function getEsiContent($adapterName, $adapterMethod, $params = array()) {
+        $url = \Cx\Core\Routing\Url::fromApi('Data', array('Plain', $adapterName, $adapterMethod), $params);
+        return $this->getSsiProxy()->getSsiProcessor()->getIncludeCode($url);
+    }
+
+    /**
+     * Each entry of $esiContentInfos consists of an array like:
+     * array(
+     *     <adapterName>,
+     *     <adapterMethod>,
+     *     <params>,
+     * )
+     */
+    public function getRandomizedEsiContent($esiContentInfos) {
+        $urls = array();
+        foreach ($esiContentInfos as $i=>$esiContentInfo) {
+            $urls[] = \Cx\Core\Routing\Url::fromApi('Data', array('Plain', $esiContentInfo[0], $esiContentInfo[1]), $esiContentInfo[2]);
+        }
+        return $this->getSsiProxy()->getSsiProcessor()->getRandomizedIncludeCode($urls);
+    }
+
+    /**
+     * Drops the ESI cache for a specific call
+     * @param string $adapterName (Json)Data adapter name
+     * @param string $adapterMethod (Json)Data method name
+     * @param array $params (optional) params for (Json)Data method call
+     * @todo Only drop this specific content instead of complete cache
+     */
+    public function clearSsiCachePage($adapterName, $adapterMethod, $params = array()) {
+        $url = \Cx\Core\Routing\Url::fromApi('Data', array('Plain', $adapterName, $adapterMethod), $params);
+        $this->getSsiProxy()->clearCachePage($url, $this->getDomainsAndPorts());
+    }
+
+    /**
+     * Drops all cached ESI/SSI elements
+     */
+    public function clearSsiCache() {
+        $this->getSsiProxy()->clearCache($this->getDomainsAndPorts());
     }
 
     protected function isInstalled($cacheEngine)
@@ -410,7 +505,8 @@ class CacheLib
                 }
                 return ini_get('xcache.size') > 0;
             case self::CACHE_ENGINE_FILESYSTEM:
-                return is_writable(ASCMS_CACHE_PATH);
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                return is_writable($cx->getWebsiteCachePath());
         }
     }
 
@@ -444,14 +540,37 @@ class CacheLib
         return array('ip' => $ip, 'port' => $port);
     }
 
-    protected function getVarnishConfiguration()
+    /**
+     * Gets the configuration value for reverse proxy
+     * @return array 'ip' and 'port' of reverse proxy
+     */
+    protected function getReverseProxyConfiguration()
     {
         global $_CONFIG;
         $ip = '127.0.0.1';
         $port = '8080';
 
-        if(!empty($_CONFIG['cacheProxyCacheVarnishConfig'])){
-            $settings = json_decode($_CONFIG['cacheProxyCacheVarnishConfig'], true);
+        if (!empty($_CONFIG['cacheProxyCacheConfig'])){
+            $settings = json_decode($_CONFIG['cacheProxyCacheConfig'], true);
+            $ip = $settings['ip'];
+            $port = $settings['port'];
+        }
+
+        return array('ip' => $ip, 'port' => $port);
+    }
+
+    /**
+     * Gets the configuration value for external ESI/SSI processor
+     * @return array 'ip' and 'port' of external ESI/SSI processor
+     */
+    protected function getSsiProcessorConfiguration()
+    {
+        global $_CONFIG;
+        $ip = '127.0.0.1';
+        $port = '8080';
+
+        if (!empty($_CONFIG['cacheSsiProcessorConfig'])){
+            $settings = json_decode($_CONFIG['cacheSsiProcessorConfig'], true);
             $ip = $settings['ip'];
             $port = $settings['port'];
         }
@@ -466,9 +585,10 @@ class CacheLib
     public function clearCache($cacheEngine = null)
     {
         if (!$this->strCachePath) {
-            if (is_dir(ASCMS_CACHE_PATH)) {
-                if (is_writable(ASCMS_CACHE_PATH)) {
-                    $this->strCachePath = ASCMS_CACHE_PATH . '/';
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            if (is_dir($cx->getWebsiteCachePath())) {
+                if (is_writable($cx->getWebsiteCachePath())) {
+                    $this->strCachePath = $cx->getWebsiteCachePath() . '/';
                 }
             }
         }
@@ -500,25 +620,47 @@ class CacheLib
                 break;
         }
 
-        $this->clearVarnishCache();
+        $this->clearReverseProxyCache('*');
+        $this->clearSsiCache();
     }
 
     /**
-     * Clears Varnish cache
+     * Drops a cache page on reverse proxy cache
+     * @param string $urlPatter URL pattern to drop on reverse cache proxy
      */
-    private function clearVarnishCache()
-    {
+    public function clearReverseProxyCache($urlPattern) {
         global $_CONFIG;
 
-        if (!isset($_CONFIG['cacheVarnishStatus']) || $_CONFIG['cacheVarnishStatus'] != 'on') {
+        // find rproxy driver
+        if (!isset($_CONFIG['cacheReverseProxy']) || $_CONFIG['cacheReverseProxy'] == 'none') {
             return;
         }
+        $reverseProxyType = $_CONFIG['cacheReverseProxy'];
 
-        $varnishConfiguration = $this->getVarnishConfiguration();
-        $varnishSocket = fsockopen($varnishConfiguration['ip'], $varnishConfiguration['port'], $errno, $errstr);
+        $className = '\\Cx\\Lib\\ReverseProxy\\Model\\Entity\\ReverseProxy' . ucfirst($reverseProxyType);
+        $reverseProxyConfiguration = $this->getReverseProxyConfiguration();
+        $reverseProxy = new $className(
+            $reverseProxyConfiguration['ip'],
+            $reverseProxyConfiguration['port']
+        );
 
-        if (!$varnishSocket) {
-            \DBG::log("Varnish error: $errstr ($errno) on server {$varnishConfiguration['ip']}:{$varnishConfiguration['port']}");
+        // advise driver to drop page for HTTP and HTTPS ports on all domain aliases
+        $reverseProxy->clearCachePage($urlPattern, $this->getDomainsAndPorts());
+    }
+
+    /**
+     * Returns all domains and ports this instance of cloudrexx can be reached at
+     * @return array List of domains and ports (array(array(0=>{domain}, 1=>{port})))
+     */
+    protected function getDomainsAndPorts() {
+        $domainsAndPorts = array();
+        foreach (array('http', 'https') as $protocol) {
+            foreach ($domains as $domain) {
+                $domainsAndPorts[] = array(
+                    $domain,
+                    \Cx\Core\Setting\Controller\Setting::getValue('portFrontend' . strtoupper($protocol), 'Config')
+                );
+            }
         }
 
         $requestDomain = $_CONFIG['domainUrl'];
