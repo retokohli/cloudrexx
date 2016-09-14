@@ -202,7 +202,7 @@ class Paypal {
 
       }
 
-      if (preg_match("/VERIFIED/i",$this->ipn_response)) {
+      if (stripos('VERIFIED', $this->ipn_response) !== false) {
 
          // Valid IPN transaction.
          $this->log_ipn_results(true);
