@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Block
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
@@ -142,14 +142,14 @@ class BlockLibrary
             $objResult = $objDatabase->Execute(sprintf($query, DBPREFIX.'module_block_blocks',
                                                                $where));
             if ($objResult !== false) {
-                $this->_arrBlocks = array();                
-                
-                while (!$objResult->EOF) {  
+                $this->_arrBlocks = array();
+
+                while (!$objResult->EOF) {
                     $langArr          = array();
                     $objBlockLang = $objDatabase->Execute("SELECT lang_id FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$objResult->fields['id']." AND `active` = 1 ORDER BY lang_id ASC");
-                    
+
                     if ($objBlockLang) {
-                        while (!$objBlockLang->EOF) {                        
+                        while (!$objBlockLang->EOF) {
                             $langArr[] = $objBlockLang->fields['lang_id'];
                             $objBlockLang->MoveNext();
 
@@ -261,9 +261,9 @@ class BlockLibrary
                         `end`               = ".intval($end).",
                         `random`            = ".intval($blockRandom).",
                         `random_2`          = ".intval($blockRandom2).",
-                        `random_3`          = ".intval($blockRandom3).", 
+                        `random_3`          = ".intval($blockRandom3).",
                         `random_4`          = ".intval($blockRandom4).",
-                        `wysiwyg_editor`    = ".intval($blockWysiwygEditor)." 
+                        `wysiwyg_editor`    = ".intval($blockWysiwygEditor)."
                   WHERE `id` = ".intval($id);
         if ($objDatabase->Execute($query) === false) {
             return false;
@@ -326,7 +326,7 @@ class BlockLibrary
     private function storeBlockContent($blockId, $arrContent, $arrLangActive)
     {
         global $objDatabase;
-        
+
         $arrPresentLang = array();
         $objResult = $objDatabase->Execute('SELECT lang_id FROM '.DBPREFIX.'module_block_rel_lang_content WHERE block_id='.$blockId);
         if ($objResult) {
@@ -336,7 +336,7 @@ class BlockLibrary
             }
         }
 
-        foreach ($arrContent as $langId => $content) {            
+        foreach ($arrContent as $langId => $content) {
             if (in_array($langId, $arrPresentLang)) {
                 $query = 'UPDATE `%1$s` SET %2$s WHERE `block_id` = %3$s AND `lang_id`='.intval($langId);
             } else {
@@ -358,8 +358,8 @@ class BlockLibrary
                     'lang' => \FWLanguage::getLanguageCodeById($langId),
                 )
             );
-        }        
-        
+        }
+
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$blockId." AND lang_id NOT IN (".join(',', array_map('intval', array_keys($arrLangActive))).")");
     }
 
@@ -558,11 +558,11 @@ class BlockLibrary
         }
         return $arrPageIds;
     }
-    
+
     function _getBlocksForPageId($pageId)
     {
         global $objDatabase;
-        
+
         $arrBlocks = array();
         $objResult = $objDatabase->Execute('
             SELECT
@@ -612,7 +612,7 @@ class BlockLibrary
         }
         return $arrBlocks;
     }
-    
+
     function _setBlocksForPageId($pageId, $blockIds) {
         global $objDatabase;
 
@@ -679,7 +679,7 @@ class BlockLibrary
         }
 
         $now = time();
-        
+
         $this->replaceBlocks(
             $this->blockNamePrefix . $id,
             '
@@ -738,9 +738,9 @@ class BlockLibrary
     {
         $category = $this->_getCategory($id);
         $separator = $category['seperator'];
-        
+
         $now = time();
-        
+
         $this->replaceBlocks(
             $this->blockNamePrefix . 'CAT_' . $id,
             '
@@ -792,7 +792,7 @@ class BlockLibrary
     function _setBlockGlobal(&$code, $pageId)
     {
         global $objDatabase;
-        
+
         // fetch separator
         $separator = '';
         $objResult = $objDatabase->Execute(
@@ -936,7 +936,7 @@ class BlockLibrary
             $arrActiveBlocks[] = $objBlockName->fields['id'];
             $objBlockName->MoveNext();
         }
-        
+
         $this->replaceBlocks(
             $this->blockNamePrefix . 'RANDOMIZER' . $blockNr,
             'SELECT ' . implode(' AS id UNION SELECT ', $arrActiveBlocks),
@@ -945,7 +945,7 @@ class BlockLibrary
             true
         );
     }
-    
+
     /**
      * Replaces a placeholder with block content
      * @param string $placeholerName Name of placeholder to replace
@@ -956,7 +956,7 @@ class BlockLibrary
      */
     protected function replaceBlocks($placeholderName, $query, &$code, $separator = '', $randomize = false) {
         global $objDatabase, $objCache;
-        
+
         // find all block IDs to parse
         $objResult = $objDatabase->Execute($query);
         $blockIds = array();
@@ -967,12 +967,12 @@ class BlockLibrary
             $blockIds[] = $objResult->fields['id'];
             $objResult->MoveNext();
         }
-        
+
         // parse
         $em = \Env::get('cx')->getDb()->getEntityManager();
         $systemComponentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
         $frontendEditingComponent = $systemComponentRepo->findOneBy(array('name' => 'FrontendEditing'));
-        
+
         if ($randomize) {
             $esiBlockInfos = array();
             foreach ($blockIds as $blockId) {
@@ -1026,7 +1026,7 @@ class BlockLibrary
         \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
         if (isset($arrSettings['blockStatus'])) {
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('blockStatus')) {
-                \Cx\Core\Setting\Controller\Setting::add('blockStatus', $arrSettings['blockStatus'], 1, 
+                \Cx\Core\Setting\Controller\Setting::add('blockStatus', $arrSettings['blockStatus'], 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component');
             } else {
                 \Cx\Core\Setting\Controller\Setting::set('blockStatus', $arrSettings['blockStatus']);
@@ -1035,7 +1035,7 @@ class BlockLibrary
         }
         if (isset($arrSettings['blockRandom'])) {
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('blockRandom')) {
-                \Cx\Core\Setting\Controller\Setting::add('blockRandom', $arrSettings['blockRandom'], 1, 
+                \Cx\Core\Setting\Controller\Setting::add('blockRandom', $arrSettings['blockRandom'], 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component');
             } else {
                 \Cx\Core\Setting\Controller\Setting::set('blockRandom', $arrSettings['blockRandom']);

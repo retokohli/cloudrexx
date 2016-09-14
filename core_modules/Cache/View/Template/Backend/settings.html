@@ -15,7 +15,7 @@
           }
       }
     };
-    $J(function(){        
+    $J(function(){
         $J( ".cache_status" ).click(function(){
             cacheSystem._switchStatus( $J(this) );
         });
@@ -26,7 +26,7 @@
 </script>
 <ul id="tabmenu">
     <li><a id="setTab_Caching1" class="active" href="javascript:{}" onclick="selectTab('Caching1')" title="{TXT_CACHE_GENERAL}">{TXT_CACHE_GENERAL}</a></li>
-    <li><a id="setTab_Caching2" href="javascript:{}" onclick="selectTab('Caching2')" title="{TXT_CACHE_STATS}">{TXT_CACHE_STATS}</a></li>    
+    <li><a id="setTab_Caching2" href="javascript:{}" onclick="selectTab('Caching2')" title="{TXT_CACHE_STATS}">{TXT_CACHE_STATS}</a></li>
 </ul>
 <div id="Caching1" class="setTab" style="display:block;">
     <form name="frmSettings" method="post" action="index.php?cmd=Config&amp;act=cache_update">
@@ -60,7 +60,7 @@
                     <td>{TXT_CACHE_ACTIVE_STATE}</td>
                     <td>{TXT_CACHE_CONFIGURATION_STATE}</td>
                     <td></td>
-                </tr>                
+                </tr>
                 <tr>
                     <td>
                         <!-- BEGIN cache_usercache_apc -->
@@ -160,10 +160,9 @@
                     <td></td>
                 </tr>
             </table>
-        </div>                
+        </div>
         <br />
         <br />
-        
         <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">            
             <tr>
                 <th colspan="2">{TXT_CACHE_OPCACHE}</th>
@@ -270,7 +269,6 @@
         </table>
         <br />
         <br />
-        
         <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
             <colgroup>
                 <col width="200" />
