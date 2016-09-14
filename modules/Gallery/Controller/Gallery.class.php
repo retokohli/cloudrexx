@@ -802,6 +802,18 @@ class Gallery
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
+        // load source code if cmd value is integer
+        if ($this->_objTpl->placeholderExists('APPLICATION_DATA')) {
+            $page = new \Cx\Core\ContentManager\Model\Entity\Page();
+            $page->setVirtual(true);
+            $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
+            $page->setModule('Gallery');
+            // load source code
+            $applicationTemplate = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
+            \LinkGenerator::parseTemplate($applicationTemplate);
+            $this->_objTpl->addBlock('APPLICATION_DATA', 'application_data', $applicationTemplate);
+        }
+
         $categoryProtected = $this->categoryIsProtected($intParentId);
         if ($categoryProtected > 0) {
             if (!\Permission::checkAccess($categoryProtected, 'dynamic', true)) {

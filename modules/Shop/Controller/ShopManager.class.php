@@ -2582,9 +2582,10 @@ if ($test === NULL) {
             array_push($arrOrderId, $order_id);
         }
         if (empty($arrOrderId)) return null;
+        $stockUpdate = !empty($_GET['stock_update']);
         $result = true;
         foreach ($arrOrderId as $oId) {
-            $result &= Order::deleteById($oId);
+            $result &= Order::deleteById($oId, $stockUpdate);
         }
         if ($result) {
             \Message::ok($_ARRAYLANG['TXT_ORDER_DELETED']);
@@ -3237,7 +3238,7 @@ if ($test === NULL) {
             $productStatus = '';
             $productStatusValue = '';
             $productStatusPicture = 'status_red.gif';
-            if ($objProduct->active()) {
+            if ($objProduct->getStatus()) {
                 $productStatus = \Html::ATTRIBUTE_CHECKED;
                 $productStatusValue = 1;
                 $productStatusPicture = 'status_green.gif';

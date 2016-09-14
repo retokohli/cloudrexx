@@ -1787,9 +1787,7 @@ class User extends User_Profile
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $objUserMail->getSenderMail();
-            $objMail->FromName = $objUserMail->getSenderName();
-            $objMail->AddReplyTo($objUserMail->getSenderMail());
+            $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
             $objMail->Subject = $objUserMail->getSubject();
 
             $placeholders = array(
@@ -2824,7 +2822,18 @@ class User extends User_Profile
         }
         return $result->fields['id'];
     }
-
+    
+    /**
+     * Returns this user's timezone
+     * @todo Implement a way to detect the real timezone
+     * @todo Implement DateTime postResolve() to set $this->userTimezone again once the sign-in user has been loaded
+     * @return \DateTimeZone User's timezone
+     */
+    public function getTimezone() {
+        global $_CONFIG;
+        
+        return new \DateTimeZone($_CONFIG['timezone']);
+    }
 
     /**
      * Tries to form a valid and unique username from the words given

@@ -63,6 +63,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $cmd = isset($_REQUEST['cmd']) ? explode('_', $_REQUEST['cmd']) : array(0 => null);
         $groupId = isset($cmd[1]) ? intval($cmd[1]) : null;
 
+        // add whole component's language data to every application page of component
+        $this->_objTpl->setVariable(\Env::get('init')->getComponentSpecificLanguageData('Access'));
         \Cx\Lib\SocialLogin::parseSociallogin($this->_objTpl, 'access_');
         \Cx\Core\Csrf\Controller\Csrf::add_code();
         switch ($cmd[0]) {
@@ -178,7 +180,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         if ($objGroup->getType() == 'frontend' && $objGroup->getUserCount() > 0 && ($objUser = $objFWUser->objUser->getUsers($userFilter, $search, array('username' => 'asc'), null, $_CONFIG['corePagingLimit'], $limitOffset)) && $userCount = $objUser->getFilteredSearchUserCount()) {
 
             if ($userCount > $_CONFIG['corePagingLimit']) {
-                $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, "&section=Access&cmd=members&groupId=".$groupId."&search=".htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET)."&username_filter=".$usernameFilter, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
+                $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, "&groupId=".$groupId."&search=".htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET)."&username_filter=".$usernameFilter, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
             }
 
             $this->_objTpl->setVariable('ACCESS_GROUP_NAME', (($objGroup = $objFWUser->objGroup->getGroup($groupId)) && $objGroup->getId()) ? htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET) : $_ARRAYLANG['TXT_ACCESS_MEMBERS']);
@@ -755,52 +757,86 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $objUserMail->getSenderMail();
-            $objMail->FromName = $objUserMail->getSenderName();
-            $objMail->AddReplyTo($objUserMail->getSenderMail());
+            $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
             $objMail->Subject = $objUserMail->getSubject();
 
-            if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
+            $isTextMail  = in_array($objUserMail->getFormat(), array('multipart', 'text'));
+            $isHtmlMail  = in_array($objUserMail->getFormat(), array('multipart', 'html'));
+            $searchTerms = array(
+                '[[HOST]]',
+                '[[USERNAME]]',
+                '[[ACTIVATION_LINK]]',
+                '[[HOST_LINK]]',
+                '[[SENDER]]',
+                '[[LINK]]'
+            );
+            $replaceTextTerms = array(
+                $_CONFIG['domainUrl'],
+                $objUser->getUsername(),
+                'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
+                'http://'.$_CONFIG['domainUrl'],
+                $objUserMail->getSenderName(),
+                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
+            );
+            $replaceHtmlTerms = array(
+                $_CONFIG['domainUrl'],
+                contrexx_raw2xhtml($objUser->getUsername()),
+                'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
+                'http://'.$_CONFIG['domainUrl'],
+                contrexx_raw2xhtml($objUserMail->getSenderName()),
+                'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
+            );
+            if ($mail2load == 'reg_confirm') {
+                $imagePath = 'http://'.$_CONFIG['domainUrl']
+                    . \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getWebsiteImagesAccessProfileWebPath().'/';
+                $objUser->objAttribute->first();
+                while (!$objUser->objAttribute->EOF) {
+                    $objAttribute = $objUser->objAttribute->getById(
+                        $objUser->objAttribute->getId()
+                    );
+
+                    $placeholderName  = strtoupper($objUser->objAttribute->getId());
+                    $searchTerms[]    = '[[USER_' . $placeholderName . ']]';
+                    $placeholderValue = $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, true);
+                    if (
+                        $objAttribute->getType() == 'image' &&
+                        $objAttribute->getId() == 'picture'
+                    ) {
+                        $path = $imagePath.'0_noavatar.gif';
+                        $imgName = $objUser->getProfileAttribute($objAttribute->getId());
+                        if (\Cx\Lib\FileSystem\FileSystem::exists($imagePath . $imgName)) {
+                            $path = $imagePath . $imgName;
+                        }
+                        $replaceHtmlTerms[] = \Html::getImageByPath($path, 'alt="'.$objUser->getEmail().'"');
+                        $replaceTextTerms[] = $path;
+                    } else {
+                        if (in_array($objUser->objAttribute->getType(), array('text', 'menu'))) {
+                            $replaceTextTerms[] = html_entity_decode($placeholderValue, ENT_QUOTES, CONTREXX_CHARSET);
+                            $replaceHtmlTerms[] = html_entity_decode($placeholderValue, ENT_QUOTES, CONTREXX_CHARSET);
+                        } else {
+                            $replaceTextTerms[] = $placeholderValue;
+                            $replaceHtmlTerms[] = $placeholderValue;
+                        }
+                    }
+                    $objUser->objAttribute->next();
+                }
+            }
+
+            if ($isTextMail) {
                 $objUserMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
                 $objMail->{($objUserMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = str_replace(
-                    array(
-                        '[[HOST]]',
-                        '[[USERNAME]]',
-                        '[[ACTIVATION_LINK]]',
-                        '[[HOST_LINK]]',
-                        '[[SENDER]]',
-                        '[[LINK]]'
-                    ),
-                    array(
-                        $_CONFIG['domainUrl'],
-                        $objUser->getUsername(),
-                        'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
-                        'http://'.$_CONFIG['domainUrl'],
-                        $objUserMail->getSenderName(),
-                        'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
-                    ),
+                    $searchTerms,
+                    $replaceTextTerms,
                     $objUserMail->getBodyText()
                 );
             }
-            if (in_array($objUserMail->getFormat(), array('multipart', 'html'))) {
+
+            if ($isHtmlMail) {
                 $objUserMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
                 $objMail->Body = str_replace(
-                    array(
-                        '[[HOST]]',
-                        '[[USERNAME]]',
-                        '[[ACTIVATION_LINK]]',
-                        '[[HOST_LINK]]',
-                        '[[SENDER]]',
-                        '[[LINK]]'
-                    ),
-                    array(
-                        $_CONFIG['domainUrl'],
-                        htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-                        'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=signup&u='.($objUser->getId()).'&k='.$objUser->getRestoreKey(),
-                        'http://'.$_CONFIG['domainUrl'],
-                        htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET),
-                        'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/index.php?cmd=Access&act=user&tpl=modify&id='.$objUser->getId()
-                    ),
+                    $searchTerms,
+                    $replaceHtmlTerms,
                     $objUserMail->getBodyHtml()
                 );
             }
@@ -834,4 +870,3 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         return false;
     }
 }
-?>

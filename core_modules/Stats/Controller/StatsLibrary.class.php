@@ -709,8 +709,26 @@ class StatsLibrary
 
         return $this->md5Id;
     }
-    
-    
+
+    /**
+     * Get the HTTP client's IP address
+     *
+     * In case the client is connecting through a proxy,
+     * this method will try the fetch the client's original
+     * IP address and will return that one instead of the
+     * proxy's IP address.
+     *
+     * @return  string  IP address of client
+     */
+    public function getClientIp()
+    {
+        if (!isset($this->arrClient['ip'])) {
+            $this->_getClientInfos();
+        }
+
+        return $this->arrClient['ip'];
+    }
+
     /**
     * Get client informations
     *

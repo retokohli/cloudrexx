@@ -978,6 +978,7 @@ class DirectoryManager extends DirectoryLibrary
     function expand()
     {
         if (isset($_GET['expand'])) {
+            $this->initExpandCollapsSessionVariable();
             if ($_GET['expand'] == "all") {
                 if ($_GET['act'] == "levels") {
                     foreach($this->levels['name'] as $levelKey => $levelName) {
@@ -999,6 +1000,17 @@ class DirectoryManager extends DirectoryLibrary
 
     }
 
+    /**
+     * Initialize the session variable for expand/collaps
+     * Check the $_GET[expand/collaps] available before call this method
+     */
+    public function initExpandCollapsSessionVariable()
+    {
+        $sessionVar = ($_GET['act'] == 'levels') ? 'expLevel' : 'expCat';
+        if (empty($_SESSION[$sessionVar])) {
+            $_SESSION[$sessionVar] = array();
+        }
+    }
 
     /**
     * collapse selected folder tree
@@ -1007,6 +1019,7 @@ class DirectoryManager extends DirectoryLibrary
     function collaps()
     {
         if (isset($_GET['collaps'])) {
+            $this->initExpandCollapsSessionVariable();
             if ($_GET['collaps'] == "all") {
                 if ($_GET['act'] == "levels") {
                     $_SESSION['expLevel'] = "";

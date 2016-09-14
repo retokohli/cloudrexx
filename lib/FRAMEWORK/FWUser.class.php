@@ -224,7 +224,10 @@ class FWUser extends User_Setting
 
         $pathOffset = ASCMS_PATH_OFFSET;
 
-        $redirect = $baseUrl = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . (!empty($pathOffset) ? $pathOffset : '/');
+        $requestUrl = clone \Cx\Core\Core\Controller\Cx::instanciate()->getRequest()->getUrl();
+        $requestUrl->setPath('');
+        $redirect = $baseUrl = $requestUrl->toString();
+
         $rawUrl   = trim(self::getRawUrL(urldecode($redirectUrl), $baseUrl));
 
         if (
@@ -539,9 +542,7 @@ class FWUser extends User_Setting
         }
 
         $objMail->CharSet = CONTREXX_CHARSET;
-        $objMail->From = $objUserMail->getSenderMail();
-        $objMail->FromName = $objUserMail->getSenderName();
-        $objMail->AddReplyTo($objUserMail->getSenderMail());
+        $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
         $objMail->Subject = $objUserMail->getSubject();
 
         $restoreLink = self::getPasswordRestoreLink($this->isBackendMode(), $objUser);

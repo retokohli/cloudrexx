@@ -919,7 +919,7 @@ CODE;
                             if (\FWValidator::is_file_ending_harmless($fileName)) {
                                 if (@move_uploaded_file($fileTmpName, $documentRootPath.$filePath)) {
                                     $id = intval(substr($file, 17));
-                                    $arrFiles[$id] = array(
+                                    $arrFiles[$id][] = array(
                                         'path' => $filePath,
                                         'name' => $fileName
                                     );
@@ -1116,14 +1116,7 @@ CODE;
                 if($key === 0)
                     throw new \Cx\Core_Modules\Contact\Controller\ContactException('could not find file field for form with id ' . $arrFormData['id']);
 
-                if ($this->legacyMode) { //store files according to their inputs name
-// TODO: check legacyMode
-                    $arrDBEntry = array();
-                    foreach ($arrFormData['uploadedFiles'] as $key => $file) {
-                        $arrDbEntry[] = base64_encode($key).",".base64_encode(contrexx_strip_tags($file));
-                    }
-                    $value = implode(';', $arrDbEntry);
-                } elseif (isset($arrFormData['uploadedFiles'][$key]) && count($arrFormData['uploadedFiles'][$key]) > 0) { //assign all files uploaded to the uploader fields name
+                if (isset($arrFormData['uploadedFiles'][$key]) && count($arrFormData['uploadedFiles'][$key]) > 0) { //assign all files uploaded to the uploader fields name
                     $arrTmp = array();
                     foreach ($arrFormData['uploadedFiles'][$key] as $file) {
                         $arrTmp[] = $file['path'];
@@ -1389,19 +1382,23 @@ CODE;
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $_CONFIG['coreAdminEmail'];
-            $objMail->FromName = $senderName;
             if (!empty($replyAddress)) {
                 $objMail->AddReplyTo($replyAddress);
 
                 if ($arrFormData['sendCopy'] == 1) {
                     $objMail->AddAddress($replyAddress);
                 }
-
-                if ($arrFormData['useEmailOfSender'] == 1) {
-                    $objMail->From = $replyAddress;
-                }
             }
+
+            if (!empty($replyAddress) && $arrFormData['useEmailOfSender'] == 1) {
+                $objMail->SetFrom(
+                    $replyAddress, 
+                    ($senderName !== $_CONFIG['coreGlobalPageTitle']) ? $senderName : ''
+                );
+            } else {
+                $objMail->SetFrom($_CONFIG['coreAdminEmail'], $senderName);
+            }
+
             $objMail->Subject = $arrFormData['subject'];
 
             if ($isHtml) {
