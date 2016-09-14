@@ -369,21 +369,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                 $start = $arrEntry['entryDurationStart'];
                                 $end = $arrEntry['entryDurationEnd'];
                                 $entryStatusClass = 'scheduled active';
-                                if (   (   !empty($start)
-                                        && empty($end)
-                                        && ($start > $intToday)
-                                       )
-                                    || (   empty($start)
-                                        && !empty($end)
-                                        && ($end < $intToday)
-                                       )
-                                    || (   !empty($start)
-                                        && !empty($end)
-                                        && !(  $start < $intToday
-                                            && $end > $intToday
-                                            )
-                                       )
-                                ) {
+                                if (!$this->getActiveByScheduledPublishing($start, $end)) {
                                     $entryStatusClass = 'scheduled inactive';
                                 }
                             }
@@ -808,7 +794,40 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         }
     }
 
+    /**
+     * Get the status of the entry based on the scheduled publishing
+     * Note: This function does not check whether the entry is in scheduled publishing,
+     * So make sure the entry is in scheduled before calling this method
+     *
+     * @param integer $startTime    Start timestamp
+     * @param integer $endTime      End timestamp
+     *
+     * @return boolean TRUE|FALSE True when product is active by scheduled publishing
+     */
+    public function getActiveByScheduledPublishing($startTime = null, $endTime = null)
+    {
+        $start = null;
+        if ($startTime !== null) {
+            $start = new \DateTime();
+            $start->setTimestamp($startTime);
+            $start->setTime(0, 0, 0);
+        }
 
+        $end = null;
+        if ($endTime !== null) {
+            $end = new \DateTime();
+            $end->setTimestamp($endTime);
+            $end->setTime(23, 59, 59);
+        }
+        if (   (!empty($start) && empty($end) && ($start->getTimestamp() > time()))
+            || (empty($start) && !empty($end) && ($end->getTimestamp() < time()))
+            || (!empty($start) && !empty($end) && !($start->getTimestamp() < time() && $end->getTimestamp() > time()))
+        ) {
+            return false;
+        }
+
+        return true;
+    }
 
     function checkPageCmd($strPageCmd)
     {
