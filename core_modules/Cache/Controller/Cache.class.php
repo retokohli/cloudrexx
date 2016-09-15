@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Cache
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
@@ -66,10 +66,20 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $this->initUserCaching();
         $this->getActivatedCacheEngines();
     }
-    
+
     protected function initContrexxCaching()
     {
         global $_CONFIG;
+
+        // check the cache directory
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (!is_dir($cx->getWebsiteCachePath())) {
+            \Cx\Lib\FileSystem\FileSystem::make_folder($cx->getWebsiteCachePath());
+        }
+        if (!is_writable($cx->getWebsiteCachePath())) {
+            \Cx\Lib\FileSystem\FileSystem::makeWritable($cx->getWebsiteCachePath());
+        }
+        $this->strCachePath = $cx->getWebsiteCachePath() . '/';
 
         // in case the request's origin is from a mobile devie
         // and this is the first request (the InitCMS object wasn't yet
@@ -105,15 +115,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         }
 
         $this->boolIsEnabled = true;
-
-        // check the cache directory
-        if (!is_dir(ASCMS_CACHE_PATH)) {
-            \Cx\Lib\FileSystem\FileSystem::make_folder(ASCMS_CACHE_PATH);
-        }
-        if (!is_writable(ASCMS_CACHE_PATH)) {
-            \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_CACHE_PATH);
-        }
-        $this->strCachePath = ASCMS_CACHE_PATH . '/';
 
         $this->intCachingTime = intval($_CONFIG['cacheExpiration']);
 

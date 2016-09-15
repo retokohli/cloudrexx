@@ -143,7 +143,7 @@ class NewsLibrary
     /**
      * Generates the formated ul/li of Archive list
      * Used in the template's
-     *
+     * 
      * @param integer $langId Language id
      *
      * @return string Formated ul/li of Archive list
@@ -189,7 +189,7 @@ class NewsLibrary
      * @param integer   $catId          Category id
      * @param array     $categoriesLang Category locale
      * @param integer   $langId         Language id
-     *
+     * 
      * @return string Formated ul/li of categories
      */
     function _buildNewsCategories($catId, $categoriesLang, $langId = null)
@@ -198,7 +198,7 @@ class NewsLibrary
             if ($langId === null) {
                 $langId = FRONTEND_LANG_ID;
             }
-            $category = $this->objNestedSet->pickNode($catId, true);
+            $category = $this->objNestedSet->pickNode($catId, true);            
             if ($catId != $this->nestedSetRootId) {
                 $html .= "<li>";
                 
@@ -1349,7 +1349,7 @@ class NewsLibrary
      * @access protected
      * @param  array     $categories      category filter
      * @param  integer   $langId          Language id
-     *
+     * 
      * @return array     $monthlyStats  Monthly status array
      */
     protected function getMonthlyNewsStats($categories, $langId = null)

@@ -66,7 +66,8 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
      * @param int $port Port to drop cache page of
      */
     protected function clearCachePageForDomainAndPort($urlPattern, $domain, $port) {
-        $strCachePath = ASCMS_CACHE_PATH . '/';
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $strCachePath = $cx->getWebsiteCachePath() . '/';
         
         if ($urlPattern == '*') {
             $fileNames = glob($strCachePath . '*');
