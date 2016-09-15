@@ -35,7 +35,7 @@
  * @subpackage  module_newsletter
  * @todo        Edit PHP DocBlocks!
  */
- 
+
 namespace Cx\Modules\Newsletter\Controller;
 
 /**
@@ -163,6 +163,10 @@ class Newsletter extends NewsletterLib
                     'key'          => 'confirm_email',
                     'section'      => 'Newsletter',
                     'lang_id'      => FRONTEND_LANG_ID,
+                    'to'           => $userEmail,
+                    'from'         => $arrSettings['sender_mail']['setvalue'],
+                    'sender'       => $arrSettings['sender_name']['setvalue'],
+                    'reply'        => $arrSettings['reply_mail']['setvalue'],
                     'substitution' => array(
                         'NEWSLETTER_USER_SEX'       => $userSex,
                         'NEWSLETTER_USER_TITLE'     => $userTitle,
@@ -171,9 +175,6 @@ class Newsletter extends NewsletterLib
                         'NEWSLETTER_USER_EMAIL'     => $userEmail,
                         'NEWSLETTER_DOMAIN_URL'     => $url,
                         'NEWSLETTER_CURRENT_DATE'   => date(ASCMS_DATE_FORMAT),
-                        'NEWSLETTER_SENDER_EMAIL'   => $arrSettings['sender_mail']['setvalue'],
-                        'NEWSLETTER_SENDER_NAME'    => $arrSettings['sender_name']['setvalue'],
-                        'NEWSLETTER_REPLY_TO'       => $arrSettings['reply_mail']['setvalue']
                     ),
                 );
                 \Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate);
@@ -187,7 +188,7 @@ class Newsletter extends NewsletterLib
 
         $this->_objTpl->setTemplate($this->pageContent);
         $message = '';
-        
+
         if (($objUser = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE code='".contrexx_addslashes($_REQUEST['code'])."' AND email='".urldecode(contrexx_addslashes($_REQUEST['mail']))."' AND status='1'", 1)) && $objUser->RecordCount() == 1) {
             $objSystem = $objDatabase->Execute("SELECT `setname`, `setvalue` FROM `".DBPREFIX."module_newsletter_settings`");
             if ($objSystem !== false) {
@@ -294,14 +295,14 @@ class Newsletter extends NewsletterLib
                 $arrPreAssociatedInactiveLists = $objUser->getSubscribedNewsletterListIDs();
             }
         }
-        
+
         // Get interface settings
-        $objInterface = $objDatabase->Execute('SELECT `setvalue` 
+        $objInterface = $objDatabase->Execute('SELECT `setvalue`
                                                 FROM `'.DBPREFIX.'module_newsletter_settings`
                                                 WHERE `setname` = "recipient_attribute_status"');
-    
+
         $recipientAttributeStatus = json_decode($objInterface->fields['setvalue'], true);
-            
+
         if (isset($_POST['recipient_save'])) {
             if (isset($_POST['email'])) {
                 $recipientEmail = $_POST['email'];
@@ -425,10 +426,7 @@ class Newsletter extends NewsletterLib
                                 if ($this->_isUniqueRecipientEmail($recipientEmail, $recipientId)) {
                                     if (!empty($arrAssociatedInactiveLists) || !empty($arrAssociatedLists) && ($objList = $objDatabase->SelectLimit('SELECT id FROM '.DBPREFIX.'module_newsletter_category WHERE status=1 AND (id='.implode(' OR id=', $arrAssociatedLists).')' , 1)) && $objList->RecordCount() > 0) {
                                         if ($recipientId > 0) {
-                                            // Get subscribed list to send notification email
-                                            $arrPreAssociatedActiveLists = $this->_getAssociatedListsOfRecipient($recipientId);
                                             if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, 1, $arrAssociatedLists, $recipientLanguage)) {
-                                                $this->sendSubscriptionNotificationMail($recipientEmail, $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname, $arrAssociatedLists, $arrPreAssociatedActiveLists);
                                                 array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED']);
                                                 $showForm = false;
                                             } else {
@@ -454,40 +452,54 @@ class Newsletter extends NewsletterLib
                                             $unsub = $nm->GetUnsubscribeURL($_REQUEST['code'], $_REQUEST['mail']);
                                         }
                                         array_push($arrStatusMessage['error'], sprintf($_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE_IF_ONLY_ONE_LIST_ACTIVE'], $unsub));
-                                    }                       
+                                    }
                                 } elseif (empty($recipientId)) {
                                     // We must send a new confirmation e-mail here
                                     // otherwise someone could reactivate someone else's e-mail address
 
                                     // It could be that a user who has unsubscribed himself from the newsletter system (recipient = deactivated) would like to subscribe the newsletter again.
                                     // Therefore, lets see if we can find a recipient by the specified e-mail address that has been deactivated (status=0)
-                                    $objRecipient      = $objDatabase->SelectLimit("SELECT id, language, notes FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."' AND status=0", 1);
-                                    if ($objRecipient && !$objRecipient->EOF) {
-                                        $recipientId       = $objRecipient->fields['id'];
-                                        $recipientLanguage = $objRecipient->fields['language'];
-                                        
+                                    $objRecipient = $objDatabase->SelectLimit("SELECT id, language, notes, status FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."'", 1);
+                                    $recipientId  = $objRecipient && !$objRecipient->EOF ? $objRecipient->fields['id'] : 0;
+
+                                    if ($recipientId) {
+                                        $arrPreAssociatedActiveLists = array();
+                                        if ($objRecipient->fields['status']) {
+                                            // When recipient is active then load his associative list and send notification about the new/existing subscription lists
+                                            // otherwise someone could unsubscribe lists of someone else
+                                            $arrPreAssociatedActiveLists = $this->_getAssociatedListsOfRecipient($recipientId);
+                                            $arrAssociatedLists = array_merge($arrPreAssociatedActiveLists, $arrAssociatedLists);
+                                        }
+
                                         // Important: We intentionally do not load existing recipient list associations, due to the fact that the user most likely had
                                         // himself been unsubscribed from the newsletter system some time in the past. Therefore the user most likey does not want
                                         // to be subscribed to any lists more than to those he just selected
                                         $arrAssociatedLists = array_unique($arrAssociatedLists);
                                         $this->_setRecipientLists($recipientId, $arrAssociatedLists);
+                                        if (!$objRecipient->fields['status']) {
+                                            $recipientLanguage = $objRecipient->fields['language'];
 
-                                        // Important: We do not update the recipient's profile data here by the reason that we can't verify the recipient's identity at this point!
-                                        
-                                        if ($this->_sendAuthorizeEmail($recipientEmail, $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname)) {
-                                            // Important: We must output the same status message as if the user has been newly added!
-                                            //            This shall prevent email-address-crawling-bots from detecting existing e-mail accounts.
+                                            // Important: We do not update the recipient's profile data here by the reason that we can't verify the recipient's identity at this point!
+
+                                            if ($this->_sendAuthorizeEmail($recipientEmail, $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname)) {
+                                                // Important: We must output the same status message as if the user has been newly added!
+                                                //            This shall prevent email-address-crawling-bots from detecting existing e-mail accounts.
+                                                array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK']);
+                                                $showForm = false;
+                                            } else {
+                                                array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU']);
+                                                array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL']);
+                                            }
+                                        } else {
+                                            $this->sendSubscriptionNotificationMail($recipientEmail, $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname, $arrAssociatedLists, $arrPreAssociatedActiveLists);
                                             array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK']);
                                             $showForm = false;
-                                        } else {
-                                            array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU']);
-                                            array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL']);
                                         }
                                     }
                                 } else {
                                     array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBER_ALREADY_INSERTED']);
                                 }
-                            } else {                    
+                            } else {
                                 array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD_ERROR']);
                             }
                         }
@@ -581,8 +593,8 @@ class Newsletter extends NewsletterLib
                     'recipient_salutation',
                     'recipient_title',
                     'recipient_firstname',
-                    'recipient_lastname',            
-                    'recipient_position',            
+                    'recipient_lastname',
+                    'recipient_position',
                     'recipient_company',
                     'recipient_industry',
                     'recipient_address',
@@ -613,7 +625,7 @@ class Newsletter extends NewsletterLib
                     'NEWSLETTER_EMAIL'        => htmlentities($recipientEmail, ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_WEBSITE'          => htmlentities($recipientUri, ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_SEX_F'        => $recipientSex == 'f' ? 'checked="checked"' : '',
-                    'NEWSLETTER_SEX_M'        => $recipientSex == 'm' ? 'checked="checked"' : '',                
+                    'NEWSLETTER_SEX_M'        => $recipientSex == 'm' ? 'checked="checked"' : '',
                     'NEWSLETTER_SALUTATION'        => $this->_getRecipientTitleMenu($recipientSalutation, 'name="salutation" size="1"'),
                     'NEWSLETTER_TITLE'    => htmlentities($recipientTitle, ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_LASTNAME'    => htmlentities($recipientLastname, ENT_QUOTES, CONTREXX_CHARSET),
@@ -659,7 +671,7 @@ class Newsletter extends NewsletterLib
                     'TXT_NEWSLETTER_WEBSITE'        => $_ARRAYLANG['TXT_NEWSLETTER_WEBSITE'],
                     'TXT_NEWSLETTER_RECIPIENT_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_DATE'],
                     'TXT_NEWSLETTER_RECIPIENT_MONTH'=> $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_MONTH'],
-                    'TXT_NEWSLETTER_RECIPIENT_YEAR' => $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_YEAR'],                
+                    'TXT_NEWSLETTER_RECIPIENT_YEAR' => $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_YEAR'],
                 ));
 
                 if ($this->_objTpl->blockExists('recipient_profile')) {
@@ -743,6 +755,10 @@ class Newsletter extends NewsletterLib
             'key'          => 'activation_email',
             'section'      => 'Newsletter',
             'lang_id'      => FRONTEND_LANG_ID,
+            'to'           => $recipientEmail,
+            'from'         => $arrSettings['sender_mail']['setvalue'],
+            'sender'       => $arrSettings['sender_name']['setvalue'],
+            'reply'        => $arrSettings['reply_mail']['setvalue'],
             'substitution' => array(
                 'NEWSLETTER_USER_SEX'       => $recipientSexTxt,
                 'NEWSLETTER_USER_TITLE'     => $recipientTitleTxt,
@@ -752,9 +768,6 @@ class Newsletter extends NewsletterLib
                 'NEWSLETTER_CONFIRM_CODE'   => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Newsletter&cmd=confirm&email='. urlencode($recipientEmail),
                 'NEWSLETTER_DOMAIN_URL'     => $url,
                 'NEWSLETTER_CURRENT_DATE'   => $now,
-                'NEWSLETTER_SENDER_EMAIL'   => $arrSettings['sender_mail']['setvalue'],
-                'NEWSLETTER_SENDER_NAME'    => $arrSettings['sender_name']['setvalue'],
-                'NEWSLETTER_REPLY_TO'       => $arrSettings['reply_mail']['setvalue']
             ),
         );
         if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
@@ -813,6 +826,10 @@ class Newsletter extends NewsletterLib
             'key'          => $newsletterKey,
             'section'      => 'Newsletter',
             'lang_id'      => FRONTEND_LANG_ID,
+            'to'           => $recipientEmail,
+            'from'         => $arrSettings['sender_mail']['setvalue'],
+            'sender'       => $arrSettings['sender_name']['setvalue'],
+            'reply'        => $arrSettings['reply_mail']['setvalue'],
             'substitution' => array(
                 'NEWSLETTER_USER_SEX'       => $recipientSex,
                 'NEWSLETTER_USER_TITLE'     => $recipientTitle,
@@ -821,9 +838,6 @@ class Newsletter extends NewsletterLib
                 'NEWSLETTER_USER_EMAIL'     => $recipientEmail,
                 'NEWSLETTER_DOMAIN_URL'     => $_CONFIG['domainUrl'],
                 'NEWSLETTER_CURRENT_DATE'   => date(ASCMS_DATE_FORMAT),
-                'NEWSLETTER_SENDER_EMAIL'   => $arrSettings['sender_mail']['setvalue'],
-                'NEWSLETTER_SENDER_NAME'    => $arrSettings['sender_name']['setvalue'],
-                'NEWSLETTER_REPLY_TO'       => $arrSettings['reply_mail']['setvalue'],
             ),
         );
         $arrMailTemplate['substitution'] = $substitution + $arrMailTemplate['substitution'];
@@ -874,7 +888,7 @@ class Newsletter extends NewsletterLib
                 $txtAction = $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SUBSCRIBE'];
             } else {
                 $txtAction = $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_UNSUBSCRIBE'];
-                $objNotificationAdressesFromLists = $objDatabase->Execute('SELECT notification_email FROM '.DBPREFIX.'module_newsletter_category AS c 
+                $objNotificationAdressesFromLists = $objDatabase->Execute('SELECT notification_email FROM '.DBPREFIX.'module_newsletter_category AS c
                                                                         INNER JOIN '.DBPREFIX.'module_newsletter_rel_user_cat AS r ON r.category = c.id
                                                                         WHERE r.user = '.contrexx_addslashes($recipientId));
 
@@ -896,9 +910,12 @@ class Newsletter extends NewsletterLib
                 'key'          => 'notification_email',
                 'section'      => 'Newsletter',
                 'lang_id'      => FRONTEND_LANG_ID,
+                'to'           => implode(',', $notifyMails),
+                'from'         => $arrSettings['sender_mail']['setvalue'],
+                'sender'       => $arrSettings['sender_name']['setvalue'],
+                'reply'        => $arrSettings['reply_mail']['setvalue'],
                 'substitution' => array(
                     'NEWSLETTER_NOTIFICATION_ACTION'    => $txtAction,
-                    'NEWSLETTER_NOTIFICATION_RECIPIENT' => implode(',', $notifyMails),
                     'NEWSLETTER_USER_SEX'       => $arrRecipient['sex'],
                     'NEWSLETTER_USER_TITLE'     => $arrRecipientTitle,
                     'NEWSLETTER_USER_FIRSTNAME' => $arrRecipient['firstname'],
@@ -906,9 +923,6 @@ class Newsletter extends NewsletterLib
                     'NEWSLETTER_USER_EMAIL'     => $arrRecipient['email'],
                     'NEWSLETTER_DOMAIN_URL'     => $_CONFIG['domainUrl'],
                     'NEWSLETTER_CURRENT_DATE'   => date(ASCMS_DATE_FORMAT),
-                    'NEWSLETTER_SENDER_EMAIL'   => $arrSettings['sender_mail']['setvalue'],
-                    'NEWSLETTER_SENDER_NAME'    => $arrSettings['sender_name']['setvalue'],
-                    'NEWSLETTER_REPLY_TO'       => $arrSettings['reply_mail']['setvalue'],
                 ),
             );
             if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
@@ -929,8 +943,8 @@ class Newsletter extends NewsletterLib
         $html = $this->_getHTML();
         $code = str_replace("{NEWSLETTER_BLOCK}", $html, $code);
     }
-    
-    
+
+
     /**
      * displays newsletter contentn in browser
      *
@@ -939,7 +953,7 @@ class Newsletter extends NewsletterLib
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
-       
+
         $id    = !empty($_GET['id'])    ? contrexx_input2raw($_GET['id'])    : '';
         $email = !empty($_GET['email']) ? contrexx_input2raw($_GET['email']) : '';
         $code  = !empty($_GET['code'])  ? contrexx_input2raw($_GET['code'])  : '';
@@ -947,7 +961,7 @@ class Newsletter extends NewsletterLib
         $unsubscribe = '';
         $profile     = '';
         $date        = '';
-        
+
         $sex         = '';
         $salutation  = '';
         $title       = '';
@@ -972,7 +986,7 @@ class Newsletter extends NewsletterLib
             $email = '';
             $code = '';
         }
-        
+
         // Get newsletter content and template.
         $query = '
                 SELECT `n`.`content`, `n`.`subject`, `t`.`html`, `n`.`date_sent`
@@ -982,7 +996,7 @@ class Newsletter extends NewsletterLib
                  WHERE `n`.`id` = "'.contrexx_raw2db($id).'"
         ';
         $objResult = $objDatabase->Execute($query);
-        
+
         if ($objResult->RecordCount()) {
             $html    = $objResult->fields['html'];
             $content = $objResult->fields['content'];
@@ -994,17 +1008,17 @@ class Newsletter extends NewsletterLib
             \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromDocumentRoot());
             exit();
         }
-        
+
         // Get user details.
         $query = '
             SELECT `id`, `email`, `uri`, `salutation`, `title`, `position`, `company`, `industry_sector`, `sex`,
-                   `lastname`, `firstname`, `address`, `zip`, `city`, `country_id`, 
+                   `lastname`, `firstname`, `address`, `zip`, `city`, `country_id`,
                    `phone_office`, `phone_mobile`, `phone_private`, `fax`, `birthday`
             FROM `'.DBPREFIX.'module_newsletter_user`
             WHERE `email` = "'.contrexx_raw2db($email).'"
         ';
         $objResult  = $objDatabase->Execute($query);
-        
+
         if ($objResult->RecordCount()) {
             // set recipient sex
             switch ($objResult->fields['sex']) {
@@ -1075,7 +1089,7 @@ class Newsletter extends NewsletterLib
             $email  = '';
             $code   = '';
         }
-        
+
         $search = array(
             // meta data
             '[[email]]',
@@ -1108,7 +1122,7 @@ class Newsletter extends NewsletterLib
             '[[birthday]]',
             '[[website]]',
         );
-        
+
         $replace = array(
             // meta data
             $email,
@@ -1142,7 +1156,7 @@ class Newsletter extends NewsletterLib
             $birthday,
             $website,
         );
-        
+
         // Replaces the placeholder in the template and content.
         $html    = str_replace($search, $replace, $html);
         $content = str_replace($search, $replace, $content);
@@ -1157,18 +1171,18 @@ class Newsletter extends NewsletterLib
         }
 
         $content = self::prepareNewsletterLinksForSend($id, $content, $userId, $realUser);
-        
+
         // Finally replace content placeholder in the template.
         $html = str_replace('[[content]]', $content, $html);
 
         // parse node-url placeholders
         \LinkGenerator::parseTemplate($html);
-        
+
         // Output
         die($html);
     }
-    
-    
+
+
     /**
      * checks if given code matches given email adress
      *
@@ -1179,19 +1193,19 @@ class Newsletter extends NewsletterLib
      */
     private static function checkCode($id, $email, $code){
         global $objDatabase;
-        
+
         $query = 'SELECT `code` FROM `'.DBPREFIX.'module_newsletter_tmp_sending` WHERE `newsletter` = '.$id.' AND `email` = "'.$email.'";';
         $objResult = $objDatabase->Execute($query);
-        
+
         if ($objResult !== false) {
             if($objResult->fields['code'] == $code) {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     public static function isTrackLink() {
         if (!isset($_GET['n'])) {
             return false;
@@ -1213,16 +1227,16 @@ class Newsletter extends NewsletterLib
                             $newUrl->setParam('m', $UserId);
                         }
     }
-    
+
     /**
      * track link: save feedback to database
      *
      * @return boolean
      */
-    public static function trackLink() 
+    public static function trackLink()
     {
         global $objDatabase;
-        
+
         $recipientId = 0;
         $realUser = true;
         if (isset($_GET['m'])) {
@@ -1235,7 +1249,7 @@ class Newsletter extends NewsletterLib
         }
         $emailId = isset($_GET['n']) ? contrexx_input2raw($_GET['n']) : 0;
         $linkId = isset($_GET['l']) ? contrexx_input2raw($_GET['l']) : 0;
-        
+
         if (!empty($recipientId)) {
             // find out recipient type
             if ($realUser) {
@@ -1255,10 +1269,10 @@ class Newsletter extends NewsletterLib
                 }
             }
         }
-        
+
         /*
-        * Request must be redirected to the newsletter $linkId URL. If the $linkId 
-        * can't be looked up in the database (by what reason  so ever), then the request shall be 
+        * Request must be redirected to the newsletter $linkId URL. If the $linkId
+        * can't be looked up in the database (by what reason  so ever), then the request shall be
         * redirected to the URL provided by the url-modificator s of the request
         */
         $objLink = $objDatabase->SelectLimit("SELECT `url` FROM ".DBPREFIX."module_newsletter_email_link WHERE id=".contrexx_raw2db($linkId)." AND email_id=".contrexx_raw2db($emailId), 1);
@@ -1267,7 +1281,7 @@ class Newsletter extends NewsletterLib
         }
 
         $url = $objLink->fields['url'];
-        
+
         \LinkGenerator::parseTemplate($url);
 
         if (!empty($recipientId)) {
