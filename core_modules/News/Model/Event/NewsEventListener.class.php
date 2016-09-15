@@ -210,7 +210,16 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             $langId  = $lang['id'];
             $themeId = $lang['themesid'];
             foreach ($basicCacheAdaptors as $adaptor) {
-                $this->clearSsiCache($adaptor, $themeId, $langId);
+                //do special cases for the adaptors
+                switch ($adaptor) {
+                    case 'getNewsCategories':
+                    case 'getNewsArchiveList':
+                        $this->clearSsiCache($adaptor, null, $langId);
+                        break;
+                    default:
+                        $this->clearSsiCache($adaptor, $themeId, $langId);
+                        break;
+                }
             }
             // clear headlines cache
             $headlinesList = $this->getHeadlinesList($themeId);

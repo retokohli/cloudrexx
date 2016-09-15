@@ -78,14 +78,24 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
         }
     }
 
-
-    function getHomeTopNews($catId=0)
+    /**
+     * Get top news
+     *
+     * @param integer $catId    Category id
+     * @param integer $langId   Language id
+     *
+     * @return string
+     */
+    function getHomeTopNews($catId = 0, $langId = null)
     {
         global $_CORELANG, $objDatabase;
 
         $catId= intval($catId);
         $i = 0;
 
+        if (null === $langId) {
+            $langId = FRONTEND_LANG_ID;
+        }
         $this->_objTemplate->setTemplate($this->_pageContent,true,true);
         if ($this->_objTemplate->blockExists('newsrow')) {
             $this->_objTemplate->setCurrentBlock('newsrow');
@@ -120,7 +130,7 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
                   WHERE tblN.status=1".
                    ($catId > 0 ? " AND tblC.category_id=$catId" : '')."
                    AND tblN.teaser_only='0'
-                   AND tblL.lang_id=".FRONTEND_LANG_ID."
+                   AND tblL.lang_id=". contrexx_input2int($langId) ."
                    AND (startdate<='".date('Y-m-d H:i:s')."' OR startdate='0000-00-00 00:00:00')
                    AND (enddate>='".date('Y-m-d H:i:s')."' OR enddate='0000-00-00 00:00:00')".
                    ($this->arrSettings['news_message_protection'] == '1' && !\Permission::hasAllAccess()
@@ -142,7 +152,7 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 $publisher  = \FWUser::getParsedUserTitle($objResult->fields['publisher_id'], $objResult->fields['publisher']);
                 $newsCategories  = $this->getCategoriesByNewsId($newsid);
                 $newsUrl    = empty($objResult->fields['redirect'])
-                                ? \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($newsCategories), array($catId))), FRONTEND_LANG_ID, array('newsid' => $newsid))
+                                ? \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($newsCategories), array($catId))), $langId, array('newsid' => $newsid))
                                 : $objResult->fields['redirect'];
 
                 $redirectNewWindow = !empty($objResult->fields['redirect']) && !empty($objResult->fields['redirectNewWindow']);

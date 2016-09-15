@@ -143,11 +143,14 @@ class NewsLibrary
     /**
      * Generates the formated ul/li of Archive list
      * Used in the template's
-     * 
+     *
+     * @param integer $langId Language id
+     *
      * @return string Formated ul/li of Archive list
      */
-    public function getNewsArchiveList() {
-        $monthlyStats = $this->getMonthlyNewsStats();
+    public function getNewsArchiveList($langId = null)
+    {
+        $monthlyStats = $this->getMonthlyNewsStats(array(), $langId);
 
         $html = '';
         if (!empty($monthlyStats)) {
@@ -171,39 +174,45 @@ class NewsLibrary
      * 
      * @return string Formated ul/li of categories
      */
-    public function getNewsCategories()
+    public function getNewsCategories($langId = null)
     {
         
         $categoriesLang = $this->getCategoriesLangData();
         
-        return $this->_buildNewsCategories($this->nestedSetRootId, $categoriesLang);
+        return $this->_buildNewsCategories($this->nestedSetRootId, $categoriesLang, $langId);
     }
     
     /**
      * Generates the formated ul/li of categories
      * Used in the template's
-     * 
+     *
+     * @param integer   $catId          Category id
+     * @param array     $categoriesLang Category locale
+     * @param integer   $langId         Language id
+     *
      * @return string Formated ul/li of categories
      */
-    function _buildNewsCategories($catId, $categoriesLang)
+    function _buildNewsCategories($catId, $categoriesLang, $langId = null)
     {
         if ($this->categoryExists($catId)) {
-            
-            $category = $this->objNestedSet->pickNode($catId, true);            
+            if ($langId === null) {
+                $langId = FRONTEND_LANG_ID;
+            }
+            $category = $this->objNestedSet->pickNode($catId, true);
             if ($catId != $this->nestedSetRootId) {
                 $html .= "<li>";
                 
                 $newsUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('News');                
                 $newsUrl->setParam('category', $catId);
                 
-                $html .= '<a href="'.$newsUrl.'" title="'.contrexx_raw2xhtml($categoriesLang[$catId][FRONTEND_LANG_ID]).'">'.contrexx_raw2xhtml($categoriesLang[$catId][FRONTEND_LANG_ID]).'</a>';
+                $html .= '<a href="'.$newsUrl.'" title="'.contrexx_raw2xhtml($categoriesLang[$catId][$langId]).'">'.contrexx_raw2xhtml($categoriesLang[$catId][$langId]).'</a>';
             }
             
             $subCategories = $this->objNestedSet->getChildren($catId, true);
             if (!empty($subCategories)) {
                 $html .= "<ul class='news_category_lvl_{$category['level']}'>";
                 foreach ($subCategories as $subCat) {
-                    $html .= $this->_buildNewsCategories($subCat['id'], $categoriesLang);
+                    $html .= $this->_buildNewsCategories($subCat['id'], $categoriesLang, $langId);
                 }
                 $html .= "</ul>";
             }
@@ -1339,10 +1348,12 @@ class NewsLibrary
      * 
      * @access protected
      * @param  array     $categories      category filter
-     * 
+     * @param  integer   $langId          Language id
+     *
      * @return array     $monthlyStats  Monthly status array
      */
-    protected function getMonthlyNewsStats($categories) {
+    protected function getMonthlyNewsStats($categories, $langId = null)
+    {
         global $objDatabase, $_CORELANG;
         
         $categoryFilter = '';
@@ -1350,7 +1361,9 @@ class NewsLibrary
         if (!empty($categories)) {
            $categoryFilter .= ' AND nc.category_id IN ('. implode(', ', contrexx_input2int($categories)) .')';            
         }
-
+        if ($langId === null) {
+            $langId = FRONTEND_LANG_ID;
+        }
         $query = '  SELECT      DISTINCT(n.id)   AS id,
                                 n.date           AS date,
                                 n.teaser_image_path AS teaser_image_path,
@@ -1371,7 +1384,7 @@ class NewsLibrary
                     LEFT JOIN '.DBPREFIX.'module_news_rel_categories AS nc ON nc.news_id = n.id
                     WHERE       n.validated = "1"
                                 AND n.status = 1
-                                AND nl.lang_id = '.FRONTEND_LANG_ID.'                         
+                                AND nl.lang_id = '. contrexx_input2int($langId) .'
                                 AND nl.is_active=1
                                 AND (n.startdate <="' . date('Y-m-d H:i:s') . '" OR n.startdate="0000-00-00 00:00:00")
                                 AND (n.enddate >="' . date('Y-m-d H:i:s') . '" OR n.enddate="0000-00-00 00:00:00")

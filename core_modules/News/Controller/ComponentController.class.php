@@ -168,9 +168,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                     'News',
                                     'getHeadlines',
                                     array(
-                                        'headlineId' => $visibleI,
-                                        'template'   => \Env::get('init')->getCurrentThemeId(),
-                                        'langId'     => $_LANGID,
+                                        'headline' => 'headlines'. $visibleI,
+                                        'template' => \Env::get('init')->getCurrentThemeId(),
+                                        'langId'   => $_LANGID,
                                     )
                                 );
                                 $page->setContent(str_replace($headlinesNewsPlaceholder, $homeHeadlines, $page->getContent()));
@@ -194,7 +194,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'News',
                             'getTopNews',
                             array(
-                                'template'   => \Env::get('init')->getCurrentThemeId(),
+                                'template' => \Env::get('init')->getCurrentThemeId(),
+                                'langId'   => $_LANGID,
                             )
                         );
                         $page->setContent(str_replace($topNewsPlaceholder, $homeTopNews, $page->getContent()));
@@ -214,7 +215,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                    ) {
                         $newsCategories = $objCache->getEsiContent(
                             'News',
-                            'getNewsCategories'
+                            'getNewsCategories',
+                            array(
+                                'langId' => $_LANGID,
+                            )
                         );
                         $page->setContent(str_replace($newsCategoriesPlaceholder, $newsCategories, $page->getContent()));
                         $themesPages['index']   = str_replace($newsCategoriesPlaceholder, $newsCategories, $themesPages['index']);
@@ -233,7 +237,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                    ) {
                         $newsArchive = $objCache->getEsiContent(
                             'News',
-                            'getNewsArchiveList'
+                            'getNewsArchiveList',
+                            array(
+                                'langId' => $_LANGID,
+                            )
                         );
                         $page->setContent(str_replace($newsArchivePlaceholder, $newsArchive, $page->getContent()));
                         $themesPages['index']   = str_replace($newsArchivePlaceholder, $newsArchive, $themesPages['index']);

@@ -168,7 +168,8 @@ class JsonNews implements JsonAdapter {
     {
         $newsLib = new NewsLibrary();
 
-        return array('content' => $newsLib->getNewsCategories());
+        $langId   = !empty($params['get']['langId']) ? contrexx_input2int($params['get']['langId']) : 0;
+        return array('content' => $newsLib->getNewsCategories($langId));
     }
 
     /**
@@ -182,7 +183,8 @@ class JsonNews implements JsonAdapter {
     {
         $newsLib = new NewsLibrary();
 
-        return array('content' => $newsLib->getNewsArchiveList());
+        $langId   = !empty($params['get']['langId']) ? contrexx_input2int($params['get']['langId']) : 0;
+        return array('content' => $newsLib->getNewsArchiveList($langId));
     }
 
     /**
@@ -213,10 +215,14 @@ class JsonNews implements JsonAdapter {
      */
     public function getHeadlines($params)
     {
-        $headline = !empty($params['get']['headlineId']) ? contrexx_input2int($params['get']['headlineId']) : '';
+        $headline = !empty($params['get']['headline']) ? contrexx_input2raw($params['get']['headline']) : '';
+        if (empty($headline)) {
+            \DBG::log(__METHOD___ . ': The headline can not be empty');
+            return array('content' => '');
+        }
         try {
             $theme   = $this->getThemeFromInput($params);
-            $content = $this->getContentFromThemeFile($theme, 'headlines'. $headline .'.html');
+            $content = $this->getContentFromThemeFile($theme, $headline . '.html');
         } catch (JsonNewsException $e) {
             \DBG::log($e->getMessage());
             return array('content' => '');
@@ -248,9 +254,9 @@ class JsonNews implements JsonAdapter {
             \DBG::log($e->getMessage());
             return array('content' => '');
         }
-
+        $langId = !empty($params['get']['langId']) ? contrexx_input2int($params['get']['langId']) : 0;
         $newsTopNews = new NewsTop($content);
-        return array('content' => $newsTopNews->getHomeTopNews());
+        return array('content' => $newsTopNews->getHomeTopNews(0, $langId));
     }
 
     /**
