@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Cloudrexx Development Team <info@cloudrexx.com>
@@ -337,4 +337,5 @@ $_ARRAYLANG['TXT_ACCESS_PASSWORD_MANUALLY'] = "Set password manually";
 $_ARRAYLANG['TXT_ACCESS_PASSWORD_GENERATED'] = "Generate random password and send to email address";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION'] = "Conformity mandatory ( profile properties )";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION_TEXT'] = "The mandatory fields must be checked and set";
-?>
+$_ARRAYLANG['TXT_CORE_MODULE_ACCESS_PERMISSION_SET_VIRTUAL_ERROR_MSG'] = "Could not set instance as non-virtual since instance contains callback.";
+$_ARRAYLANG['TXT_CORE_MODULE_ACCESS_PERMISSION_SET_CALLBACK_ERROR_MSG'] = "Could not set callback for non-virtual instance.";
