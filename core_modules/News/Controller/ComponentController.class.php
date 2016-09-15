@@ -164,17 +164,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             || strpos($themesPages['sidebar'], $headlinesNewsPlaceholder) !== false
                             || strpos($page_template, $headlinesNewsPlaceholder) !== false
                            ) {
-                                $category = 0;
-                                $matches = array();
-                                if (preg_match('/\{CATEGORY_([0-9]+)\}/', trim($themesPages['headlines' . $visibleI]), $matches)) {
-                                    $category = $matches[1];
-                                }
                                 $homeHeadlines = $objCache->getEsiContent(
                                     'News',
                                     'getHeadlines',
                                     array(
                                         'headlineId' => $visibleI,
-                                        'category'   => $category,
                                         'template'   => \Env::get('init')->getCurrentThemeId(),
                                         'langId'     => $_LANGID,
                                     )

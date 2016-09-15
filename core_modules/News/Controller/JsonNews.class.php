@@ -221,8 +221,11 @@ class JsonNews implements JsonAdapter {
             \DBG::log($e->getMessage());
             return array('content' => '');
         }
-
-        $category = !empty($params['get']['category']) ? contrexx_input2int($params['get']['category']) : 0;
+        $category = 0;
+        $matches  = array();
+        if (preg_match('/\{CATEGORY_([0-9]+)\}/', trim($content), $matches)) {
+            $category = contrexx_input2int($matches[1]);
+        }
         $langId   = !empty($params['get']['langId']) ? contrexx_input2int($params['get']['langId']) : 0;
 
         $newsHeadlines = new NewsHeadlines($content);
