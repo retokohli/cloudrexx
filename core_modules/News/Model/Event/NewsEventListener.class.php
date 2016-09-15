@@ -193,11 +193,11 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     }
 
     /**
-     * Event listener for News entity post update
+     * Clear all Ssi cache
      *
      * @param array $eventArgs Event args
      */
-    protected function newsPostUpdate(array $eventArgs)
+    protected function newsClearSsiCache(array $eventArgs)
     {
         // clear ssi cache
         $basicCacheAdaptors = array(

@@ -1862,6 +1862,11 @@ EOF;
                 : implode('<br>', $this->errMsg);
             return array(false, $errorMessage . '<br /><br />');
         }
+        if ($enable) {
+            \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getEvents()
+                ->triggerEvent('newsClearSsiCache');
+        }
 
         return array($ins_id, $_ARRAYLANG['TXT_NEWS_SUCCESSFULLY_SUBMITED'].'<br /><br />');
     }

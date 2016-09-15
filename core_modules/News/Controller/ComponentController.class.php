@@ -323,10 +323,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * Register the Event listeners
      */
     public function registerEventListeners() {
-        $this->cx->getEvents()->addEvent('newsPostUpdate');
+        $this->cx->getEvents()->addEvent('newsClearSsiCache');
 
         $newsEventListener = new \Cx\Core_Modules\News\Model\Event\NewsEventListener();
         $this->cx->getEvents()->addEventListener('languageStatusUpdate', $newsEventListener);
-        $this->cx->getEvents()->addEventListener('newsPostUpdate', $newsEventListener);
+        $this->cx->getEvents()->addEventListener('newsClearSsiCache', $newsEventListener);
     }
 }
