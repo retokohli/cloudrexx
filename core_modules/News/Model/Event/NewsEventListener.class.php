@@ -191,4 +191,104 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             $objDatabase->Execute($catQuery);
         }
     }
+
+    /**
+     * Event listener for News entity post update
+     *
+     * @param array $eventArgs Event args
+     */
+    protected function newsPostUpdate(array $eventArgs)
+    {
+        // clear ssi cache
+        $basicCacheAdaptors = array(
+            'getTopNews',
+            'getNewsCategories',
+            'getNewsArchiveList',
+            'getRecentComments',
+        );
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+            $langId  = $lang['id'];
+            $themeId = $lang['themesid'];
+            foreach ($basicCacheAdaptors as $adaptor) {
+                $this->clearSsiCache($adaptor, $themeId, $langId);
+            }
+            // clear headlines cache
+            $headlinesList = $this->getHeadlinesList($themeId);
+            foreach ($headlinesList as $headline) {
+                $params = array(
+                    'headline' => $headline,
+                );
+                $this->clearSsiCache('getHeadlines', $themeId, $langId, $params);
+            }
+        }
+    }
+
+    /**
+     * Get all headlines file list from the theme
+     *
+     * @staticvar array $themes Staic var to store loaded themes
+     *
+     * @param integer $themeId Template id
+     *
+     * @return array List of available headlines
+     */
+    protected function getHeadlinesList($themeId = null)
+    {
+        $headlineList = array();
+        if (null === $themeId) {
+            return $headlineList;
+        }
+
+        static $themes = array();
+        if (isset($themes[$themeId])) {
+            return $themes[$themeId];
+        }
+
+        $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $theme     = $themeRepo->findById($themeId);
+        if (!$theme) {
+            $themes[$themeId] = $headlineList;
+            return $headlineList;
+        }
+        for ($i = 0; $i < 10; $i++) {
+            $headline = 'headlines'. (!empty($i) ? $i : '');
+            if ($theme->getFilePath($headline  .'.html')) {
+                $headlineList[] = $headline;
+            }
+        }
+        $themes[$themeId] = $headlineList;
+
+        return $headlineList;
+    }
+
+    /**
+     * Clears SSI cache page by given arguments
+     *
+     * @param string  $adaptor              Json adaptor name
+     * @param integer $themeId              Template id
+     * @param integer $langId               Language id
+     * @param array   $additionalParams     Additional parameter needed for json request
+     *
+     * @return null
+     */
+    protected function clearSsiCache($adaptor = '', $themeId = null, $langId = null, $additionalParams = array())
+    {
+        if (empty($adaptor)) {
+            return;
+        }
+        global $objCache;
+
+        $params = array();
+        if (null !== $themeId) {
+            $params['template'] = contrexx_input2int($themeId);
+        }
+        if (null !== $langId) {
+            $params['langId'] = contrexx_input2int($langId);
+        }
+        if (!empty($additionalParams)) {
+            $params = array_merge($params, $additionalParams);
+        }
+
+        $objCache->clearSsiCachePage('News', $adaptor, $params);
+    }
 }
