@@ -231,11 +231,29 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
             throw new NoBlockFoundException('no block content found with id: ' . $id);
         }
 
+        $content = $result->fields['content'];
+// LIVE CUSTOMIZING
+        if (!\Env::get('Resolver')) {
+
+            $url = \Cx\Core\Core\Controller\Cx::instanciate()->getRequest()->getUrl();
+            $url->removeAllParams();
+            $url->setPath('/de/?section=Home');
+            $resolver = new \Cx\Core\Routing\Resolver($url, null, \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager(), null, null);
+            $page = new \Cx\Core\ContentManager\Model\Entity\Page();
+            $page->setVirtual(true);
+            $page->setId(1);
+            \Cx\Core\Core\Controller\Cx::instanciate()->resolvedPage = $page;
+            \Env::set('Resolver', $resolver);
+        }
+// END LIVE CUSTOMIZING
+        \Env::get('cx')->parseGlobalPlaceholders($content);
+        \Cx\Modules\Block\Controller\Block::setBlocks($content, \Env::get('cx')->getPage());
+        \LinkGenerator::parseTemplate($content);
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $ls = new \LinkSanitizer(
             $cx,
             $cx->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
-            $result->fields['content']
+            $content
         );
         return array('content' => $ls->replace());
     }
