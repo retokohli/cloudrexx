@@ -57,8 +57,8 @@ class Captcha {
             'ReCaptcha' => array(
                 'domains' => array(
                     'localhost' => array(
-                        'public_key'    => '6LeiusgSAAAAACPI2stz_Qh2fVC1reRUxJuqzf7h',
-                        'private_key'    => '6LeiusgSAAAAAABv3CW65svwgRMqFfTiC5NTOzOh',
+                        'site_key'   => '6Ld20QYUAAAAADAOqldYlanVYsFlIr-EcIGrbonW',
+                        'secret_key' => '6Ld20QYUAAAAANygam74EbVNAlPnMF3JH75hmeV6',
                     ),
                 ),
             ),
