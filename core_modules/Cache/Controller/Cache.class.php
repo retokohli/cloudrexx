@@ -268,6 +268,10 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             }
             $content = $response['data']['content'];
             
+            // do a final replacement of all those node-urls ({NODE_<ID>_<LANG>}- placeholders) that haven't been captured earlier
+            $content = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $content);
+            \LinkGenerator::parseTemplate($content);
+
             if ($this->boolIsEnabled) {
                 $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
                 $file->write($content);
