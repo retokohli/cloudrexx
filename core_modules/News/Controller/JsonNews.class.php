@@ -196,13 +196,23 @@ class JsonNews implements JsonAdapter {
      */
     public function getTeaserFrame($params)
     {
-        if (empty($params['get'])) {
+        $langId      = !empty($params['get']['langId']) ? contrexx_input2int($params['get']['langId']) : null;
+        $teaserFrame = !empty($params['get']['teaserFrame']) ? contrexx_input2raw($params['get']['teaserFrame']) : '';
+        if (empty($teaserFrame)) {
             return array('content' => '');
         }
-        $id         = !empty($params['get']['id']) ? $params['get']['id'] : 0;
-        $templateId = !empty($params['get']['templateId']) ? $params['get']['templateId'] : 0;
 
-        $newsTeaser = new Teasers();
+        $newsTeaser = new Teasers(false, $langId);
+        $arrTeaserFramesNames = array_flip($newsTeaser->arrTeaserFrameNames);
+
+        $arrMatches = preg_grep('/^'.$teaserFrame.'$/i', $arrTeaserFramesNames);
+        if (empty($arrMatches)) {
+            return array('content' => '');
+        }
+        $frameId    = array_keys($arrMatches);
+        $id         = $frameId[0];
+        $templateId = $newsTeaser->arrTeaserFrames[$id]['frame_template_id'];
+
         return array('content' => $newsTeaser->_getTeaserFrame($id, $templateId));
     }
 

@@ -70,17 +70,26 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
     public $_currentXMLElement;
     public $_currentXMLArrayToFill;
 
+    /**
+     * Language id
+     *
+     * @var integer
+     */
+    protected $langId = null;
 
     /**
     * PHP5 constructor
     * @global \Cx\Core\Html\Sigma
     * @see \Cx\Core\Html\Sigma::setErrorHandling, \Cx\Core\Html\Sigma::setVariable, initialize()
     */
-    function __construct($administrate = false)
+    function __construct($administrate = false, $langId = null)
     {
         parent::__construct();
         $this->administrate = $administrate;
 
+        if (null === $langId) {
+            $this->langId = FRONTEND_LANG_ID;
+        }
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -118,7 +127,7 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                    tblL.teaser_text
               FROM ".DBPREFIX."module_news AS tblN
              INNER JOIN ".DBPREFIX."module_news_locale AS tblL ON tblL.news_id=tblN.id
-             WHERE tblL.lang_id=".FRONTEND_LANG_ID.
+             WHERE tblL.lang_id=". contrexx_input2int($this->langId) .
               ($this->administrate == false
                 ? " AND tblN.validated='1'
                     AND tblN.status='1'
@@ -269,22 +278,18 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
 
         foreach ($arrTeaserFrames as $teaserFrameName) {
             $arrMatches = preg_grep('/^'.$teaserFrameName.'$/i', $arrTeaserFramesNames);
-
-            if (count($arrMatches)>0) {
-                $frameId = array_keys($arrMatches);
-                $id = $frameId[0];
-                $templateId = $this->arrTeaserFrames[$id]['frame_template_id'];
-                $content = $objCache->getEsiContent(
-                    'News',
-                    'getTeaserFrame',
-                    array(
-                        'id'         => $id,
-                        'templateId' => $templateId,
-                    )
-                );
-                $code = str_replace("{TEASERS_".$teaserFrameName."}", $content, $code);
-
+            if (empty($arrMatches)) {
+                continue;
             }
+            $content = $objCache->getEsiContent(
+                'News',
+                'getTeaserFrame',
+                array(
+                    'langId'      => FRONTEND_LANG_ID,
+                    'teaserFrame' => $teaserFrameName,
+                )
+            );
+            $code = str_replace("{TEASERS_" . $teaserFrameName . "}", $content, $code);
         }
     }
 
@@ -326,7 +331,7 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                             $teaserBlockCode = str_replace(
                                 '{TEASER_URL}', 
                                 empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'])
-                                    ? \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category_id']), FRONTEND_LANG_ID, array('newsid' => $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['id'], 'teaserId' => $this->arrTeaserFrames[$id]['id']))
+                                    ? \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category_id']), $this->langId, array('newsid' => $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['id'], 'teaserId' => $this->arrTeaserFrames[$id]['id']))
                                     : $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'], $teaserBlockCode
                             );
                             $teaserBlockCode = str_replace('{TEASER_URL_TARGET}', empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect']) ? '_self' : '_blank', $teaserBlockCode);
@@ -481,6 +486,24 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
         }
     }
 
-}
+    /**
+     * Getter for language id
+     *
+     * @return integer
+     */
+    function getLangId()
+    {
+        return $this->langId;
+    }
 
-?>
+    /**
+     * Set lang id
+     *
+     * @param integer $langId
+     */
+    function setLangId($langId)
+    {
+        $this->langId = $langId;
+    }
+
+}

@@ -277,25 +277,29 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // Set news teasers
                  $config = \Env::get('config');
                 if ($config['newsTeasersStatus'] == '1') {
+                    $objTeasers = null;
                     // set news teasers in the content
                     if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $page->getContent(), $arrMatches)) {
-                        /** @ignore */
+                        if (null === $objTeasers) {
                             $objTeasers = new Teasers();
-                            $content = $page->getContent();
-                            $objTeasers->setTeaserFrames($arrMatches[1], $content);
-                            $page->setContent($content);
+                        }
+                        $content = $page->getContent();
+                        $objTeasers->setTeaserFrames($arrMatches[1], $content);
+                        $page->setContent($content);
                     }
                     // set news teasers in the page design
                     if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $page_template, $arrMatches)) {
-                        /** @ignore */
-                        $objTeasers = new Teasers();
+                        if (null === $objTeasers) {
+                            $objTeasers = new Teasers();
+                        }
                         $objTeasers->setTeaserFrames($arrMatches[1], $page_template);
                     }
                     // set news teasers in the website design
                     if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $themesPages['index'], $arrMatches)) {
-                        /** @ignore */
+                        if (null === $objTeasers) {
                             $objTeasers = new Teasers();
-                            $objTeasers->setTeaserFrames($arrMatches[1], $themesPages['index']);
+                        }
+                        $objTeasers->setTeaserFrames($arrMatches[1], $themesPages['index']);
                     }
                 }
                 break;

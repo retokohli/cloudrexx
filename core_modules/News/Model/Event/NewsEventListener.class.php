@@ -229,6 +229,14 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 );
                 $this->clearSsiCache('getHeadlines', $themeId, $langId, $params);
             }
+            // clear teaser cache
+            $teaser = new \Cx\Core_Modules\News\Controller\Teasers(false, $langId);
+            foreach ($teaser->arrTeaserFrames as $teaserFrame) {
+                $params = array(
+                    'teaserFrame' => $teaserFrame['name'],
+                );
+                $this->clearSsiCache('getTeaserFrame', null, $langId, $params);
+            }
         }
     }
 
