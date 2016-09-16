@@ -209,7 +209,7 @@ class DataSet implements \Iterator {
      * @return type
      */
     public static function importFromFile(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $filename) {
-        global $objCache, $_CONFIG, $_DBCONFIG;
+        global $objCache, $_DBCONFIG;
         if (!$objCache) {
             $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
         }
@@ -248,7 +248,7 @@ class DataSet implements \Iterator {
      * @throws \Cx\Lib\FileSystem\FileSystemException
      */
     public function exportToFile(\Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface, $filename) {
-        global $objCache, $_CONFIG, $_DBCONFIG;
+        global $objCache, $_DBCONFIG;
         if (!$objCache) {
             $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
         }
