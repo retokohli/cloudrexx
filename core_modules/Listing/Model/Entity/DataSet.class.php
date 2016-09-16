@@ -209,13 +209,27 @@ class DataSet implements \Iterator {
      * @return type
      */
     public static function importFromFile(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $filename) {
+        global $objCache, $_CONFIG, $_DBCONFIG;
+        if (!$objCache) {
+            $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
+        }
+        $memcache = $objCache->getMemcache();
+        // try to load imported from cache
+        $key = $_DBCONFIG['database'] . $_DBCONFIG['tablePrefix'] . $filename;
+        $objImport = $memcache->get($key);
+        if ($objImport) {
+            return unserialize($objImport);
+        }
         try {
             $objFile = new \Cx\Lib\FileSystem\File($filename);
-            return self::import($importInterface, $objFile->getData());
+            $objImport = self::import($importInterface, $objFile->getData());
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
             throw new DataSetException("Failed to load data from file $filename!");
         }
+        // store imported to memcache
+        $memcache->set($key, serialize($objImport), false, intval($_CONFIG['cacheExpiration']));
+        return $objImport;
     }
 
     public function export(\Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface) {
@@ -234,10 +248,20 @@ class DataSet implements \Iterator {
      * @throws \Cx\Lib\FileSystem\FileSystemException
      */
     public function exportToFile(\Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface, $filename) {
+        global $objCache, $_CONFIG, $_DBCONFIG;
+        if (!$objCache) {
+            $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
+        }
+        $memcache = $objCache->getMemcache();
         try {
             $objFile = new \Cx\Lib\FileSystem\File($filename);
             $objFile->touch();
-            $objFile->write($this->export($exportInterface));
+            $export = $this->export($exportInterface);
+            $objFile->write($export);
+            // store imported to memcache
+            $key = $_DBCONFIG['database'] . $_DBCONFIG['tablePrefix'] . $filename;
+            // delete old key from cache, to reload it on the next import
+            $memcache->delete($key);
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
             throw new DataSetException("Failed to export data to file $filename!");
