@@ -213,7 +213,7 @@ class CacheLib
             unset($this->memcache); // needed for reinitialization
             if (class_exists('\Memcache')) {
                 $memcache = new \Memcache();
-                if (@$memcache->connect($memcacheConfiguration['ip'], $memcacheConfiguration['port'])) {
+                if (@$memcache->addServer($memcacheConfiguration['ip'], $memcacheConfiguration['port'])) {
                     $this->memcache = $memcache;
                 }
             } elseif (class_exists('\Memcached')) {
