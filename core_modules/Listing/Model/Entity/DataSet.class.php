@@ -228,7 +228,7 @@ class DataSet implements \Iterator {
             throw new DataSetException("Failed to load data from file $filename!");
         }
         // store imported to memcache
-        $memcache->set($key, serialize($objImport), false, intval($_CONFIG['cacheExpiration']));
+        $memcache->set($key, serialize($objImport));
         return $objImport;
     }
 
