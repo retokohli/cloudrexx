@@ -46,10 +46,24 @@ namespace Cx\Core_Modules\Captcha\Controller;
  * @subpackage  coremodule_captcha
  */
 class ReCaptcha implements CaptchaInterface {
+    /**
+     * @var string
+     */
     private $site_key;
+
+    /**
+     * @var string
+     */
     private $secret_key;
+
+    /**
+     * @var string
+     */
     private $error = '';
 
+    /**
+     * Constructor
+     */
     public function __construct($config)
     {
         $captchaConfig = json_decode($config['coreCaptchaLibConfig'], true);
@@ -68,21 +82,33 @@ class ReCaptcha implements CaptchaInterface {
         $this->secret_key = $reCAPTCHAKeys['secret_key'];
     }
 
+    /**
+     * Get captcha code
+     *
+     * @param integer $tabIndex
+     *
+     * @return string
+     */
     public function getCode($tabIndex = null)
     {
         $tabIndexAttr = '';
         if (isset($tabIndex)) {
-            $tabIndexAttr = "tabindex=\"$tabIndex\"";
+            $tabIndexAttr = "data-tabindex=\"$tabIndex\"";
         }
 
         $lang   = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
         $code   = <<<HTML
-<div class="g-recaptcha" data-sitekey="{$this->site_key}"></div>
+<div class="g-recaptcha" data-sitekey="{$this->site_key}" $tabIndexAttr></div>
 <script type="text/javascript" src="https://www.google.com/recaptcha/api.js?hl=$lang"></script>
 HTML;
         return $code;
     }
 
+    /**
+     * Check the captcha code
+     *
+     * @return boolean
+     */
     public function check()
     {
         $reCaptcha = new \ReCaptcha\ReCaptcha($this->secret_key, new \ReCaptcha\RequestMethod\CurlPost());
