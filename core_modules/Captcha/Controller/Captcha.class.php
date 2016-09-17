@@ -52,26 +52,14 @@ class Captcha {
         global $sessionObj;
         if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
 
-// TODO: move to basic configuration screen (/cadmin/index.php?cmd=settings)
-        $captchaConfig = array(
-            'ReCaptcha' => array(
-                'domains' => array(
-                    'localhost' => array(
-                        'site_key'   => '6Ld20QYUAAAAADAOqldYlanVYsFlIr-EcIGrbonW',
-                        'secret_key' => '6Ld20QYUAAAAANygam74EbVNAlPnMF3JH75hmeV6',
-                    ),
-                ),
-            ),
-        );
-        $config['coreCaptchaLib'] = '';
-        $config['coreCaptchaLibConfig'] = json_encode($captchaConfig);
-
-        switch ($config['coreCaptchaLib']) {
-            case 'ReCaptcha':
-                $this->objCaptcha = new ReCaptcha($config);
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'security');
+        $defaultCaptcha = \Cx\Core\Setting\Controller\Setting::getValue('defaultCaptcha', 'Config');
+        switch ($defaultCaptcha) {
+            case 'reCaptcha':
+                $this->objCaptcha = new ReCaptcha();
                 break;
 
-            case 'contrexx':
+            case 'contrexxCaptcha':
             default:
                 $this->objCaptcha = new ContrexxCaptcha($config);
                 break;

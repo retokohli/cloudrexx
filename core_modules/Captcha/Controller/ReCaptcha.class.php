@@ -64,22 +64,11 @@ class ReCaptcha implements CaptchaInterface {
     /**
      * Constructor
      */
-    public function __construct($config)
+    public function __construct()
     {
-        $captchaConfig = json_decode($config['coreCaptchaLibConfig'], true);
-
-        if (!isset($captchaConfig['ReCaptcha'])) {
-            return;
-        }
-
-        $reCAPTCHAConfig = $captchaConfig['ReCaptcha'];
-        if (!isset($reCAPTCHAConfig['domains'][$config['domainUrl']])) {
-            return;
-        }
-
-        $reCAPTCHAKeys    = $reCAPTCHAConfig['domains'][$config['domainUrl']];
-        $this->site_key   = $reCAPTCHAKeys['site_key'];
-        $this->secret_key = $reCAPTCHAKeys['secret_key'];
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'security');
+        $this->site_key   = \Cx\Core\Setting\Controller\Setting::getValue('recaptchaSiteKey', 'Config');
+        $this->secret_key = \Cx\Core\Setting\Controller\Setting::getValue('recaptchaSecretKey', 'Config');
     }
 
     /**
