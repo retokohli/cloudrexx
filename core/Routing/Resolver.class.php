@@ -850,10 +850,6 @@ class Resolver {
         global $sessionObj;
 
         $page_protected = $page->isFrontendProtected();
-        $pageAccessId = $page->getFrontendAccessId();
-        if ($history) {
-            $pageAccessId = $page->getBackendAccessId();
-        }
 
         // login pages are unprotected by design
         $checkLogin = array($page);
@@ -879,12 +875,11 @@ class Resolver {
             if (empty($sessionObj)) $sessionObj = \cmsSession::getInstance();
             $_SESSION->cmsSessionStatusUpdate('frontend');
             if (\FWUser::getFWUserObject()->objUser->login()) {
-                if ($page_protected) {
-                    if (!\Permission::checkAccess($pageAccessId, 'dynamic', true)) {
-                        $link=base64_encode(\Env::get('cx')->getRequest()->getUrl()->toString());
-                        \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Login', 'noaccess', '', array('redirect' => $link)));
-                        exit;
-                    }
+                if ($page_protected && !$page->hasFrontendReadAccess()) {
+                    $link = base64_encode(\Env::get('cx')->getRequest()->getUrl()->toString());
+                    \Cx\Core\Csrf\Controller\Csrf::redirect(
+                        \Cx\Core\Routing\Url::fromModuleAndCmd('Login', 'noaccess', '', array('redirect' => $link))
+                    );
                 }
                 if ($history && !\Permission::checkAccess(78, 'static', true)) {
                     $link=base64_encode(\Env::get('cx')->getRequest()->getUrl()->toString());

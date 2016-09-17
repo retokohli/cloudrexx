@@ -197,12 +197,11 @@ abstract class PageTree {
 
             //if page is protected, protected pages are hidden and user has not
             //sufficent permissions, then hide all child elements from this page
-            if($page && $page->isFrontendProtected() && $_CONFIG['coreListProtectedPages'] != 'on' &&
-               !(
-                    \Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true) &&
-                    $this->considerLogin
-                )
-            ){
+            if (   $page
+                && $page->isFrontendProtected()
+                && $_CONFIG['coreListProtectedPages'] != 'on'
+                && !($page->hasFrontendReadAccess() && $this->considerLogin)
+            ) {
                 $hasChilds = false;
             }
 
@@ -252,11 +251,9 @@ abstract class PageTree {
 
 
             // if page is protected, user has not sufficent permissions and protected pages are hidden
-            if ($page->isFrontendProtected() && $_CONFIG['coreListProtectedPages'] != 'on' &&
-                !(
-                    \Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true) &&
-                    $this->considerLogin
-                )
+            if (   $page->isFrontendProtected()
+                && $_CONFIG['coreListProtectedPages'] != 'on'
+                && !($page->hasFrontendReadAccess()&& $this->considerLogin)
             ) {
                 continue;
             }

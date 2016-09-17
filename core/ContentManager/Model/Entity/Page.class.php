@@ -1365,6 +1365,19 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     }
 
     /**
+     * Check whether the user has frontend read access
+     *
+     * @return boolean TRUE, when visitor has access to read the page in frontend
+     */
+    public function hasFrontendReadAccess()
+    {
+        return    !$this->isFrontendProtected()
+               || \Permission::checkAccess($this->getFrontendAccessId(), 'dynamic', true)
+               || (   $this->isBackendProtected()
+                   && \Permission::checkAccess($this->getBackendAccessId(), 'dynamic', true));
+    }
+
+    /**
      * Alias for getDisplay()
      *
      * @return boolean
