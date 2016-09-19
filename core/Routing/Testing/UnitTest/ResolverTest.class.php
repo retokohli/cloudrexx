@@ -37,8 +37,6 @@
  */
 
 namespace Cx\Core\Routing\Testing\UnitTest;
-use Cx\Core\Routing\Resolver as Resolver;
-use Cx\Core\Routing\Url as Url;
 
 /**
  * ResolverTest
@@ -323,5 +321,104 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         
         $this->assertEquals(1, $p->getLang());
         $this->assertEquals('testpage1_child', $p->getTitle());
+    }
+
+    /**
+     * Create a page based on the given arguments
+     *
+     * @param stirng  $title                Page title
+     * @param string  $type                 Type of page Application, content, .. etc
+     * @param string  $application          Component name, If page type is applicaton
+     * @param string  $cmd                  Cmd value
+     * @param boolean $frontendPermission   True, when frontend permission enabled
+     * @param integer $accessId             Access permission id
+     *
+     * @return \Cx\Core\ContentManager\Model\Entity\Page
+     */
+    protected function getPage(
+        $title,
+        $type,
+        $application = '',
+        $cmd = '',
+        $frontendPermission = null,
+        $accessId = null
+    ) {
+        $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
+
+        $root = $nodeRepo->getRoot();
+        $n   = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $n->setParent($root);
+        $root->addChildren($n);
+        self::$em->persist($n);
+        self::$em->flush();
+
+        $p = new \Cx\Core\ContentManager\Model\Entity\Page();
+        $p->setType($type);
+        $p->setLang(1);
+        $p->setTitle($title);
+        $p->setNode($n);
+        $p->setNodeIdShadowed($n->getId());
+        $p->setUseCustomContentForAllChannels('');
+        $p->setUseCustomApplicationTemplateForAllChannels('');
+        $p->setUseSkinForAllChannels('');
+        $p->setModule($application);
+        $p->setCmd($cmd);
+        $p->setActive(1);
+        $p->setFrontendProtection(null !== $frontendPermission);
+        if (null !== $accessId) {
+            $p->setFrontendAccessId($accessId);
+        }
+
+        self::$em->persist($p);
+        self::$em->flush();
+
+        return $p;
+    }
+
+    /**
+     * Test case to test the Routing::resolve() method
+     *
+     * @dataProvider resolverDataProvider Data value provider
+     *
+     * @param stirng  $title                Page title
+     * @param string  $type                 Type of page Application, content, .. etc
+     * @param string  $application          Component name, If page type is applicaton
+     * @param string  $cmd                  Cmd value
+     * @param boolean $frontendPermission   True, when frontend permission enabled
+     * @param integer $accessId             Access permission id
+     * @param string  $expectedResult       Expected test result
+     */
+    public function testResolver(
+        $title,
+        $type,
+        $application = '',
+        $cmd = '',
+        $frontendPermission = null,
+        $accessId = null,
+        $expectedResult = ''
+    ) {
+        global $url;
+
+        $this->getPage($title, $type, $application, $cmd, $frontendPermission, $accessId);
+
+        $url      = new \Cx\Core\Routing\Url('http://example.com/de/simple-content-page');
+        $resolver = new \Cx\Core\Routing\Resolver($url, 1, self::$em, '', $this->mockFallbackLanguages, false);
+        $resolver->resolve();
+        $p = $resolver->getPage();
+
+        $this->assertEquals(1, $p->getLang());
+        $this->assertEquals($expectedResult, $p->getSlug());
+    }
+
+    /**
+     * The Data provider for Resolver class test
+     *
+     * @return array
+     */
+    public function resolverDataProvider()
+    {
+        return array(
+            array('Simple conent page', \Cx\Core\ContentManager\Model\Entity\Page::TYPE_CONTENT, '', '', null, null, 'simple-content-page'),
+        );
     }
 }
