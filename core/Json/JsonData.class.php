@@ -193,24 +193,25 @@ class JsonData {
 
     /**
      * Parses data into JSON
-     * @param array $data Data to JSONify
+     * @param \Cx\Lib\Net\Model\Entity\Response $response Data to JSONify
      * @param boolean $setContentType (optional) If true (NOT default) the content type is set to application/json
      * @return String JSON data to return to client
      */
-    public function json($data, $setContentType = false) {
+    public function json($response, $setContentType = false) {
+        $response->setParser(function($response) {
+            $response->setContentType('application/json');
+            return json_encode($response->getAbstractContent());
+        });
+        
         if ($setContentType) {
-            // browsers will pass rendering of application/* MIMEs to other
-            // applications, usually.
-            // Skip the following line for debugging, if so desired
-            header('Content-Type: application/json');
-
             // Disabling CSRF protection. That's no problem as long as we
             // only return associative arrays or objects!
             // https://mycomvation.com/wiki/index.php/Contrexx_Security#CSRF
             // Search for a better way to disable CSRF!
             ini_set('url_rewriter.tags', '');
+            header('Content-Type: ' . $response->getContentType());
         }
-        return json_encode($data);
+        return $response->getParsedContent();
     }
 
     /**
@@ -220,7 +221,7 @@ class JsonData {
      * @param String $adapter Adapter name
      * @param String $method Method name
      * @param Array $arguments Arguments to pass
-     * @return String data to use for further processing
+     * @return \Cx\Lib\Net\Model\Entity\Response Data to use for further processing
      */
     public function data($adapter, $method, $arguments = array()) {
         global $_ARRAYLANG;
@@ -272,13 +273,13 @@ class JsonData {
         }
 
         try {
-            $output = call_user_func(array($adapter, $realMethod), $arguments);
-
-            return array(
+            $response = call_user_func(array($adapter, $realMethod), $arguments);
+            $response->setAbstractData(array(
                 'status'  => 'success',
-                'data'    => $output,
+                'data'    => $response->getAbstractData(),
                 'message' => $adapter->getMessagesAsString()
-            );
+            ));
+            return $response;
         } catch (\Exception $e) {
             //die($e->getTraceAsString());
             return $this->getErrorData($e->getMessage());
@@ -381,9 +382,12 @@ class JsonData {
      * @return String JSON code
      */
     public function getErrorData($message) {
-        return array(
-            'status' => 'error',
-            'message'   => $message
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            array(
+                'status' => 'error',
+                'message'   => $message
+            ),
+            500
         );
     }
 }
