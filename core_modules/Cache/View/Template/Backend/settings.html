@@ -8,10 +8,13 @@
           }
           var rowClass = elm.data( 'id' );
           if ( status == 'on' ) {
+              $J( ".setting_no_"+ rowClass).css( "display", "none" );
               $J( "div.setting_"+ rowClass).css( "display", "block" );
               $J( "tr.setting_"+ rowClass).css( "display", "table-row" );
           } else {
               $J( ".setting_"+ rowClass).css( "display", "none" );
+              $J( "div.setting_no_"+ rowClass).css( "display", "block" );
+              $J( "tr.setting_no_"+ rowClass).css( "display", "table-row" );
           }
       }
     };
@@ -316,6 +319,14 @@
                         <option {SETTINGS_SSI_CACHE_STATUS_ESI} value="esi">{TXT_CACHE_SSI_ESI}</option>
                     </select>
                     <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CACHE_SSI_HELP_SYSTEM}</span>
+                </td>
+            </tr>
+            <tr class="row2 setting_no_ssi_proxy">
+                <td>{TXT_INTERNAL_CACHE_SSI_CACHE}&nbsp;</td>
+                <td>
+                    <label ><input type="radio" name="internalSsiCache" value="on" {INTERNAL_SSI_CACHE_ON}>{TXT_SETTINGS_ON}</label>&nbsp;
+                    <label ><input type="radio" name="internalSsiCache" value="off" {INTERNAL_SSI_CACHE_OFF}>{TXT_SETTINGS_OFF}</label>&nbsp;
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SETTINGS_STATUS_HELP}</span>
                 </td>
             </tr>
             <tr class="row2 setting_ssi_proxy">
