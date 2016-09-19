@@ -38,6 +38,17 @@
 namespace Cx\Lib\Net\Model\Entity;
 
 /**
+ * An exception while sending a response
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  lib_net
+ * @link        http://www.cloudrexx.com/ cloudrexx homepage
+ * @since       v5.0.0
+ */
+class ResponseException extends \Exception {}
+
+/**
  * A response to a request
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@cloudrexx.com>
@@ -48,9 +59,9 @@ namespace Cx\Lib\Net\Model\Entity;
  */
 class Response {
     /**
-     * @var \DateTime Expire date
+     * @var \DateTime Expiration date
      */
-    protected $expireDate;
+    protected $expirationDate;
 
     /**
      * @var string Content type
@@ -68,38 +79,53 @@ class Response {
     protected $code;
 
     /**
-     * @var mixed Response content
+     * @var object|callable Parser to parse abstract content
      */
-    protected $content;
+    protected $parser;
+
+    /**
+     * @var string Message
+     */
+    protected $message;
+
+    /**
+     * @var mixed Abstract response data
+     */
+    protected $abstractContent;
+
+    /**
+     * @var string Response data
+     */
+    protected $parsedContent;
 
     /**
      * Creates a new Response
-     * @param mixed $response Response data
+     * @param mixed $abstract Abstract response data
      * @param int $code (optional) Response code, default is 200
      * @param Request $request (optional) Request object, default is null
-     * @param \DateTime $expireDate (optional) Expire date for this response, default is null
+     * @param \DateTime $expirationDate (optional) Expire date for this response, default is null
      */
-    public function __construct($content, $code = 200, $request = null, $expireDate = null) {
-        $this->setContent($content);
+    public function __construct($abstractContent, $code = 200, $request = null, $expirationDate = null) {
+        $this->setAbstractContent($abstractContent);
         $this->setCode($code);
         $this->setRequest($request);
-        $this->setExpireDate($expireDate);
+        $this->setExpirationDate($expirationDate);
     }
 
     /**
      * Returns the expiration date for this Response
      * @return \DateTime Expire date
      */
-    public function getExpireDate() {
-        return $this->expires;
+    public function getExpirationDate() {
+        return $this->expirationDate;
     }
 
     /**
      * Sets the expiration date for this Response
-     * @param \DateTime $expires Expiration date (can be set to null)
+     * @param \DateTime $expirationDate Expiration date (can be set to null)
      */
-    public function setExpireDate($expires) {
-        $this->expires = $expires;
+    public function setExpirationDate($expirationDate) {
+        $this->expirationDate = $expirationDate;
     }
 
     /**
@@ -151,18 +177,107 @@ class Response {
     }
 
     /**
-     * Returns the content
-     * @return mixed Content
+     * Returns the message
+     * Message may be used for user interaction or debugging and is "part" of abstract content
+     * @return string Message
      */
-    public function getContent() {
-        return $this->content;
+    public function getMessage() {
+        return $this->message;
     }
 
     /**
-     * Sets the content
-     * @param mixed $content Content
+     * Sets the message
+     * Message may be used for user interaction or debugging and is "part" of abstract content
+     * @param string $message Message for user interaction or debugging
      */
-    public function setContent($content) {
-        $this->content = $content;
+    public function setMessage($message) {
+        $this->message = $message;
+    }
+
+    /**
+     * Returns the abstract response data
+     * @return mixed Abstract response data
+     */
+    public function getAbstractContent() {
+        return $this->abstractContent;
+    }
+
+    /**
+     * Sets abstract response data
+     * @param mixed $abstractContent Abstract response data
+     */
+    public function setAbstractContent($abstractContent) {
+        $this->abstractContent = $abstractContent;
+    }
+
+    /**
+     * Sets the parser
+     * This can be an inline function or a class with a method like:
+     * string public function(Response $response);
+     * Parser needs to return parsed content and set content type
+     * @param object|callable $parser Parser to parse abstract content
+     */
+    public function setParser($parser) {
+        $this->parser = $parser;
+    }
+
+    /**
+     * Returns the parser
+     * @return object|callable Parser
+     */
+    public function getParser() {
+        return $this->parser;
+    }
+
+    /**
+     * Parses this response
+     */
+    public function parse() {
+        if (is_callable($this->getParser())) {
+            $parser = $this->getParser();
+            $this->setParsedContent($parser($this));
+            return;
+        }
+        $this->setParsedContent($this->getParser()->parse($this));
+    }
+
+    /**
+     * Returns the parsed response data
+     * @return string Parsed response data
+     */
+    public function getParsedContent() {
+        if (empty($this->parsedContent)) {
+            $this->parse();
+        }
+        return $this->parsedContent;
+    }
+
+    /**
+     * Sets parsed response data
+     * @param string $parsedContent Parsed response data
+     */
+    public function setParsedContent($parsedContent) {
+        $this->parsedContent = $parsedContent;
+    }
+
+    /**
+     * Sends this response to browser
+     * @throws ResponseException If content type is not set
+     */
+    public function send() {
+        if (
+            empty($this->getParsedContent()) ||
+            empty($this->getContentType())
+        ) {
+            $this->parse();
+        }
+        if (empty($this->getContentType())) {
+            throw new ResponseException('Content type is not set');
+        }
+        header('Content-Type: ' . $this->getContentType());
+        if ($this->getExpirationDate()) {
+            header('Expires: ' . $this->getExpirationDate()->format('r'));
+        }
+        die($this->getParsedContent());
     }
 }
