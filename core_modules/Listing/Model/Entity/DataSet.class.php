@@ -209,14 +209,13 @@ class DataSet implements \Iterator {
      * @return type
      */
     public static function importFromFile(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $filename) {
-        global $objCache, $_DBCONFIG;
+        global $objCache;
         if (!$objCache) {
             $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
         }
-        $memcache = $objCache->getMemcache();
+        $cacheDriver = $objCache->getDoctrineCacheDriver();
         // try to load imported from cache
-        $key = $_DBCONFIG['database'] . $_DBCONFIG['tablePrefix'] . $filename;
-        $objImport = $memcache->get($key);
+        $objImport = $cacheDriver->fetch($filename);
         if ($objImport) {
             return unserialize($objImport);
         }
@@ -228,7 +227,7 @@ class DataSet implements \Iterator {
             throw new DataSetException("Failed to load data from file $filename!");
         }
         // store imported to memcache
-        $memcache->set($key, serialize($objImport));
+        $cacheDriver->save($filename, serialize($objImport));
         return $objImport;
     }
 
@@ -248,20 +247,18 @@ class DataSet implements \Iterator {
      * @throws \Cx\Lib\FileSystem\FileSystemException
      */
     public function exportToFile(\Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface, $filename) {
-        global $objCache, $_DBCONFIG;
+        global $objCache;
         if (!$objCache) {
             $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
         }
-        $memcache = $objCache->getMemcache();
+        $cacheDriver = $objCache->getDoctrineCacheDriver();
         try {
             $objFile = new \Cx\Lib\FileSystem\File($filename);
             $objFile->touch();
             $export = $this->export($exportInterface);
             $objFile->write($export);
-            // store imported to memcache
-            $key = $_DBCONFIG['database'] . $_DBCONFIG['tablePrefix'] . $filename;
             // delete old key from cache, to reload it on the next import
-            $memcache->delete($key);
+            $cacheDriver->delete($filename);
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
             throw new DataSetException("Failed to export data to file $filename!");

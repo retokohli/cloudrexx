@@ -107,6 +107,7 @@ class CacheLib
     protected $userCacheEngine = null;
     protected $memcache = null;
 
+    protected $doctrineCacheEngine = null;
     /**
      * @var \Cx\Lib\ReverseProxy\Model\Entity\ReverseProxyProxy SSI proxy
      */
@@ -785,5 +786,52 @@ class CacheLib
     {
         global $_DBCONFIG;
         return $_DBCONFIG['database'].'.'.DBPREFIX;
+    }
+
+    /**
+     * Detects the correct doctrine cache driver for the user caching engine in use
+     * @return object The doctrine cache driver object
+     */
+    public function getDoctrineCacheDriver() {
+        if($this->doctrineCacheEngine) {
+            return $this->doctrineCacheEngine;
+        }
+        $userCacheEngine = $this->getUserCacheEngine();
+        // check if user caching is active
+        if (!$this->getUserCacheActive()) {
+            $userCacheEngine = \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_OFF;
+        }
+        switch ($userCacheEngine) {
+            case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_APC:
+                $cache = new \Doctrine\Common\Cache\ApcCache();
+                $cache->setNamespace($this->getCachePrefix());
+                break;
+            case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_MEMCACHE:
+                $memcache = $this->getMemcache();
+                if ($memcache instanceof \Memcache) {
+                    $cache = new \Doctrine\Common\Cache\MemcacheCache();
+                    $cache->setMemcache($memcache);
+                } elseif ($memcache instanceof \Memcached) {
+                    $cache = new \Doctrine\Common\Cache\MemcachedCache();
+                    $cache->setMemcache($memcache);
+                }
+                $cache->setNamespace($this->getCachePrefix());
+                break;
+            case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_XCACHE:
+                $cache = new \Doctrine\Common\Cache\XcacheCache();
+                $cache->setNamespace($this->getCachePrefix());
+                break;
+            case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_FILESYSTEM:
+                $cache = new \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver\FileSystemCache(ASCMS_CACHE_PATH);
+                break;
+            default:
+                $arrayCache = new \Doctrine\Common\Cache\ArrayCache();
+                $cache = $arrayCache;
+                break;
+        }
+        if (\Env::get('cache') === null) { // store the doctrine cache engine in the environment repository
+            \Env::set('cache', $cache);
+        }
+        return $cache;
     }
 }
