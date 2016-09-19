@@ -8,8 +8,8 @@ These are the instructions for the installation/setup of a clone of GitHub branc
 1. 
    Execute `git clone https://github.com/Cloudrexx/cloudrexx.git <directory name>`  
 2. 
-   Create a new mysql database (use **utf8_unicode_ci** as collation) and import the structure (**/installer/data/contrexx_dump_structure.sql**) and data (**/installer/data/contrexx_dump_data.sql**) into the newly created database (linux command to get a gzip with all the data for import via phpmyadmin:  
-*`mysql -u<username> -p --database=<databaseName> -e 'source installer/data/contrexx_dump_structure.sql;source installer/data/contrexx_dump_data.sql;'`*  
+   Create a new mysql database (use **utf8_unicode_ci** as collation) and import the structure (**/installer/data/contrexx_dump_structure.sql**) and data (**/installer/data/contrexx_dump_data.sql**) into the newly created database:  
+*`DbName="<databaseName>";mysql -u<username> -p -e 'CREATE DATABASE $DbName COLLATE utf8_unicode_ci;USE $DbName;SOURCE installer/data/contrexx_dump_structure.sql;SOURCE installer/data/contrexx_dump_data.sql;'`*  
 3. 
    Set up the configuration file (**/config/configuration.php**)  
     - set **`$_DBCONFIG['host']`**, **`$_DBCONFIG['database']`**, **`$_DBCONFIG['user']`** and **`$_DBCONFIG['password']`** to the appropriate values
