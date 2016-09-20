@@ -1044,8 +1044,8 @@
                 backdropClass: 'media-browser-modal-backdrop',
                 windowClass: 'media-browser-modal-window'
             }).result.finally(function(){
-                mediabrowserConfig.set('isOpen',false);
-            });
+                    mediabrowserConfig.set('isOpen',false);
+                });
 
             /**
              * Configuring Callbacks

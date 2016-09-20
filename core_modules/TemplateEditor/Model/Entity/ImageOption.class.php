@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
@@ -47,7 +47,7 @@ class ImageOption extends Option
     protected $url;
 
     /**
-     * @param String $name         Name of the option
+     * @param String $name Name of the option
      * @param array  $translations Array with translations for option.
      * @param array  $data         the specific data for this option
      * @param String $type         the type of the option
@@ -87,7 +87,7 @@ class ImageOption extends Option
             array(
                 'TEMPLATEEDITOR_OPTION_VALUE' => $this->getAbsoluteUrl(),
                 'MEDIABROWSER_BUTTON'         =>
-                    $mediaBrowser->getXHtml(
+            $mediaBrowser->getXHtml(
                         $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_CHANGE_PICTURE']
                     ),
             ),
@@ -141,11 +141,11 @@ class ImageOption extends Option
         if (
             !file_exists($this->cx->getCodeBaseDocumentRootPath() . '/' . $urlPath)
             && !file_exists($this->cx->getWebsitePath() . '/' . $urlPath)
-        ) {
+                ) {
             throw new OptionValueNotValidException(
                 sprintf(
                     $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_IMAGE_FILE_NOT_FOUND'],
-                    $data
+            $data
                 )
             );
         }

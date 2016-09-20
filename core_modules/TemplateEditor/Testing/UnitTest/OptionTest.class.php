@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -45,7 +45,7 @@ class OptionTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
 
     public function testTextOption() {
         $type = 'Cx\Core_Modules\TemplateEditor\Model\Entity\TextOption';
-        $testValue = 'TestString';
+        $testValue       = 'TestString';
         $textOption = new $type(
                 'test',
                 array(1 => 'Unit-Test'),
@@ -119,8 +119,8 @@ class OptionTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
 
     public function testColorOption() {
         $type = 'Cx\Core_Modules\TemplateEditor\Model\Entity\ColorOption';
-        $color = '#efefef';
-        $choice = array('#ededed', '#fefefe');
+        $color            = '#efefef';
+        $choice            = array('#ededed', '#fefefe');
         $colorOption = new $type(
             'test',
             array(1 => 'Unit-Test'),
@@ -206,4 +206,5 @@ class OptionTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
             $this->assertTrue(strpos($renderedTemplate, current($searchValue)) !== false);
         }
     }
+
 }

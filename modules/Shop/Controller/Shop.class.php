@@ -1094,11 +1094,12 @@ die("Failed to update the Cart!");
         // Validate parameters
         if ($product_id && empty($category_id)) {
             $objProduct = Product::getById($product_id);
-            if ($objProduct && $objProduct->active()) {
+            if ($objProduct && $objProduct->getStatus()) {
                 $category_id = $objProduct->category_id();
             } else {
-                \CSRF::redirect(
-                    Cx\Core\Routing\Url::fromModuleAndCmd('shop', ''));
+                \Cx\Core\Csrf\Controller\Csrf::redirect(
+                    \Cx\Core\Routing\Url::fromModuleAndCmd('shop', '')
+                );
             }
             if (isset($_SESSION['shop']['previous_category_id'])) {
                 $category_id_previous = $_SESSION['shop']['previous_category_id'];
@@ -1109,7 +1110,7 @@ die("Failed to update the Cart!");
                 }
             }
         }
-		// Remember visited Products
+        // Remember visited Products
         if ($product_id) {
             self::rememberVisitedProducts($product_id);
         }
@@ -1234,6 +1235,7 @@ die("Failed to update the Cart!");
                 self::$objCustomer && self::$objCustomer->is_reseller()
             );
         }
+
         // Only show sorting when there's enough to be sorted
         if ($count > 1) {
             $objSorting->parseHeaders(self::$objTemplate, 'shop_product_order');
@@ -1654,12 +1656,12 @@ die("Failed to update the Cart!");
         }
         return true;
     }
-    
+
     /**
      * Get the valid products
-     * 
+     *
      * @param  array $productIds
-     * 
+     *
      * @return array array of object
      */
     public static function getValidProducts($productIds = array()) {
@@ -1669,11 +1671,11 @@ die("Failed to update the Cart!");
         }
         foreach ($productIds as $productId) {
             $product = Product::getById($productId);
-            if ($product) {
+            if ($product && $product->getStatus()) {
                 $arrProduct[] = $product;
             }
         }
-        
+
         return $arrProduct;
     }
 
@@ -3072,8 +3074,8 @@ die("Shop::processRedirect(): This method is obsolete!");
     /**
      * Set up the "lsv_form" page with the user information form for LSV
      *
-     * @todo		Fill in the order summary automatically.
-     * @todo		Problem: If the order is big enough, it may not fit into the
+     * @todo        Fill in the order summary automatically.
+     * @todo        Problem: If the order is big enough, it may not fit into the
      *  visible text area, thus causing some order items to be cut off
      *  when printed.  This issue should be resolved by replacing the
      *  <textarea> with a variable height element, such as a table, or
@@ -3233,9 +3235,13 @@ die("Shop::processRedirect(): This method is obsolete!");
                 \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', ''));
         }
         self::$show_currency_navbar = false;
+        $stockStatus = Cart::checkProductStockStatus();
+        if ($stockStatus) {
+            \Message::warning($stockStatus);
+        }
         // The Customer clicked the confirm button; this must not be the case
         // the first time this method is called.
-        if (isset($_POST['process'])) {
+        if (isset($_POST['process']) && !$stockStatus) {
             return self::process();
         }
         // Show confirmation page.

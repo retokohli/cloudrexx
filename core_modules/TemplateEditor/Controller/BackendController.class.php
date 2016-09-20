@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 
 /**
  * Class BackendController
@@ -84,7 +84,7 @@ class BackendController
 
     /**
      * This renders the backend overview.
-     * 
+     *
      * @param \Cx\Core\Html\Sigma $template Template for current CMD
      * @param array               $cmd      CMD separated by slashes
      */
@@ -93,8 +93,8 @@ class BackendController
         \Permission::checkAccess(47, 'static');
         $fileStorage =
             new \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSetFileStorage(
-                $this->cx->getWebsiteThemesPath()
-            );
+            $this->cx->getWebsiteThemesPath()
+        );
         $themeOptionRepository =
             new \Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository(
                 $fileStorage
@@ -102,8 +102,8 @@ class BackendController
         $this->themeOptionRepository = $themeOptionRepository;
         $this->themeRepository =
             new \Cx\Core\View\Model\Repository\ThemeRepository();
-        $themeID = isset($_GET['tid']) ? $_GET['tid'] : 1;
-        $this->theme = $this->themeRepository->findById(
+        $themeID                     = isset($_GET['tid']) ? $_GET['tid'] : 1;
+        $this->theme                 = $this->themeRepository->findById(
             $themeID
         );
 
@@ -143,7 +143,7 @@ class BackendController
             // If user opens editor use active preset as active preset.
             if (
                 !isset($_SESSION['TemplateEditor'][$themeID]
-                    ['activePreset']) 
+                    ['activePreset'])
                 || !isset($_GET['preset'])) {
                 $_SESSION['TemplateEditor'][$themeID]['activePreset']
                     = $this->themeOptions->getActivePreset()->getName();
@@ -294,12 +294,12 @@ class BackendController
             array(
                 'TEMPLATEEDITOR_IFRAME_URL' =>
                     \Cx\Core\Routing\Url::fromModuleAndCmd(
-                        'home', '', null,
-                        array(
-                            'preview' => $this->theme->getId(),
-                            'templateEditor' => 1
-                        )
-                    ),
+                    'home', '', null,
+                    array(
+                        'preview' => $this->theme->getId(),
+                        'templateEditor' => 1
+                    )
+                ),
                 'TEMPLATEEDITOR_BACKURL' => './index.php?cmd=ViewManager'
             )
         );

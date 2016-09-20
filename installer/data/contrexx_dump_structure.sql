@@ -2636,6 +2636,7 @@ CREATE TABLE `contrexx_module_news` (
   `allow_comments` tinyint(1) NOT NULL DEFAULT '0',
   `enable_related_news` tinyint(1) NOT NULL DEFAULT '0',
   `enable_tags` tinyint(1) NOT NULL DEFAULT '0',
+  `redirect_new_window` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_news_categories` (
@@ -2800,13 +2801,6 @@ CREATE TABLE `contrexx_module_newsletter_category` (
   `notification_email` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `name` (`name`)
-) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_newsletter_confirm_mail` (
-  `id` int(1) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL DEFAULT '',
-  `content` longtext NOT NULL,
-  `recipients` text NOT NULL,
-  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_newsletter_email_link` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,

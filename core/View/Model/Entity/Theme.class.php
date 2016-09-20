@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Theme
  *
@@ -48,26 +48,25 @@ class Theme extends \Cx\Model\Base\EntityBase
 {
     private $id = null;
     private $themesname;
-
     /**
      * Relative path to the theme folder (relative to cx folder)
      * @var String
      */
     protected $path;
     private $expert;
-    
+
     private $defaults = array();
     private $db;
     private $componentData;
-    
+
     private $configurableLibraries;
-    
+
     const THEME_TYPE_WEB = 'web';
     const THEME_TYPE_PRINT = 'print';
     const THEME_TYPE_MOBILE = 'mobile';
     const THEME_TYPE_APP = 'app';
     const THEME_TYPE_PDF = 'pdf';
-    
+
     const THEME_PREVIEW_FILE = '/images/preview.gif'; // path from theme folder
     const THEME_DEFAULT_PREVIEW_FILE = '/core/Core/View/Media/theme_preview.gif'; // path from the document root
     const THEME_COMPONENT_FILE = '/component.yml'; // path from theme folder
@@ -79,13 +78,13 @@ class Theme extends \Cx\Model\Base\EntityBase
         $expert = 1
     ) {
         $this->db = \Env::get('db');
-        
+
         $this->setId($id);
         $this->setThemesname($themesname);
         $this->setPath($path);
         $this->setExpert($expert);
     }
-    
+
     /**
      * @return string the version number of template
      */
@@ -100,7 +99,7 @@ class Theme extends \Cx\Model\Base\EntityBase
         }
         return $version;
     }
-    
+
     /**
      * @return string the publisher of template
      */
@@ -110,7 +109,7 @@ class Theme extends \Cx\Model\Base\EntityBase
         }
         return $this->componentData['publisher'];
     }
-    
+
     /**
      * @return string the description
      */
@@ -129,16 +128,16 @@ class Theme extends \Cx\Model\Base\EntityBase
         }
         $versionInformation = current($this->componentData['versions']);
         $releaseDate = isset($versionInformation['releaseDate']) ? $versionInformation['releaseDate'] : time();
-        
+
         if (preg_match("/^(0[1-9]|[1-2][0-9]|3[0-1]).(0[1-9]|1[0-2]).[0-9]{4}$/", $releaseDate)) {
-            $releaseDate = $this->getDateTimestamp($releaseDate);            
+            $releaseDate = $this->getDateTimestamp($releaseDate);
         }
-        
+
         $objReleaseDate = new \DateTime(date('Y-m-d', $releaseDate));
 
         return $objReleaseDate;
     }
-    
+
     /**
      * @return string the subtype of the theme
      */
@@ -148,22 +147,22 @@ class Theme extends \Cx\Model\Base\EntityBase
         }
         return $this->componentData['subtype'];
     }
-    
+
     function getDateTimestamp($date) {
         //date format is dd.mm.yyyy
-        $date = str_replace(".", "", $date); 
+        $date = str_replace(".", "", $date);
         $posYear = 4;
-        $posMonth = 2;  
+        $posMonth = 2;
         $posDay = 0;
-        
+
         $year = substr($date, $posYear,4);
         $month = substr($date, $posMonth,2);
-        $day = substr($date, $posDay,2);      
-        
-        $timestamp = mktime(0,0,0,$month,$day,$year); 
+        $day = substr($date, $posDay,2);
+
+        $timestamp = mktime(0,0,0,$month,$day,$year);
         return $timestamp;
     }
-    
+
     /**
      * @return string the preview image source web path
      */
@@ -181,7 +180,7 @@ class Theme extends \Cx\Model\Base\EntityBase
         }
         return $this->cx->getCodeBaseOffsetPath(). self::THEME_DEFAULT_PREVIEW_FILE;
     }
-    
+
     /**
      * @return string the extra description includes the names of end devices, where
      * the theme is set as default
@@ -201,12 +200,12 @@ class Theme extends \Cx\Model\Base\EntityBase
         }
         return null;
     }
-    
+
     /**
      * Returns the array of active languages of theme by given type
-     * 
+     *
      * @param string $type the type of output device
-     * 
+     *
      * @return array array of languages active for this theme
      */
     public function getLanguagesByType($type) {
@@ -227,15 +226,15 @@ class Theme extends \Cx\Model\Base\EntityBase
                 $dbField = 'themesid';
                 break;
         }
-        
+
         $languagesWithThisTheme = array();
         $query = 'SELECT `id`
                     FROM `'.DBPREFIX.'languages`
                   WHERE
                     `frontend` = 1
-                    AND 
+                    AND
                     `'. $dbField .'` = "'. $this->id .'"';
-        
+
         $result = $this->db->Execute($query);
         if ($result !== false) {
             while(!$result->EOF){
@@ -243,10 +242,10 @@ class Theme extends \Cx\Model\Base\EntityBase
                 $result->MoveNext();
             }
         }
-        
+
         return $languagesWithThisTheme;
     }
-    
+
     /**
      * @return string the language abbreviations of activated languages
      * with this template, separated by comma
@@ -273,7 +272,7 @@ class Theme extends \Cx\Model\Base\EntityBase
         }
         return implode(', ', $languagesWithThisTheme);
     }
-    
+
     /**
      * @return array all dependencies (javascript libraries) which cloudrexx should
      * load when showing this template
@@ -302,7 +301,7 @@ class Theme extends \Cx\Model\Base\EntityBase
         }
         return in_array($type, $this->defaults);
     }
-    
+
     /**
      * Checks whether the template is a valid component with component.yml file
      * @return bool true if a component.yml exists
@@ -310,7 +309,7 @@ class Theme extends \Cx\Model\Base\EntityBase
     public function isComponent() {
         return !empty($this->componentData);
     }
-           
+
     /**
      * Compares two dependencies so they are loaded in the correct order.
      * @param array $a the dependency A
@@ -322,14 +321,14 @@ class Theme extends \Cx\Model\Base\EntityBase
         $aVersion = $a['minimumVersionNumber'];
         $bName = $b['name'];
         $bVersion = $b['minimumVersionNumber'];
-        
+
         $aDependencies =
                 isset($this->configurableLibraries[$aName]['versions'][$aVersion]['dependencies']) ?
                     $this->configurableLibraries[$aName]['versions'][$aVersion]['dependencies'] : array();
-        $bDependencies = 
+        $bDependencies =
                 isset($this->configurableLibraries[$bName]['versions'][$bVersion]['dependencies']) ?
                     isset($this->configurableLibraries[$bName]['versions'][$bVersion]['dependencies']) : array();
-        
+
         // b is a dependency of a, b have to be loaded in front of a
         if (isset($aDependencies[$bName])) {
             return 1;
@@ -375,7 +374,7 @@ class Theme extends \Cx\Model\Base\EntityBase
     public function getExpert() {
         return $this->expert;
     }
-    
+
     public function getComponentData() {
         return $this->componentData;
     }
@@ -420,17 +419,17 @@ class Theme extends \Cx\Model\Base\EntityBase
     public function setExpert($expert) {
         $this->expert = intval($expert);
     }
-    
+
     public function setComponentData($componentData) {
         $this->componentData = $componentData;
     }
-    
+
     public function setDependencies($dependencies = array()) {
         $this->configurableLibraries = \JS::getConfigurableLibraries();
         usort($dependencies, array($this, 'sortDependencies'));
         $this->componentData['dependencies'] = $dependencies;
     }
-    
+
     public function addDefault($type) {
         $this->defaults[] = $type;
     }
