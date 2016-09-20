@@ -55,8 +55,15 @@
                         initializeMediaButton.call(mediaButton);
                         mediaButton.trigger('click');
                     }
-                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}')
-                            .children('.elements').append(newElement);
+
+                    var seriesParent = jQuery('#{TEMPLATEEDITOR_OPTION_NAME}')
+                            .children('.elements');
+                    seriesParent.append(newElement);
+                    // Show all remove buttons for this series. This case is
+                    // needed because the remove button is hidden if only one
+                    // element was left before adding the new one
+                    seriesParent.children('.element')
+                            .children('.remove-element').show();
                     // set focus to new created element for better ux
                     jQuery(newElement).find('input, textarea')
                             .first().focus();
