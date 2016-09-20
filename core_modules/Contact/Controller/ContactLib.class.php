@@ -1407,7 +1407,7 @@ class ContactLib
      */
     function _getJsSourceCode($id, $formFields, $preview = false, $show = false)
     {
-        global $objInit;
+        global $objInit, $_ARRAYLANG;
         $this->initCheckTypes();
 
         \JS::activate('jqueryui');
@@ -1430,10 +1430,22 @@ class ContactLib
             $code .= "\t".(!empty($this->arrCheckTypes[$field['check_type']]['regex']) ? '/'.($this->arrCheckTypes[$field['check_type']]['regex']).'/'.$modifiers : "''").",\n";
             $code .= "\t'". (($field['type'] != 'special') ? $field['type'] : $field['special_type']) ."');\n";
         }
-
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'security');
+        $defaultCaptcha = \Cx\Core\Setting\Controller\Setting::getValue('defaultCaptcha', 'Config');
+        $reCapchaValidationCode = '';
+        if ($defaultCaptcha == 'reCaptcha') {
+            $reCapchaValidationCode = <<<JS_reCapchaValidation
+var response = grecaptcha.getResponse();
+if (response.length == 0) {
+    isOk = false;
+    error.push('{$_ARRAYLANG['TXT_CONTACT_RECAPTCHA_ERROR']}');
+}
+JS_reCapchaValidation;
+        }
         $code .= <<<JS_checkAllFields
 function checkAllFields() {
     var isOk = true;
+    var error = [];
 
     for (var field in fields) {
         var type = fields[field][3];
@@ -1485,8 +1497,10 @@ function checkAllFields() {
         }
     }
     }
-
+    $reCapchaValidationCode
     if (!isOk) {
+        error.push('{$_ARRAYLANG['TXT_NEW_ENTRY_ERORR']}');
+        \$J('#contactFormError').html(error.join('<br />'));
         document.getElementById('contactFormError').style.display = "block";
     }
     return isOk;
