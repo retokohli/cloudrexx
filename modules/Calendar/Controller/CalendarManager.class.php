@@ -1433,7 +1433,7 @@ class CalendarManager extends CalendarLibrary
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
 
         $filename = urlencode($objEvent->title).".csv";
-        $fileFormat = isset($_GET['format']) ? $_GET['format'] : '';
+        $fileFormat = isset($_GET['format']) ? contrexx_input2raw($_GET['format']) : '';
         $objRegistrationManager = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($objEvent, $getRegistrations, $getDeregistrations, $getWaitlist);
         $objRegistrationManager->getRegistrationList();
 

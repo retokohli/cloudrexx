@@ -81,7 +81,7 @@
             var url = "index.php?cmd={CALENDAR_MODULE_NAME}&act=event_registrations&tpl=" + $J('.registration-tab .active').data('registrationType') + "&id={CALENDAR_EVENT_ID}&date=" + selectedDateFilter + '&csrf=' + cx.variables.get('csrf', 'contrexx');
             window.location.replace(url);
         });
-        $J('.export_csv').click(function(){
+        $J('.export_csv').click(function() {
             var exportDialog = cx.ui.dialog({
                 width: 520,
                 title: '{TXT_CALENDAR_EXPORT_TITLE}',
@@ -99,11 +99,11 @@
                     }
                 },
                 close: function() {
-                    $J( ".exportContainer" ).html();
+                    $J( this ).dialog( "close" );
                 }
-    });
+            });
             exportDialog.open();
-        })
+        });
     });
 // ]]>
 </script>
