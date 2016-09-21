@@ -78,12 +78,12 @@ class Sitemap
         $this->_objTpl->setTemplate($this->pageContent);
 
         if(isset($this->_objTpl->_blocks['sitemap'])) {
-            $sm = new \Cx\Core\PageTree\SitemapPageTree(\Env::get('em'), $license, 0, null, FRONTEND_LANG_ID);
+            $sm = new \Cx\Core\PageTree\SitemapPageTree(\Env::get('em'), $license, 0, null, FRONTEND_LANG_ID, null, true, true);
             $sm->setVirtualLanguageDirectory(\Env::get('virtualLanguageDirectory'));
             $sm->setTemplate($this->_objTpl);
             $sm->render();
         }
-        
+
         /*        if (isset($this->_objTpl->_blocks['sitemap'])) {
             $this->_initialize();
             $this->_doSitemapArray();
@@ -132,7 +132,7 @@ class Sitemap
     */
     function doSitemap()
     {
-        
+
         if ($this->_doSitemap && is_array($this->_sitemapPageName)) {
             $this->_sitemapBlock = trim($this->_objTpl->_blocks['sitemap']);
             if (ereg('.*{SUB_MENU}.*', $this->_sitemapBlock)) {

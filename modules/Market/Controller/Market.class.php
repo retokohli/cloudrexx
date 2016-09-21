@@ -207,6 +207,7 @@ class Market extends MarketLibrary
             $this->_objTpl->hideBlock('showCategoriesTitle');
             $this->_objTpl->parse('showInsertEntries');
             $this->_objTpl->hideBlock('showEntriesHeader');
+
             $this->showLatestEntries();
         }else{
             $title             = $this->categories['name'][$_GET['id']];
@@ -305,8 +306,8 @@ class Market extends MarketLibrary
         global $objDatabase, $_ARRAYLANG;
 
         $today = mktime(0, 0, 0, date("m")  , date("d"), date("Y"));
-        $type = "";
-        $typePaging = "";
+        $type                 = "";
+        $typePaging            = "";
 
         if ($this->settings['maxdayStatus'] != 0) {
             $this->checkEnddate();
@@ -464,7 +465,7 @@ class Market extends MarketLibrary
                    $this->_objTpl->setVariable(array(
                     'MARKET_ENDDATE'            => $enddate,
                     'MARKET_TITLE'                => $objResult->fields['title'],
-					'MARKET_COLOR'                => $objResult->fields['color'],
+                    'MARKET_COLOR'                => $objResult->fields['color'],
                     'MARKET_DESCRIPTION'        => substr($objResult->fields['description'], 0, 110)."<a href='index.php?section=Market&amp;cmd=detail&amp;id=".$objResult->fields['id']."' target='_self'>[...]</a>",
                     'MARKET_PRICE'                => $price,
                     'MARKET_PICTURE'            => $image,
@@ -484,15 +485,20 @@ class Market extends MarketLibrary
                 $i++;
                 $objResult->MoveNext();
                }
+
            }
+
+
 
            if ($count <= 0) {
             $this->_objTpl->setVariable(array(
-                'MARKET_NO_ENTRIES_FOUND'        => $_ARRAYLANG['TXT_MARKET_NO_ENTRIES_FOUND'],
+                'MARKET_NO_ENTRIES_FOUND'            => $_ARRAYLANG['TXT_MARKET_NO_ENTRIES_FOUND'],
             ));
 
             $this->_objTpl->parse('noEntries');
         }
+
+
     }
 
     function showLatestEntries()
@@ -530,12 +536,13 @@ class Market extends MarketLibrary
 
                     $width != '' ? $width = 'width="'.$width.'"' : $width = '';
                     $height != '' ? $height = 'height="'.$height.'"' : $height = '';
-                    $image = '<img src="'.$this->mediaWebPath.'pictures/'.$pic.'" '.$width.' '.$height.' border="0" alt="'.$objEntries->fields['title'].'" />';
+
+                       $image = '<img src="'.$this->mediaWebPath.'pictures/'.$pic.'" '.$width.' '.$height.' border="0" alt="'.$objEntries->fields['title'].'" />';
 
                        $this->_objTpl->setVariable(array(
-                        'MARKET_TITLE'   => htmlentities($objEntries->fields['title'], ENT_QUOTES, CONTREXX_CHARSET),
-                        'MARKET_PICTURE' => $image,
-                        'MARKET_ROW'     => ($entryNr % 2 == ($rowNr % 2) ? 'description' : 'description'),
+                        'MARKET_TITLE'                => htmlentities($objEntries->fields['title'], ENT_QUOTES, CONTREXX_CHARSET),
+                        'MARKET_PICTURE'            => $image,
+                        'MARKET_ROW'                => ($entryNr % 2 == ($rowNr % 2) ? 'description' : 'description'),
                         'MARKET_DETAIL'  => "index.php?section=Market&amp;cmd=detail&amp;id=".$objEntries->fields['id']
                     ));
                     $this->_objTpl->parse('showLatestEntryCols');
@@ -728,8 +735,8 @@ class Market extends MarketLibrary
 
                 $residence = $objUser->getProfileAttribute('zip').' '.$objUser->getProfileAttribute('city');
             } else {
-            	$TXTuserDetails 	= $_ARRAYLANG['TXT_MARKET_CONTACT'];
-                $userDetails 		= $user.$userMail;
+                $TXTuserDetails     = $_ARRAYLANG['TXT_MARKET_CONTACT'];
+                $userDetails         = $user.$userMail;
             }
 
             if ($this->entries[$id]['userdetails'] != 1) {
@@ -1186,17 +1193,17 @@ class Market extends MarketLibrary
             $searchTermExp = "&amp;check=exp&amp;term=".$searchTermOrg;
 
             if ($_GET['catid'] != '') {
-                $query_search   .="AND catid LIKE ('%".$_GET['catid']."%') ";
-                $searchTermExp  .= "&amp;catid=".$_GET['catid'];
+                $query_search         .="AND catid LIKE ('%".$_GET['catid']."%') ";
+                $searchTermExp        .= "&amp;catid=".$_GET['catid'];
             }
             if ($_GET['type'] != '') {
-                $query_search   .="AND type LIKE ('%".$_GET['type']."%') ";
-                $searchTermExp  .= "&amp;type=".$_GET['type'];
+                $query_search         .="AND type LIKE ('%".$_GET['type']."%') ";
+                $searchTermExp        .= "&amp;type=".$_GET['type'];
             }
 
             if ($_GET['price'] != '') {
-                $query_search   .="AND price <= ".$_GET['price']." ";
-                $searchTermExp  .= "&amp;price=".$_GET['price'];
+                $query_search         .="AND price <= ".$_GET['price']." ";
+                $searchTermExp        .= "&amp;price=".$_GET['price'];
             }
         }
 
