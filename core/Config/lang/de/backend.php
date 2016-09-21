@@ -118,6 +118,11 @@ $_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEANALYTICSTRACKINGID'] = 'Google Analytics Tra
 $_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEANALYTICSTRACKINGID_TOOLTIP_HELP'] = 'Geben Sie hier Ihre Google Analytics Tracking-ID ein. Diese finden Sie in Ihrem Google Analytics Konto unter Verwaltung => Tracking-Code.';
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY'] = 'Kennwort muss der Komplexitätsvoraussetzung entsprechen';
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY_TOOLTIP_HELP'] = 'Kennwort muss folgende Zeichen enthalten: Gross-, Kleinbuchstabe und Zahl';
+$_ARRAYLANG['TXT_CORE_CONFIG_CAPTCHAMETHOD'] = 'CAPTCHA Methode';
+$_ARRAYLANG['TXT_CORE_CONFIG_RECAPTCHASITEKEY'] = 'Site key für reCAPTCHA';
+$_ARRAYLANG['TXT_CORE_CONFIG_RECAPTCHASECRETKEY'] = 'Secret key für reCAPTCHA';
+$_ARRAYLANG['TXT_CORE_CONFIG_CONTREXX_CAPTCHA_LABEL'] = 'contrexxCAPTCHA';
+$_ARRAYLANG['TXT_CORE_CONFIG_RECAPTCHA_LABEL'] = 'reCAPTCHA';
 $_ARRAYLANG['TXT_CORE_CONFIG_ADVANCEDUPLOADBACKEND'] = 'Erweiterte Dateiuploadmöglickeiten';
 $_ARRAYLANG['TXT_CORE_CONFIG_ADVANCEDUPLOADFRONTEND'] = 'Erweiterte Dateiuploadmöglickeiten';
 $_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLFRONTEND_TOOLTIP_HELP'] = $_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLBACKEND_TOOLTIP_HELP'] = 'Cloudrexx erzwingt standardmässig kein Protokoll. Sie können HTTP erzwingen um die Suchmaschinen-Bewertung zu verbessern oder HTTPS (Hypertext Transfer Protocol Secure), ein Protokoll das zusätzlich mehr Sicherheit garantiert, aktivieren. Sollte Ihr Webserver dies nicht unterstützen, deaktiviert Cloudrexx diese Einstellung automatisch wieder.';

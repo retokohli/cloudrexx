@@ -470,6 +470,21 @@ class Config
         return implode(',', $options);
     }
 
+    /**
+     * Returns captcha options
+     *
+     * @return string captcha options as string
+     */
+    public static function getCaptchaOptions()
+    {
+        global $_ARRAYLANG;
+
+        $options = array(
+            'contrexxCaptcha:' .  $_ARRAYLANG['TXT_CORE_CONFIG_CONTREXX_CAPTCHA_LABEL'],
+            'reCaptcha:' .  $_ARRAYLANG['TXT_CORE_CONFIG_RECAPTCHA_LABEL']
+        );
+        return implode(',', $options);
+    }
 
     /**
      * Sets debugging related template variables according to session state.
@@ -1328,16 +1343,16 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Passwords must meet the complexity requirements");
             }
             if (
-                !\Cx\Core\Setting\Controller\Setting::isDefined('defaultCaptcha') &&
+                !\Cx\Core\Setting\Controller\Setting::isDefined('captchaMethod') &&
                 !\Cx\Core\Setting\Controller\Setting::add(
-                    'defaultCaptcha',
-                    (isset($existingConfig['defaultCaptcha'])
-                        ? $existingConfig['defaultCaptcha']
+                    'captchaMethod',
+                    (isset($existingConfig['captchaMethod'])
+                        ? $existingConfig['captchaMethod']
                         : 'contrexxCaptcha'
                     ),
                     3,
                     \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
-                    'contrexxCaptcha:contrexxCAPTCHA,reCaptcha:reCAPTCHA',
+                    '{src:\\'.__CLASS__.'::getCaptchaOptions()}',
                     'security'
                 )
             ) {

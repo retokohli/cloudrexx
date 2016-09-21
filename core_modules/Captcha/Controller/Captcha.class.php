@@ -53,8 +53,8 @@ class Captcha {
         if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
 
         \Cx\Core\Setting\Controller\Setting::init('Config', 'security');
-        $defaultCaptcha = \Cx\Core\Setting\Controller\Setting::getValue('defaultCaptcha', 'Config');
-        switch ($defaultCaptcha) {
+        $captchaMethod = \Cx\Core\Setting\Controller\Setting::getValue('captchaMethod', 'Config');
+        switch ($captchaMethod) {
             case 'reCaptcha':
                 $this->objCaptcha = new ReCaptcha();
                 break;

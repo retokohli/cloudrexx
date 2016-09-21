@@ -87,7 +87,7 @@ class ReCaptcha implements CaptchaInterface {
 
         $lang   = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
         $code   = <<<HTML
-<div class="g-recaptcha" data-sitekey="{$this->site_key}" $tabIndexAttr></div>
+<div id="captcha" class="g-recaptcha" data-sitekey="{$this->site_key}" $tabIndexAttr></div>
 <script type="text/javascript" src="https://www.google.com/recaptcha/api.js?hl=$lang"></script>
 HTML;
         return $code;

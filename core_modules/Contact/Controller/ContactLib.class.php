@@ -1431,21 +1431,27 @@ class ContactLib
             $code .= "\t'". (($field['type'] != 'special') ? $field['type'] : $field['special_type']) ."');\n";
         }
         \Cx\Core\Setting\Controller\Setting::init('Config', 'security');
-        $defaultCaptcha = \Cx\Core\Setting\Controller\Setting::getValue('defaultCaptcha', 'Config');
-        $reCapchaValidationCode = '';
-        if ($defaultCaptcha == 'reCaptcha') {
-            $reCapchaValidationCode = <<<JS_reCapchaValidation
+        $captchaMethod = \Cx\Core\Setting\Controller\Setting::getValue('captchaMethod', 'Config');
+        $capchaValidationCode = '';
+        if ($captchaMethod == 'reCaptcha') {
+            $capchaValidationCode = <<<JS_reCapchaValidation
 var response = grecaptcha.getResponse();
 if (response.length == 0) {
-    isOk = false;
-    error.push('{$_ARRAYLANG['TXT_CONTACT_RECAPTCHA_ERROR']}');
+    isCaptchaOk = false;
 }
 JS_reCapchaValidation;
+        } else if ($captchaMethod == 'contrexxCaptcha') {
+            $capchaValidationCode = <<<JS_contrexxCapchaValidation
+var code = \$J('#coreCaptchaCode').val();
+if (\$J.trim(code) === '') {
+    isCaptchaOk = false;
+}
+JS_contrexxCapchaValidation;
         }
         $code .= <<<JS_checkAllFields
 function checkAllFields() {
-    var isOk = true;
-    var error = [];
+    var isOk = true, isCaptchaOk = true;
+    var captchaError = '{$_ARRAYLANG['TXT_CONTACT_RECAPTCHA_ERROR']}';
 
     for (var field in fields) {
         var type = fields[field][3];
@@ -1497,11 +1503,22 @@ function checkAllFields() {
         }
     }
     }
-    $reCapchaValidationCode
+    $capchaValidationCode
+    document.getElementById('contactFormError').style.display = "none";
     if (!isOk) {
-        error.push('{$_ARRAYLANG['TXT_NEW_ENTRY_ERORR']}');
-        \$J('#contactFormError').html(error.join('<br />'));
         document.getElementById('contactFormError').style.display = "block";
+    }
+
+    if (\$J('#contactFormCaptchaError').length) {
+        \$J('#contactFormCaptchaError').remove();
+    }
+    if (!isCaptchaOk) {
+        \$J('<div />')
+        .addClass('text-danger')
+        .attr('id', 'contactFormCaptchaError')
+        .text(captchaError)
+        .prependTo('#captcha');
+        return false;
     }
     return isOk;
 }
