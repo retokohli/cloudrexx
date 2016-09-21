@@ -97,10 +97,10 @@ class MarketManager extends MarketLibrary
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "
             <a href='index.php?cmd=Market' class='".($this->act == '' ? 'active' : '')."'>".$_CORELANG['TXT_OVERVIEW']."</a>
-            <a href='index.php?cmd=Market&act=addCategorie' class='".($this->act == 'addCategorie' ? 'active' : '')."'>".$_CORELANG['TXT_NEW_CATEGORY']."</a>
-            <a href='index.php?cmd=Market&act=addEntry' class='".($this->act == 'addEntry' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEW_ENTRY']."</a>
-            <a href='index.php?cmd=Market&act=entries' class='".($this->act == 'entries' ? 'active' : '')."'>".$_ARRAYLANG['TXT_ENTRIES']."</a>
-            <a href='index.php?cmd=Market&act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_CORELANG['TXT_SETTINGS']."</a>");
+            <a href='index.php?cmd=Market&amp;act=addCategorie' class='".($this->act == 'addCategorie' ? 'active' : '')."'>".$_CORELANG['TXT_NEW_CATEGORY']."</a>
+            <a href='index.php?cmd=Market&amp;act=addEntry' class='".($this->act == 'addEntry' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEW_ENTRY']."</a>
+            <a href='index.php?cmd=Market&amp;act=entries' class='".($this->act == 'entries' ? 'active' : '')."'>".$_ARRAYLANG['TXT_ENTRIES']."</a>
+            <a href='index.php?cmd=Market&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_CORELANG['TXT_SETTINGS']."</a>");
     }
 
     /**
@@ -150,11 +150,6 @@ class MarketManager extends MarketLibrary
                 $this->statusEntry();
                 $this->entries();
             break;
-            /*case 'statusEntry':
-                \Permission::checkAccess(98, 'static');
-                $this->deleteEntry();
-                $this->entries();
-            break;*/
             case 'deleteEntry':
                 \Permission::checkAccess(98, 'static');
                 $this->deleteEntry();
@@ -495,7 +490,7 @@ class MarketManager extends MarketLibrary
         }else{
             $where     = 'catid';
             $like     = intval($_GET['catid']);
-            $sortId    = '&catid='.$_GET['catid'];
+            $sortId    = '&amp;catid='.$_GET['catid'];
         }
 
         if (isset($_POST['term'])) {
@@ -505,7 +500,6 @@ class MarketManager extends MarketLibrary
 
         if (!isset($_SESSION['market'])) {
             $_SESSION['market'] = array();
-//            $_SESSION['market']['sort'] = array();
         }
 
         // Sort
@@ -994,7 +988,7 @@ class MarketManager extends MarketLibrary
                     $status = $objFile->delFile($this->mediaPath, $this->mediaWebPath, "pictures/".$_POST['picOld']);
                 }
 */
-                        }else{
+            } else {
                 $picture = $_POST['picOld'];
             }
 
@@ -1237,7 +1231,7 @@ class MarketManager extends MarketLibrary
             }
 
             if ($objResult !== false) {
-                \Cx\Core\Csrf\Controller\Csrf::header('Location: ?cmd=Market&act=settings');
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?cmd=Market&act=settings');
                 $this->strOkMessage = $_ARRAYLANG['TXT_MARKET_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1273,7 +1267,6 @@ class MarketManager extends MarketLibrary
                 $objResult->MoveNext();
             }
           }
-
           $mailActive == 1 ? $checked = 'checked' : $checked = '';
 
         $this->_objTpl->setVariable(array(
@@ -1309,7 +1302,7 @@ class MarketManager extends MarketLibrary
         if (isset($_POST['submitSettings'])) {
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_mail SET title='".$_POST['mailTitle']."', content='".$_POST['mailContent']."', mailcc='".$_POST['mailCC']."', active='".$_POST['mailOn']."' WHERE id='1'");
             if ($objResult !== false) {
-                \Cx\Core\Csrf\Controller\Csrf::header('Location: ?cmd=Market&act=settings&tpl=email');
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?cmd=Market&act=settings&tpl=email');
                 $this->strOkMessage = $_ARRAYLANG['TXT_MARKET_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1386,7 +1379,7 @@ class MarketManager extends MarketLibrary
             }
 
             if ($objResult !== false) {
-                \Cx\Core\Csrf\Controller\Csrf::header('Location: ?cmd=Market&act=settings&tpl=email_code');
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?cmd=Market&act=settings&tpl=email_code');
                 $this->strOkMessage = $_ARRAYLANG['TXT_MARKET_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
