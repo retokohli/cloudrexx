@@ -1162,14 +1162,13 @@ class Market extends MarketLibrary
         $today                 = mktime(0, 0, 0, date("m")  , date("d"), date("Y"));
         $searchTermOrg         = contrexx_addslashes($_GET['term']);
         $searchTerm         = contrexx_addslashes($_GET['term']);
-        $tmpTerm = $query_search = '';
-        $array = explode(' ', $searchTerm);
         $tmpTerm = '';
         $query_search = '';
         $catId = '';
         if (isset($_GET['catid'])) {
             $catId = intval($_GET['catid']);
         }
+        $array = explode(' ', $searchTerm);
         for($x = 0; $x < count($array); $x++) {
             $tmpTerm .= $array[$x].'%';
         }
@@ -1235,7 +1234,7 @@ class Market extends MarketLibrary
                 $objDatabase,
                 null,
                 'LIKE',
-                "(%$searchTerm%)",
+                "('%$searchTerm%')",
                 'OR '
             );
             $query="SELECT  id,
@@ -1246,12 +1245,12 @@ class Market extends MarketLibrary
                             userid,
                             enddate,
                             premium,
-                            " . $specialFieldsQuery . "
+                            " . $specialFieldsQuery . ",
                       MATCH (title,description) AGAINST ('%$searchTerm%') AS score
                        FROM ".DBPREFIX."module_market
                       WHERE (title LIKE ('%$searchTerm%')
                               OR description LIKE ('%$searchTerm%')
-                              " . $specialFieldsComparision . "
+                              OR " . $specialFieldsComparision . "
                             )
                          ".$query_search."
                         AND status = '1'

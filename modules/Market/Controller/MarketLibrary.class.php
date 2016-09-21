@@ -611,7 +611,7 @@ class MarketLibrary
      *                                              comparisons i.e. OR
      * @return string
      */
-    protected function getSpecialFieldsQueryPart($dbCon, $data = null, $comparator = '', $compareValue = '', $chainingOperator = '')
+    protected function getSpecialFieldsQueryPart($dbCon, $data = null, $comparator = '', $compareValue = '', $chainingOperator = ',')
     {
         $specialFields = array();
         // get amount of special fields
@@ -630,14 +630,13 @@ class MarketLibrary
             if (
                  empty($data) &&
                 !empty($comparator) &&
-                !empty($compareValue) &&
-                !empty($chainingOperator)
+                !empty($compareValue)
             ) {
                 $value = ' ' . $comparator . ' ' . $compareValue;
             }
-            $specialFields[] = $chainingOperator . 'spez_field_' . $i . $value;
+            $specialFields[] = 'spez_field_' . $i . $value;
         }
-        $specialFields = join(', ', $specialFields);
+        $specialFields = join(' '.$chainingOperator.' ', $specialFields);
         return $specialFields;
     }
 
