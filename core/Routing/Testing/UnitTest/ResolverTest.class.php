@@ -326,7 +326,8 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
     /**
      * Create a page based on the given arguments
      *
-     * @param stirng  $title                Page title
+     * @param string  $title                Page title
+     * @param string  $language             Language id
      * @param string  $type                 Type of page Application, content, .. etc
      * @param string  $application          Component name, If page type is applicaton
      * @param string  $cmd                  Cmd value
@@ -337,6 +338,7 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      */
     protected function getPage(
         $title,
+        $language,
         $type,
         $application = '',
         $cmd = '',
@@ -354,7 +356,7 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 
         $p = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p->setType($type);
-        $p->setLang(1);
+        $p->setLang($language);
         $p->setTitle($title);
         $p->setNode($n);
         $p->setNodeIdShadowed($n->getId());
@@ -371,6 +373,7 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 
         self::$em->persist($p);
         self::$em->flush();
+        self::$em->refresh($n);
 
         return $p;
     }
@@ -380,7 +383,8 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      *
      * @dataProvider resolverDataProvider Data value provider
      *
-     * @param stirng  $title                Page title
+     * @param string  $title                Page title
+     * @param string  $language             Language id
      * @param string  $type                 Type of page Application, content, .. etc
      * @param string  $application          Component name, If page type is applicaton
      * @param string  $cmd                  Cmd value
@@ -390,6 +394,7 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      */
     public function testResolver(
         $title,
+        $language,
         $type,
         $application = '',
         $cmd = '',
@@ -399,14 +404,14 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
     ) {
         global $url;
 
-        $this->getPage($title, $type, $application, $cmd, $frontendPermission, $accessId);
+        $this->getPage($title, $language, $type, $application, $cmd, $frontendPermission, $accessId);
 
-        $url      = new \Cx\Core\Routing\Url('http://example.com/de/simple-content-page');
-        $resolver = new \Cx\Core\Routing\Resolver($url, 1, self::$em, '', $this->mockFallbackLanguages, false);
+        $langCode = \FWLanguage::getLanguageCodeById($language);
+        $url      = new \Cx\Core\Routing\Url('http://example.com/'. $langCode .'/'. $expectedResult);
+        $resolver = new \Cx\Core\Routing\Resolver($url, $language, self::$em, '', $this->mockFallbackLanguages, false);
         $resolver->resolve();
         $p = $resolver->getPage();
 
-        $this->assertEquals(1, $p->getLang());
         $this->assertEquals($expectedResult, $p->getSlug());
     }
 
@@ -418,7 +423,7 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
     public function resolverDataProvider()
     {
         return array(
-            array('Simple conent page', \Cx\Core\ContentManager\Model\Entity\Page::TYPE_CONTENT, '', '', null, null, 'simple-content-page'),
+            array('simple content page', 1, \Cx\Core\ContentManager\Model\Entity\Page::TYPE_CONTENT, '', '', null, null, 'simple-content-page'),
         );
     }
 }
