@@ -90,7 +90,7 @@ class MarketLibrary
         }
 
         if($where != '' && $like != ''){
-            $where = "WHERE $where LIKE $like";
+            $where = "WHERE ".contrexx_input2db($where)." LIKE ".contrexx_input2db($like);
         }
         $specFieldCount = $objDatabase->Execute("SELECT COUNT(*) AS `count` FROM `" . DBPREFIX . "module_market_spez_fields`");
         $specFieldCount = $specFieldCount->fields['count'];
@@ -158,12 +158,19 @@ class MarketLibrary
      * Insert the advertisement entry
      *
      * @param integer $backend
-     * 
+     *
      * @return null
      */
 
     public function insertEntry($backend){
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
+
+        $settings = $this->getSettings();
+
+        if (!$backend && $settings['useTerms'] && !isset($_POST['confirm'])) {
+            $this->strErrMessage = $_ARRAYLANG['TXT_MARKET_CONFIRM_TERMS'];
+            return;
+        }
 
         if ($_POST['uploadImage'] != "") {
             $picture = $this->uploadPicture();
@@ -174,7 +181,6 @@ class MarketLibrary
         }
 
         if($picture != "error"){
-
             if($_POST['forfree'] == 1){
                 $price = "forfree";
             }elseif($_POST['agreement'] == 1){
@@ -206,7 +212,7 @@ class MarketLibrary
             $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_market SET
                                 type='".contrexx_addslashes($_POST['type'])."',
                                   title='".contrexx_addslashes($_POST['title'])."',
-								  color='".contrexx_addslashes($_POST['color'])."',
+                                  color='".contrexx_addslashes($_POST['color'])."',
                                   description='".contrexx_addslashes($_POST['description'])."',
                                 premium='".contrexx_addslashes($_POST['premium'])."',
                                   picture='".contrexx_addslashes($picture)."',
@@ -224,8 +230,10 @@ class MarketLibrary
 
             if($objResult !== false){
                 $this->strOkMessage = $_ARRAYLANG['TXT_MARKET_ADD_SUCCESS'];
-                if($backend == 0){
-                    $this->sendCodeMail($objDatabase->Insert_ID());
+                if($backend == 0 && $settings['confirmFrontend']){
+                    $entryId = $objDatabase->Insert_ID();
+                    $this->sendCodeMail($entryId);
+                    return $entryId;
                 }
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
@@ -270,7 +278,7 @@ class MarketLibrary
                 $mailTitle            = $objResult->fields['title'];
                 $mailContent        = $objResult->fields['content'];
                 $mailCC                = $objResult->fields['mailcc'];
-                $mailTo                = $objResult->fields['mailcc'];
+                $mailTo                = $objResult->fields['mailto'];
                 $mailOn                = $objResult->fields['active'];
                 $objResult->MoveNext();
             };
@@ -288,9 +296,6 @@ class MarketLibrary
 
         for($x = 0; $x < 8; $x++){
           $mailTitle = str_replace($array_1[$x], $array_2[$x], $mailTitle);
-        }
-
-        for($x = 0; $x < 8; $x++){
           $mailContent = str_replace($array_1[$x], $array_2[$x], $mailContent);
         }
 
@@ -398,9 +403,6 @@ class MarketLibrary
 
             for($x = 0; $x < 8; $x++){
               $mailTitle = str_replace($array_1[$x], $array_2[$x], $mailTitle);
-            }
-
-            for($x = 0; $x < 8; $x++){
               $mailContent = str_replace($array_1[$x], $array_2[$x], $mailContent);
             }
 
@@ -460,7 +462,7 @@ class MarketLibrary
         $path   = "pictures/";
 
         //check file array
-        $uploaderId = isset($_POST['marketUploaderId']) 
+        $uploaderId = isset($_POST['marketUploaderId'])
                       ? contrexx_input2raw($_POST['marketUploaderId'])
                       : 0;
         $fileName   = isset($_POST['uploadImage'])
