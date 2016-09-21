@@ -163,7 +163,7 @@ class MarketLibrary
 
         $settings = $this->getSettings();
 
-        if ($settings['useTerms'] && !isset($_POST['confirm'])) {
+        if (!$backend && $settings['useTerms'] && !isset($_POST['confirm'])) {
             $this->strErrMessage = $_ARRAYLANG['TXT_MARKET_CONFIRM_TERMS'];
             return;
         }
