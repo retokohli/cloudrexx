@@ -4129,6 +4129,11 @@ INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`,
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (3,'spez_field_3','',1,1,0);
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (4,'spez_field_4','',1,1,0);
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (5,'spez_field_5','',1,1,0);
+INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (6,'spez_field_6','',1,1,0);
+INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (7,'spez_field_7','',1,1,0);
+INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (8,'spez_field_8','',1,1,0);
+INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (9,'spez_field_9','',1,1,0);
+INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (10,'spez_field_10','',1,1,0);
 INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media1_frontend_changable','off');
 INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media2_frontend_changable','off');
 INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media3_frontend_changable','off');

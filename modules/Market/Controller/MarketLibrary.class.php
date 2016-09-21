@@ -48,6 +48,11 @@ namespace Cx\Modules\Market\Controller;
  */
 class MarketLibrary
 {
+    /**
+     * @var array specialFields
+     * @access protected
+     */
+    protected $specialFields = array();
 
     function getCategories()
     {
@@ -87,7 +92,8 @@ class MarketLibrary
         if($where != '' && $like != ''){
             $where = "WHERE ".contrexx_input2db($where)." LIKE ".contrexx_input2db($like);
         }
-
+        $specFieldCount = $objDatabase->Execute("SELECT COUNT(*) AS `count` FROM `" . DBPREFIX . "module_market_spez_fields`");
+        $specFieldCount = $specFieldCount->fields['count'];
         $objResultEntries = $objDatabase->Execute('SELECT * FROM '.DBPREFIX.'module_market '.$where.' '.$orderBy);
            if ($objResultEntries !== false){
                while (!$objResultEntries->EOF) {
@@ -109,11 +115,9 @@ class MarketLibrary
                    $this->entries[$objResultEntries->fields['id']]['status']             = $objResultEntries->fields['status'];
                    $this->entries[$objResultEntries->fields['id']]['regkey']             = $objResultEntries->fields['regkey'];
                    $this->entries[$objResultEntries->fields['id']]['sort_id']             = $objResultEntries->fields['sort_id'];
-                   $this->entries[$objResultEntries->fields['id']]['spez_field_1']     = $objResultEntries->fields['spez_field_1'];
-                   $this->entries[$objResultEntries->fields['id']]['spez_field_2']     = $objResultEntries->fields['spez_field_2'];
-                   $this->entries[$objResultEntries->fields['id']]['spez_field_3']     = $objResultEntries->fields['spez_field_3'];
-                   $this->entries[$objResultEntries->fields['id']]['spez_field_4']     = $objResultEntries->fields['spez_field_4'];
-                   $this->entries[$objResultEntries->fields['id']]['spez_field_5']     = $objResultEntries->fields['spez_field_5'];
+                   for ($i = 1; $i <= $specFieldCount; ++$i) {
+                       $this->entries[$objResultEntries->fields['id']]['spez_field_' . $i]      = $objResultEntries->fields['spez_field_' . $i];
+                   }
                    $objResultEntries->MoveNext();
                }
            }
@@ -204,7 +208,7 @@ class MarketLibrary
             }
 
             $objFWUser = \FWUser::getFWUserObject();
-
+            $specFields = $this->getSpecialFieldsQueryPart($objDatabase, $_POST);
             $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_market SET
                                 type='".contrexx_addslashes($_POST['type'])."',
                                   title='".contrexx_addslashes($_POST['title'])."',
@@ -219,12 +223,8 @@ class MarketLibrary
                                   userid='".($objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0)."',
                                   name='".contrexx_addslashes($_POST['name'])."',
                                   email='".contrexx_addslashes($_POST['email'])."',
-                                  userdetails='".contrexx_addslashes($_POST['userdetails'])."',
-                                  spez_field_1='".contrexx_addslashes($_POST['spez_1'])."',
-                                  spez_field_2='".contrexx_addslashes($_POST['spez_2'])."',
-                                  spez_field_3='".contrexx_addslashes($_POST['spez_3'])."',
-                                  spez_field_4='".contrexx_addslashes($_POST['spez_4'])."',
-                                  spez_field_5='".contrexx_addslashes($_POST['spez_5'])."',
+                                  userdetails='".contrexx_addslashes($_POST['userdetails'])."', ".
+                                  $specFields.",
                                   regkey='".$key."',
                                   status='".$status."'");
 
@@ -592,6 +592,106 @@ class MarketLibrary
             'style' => 'display:none'
         ));
         return $uploader;
+    }
+
+    /**
+     * Get the string to select, insert, update or compare special fields
+     * without a leading or trailing decimal point
+     *
+     * In case of comparison the chaining operator will be added in front of
+     * every special field
+     * @param \ADOConnection    $dbCon              The database connection
+     * @param array             $data               The data to insert or
+     *                                              update the entry
+     * @param string            $comparator         Relational operator
+     *                                              i.e. LIKE
+     * @param string            $compareValue       Value to use with relational
+     *                                              operator
+     * @param string            $chainingOperator   Operator to chain
+     *                                              comparisons i.e. OR
+     * @return string
+     */
+    protected function getSpecialFieldsQueryPart($dbCon, $data = null, $comparator = '', $compareValue = '', $chainingOperator = ',')
+    {
+        $specialFields = array();
+        // get amount of special fields
+        $specialFieldCount = count($this->specialFields);
+        if (empty($specialFieldCount)) {
+            $specialFieldCount = $dbCon->Execute("SELECT COUNT(*) AS `count` FROM `" . DBPREFIX . "module_market_spez_fields` WHERE `lang_id` = 1");
+            $specialFieldCount = $specialFieldCount->fields['count'];
+        }
+        for ($i = 1; $i <= $specialFieldCount; ++$i) {
+            $value = '';
+            // Data needs to  be updated or inserted
+            if (!empty($data)) {
+                $value = '=\'' . contrexx_input2db($data['spez_' . $i]) . '\'';
+            }
+            // Special fields are used in WHERE or similar comparison statements
+            if (
+                 empty($data) &&
+                !empty($comparator) &&
+                !empty($compareValue)
+            ) {
+                $value = ' ' . $comparator . ' ' . $compareValue;
+            }
+            $specialFields[] = 'spez_field_' . $i . $value;
+        }
+        $specialFields = join(' '.$chainingOperator.' ', $specialFields);
+        return $specialFields;
+    }
+
+    /**
+     * Get an array with placeholders and their respective values for parsing
+     * the special fields
+     *
+     * Array structure:
+     * array() {
+     *      'TXT_MARKET_SPEZ_FIELD_[SPEZ_FIELD_ID] => name stored in db,
+     *      'MARKET_SPEZ_FIELD_[SPEZ_FIELD_ID] => value stored in entry,
+     *      [...]
+     * }
+     * @param $dbCon    \ADOConnection          Database connection
+     * @param $template \HTML_Template_Sigma    The template
+     * @param $entries  array                   entry|entries which have special
+     *                                          field values
+     * @param $id       int                     id of entry which special values
+     *                                          shall be parsed
+     * @param string    $type                   Which placeholders shall be
+     *                                          returned either txt, val or both
+     *                                          defaults to both
+     * @return array
+     */
+    protected function parseSpecialFields($dbCon, $template, $entries, $id = 0, $type = 'both') {
+        // get the spez fields
+        if (empty($this->specialFields)) {
+            $objResult = $dbCon->Execute("SELECT id, value FROM ".DBPREFIX."module_market_spez_fields WHERE lang_id = '1'");
+            if ($objResult !== false) {
+                while(!$objResult->EOF) {
+                    $this->specialFields[$objResult->fields['id']] = $objResult->fields['value'];
+                    $objResult->MoveNext();
+                }
+            }
+        }
+
+        $specialVariables = array();
+        if (isset($this->specialFields)) {
+            foreach ($this->specialFields as $specialFieldId => $value) {
+                if ($type == 'both' || $type = 'txt') {
+                    $txtKey = 'TXT_MARKET_SPEZ_FIELD_' . $specialFieldId;
+                    $specialVariables[$txtKey] = $value;
+                }
+                if ($type == 'both' || $type == 'val') {
+                    $valueKey = 'MARKET_SPEZ_FIELD_' . $specialFieldId;
+                    $entryKey = 'spez_field_' . $specialFieldId;
+                    if (count($entries) > 1 || !empty($id)) {
+                        $specialVariables[$valueKey] = $entries[$id][$entryKey];
+                    } else {
+                        $specialVariables[$valueKey] = $entries[$entryKey];
+                    }
+                }
+            }
+        }
+        $template->setVariable($specialVariables);
     }
 
 }

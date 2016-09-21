@@ -269,13 +269,13 @@ class Market extends MarketLibrary
         }
 
         //spez fields
-        $objResult = $objDatabase->Execute("SELECT id, value FROM ".DBPREFIX."module_market_spez_fields WHERE lang_id = '1'");
-        if ($objResult !== false) {
-            while(!$objResult->EOF) {
-                $spezFields[$objResult->fields['id']] = $objResult->fields['value'];
-                $objResult->MoveNext();
-            }
-        }
+        $this->parseSpecialFields(
+            $objDatabase,
+            $this->_objTpl,
+            array(),
+            0,
+            'txt'
+        );
 
         // set variables
         $this->_objTpl->setVariable(array(
@@ -291,13 +291,7 @@ class Market extends MarketLibrary
             'TXT_MARKET_PRICE'                => $_ARRAYLANG['TXT_MARKET_PRICE'],
             'TXT_MARKET_CITY'                => $_ARRAYLANG['TXT_MARKET_CITY'],
             'MARKET_TYPE_SECECTION'            => $selector,
-            'TXT_MARKET_SPEZ_FIELD_1'        => $spezFields[1],
-            'TXT_MARKET_SPEZ_FIELD_2'        => $spezFields[2],
-            'TXT_MARKET_SPEZ_FIELD_3'        => $spezFields[3],
-            'TXT_MARKET_SPEZ_FIELD_4'        => $spezFields[4],
-            'TXT_MARKET_SPEZ_FIELD_5'        => $spezFields[5],
         ));
-
     }
 
 
@@ -380,7 +374,8 @@ class Market extends MarketLibrary
         $pos= intval($_GET['pos']);
 
         if ($sort == 'price') {
-            $query='SELECT `id`,`name`,`email`,`type`,`title`,`description`,`premium`,`picture`,`catid`, CAST(`price` AS UNSIGNED) as `price`,`regdate`,`enddate`,`userid`,`userdetails`,`status`,`regkey`,`paypal`,`spez_field_1`,`spez_field_2`,`spez_field_3`,`spez_field_4`,`spez_field_5` FROM '.DBPREFIX.'module_market WHERE catid = "'.contrexx_addslashes($catId).'" AND status="1" '.$where.' '.$type.' ORDER BY '.$sort.' '.$way;
+            $specialFieldsQuery = $this->getSpecialFieldsQueryPart($objDatabase);
+            $query='SELECT `id`,`name`,`email`,`type`,`title`,`description`,`premium`,`picture`,`catid`, CAST(`price` AS UNSIGNED) as `price`,`regdate`,`enddate`,`userid`,`userdetails`,`status`,`regkey`,`paypal`, ' . $specialFieldsQuery . ' FROM '.DBPREFIX.'module_market WHERE catid = "'.contrexx_addslashes($catId).'" AND status="1" '.$where.' '.$type.' ORDER BY '.$sort.' '.$way;
         }else{
             $query='SELECT * FROM '.DBPREFIX.'module_market WHERE catid = "'.contrexx_addslashes($catId).'" AND status="1" '.$where.' '.$type.' ORDER BY '.$sort.' '.$way;
         }
@@ -473,13 +468,15 @@ class Market extends MarketLibrary
                     'MARKET_DETAIL'                => "index.php?section=Market&amp;cmd=detail&amp;id=".$objResult->fields['id'],
                     'MARKET_ID'                    => $objResult->fields['id'],
                     'MARKET_CITY'                => $city,
-                    'MARKET_SPEZ_FIELD_1'        => $objResult->fields['spez_field_1'],
-                    'MARKET_SPEZ_FIELD_2'        => $objResult->fields['spez_field_2'],
-                    'MARKET_SPEZ_FIELD_3'        => $objResult->fields['spez_field_3'],
-                    'MARKET_SPEZ_FIELD_4'        => $objResult->fields['spez_field_4'],
-                    'MARKET_SPEZ_FIELD_5'        => $objResult->fields['spez_field_5'],
                 ));
 
+                $this->parseSpecialFields(
+                    $objDatabase,
+                    $this->_objTpl,
+                    $objResult->fields,
+                    0,
+                    'val'
+                );
                 $this->_objTpl->parse('showEntries');
 
                 $i++;
@@ -755,15 +752,6 @@ class Market extends MarketLibrary
                 $place         = '';
             }
 
-            //spez fields
-            $objResult = $objDatabase->Execute("SELECT id, value FROM ".DBPREFIX."module_market_spez_fields WHERE lang_id = '1'");
-              if ($objResult !== false) {
-                while(!$objResult->EOF) {
-                    $spezFields[$objResult->fields['id']] = $objResult->fields['value'];
-                    $objResult->MoveNext();
-                }
-              }
-
             //price
             if ($this->entries[$id]['price'] == 'forfree') {
                    $price = $_ARRAYLANG['TXT_MARKET_FREE'];
@@ -806,17 +794,14 @@ class Market extends MarketLibrary
                 'TXT_MARKET_EMAIL'                 => $_CORELANG['TXT_EMAIL'],
                 'TXT_MARKET_PRICE_MSG'             => $_ARRAYLANG['TXT_MARKET_PRICE_IS'],
                 'TXT_MARKET_NEW_PRICE'             => $_ARRAYLANG['TXT_PRICE_EXPECTATION'],
-                'TXT_MARKET_SPEZ_FIELD_1'        => $spezFields[1],
-                'TXT_MARKET_SPEZ_FIELD_2'        => $spezFields[2],
-                'TXT_MARKET_SPEZ_FIELD_3'        => $spezFields[3],
-                'TXT_MARKET_SPEZ_FIELD_4'        => $spezFields[4],
-                'TXT_MARKET_SPEZ_FIELD_5'        => $spezFields[5],
-                'MARKET_SPEZ_FIELD_1'            => $this->entries[$id]['spez_field_1'],
-                'MARKET_SPEZ_FIELD_2'            => $this->entries[$id]['spez_field_2'],
-                'MARKET_SPEZ_FIELD_3'            => $this->entries[$id]['spez_field_3'],
-                'MARKET_SPEZ_FIELD_4'            => $this->entries[$id]['spez_field_4'],
-                'MARKET_SPEZ_FIELD_5'            => $this->entries[$id]['spez_field_5'],
             ));
+
+            $this->parseSpecialFields(
+                $objDatabase,
+                $this->_objTpl,
+                $this->entries,
+                $id
+            );
 
             if ($this->_objTpl->blockExists('market_picture')) {
                 if (!empty($this->entries[$id]['picture'])) {
@@ -1164,23 +1149,26 @@ class Market extends MarketLibrary
             'TXT_MARKET_TITLE'                => $_ARRAYLANG['TXT_MARKET_TITLE'],
             'TXT_MARKET_PRICE'                => $_ARRAYLANG['TXT_MARKET_PRICE'],
             'TXT_MARKET_CITY'                => $_ARRAYLANG['TXT_MARKET_CITY'],
-            'TXT_MARKET_SPEZ_FIELD_1'        => $spezFields[1],
-            'TXT_MARKET_SPEZ_FIELD_2'        => $spezFields[2],
-            'TXT_MARKET_SPEZ_FIELD_3'        => $spezFields[3],
-            'TXT_MARKET_SPEZ_FIELD_4'        => $spezFields[4],
-            'TXT_MARKET_SPEZ_FIELD_5'        => $spezFields[5],
         ));
+
+        $this->parseSpecialFields(
+            $objDatabase,
+            $this->_objTpl,
+            array(),
+            0,
+            'txt'
+        );
 
         $today                 = mktime(0, 0, 0, date("m")  , date("d"), date("Y"));
         $searchTermOrg         = contrexx_addslashes($_GET['term']);
         $searchTerm         = contrexx_addslashes($_GET['term']);
-        $array = explode(' ', $searchTerm);
         $tmpTerm = '';
         $query_search = '';
         $catId = '';
         if (isset($_GET['catid'])) {
             $catId = intval($_GET['catid']);
         }
+        $array = explode(' ', $searchTerm);
         for($x = 0; $x < count($array); $x++) {
             $tmpTerm .= $array[$x].'%';
         }
@@ -1241,6 +1229,14 @@ class Market extends MarketLibrary
         ));
 
         if ($_GET['term'] != '') {
+            $specialFieldsQuery = $this->getSpecialFieldsQueryPart($objDatabase);
+            $specialFieldsComparision = $this->getSpecialFieldsQueryPart(
+                $objDatabase,
+                null,
+                'LIKE',
+                "('%$searchTerm%')",
+                'OR '
+            );
             $query="SELECT  id,
                             title,
                             description,
@@ -1249,20 +1245,13 @@ class Market extends MarketLibrary
                             userid,
                             enddate,
                             premium,
-                            spez_field_1,
-                            spez_field_2,
-                            spez_field_3,
-                            spez_field_4,
-                            spez_field_5,
+                            " . $specialFieldsQuery . ",
                       MATCH (title,description) AGAINST ('%$searchTerm%') AS score
                        FROM ".DBPREFIX."module_market
                       WHERE (title LIKE ('%$searchTerm%')
                               OR description LIKE ('%$searchTerm%')
-                              OR spez_field_1 LIKE ('%$searchTerm%')
-                              OR spez_field_2 LIKE ('%$searchTerm%')
-                              OR spez_field_3 LIKE ('%$searchTerm%')
-                              OR spez_field_4 LIKE ('%$searchTerm%')
-                              OR spez_field_5 LIKE ('%$searchTerm%'))
+                              OR " . $specialFieldsComparision . "
+                            )
                          ".$query_search."
                         AND status = '1'
                    ORDER BY score DESC, ".$sort." ".$way."";
@@ -1358,12 +1347,15 @@ class Market extends MarketLibrary
                         'MARKET_DETAIL'                    => "index.php?section=Market&amp;cmd=detail&amp;id=".$objResult->fields['id'],
                         'MARKET_ID'                        => $objResult->fields['id'],
                         'MARKET_CITY'                    => $city,
-                        'MARKET_SPEZ_FIELD_1'            => $objResult->fields['spez_field_1'],
-                        'MARKET_SPEZ_FIELD_2'            => $objResult->fields['spez_field_2'],
-                        'MARKET_SPEZ_FIELD_3'            => $objResult->fields['spez_field_3'],
-                        'MARKET_SPEZ_FIELD_4'            => $objResult->fields['spez_field_4'],
-                        'MARKET_SPEZ_FIELD_5'            => $objResult->fields['spez_field_5'],
                     ));
+
+                    $this->parseSpecialFields(
+                        $objDatabase,
+                        $this->_objTpl,
+                        $objResult->fields,
+                        0,
+                        'val'
+                    );
 
                     $this->_objTpl->parse('showEntries');
                     $objResult->MoveNext();
@@ -1462,7 +1454,8 @@ class Market extends MarketLibrary
 
         if (isset($_GET['id'])) {
             $entryId = contrexx_addslashes($_GET['id']);
-            $objResult = $objDatabase->Execute('SELECT type, title, description, premium, picture, catid, price, regdate, enddate, userid, name, email, userdetails, spez_field_1, spez_field_2, spez_field_3, spez_field_4, spez_field_5 FROM '.DBPREFIX.'module_market WHERE id = '.$entryId.' LIMIT 1');
+            $specFieldsQuery = $this->getSpecialFieldsQueryPart($objDatabase);
+            $objResult = $objDatabase->Execute('SELECT type, title, description, premium, picture, catid, price, regdate, enddate, userid, name, email, userdetails, ' . $specFieldsQuery . ' FROM '.DBPREFIX.'module_market WHERE id = '.$entryId.' LIMIT 1');
             if ($objResult !== false) {
                 while (!$objResult->EOF) {
                     if ($objFWUser->objUser->login() && $objFWUser->objUser->getId()==$objResult->fields['userid'] || \Permission::hasAllAccess()) {
@@ -1493,7 +1486,7 @@ class Market extends MarketLibrary
                         //entry user
                         $objResultUser = $objDatabase->Execute('SELECT username FROM '.DBPREFIX.'access_users WHERE id = '.$objResult->fields['userid'].' LIMIT 1');
                         if ($objResultUser !== false) {
-                            $addedby = $objResultUser->fields('username');
+                            $addedby = $objResultUser->fields['username'];
                         }
 
                         //entry userdetails
@@ -1596,6 +1589,10 @@ class Market extends MarketLibrary
                         $price = contrexx_addslashes($_POST['price']);
                     }
 
+                    $specialFieldsQuery = $this->getSpecialFieldsQueryPart(
+                        $objDatabase,
+                        $_POST
+                    );
                     $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market SET
                                         type='".contrexx_addslashes($_POST['type'])."',
                                           title='".contrexx_addslashes($_POST['title'])."',
@@ -1605,11 +1602,7 @@ class Market extends MarketLibrary
                                           price='".$price."',
                                           name='".contrexx_addslashes($_POST['name'])."',
                                           email='".contrexx_addslashes($_POST['email'])."',
-                                          spez_field_1='".contrexx_addslashes($_POST['spez_1'])."',
-                                          spez_field_2='".contrexx_addslashes($_POST['spez_2'])."',
-                                          spez_field_3='".contrexx_addslashes($_POST['spez_3'])."',
-                                          spez_field_4='".contrexx_addslashes($_POST['spez_4'])."',
-                                          spez_field_5='".contrexx_addslashes($_POST['spez_5'])."',
+                                          " . $specialFieldsQuery . ",
                                           userdetails='".contrexx_addslashes($_POST['userdetails'])."'
                                           WHERE id='".contrexx_addslashes($_POST['id'])."'");
 

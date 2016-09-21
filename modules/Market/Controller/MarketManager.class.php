@@ -845,8 +845,9 @@ class MarketManager extends MarketLibrary
         ));
 
         if (isset($_REQUEST['id'])) {
+            $specFields = $this->getSpecialFieldsQueryPart($objDatabase);
             $entryId = $_REQUEST['id'];
-            $objResult = $objDatabase->Execute('SELECT type, title, color, description, premium, picture, catid, price, regdate, enddate, userid, name, email, userdetails, spez_field_1, spez_field_2, spez_field_3, spez_field_4, spez_field_5  FROM '.DBPREFIX.'module_market WHERE id = '.$entryId.' LIMIT 1');
+            $objResult = $objDatabase->Execute('SELECT type, title, color, description, premium, picture, catid, price, regdate, enddate, userid, name, email, userdetails, ' . $specFields . ' FROM '.DBPREFIX.'module_market WHERE id = '.$entryId.' LIMIT 1');
             if ($objResult !== false) {
                 while (!$objResult->EOF) {
                     //entry type
@@ -1007,6 +1008,7 @@ class MarketManager extends MarketLibrary
                 $tempYear     = date("Y");
                 $enddate  = mktime(0, 0, 0, $tempMonth, $tempDays+$_POST['days'],  $tempYear);
 
+                $specFields = $this->getSpecialFieldsQueryPart($objDatabase, $_POST);
                 $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market SET
                                     type='".contrexx_addslashes($_POST['type'])."',
                                       title='".contrexx_addslashes($_POST['title'])."',
@@ -1020,11 +1022,7 @@ class MarketManager extends MarketLibrary
                                       userid='".contrexx_addslashes($_POST['userid'])."',
                                       name='".contrexx_addslashes($_POST['name'])."',
                                       email='".contrexx_addslashes($_POST['email'])."',
-                                      spez_field_1='".contrexx_addslashes($_POST['spez_1'])."',
-                                      spez_field_2='".contrexx_addslashes($_POST['spez_2'])."',
-                                      spez_field_3='".contrexx_addslashes($_POST['spez_3'])."',
-                                      spez_field_4='".contrexx_addslashes($_POST['spez_4'])."',
-                                      spez_field_5='".contrexx_addslashes($_POST['spez_5'])."',
+                                      " . $specFields . ",
                                       userdetails='".contrexx_addslashes($_POST['userdetails'])."'
                                       WHERE id='".intval($_POST['id'])."'");
 
@@ -1106,8 +1104,6 @@ class MarketManager extends MarketLibrary
             'TXT_NAME'                => $_CORELANG['TXT_NAME'],
             'TXT_SAVE'                => $_ARRAYLANG['TXT_SAVE'],
             'TXT_TYPE'                => $_CORELANG['TXT_TYPE'],
-            'TXT_TYPE'                => $_ARRAYLANG['TXT_TYPE'],
-            'TXT_TYPE'                => $_ARRAYLANG['TXT_TYPE'],
             'TXT_PLACEHOLDER_TITLE'   => $_ARRAYLANG['TXT_MARKET_PLACEHOLDER_TITLE'],
             'TXT_PLACEHOLDER_CONTENT' => $_ARRAYLANG['TXT_MARKET_PLACEHOLDER_CONTENT'],
         ));
