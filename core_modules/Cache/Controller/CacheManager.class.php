@@ -620,6 +620,9 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             case 'memcache':
                 $this->clearCache(self::CACHE_ENGINE_MEMCACHE);
                 break;
+            case 'memcached':
+                $this->clearCache(self::CACHE_ENGINE_MEMCACHED);
+                break;
             case self::CACHE_ENGINE_XCACHE:
             case 'xcache':
                 $this->clearCache(self::CACHE_ENGINE_XCACHE);
