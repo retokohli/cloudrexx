@@ -354,6 +354,7 @@ class DbCommand extends Command {
         foreach ($regex as $file) {
             $mwbFiles[] = $file[0];
         }
+        spl_autoload_register(array($this, 'mwbExporterAutoload'));
         while (true) {
             if (!count($mwbFiles)) {
                 return;
@@ -372,9 +373,54 @@ class DbCommand extends Command {
             unset($mwbFiles[$retVal - 1]);
         }
     }
-    
-    protected function generateYamlFromMySqlWorkbenchFile($component, $mwbFile) {
-        // generate yaml files to component's yaml directory based on file $mwbFile
+
+    /**
+     * Generate yaml files to component's yaml directory based on file $mwbFile
+     *
+     * @param \Cx\Core\Core\Model\Entity\ReflectionComponent $component     Reflection component
+     *                                                                      instance
+     * @param string                                         $mwbFile       Path to mysql workbench
+     *                                                                      file
+     */
+    protected function generateYamlFromMySqlWorkbenchFile(
+        \Cx\Core\Core\Model\Entity\ReflectionComponent $component,
+        $mwbFile
+    ) {
+        $setup = array(
+            \MwbExporter\Formatter\Doctrine2\Formatter::CFG_USE_LOGGED_STORAGE   => true,
+            \MwbExporter\Formatter\Doctrine2\Formatter::CFG_INDENTATION          => 2,
+            \MwbExporter\Formatter\Doctrine2\Formatter::CFG_FILENAME             => '%entity%.dcm.%extension%',
+            \MwbExporter\Formatter\Doctrine2\Formatter::CFG_BUNDLE_NAMESPACE     => '',
+            \MwbExporter\Formatter\Doctrine2\Formatter::CFG_ENTITY_NAMESPACE     => $component->getNameSpace() .'\\Model\\Entity',
+            \MwbExporter\Formatter\Doctrine2\Formatter::CFG_REPOSITORY_NAMESPACE => $component->getNameSpace() .'\\Model\\Repository',
+            \MwbExporter\Formatter\Doctrine2\Formatter::CFG_AUTOMATIC_REPOSITORY => true,
+            \MwbExporter\Formatter\Doctrine2\Formatter::CFG_BACKUP_FILE          => true,
+        );
+
+        try {
+            $outDir    = $component->getDirectory() . '/Model/Yaml';
+            $bootstrap = new \MwbExporter\Bootstrap();
+            $formatter = $bootstrap->getFormatter('doctrine2-yaml');
+            $formatter->setup($setup);
+            $bootstrap->export($formatter, $mwbFile, $outDir, 'file');
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+        }
+    }
+
+    /**
+     * Auto load register to load lib
+     *
+     * @param string $class Class name
+     */
+    public function mwbExporterAutoload($class) {
+        if (strpos($class, 'MwbExporter') === 0) {
+           $file     = strtr($class, '\\', DIRECTORY_SEPARATOR) . '.php';
+           $filePath = $this->cx->getCodeBaseCoreModulePath() . '/Workbench/Lib/'. $file;
+           if (file_exists($filePath)) {
+               require_once $filePath;
+           }
+        }
     }
 }
 
