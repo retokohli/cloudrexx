@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Main script for Cloudrexx
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
@@ -235,6 +235,12 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         const FOLDER_NAME_TEMP = '/tmp';
+
+        /**
+         * The folder name used for the cache storage location in temp (/cache).
+         * @var string
+         */
+        const FOLDER_NAME_CACHE = '/cache';
 
         /**
          * The folder name used to access the backend of the website (/cadmin).
@@ -569,7 +575,7 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesAccessProfileWebPath;
         protected $websiteImagesAccessPhotoPath;
         protected $websiteImagesAccessPhotoWebPath;
-        
+
         /**
          * @var \Cx\Core\MediaSource\Model\Entity\MediaSourceManager
          */
@@ -737,7 +743,7 @@ namespace Cx\Core\Core\Controller {
                  * Loads all active components
                  */
                 $this->loadComponents();
-                
+
                 /**
                  * Since we have a valid state now, we can start executing
                  * all of the component's hook methods.
@@ -1103,7 +1109,7 @@ namespace Cx\Core\Core\Controller {
         /**
          * Calls pre-init hooks
          * Pre-Init hooks are defined in /config/preInitHooks.yml.
-         * 
+         *
          * @throws \Exception
          */
         protected function callPreInitHooks() {
@@ -1122,7 +1128,7 @@ namespace Cx\Core\Core\Controller {
         /**
          * Calls post-init hooks
          * Post-Init hooks are defined in /config/postInitHooks.yml.
-         * 
+         *
          * @throws \Exception
          */
         protected function callPostInitHooks() {
@@ -1154,14 +1160,14 @@ namespace Cx\Core\Core\Controller {
             }
         }
 
-        
+
         /**
          * Get component controller object by given component name and type
          * Calls before the method preInit() and postInit() hooks are called
-         * 
+         *
          * @param string $componentName component name
          * @param string $componentType component type
-         * 
+         *
          * @return \Cx\Core\Core\Controller\SystemComponentController
          */
         protected function getComponentControllerByNameAndType($componentName, $componentType)
@@ -1181,7 +1187,7 @@ namespace Cx\Core\Core\Controller {
             }
             return new $componentControllerClass($component, $this);
         }
-        
+
         /**
          * This tries to set the memory limit if its lower than 32 megabytes
          */
@@ -1445,7 +1451,7 @@ namespace Cx\Core\Core\Controller {
                         unset($params['__cap']);
                     }
                     $params = contrexx_input2raw($params);
-                    
+
                     // parse body arguments:
                     // todo: this does not work for form-data encoded body (boundary...)
                     $dataArguments = array();
@@ -1473,7 +1479,7 @@ namespace Cx\Core\Core\Controller {
                     }
 
                     $objCommand = $this->commands[$command];
-                    //Check the access permission for the command.                    
+                    //Check the access permission for the command.
                     if(!$objCommand->hasAccessToExecuteCommand($command, $params)) {
                         throw new \Exception('The command ' . $command . ' has been rejected by not complying to the permission requirements of the requested method.');
                     }
@@ -1483,7 +1489,7 @@ namespace Cx\Core\Core\Controller {
                 } catch (\Exception $e) {
                     throw new \Exception($e);
                 }
-                
+
             }
             // init template
             $this->loadTemplate();                      // Sigma Template
@@ -2124,10 +2130,8 @@ namespace Cx\Core\Core\Controller {
                     $endcode
                 );
                 $endcode = $ls->replace();
-
-                echo $endcode;
-
-                $objCache->endContrexxCaching($this->resolvedPage);
+                
+                echo $objCache->endContrexxCaching($this->resolvedPage, $endcode);
             } else {
                 // backend meta navigation
                 if ($this->template->blockExists('backend_metanavigation')) {
@@ -2657,7 +2661,7 @@ namespace Cx\Core\Core\Controller {
             $this->websiteMediaMarketPath       = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Market';
             $this->websiteMediaCrmPath          = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Crm';
             $this->websiteMediaDirectoryPath    = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Directory';
-            
+
             $this->websiteImagesContentWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/content';
             $this->websiteImagesAttachWebPath   = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/attach';
             $this->websiteImagesShopWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Shop';
@@ -2681,7 +2685,7 @@ namespace Cx\Core\Core\Controller {
             $this->websiteMediaFileSharingWebPath=$this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/FileSharing';
             $this->websiteMediaMarketWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/Market';
             $this->websiteMediaDirectoryWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/Directory';
-                        
+
             $this->websitePublicTempPath        = $this->websiteTempPath    . self::FOLDER_NAME_PUBLIC_TEMP;
             $this->websitePublicTempWebPath     = $this->websiteTempWebPath . self::FOLDER_NAME_PUBLIC_TEMP;
         }
@@ -2759,6 +2763,16 @@ namespace Cx\Core\Core\Controller {
          */
         public function getWebsiteTempWebPath() {
             return $this->websiteTempWebPath;
+        }
+
+        /**
+         * Return the absolute path to the temp storage location (/tmp)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_CACHE_PATH.
+         * @return string
+         */
+        public function getWebsiteCachePath() {
+            return $this->websiteTempPath . self::FOLDER_NAME_CACHE;
         }
 
         /**
@@ -3142,7 +3156,7 @@ namespace Cx\Core\Core\Controller {
         public function getWebsitePublicTempWebPath() {
             return $this->websitePublicTempWebPath;
         }
-        
+
          /**
          * Return the absolute path to the website's data repository to the
          * location of the /images/Crm
@@ -3223,7 +3237,7 @@ namespace Cx\Core\Core\Controller {
         public function getWebsiteImagesAccessPhotoPath() {
             return $this->websiteImagesAccessPhotoPath;
         }
-        
+
         /**
          * Return the offset path to the data repository of the access photo.
          * Formerly known as ASCMS_ACCESS_PHOTO_IMG_WEB_PATH.

@@ -2272,6 +2272,11 @@ CREATE TABLE `contrexx_module_market` (
   `spez_field_3` varchar(255) NOT NULL,
   `spez_field_4` varchar(255) NOT NULL,
   `spez_field_5` varchar(255) NOT NULL,
+  `spez_field_6` VARCHAR(255) NOT NULL,
+  `spez_field_7` VARCHAR(255) NOT NULL,
+  `spez_field_8` VARCHAR(255) NOT NULL,
+  `spez_field_9` VARCHAR(255) NOT NULL,
+  `spez_field_10` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
   FULLTEXT KEY `description` (`description`),
   FULLTEXT KEY `title` (`description`,`title`)
@@ -2636,6 +2641,7 @@ CREATE TABLE `contrexx_module_news` (
   `allow_comments` tinyint(1) NOT NULL DEFAULT '0',
   `enable_related_news` tinyint(1) NOT NULL DEFAULT '0',
   `enable_tags` tinyint(1) NOT NULL DEFAULT '0',
+  `redirect_new_window` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_news_categories` (
