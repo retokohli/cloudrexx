@@ -789,7 +789,7 @@ class CacheLib
     protected function getCachePrefix()
     {
         global $_DBCONFIG;
-        return $_DBCONFIG['database'].'.'.DBPREFIX;
+        return $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'];
     }
 
     /**
@@ -827,7 +827,7 @@ class CacheLib
                 $cache->setNamespace($this->getCachePrefix());
                 break;
             case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_FILESYSTEM:
-                $cache = new \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver\FileSystemCache(ASCMS_CACHE_PATH);
+                $cache = new \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver\FileSystemCache($this->strCachePath);
                 break;
             default:
                 $arrayCache = new \Doctrine\Common\Cache\ArrayCache();
