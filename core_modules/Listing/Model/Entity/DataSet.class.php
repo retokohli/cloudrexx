@@ -217,7 +217,7 @@ class DataSet implements \Iterator {
         // try to load imported from cache
         $objImport = $cacheDriver->fetch($filename);
         if ($objImport) {
-            return unserialize($objImport);
+            return $objImport;
         }
         try {
             $objFile = new \Cx\Lib\FileSystem\File($filename);
@@ -227,7 +227,7 @@ class DataSet implements \Iterator {
             throw new DataSetException("Failed to load data from file $filename!");
         }
         // store imported to memcache
-        $cacheDriver->save($filename, serialize($objImport));
+        $cacheDriver->save($filename, $objImport);
         return $objImport;
     }
 
