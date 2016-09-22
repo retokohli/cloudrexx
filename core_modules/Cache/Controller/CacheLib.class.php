@@ -108,7 +108,11 @@ class CacheLib
     protected $memcache = null;
     protected $memcached = null;
 
+    /**
+     * @var object doctrine cache engine for the active user cache engine
+     */
     protected $doctrineCacheEngine = null;
+
     /**
      * @var \Cx\Lib\ReverseProxy\Model\Entity\ReverseProxyProxy SSI proxy
      */
@@ -793,7 +797,7 @@ class CacheLib
      * @return object The doctrine cache driver object
      */
     public function getDoctrineCacheDriver() {
-        if($this->doctrineCacheEngine) {
+        if($this->doctrineCacheEngine) { // return cache engine if already set
             return $this->doctrineCacheEngine;
         }
         $userCacheEngine = $this->getUserCacheEngine();
@@ -830,9 +834,10 @@ class CacheLib
                 $cache = $arrayCache;
                 break;
         }
-        if(\Env::get('cache') === null) { // store the doctrine caching engine in the environment repository
-            \Env::set('cache', $cache);
-        }
+        // store the doctrine caching engine in the environment repository
+        \Env::set('cache', $cache);
+        // set the doctrine cache engine to avoid getting it a second time
+        $this->doctrineCacheEngine = $cache;
         return $cache;
     }
 }
