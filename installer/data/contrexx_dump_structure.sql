@@ -2272,6 +2272,11 @@ CREATE TABLE `contrexx_module_market` (
   `spez_field_3` varchar(255) NOT NULL,
   `spez_field_4` varchar(255) NOT NULL,
   `spez_field_5` varchar(255) NOT NULL,
+  `spez_field_6` VARCHAR(255) NOT NULL,
+  `spez_field_7` VARCHAR(255) NOT NULL,
+  `spez_field_8` VARCHAR(255) NOT NULL,
+  `spez_field_9` VARCHAR(255) NOT NULL,
+  `spez_field_10` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
   FULLTEXT KEY `description` (`description`),
   FULLTEXT KEY `title` (`description`,`title`)
