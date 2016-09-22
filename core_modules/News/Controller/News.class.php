@@ -1602,7 +1602,7 @@ JSCODE;
         $data['newsTags'] = !empty($_POST['newsTags'])
             ? contrexx_input2raw($_POST['newsTags'])
             : array();
-        $data['redirectNewWindow'] = !empty($_POST['redirect_new_window']) ? 1 : 0;
+        $data['redirectNewWindow'] = !empty($_POST['redirect_new_window']);
 
         return array(true, $data);
     }
