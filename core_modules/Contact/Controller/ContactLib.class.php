@@ -1448,10 +1448,11 @@ if (\$J.trim(code) === '') {
 }
 JS_contrexxCapchaValidation;
         }
+        $captchaErrorMsg = addslashes($_ARRAYLANG['TXT_CONTACT_RECAPTCHA_ERROR']);
         $code .= <<<JS_checkAllFields
 function checkAllFields() {
     var isOk = true, isCaptchaOk = true;
-    var captchaError = '{$_ARRAYLANG['TXT_CONTACT_RECAPTCHA_ERROR']}';
+    var captchaError = '$captchaErrorMsg';
 
     for (var field in fields) {
         var type = fields[field][3];
