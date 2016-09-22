@@ -92,7 +92,7 @@ class ViewManager
      * Required files
      * @var array
      */
-    public $filenames = array("index.html","style.css","content.html","home.html","navbar.html","navbar2.html","navbar3.html","subnavbar.html","subnavbar2.html","subnavbar3.html","sidebar.html","shopnavbar.html","shopnavbar2.html","shopnavbar3.html","headlines.html","events.html","javascript.js","buildin_style.css","directory.html","component.yml","forum.html","podcast.html","blog.html","immo.html");
+    public $filenames = array("index.html","style.css","content.html","home.html","navbar.html","navbar2.html","navbar3.html","subnavbar.html","subnavbar2.html","subnavbar3.html","sidebar.html","shopnavbar.html","shopnavbar2.html","shopnavbar3.html","headlines.html","events.html","events2.html","events3.html","events4.html","events5.html","events6.html","events7.html","events8.html","events9.html","events10.html","javascript.js","buildin_style.css","directory.html","component.yml","forum.html","podcast.html","blog.html","immo.html");
 
     /**
      * Required directories
