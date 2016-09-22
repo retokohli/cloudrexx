@@ -30,7 +30,6 @@
     .export_options > label {
         width: 100%;
         float: left;
-        padding: 5px 0;
     }
     .export_options input {
         outline: none;
@@ -81,25 +80,34 @@
             var url = "index.php?cmd={CALENDAR_MODULE_NAME}&act=event_registrations&tpl=" + $J('.registration-tab .active').data('registrationType') + "&id={CALENDAR_EVENT_ID}&date=" + selectedDateFilter + '&csrf=' + cx.variables.get('csrf', 'contrexx');
             window.location.replace(url);
         });
-        $J('.export_csv').click(function() {
+        cx.jQuery('.export_csv').click(function() {
+            cx.jQuery('.csv-file').attr('checked', 'checked');
+            cx.jQuery('.csv-excel-file').removeAttr('checked');
+
+            var fileFormat = cx.jQuery.cookie('format');
+            if (fileFormat && fileFormat === 'export_csv_excel') {
+                cx.jQuery('.csv-excel-file').attr('checked', 'checked');
+                cx.jQuery('.csv-file').removeAttr('checked');
+            }
             var exportDialog = cx.ui.dialog({
                 width: 520,
                 title: '{TXT_CALENDAR_EXPORT_TITLE}',
-                content: $J( ".exportContainer" ).html(),
+                content: cx.jQuery( ".exportContainer" ).html(),
                 autoOpen: false,
                 buttons: {
                     "{TXT_CALENDAR_EXPORT_CANCEL}" : function() {
-                        $J( this ).dialog( "close" );
+                        cx.jQuery(this).dialog("close");
                     },
                     "{TXT_CALENDAR_EXPORT_EXPORT}": function() {
-                        var exportFormat = $J('input[name=export]:checked').val();
+                        var exportFormat = cx.jQuery('input[name=export]:checked').val();
                         var url = "index.php?cmd={CALENDAR_MODULE_NAME}&act=export_registrations&id={CALENDAR_EVENT_ID}&format=" + exportFormat + "&{CALENDAR_CSRF}";
+                        cx.jQuery.cookie("format", exportFormat);
                         window.location.href = url;
-                        $J( this ).dialog( "close" );
+                        cx.jQuery(this).dialog("close");
                     }
                 },
-                close: function() {
-                    $J( this ).dialog( "close" );
+                close: function () {
+                    cx.jQuery(this).dialog("close");
                 }
             });
             exportDialog.open();

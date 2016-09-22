@@ -1382,11 +1382,12 @@ class CalendarManager extends CalendarLibrary
      *
      * @return string
      */
-    function parseCsvData($data, $format)
-    {
-        return  ($format === 'export_csv_excel')
-                    ? utf8_decode($data)
-                    : html_entity_decode($data, ENT_QUOTES);
+    function parseCsvData($data, $format) {
+        if ($format === 'export_csv_excel') {
+            $data = utf8_decode($data);
+        }
+        $csvData = html_entity_decode($data, ENT_QUOTES);
+        return $csvData;
     }
 
     /**
@@ -1551,6 +1552,7 @@ class CalendarManager extends CalendarLibrary
     {
         global $_ARRAYLANG;
 
+        \JS::activate('jquery-cookie');
         $this->_objTpl->loadTemplateFile('module_calendar_registrations.html');
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($eventId));
 
