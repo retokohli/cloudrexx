@@ -106,6 +106,7 @@ class CacheLib
     protected $opCacheEngine = null;
     protected $userCacheEngine = null;
     protected $memcache = null;
+    protected $memcached = null;
 
     protected $doctrineCacheEngine = null;
     /**
@@ -217,11 +218,6 @@ class CacheLib
                 if (@$memcache->addServer($memcacheConfiguration['ip'], $memcacheConfiguration['port'])) {
                     $this->memcache = $memcache;
                 }
-            } elseif (class_exists('\Memcached')) {
-                $memcache = new \Memcached();
-                if (@$memcache->addServer($memcacheConfiguration['ip'], $memcacheConfiguration['port'])) {
-                    $this->memcache = $memcache;
-                }
             }
             if ($this->isConfigured(self::CACHE_ENGINE_MEMCACHE)) {
                 $this->userCacheEngines[] = self::CACHE_ENGINE_MEMCACHE;
@@ -234,11 +230,11 @@ class CacheLib
             || $_CONFIG['cacheUserCache'] == self::CACHE_ENGINE_MEMCACHED)
         ) {
             $memcachedConfiguration = $this->getMemcachedConfiguration();
-            unset($this->memcache); // needed for reinitialization
+            unset($this->memcached); // needed for reinitialization
             if (class_exists('\Memcached')) {
-                $memcache = new \Memcached();
-                if (@$memcache->addServer($memcachedConfiguration['ip'], $memcachedConfiguration['port'])) {
-                    $this->memcache = $memcache;
+                $memcached = new \Memcached();
+                if (@$memcached->addServer($memcachedConfiguration['ip'], $memcachedConfiguration['port'])) {
+                    $this->memcached = $memcached;
                 }
             }
             if ($this->isConfigured(self::CACHE_ENGINE_MEMCACHED)) {
@@ -370,6 +366,10 @@ class CacheLib
         return $this->memcache;
     }
 
+    public function getMemcached() {
+        return $this->memcached;
+    }
+
     public function getAllUserCacheEngines() {
         return array(self::CACHE_ENGINE_APC, self::CACHE_ENGINE_MEMCACHE, self::CACHE_ENGINE_MEMCACHED, self::CACHE_ENGINE_XCACHE);
     }
@@ -466,7 +466,7 @@ class CacheLib
             case self::CACHE_ENGINE_MEMCACHE:
                 return $this->memcache ? true : false;
             case self::CACHE_ENGINE_MEMCACHED:
-                return $this->memcache ? true : false;
+                return $this->memcached ? true : false;
             case self::CACHE_ENGINE_XCACHE:
                 $setting = 'xcache.cacher';
                 break;
@@ -495,7 +495,7 @@ class CacheLib
             case self::CACHE_ENGINE_MEMCACHE:
                 return $this->memcache ? true : false;
             case self::CACHE_ENGINE_MEMCACHED:
-                return $this->memcache ? true : false;
+                return $this->memcached ? true : false;
             case self::CACHE_ENGINE_XCACHE:
                 if ($user) {
                     return (
@@ -734,12 +734,12 @@ class CacheLib
         }
         //$this->memcache->flush(); //<- not like this!!!
         $keys = array();
-        $allSlabs = $this->memcache->getExtendedStats('slabs');
+        $allSlabs = $this->memcached->getExtendedStats('slabs');
 
         foreach ($allSlabs as $server => $slabs) {
             if (is_array($slabs)) {
                 foreach (array_keys($slabs) as $slabId) {
-                    $dump = $this->memcache->getExtendedStats('cachedump', (int) $slabId);
+                    $dump = $this->memcached->getExtendedStats('cachedump', (int) $slabId);
                     if ($dump) {
                         foreach ($dump as $entries) {
                             if ($entries) {
@@ -752,7 +752,7 @@ class CacheLib
         }
         foreach($keys as $key){
             if(strpos($key, $this->getCachePrefix()) !== false){
-                $this->memcache->delete($key);
+                $this->memcached->delete($key);
             }
         }
     }
@@ -808,13 +808,14 @@ class CacheLib
                 break;
             case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_MEMCACHE:
                 $memcache = $this->getMemcache();
-                if ($memcache instanceof \Memcache) {
-                    $cache = new \Doctrine\Common\Cache\MemcacheCache();
-                    $cache->setMemcache($memcache);
-                } elseif ($memcache instanceof \Memcached) {
-                    $cache = new \Doctrine\Common\Cache\MemcachedCache();
-                    $cache->setMemcache($memcache);
-                }
+                $cache = new \Doctrine\Common\Cache\MemcacheCache();
+                $cache->setMemcache($memcache);
+                $cache->setNamespace($this->getCachePrefix());
+                break;
+            case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_MEMCACHED:
+                $memcached = $this->getMemcached();
+                $cache = new \Doctrine\Common\Cache\MemcachedCache();
+                $cache->setMemcached($memcached);
                 $cache->setNamespace($this->getCachePrefix());
                 break;
             case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_XCACHE:
@@ -829,7 +830,7 @@ class CacheLib
                 $cache = $arrayCache;
                 break;
         }
-        if (\Env::get('cache') === null) { // store the doctrine cache engine in the environment repository
+        if(\Env::get('cache') === null) { // store the doctrine caching engine in the environment repository
             \Env::set('cache', $cache);
         }
         return $cache;
