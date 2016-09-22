@@ -4,6 +4,32 @@ CKEDITOR.on('dialogDefinition', function (event) {
 
     var tabCount = dialogDefinition.contents.length;
 
+    //Customize the advanced tab
+    var advancedTab = dialogDefinition.getContents( 'advanced' );
+    if (advancedTab !== null) {
+        advancedTab.add({
+            type: 'text',
+            label: 'Srcset',
+            id: 'txtdlgGenSrcSet',
+            'default': ''
+        });
+        var style = advancedTab.get('txtdlgGenStyle');
+        style['default'] = '';
+    }
+
+    //Customize the info tab
+    var infoTab = dialogDefinition.getContents( 'info' );
+    if (infoTab !== null) {
+        infoTab.remove( 'txtWidth' );
+        infoTab.remove( 'txtHeight' );
+    }
+
+    //Customize the code inserted for image
+    dialogDefinition.onOk = function (e) {
+        e.sender.originalElement.$.srcset = dialogDefinition.dialog.getValueOf('advanced', 'txtdlgGenSrcSet');
+        editor.insertElement(e.sender.originalElement);
+    };
+
     for (var i = 0; i < tabCount; i++) {
         if(dialogDefinition.contents[i] == undefined){
             continue;
@@ -39,11 +65,17 @@ CKEDITOR.on('dialogDefinition', function (event) {
                                     var image, thumbnail = $J("[name='size']").val();
                                     if (thumbnail == 0) {
                                         image = callback.data[0].datainfo.filepath;
-                                    }
-                                    else {
+                                    } else {
                                         image = callback.data[0].datainfo.thumbnail[thumbnail];
                                     }
                                     dialogDefinition.dialog.setValueOf(targetType[0], targetType[1], image);
+
+                                    //Set default value to srcSet
+                                    var srcSetValue = [];
+                                    $J.each(callback.data[0].datainfo.thumbnail, function(i, v) {
+                                        srcSetValue.push(v + ' ' + i + 'w');
+                                    });
+                                    dialogDefinition.dialog.setValueOf('advanced', 'txtdlgGenSrcSet', srcSetValue.join(', '));
                                 }
                             }
                         }
