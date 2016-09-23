@@ -386,15 +386,20 @@ class DbCommand extends Command {
         \Cx\Core\Core\Model\Entity\ReflectionComponent $component,
         $mwbFile
     ) {
+        $backupFile = false;
+        if ($this->interface->yesNo('Do you want to backup YAML files if already exists: ')) {
+            $backupFile = true;
+        }
         $setup = array(
-            \MwbExporter\Formatter\Doctrine2\Formatter::CFG_USE_LOGGED_STORAGE   => true,
-            \MwbExporter\Formatter\Doctrine2\Formatter::CFG_INDENTATION          => 2,
-            \MwbExporter\Formatter\Doctrine2\Formatter::CFG_FILENAME             => '%entity%.dcm.%extension%',
-            \MwbExporter\Formatter\Doctrine2\Formatter::CFG_BUNDLE_NAMESPACE     => '',
-            \MwbExporter\Formatter\Doctrine2\Formatter::CFG_ENTITY_NAMESPACE     => $component->getNameSpace() .'\\Model\\Entity',
-            \MwbExporter\Formatter\Doctrine2\Formatter::CFG_REPOSITORY_NAMESPACE => $component->getNameSpace() .'\\Model\\Repository',
-            \MwbExporter\Formatter\Doctrine2\Formatter::CFG_AUTOMATIC_REPOSITORY => true,
-            \MwbExporter\Formatter\Doctrine2\Formatter::CFG_BACKUP_FILE          => true,
+            \MwbExporter\Formatter\Doctrine2\Yaml\Formatter::CFG_ADD_COMMENT          => false,
+            \MwbExporter\Formatter\Doctrine2\Yaml\Formatter::CFG_USE_LOGGED_STORAGE   => true,
+            \MwbExporter\Formatter\Doctrine2\Yaml\Formatter::CFG_INDENTATION          => 2,
+            \MwbExporter\Formatter\Doctrine2\Yaml\Formatter::CFG_FILENAME             => '%entity%.dcm.%extension%',
+            \MwbExporter\Formatter\Doctrine2\Yaml\Formatter::CFG_BUNDLE_NAMESPACE     => '',
+            \MwbExporter\Formatter\Doctrine2\Yaml\Formatter::CFG_ENTITY_NAMESPACE     => $component->getNameSpace() .'\\Model\\Entity',
+            \MwbExporter\Formatter\Doctrine2\Yaml\Formatter::CFG_REPOSITORY_NAMESPACE => $component->getNameSpace() .'\\Model\\Repository',
+            \MwbExporter\Formatter\Doctrine2\Yaml\Formatter::CFG_AUTOMATIC_REPOSITORY => true,
+            \MwbExporter\Formatter\Doctrine2\Yaml\Formatter::CFG_BACKUP_FILE          => $backupFile,
         );
 
         try {

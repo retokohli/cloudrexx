@@ -300,6 +300,15 @@ class ReflectionComponent {
     }
     
     /**
+     * Return namespace of the component
+     *
+     * @return string
+     */
+    public function getNameSpace() {
+        return SystemComponent::getBaseNamespaceForType($this->componentType) . '\\' . $this->componentName;
+    }
+
+    /**
      * Installs this component from a zip file (if available)
      * @todo DB stuff (structure and data)
      * @todo check dependency versions
