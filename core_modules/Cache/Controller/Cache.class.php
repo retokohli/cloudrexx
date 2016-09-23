@@ -214,7 +214,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             '#<esi:include src="([^"]+)" onerror="continue"/>#',
             function($matches) use (&$apiUrlString, &$cxNotYetInitialized, $settings) {
                 // return cached content if available
-                $cacheFile = md5($matches[1]);
+                $cacheFile = $this->getCacheFileNameFromUrl($matches[1]);
                 if ($settings['internalSsiCache'] == 'on' && file_exists($this->strCachePath . $cacheFile)) {
                     if (filemtime($this->strCachePath . $cacheFile) > (time() - $this->intCachingTime)) {
                         return file_get_contents($this->strCachePath . $cacheFile);
@@ -282,6 +282,31 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         );
         
         return $htmlCode;
+    }
+    
+    /**
+     * Gets the local cache file name for an URL
+     * @param string $url URL to get file name for
+     * @return string File name
+     */
+    protected function getCacheFileNameFromUrl($url) {
+        $fileName = md5($url);
+        $url = new \Cx\Lib\Net\Model\Entity\Url($url);
+        $params = $url->getParsedQuery();
+        $searchParams = array(
+            'p' => 'page',
+            'l' => 'lang',
+            'u' => 'user',
+            't' => 'theme',
+            'g' => 'country',
+            'c' => 'currency',
+        );
+        foreach ($searchParams as $short=>$long) {
+            if (isset($params[$long])) {
+                $fileName .= '_' . $short . $params[$long];
+            }
+        }
+        return $fileName;
     }
 
     /**

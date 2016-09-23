@@ -393,8 +393,8 @@ class CacheLib
      * @return string ESI/SSI directives to put into HTML code
      */
     public function getEsiContent($adapterName, $adapterMethod, $params = array()) {
-        $url = \Cx\Core\Routing\Url::fromApi('Data', array('Plain', $adapterName, $adapterMethod), $params);
-        return $this->getSsiProxy()->getSsiProcessor()->getIncludeCode($url);
+        $url = $this->getUrlFromApi($adapterName, $adapterMethod, $params);
+        return $this->getSsiProxy()->getSsiProcessor()->getIncludeCode($url->toString());
     }
 
     /**
@@ -408,7 +408,7 @@ class CacheLib
     public function getRandomizedEsiContent($esiContentInfos) {
         $urls = array();
         foreach ($esiContentInfos as $i=>$esiContentInfo) {
-            $urls[] = \Cx\Core\Routing\Url::fromApi('Data', array('Plain', $esiContentInfo[0], $esiContentInfo[1]), $esiContentInfo[2]);
+            $urls[] = $this->getUrlFromApi($esiContentInfo[0], $esiContentInfo[1], $esiContentInfo[2])->toString();
         }
         return $this->getSsiProxy()->getSsiProcessor()->getRandomizedIncludeCode($urls);
     }
@@ -421,8 +421,26 @@ class CacheLib
      * @todo Only drop this specific content instead of complete cache
      */
     public function clearSsiCachePage($adapterName, $adapterMethod, $params = array()) {
+        $url = $this->getUrlFromApi($adapterName, $adapterMethod, $params);
+        $this->getSsiProxy()->clearCachePage($url->toString(), $this->getDomainsAndPorts());
+    }
+    
+    /**
+     * Wrapper for \Cx\Core\Routing\Url::fromApi()
+     * This ensures correct param order
+     * @param string $adapterName (Json)Data adapter name
+     * @param string $adapterMethod (Json)Data method name
+     * @param array $params (optional) params for (Json)Data method call
+     * @return \Cx\Core\Routing\Url URL for (Json)Data call
+     */
+    protected function getUrlFromApi($adapterName, $adapterMethod, $params) {
         $url = \Cx\Core\Routing\Url::fromApi('Data', array('Plain', $adapterName, $adapterMethod), $params);
-        $this->getSsiProxy()->clearCachePage($url, $this->getDomainsAndPorts());
+        // make sure params are in correct order:
+        $correctIndexOrder = array('page', 'lang', 'user', 'theme', 'country', 'currency');
+        $params = $url->getParamArray();
+        $params = array_replace(array_flip($correctIndexOrder), $params);
+        $url->setParams($params);
+        return $url;
     }
 
     /**
