@@ -53,6 +53,8 @@ namespace Cx\Core_Modules\News\Controller;
  */
 class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
     public $newsTitle;
+    public $newsText;
+    public $newsThumbnail;
     public $arrSettings = array();
     public $_objTpl;
     public $_submitMessage;
@@ -241,6 +243,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         $this->newsTitle = $objResult->fields['title'];
         $newstitle = $this->newsTitle;
+        $this->newsText = $text;
+        $this->newsThumbnail = $objResult->fields['newsThumbImg'];
         $newsTeaser = nl2br($objResult->fields['teaser_text']);
         \LinkGenerator::parseTemplate($newsTeaser);
 
