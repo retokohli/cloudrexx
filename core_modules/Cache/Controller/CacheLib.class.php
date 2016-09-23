@@ -440,6 +440,7 @@ class CacheLib
         $params = $url->getParamArray();
         $params = array_replace(array_flip($correctIndexOrder), $params);
         $url->setParams($params);
+        $url->setParam('EOU', '');
         return $url;
     }
 
@@ -821,5 +822,30 @@ class CacheLib
         }
 
         return $arrSettings;
+    }
+    
+    /**
+     * Gets the local cache file name for an URL
+     * @param string $url URL to get file name for
+     * @return string File name
+     */
+    public function getCacheFileNameFromUrl($url) {
+        $fileName = md5($url);
+        $url = new \Cx\Lib\Net\Model\Entity\Url($url);
+        $params = $url->getParsedQuery();
+        $searchParams = array(
+            'p' => 'page',
+            'l' => 'lang',
+            'u' => 'user',
+            't' => 'theme',
+            'g' => 'country',
+            'c' => 'currency',
+        );
+        foreach ($searchParams as $short=>$long) {
+            if (isset($params[$long])) {
+                $fileName .= '_' . $short . $params[$long];
+            }
+        }
+        return $fileName;
     }
 }

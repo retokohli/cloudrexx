@@ -68,11 +68,11 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
     protected function clearCachePageForDomainAndPort($urlPattern, $domain, $port) {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $strCachePath = $cx->getWebsiteCachePath() . '/';
-        
+
         if ($urlPattern == '*') {
             $fileNames = glob($strCachePath . '*');
             foreach ($fileNames as $fileName) {
-                if (!preg_match('#/[0-9a-f]{32}$#', $fileName)) {
+                if (!preg_match('#/[0-9a-f]{32}((_[plutgc][a-z0-9]+)+)?$#', $fileName)) {
                     continue;
                 }
                 $file = new \Cx\Lib\FileSystem\File($fileName);
@@ -81,7 +81,7 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
             return;
         }
         
-        $cacheFile = md5($urlPattern);
+        $cacheFile = \Env::get('cache')->getCacheFileNameFromUrl($urlPattern);
         $file = new \Cx\Lib\FileSystem\File($strCachePath . $cacheFile);
         $file->delete();
     }

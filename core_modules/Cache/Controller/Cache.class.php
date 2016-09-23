@@ -283,31 +283,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         
         return $htmlCode;
     }
-    
-    /**
-     * Gets the local cache file name for an URL
-     * @param string $url URL to get file name for
-     * @return string File name
-     */
-    protected function getCacheFileNameFromUrl($url) {
-        $fileName = md5($url);
-        $url = new \Cx\Lib\Net\Model\Entity\Url($url);
-        $params = $url->getParsedQuery();
-        $searchParams = array(
-            'p' => 'page',
-            'l' => 'lang',
-            'u' => 'user',
-            't' => 'theme',
-            'g' => 'country',
-            'c' => 'currency',
-        );
-        foreach ($searchParams as $short=>$long) {
-            if (isset($params[$long])) {
-                $fileName .= '_' . $short . $params[$long];
-            }
-        }
-        return $fileName;
-    }
 
     /**
      * Check the exception-list for this site
