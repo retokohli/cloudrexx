@@ -1427,6 +1427,7 @@ class CalendarManager extends CalendarLibrary
             header("Content-Disposition: attachment; filename=\"$filename\"", true);
 
             print ($_ARRAYLANG['TXT_CALENDAR_FIRST_EXPORT'].$this->csvSeparator);
+            print ($_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTRATION_SUBMISSION'].$this->csvSeparator);
             print ($_ARRAYLANG['TXT_CALENDAR_TYPE'].$this->csvSeparator);
             print ($_ARRAYLANG['TXT_CALENDAR_EVENT'].$this->csvSeparator);
             print ($_ARRAYLANG['TXT_CALENDAR_LANG'].$this->csvSeparator);
@@ -1449,8 +1450,14 @@ class CalendarManager extends CalendarLibrary
 
                 // $objRegistration->eventDate is a UTC unix timestamp
                 $exportDate = new \DateTime();
+                $submissionDate =
+                    (($objRegistration->submissionDate instanceof \DateTime)
+                        ? $this->format2userDateTime($objRegistration->submissionDate)
+                        : ''
+                    );
                 $exportDate->setTimestamp($objRegistration->firstExport);
                 print ($this->format2userDate($exportDate).$this->csvSeparator);
+                print ($submissionDate.$this->csvSeparator);
 
                 if($objRegistration->type == '1') {
                     print ($_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'].$this->csvSeparator);
