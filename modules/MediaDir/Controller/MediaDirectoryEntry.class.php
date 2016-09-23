@@ -1096,30 +1096,6 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 continue;
             }
 
-            // attribute is non-i18n
-            if ($arrInputfield['type_multi_lang'] == 0) {
-                try {
-                    $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']]);
-                    $objResult = $objDatabase->Execute("
-                        INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
-                           SET `entry_id`='".intval($intId)."',
-                               `lang_id`='".intval($_LANGID)."',
-                               `form_id`='".intval($intFormId)."',
-                               `field_id`='".intval($arrInputfield['id'])."',
-                               `value`='".contrexx_raw2db($strInputfieldValue)."'
-              ON DUPLICATE KEY
-                        UPDATE `value`='".contrexx_raw2db($strInputfieldValue)."'");
-                    if (!$objResult) {
-                        throw new \Exception($objDatabase->ErrorMsg());
-                    }
-                } catch (Exception $e) {
-                    \Message::error($e->getMessage());
-                    $error = true;
-                }
-
-                continue;
-            }
-
             // delete attribute's data of languages that are no longer in use
             $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE entry_id='".$intId."' AND field_id = '".intval($arrInputfield['id'])."' AND lang_id NOT IN (".join(",", array_keys($this->arrFrontendLanguages)).")");
 
@@ -1127,6 +1103,25 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             foreach ($this->arrFrontendLanguages as $arrLang) {
                 try {
                     $intLangId = $arrLang['id'];
+
+                    // attribute is non-i18n
+                    if ($arrInputfield['type_multi_lang'] == 0) {
+                        $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']]);
+                        $objResult = $objDatabase->Execute("
+                            INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+                               SET `entry_id`='".intval($intId)."',
+                                   `lang_id`='".intval($intLangId)."',
+                                   `form_id`='".intval($intFormId)."',
+                                   `field_id`='".intval($arrInputfield['id'])."',
+                                   `value`='".contrexx_raw2db($strInputfieldValue)."'
+                            ON DUPLICATE KEY
+                                UPDATE `value`='".contrexx_raw2db($strInputfieldValue)."'");
+                        if (!$objResult) {
+                            throw new \Exception($objDatabase->ErrorMsg());
+                        }
+
+                        continue;
+                    }
 
                     // if the attribute is of type dynamic (meaning it can have an unlimited set of childs (references))
                     if ($arrInputfield['type_dynamic'] == 1) {
@@ -1163,21 +1158,21 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                         // or the process is parsing the user's current interface language
                         || $intLangId == $_LANGID
                     ) {
-                            $strMaster =
-                                (isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0])
-                                  ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0]
-                                  : null);
-                            $strNewDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID])
-                                                ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID]
-                                                : '';
-                            if ($strNewDefault != $strMaster) {
-                                $strDefault = $strMaster;
-                            } else {
-                                $strDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId])
-                                                ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId]
-                                                : '';
-                            }
-                            $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault, $intLangId);
+                        $strMaster =
+                            (isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0])
+                              ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0]
+                              : null);
+                        $strNewDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID])
+                                            ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID]
+                                            : '';
+                        if ($strNewDefault != $strMaster) {
+                            $strDefault = $strMaster;
+                        } else {
+                            $strDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId])
+                                            ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId]
+                                            : '';
+                        }
+                        $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault, $intLangId);
                     } else {
                         // regular attribute get parsed
                         $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId], $intLangId);
@@ -1190,8 +1185,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                `form_id`='".intval($intFormId)."',
                                `field_id`='".intval($arrInputfield['id'])."',
                                `value`='".contrexx_raw2db($strInputfieldValue)."'
-              ON DUPLICATE KEY
-                        UPDATE `value`='".contrexx_raw2db($strInputfieldValue)."'");
+                        ON DUPLICATE KEY
+                            UPDATE `value`='".contrexx_raw2db($strInputfieldValue)."'");
                     if (!$objResult) {
                         throw new \Exception($objDatabase->ErrorMsg());
                     }
