@@ -103,4 +103,3 @@ $_ARRAYLANG['TXT_CACHE_SSI_HELP_SYSTEM'] = 'Wenn ein SSI oder ESI kompatibler Pr
 $_ARRAYLANG['TXT_CACHE_SSI_HELP_TYPE'] = 'Der Servertyp wird benötigt, um zwischengespeicherte Daten aktualisieren zu können.';
 $_ARRAYLANG['TXT_CACHE_SSI_IP'] = 'IP-Adresse';
 $_ARRAYLANG['TXT_CACHE_SSI_PORT'] = 'Port';
-
