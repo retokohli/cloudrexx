@@ -26,8 +26,43 @@ CKEDITOR.on('dialogDefinition', function (event) {
 
     //Customize the code inserted for image
     dialogDefinition.onOk = function (e) {
-        e.sender.originalElement.$.srcset = dialogDefinition.dialog.getValueOf('advanced', 'txtdlgGenSrcSet');
-        editor.insertElement(e.sender.originalElement);
+        var dialog = this;
+        var img = editor.document.createElement( 'img' );
+        setTagAttribute(img, 'src', dialog.getValueOf('info', 'txtUrl'));
+        setTagAttribute(img, 'alt', dialog.getValueOf('info', 'txtAlt'));
+        setTagAttribute(img, 'id', dialog.getValueOf('advanced', 'linkId'));
+        setTagAttribute(img, 'dir', dialog.getValueOf('advanced', 'cmbLangDir'));
+        setTagAttribute(img, 'lang', dialog.getValueOf('advanced', 'txtLangCode'));
+        setTagAttribute(img, 'longdesc', dialog.getValueOf('advanced', 'txtGenLongDescr'));
+        setTagAttribute(img, 'class', dialog.getValueOf('advanced', 'txtGenClass'));
+        setTagAttribute(img, 'title', dialog.getValueOf('advanced', 'txtGenTitle'));
+        setTagAttribute(img, 'style', dialog.getValueOf('advanced', 'txtdlgGenStyle'));
+        setTagAttribute(img, 'srcset', dialog.getValueOf('advanced', 'txtdlgGenSrcSet'));
+
+        var html = img;
+        if (dialog.getValueOf('Link', 'txtUrl')) {
+            var aTag = editor.document.createElement( 'a' );
+            setTagAttribute(aTag, 'href', dialog.getValueOf('Link', 'txtUrl'));
+            setTagAttribute(aTag, 'target', dialog.getValueOf('Link', 'cmbTarget'));
+            aTag.setHtml(img.getOuterHtml());
+            html = aTag;
+        }
+        editor.insertElement(html);
+    };
+
+    var setTagAttribute = function (tag, attrName, attrVal) {
+        if (!tag || !attrName) {
+            return;
+        }
+
+        if (attrVal) {
+            //If the attribute is style, check and remove the property
+            //values of width and height from style attribute
+            if (attrName == 'style') {
+                attrVal = attrVal.replace(/(width|height):(\s|)\d{2,3}px(;|)/g, '');
+            }
+            tag.setAttribute(attrName, attrVal);
+        }
     };
 
     for (var i = 0; i < tabCount; i++) {
