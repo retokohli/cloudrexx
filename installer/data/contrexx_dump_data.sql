@@ -4122,11 +4122,18 @@ INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `descripti
 INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (9,'maxdayStatus','0','TXT_MARKET_SET_MAXDAYS_ON',2);
 INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (10,'searchPrice','100,200,500,1000,2000,5000','TXT_MARKET_SET_EXP_SEARCH_PRICE',3);
 INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (11,'codeMode','1','TXT_MARKET_SET_CODE_MODE',2);
+INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (12,'confirmFrontend','0','TXT_MARKET_SET_CONFIRM_IN_FRONTEND','2');
+INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (13,'useTerms','0','TXT_MARKET_SET_USE_TERMS','2');
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (1,'spez_field_1','',1,1,0);
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (2,'spez_field_2','',1,1,0);
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (3,'spez_field_3','',1,1,0);
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (4,'spez_field_4','',1,1,0);
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (5,'spez_field_5','',1,1,0);
+INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (6,'spez_field_6','',1,1,0);
+INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (7,'spez_field_7','',1,1,0);
+INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (8,'spez_field_8','',1,1,0);
+INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (9,'spez_field_9','',1,1,0);
+INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (10,'spez_field_10','',1,1,0);
 INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media1_frontend_changable','off');
 INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media2_frontend_changable','off');
 INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media3_frontend_changable','off');
