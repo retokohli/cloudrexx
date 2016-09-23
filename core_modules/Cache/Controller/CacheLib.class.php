@@ -786,4 +786,22 @@ class CacheLib
         global $_DBCONFIG;
         return $_DBCONFIG['database'].'.'.DBPREFIX;
     }
+
+    /**
+     * Creates an array containing all important cache-settings
+     *
+     * @global     object    $objDatabase
+     * @return    array    $arrSettings
+     */
+    function getSettings() {
+        $arrSettings = array();
+        \Cx\Core\Setting\Controller\Setting::init('Config', NULL,'Yaml');
+        $ymlArray = \Cx\Core\Setting\Controller\Setting::getArray('Config', null);
+
+        foreach ($ymlArray as $key => $ymlValue){
+            $arrSettings[$key] = $ymlValue['value'];
+        }
+
+        return $arrSettings;
+    }
 }
