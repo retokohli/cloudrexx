@@ -333,7 +333,7 @@ class Wysiwyg
             $processTime = \Cx\Core\Core\Controller\Cx::instanciate()->getStartTime();
 
             //Pattern to extract the image data-urls from the given content
-            $pattern = '/<img\s+[^>]*src=[\'\"](data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([a-z0-9\!\$\&\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*)\s*)[\'\"][^>]*>/si';
+            $pattern = '/<img\s+[^>]*src=([\'\"])(data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([^\'\"]*)\s*)\1[^>]*>/si';
 
             //Get the file path and filename prefix
             $filePath   = is_callable($path) ? call_user_func($path) : $path;
@@ -365,11 +365,11 @@ class Wysiwyg
                                 $imgTag   = '';
                                 $fileName = $this->checkFileAvailability(
                                                 $args['filePath'], 
-                                                $args['filePrefix'] . '.' . $matches[3]);
+                                                $args['filePrefix'] . '.' . $matches[4]);
                                 try {
                                     $file = new \Cx\Lib\FileSystem\File($args['filePath'] . '/' . $fileName);
                                     $file->touch();
-                                    $file->write(base64_decode($matches[5]));
+                                    $file->write(base64_decode($matches[6]));
                                     $movedFiles[] = $args['filePath'] . '/' . $fileName;
                                     $imgTag = '<img src="'. $args['relativePath'] . '/' . $fileName 
                                             . '" title="' . $fileName 
