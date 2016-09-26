@@ -48,382 +48,50 @@ namespace Cx\Core\Routing\Testing\UnitTest;
  * @package     cloudrexx
  * @subpackage  core_resolver
  */
-class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
+class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
 {
     protected $mockFallbackLanguages = array(
         1 => 2,
         2 => 3
     );
-    protected function insertFixtures() {        
-        $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
-        
-        $root = $nodeRepo->getRoot();     
-        $n1 = new \Cx\Core\ContentManager\Model\Entity\Node();
-        $n2 = new \Cx\Core\ContentManager\Model\Entity\Node();
-        $n3 = new \Cx\Core\ContentManager\Model\Entity\Node();
-        $n4 = new \Cx\Core\ContentManager\Model\Entity\Node(); //redirection
-        $n5 = new \Cx\Core\ContentManager\Model\Entity\Node(); //alias
-
-        $n1->setParent($root);
-        $n2->setParent($n1);
-        $n3->setParent($n2);
-        $n4->setParent($root);
-        $n5->setParent($root);
-        
-        $root->addChildren($n1);
-        $n1->addChildren($n2);
-        $n2->addChildren($n3);
-        $root->addChildren($n4);
-        $root->addChildren($n4);
-        
-        self::$em->persist($n1);
-        self::$em->persist($n2);
-        self::$em->persist($n3);
-        self::$em->persist($n4);
-        self::$em->flush();
-        
-        $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();     
-        $p1->setLang(1);
-        $p1->setTitle('resolver testpage1');
-        $p1->setNode($n1);
-        $p1->setNodeIdShadowed($n1->getId());
-        $p1->setUseCustomContentForAllChannels('');
-        $p1->setUseCustomApplicationTemplateForAllChannels('');
-        $p1->setUseSkinForAllChannels('');
-        $p1->setCmd('');
-        $p1->setActive(1);
-
-        $p4 = new \Cx\Core\ContentManager\Model\Entity\Page();     
-        $p4->setLang(1);
-        $p4->setTitle('testpage1_child');
-        $p4->setNode($n2);
-        $p4->setNodeIdShadowed($n2->getId());
-        $p4->setUseCustomContentForAllChannels('');
-        $p4->setUseCustomApplicationTemplateForAllChannels('');
-        $p4->setUseSkinForAllChannels('');
-        $p4->setCmd('');
-        $p4->setActive(1);
-        
-        self::$em->persist($n1);
-        self::$em->persist($n2);
-        self::$em->persist($p1);
-        self::$em->persist($p4);
-        self::$em->flush();
-        self::$em->refresh($n1);
-        self::$em->refresh($n2);
-
-        $p5 = new \Cx\Core\ContentManager\Model\Entity\Page();     
-        $p5->setLang(1);
-        $p5->setTitle('subtreeTest_target');
-        $p5->setNode($n3);
-        $p5->setNodeIdShadowed($n3->getId());
-        $p5->setUseCustomContentForAllChannels('');
-        $p5->setUseCustomApplicationTemplateForAllChannels('');
-        $p5->setUseSkinForAllChannels('');
-        $p5->setCmd('');
-        $p5->setActive(1);
-        
-        $p6 = new \Cx\Core\ContentManager\Model\Entity\Page();
-        $p6->setLang(0);
-        $p6->setTitle('testalias');
-        $p6->setNode($n5);
-        $p6->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS);
-        $p6->setTarget($p4->getId().'|1');
-        $p6->setNodeIdShadowed($n5->getId());
-        $p6->setUseCustomContentForAllChannels('');
-        $p6->setUseCustomApplicationTemplateForAllChannels('');
-        $p6->setUseSkinForAllChannels('');
-        $p6->setCmd('');
-        $p6->setActive(1);
-                
-        self::$em->persist($n3);
-        self::$em->persist($n5);
-        
-        self::$em->persist($p5);
-        self::$em->persist($p6);
-        self::$em->flush();                
-        self::$em->refresh($n3);
-        self::$em->refresh($n5);
-
-        $p2 = new \Cx\Core\ContentManager\Model\Entity\Page();     
-        $p2->setLang(1);
-        $p2->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_REDIRECT);
-        $p2->setTitle('redirection');
-        $p2->setNode($n4);
-        $p2->setTarget(\Cx\Core\Routing\NodePlaceholder::fromNode($n2, 1, array('foo' => 'test'))->getPlaceholder());
-        $p2->setNodeIdShadowed($n4->getId());
-        $p2->setUseCustomContentForAllChannels('');
-        $p2->setUseCustomApplicationTemplateForAllChannels('');
-        $p2->setUseSkinForAllChannels(''); 
-        $p2->setCmd('');
-        $p2->setActive(1);
-
-        self::$em->persist($p2);
-        self::$em->flush();        
-        self::$em->refresh($n4);
-        self::$em->refresh($p2);
-    }
-
-    public function testTargetPathAndParams() {
-        return false;
-        
-        $this->insertFixtures();
-                        
-        $lang = 1;
-
-        $url = new Url('http://example.com/testpage1/testpage1_child/?foo=test');
-        $resolver = new Resolver($url, $lang, self::$em, '', $this->mockFallbackLanguages);
-        $resolver->resolve();
-        
-        $this->assertEquals('testpage1/testpage1_child/', $url->getTargetPath());
-        $this->assertEquals('?foo=test', $url->getParams());
-
-        $this->assertEquals(true, $url->isRouted());
-    }
-
-    public function testFoundPage() {
-        return false;
-        
-        $this->insertFixtures(); 
-        
-        $lang = 1;
-
-        $url = new Url('http://example.com/testpage1/testpage1_child/?foo=test');
-        $resolver = new Resolver($url, $lang, self::$em, '', $this->mockFallbackLanguages);
-        $resolver->resolve();
-
-        $page = $resolver->getPage();
-        $this->assertEquals('testpage1_child', $page->getTitle());
-    }
 
     /**
-     * @expectedException Cx\Core\Routing\ResolverException
-     */
-    public function testInexistantPage() {
-        return false;
-        
-        $this->insertFixtures();
-                
-        $lang = 1;
-
-        $url = new Url('http://example.com/inexistantPage/?foo=test');
-        $resolver = new Resolver($url, $lang, self::$em, '', $this->mockFallbackLanguages);
-        $resolver->resolve();
-
-        $page = $resolver->getPage();
-    }
-
-    public function testRedirection() {
-        return false;
-        
-        $this->insertFixtures();
-                
-        $lang = 1;
-
-        $url = new Url('http://example.com/redirection/');
-        $resolver = new Resolver($url, $lang, self::$em, '', $this->mockFallbackLanguages, true);
-        $resolver->resolve();
-
-        $page = $resolver->getPage();
-        $this->assertEquals('testpage1_child', $page->getTitle());
-    }
-
-    protected function getResolvedFallbackPage() {        
-        $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
-
-        $root = $nodeRepo->getRoot();
-        
-        $n1 = new \Cx\Core\ContentManager\Model\Entity\Node();
-        
-        $n1->setParent($root);
-        $root->addChildren($n1);
-        
-        self::$em->persist($n1);
-        self::$em->flush();
-
-        //test if requesting this page...
-        $p2 = new \Cx\Core\ContentManager\Model\Entity\Page();     
-        $p2->setLang(1);
-        $p2->setTitle('pageThatsFallingBack');
-        $p2->setNode($n1);
-        $p2->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK);
-        $p2->setNodeIdShadowed($n1->getId());
-        $p2->setUseCustomContentForAllChannels('');
-        $p2->setUseCustomApplicationTemplateForAllChannels('');
-        $p2->setUseSkinForAllChannels('');
-        $p2->setCmd('');
-        $p2->setActive(1);
-
-        //... will yield contents of this page as result.
-        $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();     
-        $p1->setLang(2);
-        $p1->setTitle('pageThatHoldsTheContent');
-        $p1->setNode($n1);
-        $p1->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_CONTENT);
-        $p1->setContent('fallbackContent');
-        $p1->setNodeIdShadowed($n1->getId());
-        $p1->setUseCustomContentForAllChannels('');
-        $p1->setUseCustomApplicationTemplateForAllChannels('');
-        $p1->setUseSkinForAllChannels('');
-        $p1->setCmd('');
-        $p1->setActive(1);
-        
-        self::$em->persist($n1);
-        self::$em->persist($p1);
-        self::$em->persist($p2);
-        self::$em->flush();
-        self::$em->refresh($n1);
-        
-        return false;
-        
-        $url = new Url('http://example.com/pageThatsFallingBack/');
-        $resolver = new Resolver($url, 1, self::$em, '', $this->mockFallbackLanguages, true);
-        $resolver->resolve();
-        $p = $resolver->getPage();
-
-        return $p;
-    }
-
-    public function testFallbackRedirection() {
-        return false;
-        
-        $p = $this->getResolvedFallbackPage();
-        
-
-        $this->assertEquals('fallbackContent', $p->getContent());
-        $this->assertEquals(true, $p->hasFallbackContent());
-    }
-
-    /**
-     * @expectedException Cx\Model\Events\PageEventListenerException
-     */
-    public function testPageListenerForResolvedPages() {
-        return false;
-        
-        $p = $this->getResolvedFallbackPage();
-
-        //try to change something
-        $p->setContent('asdf');
-        self::$em->persist($p);
-        self::$em->flush();
-    }
-    
-    public function testAliasResolving() {
-        return false;
-        
-        $this->insertFixtures();
-        
-        $url = new Url('http://example.com/testalias');
-        $resolver = new Resolver($url, 1, self::$em, '', $this->mockFallbackLanguages, true);
-        $resolver->resolveAlias();
-        $resolver->resolve();
-        $p = $resolver->getPage();
-        
-        $this->assertEquals(1, $p->getLang());
-        $this->assertEquals('testpage1_child', $p->getTitle());
-    }
-
-    /**
-     * Create a page based on the given arguments
+     * Constructs a test case with the given name.
      *
-     * @param string  $title                Page title
-     * @param string  $language             Language id
-     * @param string  $type                 Type of page Application, content, .. etc
-     * @param string  $application          Component name, If page type is applicaton
-     * @param string  $cmd                  Cmd value
-     * @param boolean $frontendPermission   True, when frontend permission enabled
-     * @param integer $accessId             Access permission id
-     *
-     * @return \Cx\Core\ContentManager\Model\Entity\Page
+     * @param string    $name
+     * @param array     $data
+     * @param string    $dataName
      */
-    protected function getPage(
-        $title,
-        $language,
-        $type,
-        $application = '',
-        $cmd = '',
-        $frontendPermission = null,
-        $accessId = null
-    ) {
-        $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
-
-        $root = $nodeRepo->getRoot();
-        $n   = new \Cx\Core\ContentManager\Model\Entity\Node();
-        $n->setParent($root);
-        $root->addChildren($n);
-        self::$em->persist($n);
-        self::$em->flush();
-
-        $p = new \Cx\Core\ContentManager\Model\Entity\Page();
-        $p->setType($type);
-        $p->setLang($language);
-        $p->setTitle($title);
-        $p->setNode($n);
-        $p->setNodeIdShadowed($n->getId());
-        $p->setUseCustomContentForAllChannels('');
-        $p->setUseCustomApplicationTemplateForAllChannels('');
-        $p->setUseSkinForAllChannels('');
-        $p->setModule($application);
-        $p->setCmd($cmd);
-        $p->setActive(1);
-        $p->setFrontendProtection(null !== $frontendPermission);
-        if (null !== $accessId) {
-            $p->setFrontendAccessId($accessId);
-        }
-
-        self::$em->persist($p);
-        self::$em->flush();
-        self::$em->refresh($n);
-
-        return $p;
+    public function __construct($name = null, array $data = array(), $dataName = '')
+    {
+        parent::__construct($name, $data, $dataName);
+        $this->dataSetFolder = $this->cx->getCodeBaseCorePath() . '/Routing/Testing/UnitTest/Data';
     }
 
     /**
-     * Test case to test the Routing::resolve() method
-     *
      * @dataProvider resolverDataProvider Data value provider
-     *
-     * @param string  $title                Page title
-     * @param string  $language             Language id
-     * @param string  $type                 Type of page Application, content, .. etc
-     * @param string  $application          Component name, If page type is applicaton
-     * @param string  $cmd                  Cmd value
-     * @param boolean $frontendPermission   True, when frontend permission enabled
-     * @param integer $accessId             Access permission id
-     * @param string  $expectedResult       Expected test result
      */
-    public function testResolver(
-        $title,
-        $language,
-        $type,
-        $application = '',
-        $cmd = '',
-        $frontendPermission = null,
-        $accessId = null,
-        $expectedResult = ''
-    ) {
+    public function testResolver($language, $expectedResult)
+    {
         global $url;
-
-        $this->getPage($title, $language, $type, $application, $cmd, $frontendPermission, $accessId);
 
         $langCode = \FWLanguage::getLanguageCodeById($language);
         $url      = new \Cx\Core\Routing\Url('http://example.com/'. $langCode .'/'. $expectedResult);
         $resolver = new \Cx\Core\Routing\Resolver($url, $language, self::$em, '', $this->mockFallbackLanguages, false);
         $resolver->resolve();
         $p = $resolver->getPage();
-
         $this->assertEquals($expectedResult, $p->getSlug());
     }
 
     /**
-     * The Data provider for Resolver class test
+     * Test records for the testResolver method
      *
      * @return array
      */
     public function resolverDataProvider()
     {
         return array(
-            array('simple content page', 1, \Cx\Core\ContentManager\Model\Entity\Page::TYPE_CONTENT, '', '', null, null, 'simple-content-page'),
+            array(1, 'Simple-content-page'),
         );
     }
 }

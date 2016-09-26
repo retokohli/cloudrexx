@@ -1,0 +1,85 @@
+contrexx_content_node:
+  -
+    id: 1
+    lft: 1
+    rgt: 4
+    lvl: 0
+  -
+    id: 532
+    parent_id: 1
+    lft: 2
+    rgt: 3
+    lvl: 1
+contrexx_content_page:
+  -
+    id: 672
+    node_id: 532
+    nodeIdShadowed: 532
+    lang: 2
+    type: "content"
+    caching: 0
+    updatedAt: "2016-09-21 19:56:14"
+    updatedBy: "noreply@contrexx.com"
+    title: "Simple content page"
+    linkTarget: ""
+    contentTitle: "Simple content page"
+    slug: "Simple-content-page"
+    content: ""
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "Simple content page"
+    metadesc: "Simple content page"
+    metakeys: "Simple content page"
+    metarobots: 1
+    editingStatus: ""
+    protection: 0
+    frontendAccessId: 0
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: ""
+    module: "Access"
+    cmd: ""
+  -
+    id: 673
+    node_id: 532
+    nodeIdShadowed: 532
+    lang: 1
+    type: "content"
+    caching: 0
+    updatedAt: "2016-09-21 19:55:16"
+    updatedBy: "noreply@contrexx.com"
+    title: "Simple content page"
+    linkTarget: ""
+    contentTitle: "Simple content page"
+    slug: "Simple-content-page"
+    content: ""
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "Simple content page"
+    metadesc: "Simple content page"
+    metakeys: "Simple content page"
+    metarobots: 1
+    editingStatus: ""
+    protection: 0
+    frontendAccessId: 0
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: ""
+    module: "Access"
+    cmd: ""
