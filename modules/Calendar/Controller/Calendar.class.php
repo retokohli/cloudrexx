@@ -415,6 +415,9 @@ class Calendar extends CalendarLibrary
 
         $dateFormat = $this->getDateFormat(1);
 
+        \JS::activate('cx');
+        \JS::activate('jqueryui');
+
         $javascript = <<< EOF
 <script language="JavaScript" type="text/javascript">
 
