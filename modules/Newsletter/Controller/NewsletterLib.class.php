@@ -136,11 +136,11 @@ class NewsletterLib
         }
         return $arrLists;
     }
-    
-    
+
+
     /**
      * Returns the Language ID for a newsletter user
-     * 
+     *
      * If the user's preferred language can not be found, the default language
      * ID is returned.
      * @param string $email E-mail address of the user
@@ -149,7 +149,7 @@ class NewsletterLib
      */
     public function getUsersPreferredLanguageId($email, $type) {
         global $objDatabase;
-        
+
         $userLanguage = \FWLanguage::getDefaultLangId();
         switch ($type) {
             case self::USER_TYPE_CORE:
@@ -160,7 +160,7 @@ class NewsletterLib
                         'email' => $email,
                     )
                 );
-                if ($user) {
+                if ($user && $user->getFrontendLanguage()) {
                     $userLanguage = $user->getFrontendLanguage();
                 }
                 break;
@@ -177,7 +177,7 @@ class NewsletterLib
                         `email` = \'' . contrexx_raw2db($email) . '\'
                 ';
                 $result = $objDatabase->Execute($query);
-                if (isset($result->fields['language'])) {
+                if (!empty($result->fields['language'])) {
                     $userLanguage = $result->fields['language'];
                 }
                 break;
@@ -425,9 +425,9 @@ class NewsletterLib
     {
         global $objDatabase;
 
-        //reset the $recipientId on copy function 
+        //reset the $recipientId on copy function
         $recipientId = $copy ? 0 : $recipientId;
-        
+
         $objRecipient = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_addslashes($email)."' AND id!=".$recipientId, 1);
         if ($objRecipient !== false && $objRecipient->RecordCount() == 0) {
             return true;
@@ -712,6 +712,23 @@ class NewsletterLib
         return null;
     }
 
+    /**
+     * Get newsletter list name by given id
+     *
+     * @param integer $listId List id
+     *
+     * @return mixed string or null
+     */
+    public function getListNameById($listId)
+    {
+        if (!isset(self::$arrLists)) {
+            self::$arrLists = self::getLists(false, true);
+        }
+        if (isset(self::$arrLists[$listId])) {
+            return self::$arrLists[$listId]['name'];
+        }
+        return null;
+    }
 
     /**
      * Add a list with the given name and status

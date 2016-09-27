@@ -1,0 +1,20 @@
+<!-- ESI_RANDOM_START -->
+<esi:assign name="content_list">
+[<!-- BEGIN first_content -->'{CONTENT}'<!-- END first_content --><!-- BEGIN content -->,'{CONTENT}'<!-- END content -->]
+</esi:assign>
+
+<!-- choosing random offset --> 
+<esi:assign name="index" value="$rand()%$len($(content_list))" />
+
+<esi:vars>
+<!--
+Index: $(index) <br>
+Content: $(content_list{$(index)}) <br>
+-->
+</esi:vars>
+
+<esi:vars>
+<esi:include src="$(content_list{$(index)})" onerror="continue"/>
+</esi:vars>
+<!-- ESI_RANDOM_END -->
+
