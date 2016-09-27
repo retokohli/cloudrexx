@@ -368,8 +368,9 @@ class Wysiwyg
                                                 $args['filePrefix'] . '.' . $matches[4]);
                                 try {
                                     $file = new \Cx\Lib\FileSystem\File($args['filePath'] . '/' . $fileName);
+                                    $decodedContent = base64_decode($matches[6]);
                                     $file->touch();
-                                    $file->write(base64_decode($matches[6]));
+                                    $file->write($decodedContent);
                                     $movedFiles[] = $args['filePath'] . '/' . $fileName;
                                     $imgTag = '<img src="'. $args['relativePath'] . '/' . $fileName 
                                             . '" title="' . $fileName 
@@ -380,7 +381,7 @@ class Wysiwyg
                                 }
 
                                 //Check the memory overflow and timeout limit
-                                $this->checkMemoryLimit(self::MiB2);
+                                $this->checkMemoryLimit(strlen($decodedContent) * 2);
                                 $this->checkTimeoutLimit($args['processTime']);
 
                                 return $imgTag;
