@@ -119,6 +119,8 @@ class Recommend extends RecommendLibrary
             'RECOM_TXT_PREVIEW'                => $_ARRAYLANG['TXT_PREVIEW_FRONTEND'],
             'RECOM_TXT_FEMALE'                => $_ARRAYLANG['TXT_FEMALE_FRONTEND'],
             'RECOM_TXT_MALE'                => $_ARRAYLANG['TXT_MALE_FRONTEND'],
+            'TXT_RECOMMEND_SEND'            => $_ARRAYLANG['TXT_RECOMMEND_SEND'],
+            'TXT_RECOMMEND_DELETE'          => $_ARRAYLANG['TXT_RECOMMEND_DELETE'],
         ));
 
         $this->_objTpl->setVariable(array(
@@ -212,6 +214,8 @@ class Recommend extends RecommendLibrary
                 'RECOM_TXT_FEMALE'                => $_ARRAYLANG['TXT_FEMALE_FRONTEND'],
                 'RECOM_TXT_MALE'                => $_ARRAYLANG['TXT_MALE_FRONTEND'],
                 'RECOM_TEXT'                    => $_ARRAYLANG['TXT_INTRODUCTION'],
+                'TXT_RECOMMEND_SEND'            => $_ARRAYLANG['TXT_RECOMMEND_SEND'],
+                'TXT_RECOMMEND_DELETE'          => $_ARRAYLANG['TXT_RECOMMEND_DELETE'],
             ));
 
             $this->_objTpl->setVariable(array(
