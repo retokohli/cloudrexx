@@ -143,7 +143,7 @@ class Counter
                 // count spider
                 if (!$this->spiderAgent) {
                     // Check exclude list
-                    if(!$this->_skipIps()) {
+                    if($this->_skipIps($this->arrClient['ip'])) {
                         // count visitor
                         $this->_countVisitor();
                         
@@ -224,7 +224,7 @@ class Counter
      */
     function _skipIps($ip) {
         global $objDb;
-        $query = "SELECT * FROM ".DBPREFIX."stats_exclude_ip WHERE '" . $ip . "' REGEXP ip_address";
+        $query = "`SELECT * FROM ".DBPREFIX."stats_exclude_ip WHERE '" . $ip . "' REGEXP ip_address`";
         if (($objResult = $objDb->Execute($query))) {
             $count = $objResult->RecordCount();
         }
