@@ -110,7 +110,21 @@ abstract class DatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
 
         $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
-        $this->backupGlobals = false;
+        $this->backupGlobals          = true;
+        /**
+         * Globals has to backup to run repeated tests. Otherwise test might conflict with
+         * each other.
+         *
+         * BackupGlobalsBlacklist
+         * List the global key's that could not take backup
+         * Ex: PDO can not be serialize and unserialize
+         */
+        $this->backupGlobalsBlacklist = array(
+          'objDatabase',
+          'objInit',
+          'objCache',
+          'cx',
+        );
         $this->backupStaticAttributes = false;
     }
 

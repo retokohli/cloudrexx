@@ -71,16 +71,27 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
     /**
      * @dataProvider resolverDataProvider Data value provider
      */
-    public function testResolver($language, $expectedResult)
-    {
+    public function testResolver(
+        $language = null,
+        $inputSlug = '',
+        $expectedSlug = null
+    ) {
         global $url;
 
-        $langCode = \FWLanguage::getLanguageCodeById($language);
-        $url      = new \Cx\Core\Routing\Url('http://example.com/'. $langCode .'/'. $expectedResult);
+        if (null === $expectedSlug) {
+            $expectedSlug = $inputSlug;
+        }
+        $urlString = '';
+        if (null !== $language) {
+            $langCode   = \FWLanguage::getLanguageCodeById($language);
+            $urlString .= '/' . $langCode;
+        }
+        $urlString .= '/'. $inputSlug;
+        $url      = new \Cx\Core\Routing\Url('http://example.com' . $urlString);
         $resolver = new \Cx\Core\Routing\Resolver($url, $language, self::$em, '', $this->mockFallbackLanguages, false);
         $resolver->resolve();
         $p = $resolver->getPage();
-        $this->assertEquals($expectedResult, $p->getSlug());
+        $this->assertEquals($expectedSlug, $p->getSlug());
     }
 
     /**
@@ -92,6 +103,12 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
     {
         return array(
             array(1, 'Simple-content-page'),
+            array(2, 'Simple-content-page'),
+            array(null, 'Alias-for-content-page', 'Simple-content-page'),
+            array(1, 'SymLink-page'),
+            array(2, 'SymLink-page'),
+            array(1, 'Application-page'),
+            array(2, 'Application-page'),
         );
     }
 }
