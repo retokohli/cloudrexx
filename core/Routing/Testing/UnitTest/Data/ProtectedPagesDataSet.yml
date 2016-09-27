@@ -1,0 +1,469 @@
+contrexx_content_node:
+  -
+    id: 1
+    lft: 1
+    rgt: 12
+    lvl: 0
+  -
+    id: 532
+    parent_id: 1
+    lft: 2
+    rgt: 3
+    lvl: 1
+  -
+    id: 533
+    parent_id: 1
+    lft: 4
+    rgt: 5
+    lvl: 1
+  -
+    id: 534
+    parent_id: 1
+    lft: 6
+    rgt: 7
+    lvl: 1
+  -
+    id: 535
+    parent_id: 1
+    lft: 8
+    rgt: 9
+    lvl: 1
+  -
+    id: 536
+    parent_id: 1
+    lft: 10
+    rgt: 11
+    lvl: 1
+contrexx_content_page:
+  -
+    id: 672
+    node_id: 532
+    nodeIdShadowed: 532
+    lang: 1
+    type: "fallback"
+    caching: 0
+    updatedAt: "2016-09-27 19:31:32"
+    updatedBy: "noreply@contrexx.com"
+    title: "Simple content page"
+    linkTarget: ""
+    contentTitle: "Simple content page"
+    slug: "Simple-content-page"
+    content: ""
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "Simple content page"
+    metadesc: "Simple content page"
+    metakeys: "Simple content page"
+    metarobots: 1
+    editingStatus: ""
+    protection: 1
+    frontendAccessId: 387
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: ""
+    module: "Access"
+    cmd: ""
+  -
+    id: 673
+    node_id: 533
+    lang: 0
+    type: "alias"
+    caching: 0
+    updatedAt: "2016-09-27 13:45:06"
+    updatedBy: "noreply@contrexx.com"
+    title: "Alias-for-content-page"
+    contentTitle: "Alias-for-content-page"
+    slug: "Alias-for-content-page"
+    content: ""
+    sourceMode: 0
+    metadesc: ""
+    metakeys: ""
+    editingStatus: ""
+    protection: 0
+    frontendAccessId: 0
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: "[[NODE_532_1]]"
+    cmd: ""
+  -
+    id: 674
+    node_id: 532
+    nodeIdShadowed: 532
+    lang: 2
+    type: "content"
+    caching: 0
+    updatedAt: "2016-09-27 19:28:53"
+    updatedBy: "noreply@contrexx.com"
+    title: "Simple content page"
+    linkTarget: ""
+    contentTitle: "Simple content page"
+    slug: "Simple-content-page"
+    content: ""
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "Simple content page"
+    metadesc: "Simple content page"
+    metakeys: "Simple content page"
+    metarobots: 1
+    editingStatus: ""
+    protection: 1
+    frontendAccessId: 383
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: ""
+    module: "Access"
+    cmd: ""
+  -
+    id: 675
+    node_id: 534
+    nodeIdShadowed: 534
+    lang: 2
+    type: "symlink"
+    caching: 0
+    updatedAt: "2016-09-27 19:32:12"
+    updatedBy: "noreply@contrexx.com"
+    title: "SymLink page"
+    linkTarget: ""
+    contentTitle: "SymLink page"
+    slug: "SymLink-page"
+    content: ""
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "SymLink page"
+    metadesc: "SymLink page"
+    metakeys: "SymLink page"
+    metarobots: 1
+    editingStatus: ""
+    protection: 1
+    frontendAccessId: 388
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: "[[NODE_532]]"
+    module: "Access"
+    cmd: ""
+  -
+    id: 676
+    node_id: 534
+    nodeIdShadowed: 534
+    lang: 1
+    type: "symlink"
+    caching: 0
+    updatedAt: "2016-09-27 19:30:02"
+    updatedBy: "noreply@contrexx.com"
+    title: "SymLink page"
+    linkTarget: ""
+    contentTitle: "SymLink page"
+    slug: "SymLink-page"
+    content: ""
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "SymLink page"
+    metadesc: "SymLink page"
+    metakeys: "SymLink page"
+    metarobots: 1
+    editingStatus: ""
+    protection: 1
+    frontendAccessId: 384
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: "[[NODE_532]]"
+    module: "Access"
+    cmd: ""
+  -
+    id: 677
+    node_id: 535
+    nodeIdShadowed: 535
+    lang: 1
+    type: "application"
+    caching: 0
+    updatedAt: "2016-09-27 19:30:36"
+    updatedBy: "noreply@contrexx.com"
+    title: "Application page"
+    linkTarget: ""
+    contentTitle: "Application page"
+    slug: "Application-page"
+    content: "<p>{APPLICATION_DATA}</p>\r\n"
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "Application page"
+    metadesc: "Application page"
+    metakeys: "Application page"
+    metarobots: 1
+    editingStatus: ""
+    protection: 1
+    frontendAccessId: 385
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: ""
+    module: "Access"
+    cmd: ""
+  -
+    id: 678
+    node_id: 535
+    nodeIdShadowed: 535
+    lang: 2
+    type: "application"
+    caching: 0
+    updatedAt: "2016-09-27 19:32:44"
+    updatedBy: "noreply@contrexx.com"
+    title: "Application page"
+    linkTarget: ""
+    contentTitle: "Application page"
+    slug: "Application-page"
+    content: "<p>{APPLICATION_DATA}</p>\r\n"
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "Application page"
+    metadesc: "Application page"
+    metakeys: "Application page"
+    metarobots: 1
+    editingStatus: ""
+    protection: 1
+    frontendAccessId: 389
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: ""
+    module: "Access"
+    cmd: ""
+  -
+    id: 679
+    node_id: 536
+    nodeIdShadowed: 536
+    lang: 2
+    type: "redirect"
+    caching: 0
+    updatedAt: "2016-09-27 19:35:08"
+    updatedBy: "noreply@contrexx.com"
+    title: "Redirect page"
+    linkTarget: ""
+    contentTitle: "Redirect page"
+    slug: "Redirect-page"
+    content: ""
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "Redirect page"
+    metadesc: "Redirect page"
+    metakeys: "Redirect page"
+    metarobots: 1
+    editingStatus: ""
+    protection: 1
+    frontendAccessId: 390
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: "[[NODE_532]]"
+    module: "Access"
+    cmd: ""
+  -
+    id: 680
+    node_id: 536
+    nodeIdShadowed: 536
+    lang: 1
+    type: "redirect"
+    caching: 0
+    updatedAt: "2016-09-27 19:31:04"
+    updatedBy: "noreply@contrexx.com"
+    title: "Redirect page"
+    linkTarget: ""
+    contentTitle: "Redirect page"
+    slug: "Redirect-page"
+    content: ""
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "Redirect page"
+    metadesc: "Redirect page"
+    metakeys: "Redirect page"
+    metarobots: 1
+    editingStatus: ""
+    protection: 1
+    frontendAccessId: 386
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: "[[NODE_532]]"
+    module: "Access"
+    cmd: ""
+contrexx_access_group_dynamic_ids:
+  -
+    access_id: 383
+    group_id: 10
+  -
+    access_id: 384
+    group_id: 10
+  -
+    access_id: 385
+    group_id: 10
+  -
+    access_id: 386
+    group_id: 10
+  -
+    access_id: 387
+    group_id: 10
+  -
+    access_id: 388
+    group_id: 10
+  -
+    access_id: 389
+    group_id: 10
+  -
+    access_id: 390
+    group_id: 10
+contrexx_access_rel_user_group:
+  -
+    user_id: 2
+    group_id: 10
+contrexx_access_users:
+  -
+    id: 1
+    is_admin: 1
+    username: "system"
+    password: "e10adc3949ba59abbe56e057f20f883e"
+    auth_token: ""
+    auth_token_timeout: 0
+    regdate: 0
+    expiration: 0
+    validity: 0
+    last_auth: 1474977259
+    last_auth_status: 1
+    last_activity: 1474978144
+    email: "noreply@contrexx.com"
+    email_access: "nobody"
+    frontend_lang_id: 0
+    backend_lang_id: 2
+    active: 1
+    verified: 1
+    primary_group: 0
+    profile_access: "members_only"
+    restore_key: ""
+    restore_key_time: 0
+    u2u_active: 0
+  -
+    id: 2
+    is_admin: 0
+    username: ""
+    password: "f91e15dbec69fc40f81f0876e7009648"
+    auth_token: ""
+    auth_token_timeout: 0
+    regdate: 1474977457
+    expiration: 0
+    validity: 0
+    last_auth: 0
+    last_auth_status: 1
+    last_activity: 0
+    email: "test@contrexx.com"
+    email_access: "members_only"
+    frontend_lang_id: 2
+    backend_lang_id: 2
+    active: 1
+    verified: 1
+    primary_group: 10
+    profile_access: "members_only"
+    restore_key: ""
+    restore_key_time: 0
+    u2u_active: 1
+contrexx_access_user_profile:
+  -
+    user_id: 1
+    gender: "gender_undefined"
+    title: 2
+    firstname: "CMS"
+    lastname: "System Benutzer"
+    company: ""
+    address: ""
+    city: ""
+    zip: ""
+    country: 0
+    phone_office: ""
+    phone_private: ""
+    phone_mobile: ""
+    phone_fax: ""
+    birthday: ""
+    website: ""
+    profession: ""
+    interests: ""
+    signature: ""
+    picture: ""
+  -
+    user_id: 2
+    gender: "gender_undefined"
+    title: 0
+    firstname: ""
+    lastname: ""
+    company: ""
+    address: ""
+    city: ""
+    zip: ""
+    country: 0
+    phone_office: ""
+    phone_private: ""
+    phone_mobile: ""
+    phone_fax: ""
+    birthday: ""
+    website: ""
+    profession: ""
+    interests: ""
+    signature: ""
+    picture: ""
