@@ -1119,6 +1119,7 @@ class Stats extends StatsLibrary
      * Add a IP address to the exclusion list.
      *
      * @param ip IP address to add.
+     * @param remarks comment for the exclusion.
      */
     function _addIpToExclusionList($ip, $remarks) {
         global $objDatabase;
@@ -1132,7 +1133,7 @@ class Stats extends StatsLibrary
 
 	// Currently only fully qualified IP addresses or subnet massks.
         if(preg_match("/[0-9|\*]{1,3}\.[0-9|\*]{1,3}\.[0-9|\*]{1,3}\.[0-9|\*]{1,3}/", $ip) == 1) {
-            $query = "INSERT INTO ".DBPREFIX."stats_exclude_ip(ip_address,remarks,username) VALUES('".$ip."','" . $remarks . "','" . $userName . "')";
+            $query = "`INSERT INTO ".DBPREFIX."stats_exclude_ip(ip_address,remarks,username) VALUES('".$ip."','" . $remarks . "','" . $userName . "')`";
             $objDatabase->Execute($query);
         }
     }
@@ -1140,24 +1141,22 @@ class Stats extends StatsLibrary
     /**
      * Delete a IP address from the exclusion list.
      *
-     * @param ip IP address to delete.
+     * @param id ID of the IP address to delete.
      */
     function _delIpFromExclusionList($id) {
         global $objDatabase;
-        $query = "DELETE FROM ".DBPREFIX."stats_exclude_ip WHERE id=".$id;
+        $query = "`DELETE FROM ".DBPREFIX."stats_exclude_ip WHERE id=".$id."`";
         $objDatabase->Execute($query);
     }
 
     /**
      * Delete a IP address from the exclusion list.
      *
-     * @param ip IP address to delete.
+     * @param ids list of IP address IDs to delete.
      */
     function _delIpsFromExclusionList($ids) {
-        global $objDatabase;
         foreach ($ids as $id) {
-            $query = "DELETE FROM ".DBPREFIX."stats_exclude_ip WHERE id=".$id;
-            $objDatabase->Execute($query);
+            _delIpFromExclusionList($id);
         }
     }
 
