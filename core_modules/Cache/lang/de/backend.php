@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,15 +24,15 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
-/** 
- * @copyright   CLOUDREXX CMS - CLOUDREXX AG 
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Cloudrexx Development Team <info@cloudrexx.com>
- * @access      public 
+ * @access      public
  * @package     cloudrexx
  * @subpackage  coremodule_cache
- */ 
-global $_ARRAYLANG; 
+ */
+global $_ARRAYLANG;
 $_ARRAYLANG['TXT_CACHE_ERR_NOTWRITABLE'] = 'Das gewählte Caching-Verzeichnis ist nicht beschreibbar. Setzen Sie die Berechtigung 777 auf folgendes Verzeichnis: ';
 $_ARRAYLANG['TXT_CACHE_ERR_NOTEXIST'] = 'Das Caching-Verzeichnis existiert nicht. Bitte überprüfen Sie folgenden Ordner:';
 $_ARRAYLANG['TXT_SETTINGS_MENU_CACHE'] = 'Caching';
@@ -80,9 +80,26 @@ $_ARRAYLANG['TXT_STATS_CHACHE_ENTRIES_COUNT'] = 'Gecachte Datenbankeinträge';
 $_ARRAYLANG['TXT_STATS_CACHE_SIZE'] = 'Datenmenge der gespeicherten Daten';
 $_ARRAYLANG['TXT_DISPLAY_CONFIGURATION'] = 'Konfiguration einblenden';
 $_ARRAYLANG['TXT_HIDE_CONFIGURATION'] = 'Konfiguration ausblenden';
-$_ARRAYLANG['TXT_CACHE_VARNISH'] = 'Varnish';
+$_ARRAYLANG['TXT_CACHE_REVERSE_PROXY'] = 'Reverse Proxy Cache';
+$_ARRAYLANG['TXT_CACHE_REVERSE_PROXY_NONE'] = 'Keines';
+$_ARRAYLANG['TXT_CACHE_REVERSE_PROXY_VARNISH'] = 'Varnish';
+$_ARRAYLANG['TXT_CACHE_REVERSE_PROXY_NGINX'] = 'NGINX';
 $_ARRAYLANG['TXT_CACHE_PROXY_IP'] = 'Proxy IP-Adresse';
 $_ARRAYLANG['TXT_CACHE_PROXY_PORT'] = 'Proxy Port';
 $_ARRAYLANG['TXT_SETTINGS_UPDATED'] = 'Die Einstellungen wurden gespeichert.';
 $_ARRAYLANG['TXT_CACHE_FOLDER_EMPTY'] = 'Cache-Ordner wurde geleert.';
 $_ARRAYLANG['TXT_CACHE_EMPTY_SUCCESS'] = 'Der Cache wurde erfolgreich geleert';
+
+$_ARRAYLANG['TXT_CACHE_SSI'] = 'SSI-Verarbeitung';
+$_ARRAYLANG['TXT_CACHE_SSI_SYSTEM'] = 'Ausgabe';
+$_ARRAYLANG['TXT_CACHE_SSI_TYPE'] = 'Typ';
+$_ARRAYLANG['TXT_CACHE_SSI_INTERN'] = 'Keine';
+$_ARRAYLANG['TXT_CACHE_SSI_VARNISH'] = 'Varnish';
+$_ARRAYLANG['TXT_CACHE_SSI_NGINX'] = 'NGINX';
+$_ARRAYLANG['TXT_CACHE_SSI_SSI'] = 'SSI Kompatibel';
+$_ARRAYLANG['TXT_CACHE_SSI_ESI'] = 'ESI Kompatibel';
+$_ARRAYLANG['TXT_CACHE_SSI_HELP_SYSTEM'] = 'Wenn ein SSI oder ESI kompatibler Proxy verfügbar ist, wählen Sie die entsprechende Option aus.';
+$_ARRAYLANG['TXT_CACHE_SSI_HELP_TYPE'] = 'Der Servertyp wird benötigt, um zwischengespeicherte Daten aktualisieren zu können.';
+$_ARRAYLANG['TXT_CACHE_SSI_IP'] = 'IP-Adresse';
+$_ARRAYLANG['TXT_CACHE_SSI_PORT'] = 'Port';
+
