@@ -105,11 +105,11 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
         $themeID         = isset($params['get']['tid']) ? $params['get']['tid'] : 1;
         $themeRepository = new ThemeRepository();
         $theme           = $themeRepository->findById($themeID);
-        if (!isset($_SESSION['TemplateEditor'])) {
-            $_SESSION['TemplateEditor'] = array();
+        if (!isset($this->getComponent('Session')->getSession()['TemplateEditor'])) {
+            $this->getComponent('Session')->getSession()['TemplateEditor'] = array();
         }
-        if (!isset($_SESSION['TemplateEditor'][$themeID])) {
-            $_SESSION['TemplateEditor'][$themeID] = array();
+        if (!isset($this->getComponent('Session')->getSession()['TemplateEditor'][$themeID])) {
+            $this->getComponent('Session')->getSession()['TemplateEditor'][$themeID] = array();
         }
         $fileStorage           = new OptionSetFileStorage(
             $this->cx->getWebsiteThemesPath()
@@ -121,7 +121,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
         );
         $themeOptions->applyPreset(
             $themeOptions->getPresetRepository()->getByName(
-                $_SESSION['TemplateEditor'][$themeID]['activePreset']
+                $this->getComponent('Session')->getSession()['TemplateEditor'][$themeID]['activePreset']
             )
         );
         $presetRepository = $themeOptions->getPresetRepository();
@@ -145,11 +145,11 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
         $themeID         = isset($params['get']['tid']) ? $params['get']['tid'] : 1;
         $themeRepository = new ThemeRepository();
         $theme           = $themeRepository->findById($themeID);
-        if (!isset($_SESSION['TemplateEditor'])) {
-            $_SESSION['TemplateEditor'] = array();
+        if (!isset($this->getComponent('Session')->getSession()['TemplateEditor'])) {
+            $this->getComponent('Session')->getSession()['TemplateEditor'] = array();
         }
-        if (!isset($_SESSION['TemplateEditor'][$themeID])) {
-            $_SESSION['TemplateEditor'][$themeID] = array();
+        if (!isset($this->getComponent('Session')->getSession()['TemplateEditor'][$themeID])) {
+            $this->getComponent('Session')->getSession()['TemplateEditor'][$themeID] = array();
         }
         $fileStorage           = new OptionSetFileStorage(
             $this->cx->getWebsiteThemesPath()
@@ -161,7 +161,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
         );
         $themeOptions->applyPreset(
             $themeOptions->getPresetRepository()->getByName(
-                $_SESSION['TemplateEditor'][$themeID]['activePreset']
+                $this->getComponent('Session')->getSession()['TemplateEditor'][$themeID]['activePreset']
             )
         );
         if (empty($params['post']['optionName'])
@@ -181,7 +181,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
         $data = $themeOptions->handleChanges(
             $params['post']['optionName'], $params['post']['optionData']
         );
-        $_SESSION['TemplateEditor'][$themeID][$params['post']['optionName']]
+        $this->getComponent('Session')->getSession()['TemplateEditor'][$themeID][$params['post']['optionName']]
               = $data;
         return $data;
     }
@@ -256,7 +256,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
             $presetPresetName
         );
         $preset->setName($presetName);
-        $_SESSION['TemplateEditor'][$themeID]['activePreset'] = $presetName;
+        $this->getComponent('Session')->getSession()['TemplateEditor'][$themeID]['activePreset'] = $presetName;
         $optionSet->getPresetRepository()->save($preset);
         return array('preset' => $presetName);
     }
@@ -316,8 +316,8 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
     public function resetPreset($params) {
         $themeID               = isset($params['post']['tid']) ?
             intval($params['post']['tid']) : 1;
-        $activePreset = $_SESSION['TemplateEditor'][$themeID]['activePreset'];
-        $_SESSION['TemplateEditor'][$themeID] = array();
-        $_SESSION['TemplateEditor'][$themeID]['activePreset'] = $activePreset;
+        $activePreset = $this->getComponent('Session')->getSession()['TemplateEditor'][$themeID]['activePreset'];
+        $this->getComponent('Session')->getSession()['TemplateEditor'][$themeID] = array();
+        $this->getComponent('Session')->getSession()['TemplateEditor'][$themeID]['activePreset'] = $activePreset;
     }
 }

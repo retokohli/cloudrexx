@@ -106,7 +106,7 @@ class ComponentController extends SystemComponentController
             if (isset($_GET['templateEditor'])) {
                 $themeOptions->applyPreset(
                     $themeOptions->getPresetRepository()->getByName(
-                        $_SESSION['TemplateEditor'][$themeID]['activePreset']
+                        $this->getComponent('Session')->getSession()['TemplateEditor'][$themeID]['activePreset']
                     )
                 );
             }

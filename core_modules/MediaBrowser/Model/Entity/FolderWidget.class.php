@@ -74,13 +74,13 @@ class FolderWidget extends \Cx\Model\Base\EntityBase
      */
     public function __construct($folder, $viewOnly = false)
     {
-        if (!isset($_SESSION['MediaBrowser'])) {
-            $_SESSION['MediaBrowser'] = array();
+        if (!isset($this->getComponent('Session')->getSession()['MediaBrowser'])) {
+            $this->getComponent('Session')->getSession()['MediaBrowser'] = array();
         }
-        if (!isset($_SESSION['MediaBrowser']['FolderWidget'])) {
-            $_SESSION['MediaBrowser']['FolderWidget'] = array();
+        if (!isset($this->getComponent('Session')->getSession()['MediaBrowser']['FolderWidget'])) {
+            $this->getComponent('Session')->getSession()['MediaBrowser']['FolderWidget'] = array();
         }
-        $lastKey  = count($_SESSION['MediaBrowser']['FolderWidget']);
+        $lastKey  = count($this->getComponent('Session')->getSession()['MediaBrowser']['FolderWidget']);
         $widgetId = ++$lastKey;
 
         $this->id = $widgetId;
@@ -91,7 +91,7 @@ class FolderWidget extends \Cx\Model\Base\EntityBase
             $this->mode = self::MODE_VIEW_ONLY;
         }
 
-        $_SESSION['MediaBrowser']['FolderWidget'][$this->id] = array(
+        $this->getComponent('Session')->getSession()['MediaBrowser']['FolderWidget'][$this->id] = array(
             'folder' => $this->folder,
             'mode'   => $this->mode
         );
@@ -133,7 +133,7 @@ class FolderWidget extends \Cx\Model\Base\EntityBase
         \JS::registerJS('core_modules/MediaBrowser/View/Script/FolderWidget.js');
         \JS::registerCSS('core_modules/MediaBrowser/View/Style/FolderWidget.css');
 
-        $tpl = new \Cx\Core\Html\Sigma(\Cx\Core\Core\Controller\Cx::instanciate()->getCoreModuleFolderName().'/MediaBrowser/View/Template/');
+        $tpl = new \Cx\Core\Html\Sigma($this->getCoreModuleFolderName().'/MediaBrowser/View/Template/');
 
         $tpl->loadTemplateFile('FolderWidget.html');
         $tpl->setVariable(array(

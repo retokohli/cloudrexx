@@ -115,24 +115,24 @@ class BackendController extends SystemComponentBackendController
             $themeID
         );
 
-        if (!$_SESSION['TemplateEditor']) {
-            $_SESSION['TemplateEditor'] = array();
+        if (!$this->getComponent('Session')->getSession()['TemplateEditor']) {
+            $this->getComponent('Session')->getSession()['TemplateEditor'] = array();
         }
-        if (!$_SESSION['TemplateEditor'][$this->theme->getId()]) {
-            $_SESSION['TemplateEditor'][$this->theme->getId()] = array();
+        if (!$this->getComponent('Session')->getSession()['TemplateEditor'][$this->theme->getId()]) {
+            $this->getComponent('Session')->getSession()['TemplateEditor'][$this->theme->getId()] = array();
         }
         if (isset($_GET['preset'])
             && Preset::isValidPresetName(
                 $_GET['preset']
             )
         ) {
-            if ($_SESSION['TemplateEditor'][$this->theme->getId(
+            if ($this->getComponent('Session')->getSession()['TemplateEditor'][$this->theme->getId(
                 )]['activePreset'] != $_GET['preset']
             ) {
                 // If the preset has changed remove all saved options
-                $_SESSION['TemplateEditor'][$this->theme->getId()] = array();
+                $this->getComponent('Session')->getSession()['TemplateEditor'][$this->theme->getId()] = array();
             }
-            $_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset']
+            $this->getComponent('Session')->getSession()['TemplateEditor'][$this->theme->getId()]['activePreset']
                 = isset($_GET['preset']) ? $_GET['preset'] : 'Default';
         }
 
@@ -149,23 +149,23 @@ class BackendController extends SystemComponentBackendController
             );
             // If user opens editor use active preset as active preset.
             if (
-                !isset($_SESSION['TemplateEditor'][$this->theme->getId()]
+                !isset($this->getComponent('Session')->getSession()['TemplateEditor'][$this->theme->getId()]
                     ['activePreset'])
                 || !isset($_GET['preset'])) {
-                $_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset']
+                $this->getComponent('Session')->getSession()['TemplateEditor'][$this->theme->getId()]['activePreset']
                     = $this->themeOptions->getActivePreset()->getName();
             }
             try {
                 $this->themeOptions->applyPreset(
                     $this->presetRepository->getByName(
-                        $_SESSION['TemplateEditor']
+                        $this->getComponent('Session')->getSession()['TemplateEditor']
                         [$this->theme->getId()]
                         ['activePreset']
                     )
                 );
             } catch (PresetRepositoryException $e) {
                 // If something fails fallback to the default preset.
-                $_SESSION['TemplateEditor']
+                $this->getComponent('Session')->getSession()['TemplateEditor']
                     [$this->theme->getId()]['activePreset'] = 'Default';
                 $this->themeOptions->applyPreset(
                     $this->presetRepository->getByName(
@@ -228,7 +228,7 @@ class BackendController extends SystemComponentBackendController
                         'TEMPLATEEDITOR_PRESET_ID' => $preset
                     )
                 );
-                if ($_SESSION['TemplateEditor'][$this->theme->getId()]
+                if ($this->getComponent('Session')->getSession()['TemplateEditor'][$this->theme->getId()]
                     ['activePreset'] == $preset
                 ) {
                     $template->setVariable(
@@ -239,7 +239,7 @@ class BackendController extends SystemComponentBackendController
                 }
                 $template->parse('presets');
             }
-            if ($_SESSION['TemplateEditor'][$this->theme->getId(
+            if ($this->getComponent('Session')->getSession()['TemplateEditor'][$this->theme->getId(
                 )]['activePreset']
                 == $this->themeOptions->getActivePreset()->getName()
             ) {
@@ -257,7 +257,7 @@ class BackendController extends SystemComponentBackendController
                 );
                 $template->show('presetTextActive');
             }
-            if ($_SESSION['TemplateEditor'][$this->theme->getId(
+            if ($this->getComponent('Session')->getSession()['TemplateEditor'][$this->theme->getId(
                 )]['activePreset']
                 == 'Default'
             ) {

@@ -183,7 +183,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $gpcs .= $this->getRequestInfo($_SERVERlite, "SERVER");
         $gpcs .= $this->getRequestInfo($_COOKIE, "COOKIE");
         $gpcs .= $this->getRequestInfo($_FILES, "FILES");
-        $gpcs .= $this->getRequestInfo($_SESSION, "SESSION");
+        $gpcs .= $this->getRequestInfo($this->getComponent('Session')->getSession(), "SESSION");
 
         // Get the data to insert in the database
         $cdate = time();

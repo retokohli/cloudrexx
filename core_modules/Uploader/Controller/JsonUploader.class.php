@@ -104,7 +104,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
         ) {
             $id = ($params['get']['id']);
             $uploadedFileCount = isset($params['get']['uploadedFileCount']) ? intval($params['get']['uploadedFileCount']) : 0;
-            $path = $_SESSION->getTempPath() . '/'.$id.'/';
+            $path = $this->getComponent('Session')->getSession()->getTempPath() . '/'.$id.'/';
             $tmpPath = $path;
         } elseif (isset($params['post']['path'])) {
             $path_part = explode("/", $params['post']['path'], 2);
@@ -113,7 +113,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             $path = $mediaSourceManager->getMediaTypePathsbyNameAndOffset($path_part[0],0)
                 . '/' . $path_part[1];
 
-            $tmpPath = $_SESSION->getTempPath();
+            $tmpPath = $this->getComponent('Session')->getSession()->getTempPath();
         } else {
             return array(
                 'OK' => 0,
@@ -123,8 +123,8 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             );
         }
         $allowedExtensions = false;
-        if (isset($_SESSION['uploader']['handlers'][$id]['config']['allowed-extensions'])) {
-            $allowedExtensions = $_SESSION['uploader']['handlers'][$id]['config']['allowed-extensions']->toArray();
+        if (isset($this->getComponent('Session')->getSession()['uploader']['handlers'][$id]['config']['allowed-extensions'])) {
+            $allowedExtensions = $this->getComponent('Session')->getSession()['uploader']['handlers'][$id]['config']['allowed-extensions']->toArray();
         }
         $uploader = UploaderController::handleRequest(
             array(
@@ -141,17 +141,17 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
 
 
         $response = new UploadResponse();
-        if (isset($_SESSION['uploader']['handlers'][$id]['callback']) && $uploader !== true) {
+        if (isset($this->getComponent('Session')->getSession()['uploader']['handlers'][$id]['callback']) && $uploader !== true) {
 
             /**
              * @var $callback RecursiveArrayAccess
              * @var $data RecursiveArrayAccess
              */
-            $callback = $_SESSION['uploader']['handlers'][$id]['callback'];
-            $data = $_SESSION['uploader']['handlers'][$id]['data'];
+            $callback = $this->getComponent('Session')->getSession()['uploader']['handlers'][$id]['callback'];
+            $data = $this->getComponent('Session')->getSession()['uploader']['handlers'][$id]['data'];
 
-            if (   isset($_SESSION['uploader']['handlers'][$id]['config']['upload-limit'])
-                && $_SESSION['uploader']['handlers'][$id]['config']['upload-limit'] <= $uploadedFileCount
+            if (   isset($this->getComponent('Session')->getSession()['uploader']['handlers'][$id]['config']['upload-limit'])
+                && $this->getComponent('Session')->getSession()['uploader']['handlers'][$id]['config']['upload-limit'] <= $uploadedFileCount
                 ) {
                 return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_UPLOADER_MAX_LIMIT_REACHED']);
             }

@@ -327,11 +327,11 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                         )->objUser->login())
                         && isset($_GET['templateEditor']))
                 ) {
-                    if (isset($_SESSION['TemplateEditor'][$this->theme->getId(
+                    if (isset($this->getComponent('Session')->getSession()['TemplateEditor'][$this->theme->getId(
                         )][$option['name']])) {
                         $option['specific'] = array_merge(
                             $option['specific'],
-                            $_SESSION['TemplateEditor']
+                            $this->getComponent('Session')->getSession()['TemplateEditor']
                             [$this->theme->getId()]
                             [$option['name']]->toArray()
                         );

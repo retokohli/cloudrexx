@@ -61,7 +61,7 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         return array(
             'getViewOverJson' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, null, null,
                 function () {
-                    $objUser = \FWUser::getFWUserObject()->objUser->getUser($_SESSION->userId);
+                    $objUser = \FWUser::getFWUserObject()->objUser->getUser($this->getComponent('Session')->getSession()->userId);
                     $objBackendGroups = \FWUser::getFWUserObject()->objGroup->getGroups(
                         array('is_active' => true, 'type' => 'backend'),
                         null,
@@ -120,7 +120,7 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         $entityClass = $params['get']['entityClass'];
         $entityClassObject = new $entityClass();
         $mappedBy = $params['get']['mappedBy'];
-        $options = $_SESSION['vgOptions'][$params['get']['sessionKey']];
+        $options = $this->getComponent('Session')->getSession()['vgOptions'][$params['get']['sessionKey']];
 
         // if the option 'add' is not true, there is no possibility to open the modal, because we are not allowed to add
         // an entry. That's why we set add to true here

@@ -269,12 +269,12 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
 
         $folderWidgetId = isset($params['get']['id']) ? contrexx_input2int($params['get']['id']) : 0;
         if (   empty($folderWidgetId)
-            || empty($_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId])
+            || empty($this->getComponent('Session')->getSession()['MediaBrowser']['FolderWidget'][$folderWidgetId])
         ) {
             return false;
         }
 
-        $folder = $_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId]['folder'];
+        $folder = $this->getComponent('Session')->getSession()['MediaBrowser']['FolderWidget'][$folderWidgetId]['folder'];
 
         $arrFileNames = array();
         if (!file_exists($folder)) {
@@ -311,8 +311,8 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
 
         $folderWidgetId = isset($params['get']['widget']) ? contrexx_input2int($params['get']['widget']) : 0;
         if (   empty($folderWidgetId)
-            || empty($_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId])
-            || $_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId]['mode'] == \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget::MODE_VIEW_ONLY
+            || empty($this->getComponent('Session')->getSession()['MediaBrowser']['FolderWidget'][$folderWidgetId])
+            || $this->getComponent('Session')->getSession()['MediaBrowser']['FolderWidget'][$folderWidgetId]['mode'] == \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget::MODE_VIEW_ONLY
         ) {
             return false;
         }
@@ -321,7 +321,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
         if (empty($path)) {
             return false;
         }
-        $folder          = $_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId]['folder'];
+        $folder          = $this->getComponent('Session')->getSession()['MediaBrowser']['FolderWidget'][$folderWidgetId]['folder'];
         $localFileSystem = new \Cx\Core\MediaSource\Model\Entity\LocalFileSystem($folder);
 
         $file    = '/' . $path;

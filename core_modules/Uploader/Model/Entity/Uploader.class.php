@@ -77,14 +77,14 @@ class Uploader extends EntityBase
     {
         $this->cx = Cx::instanciate();
         $this->getComponentController()->addUploader($this);
-        if (!isset($_SESSION['uploader'])) {
-            $_SESSION['uploader'] = array();
+        if (!isset($this->getComponent('Session')->getSession()['uploader'])) {
+            $this->getComponent('Session')->getSession()['uploader'] = array();
         }
-        if (!isset($_SESSION['uploader']['handlers'])) {
-            $_SESSION['uploader']['handlers'] = array();
+        if (!isset($this->getComponent('Session')->getSession()['uploader']['handlers'])) {
+            $this->getComponent('Session')->getSession()['uploader']['handlers'] = array();
         }
         $i       = self::generateId();
-        $_SESSION['uploader']['handlers'][$i] = array('active' => true);
+        $this->getComponent('Session')->getSession()['uploader']['handlers'][$i] = array('active' => true);
         $this->id = $i;
         $this->options = array(
             'data-pl-upload',
@@ -103,13 +103,13 @@ class Uploader extends EntityBase
      */
     function setFinishedCallback($callback)
     {
-        if (!isset($_SESSION['uploader']['handlers'])) {
-            $_SESSION['uploader']['handlers'] = array();
+        if (!isset($this->getComponent('Session')->getSession()['uploader']['handlers'])) {
+            $this->getComponent('Session')->getSession()['uploader']['handlers'] = array();
         }
-        if (!isset($_SESSION['uploader']['handlers'][$this->id])) {
-            $_SESSION['uploader']['handlers'][$this->id] = array();
+        if (!isset($this->getComponent('Session')->getSession()['uploader']['handlers'][$this->id])) {
+            $this->getComponent('Session')->getSession()['uploader']['handlers'][$this->id] = array();
         }
-        $_SESSION['uploader']['handlers'][$this->id]['callback'] = $callback;
+        $this->getComponent('Session')->getSession()['uploader']['handlers'][$this->id]['callback'] = $callback;
         return $this;
     }
 
@@ -120,23 +120,23 @@ class Uploader extends EntityBase
     {
         $this->options = array_merge($this->options, $options);
 
-        if (!isset($_SESSION['uploader']['handlers'])) {
-            $_SESSION['uploader']['handlers'] = array();
+        if (!isset($this->getComponent('Session')->getSession()['uploader']['handlers'])) {
+            $this->getComponent('Session')->getSession()['uploader']['handlers'] = array();
         }
-        if (!isset($_SESSION['uploader']['handlers'][$this->id])) {
-            $_SESSION['uploader']['handlers'][$this->id] = array();
+        if (!isset($this->getComponent('Session')->getSession()['uploader']['handlers'][$this->id])) {
+            $this->getComponent('Session')->getSession()['uploader']['handlers'][$this->id] = array();
         }
-        if (!isset($_SESSION['uploader']['handlers'][$this->id]['config'])) {
-            $_SESSION['uploader']['handlers'][$this->id]['config'] = array();
+        if (!isset($this->getComponent('Session')->getSession()['uploader']['handlers'][$this->id]['config'])) {
+            $this->getComponent('Session')->getSession()['uploader']['handlers'][$this->id]['config'] = array();
         }
 
         //set upload file limit
         if (isset($this->options['upload-limit'])) {
-            $_SESSION['uploader']['handlers'][$this->id]['config']['upload-limit'] = $this->options['upload-limit'];
+            $this->getComponent('Session')->getSession()['uploader']['handlers'][$this->id]['config']['upload-limit'] = $this->options['upload-limit'];
         }
         //set custom allowed extensions
         if (isset($this->options['allowed-extensions'])) {
-            $_SESSION['uploader']['handlers'][$this->id]['config']['allowed-extensions'] = $this->options['allowed-extensions'];
+            $this->getComponent('Session')->getSession()['uploader']['handlers'][$this->id]['config']['allowed-extensions'] = $this->options['allowed-extensions'];
         }
     }
 
@@ -259,13 +259,13 @@ class Uploader extends EntityBase
      */
     public function setData($data)
     {
-        if (!isset($_SESSION['uploader']['handlers'])) {
-            $_SESSION['uploader']['handlers'] = array();
+        if (!isset($this->getComponent('Session')->getSession()['uploader']['handlers'])) {
+            $this->getComponent('Session')->getSession()['uploader']['handlers'] = array();
         }
-        if (!isset($_SESSION['uploader']['handlers'][$this->id])) {
-            $_SESSION['uploader']['handlers'][$this->id] = array();
+        if (!isset($this->getComponent('Session')->getSession()['uploader']['handlers'][$this->id])) {
+            $this->getComponent('Session')->getSession()['uploader']['handlers'][$this->id] = array();
         }
-        $_SESSION['uploader']['handlers'][$this->id]['data'] = $data;
+        $this->getComponent('Session')->getSession()['uploader']['handlers'][$this->id]['data'] = $data;
         return $this;
     }
 
@@ -293,7 +293,7 @@ class Uploader extends EntityBase
     }
 
     public static function generateId(){
-        $uploaders = $_SESSION['uploader']['handlers'];
+        $uploaders = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['uploader']['handlers'];
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $randstring = '';
         for ($i = 0; $i < 10; $i++) {
