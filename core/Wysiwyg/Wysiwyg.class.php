@@ -333,7 +333,7 @@ class Wysiwyg
             $processTime = \Cx\Core\Core\Controller\Cx::instanciate()->getStartTime();
 
             //Pattern to extract the image data-urls from the given content
-            $pattern = '/<img\s+[^>]*src=([\'\"])(data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([^\'\"]*)\s*)\1[^>]*>/si';
+            $pattern = '/<img\s+[^>]*src=([\'\"])([^\1]*)\1[^>]*>/si';
 
             //Get the file path and filename prefix
             $filePath   = is_callable($path) ? call_user_func($path) : $path;
@@ -359,30 +359,33 @@ class Wysiwyg
             $movedFiles = array();
             $content    = preg_replace_callback(
                             $pattern, 
-                            function ($matches) use ($args, &$movedFiles) {
+                            function ($imgMatches) use ($args, &$movedFiles) {
+                                if (!preg_match('/^data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([^\'\"]*)\s*/si', $imgMatches[2], $dataMatches)) {
+                                    return '';
+                                }
                                 //Check if the content have base64 content, if so proceed further
                                 //otherwise proceed with next image data-url
-                                if (!preg_match('/^[a-zA-Z0-9\+\/]*={0,3}$/i', $matches[6])) {
+                                if (!preg_match('/^[a-zA-Z0-9\+\/]*={0,3}$/i', $dataMatches[4])) {
                                     return '';
                                 }
 
                                 //Check the memory overflow and timeout limit
-                                $decodedContent = base64_decode($matches[6]);
+                                $decodedContent = base64_decode($dataMatches[4]);
                                 $this->checkMemoryLimit(strlen($decodedContent) * 2);
                                 $this->checkTimeoutLimit($args['processTime']);
 
-                                //Convert the image data-url as image file and 
+                                //Convert the image data-url as image file and
                                 //store it into the location given in $filePath
                                 $imgTag   = '';
                                 $fileName = $this->checkFileAvailability(
-                                                $args['filePath'], 
-                                                $args['filePrefix'] . '.' . $matches[4]);
+                                                $args['filePath'],
+                                                $args['filePrefix'] . '.' . $dataMatches[2]);
                                 try {
                                     $file = new \Cx\Lib\FileSystem\File($args['filePath'] . '/' . $fileName);
                                     $file->touch();
                                     $file->write($decodedContent);
                                     $movedFiles[] = $args['filePath'] . '/' . $fileName;
-                                    $imgTag = '<img src="'. $args['relativePath'] . '/' . $fileName 
+                                    $imgTag = '<img src="'. $args['relativePath'] . '/' . $fileName
                                             . '" title="' . $fileName 
                                             . '" alt="' . $fileName . '" />';
                                 } catch (\Exception $e) {
