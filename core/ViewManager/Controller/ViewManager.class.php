@@ -172,7 +172,8 @@ class ViewManager
 
         //define the Pclzip Temporary Directory
         if (!defined('PCLZIP_TEMPORARY_DIR')) {
-            define('PCLZIP_TEMPORARY_DIR', \cmsSession::getInstance()->getTempPath() . '/');
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            define('PCLZIP_TEMPORARY_DIR', $cx->getComponent('Session')->getSession()->getTempPath() . '/');
         }
     }
 
@@ -1017,16 +1018,13 @@ CODE;
     */
     public function getUploadedFileFromUploader($uploaderId)
     {
-        global $sessionObj;
-
         if (empty($uploaderId)) {
             \DBG::log('Uploader id is empty');
             return false;
         }
 
-        if (empty($sessionObj)) {
-            $sessionObj = \cmsSession::getInstance();
-        }
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $sessionObj = $cx->getComponent('Session')->getSession();
 
         $uploaderFolder = $sessionObj->getTempPath() . '/' . $uploaderId;
 

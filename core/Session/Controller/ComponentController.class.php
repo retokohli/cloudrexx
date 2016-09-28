@@ -56,10 +56,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\Routing\Url                      $request    The URL object for this request
      */
     public function preResolve(\Cx\Core\Routing\Url $request) {
-        global $sessionObj;
-
         if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
-            if (empty($sessionObj)) $sessionObj = \cmsSession::getInstance();
+            $sessionObj = $this->getSession();
             $_SESSION->cmsSessionStatusUpdate('backend');
         }
     }

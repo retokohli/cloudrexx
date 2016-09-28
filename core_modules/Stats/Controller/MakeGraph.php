@@ -431,7 +431,7 @@ $objDatabase = $cx->getDb()->getAdoDb();
 $adminPage = true;
 $objInit = new \InitCMS($mode="backend");
 
-$sessionObj = \cmsSession::getInstance();
+$sessionObj = $cx->getComponent('Session')->getSession();
 $_SESSION->cmsSessionStatusUpdate("backend");
 \Permission::checkAccess(19, 'static');
 
