@@ -1187,6 +1187,19 @@ namespace Cx\Core\Core\Controller {
             }
             return new $componentControllerClass($component, $this);
         }
+        
+        /**
+         * Returns the ComponentController for the given component
+         * @deprecated All new classes should have access to $this->getComponent()
+         * @param string $name Component name
+         * @return \Cx\Core\Core\Model\Entity\SystemComponentController Component main controller
+         */
+        public function getComponent($name) {
+            $em = $this->getDb()->getEntityManager();
+            $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+            $component = $componentRepo->findOneBy(array('name' => $name));
+            return $component;
+        }
 
         /**
          * This tries to set the memory limit if its lower than 32 megabytes
