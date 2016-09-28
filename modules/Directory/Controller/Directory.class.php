@@ -1153,7 +1153,7 @@ $this->arrRows[2] = '';
                         preg_match($youTubeIdRegex, $arrFeedContent[$fieldName], $youTubeArray);
                         $youTubeID = $youTubeArray[1];
 
-                        $content ='<object width="'.$arrSettings['youtubeWidth']['value'].'" height="'.$arrSettings['youtubeHeight']['value'].'"><param name="movie" value="http://www.youtube.com/v/'.$youTubeID.'&hl=de&fs=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/'.$youTubeID.'&hl=de&fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="'.$arrSettings['youtubeWidth']['value'].'" height="'.$arrSettings['youtubeHeight']['value'].'"></embed></object>';
+                        $content = '<iframe width="'.$arrSettings['youtubeWidth']['value'].'" height="'.$arrSettings['youtubeHeight']['value'].'" src="//www.youtube.com/embed/'.$youTubeID.'" frameborder="0" allowfullscreen></iframe>';
                     }
 
                     //get pics
@@ -1421,12 +1421,12 @@ $this->arrRows[2] = '';
             exit;
         } elseif ($this->settings['addFeed_only_community']['value'] == '1') {
             $objFWUser = \FWUser::getFWUserObject();
-			if ($objFWUser->objUser->login()) {
-				if (!\Permission::checkAccess(96, 'static', true)) {
+            if ($objFWUser->objUser->login()) {
+                if (!\Permission::checkAccess(96, 'static', true)) {
                     \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&cmd=noaccess");
-					exit;
-				}
-			}else {
+                    exit;
+                }
+            }else {
                 $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
                 \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
                 exit;
@@ -1557,12 +1557,12 @@ $this->arrRows[2] = '';
         }
 
         $objFWUser = \FWUser::getFWUserObject();
-		if ($objFWUser->objUser->login()) {
-			if (!\Permission::checkAccess(94, 'static', true)) {
+        if ($objFWUser->objUser->login()) {
+            if (!\Permission::checkAccess(94, 'static', true)) {
                 \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&cmd=noaccess");
-				exit;
-			}
-		}else {
+                exit;
+            }
+        }else {
             $link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
             \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
             exit;
@@ -1641,12 +1641,12 @@ $this->arrRows[2] = '';
         }
 
         $objFWUser = \FWUser::getFWUserObject();
-		if ($objFWUser->objUser->login()) {
-			if (!\Permission::checkAccess(94, 'static', true)) {
+        if ($objFWUser->objUser->login()) {
+            if (!\Permission::checkAccess(94, 'static', true)) {
                 \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&cmd=noaccess");
-				exit;
-			}
-		}else {
+                exit;
+            }
+        }else {
             $link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
             \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
             exit;

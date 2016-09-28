@@ -27,15 +27,15 @@
 
 /**
  * CronLinkManager.php
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  module_linkmanager
  */
 
-// Note! The path below will work if the cron file is moved 
-// to "customizing/cron" folder. If you intend to trigger the LinkManager cron 
+// Note! The path below will work if the cron file is moved
+// to "customizing/cron" folder. If you intend to trigger the LinkManager cron
 // form a other directory, please adjust the path below.
 require_once dirname(dirname(dirname(dirname(dirname(__FILE__))))) .'/core/Core/init.php';
 

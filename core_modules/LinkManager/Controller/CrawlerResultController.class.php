@@ -37,7 +37,7 @@
 namespace Cx\Core_Modules\LinkManager\Controller;
 
 /**
- * 
+ *
  * CrawlerResultController for displaying the broken links found in the latest link crawler result.
  *
  * @copyright   Cloudrexx AG
@@ -46,37 +46,37 @@ namespace Cx\Core_Modules\LinkManager\Controller;
  * @subpackage  coremodule_linkmanager
  */
 class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
-    
+
     /**
      * Em instance
      * @var \Doctrine\ORM\EntityManager em
      */
     protected $em;
-    
+
     /**
      * Sigma template instance
      * @var Cx\Core\Html\Sigma  $template
      */
     protected $template;
-    
+
     /**
-     * LinkRepository instance 
+     * LinkRepository instance
      * @var \Cx\Core_Modules\LinkManager\Model\Repository\LinkRepository $linkRepository
      */
     protected $linkRepository;
-    
+
     /**
-     * CrawlerRepository instance 
+     * CrawlerRepository instance
      * @var \Cx\Core_Modules\LinkManager\Model\Repository\CrawlerRepository $crawlerRepository
      */
     protected $crawlerRepository;
-    
+
     /**
      * module name
      * @var string $moduleName
      */
     protected $moduleName = 'LinkManager';
-    
+
     /**
      * module name for language placeholder
      * @var string $moduleNameLang
@@ -85,7 +85,7 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
 
     /**
      * Controller for the Backend Crawler Result views
-     * 
+     *
      * @param \Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController the system component controller object
      * @param \Cx\Core\Core\Controller\Cx                          $cx                        the cx object
      * @param \Cx\Core\Html\Sigma                                  $template                  the template object
@@ -94,47 +94,47 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
     public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
         //check the user permission
         \Permission::checkAccess(1031, 'static');
-        
+
         parent::__construct($systemComponentController, $cx);
         $this->em                = $this->cx->getDb()->getEntityManager();
         $this->linkRepository    = $this->em->getRepository('Cx\Core_Modules\LinkManager\Model\Entity\Link');
         $this->crawlerRepository = $this->em->getRepository('Cx\Core_Modules\LinkManager\Model\Entity\Crawler');
-        
+
         //register backend js
         \JS::registerJS('core_modules/LinkManager/View/Script/LinkManagerBackend.js');
     }
-    
+
      /**
      * Use this to parse your backend page
-     * 
-     * @param \Cx\Core\Html\Sigma $template 
+     *
+     * @param \Cx\Core\Html\Sigma $template
      */
     public function parsePage(\Cx\Core\Html\Sigma $template) {
         $this->template = $template;
-        
+
         $this->showCrawlerResult();
     }
-    
+
     /**
      * Show the last run's crawler result
-     * 
-     * @global array $_ARRAYLANG 
+     *
+     * @global array $_ARRAYLANG
      */
     public function showCrawlerResult()
     {
         global $_ARRAYLANG;
-        
+
         \JS::activate('cx');
         $objCx = \ContrexxJavascript::getInstance();
         $objCx->setVariable(array(
             'updateSuccessMsg'  => $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_UPDATE_SUCCESS_MSG'],
             'loadingLabel'      => $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_LABEL_LOADING']
         ), 'LinkManager');
-        
+
         if (isset($_POST['checkAgain'])) {
             $this->recheckSelectedLinks();
         }
-        
+
         //show crawler results
         //get parameters
         $pos = isset($_GET['pos']) ? $_GET['pos'] : 0;
@@ -144,7 +144,7 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
         $parameter = './index.php?cmd='.$this->moduleName.'&act=crawlerResult';
         $this->template->setVariable('ENTRIES_PAGING', \Paging::get($parameter, $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_LINKS'], $this->linkRepository->brokenLinkCount(), $pageLimit, true, $pos, 'pos'));
         $brokenLinks = $this->linkRepository->getBrokenLinks($pos, $pageLimit);
-        
+
         $i = 1;
         $objUser = new \Cx\Core_Modules\LinkManager\Controller\User();
         if ($brokenLinks && $brokenLinks->count() > 0) {
@@ -171,8 +171,8 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
         } else {
             $this->template->touchBlock('LinkManagerNoCrawlerResultFound');
         }
-    }        
-    
+    }
+
     /**
      * Recheck the selected links status
      * 

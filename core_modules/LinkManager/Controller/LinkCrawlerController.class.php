@@ -56,7 +56,7 @@ class LinkCrawlerControllerException extends \Exception {}
  */
 
 class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
-    
+
     const TYPE_CONTENT     = 'content';
     const RUN_STATUS_INCOMPLETE = 'incomplete';
     const RUN_STATUS_COMPLETED = 'completed';
@@ -73,49 +73,49 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
      * @var \Doctrine\ORM\EntityManager em
      */
     private $em           = null;
-    
+
     /**
-     * Page instance 
+     * Page instance
      * @var \Cx\Core\ContentManager\Model\Entity\Page $pageRepo
      */
     private $pageRepo     = null;
-    
+
     /**
-     * CrawlerRepository instance 
+     * CrawlerRepository instance
      * @var \Cx\Core_Modules\LinkManager\Model\Repository\CrawlerRepository $crawlerRepo
      */
     private $crawlerRepo  = null;
-    
+
     /**
-     * LinkRepository instance 
+     * LinkRepository instance
      * @var \Cx\Core_Modules\LinkManager\Model\Repository\LinkRepository $linkRepo
      */
     private $linkRepo     = null;
-    
+
     /**
-     * HistoryRepository instance 
+     * HistoryRepository instance
      * @var \Cx\Core_Modules\LinkManager\Model\Repository\HistoryRepository $historyRepo
      */
     private $historyRepo  = null;
-    
+
     /**
      * language id
-     * @var integer 
+     * @var integer
      */
     private $langId       = null;
-    
+
     /**
      * language name
      * @var string
      */
     private $langName     = null;
-    
+
     /**
      * link array
-     * @var array 
+     * @var array
      */
     private $linkArray    = array();
-    
+
     /**
      * @var int
      */
@@ -123,18 +123,18 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
 
     /**
      * Constructor
-     * 
+     *
      * @param \Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController
      * @param \Cx\Core\Core\Controller\Cx                          $cx
      */
-    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) 
+    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx)
     {
         parent::__construct($systemComponentController, $cx);
     }
-    
+
     /**
      * Load the Crawler
-     * 
+     *
      * @param integer $langId
      * @param string $langName
      */
@@ -156,16 +156,16 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
         // start crawler
         $this->crawlerSpider();
     }
-    
+
     /**
      * Crawler spider -> crawl all the links present in the sitemap file.
-     * 
+     *
      * @return null
      */
     public function crawlerSpider()
     {
         try {
-            //initialize 
+            //initialize
             $runStartTime = new \DateTime('now');
 
             $crawler = new \Cx\Core_Modules\LinkManager\Model\Entity\Crawler();
@@ -426,7 +426,7 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
 
     /**
      * get the module details(Modulename, module action, parameters and title)
-     * 
+     *
      * @param string  $requestedUrl requested link
      * @param string  $refererUrl   lead link
      * 
@@ -479,7 +479,7 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
      * Get the page object by url
      * 
      * @param string $url requested url
-     * 
+     *
      * @return boolean|object
      */
     public function getPageByUrl($url)
@@ -579,7 +579,7 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
     /**
      * Checks before the crawler is triggerd, for crawling entries,
      * which aren't running anymore, but still have a status of "running".
-     * The Status of those entries will be changed to "incomplete" 
+     * The Status of those entries will be changed to "incomplete"
      */
     protected function changeRunningCrawlingToIncomplete()
     {

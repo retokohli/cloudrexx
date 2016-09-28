@@ -79,7 +79,7 @@ class DirectoryManager extends DirectoryLibrary
     var $countFeeds;
 
     private $act = '';
-    
+
     /**
     * Constructor
     *
@@ -91,7 +91,7 @@ class DirectoryManager extends DirectoryLibrary
     */
     function __construct()
     {
-        global $objInit; 
+        global $objInit;
 
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Directory/View/Template/Backend');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
@@ -115,7 +115,7 @@ class DirectoryManager extends DirectoryLibrary
 
         //get settings
         $this->settings = $this->getSettings();
-        
+
     }
     private function setNavigation()
     {
@@ -978,6 +978,7 @@ class DirectoryManager extends DirectoryLibrary
     function expand()
     {
         if (isset($_GET['expand'])) {
+            $this->initExpandCollapsSessionVariable();
             if ($_GET['expand'] == "all") {
                 if ($_GET['act'] == "levels") {
                     foreach($this->levels['name'] as $levelKey => $levelName) {
@@ -999,6 +1000,17 @@ class DirectoryManager extends DirectoryLibrary
 
     }
 
+    /**
+     * Initialize the session variable for expand/collaps
+     * Check the $_GET[expand/collaps] available before call this method
+     */
+    public function initExpandCollapsSessionVariable()
+    {
+        $sessionVar = ($_GET['act'] == 'levels') ? 'expLevel' : 'expCat';
+        if (empty($_SESSION[$sessionVar])) {
+            $_SESSION[$sessionVar] = array();
+        }
+    }
 
     /**
     * collapse selected folder tree
@@ -1007,6 +1019,7 @@ class DirectoryManager extends DirectoryLibrary
     function collaps()
     {
         if (isset($_GET['collaps'])) {
+            $this->initExpandCollapsSessionVariable();
             if ($_GET['collaps'] == "all") {
                 if ($_GET['act'] == "levels") {
                     $_SESSION['expLevel'] = "";
@@ -2968,12 +2981,12 @@ EOF;
             //get post data
             foreach ($_POST['setvalue'] as $id => $value) {
                 //update settings
-                
+
                 // check for description field to be required
                 if ($id == 13 && $value == 1) {
                     $objDatabase->Execute("UPDATE `".DBPREFIX."module_directory_inputfields` SET active='1', is_required='1', active_backend='1' WHERE name='description'");
                 }
-                
+
                 if (ini_get('allow_url_fopen') == false && $id == 19) {
                     $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_settings SET setvalue='0' WHERE setid=".intval($id));
                 } else {
@@ -3023,7 +3036,7 @@ EOF;
 
         if (isset($_POST['set_inputs_submit'])) {
             //update settings
-            
+
             // title field should stay active, required and available for search
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='0' Where id !='1'");
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET is_search='0' Where id !='1'");
@@ -3166,7 +3179,7 @@ EOF;
             }
         }
     }
-    
+
     /**
      * check whether the description field is required or not
      * @return boolean true if the description field is required

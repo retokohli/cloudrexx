@@ -63,7 +63,7 @@ class MemberDirManager extends MemberDirLibrary
     //var $arrSettings = array();
 
     private $act = '';
-    
+
     /**
      * Constructor
      *
@@ -88,7 +88,7 @@ class MemberDirManager extends MemberDirLibrary
         $this->langId=$objInit->userFrontendLangId;
 
         parent::__construct();
-        
+
     }
     private function setNavigation()
     {
@@ -766,19 +766,6 @@ class MemberDirManager extends MemberDirLibrary
             $query = "DELETE FROM ".DBPREFIX."module_memberdir_name
                   WHERE dirid = '$dirid'";
             $objDatabase->Execute($query);
-
-            // Delete Pictures
-            $query = "SELECT pic1, pic2 FROM ".DBPREFIX."module_memberdir_values WHERE
-                   dirid = '$dirid'";
-            $objResult = $objDatabase->Execute($query);
-
-            if ($objResult) {
-                while (!$objResult->EOF) {
-                    @unlink("../media/MemberDir/".$objResult->fields['pic1']);
-                    @unlink("../media/MemberDir/".$objResult->fields['pic2']);
-                    $objResult->MoveNext();
-                }
-            }
 
             $query = "DELETE FROM ".DBPREFIX."module_memberdir_values
                 WHERE dirid = '$dirid'";
@@ -1729,7 +1716,7 @@ class MemberDirManager extends MemberDirLibrary
         global $objDatabase, $_ARRAYLANG;
 
         \Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/importexport/import.class.php');
-        
+
         $importlib = new \Import();
 
         if (isset($_POST['import_cancel'])) {
