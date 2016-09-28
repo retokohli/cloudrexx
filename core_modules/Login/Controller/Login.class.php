@@ -257,7 +257,7 @@ class Login
     *
     * @access private
     * @global array
-    * @see cmsSession::cmsSessionStatusUpdate(), contrexx_strip_tags, \Cx\Core\Html\Sigma::get()
+    * @see \Cx\Core\Session\Model\Entity\Session::cmsSessionStatusUpdate(), contrexx_strip_tags, \Cx\Core\Html\Sigma::get()
     * @return string \Cx\Core\Html\Sigma::get()
     */
     function _login()

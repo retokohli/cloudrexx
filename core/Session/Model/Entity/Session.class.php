@@ -38,7 +38,7 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-namespace \Cx\Core\Session\Model\Entity;
+namespace Cx\Core\Session\Model\Entity;
 
 /**
  * Session
@@ -51,7 +51,7 @@ namespace \Cx\Core\Session\Model\Entity;
  * @package     cloudrexx
  * @subpackage  core_session
  */
-class Session extends \Cx\Core\Model\RecursiveArrayAccess\RecursiveArrayAccess implements \SessionHandlerInterface {
+class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHandlerInterface {
 
     /**
      * Instance of class for use in the singelton pattern.
@@ -323,7 +323,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess\RecursiveArrayAccess i
      */
     public function readData() {
         $this->data = static::getDataFromKey(0);
-        $this->callableOnUnset = array('\cmsSession', 'removeFromSession');
+        $this->callableOnUnset = array(get_class($this), 'removeFromSession');
     }
 
     /**
@@ -355,11 +355,11 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess\RecursiveArrayAccess i
             while (!$objResult->EOF) {
                 $dataKey   = $objResult->fields['key'];
                 if ($objResult->fields['value'] === '') {
-                    $data[$dataKey]       = new RecursiveArrayAccess(null, $dataKey, $varId);
+                    $data[$dataKey]       = new \Cx\Core\Model\RecursiveArrayAccess(null, $dataKey, $varId);
                     $data[$dataKey]->id   = $objResult->fields['id'];
                     $data[$dataKey]->data = static::getDataFromKey($objResult->fields['id']);
-                    $data[$dataKey]->callableOnUnset = array('\cmsSession', 'removeFromSession');
-                    $data[$dataKey]->callableOnSanitizeKey = array('\cmsSession', 'validateSessionKeyLength');
+                    $data[$dataKey]->callableOnUnset = array(get_called_class(), 'removeFromSession');
+                    $data[$dataKey]->callableOnSanitizeKey = array(get_called_class(), 'validateSessionKeyLength');
                 } else {
                     $data[$dataKey] = unserialize($objResult->fields['value']);
                 }
@@ -388,9 +388,9 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess\RecursiveArrayAccess i
      */
     protected function setAdodbDebugMode()
     {
-        if (DBG::getMode() & DBG_ADODB_TRACE) {
+        if (\DBG::getMode() & DBG_ADODB_TRACE) {
             \Env::get('db')->debug = 99;
-        } elseif (DBG::getMode() & DBG_ADODB || DBG::getMode() & DBG_ADODB_ERROR) {
+        } elseif (\DBG::getMode() & DBG_ADODB || \DBG::getMode() & DBG_ADODB_ERROR) {
             \Env::get('db')->debug = 1;
         } else {
             \Env::get('db')->debug = 0;
@@ -405,7 +405,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess\RecursiveArrayAccess i
     protected function restoreDebuggingParams()
     {
         if (isset($_SESSION['debugging']) && $_SESSION['debugging']) {
-            DBG::activate(DBG::getMode() | $_SESSION['debugging_flags']);
+            \DBG::activate(\DBG::getMode() | $_SESSION['debugging_flags']);
         }
     }
 
@@ -765,7 +765,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess\RecursiveArrayAccess i
             $_SESSION->locks[$offset] = 1;
             static::getLock(static::getLockName($offset), static::$sessionLockTime);
         }
-        parent::offsetSet($offset, $data, null, null, array('\cmsSession', 'removeFromSession'), array('\cmsSession', 'validateSessionKeyLength'));
+        parent::offsetSet($offset, $data, null, null, array(get_class($this), 'removeFromSession'), array(get_class($this), 'validateSessionKeyLength'));
     }
 
     /**
@@ -837,11 +837,11 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess\RecursiveArrayAccess i
 
                 if ($objResult && $objResult->RecordCount()) {
                     if ($objResult->fields['value'] === '') {
-                        $data       = new RecursiveArrayAccess(null, $offset, $arrObj->id);
+                        $data       = new \Cx\Core\Model\RecursiveArrayAccess(null, $offset, $arrObj->id);
                         $data->id   = $objResult->fields['id'];
                         $data->data = static::getDataFromKey($objResult->fields['id']);
-                        $data->callableOnUnset = array('\cmsSession', 'removeFromSession');
-                        $data->callableOnSanitizeKey = array('\cmsSession', 'validateSessionKeyLength');
+                        $data->callableOnUnset = array(get_called_class(), 'removeFromSession');
+                        $data->callableOnSanitizeKey = array(get_called_class(), 'validateSessionKeyLength');
 
                         $arrObj->data[$offset] = $data;
                     } else {
