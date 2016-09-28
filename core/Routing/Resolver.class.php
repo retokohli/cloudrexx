@@ -241,6 +241,7 @@ class Resolver {
                                 $command = $this->getCmd();
                                 $section = $this->getSection();
                             } catch (\Cx\Core\Routing\ResolverException $e) {
+                                \DBG::log($e->getMessage());
                                 try {
                                     $this->legacyResolve($url, $section, $command);
                                     $page = $this->getPage();
@@ -261,7 +262,7 @@ class Resolver {
                                 } else {
                                     //page not found, redirect to error page.
                                     \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Error'));
-                                    exit;
+                                    throw new \Cx\Core\Core\Controller\InstanceException();
                                 }
                             }
 
@@ -464,7 +465,7 @@ class Resolver {
             header('HTTP/1.1 301 Moved Permanently');
             header('Location: ' . $target);
             header('Connection: close');
-            exit;
+            throw new \Cx\Core\Core\Controller\InstanceException();
         }
         return $this->page;
     }
@@ -473,7 +474,7 @@ class Resolver {
         $this->url->setLangDir(\FWLanguage::getLanguageCodeById($this->lang));
 
         \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$this->url);
-        exit;
+        throw new \Cx\Core\Core\Controller\InstanceException();
     }
 
     /**
@@ -638,7 +639,7 @@ class Resolver {
             } else { //external target - redirect via HTTP 302
                 if (\FWValidator::isUri($target)) {
                     header('Location: '.$target);
-                    exit;
+                    throw new \Cx\Core\Core\Controller\InstanceException();
                 } else {
                     if ($target[0] == '/') {
                         $target = substr($target, 1);
@@ -652,7 +653,7 @@ class Resolver {
                     }
                     
                     header('Location: ' . ASCMS_INSTANCE_OFFSET . $langDir . '/' . $target);
-                    exit;
+                    throw new \Cx\Core\Core\Controller\InstanceException();
                 }
             }
         }
@@ -661,7 +662,7 @@ class Resolver {
         if ($this->isRedirection && !$this->forceInternalRedirection) {
             $params = $this->url->getSuggestedParams();
             header('Location: '.$this->page->getURL($this->pathOffset, $params));
-            exit;
+            throw new \Cx\Core\Core\Controller\InstanceException();
         }
 
         // in case the requested page is of type fallback, we will now handle/load this page
@@ -883,13 +884,13 @@ class Resolver {
                     if (!\Permission::checkAccess($pageAccessId, 'dynamic', true)) {
                         $link=base64_encode(\Env::get('cx')->getRequest()->getUrl()->toString());
                         \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Login', 'noaccess', '', array('redirect' => $link)));
-                        exit;
+                        throw new \Cx\Core\Core\Controller\InstanceException();
                     }
                 }
                 if ($history && !\Permission::checkAccess(78, 'static', true)) {
                     $link=base64_encode(\Env::get('cx')->getRequest()->getUrl()->toString());
                     \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Login', 'noaccess', '', array('redirect' => $link)));
-                    exit;
+                    throw new \Cx\Core\Core\Controller\InstanceException();
                 }
             } elseif (!empty($_COOKIE['PHPSESSID']) && !$page_protected) {
                 unset($_COOKIE['PHPSESSID']);
@@ -900,7 +901,7 @@ class Resolver {
                     $link=base64_encode(\Env::get('cx')->getRequest()->getUrl()->toString());
                 }
                 \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Login', '', '', array('redirect' => $link)));
-                exit;
+                throw new \Cx\Core\Core\Controller\InstanceException();
             }
         }
     }
