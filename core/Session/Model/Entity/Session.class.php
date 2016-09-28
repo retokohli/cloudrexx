@@ -286,7 +286,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                                             '. DBPREFIX .'session_variable
                                         SET
                                         `parent_id` = "0",
-                                        `sessionid` = "'. $_SESSION->sessionid .'",
+                                        `sessionid` = "'. static::getInstance()->sessionid .'",
                                         `key` = "'. contrexx_input2db($lockKey) .'",
                                         `value` = "'. $serializedValue .'"
                                       ON DUPLICATE KEY UPDATE
@@ -312,7 +312,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
         // script request (javascript) that only checks for a certain event to happen.
         if ($this->discardChanges) return;
 
-        $query = "UPDATE " . DBPREFIX . "sessions SET lastupdated = '" . time() . "' WHERE sessionid = '" . $_SESSION->sessionid . "'";
+        $query = "UPDATE " . DBPREFIX . "sessions SET lastupdated = '" . time() . "' WHERE sessionid = '" . $this->sessionid . "'";
 
         \Env::get('db')->Execute($query);
     }
@@ -343,7 +343,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                   FROM
                     `". DBPREFIX ."session_variable`
                   WHERE
-                    `sessionid` = '{$_SESSION->sessionid}'
+                    `sessionid` = '{static::getInstance()->sessionid}'
                   AND
                     `parent_id` = '$varId'";
 
@@ -404,8 +404,8 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
      */
     protected function restoreDebuggingParams()
     {
-        if (isset($_SESSION['debugging']) && $_SESSION['debugging']) {
-            \DBG::activate(\DBG::getMode() | $_SESSION['debugging_flags']);
+        if (isset($this['debugging']) && $this['debugging']) {
+            \DBG::activate(\DBG::getMode() | $this['debugging_flags']);
         }
     }
 
@@ -715,7 +715,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
         global $_DBCONFIG;
 
         // MySQL 5.7.5 and later enforces a maximum length on lock names of 64 characters. Previously, no limit was enforced.
-        return md5($_DBCONFIG['database'] . DBPREFIX . $_SESSION->sessionid) .md5($key);
+        return md5($_DBCONFIG['database'] . DBPREFIX . static::getInstance()->sessionid) .md5($key);
     }
 
     /**
@@ -739,7 +739,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
      */
     public function releaseLock($key)
     {
-        unset($_SESSION->locks[$key]);
+        unset($this->locks[$key]);
         \Env::get('db')->Execute('SELECT RELEASE_LOCK("' . static::getLockName($key) . '")');
     }
 
@@ -761,8 +761,8 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
     public function offsetSet($offset, $data) {
         static::validateSessionKeyLength($offset);
 
-        if (!isset($_SESSION->locks[$offset])) {
-            $_SESSION->locks[$offset] = 1;
+        if (!isset($this->locks[$offset])) {
+            $this->locks[$offset] = 1;
             static::getLock(static::getLockName($offset), static::$sessionLockTime);
         }
         parent::offsetSet($offset, $data, null, null, array(get_class($this), 'removeFromSession'), array(get_class($this), 'validateSessionKeyLength'));
@@ -787,7 +787,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                   FROM
                     `". DBPREFIX ."session_variable`
                   WHERE
-                    `sessionid` = '{$_SESSION->sessionid}'
+                    `sessionid` = '{static::getInstance()->sessionid}'
                   AND
                     `parent_id` = '" . intval($keyId) ."'";
 
@@ -815,8 +815,8 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
      */
     public static function getFromDb($offset, $arrObj) {
         if (isset($arrObj->data[$offset])) {
-            if (!isset($_SESSION->locks[$offset])) {
-                $_SESSION->locks[$offset] = 1;
+            if (!isset(static::getInstance()->locks[$offset])) {
+                static::getInstance()->locks[$offset] = 1;
                 static::getLock(static::getLockName($offset), static::$sessionLockTime);
 
                 $query = 'SELECT
@@ -825,7 +825,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                           FROM
                             `'. DBPREFIX .'session_variable`
                           WHERE
-                            `sessionid` = "'. $_SESSION->sessionid .'"
+                            `sessionid` = "'. static::getInstance()->sessionid .'"
                           AND
                             `parent_id` = "'. intval($arrObj->id).'"
                           AND
@@ -868,7 +868,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                             '. DBPREFIX .'session_variable
                         SET
                         `parent_id` = "'. intval($recursiveArrayAccess->parentId) .'",
-                        `sessionid` = "'. $_SESSION->sessionid .'",
+                        `sessionid` = "'. static::getInstance()->sessionid .'",
                         `key` = "'. contrexx_input2db($recursiveArrayAccess->offset) .'",
                         `value` = ""';
             \Env::get('db')->Execute($query);
@@ -893,7 +893,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                                 '. DBPREFIX .'session_variable
                             SET
                             `parent_id` = "'. intval($recursiveArrayAccess->id) .'",
-                            `sessionid` = "'. $_SESSION->sessionid .'",
+                            `sessionid` = "'. static::getInstance()->sessionid .'",
                             `key` = "'. contrexx_input2db($key) .'",
                             `value` = "'. $serializedValue .'"
                           ON DUPLICATE KEY UPDATE
@@ -920,7 +920,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                   FROM
                     `". DBPREFIX ."session_variable`
                   WHERE
-                    `sessionid` = '{$_SESSION->sessionid}'
+                    `sessionid` = '{static::getInstance()->sessionid}'
                   AND
                     `parent_id` = '". intval($parentId) ."'
                   AND
