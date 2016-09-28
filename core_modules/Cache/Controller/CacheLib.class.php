@@ -737,23 +737,7 @@ class CacheLib
             return;
         }
         //$this->memcache->flush(); //<- not like this!!!
-        $keys = array();
-        $allSlabs = $this->memcached->getExtendedStats('slabs');
-
-        foreach ($allSlabs as $server => $slabs) {
-            if (is_array($slabs)) {
-                foreach (array_keys($slabs) as $slabId) {
-                    $dump = $this->memcached->getExtendedStats('cachedump', (int) $slabId);
-                    if ($dump) {
-                        foreach ($dump as $entries) {
-                            if ($entries) {
-                                $keys = array_merge($keys, array_keys($entries));
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        $keys = $this->memcached->getAllKeys();
         foreach($keys as $key){
             if(strpos($key, $this->getCachePrefix()) !== false){
                 $this->memcached->delete($key);

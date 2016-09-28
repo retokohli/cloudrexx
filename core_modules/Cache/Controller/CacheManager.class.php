@@ -248,6 +248,16 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         }else{
             $this->objTpl->hideBlock('memcacheCachingStats');
         }
+        if (   $this->isInstalled(self::CACHE_ENGINE_MEMCACHED)
+            && $this->isConfigured(self::CACHE_ENGINE_MEMCACHED)
+            && $this->userCacheEngine == self::CACHE_ENGINE_MEMCACHED
+            && $this->getUserCacheActive()
+        ){
+            $this->objTpl->touchBlock('memcachedCachingStats');
+            $memcachedStats = $this->memcache->getStats();
+        }else{
+            $this->objTpl->hideBlock('memcachedCachingStats');
+        }
         if (   $this->isInstalled(self::CACHE_ENGINE_XCACHE)
             && $this->isConfigured(self::CACHE_ENGINE_XCACHE)
             && (
@@ -284,6 +294,15 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $memcacheSizeMb = isset($memcacheStats['bytes']) ? $memcacheStats['bytes'] / (1024 *1024) : 0;
         $memcacheMaxSizeMb = isset($memcacheStats['limit_maxbytes']) ? $memcacheStats['limit_maxbytes'] / (1024 *1024) : 0;
 
+        $memcacheConfiguration = $this->getMemcacheConfiguration();
+        $memcacheServerKey = $memcacheConfiguration['ip'].':'.$memcacheConfiguration['port'];
+        $memcachedServerEntriesCount = isset($memcachedStats[$memcacheServerKey]['curr_items']) ? $memcachedStats[$memcacheServerKey]['curr_items'] : 0;
+        $memcachedServerSizeMb = isset($memcachedStats[$memcacheServerKey]['bytes']) ? $memcachedStats[$memcacheServerKey]['bytes'] / (1024 *1024) : 0;
+        $memcachedEntriesCount = $this->getMemcachedEntryCount();
+        $memcachedSizeMb = $memcachedServerEntriesCount ? $memcachedServerSizeMb / $memcachedServerEntriesCount * $memcachedEntriesCount : 0;
+
+        $memcachedMaxSizeMb = isset($memcachedStats[$memcacheServerKey]['limit_maxbytes']) ? $memcachedStats[$memcacheServerKey]['limit_maxbytes'] / (1024 *1024) : 0;
+
         $this->objTpl->setVariable(array(
             'SETTINGS_STATUS_ON' => ($this->arrSettings['cacheEnabled'] == 'on') ? 'checked' : '',
             'SETTINGS_STATUS_OFF' => ($this->arrSettings['cacheEnabled'] == 'off') ? 'checked' : '',
@@ -314,12 +333,37 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             'STATS_MEMCACHE_CHACHE_ENTRIES_COUNT'   => $memcacheEntriesCount,
             'STATS_MEMCACHE_SIZE'                   => number_format($memcacheSizeMb, 2, '.', '\''),
             'STATS_MEMCACHE_MAX_SIZE'               => number_format($memcacheMaxSizeMb, 2, '.', '\''),
+            'STATS_MEMCACHED_CHACHE_ENTRIES_COUNT'   => $memcachedEntriesCount,
+            'STATS_MEMCACHED_SIZE'                   => number_format($memcachedSizeMb, 2, '.', '\''),
+            'STATS_MEMCACHED_MAX_SIZE'               => number_format($memcachedMaxSizeMb, 2, '.', '\''),
         ));
 
         $objTemplate->setVariable(array(
             'CONTENT_TITLE' => $_ARRAYLANG['TXT_SETTINGS_MENU_CACHE'],
             'ADMIN_CONTENT' => $this->objTpl->get()
         ));
+    }
+
+    /**
+     * Return the number of cached entries by Memcached.
+     * It returns the number of cached entries of the current Cx instance.
+     *
+     * @return  integer Number of cached entries by Memcached
+     */
+    protected function getMemcachedEntryCount() {
+        if (!$this->isInstalled(self::CACHE_ENGINE_MEMCACHED)){
+            return;
+        }
+
+        $count = 0;
+        $keys = $this->memcached->getAllKeys();
+        foreach($keys as $key){
+            if (strpos($key, $this->getCachePrefix()) !== false) {
+                $count++;
+            }
+        }
+
+        return $count;
     }
 
     /**
