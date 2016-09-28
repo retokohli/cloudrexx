@@ -333,7 +333,7 @@ class Wysiwyg
             $processTime = \Cx\Core\Core\Controller\Cx::instanciate()->getStartTime();
 
             //Pattern to extract the image data-urls from the given content
-            $pattern = '/<img\s+[^>]*src=([\'\"])(data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([^\1]*)\s*)\1[^>]*>/si';
+            $pattern = '/<img\s+[^>]*src=([\'\"])(data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([^\'\"]*)\s*)\1[^>]*>/si';
 
             //Get the file path and filename prefix
             $filePath   = is_callable($path) ? call_user_func($path) : $path;
