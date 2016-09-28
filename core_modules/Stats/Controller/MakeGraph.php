@@ -432,7 +432,7 @@ $adminPage = true;
 $objInit = new \InitCMS($mode="backend");
 
 $sessionObj = $cx->getComponent('Session')->getSession();
-$_SESSION->cmsSessionStatusUpdate("backend");
+$sessionObj->cmsSessionStatusUpdate("backend");
 \Permission::checkAccess(19, 'static');
 
 $objInit->_initBackendLanguage();

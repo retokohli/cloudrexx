@@ -38,7 +38,7 @@ require_once($contrexx_path . '/core/Core/init.php');
 $cx = init('minimal');
 
 $sessionObj = $cx->getComponent('Session')->getSession();
-$_SESSION->cmsSessionStatusUpdate('backend');
+$sessionObj->cmsSessionStatusUpdate('backend');
 
 $pageId = !empty($_GET['pageId']) ? $_GET['pageId'] : null;
 
