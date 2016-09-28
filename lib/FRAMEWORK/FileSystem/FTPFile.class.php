@@ -313,7 +313,7 @@ class FTPFile implements FileInterface
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             $sessionObj = $cx->getComponent('Session')->getSession();
 
-            $sessionTempPath = $_SESSION->getTempPath();
+            $sessionTempPath = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->getTempPath();
             $pathInfo = pathinfo($this->file);
             $tempFile = $sessionTempPath.'/'.$pathInfo['basename'];
             $idx = 1;

@@ -117,8 +117,8 @@ class Immo extends ImmoLib
         }
 
         // initialise the session array
-        if (!isset($_SESSION['immo'])) {
-            $_SESSION['immo'] = array();
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo'] = array();
         }
         // Run parent constructor
         parent::__construct();
@@ -154,9 +154,9 @@ class Immo extends ImmoLib
         switch($_GET['act']) {
 
             case 'debug':
-                print_r($_SESSION['immo']);
-                unset($_SESSION['immo']);
-                print_r($_SESSION['immo']);
+                print_r(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']);
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']);
+                print_r(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']);
                 break;
             case 'add':
                 $this->_add();
@@ -303,8 +303,8 @@ class Immo extends ImmoLib
                             AND fname.lang_id =1
                         )"
                 .$searchField." ".$searchTerm;
-        if($_REQUEST['ignore_timespan'] !== 'on' && !empty($_SESSION['immo']['startDate'])) {
-            $query .= " AND `time` BETWEEN ".strtotime($_SESSION['immo']['startDate'])." AND ".strtotime($_SESSION['immo']['endDate']);
+        if($_REQUEST['ignore_timespan'] !== 'on' && !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])) {
+            $query .= " AND `time` BETWEEN ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])." AND ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate']);
         }
         if($immoID > 0) {
             $query .= " AND interest.immo_id = $immoID";
@@ -354,8 +354,8 @@ class Immo extends ImmoLib
         $this->_objTpl->loadTemplateFile('module_immo_interests.html');
 
         $immoID = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
-        $_SESSION['immo']['startDate']    = !empty($_REQUEST['inputStartDate']) ? contrexx_addslashes($_REQUEST['inputStartDate'])  : $_SESSION['immo']['startDate'];
-        $_SESSION['immo']['endDate']    = !empty($_REQUEST['inputEndDate']) ? contrexx_addslashes($_REQUEST['inputEndDate'])  : $_SESSION['immo']['endDate'];
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate']    = !empty($_REQUEST['inputStartDate']) ? contrexx_addslashes($_REQUEST['inputStartDate'])  : \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'];
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate']    = !empty($_REQUEST['inputEndDate']) ? contrexx_addslashes($_REQUEST['inputEndDate'])  : \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate'];
         $limit = !empty($_REQUEST['limit']) ? intval($_REQUEST['limit']) : $_CONFIG['corePagingLimit'];
         $pos = !empty($_REQUEST['pos']) ? intval($_REQUEST['pos']) : 0;
         $field = (!empty($_REQUEST['field'])) ? contrexx_addslashes($_REQUEST['field']) : 'visits';
@@ -396,8 +396,8 @@ class Immo extends ImmoLib
                 'TXT_IMMO_FUNCTIONS'                    =>    $_ARRAYLANG['TXT_IMMO_FUNCTIONS'],
                 'TXT_IMMO_CONFIRM_DELETE_CONTACT'    =>    $_ARRAYLANG['TXT_IMMO_CONFIRM_DELETE_CONTACT'],
                 'TXT_IMMO_CANNOT_UNDO_OPERATION'    =>    $_ARRAYLANG['TXT_IMMO_CANNOT_UNDO_OPERATION'],
-                'CALENDAR_TODAY'                     => !empty($_SESSION['immo']['startDate']) ? $_SESSION['immo']['startDate'] : date('Y-m-d', strtotime('-1 month')),
-                'CALENDAR_NEXT_MONTH'                 => !empty($_SESSION['immo']['endDate']) ? $_SESSION['immo']['endDate'] : date('Y-m-d'),
+                'CALENDAR_TODAY'                     => !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'] : date('Y-m-d', strtotime('-1 month')),
+                'CALENDAR_NEXT_MONTH'                 => !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate'] : date('Y-m-d'),
                 'IMMO_FORM_ACTION_ID'                 => $immoID,
                 'IMMO_ID'                             => $immoID,
         ));
@@ -442,8 +442,8 @@ class Immo extends ImmoLib
         }
 
 
-        if(empty($_REQUEST['ignore_timespan']) && !empty($_SESSION['immo']['startDate'])) {
-            $query .= " AND `time` BETWEEN ".strtotime($_SESSION['immo']['startDate'])." AND ".strtotime($_SESSION['immo']['endDate'])." ORDER BY `time` DESC";
+        if(empty($_REQUEST['ignore_timespan']) && !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])) {
+            $query .= " AND `time` BETWEEN ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])." AND ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate'])." ORDER BY `time` DESC";
         }
         if(($objRS = $objDatabase->Execute($query)) !== false) {
             $count = $objRS->RecordCount();
@@ -497,8 +497,8 @@ class Immo extends ImmoLib
                                     `telephone`, `telephone_office`, `telephone_mobile`, `purchase`, `funding`,
                                     `comment`, `timestamp`
                             FROM `".DBPREFIX."module_immo_contact`";
-                if(!empty($_SESSION['immo']['startDate'])) {
-                    $query .= " WHERE `timestamp` BETWEEN ".strtotime($_SESSION['immo']['startDate'])." AND ".strtotime($_SESSION['immo']['endDate']);
+                if(!empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])) {
+                    $query .= " WHERE `timestamp` BETWEEN ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])." AND ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate']);
                 }
                 $immoid = !empty($_REQUEST['immo_id']) ? intval($_REQUEST['immo_id']) : 0;
                 if(!empty($immoid)) {
@@ -518,8 +518,8 @@ class Immo extends ImmoLib
                                     `funding_advice`, `inspection`, `contact_via_phone`, `comment` ,`time`
                             FROM `".DBPREFIX."module_immo_interest` AS `interest`
                             LEFT JOIN `".DBPREFIX."module_immo` AS `immo` ON `interest`.`immo_id` = `immo`.`id`";
-                if(!empty($_SESSION['immo']['startDate'])) {
-                    $query .= " WHERE `time` BETWEEN ".strtotime($_SESSION['immo']['startDate'])." AND ".strtotime($_SESSION['immo']['endDate']);
+                if(!empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])) {
+                    $query .= " WHERE `time` BETWEEN ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])." AND ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate']);
                 }
                 $immoid = !empty($_REQUEST['immo_id']) ? intval($_REQUEST['immo_id']) : 0;
 
@@ -779,8 +779,8 @@ class Immo extends ImmoLib
             $_REQUEST['tab'] = 'immo_downloads';
         }
 
-        $_SESSION['immo']['startDate']    = !empty($_REQUEST['inputStartDate']) ? contrexx_addslashes($_REQUEST['inputStartDate'])  : $_SESSION['immo']['startDate'];
-        $_SESSION['immo']['endDate']    = !empty($_REQUEST['inputEndDate']) ? contrexx_addslashes($_REQUEST['inputEndDate'])  : $_SESSION['immo']['endDate'];
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate']    = !empty($_REQUEST['inputStartDate']) ? contrexx_addslashes($_REQUEST['inputStartDate'])  : \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'];
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate']    = !empty($_REQUEST['inputEndDate']) ? contrexx_addslashes($_REQUEST['inputEndDate'])  : \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate'];
 
         $this->_objTpl->setGlobalVariable(array(
                 'TXT_IMMO_PAGE_VIEWS'                =>    $_ARRAYLANG['TXT_IMMO_PAGE_VIEWS'],
@@ -829,8 +829,8 @@ class Immo extends ImmoLib
                 'TXT_IMMO_SHOW_TIMESPAN_DETAILS'     =>    $_ARRAYLANG['TXT_IMMO_SHOW_TIMESPAN_DETAILS'],
                 'TXT_IMMO_IGNORE_TIMESPAN'             =>    $_ARRAYLANG['TXT_IMMO_IGNORE_TIMESPAN'],
                 'TXT_IMMO_REFRESH'                     =>    $_ARRAYLANG['TXT_IMMO_REFRESH'],
-                'CALENDAR_TODAY'                     => !empty($_SESSION['immo']['startDate']) ? $_SESSION['immo']['startDate'] : date('Y-m-d', strtotime('-1 month')),
-                'CALENDAR_NEXT_MONTH'                 => !empty($_SESSION['immo']['endDate']) ? $_SESSION['immo']['endDate'] : date('Y-m-d'),
+                'CALENDAR_TODAY'                     => !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'] : date('Y-m-d', strtotime('-1 month')),
+                'CALENDAR_NEXT_MONTH'                 => !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate'] : date('Y-m-d'),
                 'IMMO_IGNORE_TIMESPAN_CHECKED'         => empty($_REQUEST['ignore_timespan']) ? '' : 'checked="checked"',
                 'PATH_OFFSET'                         => ASCMS_PATH_OFFSET,
                 'IMMO_PAGING_LIMIT'                     =>    $limit,
@@ -872,8 +872,8 @@ class Immo extends ImmoLib
                         )
                     LEFT JOIN `".DBPREFIX."module_immo` AS immo ON immo.id = CAST(MID(`page`, 40, 8) AS UNSIGNED)
                     WHERE page LIKE '/index.php?section=immo&cmd=showObj&id=%'";
-        if(empty($_REQUEST['ignore_timespan']) && !empty($_SESSION['immo']['startDate'])) {
-            $query .= " AND `timestamp` BETWEEN ".strtotime($_SESSION['immo']['startDate'])." AND ".strtotime($_SESSION['immo']['endDate']);
+        if(empty($_REQUEST['ignore_timespan']) && !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])) {
+            $query .= " AND `timestamp` BETWEEN ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])." AND ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate']);
         }
         $query .= " GROUP BY reference
                     ORDER BY ".$field." DESC";
@@ -925,8 +925,8 @@ class Immo extends ImmoLib
                     AND fn.lang_id = 1
                     AND a.lang_id = 1
                     AND b.lang_id = 1";
-        if(empty($_REQUEST['ignore_timespan']) && !empty($_SESSION['immo']['startDate'])) {
-            $query .= " AND `timestamp` BETWEEN ".strtotime($_SESSION['immo']['startDate'])." AND ".strtotime($_SESSION['immo']['endDate']);
+        if(empty($_REQUEST['ignore_timespan']) && !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])) {
+            $query .= " AND `timestamp` BETWEEN ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])." AND ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate']);
         }
         $query .= " GROUP BY contact.immo_id
                     ORDER BY cnt DESC";
@@ -961,8 +961,8 @@ class Immo extends ImmoLib
                     WHERE lower( fn.name ) = '".$this->_headline."'
                     AND fn.lang_id =1
                     AND a.lang_id =1";
-        if(empty($_REQUEST['ignore_timespan']) && !empty($_SESSION['immo']['startDate'])) {
-            $query .= " AND `time` BETWEEN ".strtotime($_SESSION['immo']['startDate'])." AND ".strtotime($_SESSION['immo']['endDate']);
+        if(empty($_REQUEST['ignore_timespan']) && !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])) {
+            $query .= " AND `time` BETWEEN ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])." AND ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate']);
         }
         $query .= " GROUP BY `interest`.`immo_id`
                     ORDER BY cnt DESC ";
@@ -1011,8 +1011,8 @@ class Immo extends ImmoLib
 
         $immoID = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 
-        $_SESSION['immo']['startDate']    = !empty($_REQUEST['inputStartDate']) ? contrexx_addslashes($_REQUEST['inputStartDate'])  : $_SESSION['immo']['startDate'];
-        $_SESSION['immo']['endDate']    = !empty($_REQUEST['inputEndDate']) ? contrexx_addslashes($_REQUEST['inputEndDate'])  : $_SESSION['immo']['endDate'];
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate']    = !empty($_REQUEST['inputStartDate']) ? contrexx_addslashes($_REQUEST['inputStartDate'])  : \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'];
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate']    = !empty($_REQUEST['inputEndDate']) ? contrexx_addslashes($_REQUEST['inputEndDate'])  : \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate'];
         //paging data
         $limit = !empty($_REQUEST['limit']) ? intval($_REQUEST['limit']) : $_CONFIG['corePagingLimit'];
         $pos = !empty($_REQUEST['pos']) ? intval($_REQUEST['pos']) : 0;
@@ -1063,8 +1063,8 @@ class Immo extends ImmoLib
                 'TXT_IMMO_SHOW_TIMESPAN_DETAILS'     =>    $_ARRAYLANG['TXT_IMMO_SHOW_TIMESPAN_DETAILS'],
                 'TXT_IMMO_IGNORE_TIMESPAN'             =>    $_ARRAYLANG['TXT_IMMO_IGNORE_TIMESPAN'],
                 'TXT_IMMO_REFRESH'                     =>    $_ARRAYLANG['TXT_IMMO_REFRESH'],
-                'CALENDAR_TODAY'                     => !empty($_SESSION['immo']['startDate']) ? $_SESSION['immo']['startDate'] : date('Y-m-d', strtotime('-1 month')),
-                'CALENDAR_NEXT_MONTH'                 => !empty($_SESSION['immo']['endDate']) ? $_SESSION['immo']['endDate'] : date('Y-m-d'),
+                'CALENDAR_TODAY'                     => !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'] : date('Y-m-d', strtotime('-1 month')),
+                'CALENDAR_NEXT_MONTH'                 => !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate'] : date('Y-m-d'),
                 'PATH_OFFSET'                         => ASCMS_PATH_OFFSET,
                 'IMMO_FORM_ACTION_ID'                 => $immoID,
                 'IMMO_ID'                             => $immoID,
@@ -1115,8 +1115,8 @@ class Immo extends ImmoLib
         }
 
 
-        if(empty($_REQUEST['ignore_timespan']) && !empty($_SESSION['immo']['startDate'])) {
-            $query .= " AND `timestamp` BETWEEN ".strtotime($_SESSION['immo']['startDate'])." AND ".strtotime($_SESSION['immo']['endDate'])." ORDER BY timestamp DESC";
+        if(empty($_REQUEST['ignore_timespan']) && !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])) {
+            $query .= " AND `timestamp` BETWEEN ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])." AND ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate'])." ORDER BY timestamp DESC";
         }
         if(($objRS = $objDatabase->Execute($query)) !== false) {
             $count = $objRS->RecordCount();
@@ -1185,8 +1185,8 @@ class Immo extends ImmoLib
                     WHERE lower( fn.name ) = '".$this->_headline."'";
 
 
-        if(empty($_REQUEST['ignore_timespan']) && !empty($_SESSION['immo']['startDate'])) {
-            $query .= " AND `time` BETWEEN ".strtotime($_SESSION['immo']['startDate'])." AND ".strtotime($_SESSION['immo']['endDate']);
+        if(empty($_REQUEST['ignore_timespan']) && !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])) {
+            $query .= " AND `time` BETWEEN ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])." AND ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate']);
         }
         $query .= " AND fn.lang_id =1
                     AND a.lang_id = 1
@@ -1259,8 +1259,8 @@ class Immo extends ImmoLib
                             AND fname.lang_id =1
                         )"
                 .$searchField." ".$searchTerm;
-        if($_REQUEST['ignore_timespan'] !== 'on' && !empty($_SESSION['immo']['startDate'])) {
-            $query .= " AND `timestamp` BETWEEN ".strtotime($_SESSION['immo']['startDate'])." AND ".strtotime($_SESSION['immo']['endDate']);
+        if($_REQUEST['ignore_timespan'] !== 'on' && !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])) {
+            $query .= " AND `timestamp` BETWEEN ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])." AND ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate']);
         }
         if($immoID > 0) {
             $query .= " AND contact.immo_id = $immoID";
@@ -1466,8 +1466,8 @@ class Immo extends ImmoLib
                         )
                     LEFT JOIN `".DBPREFIX."module_immo` AS immo ON immo.id = CAST(MID(`page`, 40, 8) AS UNSIGNED)
                     WHERE page LIKE '/index.php?section=immo&cmd=showObj&id=%'";
-        if(empty($_REQUEST['ignore_timespan']) && !empty($_SESSION['immo']['startDate'])) {
-            $query .= " AND `timestamp` BETWEEN ".strtotime($_SESSION['immo']['startDate'])." AND ".strtotime($_SESSION['immo']['endDate']);
+        if(empty($_REQUEST['ignore_timespan']) && !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])) {
+            $query .= " AND `timestamp` BETWEEN ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])." AND ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate']);
         }
         $query .= "
                     GROUP BY reference
@@ -1524,8 +1524,8 @@ class Immo extends ImmoLib
                     WHERE lower( fn.name ) = '".$this->_headline."'";
 
 
-        if(empty($_REQUEST['ignore_timespan']) && !empty($_SESSION['immo']['startDate'])) {
-            $query .= " AND `timestamp` BETWEEN ".strtotime($_SESSION['immo']['startDate'])." AND ".strtotime($_SESSION['immo']['endDate']);
+        if(empty($_REQUEST['ignore_timespan']) && !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])) {
+            $query .= " AND `timestamp` BETWEEN ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['startDate'])." AND ".strtotime(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['endDate']);
         }
         $query .= " AND fn.lang_id =1
                     AND a.lang_id = 1

@@ -852,9 +852,9 @@ class MediaDirectory extends MediaDirectoryLibrary
                 }
             }
 
-            if (!empty($_SESSION[$this->moduleNameLC]) && empty($_SESSION[$this->moduleNameLC]['bolFileSizesStatus'])) {
+            if (!empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$this->moduleNameLC]) && empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$this->moduleNameLC]['bolFileSizesStatus'])) {
                 $strFileMessage = '<div class="'.$this->moduleNameLC.'FileErrorMessage">'.$_ARRAYLANG['TXT_MEDIADIR_IMAGE_ERROR_MESSAGE'].'</div>';
-                unset($_SESSION[$this->moduleNameLC]['bolFileSizesStatus']);
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$this->moduleNameLC]['bolFileSizesStatus']);
             } else {
                 $strFileMessage = '';
             }

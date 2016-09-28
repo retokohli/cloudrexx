@@ -268,8 +268,8 @@ class Login
 
         if (isset($_REQUEST['redirect'])) {
             $redirect = contrexx_strip_tags($_REQUEST['redirect']);
-        } elseif (isset($_SESSION['redirect'])) {
-            $redirect = $_SESSION['redirect'];
+        } elseif (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['redirect'])) {
+            $redirect = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['redirect'];
         } else {
             $redirect = "";
         }
@@ -298,8 +298,8 @@ class Login
         if ((!isset($_GET['relogin']) || $_GET['relogin'] != 'true') && $objFWUser->objUser->login() || $objFWUser->checkAuth()) {
             $groupRedirect = ($objGroup = $objFWUser->objGroup->getGroup($objFWUser->objUser->getPrimaryGroupId())) && $objGroup->getHomepage() ? preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $objGroup->getHomepage()) : CONTREXX_SCRIPT_PATH;
             \LinkGenerator::parseTemplate($groupRedirect);
-            if (isset($_SESSION['redirect'])) {
-                unset($_SESSION['redirect']);
+            if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['redirect'])) {
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['redirect']);
             }
             if (!empty($redirect)) {
                 $redirect = \FWUser::getRedirectUrl(urlencode(base64_decode($redirect)));
@@ -311,7 +311,7 @@ class Login
                 $this->_statusMessage = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
             }
         }
-        if (isset($_SESSION['auth']['loginLastAuthFailed'])) {
+        if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['auth']['loginLastAuthFailed'])) {
             $this->_objTpl->setVariable(array(
                 'TXT_CORE_CAPTCHA'  => $_CORELANG['TXT_CORE_CAPTCHA'],
                 'CAPTCHA_CODE'      => \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getCode(),

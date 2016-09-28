@@ -61,7 +61,7 @@ abstract class FileSharingLib
             'style' => 'display:none;'
         ));
 
-        $folderWidget   = new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget($_SESSION->getTempPath() . '/' . $uploadId, true);
+        $folderWidget   = new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->getTempPath() . '/' . $uploadId, true);
         $folderWidgetId = $folderWidget->getId();
         $extendedFileInputCode = <<<CODE
 <script type="text/javascript">
@@ -103,8 +103,8 @@ CODE;
         $sessionObj = $cx->getComponent('Session')->getSession();
 
         return array(
-            $_SESSION->getTempPath() . '/',
-            $_SESSION->getWebTempPath() . '/',
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->getTempPath() . '/',
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->getWebTempPath() . '/',
             $uploadId,
         );
     }

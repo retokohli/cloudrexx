@@ -205,7 +205,7 @@ class ContrexxCaptcha implements CaptchaInterface {
      * writes the secret to the session
      */
     private function updateSession() {
-        $_SESSION['captchaSecret'] = $this->strRandomString;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['captchaSecret'] = $this->strRandomString;
     }
 
     public function getCode($tabIndex = null)
@@ -256,17 +256,17 @@ class ContrexxCaptcha implements CaptchaInterface {
 
         $strEnteredString = trim(contrexx_input2raw($_POST['coreCaptchaCode']));
 
-        // in case there was a session initialization problem, $_SESSION['captchaSecret'] might be NULL, therefore we must ensure not to test against an empty captcha code
+        // in case there was a session initialization problem, \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['captchaSecret'] might be NULL, therefore we must ensure not to test against an empty captcha code
         if (empty($strEnteredString)) {
             return false;
         }
 
-        if (empty($_SESSION['captchaSecret'])) {
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['captchaSecret'])) {
             return false;
         }
 
-        $captcha = $_SESSION['captchaSecret'];
-        unset($_SESSION['captchaSecret']); //remove secret to improve security
+        $captcha = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['captchaSecret'];
+        unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['captchaSecret']); //remove secret to improve security
 
         return strtoupper($strEnteredString) == strtoupper($captcha);
     }

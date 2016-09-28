@@ -96,12 +96,12 @@ abstract class Uploader
      */
     public function restrictUpload2SingleFile()
     {
-        if (!isset($_SESSION['upload']['handlers'][$this->uploadId])) {
-            $_SESSION['upload']['handlers'][$this->uploadId] = array();
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId] = array();
         }
         // limit upload to 1 file at a time
         \ContrexxJavascript::getInstance()->setVariable('restrictUpload2SingleFile', true, "upload/widget_$this->uploadId");
-        $_SESSION['upload']['handlers'][$this->uploadId]['singleFileMode'] = true;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['singleFileMode'] = true;
     }
 
     /**
@@ -144,7 +144,7 @@ abstract class Uploader
         $this->callbackData = $callbackData;
         if($updateSession) {
             //write callback to session
-            $_SESSION['upload']['handlers'][$this->uploadId]['callback'] = $this->callbackData;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['callback'] = $this->callbackData;
         }
     }
 
@@ -159,7 +159,7 @@ abstract class Uploader
      */
     public function setRedirectUrl($url, $updateSession = true) {
         if($updateSession)
-            $_SESSION['upload']['handlers'][$this->uploadId]['redirect_url'] = $url;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['redirect_url'] = $url;
 
         global $_CONFIG;
         $this->redirectUrl = /*"http://".$_CONFIG['domainUrl'].*/$url;
@@ -184,11 +184,11 @@ abstract class Uploader
     public function setUploadId($id)
     {
         $this->uploadId = $id;
-        if (!isset($_SESSION['upload']['handlers'][$this->uploadId])) {
-            $_SESSION['upload']['handlers'][$this->uploadId] = array();
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId] = array();
         }
-        if(isset($_SESSION['upload']['handlers'][$this->uploadId]['callback']))
-            $this->callbackData = $_SESSION['upload']['handlers'][$this->uploadId]['callback'];
+        if(isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['callback']))
+            $this->callbackData = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['callback'];
     }
 
     /**
@@ -252,7 +252,7 @@ abstract class Uploader
     public function setData($data) {
         $this->data = $data;
         //store data to session
-        $_SESSION['upload']['handlers'][$this->uploadId]['data'] = $data;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['data'] = $data;
     }
 
     /**
@@ -262,9 +262,9 @@ abstract class Uploader
         if($this->data != null) { //$data is set, this means it's up to date
             return $this->data;
         }
-        else if(isset($_SESSION['upload']['handlers'][$this->uploadId]['data'])) //try to recover data from session
+        else if(isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['data'])) //try to recover data from session
         {
-            $this->data = $_SESSION['upload']['handlers'][$this->uploadId]['data'];
+            $this->data = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['data'];
             return $this->data; //cache for future gets
         }
         else { //nothing set yet, return null
@@ -273,7 +273,7 @@ abstract class Uploader
     }
 
     /**
-     * Checks $fileCount against $_SESSION[upload][handlers][x][uploadedCount].
+     * Checks $fileCount against \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[upload][handlers][x][uploadedCount].
      * Takes appropriate action (calls callback if they equal).
      * @param integer $fileCount files in current uploado
      */
@@ -282,17 +282,17 @@ abstract class Uploader
             $this->notifyCallback();
         }
         else {
-            if(!isset($_SESSION['upload']['handlers'][$this->uploadId]['uploadedCount'])) { //multiple files, first file
-                $_SESSION['upload']['handlers'][$this->uploadId]['uploadedCount'] = 1;
+            if(!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['uploadedCount'])) { //multiple files, first file
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['uploadedCount'] = 1;
             }
             else {
-                $count = $_SESSION['upload']['handlers'][$this->uploadId]['uploadedCount'] + 1;
+                $count = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['uploadedCount'] + 1;
                 if($count == $fileCount) { //all files uploaded
-                    unset($_SESSION['upload']['handlers'][$this->uploadId]['uploadedCount']);
+                    unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['uploadedCount']);
                     $this->notifyCallback();
                 }
                 else {
-                    $_SESSION['upload']['handlers'][$this->uploadId]['uploadedCount'] = $count;
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['uploadedCount'] = $count;
                 }
             }
         }
@@ -306,8 +306,8 @@ abstract class Uploader
 
         //temporary path where files were uploaded
         $tempDir = '/upload_'.$this->uploadId;
-        $tempPath = $_SESSION->getTempPath().$tempDir;
-        $tempWebPath = $_SESSION->getWebTempPath().$tempDir;
+        $tempPath = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->getTempPath().$tempDir;
+        $tempWebPath = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->getWebTempPath().$tempDir;
 
         //we're going to call the callbck, so the data is not needed anymore
         //well... not quite sure. need it again in contact form.
@@ -323,8 +323,8 @@ abstract class Uploader
         }
 
         $originalFileNames = array();
-        if (isset($_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames'])) {
-            $originalFileNames = $_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames'];
+        if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['originalFileNames'])) {
+            $originalFileNames = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['originalFileNames'];
         }
         //various file infos are passed via this array
         $fileInfos = array(
@@ -333,19 +333,19 @@ abstract class Uploader
 
         $response = null;
         //the response data.
-        if(isset($_SESSION['upload']['handlers'][$this->uploadId]['response_data']))
-            $response = UploadResponse::fromSession($_SESSION['upload']['handlers'][$this->uploadId]['response_data']);
+        if(isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['response_data']))
+            $response = UploadResponse::fromSession(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['response_data']);
         else
             $response = new UploadResponse();
 
         $ret = call_user_func(array($this->callbackData[1],$this->callbackData[2]),$tempPath,$tempWebPath,$this->getData(), $this->uploadId, $fileInfos, $response);
 
         //clean up session: we do no longer need the array with the original file names
-        unset($_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames']);
+        unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['originalFileNames']);
         //same goes for the data
-        //if(isset($_SESSION['upload']['handlers'][$this->uploadId]['data']))
+        //if(isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['data']))
 // TODO: unset this when closing the uploader dialog, but not before
-//            unset($_SESSION['upload']['handlers'][$this->uploadId]['data']);
+//            unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['data']);
 
         if (\Cx\Lib\FileSystem\FileSystem::exists($tempWebPath)) {
             //the callback could have returned a path where he wants the files moved to
@@ -392,7 +392,7 @@ abstract class Uploader
         }
 
         $response->uploadFinished();
-        $_SESSION['upload']['handlers'][$this->uploadId]['response_data'] = $response->toSessionValue();
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['response_data'] = $response->toSessionValue();
     }
 
     /**
@@ -400,8 +400,8 @@ abstract class Uploader
      */
     protected function cleanupCallbackData() {
 
-        unset($_SESSION['upload']['handlers'][$this->uploadId]['callback']);
-        $_SESSION->cleanTempPaths();
+        unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['callback']);
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->cleanTempPaths();
     }
 
     /**
@@ -455,8 +455,8 @@ abstract class Uploader
     {
 
         //get a writable directory
-        $tempPath = $_SESSION->getTempPath();
-        $webTempPath = $_SESSION->getWebTempPath();
+        $tempPath = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->getTempPath();
+        $webTempPath = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->getWebTempPath();
         $dirName = 'upload_'.$this->uploadId;
 
         $targetDir = $tempPath.'/'.$dirName;
@@ -481,17 +481,17 @@ abstract class Uploader
 
         //try to retrieve session file name for chunked uploads
         if ($chunk > 0) {
-            if(isset($_SESSION['upload']['handlers'][$this->uploadId]['fileName']))
-                $fileName = $_SESSION['upload']['handlers'][$this->uploadId]['fileName'];
+            if(isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['fileName']))
+                $fileName = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['fileName'];
             else
                 throw new UploaderException('Session lost.');
         }
         else { //first chunk, store original file name in session
             $originalFileNames = array();
-            if(isset($_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames']))
-                $originalFileNames = $_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames'];
+            if(isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['originalFileNames']))
+                $originalFileNames = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['originalFileNames'];
             $originalFileNames[$fileName] = $originalFileName;
-            $_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames'] = $originalFileNames;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['originalFileNames'] = $originalFileNames;
         }
 
         // Make sure the fileName is unique (for chunked uploads only on first chunk, since we're using the same name)
@@ -507,7 +507,7 @@ abstract class Uploader
             $fileName = $fileName_a . '_' . $count . $fileName_b;
         }
         //$fileName contains now the name we'll use for the whole upload process, so store it.
-        $_SESSION['upload']['handlers'][$this->uploadId]['fileName'] = $fileName;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['fileName'] = $fileName;
 
         // Remove old temp files
         if (is_dir($targetDir) && ($dir = opendir($targetDir))) {
@@ -581,12 +581,12 @@ abstract class Uploader
 
         $response = null;
         //the response data.
-        if(isset($_SESSION['upload']['handlers'][$this->uploadId]['response_data']))
-            $response = UploadResponse::fromSession($_SESSION['upload']['handlers'][$this->uploadId]['response_data']);
+        if(isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['response_data']))
+            $response = UploadResponse::fromSession(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['response_data']);
         else
             $response = new UploadResponse();
 
         $response->addMessage(UploadResponse::STATUS_ERROR, $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'], $fileName);
-        $_SESSION['upload']['handlers'][$this->uploadId]['response_data'] = $response->toSessionValue();
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['response_data'] = $response->toSessionValue();
     }
 }

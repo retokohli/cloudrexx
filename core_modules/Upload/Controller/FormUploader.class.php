@@ -55,8 +55,8 @@ class FormUploader extends Uploader
 
         //get a writable directory
         $targetDir = '/upload_'.$this->uploadId;
-        $tempPath = $_SESSION->getTempPath();
-        $webTempPath = $_SESSION->getWebTempPath();
+        $tempPath = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->getTempPath();
+        $webTempPath = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->getWebTempPath();
 
 
         //make sure target directory exists
@@ -85,10 +85,10 @@ class FormUploader extends Uploader
                 $name = preg_replace('/[^a-zA-Z0-9\._-]+/', '', $name);
 
                 $originalFileNames = array();
-                if(isset($_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames']))
-                    $originalFileNames = $_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames'];
+                if(isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['originalFileNames']))
+                    $originalFileNames = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['originalFileNames'];
                 $originalFileNames[$name] = $originalFileName;
-                $_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames'] = $originalFileNames;
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['originalFileNames'] = $originalFileNames;
                 //end of TODO-region
 
                 //move file somewhere we know both the web- and normal path...
@@ -127,7 +127,7 @@ class FormUploader extends Uploader
     public function getFrameXHtml() {
         global $_CORELANG;
 
-        if (!empty($_SESSION['upload']['handlers'][$this->uploadId]['singleFileMode'])) {
+        if (!empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$this->uploadId]['singleFileMode'])) {
             \ContrexxJavascript::getInstance()->setVariable('restrictUpload2SingleFile', true, "upload/widget_$this->uploadId");
         }
 

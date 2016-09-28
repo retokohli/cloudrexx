@@ -324,8 +324,8 @@ class Shipment
             }
             if (self::calculateShipmentPrice(
                     $shipper_id,
-                    $_SESSION['shop']['cart']['total_price'],
-                    $_SESSION['shop']['cart']['total_weight']) < 0) {
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['total_price'],
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['total_weight']) < 0) {
                 unset($arrId[$key]);
             }
         }

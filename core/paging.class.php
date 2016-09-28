@@ -201,17 +201,17 @@ class Paging
             return intval($_REQUEST[$parameter_name]);
         }
 
-        if (!isset($_SESSION['paging'])) {
-            $_SESSION['paging'] = array();
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['paging'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['paging'] = array();
         }
-        if (!isset($_SESSION['paging'][$parameter_name]))
-            $_SESSION['paging'][$parameter_name] = 0;
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['paging'][$parameter_name]))
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['paging'][$parameter_name] = 0;
         if (isset($_REQUEST[$parameter_name])) {
             $position = intval($_REQUEST[$parameter_name]);
             unset($_REQUEST[$parameter_name]);
-            $_SESSION['paging'][$parameter_name] = $position;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['paging'][$parameter_name] = $position;
         }
-        return $_SESSION['paging'][$parameter_name];
+        return \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['paging'][$parameter_name];
     }
 
 
@@ -225,7 +225,7 @@ class Paging
     static function reset($parameter_name=null)
     {
         $parameter_name = self::getParametername($parameter_name);//'pos';
-        $_SESSION['paging'][$parameter_name] = 0;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['paging'][$parameter_name] = 0;
         unset($_REQUEST[$parameter_name]);
     }
 

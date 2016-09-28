@@ -177,9 +177,9 @@ class MediaManager extends MediaLibrary
         $this->shopEnabled = $this->checkModule('Shop');
 
         if($this->archive == 'themes') {
-            $_SESSION["skins"] = true;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()["skins"] = true;
         } else {
-            $_SESSION["skins"] = false;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()["skins"] = false;
         }
 
         switch ($this->archive) {
@@ -504,40 +504,40 @@ class MediaManager extends MediaLibrary
                       : '';
 
         // cut, copy and paste session
-        if (isset($_SESSION['mediaCutFile'])) {
+        if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'])) {
             $tmpArray = array();
-            foreach ($_SESSION['mediaCutFile'][2] as $tmp) {
-                 if (file_exists($_SESSION['mediaCutFile'][0].$tmp)) {
+            foreach (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][2] as $tmp) {
+                 if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][0].$tmp)) {
                      $tmpArray[] = $tmp;
                  }
             }
 
             if (count($tmpArray) > 0) {
-                $_SESSION['mediaCutFile'][0] = $_SESSION['mediaCutFile'][0];
-                $_SESSION['mediaCutFile'][1] = $_SESSION['mediaCutFile'][1];
-                $_SESSION['mediaCutFile'][2] = $tmpArray;
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][0] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][0];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][1] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][1];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][2] = $tmpArray;
             } else {
-                unset($_SESSION['mediaCutFile']);
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile']);
             }
         }
-        if (isset($_SESSION['mediaCopyFile'])) // copy
+        if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'])) // copy
         {
             $tmpArray = array();
-            foreach ($_SESSION['mediaCopyFile'][2] as $tmp) {
-                 if (file_exists($_SESSION['mediaCopyFile'][0].$tmp)) {
+            foreach (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'][2] as $tmp) {
+                 if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'][0].$tmp)) {
                      $tmpArray[] = $tmp;
                  }
             }
 
             if (count($tmpArray) > 0)
             {
-                $_SESSION['mediaCopyFile'][0] = $_SESSION['mediaCopyFile'][0];
-                $_SESSION['mediaCopyFile'][1] = $_SESSION['mediaCopyFile'][1];
-                $_SESSION['mediaCopyFile'][2] = $tmpArray;
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'][0] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'][0];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'][1] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'][1];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'][2] = $tmpArray;
             }
             else
             {
-                unset($_SESSION['mediaCopyFile']);
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile']);
             }
         }
 
@@ -574,11 +574,11 @@ class MediaManager extends MediaLibrary
         //if yes, we know the added files and want to highlight them
         if (!empty($_GET['highlightUploadId'])) {
             $key = 'media_upload_files_'.($_GET['highlightUploadId']);
-            if (isset($_SESSION[$key])) {
-                $sessionHighlightCandidates = $_SESSION[$key]->toArray(); //an array with the filenames, set in mediaLib::uploadFinished
+            if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$key])) {
+                $sessionHighlightCandidates = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$key]->toArray(); //an array with the filenames, set in mediaLib::uploadFinished
             }
             //clean up session; we do only highlight once
-            unset($_SESSION[$key]);
+            unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$key]);
 
             if (is_array($sessionHighlightCandidates)) {
                 //make sure we don't cause any unexpected behaviour if we lost the session data
@@ -595,9 +595,9 @@ class MediaManager extends MediaLibrary
                 ->createThumbnailFromPath($this->path . $_GET['editedImage'], true);
             $this->highlightName[] = $_GET['editedImage'];
         }
-        if (!empty($_SESSION['media_highlight_name'])) {
-            $this->highlightName = $_SESSION['media_highlight_name']->toArray();
-            unset($_SESSION['media_highlight_name']);
+        if (!empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['media_highlight_name'])) {
+            $this->highlightName = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['media_highlight_name']->toArray();
+            unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['media_highlight_name']);
         }
 
         // media directory tree
@@ -636,17 +636,17 @@ class MediaManager extends MediaLibrary
                 if (in_array($fileName, $this->highlightName)) { // highlight
                     $class .= '" style="background-color: ' . $this->highlightColor . ';';
                 }
-                if (   isset($_SESSION['mediaCutFile'])
-                    && !empty($_SESSION['mediaCutFile'])
-                    && $this->webPath == $_SESSION['mediaCutFile'][1]
-                    && in_array($fileName, $_SESSION['mediaCutFile'][2])
+                if (   isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'])
+                    && !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'])
+                    && $this->webPath == \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][1]
+                    && in_array($fileName, \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][2])
                 ) {  // cut
                     $class .= '" style="background-color: ' . $this->highlightCCColor . ';';
                 }
-                if (   isset($_SESSION['mediaCopyFile'])
-                    && !empty($_SESSION['mediaCopyFile'])
-                    && $this->webPath == $_SESSION['mediaCopyFile'][1]
-                    && in_array($fileName, $_SESSION['mediaCopyFile'][2])
+                if (   isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'])
+                    && !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'])
+                    && $this->webPath == \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'][1]
+                    && in_array($fileName, \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'][2])
                 ) {  // copy
                     $class .= '" style="background-color: ' . $this->highlightCCColor . ';';
                 }
@@ -773,7 +773,7 @@ class MediaManager extends MediaLibrary
             $this->_objTpl->setVariable('MEDIA_ARCHIVE', $this->archive);
         }
         // paste media
-        if (empty($searchTerm) && (isset($_SESSION['mediaCutFile']) || isset($_SESSION['mediaCopyFile']))) {
+        if (empty($searchTerm) && (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile']) || isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile']))) {
             $this->_objTpl->setVariable(array(
                 'MEDIDA_PASTE_ACTION'      => 'index.php?cmd=Media&amp;archive='.$this->archive.'&amp;act=paste&amp;path='.$this->webPath,
                 'TXT_MEDIA_PASTE'          => $_ARRAYLANG['TXT_MEDIA_PASTE']

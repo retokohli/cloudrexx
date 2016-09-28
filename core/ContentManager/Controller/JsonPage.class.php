@@ -780,7 +780,7 @@ class JsonPage implements JsonAdapter {
         $page['pageId'] = $params['post']['page']['id'];
         $page['lang'] = $params['post']['page']['lang'];
 
-        $_SESSION['page'] = $page;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['page'] = $page;
     }
 
     /**

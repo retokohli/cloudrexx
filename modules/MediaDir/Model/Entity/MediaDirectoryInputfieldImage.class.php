@@ -281,10 +281,10 @@ INPUT;
                     //upload image
                     $strValue = $this->uploadMedia($imagePath);
                 } else {
-                    if (!isset($_SESSION[$this->moduleNameLC])) {
-                        $_SESSION[$this->moduleNameLC] = array();
+                    if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$this->moduleNameLC])) {
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$this->moduleNameLC] = array();
                     }
-                    $_SESSION[$this->moduleNameLC]['bolFileSizesStatus'] = false;
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$this->moduleNameLC]['bolFileSizesStatus'] = false;
                     $strValue = null;
                 }
             } else {

@@ -183,7 +183,7 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
      */
     private static function init_session()
     {
-        if (empty($_SESSION)) {
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession())) {
             if (checkForSpider()) {
                 return;
             }
@@ -193,8 +193,8 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
             $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
             $sessionObj = $cx->getComponent('Session')->getSession();
         }
-        if (empty($_SESSION['shop'])) {
-            $_SESSION['shop'] = array();
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop'] = array();
         }
     }
 
@@ -217,8 +217,8 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
         self::$objTemplate->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
         // Do this *before* calling our friends, especially Customer methods!
         // Pick the default Country for delivery
-        if (empty($_SESSION['shop']['countryId2'])) {
-            $_SESSION['shop']['countryId2'] =
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2'] =
                 (isset($_POST['countryId2'])
                   ? intval($_POST['countryId2'])
                   : \Cx\Core\Setting\Controller\Setting::getValue('country_id', 'Shop'));
@@ -229,9 +229,9 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
         if (isset($_REQUEST['coupon_code'])) {
             $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
             $sessionObj = $cx->getComponent('Session')->getSession();
-            $_SESSION['shop']['coupon_code'] =
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['coupon_code'] =
                 trim(strip_tags(contrexx_input2raw($_REQUEST['coupon_code'])));
-//\DBG::log("Coupon Code: Set to ".$_SESSION['shop']['coupon_code']);
+//\DBG::log("Coupon Code: Set to ".\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['coupon_code']);
         }
 //\DBG::log("Shop::getPage(): Entered");
         // Global placeholders that are used on (almost) all pages.
@@ -477,8 +477,8 @@ die("Failed to get Customer for ID $customer_id");
             $objProduct = Product::getById($product_id);
             if ($objProduct) {
                 $productCatIds = $objProduct->category_id();
-                if (isset($_SESSION['shop']['previous_category_id']) && in_array($_SESSION['shop']['previous_category_id'], array_map('intval', explode(',', $productCatIds)))) {
-                    $selectedCatId = $_SESSION['shop']['previous_category_id'];
+                if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['previous_category_id']) && in_array(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['previous_category_id'], array_map('intval', explode(',', $productCatIds)))) {
+                    $selectedCatId = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['previous_category_id'];
                 } else {
                     $selectedCatId = preg_replace('/,.+$/', '', $productCatIds);
                 }
@@ -495,10 +495,10 @@ die("Failed to get Customer for ID $customer_id");
         //       A possible solution would be to check for all section/cmd cases
         //       that won't allow $selectedCatId to be empty.
         if (is_numeric($selectedCatId)/* && !empty($selectedCatId)*/) {
-            $_SESSION['shop']['previous_category_id'] = $selectedCatId;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['previous_category_id'] = $selectedCatId;
         } else {
-            if (isset($_SESSION['shop']['previous_category_id']))
-                $selectedCatId = $_SESSION['shop']['previous_category_id'];
+            if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['previous_category_id']))
+                $selectedCatId = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['previous_category_id'];
         }
 
         // parse shopNavbar and/or shop_breadcrumb
@@ -747,7 +747,7 @@ die("Failed to get Customer for ID $customer_id");
 //\DBG::log("Shop::cart(): Entered");
         Cart::init();
         if (!empty($_POST['countryId2'])) {
-            $_SESSION['shop']['countryId2'] = intval($_POST['countryId2']);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2'] = intval($_POST['countryId2']);
         }
         if (empty($_GET['remoteJs'])) {
 //\DBG::log("Shop::cart(): Receiving POST");
@@ -798,14 +798,14 @@ die("Failed to update the Cart!");
     static function destroyCart($full=null)
     {
         // Necessary, otherwise no successive orders are possible
-        $_SESSION['shop']['order_id'] = $_SESSION['shop']['order_id_checkin'] =
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id'] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id_checkin'] =
             NULL;
-        $_SESSION['shop']['coupon_code'] = NULL;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['coupon_code'] = NULL;
 // TEST ONLY, to not clear the cart: return;
         Cart::destroy();
         // In case you want to flush everything, including the Customer:
         if ($full) {
-            unset($_SESSION['shop']);
+            unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']);
             self::$objCustomer = null;
         }
     }
@@ -816,7 +816,7 @@ die("Failed to update the Cart!");
      *
      * - Counts the items in the Cart, sums up the amounts
      * - Calculates all taxes and fees
-     * Sets fields in the global $_SESSION['shop'] array, namely
+     * Sets fields in the global \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop'] array, namely
      *  'grand_total_price', 'vat_price', 'vat_products_txt',
      *  'vat_grand_txt', and 'vat_procentual'.
      */
@@ -824,44 +824,44 @@ die("Failed to update the Cart!");
     {
         global $_ARRAYLANG;
 
-        if (empty($_SESSION['shop']['payment_price']))
-            $_SESSION['shop']['payment_price'] = 0;
-        if (empty($_SESSION['shop']['shipment_price']))
-            $_SESSION['shop']['shipment_price'] = 0;
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['payment_price']))
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['payment_price'] = 0;
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipment_price']))
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipment_price'] = 0;
         Vat::is_home_country(
-               empty($_SESSION['shop']['countryId2'])
-            || $_SESSION['shop']['countryId2'] == \Cx\Core\Setting\Controller\Setting::getValue('country_id','Shop'));
+               empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2'])
+            || \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2'] == \Cx\Core\Setting\Controller\Setting::getValue('country_id','Shop'));
         // VAT enabled?
         if (Vat::isEnabled()) {
             // VAT included?
             if (Vat::isIncluded()) {
                 // home country equals shop country; VAT is included already
                 if (Vat::is_home_country()) {
-                    $_SESSION['shop']['vat_price'] = Currency::formatPrice(
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_price'] = Currency::formatPrice(
                         Cart::get_vat_amount() +
                         Vat::calculateOtherTax(
-                              $_SESSION['shop']['payment_price']
-                            + $_SESSION['shop']['shipment_price']
+                              \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['payment_price']
+                            + \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipment_price']
                         )
                     );
-                    $_SESSION['shop']['grand_total_price'] = Currency::formatPrice(
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price'] = Currency::formatPrice(
                           Cart::get_price()
-                        + $_SESSION['shop']['payment_price']
-                        + $_SESSION['shop']['shipment_price']
+                        + \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['payment_price']
+                        + \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipment_price']
                     );
-                    $_SESSION['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_TAX_INCLUDED'];
-                    $_SESSION['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_TAX_INCLUDED'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_TAX_INCLUDED'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_TAX_INCLUDED'];
                 } else {
                     // Foreign country; subtract VAT from grand total price.
-                    $_SESSION['shop']['vat_price'] = Cart::get_vat_amount();
-                    $_SESSION['shop']['grand_total_price'] = Currency::formatPrice(
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_price'] = Cart::get_vat_amount();
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price'] = Currency::formatPrice(
                           Cart::get_price()
-                        + $_SESSION['shop']['payment_price']
-                        + $_SESSION['shop']['shipment_price']
-                        - $_SESSION['shop']['vat_price']
+                        + \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['payment_price']
+                        + \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipment_price']
+                        - \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_price']
                     );
-                    $_SESSION['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_TAX_INCLUDED'];
-                    $_SESSION['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_TAX_EXCLUDED'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_TAX_INCLUDED'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_TAX_EXCLUDED'];
                 }
             } else {
                 // VAT is excluded
@@ -872,41 +872,41 @@ die("Failed to update the Cart!");
                     // home country equals shop country; add VAT.
                     // the VAT on the products has already been calculated and set in the cart.
                     // now we add the default VAT to the shipping and payment cost.
-                    $_SESSION['shop']['vat_price'] = Currency::formatPrice(
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_price'] = Currency::formatPrice(
                         Cart::get_vat_amount() +
                         Vat::calculateOtherTax(
-                            $_SESSION['shop']['payment_price'] +
-                            $_SESSION['shop']['shipment_price']
+                            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['payment_price'] +
+                            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipment_price']
                         ));
-                    $_SESSION['shop']['grand_total_price'] = Currency::formatPrice(
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price'] = Currency::formatPrice(
                           Cart::get_price()
-                        + $_SESSION['shop']['payment_price']
-                        + $_SESSION['shop']['shipment_price']
-                        + $_SESSION['shop']['vat_price']);
-                    $_SESSION['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_TAX_EXCLUDED'];
-                    $_SESSION['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_TAX_INCLUDED'];
+                        + \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['payment_price']
+                        + \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipment_price']
+                        + \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_price']);
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_TAX_EXCLUDED'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_TAX_INCLUDED'];
 //                } else {
 //                    // foreign country; do not add VAT
-//                    $_SESSION['shop']['vat_price'] = '0.00';
-//                    $_SESSION['shop']['grand_total_price'] = Currency::formatPrice(
+//                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_price'] = '0.00';
+//                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price'] = Currency::formatPrice(
 //                          Cart::get_price()
-//                        + $_SESSION['shop']['payment_price']
-//                        + $_SESSION['shop']['shipment_price']);
-//                    $_SESSION['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_TAX_EXCLUDED'];
-//                    $_SESSION['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_TAX_EXCLUDED'];
+//                        + \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['payment_price']
+//                        + \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipment_price']);
+//                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_TAX_EXCLUDED'];
+//                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_TAX_EXCLUDED'];
 //                }
             }
         } else {
             // VAT is disabled
-            $_SESSION['shop']['vat_price'] = '0.00';
-            $_SESSION['shop']['vat_products_txt'] = '';
-            $_SESSION['shop']['vat_grand_txt'] = '';
-            $_SESSION['shop']['grand_total_price'] = Currency::formatPrice(
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_price'] = '0.00';
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_products_txt'] = '';
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_grand_txt'] = '';
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price'] = Currency::formatPrice(
                   Cart::get_price()
-                + $_SESSION['shop']['payment_price']
-                + $_SESSION['shop']['shipment_price']);
+                + \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['payment_price']
+                + \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipment_price']);
         }
-//\DBG::log("Shop::update_session(): VAT: ".$_SESSION['shop']['vat_price']);
+//\DBG::log("Shop::update_session(): VAT: ".\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_price']);
     }
 
 
@@ -1097,8 +1097,8 @@ die("Failed to update the Cart!");
                     \Cx\Core\Routing\Url::fromModuleAndCmd('shop', '')
                 );
             }
-            if (isset($_SESSION['shop']['previous_category_id'])) {
-                $category_id_previous = $_SESSION['shop']['previous_category_id'];
+            if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['previous_category_id'])) {
+                $category_id_previous = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['previous_category_id'];
                 foreach (preg_split('/\s*,\s*/', $category_id) as $id) {
                     if ($category_id_previous == intval($id)) {
                         $category_id = $category_id_previous;
@@ -1762,15 +1762,15 @@ die("Failed to update the Cart!");
     private static function rememberVisitedProducts($product_id)
     {
         // If init_session() didn't set that index, there's no session
-        // Note: DO NOT USE array_key_exists() on the $_SESSION variable.
+        // Note: DO NOT USE array_key_exists() on the \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession() variable.
         // It won't work.
-        if (empty($_SESSION['shop'])) {
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop'])) {
             return;
         }
-        if (empty($_SESSION['shop']['previous_product_ids'])) {
-            $_SESSION['shop']['previous_product_ids'] = array();
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['previous_product_ids'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['previous_product_ids'] = array();
         }
-        $ids = $_SESSION['shop']['previous_product_ids']->toArray();
+        $ids = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['previous_product_ids']->toArray();
         // Remove the current ID from the list if it exists already
         $index = array_search($product_id, $ids);
         if ($index !== false) {
@@ -1782,7 +1782,7 @@ die("Failed to update the Cart!");
         if (count($ids) > self::numof_remember_visited_products) {
             array_pop($ids);
         }
-        $_SESSION['shop']['previous_product_ids'] = $ids;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['previous_product_ids'] = $ids;
     }
 
     /**
@@ -2279,10 +2279,10 @@ die("Failed to update the Cart!");
             self::$objCustomer = Customer::getById($objUser->getId());
             if (self::$objCustomer) {
                 // This is still required in confirm() (TODO: remove)
-                $_SESSION['shop']['username'] = self::$objCustomer->username();
-                $_SESSION['shop']['email'] = self::$objCustomer->email();
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['username'] = self::$objCustomer->username();
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email'] = self::$objCustomer->email();
 //\DBG::log("Shop::_authenticate(): Success! (".self::$objCustomer->firstname().' '.self::$objCustomer->lastname().', '.self::$objCustomer->username().', email '.self::$objCustomer->email().")");
-                $_SESSION->cmsSessionUserUpdate(self::$objCustomer->id());
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->cmsSessionUserUpdate(self::$objCustomer->id());
                 return true;
             }
         }
@@ -2316,9 +2316,9 @@ die("Failed to update the Cart!");
 
         if (   isset($_POST['bnoaccount'])
             && \Cx\Core\Setting\Controller\Setting::getValue('register','Shop') != self::REGISTER_MANDATORY) {
-            $_SESSION['shop']['dont_register'] = true;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['dont_register'] = true;
         } else {
-            $_SESSION['shop']['dont_register'] = false;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['dont_register'] = false;
         }
 // TODO: Even though no one can register herself, there still might
 // be registered Customers already!
@@ -2424,38 +2424,38 @@ die("Shop::processRedirect(): This method is obsolete!");
         // Use the details stored in the database as default.
         // Once the (changed) values are posted back, they are stored
         // in the session
-        $company = (isset($_SESSION['shop']['company'])
-            ? $_SESSION['shop']['company']
+        $company = (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['company'])
+            ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['company']
             : (self::$objCustomer ? self::$objCustomer->company() : ''));
-        $gender = (isset($_SESSION['shop']['gender'])
-            ? $_SESSION['shop']['gender']
+        $gender = (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender'])
+            ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender']
             : (self::$objCustomer ? self::$objCustomer->gender() : ''));
-        $lastname = (isset($_SESSION['shop']['lastname'])
-            ? $_SESSION['shop']['lastname']
+        $lastname = (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname'])
+            ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname']
             : (self::$objCustomer ? self::$objCustomer->lastname() : ''));
-        $firstname = (isset($_SESSION['shop']['firstname'])
-            ? $_SESSION['shop']['firstname']
+        $firstname = (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname'])
+            ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname']
             : (self::$objCustomer ? self::$objCustomer->firstname() : ''));
-        $address = (isset($_SESSION['shop']['address'])
-            ? $_SESSION['shop']['address']
+        $address = (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address'])
+            ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address']
             : (self::$objCustomer ? self::$objCustomer->address() : ''));
-        $zip = (isset($_SESSION['shop']['zip'])
-            ? $_SESSION['shop']['zip']
+        $zip = (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip'])
+            ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip']
             : (self::$objCustomer ? self::$objCustomer->zip() : ''));
-        $city = (isset($_SESSION['shop']['city'])
-            ? $_SESSION['shop']['city']
+        $city = (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city'])
+            ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city']
             : (self::$objCustomer ? self::$objCustomer->city() : ''));
-        $country_id = (isset($_SESSION['shop']['countryId'])
-            ? $_SESSION['shop']['countryId']
+        $country_id = (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId'])
+            ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId']
             : (self::$objCustomer ? self::$objCustomer->country_id() : 0));
-        $email = (isset($_SESSION['shop']['email'])
-            ? $_SESSION['shop']['email']
+        $email = (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email'])
+            ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email']
             : (self::$objCustomer ? self::$objCustomer->email() : ''));
-        $phone = (isset($_SESSION['shop']['phone'])
-            ? $_SESSION['shop']['phone']
+        $phone = (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone'])
+            ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone']
             : (self::$objCustomer ? self::$objCustomer->phone() : ''));
-        $fax = (isset($_SESSION['shop']['fax'])
-            ? $_SESSION['shop']['fax']
+        $fax = (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['fax'])
+            ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['fax']
             : (self::$objCustomer ? self::$objCustomer->fax() : ''));
         self::$objTemplate->setVariable(array(
             'SHOP_ACCOUNT_COMPANY' => htmlentities($company, ENT_QUOTES, CONTREXX_CHARSET),
@@ -2519,7 +2519,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             if ($register == ShopLibrary::REGISTER_OPTIONAL) {
 //\DBG::log("Shop::view_account(): Optional -> e-mail, touch 'dont_register'");
                 self::$objTemplate->touchBlock('dont_register');
-                if (empty($_SESSION['shop']['dont_register'])) {
+                if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['dont_register'])) {
 //\DBG::log("Shop::view_account(): Register -> block password");
                     $block_password = true;
                 } else {
@@ -2527,7 +2527,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                 }
             }
             if ($register == ShopLibrary::REGISTER_NONE) {
-                $_SESSION['shop']['dont_register'] = true;
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['dont_register'] = true;
             }
             if ($register == ShopLibrary::REGISTER_MANDATORY) {
 //\DBG::log("Shop::view_account(): Mandatory/None -> div password");
@@ -2547,37 +2547,37 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (!Cart::needs_shipment()) {
             return;
         }
-        if (!isset($_SESSION['shop']['equal_address'])) {
-            $_SESSION['shop']['equal_address'] = true;
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['equal_address'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['equal_address'] = true;
         }
         self::$objTemplate->setVariable(array(
-            'SHOP_ACCOUNT_COMPANY2' => (empty($_SESSION['shop']['company2'])
-                ? '' : htmlentities($_SESSION['shop']['company2'], ENT_QUOTES, CONTREXX_CHARSET)),
+            'SHOP_ACCOUNT_COMPANY2' => (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['company2'])
+                ? '' : htmlentities(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['company2'], ENT_QUOTES, CONTREXX_CHARSET)),
             'SHOP_ACCOUNT_PREFIX2' => Customers::getGenderMenuoptions(
-                empty($_SESSION['shop']['gender2'])
-                    ? '' : $_SESSION['shop']['gender2']),
-            'SHOP_ACCOUNT_LASTNAME2' => (empty($_SESSION['shop']['lastname2'])
-                ? '' : htmlentities($_SESSION['shop']['lastname2'], ENT_QUOTES, CONTREXX_CHARSET)),
-            'SHOP_ACCOUNT_FIRSTNAME2' => (empty($_SESSION['shop']['firstname2'])
-                ? '' : htmlentities($_SESSION['shop']['firstname2'], ENT_QUOTES, CONTREXX_CHARSET)),
-            'SHOP_ACCOUNT_ADDRESS2' => (empty($_SESSION['shop']['address2'])
-                ? '' : htmlentities($_SESSION['shop']['address2'], ENT_QUOTES, CONTREXX_CHARSET)),
-            'SHOP_ACCOUNT_ZIP2' => (empty($_SESSION['shop']['zip2'])
-                ? '' : htmlentities($_SESSION['shop']['zip2'], ENT_QUOTES, CONTREXX_CHARSET)),
-            'SHOP_ACCOUNT_CITY2' => (empty($_SESSION['shop']['city2'])
-                ? '' : htmlentities($_SESSION['shop']['city2'], ENT_QUOTES, CONTREXX_CHARSET)),
+                empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender2'])
+                    ? '' : \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender2']),
+            'SHOP_ACCOUNT_LASTNAME2' => (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname2'])
+                ? '' : htmlentities(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname2'], ENT_QUOTES, CONTREXX_CHARSET)),
+            'SHOP_ACCOUNT_FIRSTNAME2' => (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname2'])
+                ? '' : htmlentities(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname2'], ENT_QUOTES, CONTREXX_CHARSET)),
+            'SHOP_ACCOUNT_ADDRESS2' => (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address2'])
+                ? '' : htmlentities(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address2'], ENT_QUOTES, CONTREXX_CHARSET)),
+            'SHOP_ACCOUNT_ZIP2' => (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip2'])
+                ? '' : htmlentities(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip2'], ENT_QUOTES, CONTREXX_CHARSET)),
+            'SHOP_ACCOUNT_CITY2' => (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city2'])
+                ? '' : htmlentities(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city2'], ENT_QUOTES, CONTREXX_CHARSET)),
             'SHOP_ACCOUNT_COUNTRY2' =>
-                \Cx\Core\Country\Controller\Country::getNameById($_SESSION['shop']['countryId2']),
-            'SHOP_ACCOUNT_COUNTRY2_ID' => $_SESSION['shop']['countryId2'],
-            'SHOP_ACCOUNT_PHONE2' => (empty($_SESSION['shop']['phone2'])
-                ? '' : htmlentities($_SESSION['shop']['phone2'], ENT_QUOTES, CONTREXX_CHARSET)),
+                \Cx\Core\Country\Controller\Country::getNameById(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2']),
+            'SHOP_ACCOUNT_COUNTRY2_ID' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2'],
+            'SHOP_ACCOUNT_PHONE2' => (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone2'])
+                ? '' : htmlentities(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone2'], ENT_QUOTES, CONTREXX_CHARSET)),
             // Compatibility -- old name
-            'SHOP_ACCOUNT_EQUAL_ADDRESS' => (empty($_SESSION['shop']['equal_address'])
+            'SHOP_ACCOUNT_EQUAL_ADDRESS' => (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['equal_address'])
                 ? '' : \Html::ATTRIBUTE_CHECKED),
             // Compatibility -- new name
-            'SHOP_EQUAL_ADDRESS_CHECKED' => (empty($_SESSION['shop']['equal_address'])
+            'SHOP_EQUAL_ADDRESS_CHECKED' => (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['equal_address'])
                 ? '' : \Html::ATTRIBUTE_CHECKED),
-            'SHOP_SHIPPING_ADDRESS_DISPLAY' => (empty($_SESSION['shop']['equal_address'])
+            'SHOP_SHIPPING_ADDRESS_DISPLAY' => (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['equal_address'])
                 ? \Html::CSS_DISPLAY_BLOCK : \Html::CSS_DISPLAY_NONE),
         ));
     }
@@ -2597,46 +2597,46 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (empty($_POST) || !is_array($_POST)) return;
 //\DBG::log("Shop::account_to_session(): Have POST");
         foreach ($_POST as $key => $value) {
-            $_SESSION['shop'][$key] =
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop'][$key] =
                 trim(strip_tags(contrexx_input2raw($value)));
         }
-        if (   empty($_SESSION['shop']['gender2'])
-            || empty($_SESSION['shop']['lastname2'])
-            || empty($_SESSION['shop']['firstname2'])
-            || empty($_SESSION['shop']['address2'])
-            || empty($_SESSION['shop']['zip2'])
-            || empty($_SESSION['shop']['city2'])
-            || empty($_SESSION['shop']['phone2'])
-            || empty($_SESSION['shop']['countryId2'])
+        if (   empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender2'])
+            || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname2'])
+            || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname2'])
+            || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address2'])
+            || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip2'])
+            || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city2'])
+            || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone2'])
+            || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2'])
         ) {
-            $_SESSION['shop']['equal_address'] = false;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['equal_address'] = false;
         } elseif (!empty($_POST['equal_address'])) {
             // Copy address
-            $_SESSION['shop']['company2'] = $_SESSION['shop']['company'];
-            $_SESSION['shop']['gender2'] = $_SESSION['shop']['gender'];
-            $_SESSION['shop']['lastname2'] = $_SESSION['shop']['lastname'];
-            $_SESSION['shop']['firstname2'] = $_SESSION['shop']['firstname'];
-            $_SESSION['shop']['address2'] = $_SESSION['shop']['address'];
-            $_SESSION['shop']['zip2'] = $_SESSION['shop']['zip'];
-            $_SESSION['shop']['city2'] = $_SESSION['shop']['city'];
-            $_SESSION['shop']['phone2'] = $_SESSION['shop']['phone'];
-            $_SESSION['shop']['countryId2'] = $_SESSION['shop']['countryId'];
-            $_SESSION['shop']['equal_address'] = true;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['company2'] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['company'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender2'] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname2'] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname2'] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address2'] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip2'] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city2'] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone2'] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2'] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['equal_address'] = true;
         }
-        if (empty($_SESSION['shop']['countryId'])) {
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId'])) {
             // countryId2 is set in Cart::init() already
-            $_SESSION['shop']['countryId'] = $_SESSION['shop']['countryId2'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId'] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2'];
         }
         // Fill missing arguments with empty strings
-        if (empty($_SESSION['shop']['company2']))   $_SESSION['shop']['company2'] = '';
-        if (empty($_SESSION['shop']['gender2']))    $_SESSION['shop']['gender2'] = '';
-        if (empty($_SESSION['shop']['lastname2']))  $_SESSION['shop']['lastname2'] = '';
-        if (empty($_SESSION['shop']['firstname2'])) $_SESSION['shop']['firstname2'] = '';
-        if (empty($_SESSION['shop']['address2']))   $_SESSION['shop']['address2'] = '';
-        if (empty($_SESSION['shop']['zip2']))       $_SESSION['shop']['zip2'] = '';
-        if (empty($_SESSION['shop']['city2']))      $_SESSION['shop']['city2'] = '';
-        if (empty($_SESSION['shop']['phone2']))     $_SESSION['shop']['phone2'] = '';
-        if (empty($_SESSION['shop']['countryId2'])) $_SESSION['shop']['countryId2'] = 0;
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['company2']))   \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['company2'] = '';
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender2']))    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender2'] = '';
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname2']))  \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname2'] = '';
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname2'])) \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname2'] = '';
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address2']))   \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address2'] = '';
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip2']))       \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip2'] = '';
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city2']))      \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city2'] = '';
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone2']))     \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone2'] = '';
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2'])) \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2'] = 0;
     }
 
 
@@ -2663,9 +2663,9 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (self::$objCustomer) return $status;
         if (   \Cx\Core\Setting\Controller\Setting::getValue('register','Shop') == ShopLibrary::REGISTER_MANDATORY
             || (   \Cx\Core\Setting\Controller\Setting::getValue('register','Shop') == ShopLibrary::REGISTER_OPTIONAL
-                && empty($_SESSION['shop']['dont_register']))) {
-            if (   isset($_SESSION['shop']['password'])
-                && !\User::isValidPassword($_SESSION['shop']['password'])) {
+                && empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['dont_register']))) {
+            if (   isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['password'])
+                && !\User::isValidPassword(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['password'])) {
                 if ($silent) return false;
                 global $objInit;
                 $objInit->loadLanguageData('Access');
@@ -2676,31 +2676,31 @@ die("Shop::processRedirect(): This method is obsolete!");
             // Mind that this is necessary in order to avoid passwords filled
             // in automatically by the browser, which may be wrong, or
             // invalid, or both.
-            $_SESSION['shop']['password'] = NULL;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['password'] = NULL;
         }
-        if (   isset($_SESSION['shop']['email'])
-            && !\FWValidator::isEmail($_SESSION['shop']['email'])) {
+        if (   isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email'])
+            && !\FWValidator::isEmail(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email'])) {
             if ($silent) return false;
             $status = \Message::error($_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS']);
         }
         if (!$status) {
             return false;
         }
-        if (isset($_SESSION['shop']['email'])) {
+        if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email'])) {
             // Ignore "unregistered" Customers.  These will silently be updated
-            if (Customer::getUnregisteredByEmail($_SESSION['shop']['email'])) {
+            if (Customer::getUnregisteredByEmail(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email'])) {
                 return true;
             }
             $objUser = new \User();
-            $objUser->setUsername($_SESSION['shop']['email']);
-            $objUser->setEmail($_SESSION['shop']['email']);
+            $objUser->setUsername(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email']);
+            $objUser->setEmail(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email']);
             \Message::save();
             // This method will set an error message we don't want here
             // (as soon as it uses the Message class, that is)
             if (!($objUser->validateUsername() && $objUser->validateEmail())) {
 //\DBG::log("Shop::verify_account(): Username or e-mail in use");
                 \Message::restore();
-                $_POST['email'] = $_SESSION['shop']['email'] = NULL;
+                $_POST['email'] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email'] = NULL;
                 if ($silent) return false;
             return \Message::error(sprintf(
                 $_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER'],
@@ -2733,19 +2733,19 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (Cart::is_empty()) {
             \Cx\Core\Csrf\Controller\Csrf::redirect(
                 \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', '', '',
-                    (intval($_SESSION['shop']['previous_category_id']) > 0
+                    (intval(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['previous_category_id']) > 0
                         ? 'catId='.
-                            intval($_SESSION['shop']['previous_category_id'])
+                            intval(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['previous_category_id'])
                         : '')));
         }
-        if (!isset($_SESSION['shop']['note'])) {
-            $_SESSION['shop']['note'] = '';
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['note'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['note'] = '';
         }
-        if (!isset($_SESSION['shop']['agb'])) {
-            $_SESSION['shop']['agb'] = '';
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['agb'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['agb'] = '';
         }
-        if (!isset($_SESSION['shop']['cancellation_terms'])) {
-            $_SESSION['shop']['cancellation_terms'] = '';
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cancellation_terms'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cancellation_terms'] = '';
         }
         // Since 3.1.0
         $page_repository = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
@@ -2793,45 +2793,45 @@ die("Shop::processRedirect(): This method is obsolete!");
         // The Payment ID must be known and up to date when the cart is
         // parsed in order to consider payment dependent Coupons
         if (isset($_POST['paymentId']))
-            $_SESSION['shop']['paymentId'] = intval($_POST['paymentId']);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'] = intval($_POST['paymentId']);
         // Determine any valid value for it
         if (   $cart_amount
-            && empty($_SESSION['shop']['paymentId'])) {
+            && empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'])) {
             $arrPaymentId = Payment::getCountriesRelatedPaymentIdArray(
-                $_SESSION['shop']['countryId'], Currency::getCurrencyArray());
-            $_SESSION['shop']['paymentId'] = current($arrPaymentId);
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId'], Currency::getCurrencyArray());
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'] = current($arrPaymentId);
         }
-        if (empty($_SESSION['shop']['paymentId']))
-            $_SESSION['shop']['paymentId'] = null;
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId']))
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'] = null;
         // hide currency navbar
         self::$show_currency_navbar = false;
         if (isset($_POST['customer_note']))
-            $_SESSION['shop']['note'] =
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['note'] =
                 trim(strip_tags(contrexx_input2raw($_POST['customer_note'])));
         if (isset($_POST['agb']))
-            $_SESSION['shop']['agb'] = \Html::ATTRIBUTE_CHECKED;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['agb'] = \Html::ATTRIBUTE_CHECKED;
         if (isset($_POST['cancellation_terms']))
-            $_SESSION['shop']['cancellation_terms'] = \Html::ATTRIBUTE_CHECKED;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cancellation_terms'] = \Html::ATTRIBUTE_CHECKED;
         // if shipperId is not set, there is no use in trying to determine a shipment_price
-        if (isset($_SESSION['shop']['shipperId'])) {
+        if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId'])) {
             $shipmentPrice = self::_calculateShipmentPrice(
-                $_SESSION['shop']['shipperId'],
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId'],
                 Cart::get_price(),
                 Cart::get_weight()
             );
             // anything wrong with this kind of shipping?
             if ($shipmentPrice == -1) {
-                unset($_SESSION['shop']['shipperId']);
-                $_SESSION['shop']['shipment_price'] = '0.00';
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId']);
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipment_price'] = '0.00';
             } else {
-                $_SESSION['shop']['shipment_price'] = $shipmentPrice;
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipment_price'] = $shipmentPrice;
             }
         } else {
-            $_SESSION['shop']['shipment_price'] = '0.00';
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipment_price'] = '0.00';
         }
-        $_SESSION['shop']['payment_price'] =
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['payment_price'] =
             self::_calculatePaymentPrice(
-                $_SESSION['shop']['paymentId'],
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'],
                 $cart_amount
             );
         Cart::update(self::$objCustomer);
@@ -2841,15 +2841,15 @@ die("Shop::processRedirect(): This method is obsolete!");
 
     /**
      * Determines the shipper ID to be used, if any, stores it in
-     * $_SESSION['shop']['shipperId'], and returns the shipment dropdown menu.
+     * \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId'], and returns the shipment dropdown menu.
      * If no shipping is desired, returns an empty string.
      *
      * - If Cart::needs_shipment() evaluates to true:
-     *   - If $_SESSION['shop']['shipperId'] is set, it is changed to the value
+     *   - If \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId'] is set, it is changed to the value
      *     of the shipment ID returned in $_POST['shipperId'], if the latter is set.
-     *   - Otherwise, sets $_SESSION['shop']['shipperId'] to the default value
+     *   - Otherwise, sets \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId'] to the default value
      *     obtained by calling {@see Shipment::getCountriesRelatedShippingIdArray()}
-     *     with the country ID found in $_SESSION['shop']['countryId2'].
+     *     with the country ID found in \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2'].
      *   - Returns the shipment dropdown menu as returned by
      *     {@see Shipment::getShipperMenu()}.
      * - If Cart::needs_shipment() evaluates to false, does nothing, but simply
@@ -2861,21 +2861,21 @@ die("Shop::processRedirect(): This method is obsolete!");
         // Only show the menu if shipment is needed and the ship-to
         // country is known
         if (   !Cart::needs_shipment()
-            || empty($_SESSION['shop']['countryId2'])) {
-            $_SESSION['shop']['shipperId'] = null;
+            || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId'] = null;
             return '';
         }
         // Choose a shipment in this order from
         // - post, if present,
         // - session, if present,
         // - none.
-        if (   empty($_SESSION['shop']['shipperId'])
+        if (   empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId'])
             || isset($_POST['shipperId'])) {
-            $_SESSION['shop']['shipperId'] =
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId'] =
                 (isset($_POST['shipperId'])
                   ? intval($_POST['shipperId'])
-                  : (isset($_SESSION['shop']['shipperId'])
-                      ? $_SESSION['shop']['shipperId'] : 0
+                  : (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId'])
+                      ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId'] : 0
                     )
                 );
         }
@@ -2883,16 +2883,16 @@ die("Shop::processRedirect(): This method is obsolete!");
         // as the selected one.
 // TODO: This is not the solution.  The value posted by the form should
 // actually be verified, and an error message be displayed if it's invalid.
-        if (empty($_SESSION['shop']['shipperId'])) {
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId'])) {
             // Get available shipment IDs
             $arrShipmentId = Shipment::getCountriesRelatedShippingIdArray(
-                $_SESSION['shop']['countryId2']);
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2']);
             // First is the default shipment ID
-            $_SESSION['shop']['shipperId'] = current($arrShipmentId);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId'] = current($arrShipmentId);
         }
         $menu = Shipment::getShipperMenu(
-            $_SESSION['shop']['countryId2'],
-            $_SESSION['shop']['shipperId'],
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2'],
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId'],
             "document.forms['shopForm'].submit()"
         );
         return $menu;
@@ -2901,16 +2901,16 @@ die("Shop::processRedirect(): This method is obsolete!");
 
     /**
      * Determines the payment ID to be used, if any, stores it in
-     * $_SESSION['shop']['paymentId'], and returns the payment dropdown menu.
+     * \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'], and returns the payment dropdown menu.
      * If there is nothing to pay (products or shipping), returns an empty string.
      *
      * - If Cart::needs_shipment() evaluates to true, and Cart::get_price()
      *   is greater than zero:
-     *   - If $_SESSION['shop']['paymentId'] is set, it is changed to the value
+     *   - If \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'] is set, it is changed to the value
      *     of the paymentId ID returned in $_POST['paymentId'], if the latter is set.
-     *   - Otherwise, sets $_SESSION['shop']['paymentId'] to the first value
+     *   - Otherwise, sets \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'] to the first value
      *     found in $arrPaymentId {@see Payment::getCountriesRelatedPaymentIdArray()}
-     *     with the country ID found in $_SESSION['shop']['countryId'].
+     *     with the country ID found in \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId'].
      *   - Returns the payment dropdown menu as returned by
      *     {@see Payment::getPaymentMenu()}.
      * - If no shipment is necessary, or the order amount is zero (or less),
@@ -2921,23 +2921,23 @@ die("Shop::processRedirect(): This method is obsolete!");
     {
         if (   !Cart::needs_shipment()
             && Cart::get_price() <= 0) {
-            $_SESSION['shop']['paymentId'] = null;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'] = null;
             return '';
         }
         if (isset($_POST['paymentId'])) {
-            $_SESSION['shop']['paymentId'] = intval($_POST['paymentId']);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'] = intval($_POST['paymentId']);
         }
-        if (empty($_SESSION['shop']['paymentId'])) {
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'])) {
             // Use the first Payment ID
             $arrPaymentId = Payment::getCountriesRelatedPaymentIdArray(
-                $_SESSION['shop']['countryId'], Currency::getCurrencyArray()
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId'], Currency::getCurrencyArray()
             );
-            $_SESSION['shop']['paymentId'] = current($arrPaymentId);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'] = current($arrPaymentId);
         }
         return Payment::getPaymentMenu(
-            $_SESSION['shop']['paymentId'],
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'],
             "document.forms['shopForm'].submit()",
-            $_SESSION['shop']['countryId']
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId']
         );
     }
 
@@ -2952,11 +2952,11 @@ die("Shop::processRedirect(): This method is obsolete!");
         // session
         if (self::processor_name() == 'internal_lsv') {
             if (!empty($_POST['account_holder']))
-                $_SESSION['shop']['account_holder'] = contrexx_input2raw($_POST['account_holder']);
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_holder'] = contrexx_input2raw($_POST['account_holder']);
             if (!empty($_POST['account_bank']))
-                $_SESSION['shop']['account_bank'] = contrexx_input2raw($_POST['account_bank']);
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_bank'] = contrexx_input2raw($_POST['account_bank']);
             if (!empty($_POST['account_blz']))
-                $_SESSION['shop']['account_blz'] = contrexx_input2raw($_POST['account_blz']);
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_blz'] = contrexx_input2raw($_POST['account_blz']);
         }
 
         $status = true;
@@ -2965,8 +2965,8 @@ die("Shop::processRedirect(): This method is obsolete!");
         // - the paymentId is set and valid, and the LSV status evaluates to true.
         // luckily, shipping, VAT, and price have been handled in update_session()
         // above already, so we'll only have to check grand_total_price
-        if (   $_SESSION['shop']['grand_total_price'] > 0
-            && (   empty($_SESSION['shop']['paymentId'])
+        if (   \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price'] > 0
+            && (   empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'])
                 || (   self::processor_name() == 'Internal_LSV'
                     && !self::lsv_complete()))) {
 //\DBG::log("Shop::verify_payment_details(): Payment missing!");
@@ -2978,7 +2978,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         // - the shipperId is set already (and the shipment conditions were validated)
         if (Cart::needs_shipment()) {
 //\DBG::log("Shop::verify_payment_details(): Shipment necessary");
-            if (empty($_SESSION['shop']['shipperId'])) {
+            if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId'])) {
 //\DBG::log("Shop::verify_payment_details(): Shipment missing!");
                 // Ask the Customer to pick a different Shipper if none is
                 // selected or it did not work
@@ -3019,8 +3019,8 @@ die("Shop::processRedirect(): This method is obsolete!");
         // in order to determine whether to show the LSV form.
         $processor_id = 0;
         $processor_name = '';
-        if (!empty($_SESSION['shop']['paymentId']))
-            $processor_id = Payment::getPaymentProcessorId($_SESSION['shop']['paymentId']);
+        if (!empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId']))
+            $processor_id = Payment::getPaymentProcessorId(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId']);
         if (!empty($processor_id))
             $processor_name = PaymentProcessing::getPaymentProcessorName($processor_id);
         return $processor_name;
@@ -3043,12 +3043,12 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (self::processor_name() != 'internal_lsv') return;
         self::$objTemplate->setGlobalVariable($_ARRAYLANG);
         self::$objTemplate->setVariable(array(
-            'SHOP_ACCOUNT_HOLDER' => (isset($_SESSION['shop']['account_holder'])
-                ? $_SESSION['shop']['account_holder'] : ''),
-            'SHOP_ACCOUNT_BANK' => (isset($_SESSION['shop']['account_bank'])
-                ? $_SESSION['shop']['account_bank'] : ''),
-            'SHOP_ACCOUNT_BLZ' => (isset($_SESSION['shop']['account_blz'])
-                ? $_SESSION['shop']['account_blz'] : ''),
+            'SHOP_ACCOUNT_HOLDER' => (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_holder'])
+                ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_holder'] : ''),
+            'SHOP_ACCOUNT_BANK' => (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_bank'])
+                ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_bank'] : ''),
+            'SHOP_ACCOUNT_BLZ' => (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_blz'])
+                ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_blz'] : ''),
         ));
     }
 
@@ -3060,9 +3060,9 @@ die("Shop::processRedirect(): This method is obsolete!");
      */
     static function lsv_complete()
     {
-        return !empty($_SESSION['shop']['account_holder'])
-            && !empty($_SESSION['shop']['account_bank'])
-            && !empty($_SESSION['shop']['account_blz']);
+        return !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_holder'])
+            && !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_bank'])
+            && !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_blz']);
     }
 
 
@@ -3084,29 +3084,29 @@ die("Shop::processRedirect(): This method is obsolete!");
 
         self::$objTemplate->setGlobalVariable($_ARRAYLANG);
         self::$objTemplate->setVariable(array(
-            'SHOP_CUSTOMER_TITLE' => (isset($_SESSION['shop']['gender'])
-                ? contrexx_raw2xhtml($_SESSION['shop']['gender']) : ''),
-            'SHOP_CUSTOMER_FIRST_NAME' => (isset($_SESSION['shop']['firstname'])
-                ? contrexx_raw2xhtml($_SESSION['shop']['firstname']) : ''),
-            'SHOP_CUSTOMER_LAST_NAME' => (isset($_SESSION['shop']['lastname'])
-                ? contrexx_raw2xhtml($_SESSION['shop']['lastname']) : ''),
-            'SHOP_CUSTOMER_ADDRESS' => (isset($_SESSION['shop']['address'])
-                ? contrexx_raw2xhtml($_SESSION['shop']['address']) : ''),
-            'SHOP_CUSTOMER_ZIP' => (isset($_SESSION['shop']['zip'])
-                ? contrexx_raw2xhtml($_SESSION['shop']['zip']) : ''),
-            'SHOP_CUSTOMER_CITY' => (isset($_SESSION['shop']['city'])
-                ? contrexx_raw2xhtml($_SESSION['shop']['city']) : ''),
-            'SHOP_CUSTOMER_PHONE' => (isset($_SESSION['shop']['phone'])
-                ? contrexx_raw2xhtml($_SESSION['shop']['phone']) : ''),
-            'SHOP_CUSTOMER_FAX' => (isset($_SESSION['shop']['fax'])
-                ? contrexx_raw2xhtml($_SESSION['shop']['fax']) : ''),
-            'SHOP_CUSTOMER_EMAIL' => (isset($_SESSION['shop']['email'])
-                ? contrexx_raw2xhtml($_SESSION['shop']['email']) : ''),
+            'SHOP_CUSTOMER_TITLE' => (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender'])
+                ? contrexx_raw2xhtml(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender']) : ''),
+            'SHOP_CUSTOMER_FIRST_NAME' => (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname'])
+                ? contrexx_raw2xhtml(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname']) : ''),
+            'SHOP_CUSTOMER_LAST_NAME' => (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname'])
+                ? contrexx_raw2xhtml(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname']) : ''),
+            'SHOP_CUSTOMER_ADDRESS' => (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address'])
+                ? contrexx_raw2xhtml(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address']) : ''),
+            'SHOP_CUSTOMER_ZIP' => (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip'])
+                ? contrexx_raw2xhtml(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip']) : ''),
+            'SHOP_CUSTOMER_CITY' => (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city'])
+                ? contrexx_raw2xhtml(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city']) : ''),
+            'SHOP_CUSTOMER_PHONE' => (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone'])
+                ? contrexx_raw2xhtml(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone']) : ''),
+            'SHOP_CUSTOMER_FAX' => (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['fax'])
+                ? contrexx_raw2xhtml(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['fax']) : ''),
+            'SHOP_CUSTOMER_EMAIL' => (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email'])
+                ? contrexx_raw2xhtml(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email']) : ''),
             //'SHOP_LSV_EE_PRODUCTS' => '',
-            'SHOP_CUSTOMER_BANK' => (isset($_SESSION['shop']['account_bank'])
-                ? contrexx_raw2xhtml($_SESSION['shop']['account_bank']) : ''),
-            'SHOP_CUSTOMER_BANKCODE' => (isset($_SESSION['shop']['account_blz'])
-                ? contrexx_raw2xhtml($_SESSION['shop']['account_blz']) : ''),
+            'SHOP_CUSTOMER_BANK' => (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_bank'])
+                ? contrexx_raw2xhtml(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_bank']) : ''),
+            'SHOP_CUSTOMER_BANKCODE' => (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_blz'])
+                ? contrexx_raw2xhtml(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_blz']) : ''),
             'SHOP_CUSTOMER_ACCOUNT' => '', // not available
             'SHOP_DATE' => date(ASCMS_DATE_FORMAT_DATE),
             'SHOP_FAX' => contrexx_raw2xhtml(\Cx\Core\Setting\Controller\Setting::getValue('fax','Shop')),
@@ -3135,25 +3135,25 @@ die("Shop::processRedirect(): This method is obsolete!");
             ));
         }
         if (!Cart::needs_shipment()) {
-            unset($_SESSION['shop']['shipperId']);
+            unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId']);
         } else {
             self::$objTemplate->setVariable(array(
                 'SHOP_SHIPMENT_PRICE' => Currency::formatPrice(
-                    $_SESSION['shop']['shipment_price']),
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipment_price']),
                 'SHOP_SHIPMENT_MENU' => self::_getShipperMenu(),
             ));
         }
         if (   Cart::get_price()
-            || $_SESSION['shop']['shipment_price']
-            || $_SESSION['shop']['vat_price']) {
+            || \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipment_price']
+            || \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_price']) {
             self::$objTemplate->setVariable(array(
                 'SHOP_PAYMENT_PRICE' => Currency::formatPrice(
-                    $_SESSION['shop']['payment_price']),
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['payment_price']),
                 'SHOP_PAYMENT_MENU' => self::get_payment_menu(),
             ));
         }
-        if (empty($_SESSION['shop']['coupon_code'])) {
-            $_SESSION['shop']['coupon_code'] = '';
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['coupon_code'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['coupon_code'] = '';
         }
         $total_discount_amount = 0;
         if (Cart::get_discount_amount()) {
@@ -3168,7 +3168,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         // Show the Coupon code field only if there is at least one defined
         if (Coupon::count_available()) {
             self::$objTemplate->setVariable(array(
-                'SHOP_DISCOUNT_COUPON_CODE' => $_SESSION['shop']['coupon_code'],
+                'SHOP_DISCOUNT_COUPON_CODE' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['coupon_code'],
             ));
         }
         self::$objTemplate->setVariable(array(
@@ -3178,18 +3178,18 @@ die("Shop::processRedirect(): This method is obsolete!");
                   Cart::get_price()
                 + Cart::get_discount_amount()),
             'SHOP_GRAND_TOTAL' => Currency::formatPrice(
-                  $_SESSION['shop']['grand_total_price']),
-            'SHOP_CUSTOMERNOTE' => $_SESSION['shop']['note'],
-            'SHOP_AGB' => $_SESSION['shop']['agb'],
-            'SHOP_CANCELLATION_TERMS_CHECKED' => $_SESSION['shop']['cancellation_terms'],
+                  \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price']),
+            'SHOP_CUSTOMERNOTE' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['note'],
+            'SHOP_AGB' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['agb'],
+            'SHOP_CANCELLATION_TERMS_CHECKED' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cancellation_terms'],
         ));
         if (Vat::isEnabled()) {
             self::$objTemplate->setVariable(array(
                 'SHOP_TAX_PRICE' =>
-                    $_SESSION['shop']['vat_price'].
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_price'].
                     '&nbsp;'.Currency::getActiveCurrencySymbol(),
-                'SHOP_TAX_PRODUCTS_TXT' => $_SESSION['shop']['vat_products_txt'],
-                'SHOP_TAX_GRAND_TXT' => $_SESSION['shop']['vat_grand_txt'],
+                'SHOP_TAX_PRODUCTS_TXT' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_products_txt'],
+                'SHOP_TAX_GRAND_TXT' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_grand_txt'],
                 'TXT_TAX_RATE' => $_ARRAYLANG['TXT_SHOP_VAT_RATE'],
                 'TXT_TAX_PREFIX' =>
                     (Vat::isIncluded()
@@ -3201,7 +3201,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                 self::$objTemplate->setVariable(array(
                     'SHOP_GRAND_TOTAL_EXCL_TAX' =>
                         Currency::formatPrice(
-                        $_SESSION['shop']['grand_total_price'] - $_SESSION['shop']['vat_price']
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price'] - \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_price']
                     ),
                 ));
             }
@@ -3317,53 +3317,53 @@ die("Shop::processRedirect(): This method is obsolete!");
             'SHOP_UNIT' => Currency::getActiveCurrencySymbol(),
             'SHOP_TOTALITEM' => Cart::get_item_count(),
             'SHOP_PAYMENT_PRICE' => Currency::formatPrice(
-                $_SESSION['shop']['payment_price']),
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['payment_price']),
             'SHOP_TOTALPRICE' => Currency::formatPrice(Cart::get_price()),
             'SHOP_PAYMENT' =>
-                Payment::getProperty($_SESSION['shop']['paymentId'], 'name'),
+                Payment::getProperty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'], 'name'),
             'SHOP_GRAND_TOTAL' => Currency::formatPrice(
-                  $_SESSION['shop']['grand_total_price']),
-            'SHOP_COMPANY' => stripslashes($_SESSION['shop']['company']),
+                  \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price']),
+            'SHOP_COMPANY' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['company']),
 // Old
-            'SHOP_TITLE' => stripslashes($_SESSION['shop']['gender']),
+            'SHOP_TITLE' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender']),
 // New
-            'SHOP_GENDER' => stripslashes($_SESSION['shop']['gender']),
-            'SHOP_LASTNAME' => stripslashes($_SESSION['shop']['lastname']),
-            'SHOP_FIRSTNAME' => stripslashes($_SESSION['shop']['firstname']),
-            'SHOP_ADDRESS' => stripslashes($_SESSION['shop']['address']),
-            'SHOP_ZIP' => stripslashes($_SESSION['shop']['zip']),
-            'SHOP_CITY' => stripslashes($_SESSION['shop']['city']),
-            'SHOP_COUNTRY' => \Cx\Core\Country\Controller\Country::getNameById($_SESSION['shop']['countryId']),
-            'SHOP_EMAIL' => stripslashes($_SESSION['shop']['email']),
-            'SHOP_PHONE' => stripslashes($_SESSION['shop']['phone']),
-            'SHOP_FAX' => stripslashes($_SESSION['shop']['fax']),
+            'SHOP_GENDER' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender']),
+            'SHOP_LASTNAME' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname']),
+            'SHOP_FIRSTNAME' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname']),
+            'SHOP_ADDRESS' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address']),
+            'SHOP_ZIP' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip']),
+            'SHOP_CITY' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city']),
+            'SHOP_COUNTRY' => \Cx\Core\Country\Controller\Country::getNameById(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId']),
+            'SHOP_EMAIL' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email']),
+            'SHOP_PHONE' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone']),
+            'SHOP_FAX' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['fax']),
         ));
-        if (!empty($_SESSION['shop']['lastname2'])) {
+        if (!empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname2'])) {
             self::$objTemplate->setVariable(array(
-                'SHOP_COMPANY2' => stripslashes($_SESSION['shop']['company2']),
-                'SHOP_TITLE2' => stripslashes($_SESSION['shop']['gender2']),
-                'SHOP_LASTNAME2' => stripslashes($_SESSION['shop']['lastname2']),
-                'SHOP_FIRSTNAME2' => stripslashes($_SESSION['shop']['firstname2']),
-                'SHOP_ADDRESS2' => stripslashes($_SESSION['shop']['address2']),
-                'SHOP_ZIP2' => stripslashes($_SESSION['shop']['zip2']),
-                'SHOP_CITY2' => stripslashes($_SESSION['shop']['city2']),
-                'SHOP_COUNTRY2' => \Cx\Core\Country\Controller\Country::getNameById($_SESSION['shop']['countryId2']),
-                'SHOP_PHONE2' => stripslashes($_SESSION['shop']['phone2']),
+                'SHOP_COMPANY2' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['company2']),
+                'SHOP_TITLE2' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender2']),
+                'SHOP_LASTNAME2' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname2']),
+                'SHOP_FIRSTNAME2' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname2']),
+                'SHOP_ADDRESS2' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address2']),
+                'SHOP_ZIP2' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip2']),
+                'SHOP_CITY2' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city2']),
+                'SHOP_COUNTRY2' => \Cx\Core\Country\Controller\Country::getNameById(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2']),
+                'SHOP_PHONE2' => stripslashes(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone2']),
             ));
         }
-        if (!empty($_SESSION['shop']['note'])) {
+        if (!empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['note'])) {
             self::$objTemplate->setVariable(array(
 //                    'TXT_COMMENTS' => $_ARRAYLANG['TXT_COMMENTS'],
-                'SHOP_CUSTOMERNOTE' => $_SESSION['shop']['note'],
+                'SHOP_CUSTOMERNOTE' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['note'],
             ));
         }
         if (Vat::isEnabled()) {
             self::$objTemplate->setVariable(array(
                 'TXT_TAX_RATE' => $_ARRAYLANG['TXT_SHOP_VAT_RATE'],
                 'SHOP_TAX_PRICE' => Currency::formatPrice(
-                    $_SESSION['shop']['vat_price']),
-                'SHOP_TAX_PRODUCTS_TXT' => $_SESSION['shop']['vat_products_txt'],
-                'SHOP_TAX_GRAND_TXT' => $_SESSION['shop']['vat_grand_txt'],
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_price']),
+                'SHOP_TAX_PRODUCTS_TXT' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_products_txt'],
+                'SHOP_TAX_GRAND_TXT' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_grand_txt'],
                 'TXT_TAX_PREFIX' =>
                     (Vat::isIncluded()
                         ? $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_INCL']
@@ -3374,8 +3374,8 @@ die("Shop::processRedirect(): This method is obsolete!");
                 self::$objTemplate->setVariable(array(
                     'SHOP_GRAND_TOTAL_EXCL_TAX' =>
                         Currency::formatPrice(
-                            $_SESSION['shop']['grand_total_price']
-                            - $_SESSION['shop']['vat_price']
+                            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price']
+                            - \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_price']
                     ),
                 ));
             }
@@ -3383,20 +3383,20 @@ die("Shop::processRedirect(): This method is obsolete!");
 // TODO: Make sure in payment() that those two are either both empty or
 // both non-empty!
         if (   !Cart::needs_shipment()
-            && empty($_SESSION['shop']['shipperId'])) {
+            && empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId'])) {
             if (self::$objTemplate->blockExists('shipping_address'))
                 self::$objTemplate->hideBlock('shipping_address');
         } else {
             // Shipment is required, so
-            if (empty($_SESSION['shop']['shipperId'])) {
+            if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId'])) {
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
                     \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'payment'));
             }
             self::$objTemplate->setVariable(array(
                 'SHOP_SHIPMENT_PRICE' => Currency::formatPrice(
-                    $_SESSION['shop']['shipment_price']),
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipment_price']),
                 'SHOP_SHIPMENT' =>
-                    Shipment::getShipperName($_SESSION['shop']['shipperId']),
+                    Shipment::getShipperName(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId']),
 //                    'TXT_SHIPPING_METHOD' => $_ARRAYLANG['TXT_SHIPPING_METHOD'],
 //                    'TXT_SHIPPING_ADDRESS' => $_ARRAYLANG['TXT_SHIPPING_ADDRESS'],
             ));
@@ -3420,11 +3420,11 @@ die("Shop::processRedirect(): This method is obsolete!");
         global $objDatabase, $_ARRAYLANG;
 
 // FOR TESTING ONLY (repeatedly process/store the order, also disable self::destroyCart())
-//$_SESSION['shop']['order_id'] = NULL;
+//\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id'] = NULL;
 
         // Verify that the order hasn't yet been saved
         // (and has thus not yet been confirmed)
-        if (isset($_SESSION['shop']['order_id'])) {
+        if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id'])) {
             return \Message::error($_ARRAYLANG['TXT_ORDER_ALREADY_PLACED']);
         }
         // No more confirmation
@@ -3434,13 +3434,13 @@ die("Shop::processRedirect(): This method is obsolete!");
         $customer_host = substr(@gethostbyaddr($_SERVER['REMOTE_ADDR']), 0, 100);
         $customer_browser = substr(getenv('HTTP_USER_AGENT'), 0, 100);
         $new_customer = false;
-//\DBG::log("Shop::process(): E-Mail: ".$_SESSION['shop']['email']);
+//\DBG::log("Shop::process(): E-Mail: ".\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email']);
         if (self::$objCustomer) {
-//\DBG::log("Shop::process(): Existing User username ".$_SESSION['shop']['username'].", email ".$_SESSION['shop']['email']);
+//\DBG::log("Shop::process(): Existing User username ".\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['username'].", email ".\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email']);
         } else {
             // Registered Customers are required to be logged in!
             self::$objCustomer = Customer::getRegisteredByEmail(
-                $_SESSION['shop']['email']);
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email']);
             if (self::$objCustomer) {
                 \Message::error($_ARRAYLANG['TXT_SHOP_CUSTOMER_REGISTERED_EMAIL']);
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
@@ -3452,43 +3452,43 @@ die("Shop::processRedirect(): This method is obsolete!");
 // Unregistered Customers are stored as well, as their information is needed
 // nevertheless.  Their active status, however, is set to false.
             self::$objCustomer = Customer::getUnregisteredByEmail(
-                $_SESSION['shop']['email']);
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email']);
             if (!self::$objCustomer) {
                 self::$objCustomer = new Customer();
                 // Currently, the e-mail address is set as the user name
-                $_SESSION['shop']['username'] = $_SESSION['shop']['email'];
-//\DBG::log("Shop::process(): New User username ".$_SESSION['shop']['username'].", email ".$_SESSION['shop']['email']);
-                self::$objCustomer->username($_SESSION['shop']['username']);
-                self::$objCustomer->email($_SESSION['shop']['email']);
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['username'] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email'];
+//\DBG::log("Shop::process(): New User username ".\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['username'].", email ".\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email']);
+                self::$objCustomer->username(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['username']);
+                self::$objCustomer->email(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email']);
                 // Note that the password is unset when the Customer chooses
                 // to order without registration.  The generated one
                 // defaults to length 8, fulfilling the requirements for
                 // complex passwords.  And it's kept absolutely secret.
-                $password = (empty($_SESSION['shop']['password'])
+                $password = (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['password'])
                     ? \User::make_password()
-                    : $_SESSION['shop']['password']);
-//\DBG::log("Password: $password (session: {$_SESSION['shop']['password']})");
+                    : \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['password']);
+//\DBG::log("Password: $password (session: {\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['password']})");
                 if (!self::$objCustomer->password($password)) {
                     \Message::error($_ARRAYLANG['TXT_INVALID_PASSWORD']);
                     \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd(
                         'Shop', 'account'));
                 }
-                self::$objCustomer->active(empty($_SESSION['shop']['dont_register']));
+                self::$objCustomer->active(empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['dont_register']));
                 $new_customer = true;
             }
         }
         // Update the Customer object from the session array
         // (whether new or not -- it may have been edited)
-        self::$objCustomer->gender($_SESSION['shop']['gender']);
-        self::$objCustomer->firstname($_SESSION['shop']['firstname']);
-        self::$objCustomer->lastname($_SESSION['shop']['lastname']);
-        self::$objCustomer->company($_SESSION['shop']['company']);
-        self::$objCustomer->address($_SESSION['shop']['address']);
-        self::$objCustomer->city($_SESSION['shop']['city']);
-        self::$objCustomer->zip($_SESSION['shop']['zip']);
-        self::$objCustomer->country_id($_SESSION['shop']['countryId']);
-        self::$objCustomer->phone($_SESSION['shop']['phone']);
-        self::$objCustomer->fax($_SESSION['shop']['fax']);
+        self::$objCustomer->gender(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender']);
+        self::$objCustomer->firstname(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname']);
+        self::$objCustomer->lastname(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname']);
+        self::$objCustomer->company(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['company']);
+        self::$objCustomer->address(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address']);
+        self::$objCustomer->city(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city']);
+        self::$objCustomer->zip(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip']);
+        self::$objCustomer->country_id(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId']);
+        self::$objCustomer->phone(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone']);
+        self::$objCustomer->fax(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['fax']);
 
         $arrGroups = self::$objCustomer->getAssociatedGroupIds();
         $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller','Shop');
@@ -3529,7 +3529,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         if ($new_customer) {
             // Fails for "unregistered" Customers!
             if (self::$objCustomer->auth(
-                $_SESSION['shop']['username'], $_SESSION['shop']['password'], false, true)) {
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['username'], \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['password'], false, true)) {
                 if (!self::_authenticate()) {
                     return \Message::error($_ARRAYLANG['TXT_SHOP_CUSTOMER_ERROR_STORING']);
                 }
@@ -3538,65 +3538,65 @@ die("Shop::processRedirect(): This method is obsolete!");
 //die();
         // Clear the ship-to country if there is no shipping
         if (!Cart::needs_shipment()) {
-            $_SESSION['shop']['countryId2'] = 0;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2'] = 0;
         }
-        $shipper_id = (empty($_SESSION['shop']['shipperId'])
-            ? null : $_SESSION['shop']['shipperId']);
-        $payment_id = (empty($_SESSION['shop']['paymentId'])
-            ? null : $_SESSION['shop']['paymentId']);
+        $shipper_id = (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId'])
+            ? null : \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId']);
+        $payment_id = (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'])
+            ? null : \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId']);
         $objOrder = new Order();
         $objOrder->customer_id(self::$objCustomer->id());
 
-        $objOrder->billing_gender($_SESSION['shop']['gender']);
-        $objOrder->billing_firstname($_SESSION['shop']['firstname']);
-        $objOrder->billing_lastname($_SESSION['shop']['lastname']);
-        $objOrder->billing_company($_SESSION['shop']['company']);
-        $objOrder->billing_address($_SESSION['shop']['address']);
-        $objOrder->billing_city($_SESSION['shop']['city']);
-        $objOrder->billing_zip($_SESSION['shop']['zip']);
-        $objOrder->billing_country_id($_SESSION['shop']['countryId']);
-        $objOrder->billing_phone($_SESSION['shop']['phone']);
-        $objOrder->billing_fax($_SESSION['shop']['fax']);
-        $objOrder->billing_email($_SESSION['shop']['email']);
+        $objOrder->billing_gender(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender']);
+        $objOrder->billing_firstname(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname']);
+        $objOrder->billing_lastname(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname']);
+        $objOrder->billing_company(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['company']);
+        $objOrder->billing_address(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address']);
+        $objOrder->billing_city(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city']);
+        $objOrder->billing_zip(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip']);
+        $objOrder->billing_country_id(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId']);
+        $objOrder->billing_phone(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone']);
+        $objOrder->billing_fax(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['fax']);
+        $objOrder->billing_email(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email']);
 
-        $objOrder->currency_id($_SESSION['shop']['currencyId']);
-        $objOrder->sum($_SESSION['shop']['grand_total_price']);
+        $objOrder->currency_id(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['currencyId']);
+        $objOrder->sum(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price']);
         $objOrder->date_time(date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME));
         $objOrder->status(0);
-        $objOrder->company($_SESSION['shop']['company2']);
-        $objOrder->gender($_SESSION['shop']['gender2']);
-        $objOrder->firstname($_SESSION['shop']['firstname2']);
-        $objOrder->lastname($_SESSION['shop']['lastname2']);
-        $objOrder->address($_SESSION['shop']['address2']);
-        $objOrder->city($_SESSION['shop']['city2']);
-        $objOrder->zip($_SESSION['shop']['zip2']);
-        $objOrder->country_id($_SESSION['shop']['countryId2']);
-        $objOrder->phone($_SESSION['shop']['phone2']);
-        $objOrder->vat_amount($_SESSION['shop']['vat_price']);
-        $objOrder->shipment_amount($_SESSION['shop']['shipment_price']);
+        $objOrder->company(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['company2']);
+        $objOrder->gender(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender2']);
+        $objOrder->firstname(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname2']);
+        $objOrder->lastname(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname2']);
+        $objOrder->address(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address2']);
+        $objOrder->city(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city2']);
+        $objOrder->zip(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip2']);
+        $objOrder->country_id(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2']);
+        $objOrder->phone(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone2']);
+        $objOrder->vat_amount(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['vat_price']);
+        $objOrder->shipment_amount(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipment_price']);
         $objOrder->shipment_id($shipper_id);
         $objOrder->payment_id($payment_id);
-        $objOrder->payment_amount($_SESSION['shop']['payment_price']);
+        $objOrder->payment_amount(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['payment_price']);
         $objOrder->ip($customer_ip);
         $objOrder->host($customer_host);
         $objOrder->lang_id(FRONTEND_LANG_ID);
         $objOrder->browser($customer_browser);
-        $objOrder->note($_SESSION['shop']['note']);
+        $objOrder->note(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['note']);
         if (!$objOrder->insert()) {
             // $order_id is unset!
             return \Message::error($_ARRAYLANG['TXT_SHOP_ORDER_ERROR_STORING']);
         }
         $order_id = $objOrder->id();
-        $_SESSION['shop']['order_id'] = $order_id;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id'] = $order_id;
         // The products will be tested one by one below.
         // If any single one of them requires delivery, this
         // flag will be set to true.
         // This is used to determine the order status at the
         // end of the shopping process.
-        $_SESSION['shop']['isDelivery'] = false;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['isDelivery'] = false;
         // Try to redeem the Coupon, if any
-        $coupon_code = (isset($_SESSION['shop']['coupon_code'])
-            ? $_SESSION['shop']['coupon_code'] : null);
+        $coupon_code = (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['coupon_code'])
+            ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['coupon_code'] : null);
 //\DBG::log("Cart::update(): Coupon Code: $coupon_code");
         $items_total = 0;
 
@@ -3605,7 +3605,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         foreach (Cart::get_products_array() as $arrProduct) {
             $objProduct = Product::getById($arrProduct['id']);
             if (!$objProduct) {
-                unset($_SESSION['shop']['order_id']);
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id']);
                 return \Message::error($_ARRAYLANG['TXT_ERROR_LOOKING_UP_ORDER']);
             }
             $product_id = $arrProduct['id'];
@@ -3625,7 +3625,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             // Test the distribution method for delivery
             $productDistribution = $objProduct->distribution();
             if ($productDistribution == 'delivery') {
-                $_SESSION['shop']['isDelivery'] = true;
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['isDelivery'] = true;
             }
             $weight = ($productDistribution == 'delivery'
                 ? $objProduct->weight() : 0); // grams
@@ -3635,7 +3635,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                 $order_id, $product_id, $name, $price, $quantity,
                 $vat_rate, $weight, $arrProduct['options']);
             if (!$result) {
-                unset($_SESSION['shop']['order_id']);
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id']);
 // TODO: Verify error message set by Order::insertItem()
                 return false;
             }
@@ -3670,7 +3670,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         }
         \Message::restore();
 
-        $processor_id = Payment::getProperty($_SESSION['shop']['paymentId'], 'processor_id');
+        $processor_id = Payment::getProperty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'], 'processor_id');
         $processor_name = PaymentProcessing::getPaymentProcessorName($processor_id);
          // other payment methods
         PaymentProcessing::initProcessor($processor_id);
@@ -3682,7 +3682,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         if ($processor_name == 'internal_lsv') {
             if (!self::lsv_complete()) {
                 // Missing mandatory data; return to payment
-                unset($_SESSION['shop']['order_id']);
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id']);
                 \Message::error($_ARRAYLANG['TXT_ERROR_ACCOUNT_INFORMATION_NOT_AVAILABLE']);
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
                     \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'payment'));
@@ -3692,21 +3692,21 @@ die("Shop::processRedirect(): This method is obsolete!");
                     order_id, holder, bank, blz
                 ) VALUES (
                     $order_id,
-                    '".contrexx_raw2db($_SESSION['shop']['account_holder'])."',
-                    '".contrexx_raw2db($_SESSION['shop']['account_bank'])."',
-                    '".contrexx_raw2db($_SESSION['shop']['account_blz'])."'
+                    '".contrexx_raw2db(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_holder'])."',
+                    '".contrexx_raw2db(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_bank'])."',
+                    '".contrexx_raw2db(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['account_blz'])."'
                 )";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) {
                 // Return to payment
-                unset($_SESSION['shop']['order_id']);
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id']);
                 \Message::error($_ARRAYLANG['TXT_ERROR_INSERTING_ACCOUNT_INFORMATION']);
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
                     \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'payment'));
             }
         }
 
-        $_SESSION['shop']['order_id_checkin'] = $order_id;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id_checkin'] = $order_id;
         $strProcessorType = PaymentProcessing::getCurrentPaymentProcessorType();
 
         // Test whether the selected payment method can be
@@ -3716,20 +3716,20 @@ die("Shop::processRedirect(): This method is obsolete!");
 // TODO: Invert this flag, as it may no longer be present after paying
 // online using one of the external payment methods!  Ensure that it is set
 // instead when paying "deferred".
-        $_SESSION['shop']['isInstantPayment'] = false;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['isInstantPayment'] = false;
         if ($strProcessorType == 'external') {
             // For the sake of simplicity, all external payment
             // methods are considered to be 'instant'.
             // All currently implemented internal methods require
             // further action from the merchant, and thus are
             // considered to be 'deferred'.
-            $_SESSION['shop']['isInstantPayment'] = true;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['isInstantPayment'] = true;
         }
         // Send the Customer login separately, as the password possibly
         // won't be available later
-        if (!empty($_SESSION['shop']['password'])) {
+        if (!empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['password'])) {
             self::sendLogin(
-                self::$objCustomer->email(), $_SESSION['shop']['password']);
+                self::$objCustomer->email(), \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['password']);
         }
         // Show payment processing page.
         // Note that some internal payments are redirected away
@@ -3740,7 +3740,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         );
         // Clear the order ID.
         // The order may be resubmitted and the payment retried.
-        unset($_SESSION['shop']['order_id']);
+        unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id']);
         // Custom.
         // Enable if Discount class is customized and in use.
         //self::showCustomerDiscount(Cart::get_price());
@@ -3763,9 +3763,9 @@ die("Shop::processRedirect(): This method is obsolete!");
 
         // Use the Order ID stored in the session, if possible.
         // Otherwise, get it from the payment processor.
-        $order_id = (empty($_SESSION['shop']['order_id_checkin'])
+        $order_id = (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id_checkin'])
             ? PaymentProcessing::getOrderId()
-            : $_SESSION['shop']['order_id_checkin']);
+            : \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id_checkin']);
 //\DBG::deactivate();
 //\DBG::activate(DBG_LOG_FILE);
 //\DBG::log("success(): Restored Order ID ".var_export($order_id, true));
@@ -3792,12 +3792,12 @@ die("Shop::processRedirect(): This method is obsolete!");
 //\DBG::log("success(): Order ID is *null* (new Status $newOrderStatus)");
         }
         // Verify the Order ID with the session, if available
-        if (   isset($_SESSION['shop']['order_id_checkin'])
-            && $order_id != $_SESSION['shop']['order_id_checkin']) {
+        if (   isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id_checkin'])
+            && $order_id != \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id_checkin']) {
             // Cancel the Order with the ID from the session, not the
             // possibly faked one from the request!
-//\DBG::log("success(): Order ID $order_id is not ".$_SESSION['shop']['order_id_checkin'].", new Status $newOrderStatus");
-            $order_id = $_SESSION['shop']['order_id_checkin'];
+//\DBG::log("success(): Order ID $order_id is not ".\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id_checkin'].", new Status $newOrderStatus");
+            $order_id = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id_checkin'];
             $newOrderStatus = Order::STATUS_CANCELLED;
             $checkinresult = false;
         }
@@ -4219,28 +4219,28 @@ die("Shop::processRedirect(): This method is obsolete!");
         // Note that the Country IDs are either set already, or chosen in a
         // dropdown menu, so if everything else is set, so are they.
         // They may thus be disabled entirely without affecting this.
-        if (   empty($_SESSION['shop']['gender'])
-            || empty($_SESSION['shop']['lastname'])
-            || empty($_SESSION['shop']['firstname'])
-            || empty($_SESSION['shop']['address'])
-            || empty($_SESSION['shop']['zip'])
-            || empty($_SESSION['shop']['city'])
-            || empty($_SESSION['shop']['phone'])
+        if (   empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender'])
+            || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname'])
+            || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname'])
+            || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address'])
+            || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip'])
+            || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city'])
+            || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone'])
 // Must not check this here, would collide with Customers not willing
 // to register!
-//            || (empty($_SESSION['shop']['email']) && !self::$objCustomer)
-//            || (empty($_SESSION['shop']['password']) && !self::$objCustomer)
+//            || (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email']) && !self::$objCustomer)
+//            || (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['password']) && !self::$objCustomer)
             || (Cart::needs_shipment()
-            && (   empty($_SESSION['shop']['gender2'])
-                || empty($_SESSION['shop']['lastname2'])
-                || empty($_SESSION['shop']['firstname2'])
-                || empty($_SESSION['shop']['address2'])
-                || empty($_SESSION['shop']['zip2'])
-                || empty($_SESSION['shop']['city2'])
-                || empty($_SESSION['shop']['phone2'])))
+            && (   empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['gender2'])
+                || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname2'])
+                || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname2'])
+                || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address2'])
+                || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip2'])
+                || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city2'])
+                || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone2'])))
         ) return false;
 // TODO: I don't see why this would be done here:
-//        $_SESSION['shop']['equal_address'] = false;
+//        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['equal_address'] = false;
         return true;
     }
 
@@ -4318,7 +4318,7 @@ die("Shop::processRedirect(): This method is obsolete!");
      * - the customer puts an article into the cart.
      * In the above cases, this will return true, false otherwise.
      * If true is returned, the caller *MUST* verify the existence of an
-     * active session (by checking the state of global $_SESSION) and,
+     * active session (by checking the state of global \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()) and,
      * if that is empty, instantiate it.  See {@see init()} for more.
      * @return  boolean     True if a session is required, false otherwise
      */

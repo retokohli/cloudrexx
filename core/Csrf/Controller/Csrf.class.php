@@ -45,7 +45,7 @@ namespace Cx\Core\Csrf\Controller;
  * request if there's an invalid code.
  *
  * This class expects that the session has been set up
- * correctly and can be used through $_SESSION.
+ * correctly and can be used through \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession().
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      David Vogt <david.vogt@comvation.com>
@@ -409,8 +409,8 @@ class Csrf {
 
     private static function __reduce($code)
     {
-        foreach ($_SESSION[self::$sesskey] as $key => $value) {
-            $_SESSION[self::$sesskey][$key] = $_SESSION[self::$sesskey][$key] -
+        foreach (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[self::$sesskey] as $key => $value) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[self::$sesskey][$key] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[self::$sesskey][$key] -
                 ($code == $key
                     ? self::$active_decrease : self::$unused_decrease);
         }
@@ -428,9 +428,9 @@ class Csrf {
 
     private static function __cleanup()
     {
-        foreach ($_SESSION[self::$sesskey] as $key => $count) {
+        foreach (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[self::$sesskey] as $key => $count) {
             if ($count < 0) {
-                unset($_SESSION[self::$sesskey][$key]);
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[self::$sesskey][$key]);
             }
         }
     }
@@ -438,18 +438,18 @@ class Csrf {
 
     private static function __getkey($key)
     {
-        return !empty($_SESSION[self::$sesskey][$key]);
+        return !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[self::$sesskey][$key]);
     }
 
 
     private static function __setkey($key, $value)
     {
-        if (!isset($_SESSION[self::$sesskey])) {
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[self::$sesskey])) {
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             $cx->getComponent('Session')->getSession();
-            $_SESSION[self::$sesskey] = array();
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[self::$sesskey] = array();
         }
-        $_SESSION[self::$sesskey][$key] = $value;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[self::$sesskey][$key] = $value;
     }
 
 

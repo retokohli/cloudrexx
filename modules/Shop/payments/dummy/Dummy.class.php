@@ -63,7 +63,7 @@ class Dummy
     //static
     function getForm()
     {
-        $order_id    = isset($_SESSION['shop']['order_id']) ? $_SESSION['shop']['order_id'] : 0;
+        $order_id    = isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id'] : 0;
         $confirmURI = "index.php?section=Shop".MODULE_INDEX."&amp;cmd=success&amp;handler=dummy&amp;order_id=$order_id&amp;result=-1";
         $failureURI = "index.php?section=Shop".MODULE_INDEX."&amp;cmd=success&amp;handler=dummy&amp;order_id=$order_id&amp;result=0";
         $successURI = "index.php?section=Shop".MODULE_INDEX."&amp;cmd=success&amp;handler=dummy&amp;order_id=$order_id&amp;result=1";

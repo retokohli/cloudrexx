@@ -343,14 +343,14 @@ class Saferpay
     static function getForm($arrOrder, $autopost=false)
     {
         global $_ARRAYLANG;
-/*        'AMOUNT' => str_replace('.', '', $_SESSION['shop']['grand_total_price']),
+/*        'AMOUNT' => str_replace('.', '', \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price']),
         'CURRENCY' => \Cx\Modules\Shop\Controller\Currency::getActiveCurrencyCode(),
-        'ORDERID' => $_SESSION['shop']['order_id'],
+        'ORDERID' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id'],
         'ACCOUNTID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id','Shop'),
         'SUCCESSLINK' => urlencode('http://'.$serverBase.'index.php?section=Shop'.MODULE_INDEX.'&cmd=success&result=1&handler=saferpay'),
         'FAILLINK' => urlencode('http://'.$serverBase.'index.php?section=Shop'.MODULE_INDEX.'&cmd=success&result=0&handler=saferpay'),
         'BACKLINK' => urlencode('http://'.$serverBase.'index.php?section=Shop'.MODULE_INDEX.'&cmd=success&result=2&handler=saferpay'),
-        'DESCRIPTION' => urlencode('"'.$_ARRAYLANG['TXT_ORDER_NR'].' '.$_SESSION['shop']['order_id'].'"'),
+        'DESCRIPTION' => urlencode('"'.$_ARRAYLANG['TXT_ORDER_NR'].' '.\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id'].'"'),
         'LANGID' => FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
         'NOTIFYURL' => urlencode('http://'.$serverBase.'index.php?section=Shop'.MODULE_INDEX.'&cmd=success&result=-1&handler=saferpay'),
         'ALLOWCOLLECT' => 'no',

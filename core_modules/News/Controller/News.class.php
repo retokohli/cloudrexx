@@ -2028,9 +2028,9 @@ RSS2JSCODE;
     {
         global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
-        if (!isset($_SESSION['news'])) {
-            $_SESSION['news'] = array();
-            $_SESSION['news']['comments'] = array();
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['news'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['news'] = array();
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['news']['comments'] = array();
         }
 
         // just comment
@@ -2092,8 +2092,8 @@ RSS2JSCODE;
         /* Prevent comment flooding from same user:
            Either user is authenticated or had to validate a CAPTCHA.
            In either way, a Cloudrexx session had been initialized,
-           therefore we are able to use the $_SESSION to log this comment */
-        $_SESSION['news']['comments'][$newsMessageId] = $date;
+           therefore we are able to use the \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession() to log this comment */
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['news']['comments'][$newsMessageId] = $date;
 
         // Don't send a notification e-mail to the administrator
         if (!$this->arrSettings['news_comments_notification']) {
@@ -2173,8 +2173,8 @@ RSS2JSCODE;
         global $objDatabase;
 
         //Check cookie first
-        if (!empty($_SESSION['news']['comments'][$newsMessageId])) {
-            $intLastCommentTime = intval($_SESSION['news']['comments'][$newsMessageId]);
+        if (!empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['news']['comments'][$newsMessageId])) {
+            $intLastCommentTime = intval(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['news']['comments'][$newsMessageId]);
             if (time() < $intLastCommentTime + intval($this->arrSettings['news_comments_timeout'])) {
                 //The current system-time is smaller than the time in the session plus timeout-time, so the user just submitted a comment
                 return true;

@@ -181,15 +181,15 @@ class FileBrowser {
 
     function _getPath() {
 
-        if (!isset($_SESSION['fileBrowser'])) {
-            $_SESSION['fileBrowser'] = array();
-            $_SESSION['fileBrowser']['path'] = array();
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['fileBrowser'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['fileBrowser'] = array();
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['fileBrowser']['path'] = array();
         }
 
         $path =    $this->_mediaType != 'webpages'
                 && array_key_exists($this->_mediaType, $this->mediaTypePaths)
-                && isset($_SESSION['fileBrowser']['path'][$this->_mediaType])
-                ?  $_SESSION['fileBrowser']['path'][$this->_mediaType]
+                && isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['fileBrowser']['path'][$this->_mediaType])
+                ?  \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['fileBrowser']['path'][$this->_mediaType]
                 :  "";
 
         if (isset($_REQUEST['path']) && !stristr($_REQUEST['path'], '..')) {
@@ -203,7 +203,7 @@ class FileBrowser {
         if (    $this->_mediaType != 'webpages'
              && array_key_exists($this->_mediaType, $this->mediaTypePaths)
            ) {
-            $_SESSION['fileBrowser']['path'][$this->_mediaType] = $path;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['fileBrowser']['path'][$this->_mediaType] = $path;
         }
 
         return $path;
@@ -558,11 +558,11 @@ class FileBrowser {
         //if yes, we know the added files and want to highlight them
         if (!empty($_GET['highlightUploadId'])) {
             $key = 'filebrowser_upload_files_'.intval($_GET['highlightUploadId']);
-            if (isset($_SESSION[$key])) {
-                $sessionHighlightCandidates = $_SESSION[$key]; //an array with the filenames, set in FileBrowser::uploadFinished
+            if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$key])) {
+                $sessionHighlightCandidates = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$key]; //an array with the filenames, set in FileBrowser::uploadFinished
             }
             //clean up session; we do only highlight once
-            unset($_SESSION[$key]);
+            unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$key]);
 
             if(is_array($sessionHighlightCandidates)) //make sure we don't cause any unexpected behaviour if we lost the session data
                 $this->highlightedFiles = $sessionHighlightCandidates;
@@ -653,9 +653,9 @@ class FileBrowser {
 //        }
 
         //remember the uploaded files
-        if(isset($_SESSION["filebrowser_upload_files_$uploadId"])) //do not overwrite already uploaded files
-            $arrFiles = array_merge($_SESSION["filebrowser_upload_files_$uploadId"], $arrFiles);
-        $_SESSION["filebrowser_upload_files_$uploadId"] = $arrFiles;
+        if(isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()["filebrowser_upload_files_$uploadId"])) //do not overwrite already uploaded files
+            $arrFiles = array_merge(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()["filebrowser_upload_files_$uploadId"], $arrFiles);
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()["filebrowser_upload_files_$uploadId"] = $arrFiles;
 
         /* unwanted files have been deleted, unallowed filenames corrected.
            we can now simply return the desired target path, as only valid

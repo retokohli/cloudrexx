@@ -121,8 +121,8 @@ class Immo extends ImmoLib
         }
 
         // initialise the session array
-        if (!isset($_SESSION['immo'])) {
-            $_SESSION['immo'] = array();
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo'] = array();
         }
 
         parent::__construct();
@@ -273,7 +273,7 @@ class Immo extends ImmoLib
                 'IMMO_CHECKBOX_ID' => $id,
                 'IMMO_CHECKBOX_NAME' => 'rent',
                 'IMMO_CHECKBOX_VALUE' => $category,
-                'IMMO_CHECKBOX_CHECKED' => $_SESSION['immo']['search']['cat_rent'][$category] ? 'checked="checked"' : '',
+                'IMMO_CHECKBOX_CHECKED' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['search']['cat_rent'][$category] ? 'checked="checked"' : '',
                 'IMMO_CHECKBOX_LABEL' => $category
             ));
             $this->_objTpl->parse('buyResult');
@@ -286,7 +286,7 @@ class Immo extends ImmoLib
                 'IMMO_CHECKBOX_ID' => $id,
                 'IMMO_CHECKBOX_NAME' => 'rent',
                 'IMMO_CHECKBOX_VALUE' => $category,
-                'IMMO_CHECKBOX_CHECKED' => $_SESSION['immo']['search']['cat_rent'][$category] ? 'checked="checked"' : '',
+                'IMMO_CHECKBOX_CHECKED' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['immo']['search']['cat_rent'][$category] ? 'checked="checked"' : '',
                 'IMMO_CHECKBOX_LABEL' => $category
             ));
             $this->_objTpl->parse('rentResult');

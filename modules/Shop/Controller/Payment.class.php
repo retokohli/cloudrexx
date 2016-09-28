@@ -179,8 +179,8 @@ class Payment
         global $objDatabase;
 
         if (is_null(self::$arrPayments)) self::init();
-        if (isset($_SESSION['shop']['paymentId'])) {
-            $payment_id = $_SESSION['shop']['paymentId'];
+        if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'])) {
+            $payment_id = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'];
             $processor_id = self::getPaymentProcessorId($payment_id);
             if ($processor_id == 2) {
                 foreach ($arrCurrencies as $index => $arrCurrency) {

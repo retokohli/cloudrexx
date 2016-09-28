@@ -732,7 +732,7 @@ class CrmInterface extends CrmLibrary
         $fileName       = isset ($_POST['fileUri']) ? $_POST['fileUri'] : '';
         $objFWUser      = \FWUser::getFWUserObject();
 
-        $_SESSION[$fileName] = array();
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$fileName] = array();
 
         foreach ($_POST['crm_contact_option_base'] as $colId => $value) {
             if (!empty($value)) {
@@ -751,7 +751,7 @@ class CrmInterface extends CrmLibrary
             $skipedLines   = 0;
             while ($line) {
                 session_start();
-                $_SESSION[$fileName]['totalRows'] = $totalLines;
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$fileName]['totalRows'] = $totalLines;
                 if (!$first || !$csvIgnoreFirst) {
                     $this->contact->clean();
                     $this->contact->contactType = !empty($line[$firstname]) || !empty($line[$lastname])
@@ -826,7 +826,7 @@ class CrmInterface extends CrmLibrary
 
                         if (!$skip) {
                             $importedLines++;
-                            $_SESSION[$fileName]['importedRows'] = $importedLines;
+                            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$fileName]['importedRows'] = $importedLines;
 
                             //insert customer groups
                             if (isset($customerGroups) && !empty($line[$customerGroups])) {
@@ -955,7 +955,7 @@ class CrmInterface extends CrmLibrary
                             }
                         } else {
                             $skipedLines++;
-                            $_SESSION[$fileName]['skippedRows'] = $skipedLines;
+                            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$fileName]['skippedRows'] = $skipedLines;
                         }
                     }
                 }
@@ -1127,10 +1127,10 @@ class CrmInterface extends CrmLibrary
 
         $json = array();
         if (!empty($file)) {
-            if (isset($_SESSION[$file])) {
-                $json['totalRows'] = isset ($_SESSION[$file]['totalRows']) ? $_SESSION[$file]['totalRows'] : 0;
-                $json['skippedRows'] = isset ($_SESSION[$file]['skippedRows']) ? $_SESSION[$file]['skippedRows'] : 0;
-                $json['importedRows'] = isset ($_SESSION[$file]['importedRows']) ? $_SESSION[$file]['importedRows'] : 0;
+            if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$file])) {
+                $json['totalRows'] = isset (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$file]['totalRows']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$file]['totalRows'] : 0;
+                $json['skippedRows'] = isset (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$file]['skippedRows']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$file]['skippedRows'] : 0;
+                $json['importedRows'] = isset (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$file]['importedRows']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$file]['importedRows'] : 0;
                 $json['percentCompleted'] = 100;
 
             } else {

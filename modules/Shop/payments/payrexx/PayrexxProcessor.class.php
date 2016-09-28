@@ -74,7 +74,7 @@ class PayrexxProcessor
             return false;
         }
 
-        $order = \Cx\Modules\Shop\Controller\Order::getById($_SESSION['shop']['order_id']);
+        $order = \Cx\Modules\Shop\Controller\Order::getById(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id']);
 
         $payrexx = new \Payrexx\Payrexx($instanceName, $apiSecret);
         $invoice = new \Payrexx\Models\Request\Invoice();
@@ -84,9 +84,9 @@ class PayrexxProcessor
         // We have to set all known PSPs to support all PSPs.
         // Known PSP are listed on https://payrexx.readme.io/docs/miscellaneous
         $invoice->setPsp(array(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20,21,22,23));
-        $invoice->setName('Contrexx Shop Order: #' . $_SESSION['shop']['order_id']);
-        $invoice->setPurpose('Shop Order #' . $_SESSION['shop']['order_id']);
-        $invoice->setAmount(intval($_SESSION['shop']['grand_total_price']*100));
+        $invoice->setName('Contrexx Shop Order: #' . \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id']);
+        $invoice->setPurpose('Shop Order #' . \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id']);
+        $invoice->setAmount(intval(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price']*100));
         $invoice->setCurrency(\Cx\Modules\Shop\Controller\Currency::getCodeById($order->currency_id()));
         $invoice->addField('email', false, $order->billing_email());
         $invoice->addField('company', false, $order->billing_company());

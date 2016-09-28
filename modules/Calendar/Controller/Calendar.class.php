@@ -1226,7 +1226,7 @@ UPLOADER;
                 $uploadCallBack
             ));
 
-            $folderWidget = new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget($_SESSION->getTempPath().'/'.$uploaderId);
+            $folderWidget = new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->getTempPath().'/'.$uploaderId);
             $this->_objTpl->setVariable( array(
                 strtoupper($fieldName).'_WIDGET_CODE'            => $folderWidget->getXHtml(),
                 "{$this->moduleLangVar}_". strtoupper($fieldKey) => $uploaderId

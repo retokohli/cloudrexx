@@ -304,8 +304,8 @@ class PaymentProcessing
             // Added 20100222 -- Reto Kohli
             case 'mobilesolutions':
                 $return = \PostfinanceMobile::getForm(
-                    intval(100 * $_SESSION['shop']['grand_total_price']),
-                    $_SESSION['shop']['order_id']);
+                    intval(100 * \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price']),
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id']);
                 if ($return) {
 //DBG::log("Postfinance Mobile getForm() returned:");
 //DBG::log($return);
@@ -322,12 +322,12 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
                 $return = self::getDatatransForm(Currency::getActiveCurrencyCode());
                 break;
             case 'paypal':
-                $order_id = $_SESSION['shop']['order_id'];
+                $order_id = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id'];
                 $account_email = \Cx\Core\Setting\Controller\Setting::getValue('paypal_account_email','Shop');
                 $item_name = $_ARRAYLANG['TXT_SHOP_PAYPAL_ITEM_NAME'];
                 $currency_code = Currency::getCodeById(
-                    $_SESSION['shop']['currencyId']);
-                $amount = $_SESSION['shop']['grand_total_price'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['currencyId']);
+                $amount = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price'];
                 $return = \PayPal::getForm($account_email, $order_id,
                     $currency_code, $amount, $item_name);
                 break;
@@ -384,9 +384,9 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
         global $_ARRAYLANG;
 
         $arrShopOrder = array(
-            'AMOUNT'        => str_replace('.', '', $_SESSION['shop']['grand_total_price']),
+            'AMOUNT'        => str_replace('.', '', \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price']),
             'CURRENCY'      => Currency::getActiveCurrencyCode(),
-            'ORDERID'       => $_SESSION['shop']['order_id'],
+            'ORDERID'       => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id'],
             'ACCOUNTID'     => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id','Shop'),
             'SUCCESSLINK'   => \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
                                    array('result' => 1, 'handler' => 'saferpay'))->toString(),
@@ -395,7 +395,7 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
             'BACKLINK'      => \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
                                    array('result' => 2, 'handler' => 'saferpay'))->toString(),
             'DESCRIPTION'   => '"'.$_ARRAYLANG['TXT_ORDER_NR'].
-                                ' '.$_SESSION['shop']['order_id'].'"',
+                                ' '.\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id'].'"',
             'LANGID'        => \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
             'NOTIFYURL'     => \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
                                    array('result' => '-1', 'handler' => 'saferpay'))->toString(),
@@ -465,8 +465,8 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
         $landingPage = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findOneByModuleCmdLang('Shop'.MODULE_INDEX, 'success', FRONTEND_LANG_ID);
 
         $arrShopOrder = array(
-            'order_id'  => $_SESSION['shop']['order_id'],
-            'amount'    => intval($_SESSION['shop']['grand_total_price']*100),
+            'order_id'  => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id'],
+            'amount'    => intval(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price']*100),
             'currency'  => Currency::getActiveCurrencyCode(),
         );
 
@@ -511,27 +511,27 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
 
         $arrShopOrder = array(
 // 20111227 - Note that all parameter names should now be uppercase only
-            'ORDERID'   => $_SESSION['shop']['order_id'],
-            'AMOUNT'    => intval($_SESSION['shop']['grand_total_price']*100),
+            'ORDERID'   => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id'],
+            'AMOUNT'    => intval(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price']*100),
             'CURRENCY'  => Currency::getActiveCurrencyCode(),
             'PARAMPLUS' => 'section=Shop'.MODULE_INDEX.'&cmd=success&handler=yellowpay',
 // Custom code for adding more Customer data to the form.
 // Enable as needed.
             // COM          Order description
             // CN           Customer name. Will be pre-initialized (but still editable) in the cardholder name field of the credit card details.
-//            'CN' => $_SESSION['shop']['firstname'].' '.$_SESSION['shop']['lastname'],
+//            'CN' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['firstname'].' '.\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['lastname'],
             // EMAIL        Customer's e-mail address
-//            'EMAIL' => $_SESSION['shop']['email'],
+//            'EMAIL' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['email'],
             // owneraddress Customer's street name and number
-//            'owneraddress' => $_SESSION['shop']['address'],
+//            'owneraddress' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['address'],
             // ownerZIP     Customer's ZIP code
-//            'ownerZIP' => $_SESSION['shop']['zip'],
+//            'ownerZIP' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['zip'],
             // ownertown    Customer's town/city name
-//            'ownertown' => $_SESSION['shop']['city'],
+//            'ownertown' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['city'],
             // ownercty     Customer's country
-//            'ownercty' => \Cx\Core\Country\Controller\Country::getNameById($_SESSION['shop']['countryId']),
+//            'ownercty' => \Cx\Core\Country\Controller\Country::getNameById(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId']),
             // ownertelno   Customer's telephone number
-//            'ownertelno' => $_SESSION['shop']['phone'],
+//            'ownertelno' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['phone'],
         );
 
         $landingPage = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findOneByModuleCmdLang('Shop'.MODULE_INDEX, 'success', FRONTEND_LANG_ID);
@@ -592,8 +592,8 @@ if (empty ($return)) {
 
         \Datatrans::initialize(
             \Cx\Core\Setting\Controller\Setting::getValue('datatrans_merchant_id','Shop'),
-            $_SESSION['shop']['order_id'],
-            $_SESSION['shop']['grand_total_price'],
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id'],
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price'],
             Currency::getActiveCurrencyCode()
         );
         return
@@ -633,10 +633,10 @@ if (empty ($return)) {
             case 'paymill_elv':
             case 'paymill_iban':
                 $arrShopOrder = array(
-                    'order_id'  => $_SESSION['shop']['order_id'],
-                    'amount'    => intval($_SESSION['shop']['grand_total_price']*100),
+                    'order_id'  => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id'],
+                    'amount'    => intval(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['grand_total_price']*100),
                     'currency'  => Currency::getActiveCurrencyCode(),
-                    'note'      => $_SESSION['shop']['note']
+                    'note'      => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['note']
                 );
                 $response = \PaymillHandler::processRequest($_REQUEST['paymillToken'], $arrShopOrder);
                 \DBG::log(var_export($response, true));
@@ -664,10 +664,10 @@ if (empty ($return)) {
                 }
                 $order_id = \PayPal::getOrderId();
 //                    if (!$order_id) {
-//                        $order_id = (isset($_SESSION['shop']['order_id'])
-//                            ? $_SESSION['shop']['order_id']
-//                            : (isset ($_SESSION['shop']['order_id_checkin'])
-//                                ? $_SESSION['shop']['order_id_checkin']
+//                        $order_id = (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id'])
+//                            ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id']
+//                            : (isset (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id_checkin'])
+//                                ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id_checkin']
 //                                : NULL));
 //                    }
                 $order = Order::getById($order_id);
@@ -782,8 +782,8 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
             case 'Internal_Debit':
             case 'Internal_LSV':
             case 'dummy':
-                return (isset($_SESSION['shop']['order_id_checkin'])
-                    ? $_SESSION['shop']['order_id_checkin']
+                return (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id_checkin'])
+                    ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['order_id_checkin']
                     : false);
         }
         // Anything else is wrong.

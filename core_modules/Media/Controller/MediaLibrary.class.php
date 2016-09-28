@@ -188,16 +188,16 @@ class MediaLibrary
     function _cutMedia()
     {
         if (isset($_POST['formSelected']) && !empty($_POST['formSelected'])) {
-            if (isset($_SESSION['mediaCutFile'])) {
-                unset($_SESSION['mediaCutFile']);
+            if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'])) {
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile']);
             }
-            if (isset($_SESSION['mediaCopyFile'])) {
-                unset($_SESSION['mediaCopyFile']);
+            if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'])) {
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile']);
             }
-            $_SESSION['mediaCutFile'] = array();
-            $_SESSION['mediaCutFile'][] = $this->path;
-            $_SESSION['mediaCutFile'][] = $this->webPath;
-            $_SESSION['mediaCutFile'][] = $_POST['formSelected'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'] = array();
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][] = $this->path;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][] = $this->webPath;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][] = $_POST['formSelected'];
         }
     }
 
@@ -210,17 +210,17 @@ class MediaLibrary
     function _copyMedia()
     {
         if (isset($_POST['formSelected']) && !empty($_POST['formSelected'])) {
-            if (isset($_SESSION['mediaCutFile'])) {
-                unset($_SESSION['mediaCutFile']);
+            if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'])) {
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile']);
             }
-            if (isset($_SESSION['mediaCopyFile'])) {
-                unset($_SESSION['mediaCopyFile']);
+            if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'])) {
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile']);
             }
 
-            $_SESSION['mediaCopyFile'] = array();
-            $_SESSION['mediaCopyFile'][] = $this->path;
-            $_SESSION['mediaCopyFile'][] = $this->webPath;
-            $_SESSION['mediaCopyFile'][] = $_POST['formSelected'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'] = array();
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'][] = $this->path;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'][] = $this->webPath;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'][] = $_POST['formSelected'];
         }
     }
 
@@ -235,26 +235,26 @@ class MediaLibrary
         global $_ARRAYLANG, $objTemplate;
 
         // cut
-        if (isset($_SESSION['mediaCutFile']) && !empty($_SESSION['mediaCutFile'])) {
+        if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile']) && !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'])) {
             $check = true;
 
-            foreach ($_SESSION['mediaCutFile'][2] as $name) {
-                if ($_SESSION['mediaCutFile'][0] != $this->path) {
+            foreach (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][2] as $name) {
+                if (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][0] != $this->path) {
                     $obj_file = new \File();
 
-                    if (is_dir($_SESSION['mediaCutFile'][0].$name)) {
-                        $this->dirLog=$obj_file->copyDir($_SESSION['mediaCutFile'][0], $_SESSION['mediaCutFile'][1], $name, $this->path, $this->webPath, $name);
+                    if (is_dir(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][0].$name)) {
+                        $this->dirLog=$obj_file->copyDir(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][0], \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][1], $name, $this->path, $this->webPath, $name);
                         if ($this->dirLog == "error") {
                             $check = false;
                         } else {
-                            $obj_file->delDir($_SESSION['mediaCutFile'][0], $_SESSION['mediaCutFile'][1], $name);
+                            $obj_file->delDir(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][0], \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][1], $name);
                         }
                     } else {
-                        $this->dirLog=$obj_file->copyFile($_SESSION['mediaCutFile'][0], $name, $this->path, $name);
+                        $this->dirLog=$obj_file->copyFile(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][0], $name, $this->path, $name);
                         if ($this->dirLog == "error") {
                             $check = false;
                         } else {
-                            $obj_file->delFile($_SESSION['mediaCutFile'][0], $_SESSION['mediaCutFile'][1], $name);
+                            $obj_file->delFile(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][0], \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile'][1], $name);
                         }
                     }
 
@@ -268,27 +268,27 @@ class MediaLibrary
 
             if ($check != false) {
                 $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_CUT']);
-                unset($_SESSION['mediaCutFile']);
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCutFile']);
             } else {
                 $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_CUT']);
             }
         }
 
         // copy
-        if (isset($_SESSION['mediaCopyFile']) && !empty($_SESSION['mediaCopyFile']))
+        if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile']) && !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile']))
         {
             $check = true;
 
-            foreach ($_SESSION['mediaCopyFile'][2] as $name) {
+            foreach (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'][2] as $name) {
                 $obj_file = new \File();
 
-                if (is_dir($_SESSION['mediaCopyFile'][0].$name)) {
-                    $this->dirLog=$obj_file->copyDir($_SESSION['mediaCopyFile'][0], $_SESSION['mediaCopyFile'][1], $name, $this->path, $this->webPath, $name);
+                if (is_dir(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'][0].$name)) {
+                    $this->dirLog=$obj_file->copyDir(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'][0], \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'][1], $name, $this->path, $this->webPath, $name);
                     if ($this->dirLog == "error") {
                         $check = false;
                     }
                 } else {
-                    $this->dirLog=$obj_file->copyFile($_SESSION['mediaCopyFile'][0], $name, $this->path, $name);
+                    $this->dirLog=$obj_file->copyFile(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile'][0], $name, $this->path, $name);
                     if ($this->dirLog == "error") {
                         $check = false;
                     }
@@ -299,7 +299,7 @@ class MediaLibrary
 
             if ($check != false) {
                 $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_COPY']);
-                unset($_SESSION['mediaCopyFile']);
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['mediaCopyFile']);
             } else {
                 $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_COPY']);
             }
@@ -399,7 +399,7 @@ class MediaLibrary
             \Message::error($_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT']);
             return;
         } else {
-            $_SESSION['media_highlight_name'] = array($result);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['media_highlight_name'] = array($result);
             \Message::ok($_ARRAYLANG['TXT_MEDIA_MSG_EDIT']);
         }
 
@@ -1199,8 +1199,8 @@ END;
         }
 
         //remeber the uploaded files
-        $files                                    = $_SESSION["media_upload_files_$uploadId"];
-        $_SESSION["media_upload_files_$uploadId"] = array_merge(
+        $files                                    = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()["media_upload_files_$uploadId"];
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()["media_upload_files_$uploadId"] = array_merge(
             $arrFiles, ($files ? $files->toArray() : [])
         );
         /* unwanted files have been deleted, unallowed filenames corrected.

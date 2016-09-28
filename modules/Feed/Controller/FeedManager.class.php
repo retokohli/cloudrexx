@@ -135,12 +135,12 @@ class FeedManager extends FeedLibrary
 
         $objTemplate->setVariable(array(
             'CONTENT_TITLE' => $this->pageTitle,
-            'CONTENT_OK_MESSAGE' => isset($_SESSION['strOkMessage']) ? $_SESSION['strOkMessage'] : '',
-            'CONTENT_STATUS_MESSAGE' => isset($_SESSION['strErrMessage']) ? $_SESSION['strErrMessage'] : '',
+            'CONTENT_OK_MESSAGE' => isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] : '',
+            'CONTENT_STATUS_MESSAGE' => isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] : '',
         ));
 
-        unset($_SESSION['strOkMessage']);
-        unset($_SESSION['strErrMessage']);
+        unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage']);
+        unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage']);
 
         $this->act = $_REQUEST['act'];
         $this->setNavigation();
@@ -175,7 +175,7 @@ class FeedManager extends FeedLibrary
             }
         }
 
-        $_SESSION['strOkMessage'] = $_CORELANG['TXT_SETTINGS_UPDATED'];
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_CORELANG['TXT_SETTINGS_UPDATED'];
     }
 
     function _showNewsML()
@@ -241,12 +241,12 @@ class FeedManager extends FeedLibrary
         $categoryId = isset($_GET['categoryId']) ? intval($_GET['categoryId']) : 0;
         if ($categoryId != 0) {
             if ($this->_objNewsML->deleteCategory($categoryId)) {
-                $_SESSION['strOkMessage'] .= $_ARRAYLANG['TXT_FEED_CATEGORY_SUCCESSFULLY_DELETED']."<br />";
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] .= $_ARRAYLANG['TXT_FEED_CATEGORY_SUCCESSFULLY_DELETED']."<br />";
                 $this->_objNewsML->initCategories();
             } else {
-                $_SESSION['strErrMessage'] .= str_replace('%CATEGORY%', $this->_objNewsML->arrCategories[$categoryId]['name'], $_ARRAYLANG['TXT_FEED_CATEGORY_COULD_NOT_BE_DELETED']."<br />");
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] .= str_replace('%CATEGORY%', $this->_objNewsML->arrCategories[$categoryId]['name'], $_ARRAYLANG['TXT_FEED_CATEGORY_COULD_NOT_BE_DELETED']."<br />");
             }
-            $_SESSION['strErrMessage'] .= str_replace('%CATEGORY%', $this->_objNewsML->arrCategories[$categoryId]['name'], $_ARRAYLANG['TXT_FEED_CATEGORY_COULD_NOT_BE_DELETED']."<br />");
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] .= str_replace('%CATEGORY%', $this->_objNewsML->arrCategories[$categoryId]['name'], $_ARRAYLANG['TXT_FEED_CATEGORY_COULD_NOT_BE_DELETED']."<br />");
         }
     }
 
@@ -261,7 +261,7 @@ class FeedManager extends FeedLibrary
                 $categoryId = intval($categoryId);
                 if ($categoryId != 0) {
                     if (!$this->_objNewsML->deleteCategory($categoryId)) {
-                        $_SESSION['strErrMessage'] .= str_replace('%CATEGORY%', $this->_objNewsML->arrCategories[$categoryId]['name'], $_ARRAYLANG['TXT_FEED_CATEGORY_COULD_NOT_BE_DELETED']."<br />");
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] .= str_replace('%CATEGORY%', $this->_objNewsML->arrCategories[$categoryId]['name'], $_ARRAYLANG['TXT_FEED_CATEGORY_COULD_NOT_BE_DELETED']."<br />");
                         $status = false;
                     }
                 }
@@ -269,9 +269,9 @@ class FeedManager extends FeedLibrary
 
             if ($status) {
                 if (count($_POST['selectedNewsMLCatId'])>1) {
-                    $_SESSION['strOkMessage'] .= $_ARRAYLANG['TXT_FEED_CATEGORIES_SUCCESSFULLY_DELETED']."<br />";
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] .= $_ARRAYLANG['TXT_FEED_CATEGORIES_SUCCESSFULLY_DELETED']."<br />";
                 } else {
-                    $_SESSION['strOkMessage'] .= $_ARRAYLANG['TXT_FEED_CATEGORY_SUCCESSFULLY_DELETED']."<br />";
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] .= $_ARRAYLANG['TXT_FEED_CATEGORY_SUCCESSFULLY_DELETED']."<br />";
                 }
             }
             $this->_objNewsML->initCategories();
@@ -354,10 +354,10 @@ class FeedManager extends FeedLibrary
 
         $id = intval($_GET['publicIdentifier']);
         if ($this->_objNewsML->deleteDocument($id)) {
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_FEED_NEWS_MSG_DELETED_SUCCESSFULLY'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_FEED_NEWS_MSG_DELETED_SUCCESSFULLY'];
         } else {
             $arrNewsMLDocuments = $this->_objNewsML->getDocuments($id);
-            $_SESSION['strErrMessage'] = str_replace('%NAME%', $arrNewsMLDocuments[$id]['headline'], $_ARRAYLANG['TXT_FEED_COULD_NOT_DELETE_NEWS_MSG']);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = str_replace('%NAME%', $arrNewsMLDocuments[$id]['headline'], $_ARRAYLANG['TXT_FEED_COULD_NOT_DELETE_NEWS_MSG']);
         }
     }
 
@@ -378,13 +378,13 @@ class FeedManager extends FeedLibrary
                 $arrNewsMLDocuments = $this->_objNewsML->getDocuments($id);
                 if ($id != 0) {
                     if (!$this->_objNewsML->deleteDocument($id)) {
-                        $_SESSION['strErrMessage'] .= str_replace('%NAME%', $arrNewsMLDocuments[$id]['headline'], $_ARRAYLANG['TXT_FEED_COULD_NOT_DELETE_NEWS_MSG']);
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] .= str_replace('%NAME%', $arrNewsMLDocuments[$id]['headline'], $_ARRAYLANG['TXT_FEED_COULD_NOT_DELETE_NEWS_MSG']);
                         $status = false;
                     }
                 }
             }
             if ($status) {
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_FEED_NEWS_MSGS_DELETED_SUCCESSFULLY'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_FEED_NEWS_MSGS_DELETED_SUCCESSFULLY'];
             }
         }
     }
@@ -496,11 +496,11 @@ class FeedManager extends FeedLibrary
 
             if ($categoryId != 0) {
                 if ($this->_objNewsML->updateCategory($categoryId, $providerId, $categoryName, $arrSubjectCodes, $subjectCodeMethod, $templateHtml, $msgCount, $showPics) === false) {
-                    $_SESSION['strErrMessage'] .= $_ARRAYLANG['TXT_FEED_CATEGORY_COULD_NOT_BE_UPDATED']."<br />";
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] .= $_ARRAYLANG['TXT_FEED_CATEGORY_COULD_NOT_BE_UPDATED']."<br />";
                 }
             } else {
                 if ($this->_objNewsML->addCategory($providerId, $categoryName, $arrSubjectCodes, $subjectCodeMethod, $templateHtml, $msgCount, $showPics) === false) {
-                    $_SESSION['strErrMessage'] .= $_ARRAYLANG['TXT_FEED_COULD_NOT_ADD_CATEGORY']."<br />";
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] .= $_ARRAYLANG['TXT_FEED_COULD_NOT_ADD_CATEGORY']."<br />";
                 }
             }
             $this->_objNewsML->initCategories();
@@ -575,7 +575,7 @@ class FeedManager extends FeedLibrary
             $id   = intval($_GET['id']);
             $time = time();
             $this->showNewsRefresh($id, $time, $this->feedpath);
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_REFRESH_NEWS_FEED'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_REFRESH_NEWS_FEED'];
             $this->goToReplace('');
             die;
         }
@@ -605,13 +605,13 @@ class FeedManager extends FeedLibrary
                     $image     = intval($_POST['form_image']);
                     $status    = intval($_POST['form_status']);
                     $this->showNewsNew($category, $name, $link, $filename, $articles, $cache, $time, $image, $status);
-                    $_SESSION['feedCategorySort'] = $category;
-                    $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_SUCCESSFULL_NEWS'];;
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['feedCategorySort'] = $category;
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_SUCCESSFULL_NEWS'];;
                 }else{
-                    $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_FILL_IN_ALL'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_FILL_IN_ALL'];
                 }
             }else{
-                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_FILL_IN_ALL'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_FILL_IN_ALL'];
             }
 
             $this->goToReplace('');
@@ -620,11 +620,11 @@ class FeedManager extends FeedLibrary
 
         //sortbycategory
         if (isset($_GET['sort']) and $_GET['sort'] != 0){
-            $_SESSION['feedCategorySort'] = $_GET['sort'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['feedCategorySort'] = $_GET['sort'];
             $this->goToReplace('');
             die;
         }elseif (isset($_GET['sort']) and $_GET['sort'] == 0){
-            unset($_SESSION['feedCategorySort']);
+            unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['feedCategorySort']);
             $this->goToReplace('');
             die;
         }
@@ -634,7 +634,7 @@ class FeedManager extends FeedLibrary
             if ($_POST['form_delete'] != ''){
                 $ids = $_POST['form_selected'];
                 $this->showNewsDelete($ids);
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_DELETED_NEWS'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_DELETED_NEWS'];
                 $this->goToReplace('');
                 die;
             }
@@ -647,7 +647,7 @@ class FeedManager extends FeedLibrary
                 if ($_POST['form_deactivate'] != ''){
                     $this->showNewsChange($ids, 0);
                 }
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_STATUS'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_STATUS'];
                 $this->goToReplace('');
                 die;
             }
@@ -658,7 +658,7 @@ class FeedManager extends FeedLibrary
             $ids = $_POST['form_id'];
             $pos = $_POST['form_pos'];
             $this->showNewsChangePos($ids, $pos);
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_SORT'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_SORT'];
             $this->goToReplace('');
             die;
         }
@@ -666,7 +666,7 @@ class FeedManager extends FeedLibrary
             $ids = $_POST['form_id'];
             $pos = $_POST['form_pos'];
             $this->showNewsChangePos($ids, $pos);
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_SORT'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_SORT'];
             $this->goToReplace('');
             die;
         }
@@ -702,8 +702,8 @@ class FeedManager extends FeedLibrary
 
             if ($objResult2->RecordCount() != 0){
                 $selected = '';
-                if (   isset($_SESSION['feedCategorySort'])
-                    && $_SESSION['feedCategorySort'] == $objResult->fields['id']) {
+                if (   isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['feedCategorySort'])
+                    && \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['feedCategorySort'] == $objResult->fields['id']) {
                     $selected = ' selected="selected"';
                 }
 
@@ -753,7 +753,7 @@ class FeedManager extends FeedLibrary
         }
 
         //table
-        if (!isset($_SESSION['feedCategorySort']) or $_SESSION['feedCategorySort'] == 0){
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['feedCategorySort']) or \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['feedCategorySort'] == 0){
             $query = "SELECT id,
                                name,
                                lang
@@ -765,17 +765,17 @@ class FeedManager extends FeedLibrary
                                name,
                                lang
                           FROM ".DBPREFIX."module_feed_category
-                         WHERE id = '".$_SESSION['feedCategorySort']."'
+                         WHERE id = '".\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['feedCategorySort']."'
                       ORDER BY pos";
             $objResult = $objDatabase->Execute($query);
 
             $query = "SELECT id
                            FROM ".DBPREFIX."module_feed_news
-                          WHERE subid = '".$_SESSION['feedCategorySort']."'";
+                          WHERE subid = '".\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['feedCategorySort']."'";
             $objResult2 = $objDatabase->Execute($query);
 
             if ($objResult2->RecordCount() == 0){
-                unset($_SESSION['feedCategorySort']);
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['feedCategorySort']);
                 $query = "SELECT id,
                                    name,
                                    lang
@@ -939,7 +939,7 @@ class FeedManager extends FeedLibrary
                 //copy
                 $filename = "feed_".$time."_".basename($link);
                 if (!copy($link, $this->feedpath.$filename)){
-                    $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_LINK_NO_NEWS'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_LINK_NO_NEWS'];
                     $this->goToReplace('');
                     die;
                 }
@@ -958,7 +958,7 @@ class FeedManager extends FeedLibrary
                 }
                 if ($content == ''){
                     unlink($this->feedpath.$filename);
-                    $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_LINK_NO_NEWS'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_LINK_NO_NEWS'];
                     $this->goToReplace('');
                     die;
                 }
@@ -977,7 +977,7 @@ class FeedManager extends FeedLibrary
                                     image = '".$image."'";
             $objResult = $objDatabase->Execute($query);
         } else{
-            $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_EXISTING_NEWS'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_EXISTING_NEWS'];
             $this->goToReplace('');
             die;
         }
@@ -1083,20 +1083,20 @@ class FeedManager extends FeedLibrary
                     $status   = intval($_POST['form_status']);
 
                     $this->showEditSetNew($id, $subid, $name, $link, $filename, $articles, $cache, $time, $image, $status);
-                    $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_SUCCESSFULL_EDIT_NEWS'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_SUCCESSFULL_EDIT_NEWS'];
                     $this->goToReplace('');
                     die;
                 }
                 else
                 {
-                    $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_FILL_IN_ALL'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_FILL_IN_ALL'];
                     $this->goToReplace('&act=edit&id='.$_POST['form_id']);
                     die;
                 }
             }
             else
             {
-                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_FILL_IN_ALL'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_FILL_IN_ALL'];
                 $this->goToReplace('&act=edit&id='.$_POST['form_id']);
                 die;
             }
@@ -1261,7 +1261,7 @@ class FeedManager extends FeedLibrary
             if ($link != '') {
                 $filename = "feed_".$time."_".basename($link);
                 if (!copy($link, $this->feedpath.$filename)) {
-                    $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_NEWS_FEED'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_NEWS_FEED'];
                     $this->goToReplace('&act=edit&id='.$id);
                     die;
                 }
@@ -1276,7 +1276,7 @@ class FeedManager extends FeedLibrary
                 }
                 if ($content == '') {
                     unlink($this->feedpath.$filename);
-                    $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_NEWS_FEED'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_NEWS_FEED'];
                     $this->goToReplace('&act=edit&id='.$id);
                     die;
                 }
@@ -1295,7 +1295,7 @@ class FeedManager extends FeedLibrary
                          WHERE id = '".$id."'";
             $objResult = $objDatabase->Execute($query);
         } else {
-            $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_EXISTING_NEWS'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_EXISTING_NEWS'];
             $this->goToReplace('&act=edit&id='.$id);
             die;
         }
@@ -1303,7 +1303,7 @@ class FeedManager extends FeedLibrary
         //delete old #02
         if ($old_link != '') {
             if (!unlink($this->feedpath.$old_filename)) {
-                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_DELETE'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_DELETE'];
                 $this->goToReplace('');
                 die;
             }
@@ -1315,7 +1315,7 @@ class FeedManager extends FeedLibrary
     {
         global $objDatabase, $_ARRAYLANG, $_LANGID, $_CONFIG;
 
-        unset($_SESSION['feedCategorySort']);
+        unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['feedCategorySort']);
 
         //new
         if (isset($_GET['new']) and $_GET['new'] == 1) {
@@ -1325,9 +1325,9 @@ class FeedManager extends FeedLibrary
                 $status = intval($_POST['form_status']);
                 $time   = time();
                 $this->showCategoryNew($name, $lang, $status, $time);
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_SUCCESSFULL_CAT'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_SUCCESSFULL_CAT'];
             } else {
-                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_FILL_IN_ALL'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_FILL_IN_ALL'];
             }
 
             $this->goToReplace('&act=category');
@@ -1338,7 +1338,7 @@ class FeedManager extends FeedLibrary
             if ($_POST['form_discharge'] != '') {
                 $ids = $_POST['form_selected'];
                 $this->showCategoryDischarge($ids);
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_SUCCESSFUL_DISCHARGE'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_SUCCESSFUL_DISCHARGE'];
                 $this->goToReplace('&act=category');
                 die;
             }
@@ -1358,7 +1358,7 @@ class FeedManager extends FeedLibrary
                 if ($_POST['form_deactivate'] != '') {
                     $this->showCategoryChange($ids, 0);
                 }
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_STATUS'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_STATUS'];
                 $this->goToReplace('&act=category');
                 die;
             }
@@ -1368,7 +1368,7 @@ class FeedManager extends FeedLibrary
             $ids = $_POST['form_id'];
             $pos = $_POST['form_pos'];
             $this->showCategoryChangePos($ids, $pos);
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_SORT'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_SORT'];
             $this->goToReplace('&act=category');
             die;
         }
@@ -1537,7 +1537,7 @@ class FeedManager extends FeedLibrary
                                     time = '".$time."'";
             $objResult = $objDatabase->Execute($query);
         } else {
-            $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_EXISTING_CAT'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_EXISTING_CAT'];
             $this->goToReplace('&act=category');
             die;
         }
@@ -1562,7 +1562,7 @@ class FeedManager extends FeedLibrary
 
                 if ($link != '') {
                     if (!unlink($this->feedpath.$filename)) {
-                        $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_DELETE'];
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_DELETE'];
                         $this->goToReplace('&act=category');
                         die;
                     }
@@ -1613,9 +1613,9 @@ class FeedManager extends FeedLibrary
         }
 
         if ($y == 0) {
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_SUCCESSFUL_DELETE'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_SUCCESSFUL_DELETE'];
         } else {
-            $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_UNSUCCESSFUL_DELETE'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_UNSUCCESSFUL_DELETE'];
         }
     }
 
@@ -1668,11 +1668,11 @@ class FeedManager extends FeedLibrary
                 $lang     = intval($_POST['form_lang']);
 
                 $this->showCatEditSet($id, $name, $status, $time, $lang);
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_SUCCESSFUL_EDIT_CAT'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_SUCCESSFUL_EDIT_CAT'];
                 $this->goToReplace('&act=category');
                 die;
             } else {
-                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_FILL_IN_ALL'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_FILL_IN_ALL'];
                 $this->goToReplace('&act=catedit&id='.$_POST['form_id']);
                 die;
             }
@@ -1767,7 +1767,7 @@ class FeedManager extends FeedLibrary
                          WHERE id = '".$id."'";
             $objResult = $objDatabase->Execute($query);
         } else {
-            $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_EXISTING_CAT'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_FEED_MESSAGE_ERROR_EXISTING_CAT'];
             $this->goToReplace('&act=catedit&id='.$id);
             die;
         }

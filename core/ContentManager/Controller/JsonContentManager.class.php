@@ -88,10 +88,10 @@ class JsonContentManager implements JsonAdapter {
             $arrToggleStatuses[contrexx_input2raw($toggleKey)] = contrexx_input2raw($toggleValue);
         }
 
-        if (!isset($_SESSION['contentManager'])) {
-            $_SESSION['contentManager'] = array();
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contentManager'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contentManager'] = array();
         }
-        $_SESSION['contentManager']['toggleStatuses'] = $arrToggleStatuses;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contentManager']['toggleStatuses'] = $arrToggleStatuses;
     }
 
     /**

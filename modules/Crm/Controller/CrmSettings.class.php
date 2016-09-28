@@ -114,13 +114,13 @@ class CrmSettings extends CrmLibrary
 
         switch ($mes) {
         case 'activate':
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'];
             break;
         case 'deactivate':
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
             break;
         case 'error':
-            $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_DEFAULT_CUSTOMER_TYPE_STATUS_ERROR'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_CRM_DEFAULT_CUSTOMER_TYPE_STATUS_ERROR'];
             break;
         }
 
@@ -179,7 +179,7 @@ class CrmSettings extends CrmLibrary
 
             $objDatabase->Execute($query);
 
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CHANGES_UPDATED_SUCCESSFULLY'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CHANGES_UPDATED_SUCCESSFULLY'];
         }
 
         if (isset($_GET['chg']) && $_GET['chg'] == 1) {
@@ -189,7 +189,7 @@ class CrmSettings extends CrmLibrary
                           WHERE    id = '".intval($_POST['form_id'][$x])."'";
                 $objDatabase->Execute($query);
             }
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SORTING_COMPLETE'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SORTING_COMPLETE'];
         }
 
         $sortField            = isset($_GET['sortf']) ? intval($_GET['sortf']) : 0;
@@ -327,7 +327,7 @@ class CrmSettings extends CrmLibrary
             $objResult = $objDatabase->Execute($searchingQuery);
 
             if (!$objResult->EOF) {
-                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPE_ALREADY_EXIST'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPE_ALREADY_EXIST'];
                 $success = false;
             } else {
                 $insertCustomerTypes = "UPDATE `".DBPREFIX."module_".$this->moduleNameLC."_customer_types`
@@ -338,7 +338,7 @@ class CrmSettings extends CrmLibrary
 
                 $db = $objDatabase->Execute($insertCustomerTypes);
                 if ($db)
-                    $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES_UPDATED_SUCCESSFULLY'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES_UPDATED_SUCCESSFULLY'];
                 else
                     $success = false;
             }
@@ -404,7 +404,7 @@ class CrmSettings extends CrmLibrary
         $objResult = $objDatabase->Execute($searchingQuery);
 
         if (!$objResult->EOF) {
-            $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPE_ALREADY_EXIST'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPE_ALREADY_EXIST'];
             $success = false;
         } else {
             $insertCustomerTypes = "INSERT INTO `".DBPREFIX."module_".$this->moduleNameLC."_customer_types`
@@ -414,7 +414,7 @@ class CrmSettings extends CrmLibrary
                                                ";
             $db = $objDatabase->Execute($insertCustomerTypes);
             if ($db)
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES_ADDED_SUCCESSFULLY'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES_ADDED_SUCCESSFULLY'];
             else
                 $success = false;
         }
@@ -475,9 +475,9 @@ class CrmSettings extends CrmLibrary
             $this->_objTpl->setVariable(array(
                     'TXT_DISPLAY_ADD'      =>    "block",
                     'TXT_DISPLAY_ENTRIES'  =>    "none",
-                    'TXT_DESCRIPTION_VALUE' => $_SESSION['description']
+                    'TXT_DESCRIPTION_VALUE' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['description']
             ));
-            unset($_SESSION['description']);
+            unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['description']);
         } else {
             $this->_objTpl->setVariable(array(
                     'TXT_DISPLAY_ADD'      =>    "none",
@@ -492,7 +492,7 @@ class CrmSettings extends CrmLibrary
                              WHERE id = '".intval($_POST['form_id'][$x])."'";
                 $objDatabase->Execute($query);
             }
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SORTING_COMPLETE'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SORTING_COMPLETE'];
         }
 
         if (isset($_POST['currencyfield_submit'])) {
@@ -504,7 +504,7 @@ class CrmSettings extends CrmLibrary
                                   default_currency = '".intval($default)."'
                              WHERE id = '".intval($_POST['form_id'][$x])."'";
                 $objDatabase->Execute($query);
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CHANGES_UPDATED_SUCCESSFULLY'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CHANGES_UPDATED_SUCCESSFULLY'];
             }
         }
 
@@ -656,7 +656,7 @@ class CrmSettings extends CrmLibrary
             $objData = $objDatabase->Execute($searchDuplicateQuery);
 
             if ($objData->RecordCount()) {
-                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_ALREADY_EXISTS'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_ALREADY_EXISTS'];
             } else {
                 $updateProjectTypes = "UPDATE `".DBPREFIX."module_{$this->moduleNameLC}_currency`
                                      SET  `name`  = '$label',
@@ -665,7 +665,7 @@ class CrmSettings extends CrmLibrary
                                           `hourly_rate` = '".json_encode($hrlyRate)."'
                                      WHERE id = $id";
                 $objDatabase->Execute($updateProjectTypes);
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_UPDATED_SUCCESSFULLY'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_UPDATED_SUCCESSFULLY'];
 
                 \Cx\Core\Csrf\Controller\Csrf::header("location:./index.php?cmd=".$this->moduleName."&act=settings&tpl=currency");
                 exit();
@@ -748,7 +748,7 @@ class CrmSettings extends CrmLibrary
             }
 
             if (!$objResult->EOF) {
-                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_ALREADY_EXISTS'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_ALREADY_EXISTS'];
                 return;
             } else {
                 $activeValue = isset($_POST['activeStatus']) ? 1 : 0;
@@ -760,7 +760,7 @@ class CrmSettings extends CrmLibrary
                                         `hourly_rate`       = '".json_encode($hrlyRate)."'";
 
                 $objDatabase->Execute($insertQuery);
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_ADDED_SUCCESSFULLY'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_ADDED_SUCCESSFULLY'];
             }
         }
         $this->_objTpl->setVariable(array(
@@ -826,7 +826,7 @@ class CrmSettings extends CrmLibrary
         $msg = base64_decode($_REQUEST['msg']);
         switch ($msg) {
         case 'taskUpdated':
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_TYPE_UPDATED_SUCCESSFULLY'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_TYPE_UPDATED_SUCCESSFULLY'];
             break;
         default:
             break;
@@ -860,12 +860,12 @@ class CrmSettings extends CrmLibrary
         if (!empty ($action)) {
             $this->saveSortingTaskType($tasktypeSorting);
             if ($action == 'savesorting' || $action == 'Save')
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SORTING_COMPLETE'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SORTING_COMPLETE'];
         }
 
         if ($_POST['saveTaskType']) {
             $this->saveTaskTypes();
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_TYPE_ADDED_SUCCESSFULLY'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_TYPE_ADDED_SUCCESSFULLY'];
         }
 
         $this->getModifyTaskTypes();
@@ -963,7 +963,7 @@ class CrmSettings extends CrmLibrary
             $query .= "END WHERE id IN ($ids)";
             $objResult = $objDatabase->Execute($query);
 
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_TYPE_STATUS_CHANGED_SUCCESSFULLY'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_TYPE_STATUS_CHANGED_SUCCESSFULLY'];
 
         }
     }
@@ -1033,7 +1033,7 @@ class CrmSettings extends CrmLibrary
             $query = "DELETE FROM `".DBPREFIX."module_".$this->moduleNameLC."_task_types` WHERE id IN ($ids) AND system_defined != 1";
             $objResult = $objDatabase->Execute($query);
 
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_TYPE_DELETED_SUCCESSFULLY'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_TYPE_DELETED_SUCCESSFULLY'];
         }
     }
 
@@ -1100,7 +1100,7 @@ class CrmSettings extends CrmLibrary
                 $objDatabase->Execute($updateAllowPm);
             }
 
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CHANGES_UPDATED_SUCCESSFULLY'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CHANGES_UPDATED_SUCCESSFULLY'];
         }
 
         $settings = $this->getSettings();
@@ -1499,9 +1499,9 @@ class CrmSettings extends CrmLibrary
             $query = \SQL::insert('module_' . $this->moduleNameLC . '_company_size', $fields, array('escape' => true));
             $db = $objDatabase->Execute($query);
             if ($db) {
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_ADDED_SUCCESS'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_ADDED_SUCCESS'];
             } else {
-                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_ADDED_ERROR'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_ADDED_ERROR'];
             }
         }
 
@@ -1536,11 +1536,11 @@ class CrmSettings extends CrmLibrary
             }
             $objResult = $objDatabase->Execute($query);
             if ($objResult) {
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_UPDATED_SUCCESS'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_UPDATED_SUCCESS'];
                 \Cx\Core\Csrf\Controller\Csrf::header("location:./index.php?cmd=" . $this->moduleName . "&act=settings&tpl=companySize");
                 exit();
             }else{
-                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_UPDATE_ERROR'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_UPDATE_ERROR'];
             }
         }
 

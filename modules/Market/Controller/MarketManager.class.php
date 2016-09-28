@@ -498,44 +498,44 @@ class MarketManager extends MarketLibrary
             $like     = "'%".contrexx_addslashes($_POST['term'])."%' OR description LIKE '%".contrexx_addslashes($_POST['term'])."%' OR id LIKE '%".intval($_POST['term'])."%'";
         }
 
-        if (!isset($_SESSION['market'])) {
-            $_SESSION['market'] = array();
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['market'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['market'] = array();
         }
 
         // Sort
-        if (empty ($_SESSION['market']['sort'])) {
-            $_SESSION['market']['sort'] = 'title ASC';
+        if (empty (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['market']['sort'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['market']['sort'] = 'title ASC';
         }
         if (isset($_GET['sort'])) {
             switch ($_GET['sort']) {
                 case 'title':
-                    $_SESSION['market']['sort'] =
-                        ($_SESSION['market']['sort'] == "title DESC"
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['market']['sort'] =
+                        (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['market']['sort'] == "title DESC"
                             ? "title ASC" : "title DESC");
                     break;
                 case 'type':
-                    $_SESSION['market']['sort'] =
-                        ($_SESSION['market']['sort'] == "type DESC"
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['market']['sort'] =
+                        (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['market']['sort'] == "type DESC"
                             ? "type ASC" : "type DESC");
                     break;
                 case 'status':
-                    $_SESSION['market']['sort'] =
-                        ($_SESSION['market']['sort'] == "status DESC"
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['market']['sort'] =
+                        (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['market']['sort'] == "status DESC"
                             ? "status ASC" : "status DESC");
                     break;
                 case 'addedby':
-                    $_SESSION['market']['sort'] =
-                        ($_SESSION['market']['sort'] == "userid DESC"
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['market']['sort'] =
+                        (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['market']['sort'] == "userid DESC"
                             ? "userid ASC" : "userid DESC");
                     break;
                 case 'regdate':
-                    $_SESSION['market']['sort'] =
-                        ($_SESSION['market']['sort'] == "regdate DESC"
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['market']['sort'] =
+                        (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['market']['sort'] == "regdate DESC"
                             ? "regdate ASC" : "regdate DESC");
                     break;
                 case 'id':
-                    $_SESSION['market']['sort'] =
-                        ($_SESSION['market']['sort'] == "id DESC"
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['market']['sort'] =
+                        (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['market']['sort'] == "id DESC"
                             ? "id ASC" : "id DESC");
                     break;
             }
@@ -568,7 +568,7 @@ class MarketManager extends MarketLibrary
             'TXT_SEARCH'                =>    $_ARRAYLANG['TXT_SEARCH'],
         ));
 
-        $this->getEntries($_SESSION['market']['sort'], $where, $like);
+        $this->getEntries(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['market']['sort'], $where, $like);
 
         if (count($this->entries) != 0) {
                $i = 0;

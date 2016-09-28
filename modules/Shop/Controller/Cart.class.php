@@ -59,14 +59,14 @@ class Cart
      * Initialises the Cart
      *
      * Doesn't change anything if it already exists.
-     * Otherwise, resets the Cart array in $_SESSION['shop']['cart'].
+     * Otherwise, resets the Cart array in \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart'].
      * Thank you for respecting its privacy.
      * @static
      */
     static function init()
     {
-        if (empty($_SESSION['shop']['cart'])) {
-            $_SESSION['shop']['cart'] = array(
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart'] = array(
                 'items' => array(),
                 'shipment' => false,
                 'total_price' => 0.00,
@@ -130,7 +130,7 @@ class Cart
                   self::get_price()
                 + (Vat::isEnabled() && !Vat::isIncluded()
                     ? self::get_vat_amount() : 0)),
-            'item_count' => $_SESSION['shop']['cart']['total_items'],
+            'item_count' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['total_items'],
             'unit' => Currency::getActiveCurrencySymbol()
         );
         $objJson = new \Services_JSON();
@@ -218,7 +218,7 @@ class Cart
      */
     static function add_product($arrNewProduct, $old_cart_id=null)
     {
-//DBG::log("Cart::add_product(): Entered, Items: ".var_export($_SESSION['shop']['cart']['items'], true));
+//DBG::log("Cart::add_product(): Entered, Items: ".var_export(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['items'], true));
         if (empty($arrNewProduct['id'])) {
 //DBG::log("Cart::add_product(): No ID");
             return;
@@ -230,7 +230,7 @@ class Cart
             return;
         }
         $quantity = intval($arrNewProduct['quantity']);
-        $products = $_SESSION['shop']['cart']['items']->toArray(); // $_SESSION is a object so convert into array
+        $products = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['items']->toArray(); // \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession() is a object so convert into array
         $cart_id = null;
         // Add as a new product if true
         $new = true;
@@ -342,7 +342,7 @@ class Cart
 //DBG::log("Cart::add_product(): Old Product: Adding quantity $quantity to {$products[$cart_id]['quantity']} in cart ID $cart_id (old ID $old_cart_id)");
                 $products[$cart_id]['quantity'] +=
                     $quantity;
-//DBG::log("Cart::add_product(): Old Product: Updated quantity to {$_SESSION['shop']['cart']['items'][$cart_id]['quantity']}");
+//DBG::log("Cart::add_product(): Old Product: Updated quantity to {\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['items'][$cart_id]['quantity']}");
             }
         }
         // Add options
@@ -381,7 +381,7 @@ class Cart
                 }
             }
         }
-        $_SESSION['shop']['cart']['items'] = $products;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['items'] = $products;
 //DBG::log("Cart::add_product(): New options: ".var_export($products[$cart_id]['options'], true));
 //DBG::log("Cart::add_product(): Leaving");
     }
@@ -410,17 +410,17 @@ class Cart
         }
 //DBG::log("Cart::update_quantity(): Quantities: ".var_export($_REQUEST['quantity'], true));
         // Update quantity to cart
-        if (empty($_SESSION['shop']['cart']['items'])) return;
-        foreach (array_keys($_SESSION['shop']['cart']['items']->toArray()) as $cartId) {
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['items'])) return;
+        foreach (array_keys(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['items']->toArray()) as $cartId) {
             // Remove Products
             if (isset($_REQUEST['quantity'][$cartId])) {
                 if (intval($_REQUEST['quantity'][$cartId] < 1)) {
-                    unset($_SESSION['shop']['cart']['items'][$cartId]);
+                    unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['items'][$cartId]);
                 } else {
-                    $_SESSION['shop']['cart']['items'][$cartId]['quantity'] =
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['items'][$cartId]['quantity'] =
                         intval($_REQUEST['quantity'][$cartId]);
                 }
-//DBG::log("Cart::update_quantity(): Cart ID $cartId quantity: {$_SESSION['shop']['cart']['items'][$cartId]['quantity']}");
+//DBG::log("Cart::update_quantity(): Cart ID $cartId quantity: {\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['items'][$cartId]['quantity']}");
             }
         }
     }
@@ -447,19 +447,19 @@ class Cart
     {
         global $_ARRAYLANG;
 
-//DBG::log("Cart::update(): Cart: ".var_export($_SESSION['shop']['cart'], true));
-        if (empty($_SESSION['shop']['cart'])) {
+//DBG::log("Cart::update(): Cart: ".var_export(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart'], true));
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart'])) {
             self::init();
             return true;//self::get_products_array();
         }
         // No shipment by default.  Only if at least one Product with
         // type "delivery" is encountered, it is switched on.
-        $_SESSION['shop']['cart']['shipment'] = false;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['shipment'] = false;
         $total_discount_amount = 0;
-        $coupon_code = (isset($_SESSION['shop']['coupon_code'])
-            ? $_SESSION['shop']['coupon_code'] : '');
-        $payment_id = (isset($_SESSION['shop']['paymentId'])
-            ? $_SESSION['shop']['paymentId'] : 0);
+        $coupon_code = (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['coupon_code'])
+            ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['coupon_code'] : '');
+        $payment_id = (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'])
+            ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'] : 0);
         $customer_id = ($objCustomer ? $objCustomer->id() : 0);
 //DBG::log("Cart::update(): Coupon Code: $coupon_code");
         self::$products = array();
@@ -470,7 +470,7 @@ class Cart
         $total_discount_amount = 0;
 //DBG::log("Cart::update(): Products: ".var_export($products, true));
         // Loop 1: Collect necessary Product data
-        $products = $_SESSION['shop']['cart']['items']->toArray();
+        $products = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['items']->toArray();
         foreach ($products as $cart_id => &$product) {
             $objProduct = Product::getById($product['id']);
             if (!$objProduct) {
@@ -556,7 +556,7 @@ class Cart
             // Requires shipment if the distribution type is 'delivery'
             if ($handler == 'delivery') {
 //DBG::log("Cart::update(): Product ID ".$objProduct->id()." needs delivery");
-                $_SESSION['shop']['cart']['shipment'] = true;
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['shipment'] = true;
             }
             $weight = $itemweight * $quantity;
             $vat_rate = Vat::getRate($objProduct->vat_id());
@@ -590,7 +590,7 @@ class Cart
             );
 //DBG::log("Cart::update(): Loop 1: Product: ".var_export(self::$products[$cart_id], true));
         }
-        $_SESSION['shop']['cart']['items'] = $products;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['items'] = $products;
         // Loop 2: Calculate Coupon discounts and VAT
         $objCoupon = null;
         $hasCoupon = false;
@@ -671,16 +671,16 @@ class Cart
             \Message::clear();
         }
 
-        $_SESSION['shop']['cart']['total_discount_amount'] =
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['total_discount_amount'] =
             $total_discount_amount;
-        $_SESSION['shop']['cart']['total_price'] =
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['total_price'] =
             Currency::formatPrice($total_price);
-        $_SESSION['shop']['cart']['total_vat_amount'] =
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['total_vat_amount'] =
             Currency::formatPrice($total_vat_amount);
-//DBG::log("Cart::update(): Updated Cart (session): VAT amount: ".$_SESSION['shop']['cart']['total_vat_amount']);
-        $_SESSION['shop']['cart']['total_items'] = $items;
-        $_SESSION['shop']['cart']['total_weight'] = $total_weight; // In grams!
-//DBG::log("Cart::update(): Updated Cart (session): ".var_export($_SESSION['shop']['cart'], true));
+//DBG::log("Cart::update(): Updated Cart (session): VAT amount: ".\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['total_vat_amount']);
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['total_items'] = $items;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['total_weight'] = $total_weight; // In grams!
+//DBG::log("Cart::update(): Updated Cart (session): ".var_export(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart'], true));
         return true;
     }
 
@@ -693,8 +693,8 @@ class Cart
      */
     static function get_item_count()
     {
-        if (empty($_SESSION['shop']['cart']['total_items'])) return 0;
-        return $_SESSION['shop']['cart']['total_items'];
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['total_items'])) return 0;
+        return \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['total_items'];
     }
 
 
@@ -704,7 +704,7 @@ class Cart
      */
     static function is_empty()
     {
-        return empty($_SESSION['shop']['cart']['items']);
+        return empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['items']);
     }
 
 
@@ -716,9 +716,9 @@ class Cart
      */
     static function get_product_id($cart_id)
     {
-        if (empty($_SESSION['shop']['cart']['items'][$cart_id]['id']))
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['items'][$cart_id]['id']))
             return null;
-        return $_SESSION['shop']['cart']['items'][$cart_id]['id'];
+        return \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['items'][$cart_id]['id'];
     }
 
 
@@ -733,7 +733,7 @@ class Cart
      */
     static function get_products_array()
     {
-        return $_SESSION['shop']['cart']['items']->toArray();
+        return \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['items']->toArray();
     }
 
 
@@ -745,9 +745,9 @@ class Cart
      */
     static function get_options_array($cart_id, $attribute_id)
     {
-        if (empty($_SESSION['shop']['cart']['items'][$cart_id]['options'][$attribute_id]))
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['items'][$cart_id]['options'][$attribute_id]))
             return null;
-        return $_SESSION['shop']['cart']['items'][$cart_id]['options'][$attribute_id];
+        return \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['items'][$cart_id]['options'][$attribute_id];
     }
 
 
@@ -759,7 +759,7 @@ class Cart
      */
     static function get_price()
     {
-        return $_SESSION['shop']['cart']['total_price'];
+        return \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['total_price'];
     }
 
 
@@ -771,7 +771,7 @@ class Cart
      */
     static function get_weight()
     {
-        return $_SESSION['shop']['cart']['total_weight'];
+        return \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['total_weight'];
     }
 
 
@@ -784,8 +784,8 @@ class Cart
      */
     static function needs_shipment()
     {
-        return (isset($_SESSION['shop']['cart']['shipment'])
-            ? $_SESSION['shop']['cart']['shipment'] : FALSE);
+        return (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['shipment'])
+            ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['shipment'] : FALSE);
     }
 
 
@@ -797,7 +797,7 @@ class Cart
      */
     static function get_vat_amount()
     {
-        return $_SESSION['shop']['cart']['total_vat_amount'];
+        return \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['total_vat_amount'];
     }
 
 
@@ -809,7 +809,7 @@ class Cart
      */
     static function get_discount_amount()
     {
-        return $_SESSION['shop']['cart']['total_discount_amount'];
+        return \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart']['total_discount_amount'];
     }
 
 
@@ -820,7 +820,7 @@ class Cart
      */
     static function destroy()
     {
-        $_SESSION['shop']['cart'] = null;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['cart'] = null;
         self::update(null);
     }
 
@@ -934,8 +934,8 @@ die("Cart::view(): ERROR: No template");
                 $objTemplate->touchBlock('shopCartEmpty');
                 $objTemplate->parse('shopCartEmpty');
             }
-            if ($_SESSION['shop']['previous_product_ids']) {
-                $ids = $_SESSION['shop']['previous_product_ids']->toArray();
+            if (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['previous_product_ids']) {
+                $ids = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['previous_product_ids']->toArray();
                 Shop::view_product_overview($ids);
             }
         }
@@ -960,8 +960,8 @@ die("Cart::view(): ERROR: No template");
 //DBG::log("Coupons available");
             $objTemplate->setVariable(array(
                 'SHOP_DISCOUNT_COUPON_CODE' =>
-                    (isset ($_SESSION['shop']['coupon_code'])
-                        ? $_SESSION['shop']['coupon_code'] : ''),
+                    (isset (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['coupon_code'])
+                        ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['coupon_code'] : ''),
             ));
             if ($objTemplate->blockExists('shopCoupon')) {
                 $objTemplate->parse('shopCoupon');
@@ -1006,11 +1006,11 @@ die("Cart::view(): ERROR: No template");
                 'TXT_SHIP_COUNTRY' => $_ARRAYLANG['TXT_SHIP_COUNTRY'],
                 // Old, obsolete
                 'SHOP_COUNTRIES_MENU' => \Cx\Core\Country\Controller\Country::getMenu(
-                    'countryId2', $_SESSION['shop']['countryId2'],
+                    'countryId2', \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2'],
                         true, "document.forms['shopForm'].submit()"),
                 // New; use this so you can apply CSS more easily
                 'SHOP_COUNTRIES_MENUOPTIONS' => \Cx\Core\Country\Controller\Country::getMenuoptions(
-                    $_SESSION['shop']['countryId2']),
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['countryId2']),
             ));
         }
         if (   \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_min','Shop') > 0
@@ -1076,8 +1076,8 @@ die("Cart::view(): ERROR: No template");
         }
 // Optional!
         self::destroy();
-        $_SESSION['shop']['shipperId'] = $order->shipment_id();
-        $_SESSION['shop']['paymentId'] = $order->payment_id();
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['shipperId'] = $order->shipment_id();
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['paymentId'] = $order->payment_id();
         $order_attributes = $order->getOptionArray();
         $count = null;
         $arrAttributes = Attributes::getArray($count, 0, -1, null, array());
@@ -1191,10 +1191,10 @@ die("Cart::view(): ERROR: No template");
     static function restored_order_id($order_id=null)
     {
         if (isset($order_id)) {
-            $_SESSION['shop']['restored_order_id'] = max(0, intval($order_id));
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['restored_order_id'] = max(0, intval($order_id));
         }
-        return (isset($_SESSION['shop']['restored_order_id'])
-            ? $_SESSION['shop']['restored_order_id']
+        return (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['restored_order_id'])
+            ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['restored_order_id']
             : 0);
     }
 

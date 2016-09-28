@@ -532,8 +532,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $arrSettings = \User_Setting::getSettings();
 
         $objUser = null;
-        if (!empty($_SESSION['user_id'])) {
-            $objUser = \FWUser::getFWUserObject()->objUser->getUser($_SESSION['user_id']);
+        if (!empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['user_id'])) {
+            $objUser = \FWUser::getFWUserObject()->objUser->getUser(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['user_id']);
             if ($objUser) {
                 $objUser->releaseRestoreKey();
 
@@ -598,8 +598,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 && $objUser->signUp()
             ) {
                 if ($this->handleSignUp($objUser)) {
-                    if (isset($_SESSION['user_id'])) {
-                        unset($_SESSION['user_id']);
+                    if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['user_id'])) {
+                        unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['user_id']);
                     }
                     $this->_objTpl->setVariable('ACCESS_SIGNUP_MESSAGE', implode('<br />', $this->arrStatusMsg['ok']));
                     $this->_objTpl->parse('access_signup_store_success');

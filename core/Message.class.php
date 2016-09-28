@@ -79,7 +79,7 @@ class Message
      */
     static function clear()
     {
-        unset($_SESSION['messages']);
+        unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages']);
     }
 
 
@@ -97,9 +97,9 @@ class Message
     static function have($class=null)
     {
         if (empty($class)) {
-            return !empty($_SESSION['messages']);
+            return !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages']);
         }
-        return !empty($_SESSION['messages'][$class]);
+        return !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'][$class]);
     }
 
 
@@ -122,13 +122,13 @@ class Message
      */
     static function save()
     {
-        if (empty($_SESSION['messages'])) {
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'])) {
             return;
         }
-        if (empty($_SESSION['messages_stack'])) {
-            $_SESSION['messages_stack'] = array();
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages_stack'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages_stack'] = array();
         }
-        $_SESSION['messages_stack'] = array_push($_SESSION['messages_stack']->toArray(), $_SESSION['messages']->toArray());
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages_stack'] = array_push(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages_stack']->toArray(), \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages']->toArray());
         self::clear();
     }
 
@@ -140,11 +140,11 @@ class Message
      */
     static function restore()
     {
-        if (empty($_SESSION['messages_stack'])) {
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages_stack'])) {
             self::clear();
             return;
         }
-        $_SESSION['messages'] = array_pop(self::toArray($_SESSION['messages_stack']));
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'] = array_pop(self::toArray(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages_stack']));
     }
 
 
@@ -165,14 +165,14 @@ class Message
         if (!\Cx\Core\Session\Model\Entity\Session::isInitialized()) {
             throw new \Exception("\Message can't be used at this point as no session has been initialized yet!");
         }
-        if (empty($_SESSION['messages'])) {
-            $_SESSION['messages'] = array();
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'] = array();
         }
-        if (empty($_SESSION['messages'][$class])) {
-            $_SESSION['messages'][$class] = array();
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'][$class])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'][$class] = array();
         }
 
-        $_SESSION['messages'][$class][] = $message;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'][$class][] = $message;
     }
 
 
@@ -241,7 +241,7 @@ class Message
      */
     static function show($objTemplateLocal=null)
     {
-//DBG::log("Message::show(): Got messages: ".var_export($_SESSION['messages'], true));
+//DBG::log("Message::show(): Got messages: ".var_export(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'], true));
         if (defined('BACKEND_LANG_ID')) {
             self::show_backend($objTemplateLocal);
         } else {
@@ -263,17 +263,17 @@ class Message
      */
     private static function show_backend($objTemplateLocal=null)
     {
-        if (empty($_SESSION['messages'])) return;
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'])) return;
 
         global $objTemplate;
         if (empty($objTemplateLocal)) $objTemplateLocal = &$objTemplate;
 
         foreach (self::$message_classes as $class) {
-            if (empty($_SESSION['messages'][$class])) {
+            if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'][$class])) {
 //DBG::log("Message::show_backend(): No message of class $class");
                 continue;
             }
-//DBG::log("Message::show_backend(): Got message of class $class: ".var_export($_SESSION['messages'][$class], true));
+//DBG::log("Message::show_backend(): Got message of class $class: ".var_export(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'][$class], true));
             $objTemplateLocal->setVariable(array(
 // TODO: Unify this placeholder once the type is available:
 // Should be "MESSAGE_TEXT", see frontend version
@@ -282,7 +282,7 @@ class Message
                  || $class == self::CLASS_INFO
                     ? 'OK' : 'STATUS').
                 '_MESSAGE' =>
-                    join('<br />', $_SESSION['messages'][$class]->toArray()),
+                    join('<br />', \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'][$class]->toArray()),
 // Should be "MESSAGE_CLASS", see frontend version
                 'CONTENT_MESSAGE_TYPE' => $class,
             ));
@@ -311,17 +311,17 @@ class Message
      */
     private static function show_frontend($objTemplateLocal=null)
     {
-        if (empty($_SESSION['messages'])) return null;
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'])) return null;
 
         global $objTemplate;
         if (empty($objTemplateLocal)) $objTemplateLocal = &$objTemplate;
 
         foreach (self::$message_classes as $class) {
-            if (empty($_SESSION['messages'][$class])) continue;
+            if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'][$class])) continue;
             $objTemplateLocal->setVariable(array(
                 'MESSAGE_CLASS' => $class,
                 'MESSAGE_TEXT' =>
-                    join('<br />', $_SESSION['messages'][$class]->toArray()),
+                    join('<br />', \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'][$class]->toArray()),
             ));
             if ($objTemplateLocal->blockExists('messages')) {
                 $objTemplateLocal->parse('messages');
@@ -334,7 +334,7 @@ class Message
             }
         }
         // Fail when there are error messages
-        if (isset($_SESSION['messages'][self::CLASS_ERROR])) {
+        if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'][self::CLASS_ERROR])) {
             return false;
         }
         return true;
@@ -357,10 +357,10 @@ class Message
     {
         global $objTemplate;
 
-        if (empty($_SESSION['messages'])) return null;
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'])) return null;
         foreach (self::$message_classes as $class) {
-            if (empty($_SESSION['messages'][$class])) continue;
-            return join('<br />', $_SESSION['messages'][$class]->toArray());
+            if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'][$class])) continue;
+            return join('<br />', \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['messages'][$class]->toArray());
         }
         return null;
     }

@@ -471,8 +471,8 @@ class Config
      * @param template the Sigma tpl
      */
     protected function setDebuggingVariables($template) {
-        $status = $_SESSION['debugging'];
-        $flags = $_SESSION['debugging_flags'];
+        $status = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['debugging'];
+        $flags = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['debugging_flags'];
 
         $flags = $this->debuggingFlagArrayFromFlags($flags);
 
@@ -621,11 +621,11 @@ class Config
         $flags = $this->debuggingFlagsFromFlagArray($flags);
 
         if ($status) {
-            $_SESSION['debugging'] = true;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['debugging'] = true;
         } else {
-            unset($_SESSION['debugging']);
+            unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['debugging']);
         }
-        $_SESSION['debugging_flags'] = $flags;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['debugging_flags'] = $flags;
     }
 
     /**

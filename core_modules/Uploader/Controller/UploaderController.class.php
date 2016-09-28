@@ -140,7 +140,7 @@ class UploaderController {
 
         $conf = self::$conf = array_merge(array(
             'file_data_name' => 'file',
-            'tmp_dir' => $_SESSION->getTempPath(),
+            'tmp_dir' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->getTempPath(),
             'target_dir' => 'images/content/',
             'cleanup' => true,
             'max_file_age' => 5 * 3600,

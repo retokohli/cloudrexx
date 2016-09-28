@@ -176,7 +176,7 @@ abstract class OAuth implements OAuthInterface
                 $sessionObj = $cx->getComponent('Session')->getSession();
 
                 // write the user id to session so we can pre-fill the sign up form
-                $_SESSION['user_id'] = $objUser->getId();
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['user_id'] = $objUser->getId();
 
                 // generate url for sign up page and redirect
                 $signUpPageUri = \Cx\Core\Routing\Url::fromModuleAndCmd('Access', 'signup');

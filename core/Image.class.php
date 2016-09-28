@@ -1100,7 +1100,7 @@ class Image
      * If possible, the corresponding Image object is updated.  If not,
      * a new one is created and stored.
      * The original file name, type, Image ID and ordinal value are stored
-     * in the session under $_SESSION['image'][<field_name>].
+     * in the session under \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][<field_name>].
      * @param   string  $target_folder_path   The target folder path for
      *                                        uploaded images only
      * @return  integer             The Image ID if all images have been
@@ -1150,8 +1150,8 @@ class Image
         $arrPath = array();
         $arrPathDeleted = array();
 
-        $image_id = ($name && !empty($_SESSION['image'][$name]['id'])
-            ? $_SESSION['image'][$name]['id'] : false); // The image ID
+        $image_id = ($name && !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]['id'])
+            ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]['id'] : false); // The image ID
 //DBG::log("Image::processPostFiles(): Image ID $image_id");
         $objImage = false;
         $result = ''; // No change
@@ -1168,14 +1168,14 @@ class Image
             $image_type = false; // The image type key
             // Try to get the image object coordinates from the session,
             // in the ['image'][$name] branch, ...
-            if (isset($_SESSION['image'][$name]['src']))
-                $image_src  = $_SESSION['image'][$name]['src'];
-//            if (!empty($_SESSION['image'][$name]['id']))
-//                $image_id   = $_SESSION['image'][$name]['id'];
-            if (isset($_SESSION['image'][$name]['ord']))
-                $image_ord  = $_SESSION['image'][$name]['ord'];
-            if (isset($_SESSION['image'][$name]['type']))
-                $image_type = $_SESSION['image'][$name]['type'];
+            if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]['src']))
+                $image_src  = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]['src'];
+//            if (!empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]['id']))
+//                $image_id   = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]['id'];
+            if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]['ord']))
+                $image_ord  = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]['ord'];
+            if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]['type']))
+                $image_type = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]['type'];
             // ...or get them from the post.
             // There may be fields with the name plus suffix
             // These override the session parameters.
@@ -1222,7 +1222,7 @@ class Image
 //DBG::log("Image::processPostFiles(): Path is $objImage->path<br />");
             if (empty($image_src)) {
 //DBG::log("Image::processPostFiles(): Deleting $objImage->path<br />");
-                unset($_SESSION['image'][$name]);
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]);
                 // Remember the path of the deleted Image, if any.
                 if ($objImage->path) $arrPathDeleted[] = $objImage->path;
 // TODO: Records should not have to be deleted if the path is empty
@@ -1261,11 +1261,11 @@ class Image
                     // The original name is never stored with the image, just kept
                     // for reference as long as the session is alive
                     if ($image_name)
-                        $_SESSION['image'][$name]['name'] = $image_name;
-                    $_SESSION['image'][$name]['src']  = $objImage->path;
-                    $_SESSION['image'][$name]['id']   = $image_id;
-                    $_SESSION['image'][$name]['ord']  = $objImage->ord;
-                    $_SESSION['image'][$name]['type'] = $objImage->imagetype_key;
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]['name'] = $image_name;
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]['src']  = $objImage->path;
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]['id']   = $image_id;
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]['ord']  = $objImage->ord;
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]['type'] = $objImage->imagetype_key;
 //DBG::log("Image::processPostFiles(): Successfully stored image $name, ID ".$objImage->id);
                     if ($result === '') $result = true;
 //DBG::log("Image::processPostFiles(): Temp result ".var_export($result, true));
@@ -1299,7 +1299,7 @@ class Image
 //DBG::log("Image::processPostFiles(): Result ".var_export($result, true).", image ID $image_id<br />");
         $result = ($result === true ? $image_id : $result);
 //DBG::log("Image::processPostFiles(): Result ".var_export($result, true).", image ID $image_id<br />");
-//DBG::log("Image::processPostFiles(): Session: ".var_export($_SESSION['image'], true)."<br />");
+//DBG::log("Image::processPostFiles(): Session: ".var_export(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'], true)."<br />");
         return $result;
     }
 
@@ -1317,12 +1317,12 @@ class Image
      */
     static function getFromSessionByName($name)
     {
-        if (   isset($_SESSION['image'][$name])
-            && isset($_SESSION['image'][$name]['id'])) {
-//echo("Image::getFromSessionByName($name): Found ".var_export($_SESSION['image'][$name], true)."<br />");
+        if (   isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name])
+            && isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]['id'])) {
+//echo("Image::getFromSessionByName($name): Found ".var_export(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name], true)."<br />");
             $objImage = self::getById(
-                $_SESSION['image'][$name]['id'],
-                $_SESSION['image'][$name]['ord']
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]['id'],
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$name]['ord']
             );
             if ($objImage) return $objImage;
 //echo("Image::getFromSessionByName($name): Could not get the image<br />");
@@ -1344,12 +1344,12 @@ class Image
      */
     static function getFromSessionByKey($key)
     {
-        if (   isset($_SESSION['image'][$key])
-            && isset($_SESSION['image'][$key]['id'])) {
-//echo("Image::getFromSessionByKey($key): Found ".var_export($_SESSION['image'][$key], true)."<br />");
+        if (   isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$key])
+            && isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$key]['id'])) {
+//echo("Image::getFromSessionByKey($key): Found ".var_export(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$key], true)."<br />");
             $objImage = self::getById(
-                $_SESSION['image'][$key]['id'],
-                $_SESSION['image'][$key]['ord']
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$key]['id'],
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['image'][$key]['ord']
             );
             if ($objImage) return $objImage;
 //echo("Image::getFromSessionByKey($key): Could not get the image<br />");

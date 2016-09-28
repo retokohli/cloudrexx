@@ -136,26 +136,26 @@ class Currency
                 self::$defaultCurrencyId = $objResult->fields['id'];
             $objResult->MoveNext();
         }
-        if (!isset($_SESSION['shop'])) {
-            $_SESSION['shop'] = array();
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop'] = array();
         }
         if (isset($_REQUEST['currency'])) {
             $currency_id = intval($_REQUEST['currency']);
-            $_SESSION['shop']['currencyId'] =
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['currencyId'] =
                 (isset(self::$arrCurrency[$currency_id])
                     ? $currency_id : self::$defaultCurrencyId
                 );
         }
         if (!empty($active_currency_id)) {
-            $_SESSION['shop']['currencyId'] =
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['currencyId'] =
                 (isset(self::$arrCurrency[$active_currency_id])
                     ? $active_currency_id : self::$defaultCurrencyId
                 );
         }
-        if (empty($_SESSION['shop']['currencyId'])) {
-            $_SESSION['shop']['currencyId'] = self::$defaultCurrencyId;
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['currencyId'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['currencyId'] = self::$defaultCurrencyId;
         }
-        self::$activeCurrencyId = intval($_SESSION['shop']['currencyId']);
+        self::$activeCurrencyId = intval(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['currencyId']);
         return true;
     }
 

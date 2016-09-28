@@ -165,7 +165,7 @@ class Resolver {
         $this->fallbackLanguages = $fallbackLanguages;
         $this->pagePreview = !empty($_GET['pagePreview']) && ($_GET['pagePreview'] == 1) ? 1 : 0;
         $this->historyId = !empty($_GET['history']) ? $_GET['history'] : 0;
-        $this->sessionPage = !empty($_SESSION['page']) ? $_SESSION['page']->toArray() : array();
+        $this->sessionPage = !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['page']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['page']->toArray() : array();
     }
 
     public function resolve() {
@@ -229,7 +229,7 @@ class Resolver {
                         // Regular page request
                         if ($isRegularPageRequest) {
                         // TODO: history (empty($history) ? )
-                            if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($_SESSION)) {
+                            if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession())) {
                                 $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                                 $sessionObj = $cx->getComponent('Session')->getSession();
                             }
@@ -874,7 +874,7 @@ class Resolver {
         ) {
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             $sessionObj = $cx->getComponent('Session')->getSession();
-            $_SESSION->cmsSessionStatusUpdate('frontend');
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->cmsSessionStatusUpdate('frontend');
             if (\FWUser::getFWUserObject()->objUser->login()) {
                 if ($page_protected) {
                     if (!\Permission::checkAccess($pageAccessId, 'dynamic', true)) {

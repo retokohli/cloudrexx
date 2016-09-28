@@ -116,7 +116,7 @@ class CrmTask extends CrmLibrary
         \JS::registerJS('lib/javascript/jquery.tmpl.min.js');
 
         $objtpl = $this->_objTpl;
-        $_SESSION['pageTitle'] = $_ARRAYLANG['TXT_CRM_TASK_OVERVIEW'];
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['pageTitle'] = $_ARRAYLANG['TXT_CRM_TASK_OVERVIEW'];
         $objtpl->loadTemplateFile("module_{$this->moduleNameLC}_tasks_overview.html");
         $objtpl->setGlobalVariable("MODULE_NAME", $this->moduleName);
 
@@ -124,7 +124,7 @@ class CrmTask extends CrmLibrary
         if ($msg) {
             switch ($msg) {
             case 'taskDeleted':
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_DELETE_MESSAGE'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_DELETE_MESSAGE'];
                 break;
             }
         }
@@ -321,7 +321,7 @@ class CrmTask extends CrmLibrary
             $objFWUser = \FWUser::getFWUserObject();
         }
         $objtpl = $this->_objTpl;
-        $_SESSION['pageTitle'] = empty($_GET['id']) ? $_ARRAYLANG['TXT_CRM_ADDTASK'] : $_ARRAYLANG['TXT_CRM_EDITTASK'];
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['pageTitle'] = empty($_GET['id']) ? $_ARRAYLANG['TXT_CRM_ADDTASK'] : $_ARRAYLANG['TXT_CRM_EDITTASK'];
 
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleNameLC.'_addtasks.html');
         $objtpl->setGlobalVariable("MODULE_NAME", $this->moduleName);
@@ -376,9 +376,9 @@ class CrmTask extends CrmLibrary
                             'description'       => $description
                         );
                         $query = \SQL::update("module_{$this->moduleNameLC}_task", $fields, array('escape' => true))." WHERE `id` = {$id}";
-                        $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_UPDATE_MESSAGE'];
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_UPDATE_MESSAGE'];
                 } else {
-                        $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_TASK_RESPONSIBLE_ERR'];
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_CRM_TASK_RESPONSIBLE_ERR'];
                     }
             } else {
                 $addedDate = date('Y-m-d H:i:s');
@@ -394,7 +394,7 @@ class CrmTask extends CrmLibrary
                     'description'       => $description
                 );
                 $query = \SQL::insert("module_{$this->moduleNameLC}_task", $fields, array('escape' => true));
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_OK_MESSAGE'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_OK_MESSAGE'];
             }
             $db = $objDatabase->Execute($query);
             if ($db) {

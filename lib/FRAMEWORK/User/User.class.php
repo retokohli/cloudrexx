@@ -393,7 +393,7 @@ class User extends User_Profile
         global $objDatabase;
 
         // If the last login has failed and the captcha is wrong the login must be invalid.
-        if ($_SESSION['auth']['loginLastAuthFailed'] && !$captchaCheckResult) {
+        if (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['auth']['loginLastAuthFailed'] && !$captchaCheckResult) {
             return false;
         }
 
@@ -1871,7 +1871,7 @@ class User extends User_Profile
         }
         if (!empty($this->password)) {
             // deletes all sessions which are using this user (except the session changing the password)
-            $_SESSION->cmsSessionDestroyByUserId($this->id);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->cmsSessionDestroyByUserId($this->id);
         }
     }
 
@@ -2174,10 +2174,10 @@ class User extends User_Profile
     {
 
         if ($this->loggedIn) return true;
-        if(isset($_SESSION)
-            && is_object($_SESSION)
-            && $_SESSION->userId
-            && $this->load($_SESSION->userId)
+        if(isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession())
+            && is_object(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession())
+            && \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->userId
+            && $this->load(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->userId)
             && $this->getActiveStatus()
             && $this->hasModeAccess($backend)
             && $this->updateLastActivityTime()) {
@@ -2445,7 +2445,7 @@ class User extends User_Profile
     {
         global $_CORELANG, $_CONFIG;
 
-        if ((empty($password) && empty($confirmedPassword) && $this->id && !$reset) || isset($_SESSION['user_id'])) {
+        if ((empty($password) && empty($confirmedPassword) && $this->id && !$reset) || isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['user_id'])) {
             return true;
         }
         if (self::isValidPassword($password)) {

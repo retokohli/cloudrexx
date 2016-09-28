@@ -258,13 +258,13 @@ class ContentManager extends \Module
             'CM_MEDIABROWSER_BUTTON' => $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE'])
         ));
 
-        $toggleTitles      = !empty($_SESSION['contentManager']['toggleStatuses']['toggleTitles']) ? $_SESSION['contentManager']['toggleStatuses']['toggleTitles'] : 'block';
-        $toggleType        = !empty($_SESSION['contentManager']['toggleStatuses']['toggleType']) ? $_SESSION['contentManager']['toggleStatuses']['toggleType'] : 'block';
-        $toggleNavigation  = !empty($_SESSION['contentManager']['toggleStatuses']['toggleNavigation']) ? $_SESSION['contentManager']['toggleStatuses']['toggleNavigation'] : 'block';
-        $toggleBlocks      = !empty($_SESSION['contentManager']['toggleStatuses']['toggleBlocks']) ? $_SESSION['contentManager']['toggleStatuses']['toggleBlocks'] : 'block';
-        $toggleThemes      = !empty($_SESSION['contentManager']['toggleStatuses']['toggleThemes']) ? $_SESSION['contentManager']['toggleStatuses']['toggleThemes'] : 'block';
-        $toggleApplication = !empty($_SESSION['contentManager']['toggleStatuses']['toggleApplication']) ? $_SESSION['contentManager']['toggleStatuses']['toggleApplication'] : 'block';
-        $toggleSidebar     = !empty($_SESSION['contentManager']['toggleStatuses']['sidebar']) ? $_SESSION['contentManager']['toggleStatuses']['sidebar'] : 'block';
+        $toggleTitles      = !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contentManager']['toggleStatuses']['toggleTitles']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contentManager']['toggleStatuses']['toggleTitles'] : 'block';
+        $toggleType        = !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contentManager']['toggleStatuses']['toggleType']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contentManager']['toggleStatuses']['toggleType'] : 'block';
+        $toggleNavigation  = !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contentManager']['toggleStatuses']['toggleNavigation']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contentManager']['toggleStatuses']['toggleNavigation'] : 'block';
+        $toggleBlocks      = !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contentManager']['toggleStatuses']['toggleBlocks']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contentManager']['toggleStatuses']['toggleBlocks'] : 'block';
+        $toggleThemes      = !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contentManager']['toggleStatuses']['toggleThemes']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contentManager']['toggleStatuses']['toggleThemes'] : 'block';
+        $toggleApplication = !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contentManager']['toggleStatuses']['toggleApplication']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contentManager']['toggleStatuses']['toggleApplication'] : 'block';
+        $toggleSidebar     = !empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contentManager']['toggleStatuses']['sidebar']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contentManager']['toggleStatuses']['sidebar'] : 'block';
         $objCx->setVariable('toggleTitles', $toggleTitles, 'contentmanager/toggle');
         $objCx->setVariable('toggleType', $toggleType, 'contentmanager/toggle');
         $objCx->setVariable('toggleNavigation', $toggleNavigation, 'contentmanager/toggle');

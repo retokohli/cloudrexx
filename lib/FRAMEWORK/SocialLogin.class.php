@@ -158,11 +158,11 @@ class SocialLogin
     public static function parseSociallogin($objTpl, $prefix = 'login_')
     {
         $arrSettings = \User_Setting::getSettings();
-        if (function_exists('curl_init') && $arrSettings['sociallogin']['status'] && !isset($_SESSION['user_id'])) {
+        if (function_exists('curl_init') && $arrSettings['sociallogin']['status'] && !isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['user_id'])) {
             if (!empty($_GET['redirect'])) {
-                $_SESSION['redirect'] = $_GET['redirect'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['redirect'] = $_GET['redirect'];
             }
-            $redirect = isset($_SESSION['redirect']) ? $_SESSION['redirect'] : null;
+            $redirect = isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['redirect']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['redirect'] : null;
             $socialloginProviders = \Cx\Lib\SocialLogin::getProviders();
             foreach ($socialloginProviders as $provider => $providerData) {
                 if (!$objTpl->blockExists($prefix . 'social_networks_' . $provider)) {

@@ -521,13 +521,13 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
             $id = intval($_REQUEST['unique_id']);
         }
         else { //generate a new id
-            if(!isset($_SESSION['contact_last_id'])) {
-                $_SESSION['contact_last_id'] = 1;
+            if(!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contact_last_id'])) {
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contact_last_id'] = 1;
             } else {
-                $_SESSION['contact_last_id'] += 1;
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contact_last_id'] += 1;
             }
 
-            $id = $_SESSION['contact_last_id'];
+            $id = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['contact_last_id'];
         }
         $this->objTemplate->setVariable('CONTACT_UNIQUE_ID', $id);
         $this->submissionId = $id;
@@ -566,7 +566,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
             ));
 
             //initialize the widget displaying the folder contents
-            $folderWidget = new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget($_SESSION->getTempPath() . '/'. $uploaderId);
+            $folderWidget = new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->getTempPath() . '/'. $uploaderId);
             $this->objTemplate->setVariable(array(
                 'CONTACT_UPLOADER_FOLDER_WIDGET_'.$fieldId => $folderWidget->getXhtml(),
                 'CONTACT_UPLOADER_ID_'.$fieldId            => $uploaderId
@@ -1611,8 +1611,8 @@ CODE;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $sessionObj = $cx->getComponent('Session')->getSession();
 
-        $tempPath = $_SESSION->getTempPath();
-        $tempWebPath = $_SESSION->getWebTempPath();
+        $tempPath = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->getTempPath();
+        $tempWebPath = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->getWebTempPath();
         if($tempPath === false || $tempWebPath === false)
             throw new \Cx\Core_Modules\Contact\Controller\ContactException('could not get temporary session folder');
 

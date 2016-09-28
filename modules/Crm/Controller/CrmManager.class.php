@@ -282,16 +282,16 @@ class CrmManager extends CrmLibrary
         }
 
         $objTemplate->setVariable(array(
-                'CONTENT_TITLE'             => isset($_SESSION['pageTitle']) ? $_SESSION['pageTitle'] : $this->_pageTitle,
-                'CONTENT_OK_MESSAGE'        => isset($_SESSION['strOkMessage']) ? $_SESSION['strOkMessage'] : $this->_strOkMessage,
-                'CONTENT_STATUS_MESSAGE'    => isset($_SESSION['strErrMessage']) ? $_SESSION['strErrMessage'] : $this->_strErrMessage,
-                'CONTENT_WARNING_MESSAGE'   => isset($_SESSION['strWarMessage']) ? $_SESSION['strWarMessage'] : $this->_strWarMessage,
+                'CONTENT_TITLE'             => isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['pageTitle']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['pageTitle'] : $this->_pageTitle,
+                'CONTENT_OK_MESSAGE'        => isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] : $this->_strOkMessage,
+                'CONTENT_STATUS_MESSAGE'    => isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] : $this->_strErrMessage,
+                'CONTENT_WARNING_MESSAGE'   => isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strWarMessage']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strWarMessage'] : $this->_strWarMessage,
                 'ADMIN_CONTENT'             => $this->_objTpl->get()
         ));
-        unset($_SESSION['pageTitle']);
-        unset($_SESSION['strOkMessage']);
-        unset($_SESSION['strErrMessage']);
-        unset($_SESSION['strWarMessage']);
+        unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['pageTitle']);
+        unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage']);
+        unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage']);
+        unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strWarMessage']);
     }
 
     /**
@@ -891,9 +891,9 @@ class CrmManager extends CrmLibrary
             }
         }
 
-        if (isset($_SESSION['TXT_MSG_OK'])) {
-            $this->_strOkMessage = $_SESSION['TXT_MSG_OK'];
-            unset($_SESSION['TXT_MSG_OK']);
+        if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['TXT_MSG_OK'])) {
+            $this->_strOkMessage = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['TXT_MSG_OK'];
+            unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['TXT_MSG_OK']);
         }
 
         if (isset($_REQUEST['deleteComment'])) {
@@ -1883,13 +1883,13 @@ END;
                     $deleteQuery = 'DELETE FROM   `'.DBPREFIX.'module_'.$this->moduleNameLC.'_customer_types`
                                     WHERE          id = '.$id;
                     $objDatabase->Execute($deleteQuery);
-                    $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES_DELETED_SUCCESSFULLY'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES_DELETED_SUCCESSFULLY'];
                 } else {
 
-                    $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_DEFAULT_CUSTOMER_TYPES_CANNOT_BE_DELETED'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_CRM_DEFAULT_CUSTOMER_TYPES_CANNOT_BE_DELETED'];
                 }
             } else {
-                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES_CANNOT_BE_DELETED'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES_CANNOT_BE_DELETED'];
             }
         } else {
             $deleteIds = array_map(intval, $_POST['selectedEntriesId']);
@@ -1906,17 +1906,17 @@ END;
 
             foreach ($deleteIds as $id) {
                 if (in_array($id, $idContainsCustomer)) {
-                    $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES_CANNOT_BE_DELETED'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES_CANNOT_BE_DELETED'];
                     continue;
                 }
                 if ($defaultId == $id) {
-                    $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_DEFAULT_CUSTOMER_TYPES_CANNOT_BE_DELETED'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_CRM_DEFAULT_CUSTOMER_TYPES_CANNOT_BE_DELETED'];
                     continue;
                 }
                 $deleteQuery = 'DELETE FROM `'.DBPREFIX.'module_'.$this->moduleNameLC.'_customer_types`
                                 WHERE        id = '.$id;
                 $objDatabase->Execute($deleteQuery);
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES_DELETED_SUCCESSFULLY'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES_DELETED_SUCCESSFULLY'];
             }
         }
         \Cx\Core\Csrf\Controller\Csrf::header('location:./index.php?cmd=Crm&act=settings&tpl=customertypes');
@@ -2600,7 +2600,7 @@ END;
         $updateQuery = 'UPDATE '.DBPREFIX.'module_'.$this->moduleNameLC.'_contacts SET status = '.$value.'
                         WHERE    id='.$id;
         $objDatabase->Execute($updateQuery);
-        $_SESSION['strOkMessage'] = ($value == 1) ? $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = ($value == 1) ? $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
     }
 
     /**
@@ -2660,7 +2660,7 @@ END;
 
                     $db = $objDatabase->Execute($sql);
                     if ($db) {
-                        $_SESSION['TXT_MSG_OK'] = ($id) ? $_ARRAYLANG['TXT_CRM_COMMENT_UPDATESUCESSMESSAGE'] : $_ARRAYLANG['TXT_CRM_COMMENT_SUCESSMESSAGE'];
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['TXT_MSG_OK'] = ($id) ? $_ARRAYLANG['TXT_CRM_COMMENT_UPDATESUCESSMESSAGE'] : $_ARRAYLANG['TXT_CRM_COMMENT_SUCESSMESSAGE'];
                         \Cx\Core\Csrf\Controller\Csrf::header("Location: ".base64_decode($redirect));
                         exit();
                     } else {
@@ -2754,7 +2754,7 @@ END;
             $objDatabase->Execute($deleteQuery);
 
             if (isset($redirect))
-                $_SESSION['TXT_MSG_OK'] = $_ARRAYLANG['TXT_CRM_COMMENT_DELETESUCESSMESSAGE'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['TXT_MSG_OK'] = $_ARRAYLANG['TXT_CRM_COMMENT_DELETESUCESSMESSAGE'];
             \Cx\Core\Csrf\Controller\Csrf::header("Location: ".base64_decode($redirect));
         }
         die();
@@ -2772,7 +2772,7 @@ END;
         global $_ARRAYLANG;
 
         $tpl = isset($_GET['subTpl']) ? $_GET['subTpl'] : '';
-        $_SESSION['pageTitle'] = $_ARRAYLANG['TXT_CRM_SETTINGS'];
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['pageTitle'] = $_ARRAYLANG['TXT_CRM_SETTINGS'];
 
         $this->crmInterfaceController = new CrmInterface($this->_objTpl, $this->moduleName);
 
@@ -3057,7 +3057,7 @@ END;
                                                                                                   icon    = '$icon',
                                                                                                   pos     = '$position'
                                                                                             WHERE id      = '$id'");
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_NOTES_UPDATED'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_NOTES_UPDATED'];
                 $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                 \Cx\Core\Csrf\Controller\Csrf::header("Location:".$cx->getCodeBaseOffsetPath(). $cx->getBackendFolderName()."/index.php?cmd=".$this->moduleName."&act=settings&tpl=notes");
                 exit();
@@ -3138,9 +3138,9 @@ END;
             if ($defaultId != $id) {
                 $deleteQuery = 'DELETE FROM `'.DBPREFIX.'module_'.$this->moduleNameLC.'_currency` WHERE default_currency != 1 AND id = '.$id;
                 $objDatabase->Execute($deleteQuery);
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_DELETED_SUCCESSFULLY'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_DELETED_SUCCESSFULLY'];
             } else {
-                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_ERROR'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_ERROR'];
             }
         } else {
             $deleteIds = $_POST['selectedEntriesId'];
@@ -3148,9 +3148,9 @@ END;
                 if ($defaultId != $id) {
                     $deleteQuery = 'DELETE FROM `'.DBPREFIX.'module_'.$this->moduleNameLC.'_currency` WHERE default_currency != 1 AND id = '.$id;
                     $objDatabase->Execute($deleteQuery);
-                    $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_DELETED_SUCCESSFULLY'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_DELETED_SUCCESSFULLY'];
                 } else {
-                    $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_ERROR'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_ERROR'];
                 }
             }
         }
@@ -3175,9 +3175,9 @@ END;
             if ($defaultId != $id) {
                 $query = 'UPDATE '.DBPREFIX.'module_'.$this->moduleNameLC.'_currency SET active='.$status.' WHERE default_currency != "1" AND id = '.$id;
                 $objDatabase->Execute($query);
-                $_SESSION['strOkMessage'] = ($status == 1) ? $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = ($status == 1) ? $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
             } else {
-                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_STATUS_ERROR'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_STATUS_ERROR'];
             }
         }
 
@@ -3189,7 +3189,7 @@ END;
                     $objDatabase->Execute($query);
                 }
             }
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'];
         }
         if ($_REQUEST['type'] == "deactivate") {
             $arrStatusNote = $_POST['selectedEntriesId'];
@@ -3199,11 +3199,11 @@ END;
                         $query = "UPDATE ".DBPREFIX."module_".$this->moduleNameLC."_currency SET active='0' WHERE default_currency != '1' AND id=$noteId";
                         $objDatabase->Execute($query);
                     } else {
-                        $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_STATUS_ERROR'];
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strErrMessage'] = $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_STATUS_ERROR'];
                     }
                 }
             }
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
         }
         \Cx\Core\Csrf\Controller\Csrf::header("Location: ./index.php?cmd=".$this->moduleName."&act=settings&tpl=currency");
         $_GET['tpl'] = 'currency';
@@ -4771,10 +4771,10 @@ END;
         $indusEntries       = (isset($_REQUEST['indusEntry'])) ? array_map('intval', $_REQUEST['indusEntry']) : 0;
         $indusEntriesorting = (isset($_REQUEST['sorting'])) ? array_map('intval', $_REQUEST['sorting']) : 0;
 
-        if (isset($_SESSION['strOkMessage'])) {
-            $strMessage = is_array($_SESSION['strOkMessage']) ? implode("<br>", $_SESSION['strOkMessage']) : $_SESSION['strOkMessage'];
+        if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'])) {
+            $strMessage = is_array(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage']) ? implode("<br>", \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage']) : \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'];
             $this->_strOkMessage = $strMessage;
-            unset($_SESSION['strOkMessage']);
+            unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage']);
         }
 
         switch ($action) {
@@ -4857,7 +4857,7 @@ END;
                 }
 
                 if ($db) {
-                    $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_ADDED_SUCCESS'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_ADDED_SUCCESS'];
                 } else {
                     $this->_strErrMessage = "Error in saving Data";
                 }
@@ -4943,10 +4943,10 @@ END;
                 'TXT_CRM_IMAGE_DELETE' => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
         ));
 
-        if (isset($_SESSION['strOkMessage'])) {
-            $strMessage = is_array($_SESSION['strOkMessage']) ? implode("<br>", $_SESSION['strOkMessage']) : $_SESSION['strOkMessage'];
+        if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'])) {
+            $strMessage = is_array(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage']) ? implode("<br>", \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage']) : \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'];
             $this->_strOkMessage = $strMessage;
-            unset($_SESSION['strOkMessage']);
+            unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage']);
         }
 
         $id       = isset($_GET['id']) ? (int) $_GET['id'] : 0;
@@ -4987,11 +4987,11 @@ END;
                     $query = "UPDATE `".DBPREFIX."module_{$this->moduleNameLC}_industry_types` SET
                             $field_set
                       WHERE `id` = $id";
-                    $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_UPDATED_SUCCESS'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_UPDATED_SUCCESS'];
                 } else {
                     $query = "INSERT INTO `".DBPREFIX."module_{$this->moduleNameLC}_industry_types` SET
                             $field_set";
-                    $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_ADDED_SUCCESS'];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_ADDED_SUCCESS'];
                 }
                 $db = $objDatabase->Execute($query);
                 $entryId = !empty($id) ? $id : $objDatabase->INSERT_ID();
@@ -5101,10 +5101,10 @@ END;
         $memberEntries       = (isset($_REQUEST['memberEntry'])) ? array_map('intval', $_REQUEST['memberEntry']) : 0;
         $memberEntriesorting = (isset($_REQUEST['sorting'])) ? array_map('intval', $_REQUEST['sorting']) : 0;
 
-        if (isset($_SESSION['strOkMessage'])) {
-            $strMessage = is_array($_SESSION['strOkMessage']) ? implode("<br>", $_SESSION['strOkMessage']) : $_SESSION['strOkMessage'];
+        if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'])) {
+            $strMessage = is_array(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage']) ? implode("<br>", \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage']) : \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'];
             $this->_strOkMessage = $strMessage;
-            unset($_SESSION['strOkMessage']);
+            unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage']);
         }
 
         switch ($action) {
@@ -5168,7 +5168,7 @@ END;
                 $query = "UPDATE `".DBPREFIX."module_{$this->moduleNameLC}_memberships` SET
                         $field_set
                   WHERE `id` = $id";
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_UPDATED_SUCCESS'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_UPDATED_SUCCESS'];
             } else {
                 $query = "INSERT INTO `".DBPREFIX."module_{$this->moduleNameLC}_memberships` SET
                         $field_set";
@@ -5192,7 +5192,7 @@ END;
             }
 
             if ($db) {
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_ADDED_SUCCESS'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_ADDED_SUCCESS'];
             } else {
                 $this->_strErrMessage = "Error in saving Data";
             }
@@ -5324,11 +5324,11 @@ END;
                 $query = "UPDATE `".DBPREFIX."module_{$this->moduleNameLC}_memberships` SET
                         $field_set
                   WHERE `id` = $id";
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_UPDATED_SUCCESS'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_UPDATED_SUCCESS'];
             } else {
                 $query = "INSERT INTO `".DBPREFIX."module_{$this->moduleNameLC}_memberships` SET
                         $field_set";
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_ADDED_SUCCESS'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_ADDED_SUCCESS'];
             }
             $db = $objDatabase->Execute($query);
             $entryId = !empty($id) ? $id : $objDatabase->INSERT_ID();
@@ -5775,7 +5775,7 @@ END;
                         if (!empty ($fileName)) {
                             list($file, $ext) = split('[.]', $fileName);
                             if ($ext == 'csv') {
-                                $_SESSION['importFilename'] = $fileName;
+                                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['importFilename'] = $fileName;
                             }
                         }
                     } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
@@ -6031,7 +6031,7 @@ END;
                             70,
                             '_24X24.thumb'
                         );
-                        $_SESSION['importFilename'] = $imageName;
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['importFilename'] = $imageName;
                     } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                         \DBG::msg($e->getMessage());
                     }
@@ -6104,7 +6104,7 @@ END;
                             90,
                             '_16X16.thumb'
                         );
-                        $_SESSION['importFilename'] = $imageName;
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['importFilename'] = $imageName;
                     } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                         \DBG::msg($e->getMessage());
                     }
@@ -6177,9 +6177,9 @@ END;
     {
         global $objDatabase;
 
-        if (isset ($_SESSION['importFilename'])) {
-            $fileName = $_SESSION['importFilename'];
-            unset ($_SESSION['importFilename']);
+        if (isset (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['importFilename'])) {
+            $fileName = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['importFilename'];
+            unset (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['importFilename']);
         }
 
         if (isset ($_REQUEST['custId']) && !empty($_REQUEST['custId'])) {

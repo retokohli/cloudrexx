@@ -1536,7 +1536,7 @@ class CrmLibrary
             if ($_GET['ajax']) {
                 exit();
             } else {
-                $_SESSION['strOkMessage'] = sprintf($_ARRAYLANG['TXT_CRM_MEMBERSHIP_UPDATED_SUCCESSFULLY'], ($deactivate) ? $_ARRAYLANG['TXT_CRM_DEACTIVATED'] : $_ARRAYLANG['TXT_CRM_ACTIVATED']);
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = sprintf($_ARRAYLANG['TXT_CRM_MEMBERSHIP_UPDATED_SUCCESSFULLY'], ($deactivate) ? $_ARRAYLANG['TXT_CRM_DEACTIVATED'] : $_ARRAYLANG['TXT_CRM_ACTIVATED']);
             }
         } else {
             $objDatabase->Execute("UPDATE `".DBPREFIX."module_".$this->moduleNameLC."_memberships` SET `status` = IF(status = 1, 0, 1) WHERE id = $entries");
@@ -1566,7 +1566,7 @@ class CrmLibrary
             }
             $query .= "END WHERE id IN ($ids)";
             $objDatabase->Execute($query);
-            $_SESSION['strOkMessage'] = (!$deactivate) ? $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY']
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = (!$deactivate) ? $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY']
                                                        : $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
         } else {
             $objDatabase->Execute("UPDATE `".DBPREFIX."module_".$this->moduleNameLC."_company_size` SET `status` = IF(status = 1, 0, 1) WHERE id = $entries");
@@ -1616,7 +1616,7 @@ class CrmLibrary
 
         }
         if (isset($_POST['save_entries'])) {
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_SORTING_COMPLETE'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_SORTING_COMPLETE'];
         }
     }
 
@@ -1647,7 +1647,7 @@ class CrmLibrary
 
         }
         if (isset($_POST['save_entries'])) {
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_SORTING_COMPLETE'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_SORTING_COMPLETE'];
         }
     }
 
@@ -1679,7 +1679,7 @@ class CrmLibrary
         if ($_GET['ajax']) {
             exit();
         } else {
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_MEMBERSHIP_DELETED_SUCCESSFULLY'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['strOkMessage'] = $_ARRAYLANG['TXT_CRM_MEMBERSHIP_DELETED_SUCCESSFULLY'];
         }
 
     }
@@ -3058,8 +3058,8 @@ class CrmLibrary
         $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
         $sessionObj = $cx->getComponent('Session')->getSession();
 
-        $tempPath = $_SESSION->getTempPath();
-        $tempWebPath = $_SESSION->getWebTempPath();
+        $tempPath = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->getTempPath();
+        $tempWebPath = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->getWebTempPath();
         if($tempPath === false || $tempWebPath === false)
             throw new \Cx\Core_Modules\Contact\Controller\ContactException('could not get temporary session folder');
 

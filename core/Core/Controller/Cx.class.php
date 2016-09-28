@@ -2170,16 +2170,16 @@ namespace Cx\Core\Core\Controller {
                 $parsingTime = $this->stopTimer();
 //                var_dump($parsingTime);
     /*echo ($finishTime[0] - $startTime[0]) . '<br />';
-    if (!isset($_SESSION['asdf1']) || isset($_GET['reset'])) {
-        $_SESSION['asdf1'] = 0;
-        $_SESSION['asdf2'] = 0;
+    if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['asdf1']) || isset($_GET['reset'])) {
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['asdf1'] = 0;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['asdf2'] = 0;
     }
-    echo $_SESSION['asdf1'] . '<br />';
-    if ($_SESSION['asdf1'] > 0) {
-        echo $_SESSION['asdf2'] / $_SESSION['asdf1'];
+    echo \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['asdf1'] . '<br />';
+    if (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['asdf1'] > 0) {
+        echo \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['asdf2'] / \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['asdf1'];
     }
-    $_SESSION['asdf1']++;
-    $_SESSION['asdf2'] += ($finishTime[0] - $startTime[0]);//*/
+    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['asdf1']++;
+    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['asdf2'] += ($finishTime[0] - $startTime[0]);//*/
                 $objAdminNav = new \adminMenu($plainCmd);
                 $objAdminNav->getAdminNavbar();
                 $this->template->setVariable(array(
@@ -2228,7 +2228,7 @@ namespace Cx\Core\Core\Controller {
                 }
 
                 /*echo '<pre>';
-                print_r($_SESSION);
+                print_r(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession());
                 /*echo '<b>Overall time: ' . (microtime(true) - $timeAtStart) . 's<br />';
                 echo 'Max RAM usage: ' . formatBytes(memory_get_peak_usage()) . '<br />';
                 echo 'End RAM usage: ' . formatBytes(memory_get_usage()) . '<br /></b>';*/

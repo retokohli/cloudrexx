@@ -282,7 +282,7 @@ class LoginManager {
         } else {
             $this->objTemplate->hideBlock('error_message');
         }
-        if (isset($_SESSION['auth']['loginLastAuthFailed'])) {
+        if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['auth']['loginLastAuthFailed'])) {
             $this->objTemplate->setVariable(array(
                 'TXT_LOGIN_SECURITY_CODE'   => $_ARRAYLANG['TXT_LOGIN_SECURITY_CODE'],
                 'CAPTCHA_CODE'              => \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getCode(3),

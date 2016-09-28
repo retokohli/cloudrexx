@@ -115,17 +115,17 @@ class UploadLib
 
     public function response($uploadId) {
 
-        if(isset($_SESSION['upload']['handlers'][$uploadId]['response_data'])) {
-            $r = UploadResponse::fromSession($_SESSION['upload']['handlers'][$uploadId]['response_data']);
+        if(isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$uploadId]['response_data'])) {
+            $r = UploadResponse::fromSession(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$uploadId]['response_data']);
             if($r->isUploadFinished()) {
                 echo $r->getJSON();
-                unset($_SESSION['upload']['handlers'][$uploadId]['response_data']);
+                unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$uploadId]['response_data']);
                 die();
             }
         }
 
         // don't write session-data to database
-        $_SESSION->discardChanges();
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->discardChanges();
         echo '{}';
         die();
     }

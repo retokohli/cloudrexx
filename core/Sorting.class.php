@@ -178,11 +178,11 @@ class Sorting
                         : null)));
         $this->setOrder(
             (empty($orderRequested)
-                ? (empty($_SESSION['sorting'][$this->orderUriParameter])
+                ? (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['sorting'][$this->orderUriParameter])
                     ? (empty($defaultOrder)
                         ? current($this->arrField)
                         : $defaultOrder)
-                    : $_SESSION['sorting'][$this->orderUriParameter])
+                    : \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['sorting'][$this->orderUriParameter])
                 : $orderRequested
             )
         );
@@ -484,10 +484,10 @@ class Sorting
         $this->orderField     = $index;
         $this->orderDirection = $direction;
 //\DBG::log("Sorting::setOrder($order): setting order to /$index $direction/");
-        if (!isset($_SESSION['sorting'])) {
-            $_SESSION['sorting'] = array();
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['sorting'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['sorting'] = array();
         }
-        $_SESSION['sorting'][$this->orderUriParameter] = $order;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['sorting'][$this->orderUriParameter] = $order;
     }
 
 

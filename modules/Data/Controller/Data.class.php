@@ -68,7 +68,7 @@ class Data extends \Cx\Modules\Data\Controller\DataLibrary
 
         parent::__construct();
         $this->_intLanguageId = intval($_LANGID);
-        $this->_intCurrentUserId = (isset($_SESSION['auth']['userid'])) ? intval($_SESSION['auth']['userid']) : 0;
+        $this->_intCurrentUserId = (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['auth']['userid'])) ? intval(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['auth']['userid']) : 0;
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);

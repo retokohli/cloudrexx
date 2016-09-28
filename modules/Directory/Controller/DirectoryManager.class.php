@@ -361,7 +361,7 @@ class DirectoryManager extends DirectoryLibrary
             foreach($this->levels['name'] as $levelKey => $levelName) {
                 if ($this->levels['parentid'][$levelKey] == $parentId) {
                     //set categorie icon
-                    if ($_SESSION['expLevel'][$levelKey] == 1) {
+                    if (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['expLevel'][$levelKey] == 1) {
                         $icon = "<a href='index.php?cmd=Directory&amp;act=levels&amp;collaps=$levelKey'><img src='".$this->imageWebPath."/minuslink.gif' border='0' alt='' /></a>";
                     } elseif (!in_array($levelKey, $this->levels['parentid'])) {
                         $icon = "<img src='".$this->imageWebPath."/pixel.gif' width='11' height='1' border='0' alt='' />";
@@ -458,9 +458,9 @@ class DirectoryManager extends DirectoryLibrary
         //shows all subcategories
         foreach($this->levels['name'] as $levelKey => $levelName) {
             if ($this->levels['parentid'][$levelKey] == $parentId) {
-                if ($_SESSION['expLevel'][$parentId] == 1) {
+                if (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['expLevel'][$parentId] == 1) {
                     //set subcategorie icon
-                    if ($_SESSION['expLevel'][$levelKey] == 1) {
+                    if (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['expLevel'][$levelKey] == 1) {
                         $link = "<a href='index.php?cmd=Directory&amp;act=levels&amp;collaps=$levelKey'><img src='".$this->imageWebPath."/minuslink.gif' border='0' alt='' /></a>";
                     } elseif (!in_array($levelKey, $this->levels['parentid'])) {
                         $link = "<img src='".$this->imageWebPath."/pixel.gif' width='11' height='1' border='0' alt='' />";
@@ -825,7 +825,7 @@ class DirectoryManager extends DirectoryLibrary
             foreach($this->categories['name'] as $catKey => $catName) {
                 if ($this->categories['parentid'][$catKey] == $parentId) {
                     //set categorie icon
-                    if ($_SESSION['expCat'][$catKey] == 1) {
+                    if (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['expCat'][$catKey] == 1) {
                         $icon = "<a href='index.php?cmd=Directory&amp;collaps=$catKey'><img src='".$this->imageWebPath."/minuslink.gif' border='0' alt='' /></a>";
                     } elseif (!in_array($catKey, $this->categories['parentid'])) {
                         $icon = "<img src='".$this->imageWebPath."/pixel.gif' width='11' height='1' border='0' alt='' />";
@@ -922,9 +922,9 @@ class DirectoryManager extends DirectoryLibrary
         //shows all subcategories
         foreach($this->categories['name'] as $catKey => $catName) {
             if ($this->categories['parentid'][$catKey] == $parentId) {
-                if ($_SESSION['expCat'][$parentId] == 1) {
+                if (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['expCat'][$parentId] == 1) {
                     //set subcategorie icon
-                    if ($_SESSION['expCat'][$catKey] == 1) {
+                    if (\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['expCat'][$catKey] == 1) {
                         $link = "<a href='index.php?cmd=Directory&amp;collaps=$catKey'><img src='".$this->imageWebPath."/minuslink.gif' border='0' alt='' /></a>";
                     } elseif (!in_array($catKey, $this->categories['parentid'])) {
                         $link = "<img src='".$this->imageWebPath."/pixel.gif' width='11' height='1' border='0' alt='' />";
@@ -982,18 +982,18 @@ class DirectoryManager extends DirectoryLibrary
             if ($_GET['expand'] == "all") {
                 if ($_GET['act'] == "levels") {
                     foreach($this->levels['name'] as $levelKey => $levelName) {
-                        $_SESSION['expLevel'][$levelKey] = 1;
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['expLevel'][$levelKey] = 1;
                     }
                 } else {
                     foreach($this->categories['name'] as $catKey => $catName) {
-                        $_SESSION['expCat'][$catKey] = 1;
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['expCat'][$catKey] = 1;
                     }
                 }
             } else {
                 if ($_GET['act'] == "levels") {
-                    $_SESSION['expLevel'][$_GET['expand']] = "1";
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['expLevel'][$_GET['expand']] = "1";
                 } else {
-                    $_SESSION['expCat'][$_GET['expand']] = "1";
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['expCat'][$_GET['expand']] = "1";
                 }
             }
         }
@@ -1007,8 +1007,8 @@ class DirectoryManager extends DirectoryLibrary
     public function initExpandCollapsSessionVariable()
     {
         $sessionVar = ($_GET['act'] == 'levels') ? 'expLevel' : 'expCat';
-        if (empty($_SESSION[$sessionVar])) {
-            $_SESSION[$sessionVar] = array();
+        if (empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$sessionVar])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$sessionVar] = array();
         }
     }
 
@@ -1022,15 +1022,15 @@ class DirectoryManager extends DirectoryLibrary
             $this->initExpandCollapsSessionVariable();
             if ($_GET['collaps'] == "all") {
                 if ($_GET['act'] == "levels") {
-                    $_SESSION['expLevel'] = "";
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['expLevel'] = "";
                 } else {
-                    $_SESSION['expCat'] = "";
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['expCat'] = "";
                 }
             } else {
                 if ($_GET['act'] == "levels") {
-                    $_SESSION['expLevel'][$_GET['collaps']] = "";
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['expLevel'][$_GET['collaps']] = "";
                 } else {
-                    $_SESSION['expCat'][$_GET['collaps']] = "";
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['expCat'][$_GET['collaps']] = "";
                 }
             }
         }
@@ -1109,7 +1109,7 @@ class DirectoryManager extends DirectoryLibrary
                 $levels = $this->getLevels('', 1);
 
                 if (isset($_POST["formSelected"])) {
-                    $_SESSION['formSelected'] = $_POST["formSelected"];
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['formSelected'] = $_POST["formSelected"];
                 }
 
                 $java = <<< EOF
@@ -1223,7 +1223,7 @@ EOF;
                 ));
 
                 if (isset($_POST['move_submit'])) {
-                    foreach($_SESSION['formSelected'] as $fileName => $fileKey) {
+                    foreach(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['formSelected'] as $fileName => $fileKey) {
                         //save categories
                         if (!empty($_POST["selectedCat"])) {
                             $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_directory_rel_dir_cat WHERE dir_id='".$fileKey."'");
@@ -1244,7 +1244,7 @@ EOF;
                             }
                         }
                     }
-                    $_SESSION['formSelected'] = null;
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['formSelected'] = null;
                     $this->showFiles('', '');
                 }
                 break;
@@ -1892,26 +1892,26 @@ EOF;
         ));
 
         // Sort
-        if (isset($_GET['sort']) || empty($_SESSION['order'])) {
+        if (isset($_GET['sort']) || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order'])) {
             switch ($_GET['sort'])
             {
                 case 'date':
-                $_SESSION['order']=($_SESSION['order']=="files.date desc")? "files.date asc" : "files.date desc";
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order']=(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order']=="files.date desc")? "files.date asc" : "files.date desc";
                 break;
                 case 'name':
-                $_SESSION['order']=($_SESSION['order']=="files.title desc")? "files.title asc" : "files.title desc";
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order']=(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order']=="files.title desc")? "files.title asc" : "files.title desc";
                 break;
                 case 'hits':
-                $_SESSION['order']=($_SESSION['order']=="files.hits desc")? "files.hits asc" : "files.hits desc";
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order']=(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order']=="files.hits desc")? "files.hits asc" : "files.hits desc";
                 break;
                 case 'spez':
-                $_SESSION['order']=($_SESSION['order']=="files.spezial desc")? "files.spezial asc" : "files.spezial desc";
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order']=(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order']=="files.spezial desc")? "files.spezial asc" : "files.spezial desc";
                 break;
                 case 'addedby':
-                $_SESSION['order']=($_SESSION['order']=="files.addedby desc")? "files.addedby asc" : "files.addedby desc";
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order']=(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order']=="files.addedby desc")? "files.addedby asc" : "files.addedby desc";
                 break;
                 default:
-                $_SESSION['order'] = "files.id desc";
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order'] = "files.id desc";
                 break;
             }
         }
@@ -1942,7 +1942,7 @@ EOF;
                     FROM ".$db." ".DBPREFIX."module_directory_dir AS files
                    WHERE files.status = 1 ".$where."
                    GROUP BY files.id
-                   ORDER BY ".$_SESSION['order']."";
+                   ORDER BY ".\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order']."";
 
         ////// paging start /////////
         $pagingLimit    = intval($this->settings['pagingLimit']['value']);
@@ -2214,20 +2214,20 @@ EOF;
 
 
         // Sort
-        if (isset($_GET['sort']) || empty($_SESSION['order'])) {
+        if (isset($_GET['sort']) || empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order'])) {
             switch ($_GET['sort'])
             {
                 case 'date':
-                $_SESSION['order']=($_SESSION['order']=="files.date desc")? "files.date asc" : "files.date desc";
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order']=(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order']=="files.date desc")? "files.date asc" : "files.date desc";
                 break;
                 case 'name':
-                $_SESSION['order']=($_SESSION['order']=="files.title desc")? "files.title asc" : "files.title desc";
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order']=(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order']=="files.title desc")? "files.title asc" : "files.title desc";
                 break;
                 case 'addedby':
-                $_SESSION['order']=($_SESSION['order']=="files.addedby desc")? "files.addedby asc" : "files.addedby desc";
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order']=(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order']=="files.addedby desc")? "files.addedby asc" : "files.addedby desc";
                 break;
                 default:
-                $_SESSION['order'] = "files.id desc";
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order'] = "files.id desc";
                 break;
             }
         }
@@ -2246,7 +2246,7 @@ EOF;
         }
 
         //create query
-        $query="SELECT * FROM ".DBPREFIX."module_directory_dir AS files WHERE status='0' ".$where." ORDER BY ".$_SESSION['order'];
+        $query="SELECT * FROM ".DBPREFIX."module_directory_dir AS files WHERE status='0' ".$where." ORDER BY ".\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['order'];
 
         ////// paging start /////////
         $objResult = $objDatabase->Execute($query);

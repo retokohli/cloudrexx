@@ -81,8 +81,8 @@ class Twitter extends OAuth
         $tmhOAuth->config['timestamp'] = time();
 
         if (isset($_GET['oauth_verifier'])) {
-            $tmhOAuth->config['user_token'] = $_SESSION['oauth']['oauth_token'];
-            $tmhOAuth->config['user_secret'] = $_SESSION['oauth']['oauth_token_secret'];
+            $tmhOAuth->config['user_token'] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['oauth']['oauth_token'];
+            $tmhOAuth->config['user_secret'] = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['oauth']['oauth_token_secret'];
 
             $tmhOAuth->request('POST', $tmhOAuth->url('oauth/access_token', ''), array(
                 'oauth_verifier' => $_GET['oauth_verifier'],
@@ -96,7 +96,7 @@ class Twitter extends OAuth
             $tmhOAuth->request('GET', $tmhOAuth->url('1.1/account/verify_credentials'));
             $resp = json_decode($tmhOAuth->response['response']);
 
-            unset($_SESSION['oauth']);
+            unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['oauth']);
 
             $name = explode(' ', $resp->name);
             self::$userdata = array(
@@ -107,8 +107,8 @@ class Twitter extends OAuth
             $this->getContrexxUser($resp->id);
         } else {
             $tmhOAuth->request('POST',$tmhOAuth->url('oauth/request_token',""),array('oauth_callback' => \Cx\Lib\SocialLogin::getLoginUrl(self::OAUTH_PROVIDER)));
-            $_SESSION['oauth'] = $tmhOAuth->extract_params($tmhOAuth->response['response']);
-            $url = 'https://api.twitter.com/oauth/authenticate?oauth_token='.$_SESSION['oauth']['oauth_token'];
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['oauth'] = $tmhOAuth->extract_params($tmhOAuth->response['response']);
+            $url = 'https://api.twitter.com/oauth/authenticate?oauth_token='.\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['oauth']['oauth_token'];
             \Cx\Core\Csrf\Controller\Csrf::header("Location: ". $url);
             exit;
         }

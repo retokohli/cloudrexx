@@ -377,8 +377,8 @@ class InitCMS
             }
         } elseif (!empty($_COOKIE['userFrontendLangId'])) {
             $id = FWLanguage::getLanguageIdByCode($_COOKIE['userFrontendLangId']);
-        } elseif (!empty($_SESSION['userFrontendLangId'])) {
-            $id = intval($_SESSION['userFrontendLangId']);
+        } elseif (!empty(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['userFrontendLangId'])) {
+            $id = intval(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['userFrontendLangId']);
         } else {
             $id = $this->defaultFrontendLangId;
         }
@@ -386,7 +386,7 @@ class InitCMS
             $id = $this->defaultFrontendLangId;
         }
         $this->userFrontendLangId = $id;
-        $_SESSION['userFrontendLangId'] = $id;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['userFrontendLangId'] = $id;
         setcookie("userFrontendLangId", "", time() - 3600);
         return $this->userFrontendLangId;
     }

@@ -588,11 +588,11 @@ class Customer extends \User
 //            'CUSTOMER_RESELLER' => $this->getProfileAttribute($index_reseller),
 //            'CUSTOMER_GROUP_ID' => current($this->getAssociatedGroupIds()),
         );
-//DBG::log("Login: ".$this->username()."/".$_SESSION['shop']['password']);
-        if (isset($_SESSION['shop']['password'])) {
+//DBG::log("Login: ".$this->username()."/".\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['password']);
+        if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['password'])) {
             $arrSubstitution['CUSTOMER_LOGIN'] = array(0 => array(
                 'CUSTOMER_USERNAME' => $this->username(),
-                'CUSTOMER_PASSWORD' => $_SESSION['shop']['password'],
+                'CUSTOMER_PASSWORD' => \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['password'],
             ));
         }
         return $arrSubstitution;

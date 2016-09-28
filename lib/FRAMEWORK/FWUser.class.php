@@ -124,8 +124,8 @@ class FWUser extends User_Setting
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $sessionObj = $cx->getComponent('Session')->getSession();
 
-        if (!isset($_SESSION['auth'])) {
-            $_SESSION['auth'] = array();
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['auth'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['auth'] = array();
         }
 
         if (   (  isset($username) && isset($password)
@@ -140,11 +140,11 @@ class FWUser extends User_Setting
             return true;
         }
 
-        $_SESSION['auth']['loginLastAuthFailed'] = 1;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['auth']['loginLastAuthFailed'] = 1;
         User::registerFailedLogin($username);
         $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
-        $_SESSION->cmsSessionUserUpdate();
-        $_SESSION->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->cmsSessionUserUpdate();
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
         return false;
     }
 
@@ -172,9 +172,9 @@ class FWUser extends User_Setting
     function loginUser($objUser) {
         global $objInit;
 
-        $_SESSION->cmsSessionUserUpdate($objUser->getId());
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()->cmsSessionUserUpdate($objUser->getId());
         $objUser->registerSuccessfulLogin();
-        unset($_SESSION['auth']['loginLastAuthFailed']);
+        unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['auth']['loginLastAuthFailed']);
         // Store frontend lang_id in cookie
         if (empty($_COOKIE['langId'])) {
             // TODO: Seems that this method returns zero at first when the Users' language is set to "default"!
@@ -302,8 +302,8 @@ class FWUser extends User_Setting
      */
     public function logoutAndDestroySession()
     {
-        if (isset($_SESSION['auth'])) {
-            unset($_SESSION['auth']);
+        if (isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['auth'])) {
+            unset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['auth']);
         }
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $cx->getComponent('Session')->getSession()->destroy();
@@ -319,7 +319,7 @@ class FWUser extends User_Setting
     {
         global $objDatabase;
 
-        if (!isset($_SESSION['auth']['log'])) {
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['auth']['log'])) {
             $remote_host = @gethostbyaddr($_SERVER['REMOTE_ADDR']);
             $referer = isset($_SERVER['HTTP_REFERER']) ? contrexx_strip_tags(strtolower($_SERVER['HTTP_REFERER'])) : '';
             $httpUserAgent = get_magic_quotes_gpc() ? strip_tags($_SERVER['HTTP_USER_AGENT']) : addslashes(strip_tags($_SERVER['HTTP_USER_AGENT']));
@@ -337,7 +337,7 @@ class FWUser extends User_Setting
                                             http_via = '".(isset($_SERVER['HTTP_VIA']) ? substr(strip_tags($_SERVER['HTTP_VIA']), 0, 250) : '')."',
                                             http_client_ip = '".(isset($_SERVER['HTTP_CLIENT_IP']) ? substr(strip_tags($_SERVER['HTTP_CLIENT_IP']), 0, 250) : '')."',
                                             referer ='".substr($referer, 0, 250)."'");
-            $_SESSION['auth']['log']=true;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['auth']['log']=true;
         }
     }
 

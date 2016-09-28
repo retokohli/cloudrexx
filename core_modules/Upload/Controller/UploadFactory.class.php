@@ -98,9 +98,9 @@ class UploadFactory
     protected function initSession() {
         $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
         $cx->getComponent('Session')->getSession();
-        if (!isset($_SESSION['upload'])) {
-            $_SESSION['upload'] = array();
-            $_SESSION['upload']['handlers'] = array();
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload'] = array();
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'] = array();
         }
     }
 
@@ -197,8 +197,8 @@ class UploadFactory
         //determine the callback on finishing
         $onFinished = null;
 
-        if(isset($_SESSION['upload']['handlers'][$id]['callback'])) {
-            $onFinished = $_SESSION['upload']['handlers'][$id]['callback'];
+        if(isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$id]['callback'])) {
+            $onFinished = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$id]['callback'];
         }
         else { //no callback found
             throw new UploadFactoryException('No callback specified for id '.$id.'.');
@@ -234,11 +234,11 @@ class UploadFactory
 
         if($id == 0) { //no explicitly specified id; create a new one
             //generate a unique upload id & increment the upload id counter
-            if(!isset($_SESSION['upload']['currentid']))
-                $_SESSION['upload']['currentid'] = 1;
-            $curId = $_SESSION['upload']['currentid'];
+            if(!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['currentid']))
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['currentid'] = 1;
+            $curId = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['currentid'];
             $theUploader->setUploadId($curId);
-            $_SESSION['upload']['currentid'] = $curId + 1;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['currentid'] = $curId + 1;
         }
         else {
             $theUploader->setUploadId($id);
@@ -267,8 +267,8 @@ class UploadFactory
     public function folderWidgetFromRequest()
     {
         $id = intval($_REQUEST['folderWidgetId']);
-        if($id>0 && isset($_SESSION['upload']['folder_widgets'][$id]['path'])) {
-            $path = $_SESSION['upload']['folder_widgets'][$id]['path'];
+        if($id>0 && isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['folder_widgets'][$id]['path'])) {
+            $path = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['folder_widgets'][$id]['path'];
             return $this->createFolderWidget($path, $id);
         }
         else {
@@ -288,18 +288,18 @@ class UploadFactory
 
         if($id == 0) { //new instance, handle initializing
             $id = 1;
-            if(!isset($_SESSION['upload']['folder_widget_current_id'])) {
-                $_SESSION['upload']['folder_widget_current_id'] = 1;
+            if(!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['folder_widget_current_id'])) {
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['folder_widget_current_id'] = 1;
             } else {
-                $_SESSION['upload']['folder_widget_current_id'] += 1;
-                $id = $_SESSION['upload']['folder_widget_current_id'];
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['folder_widget_current_id'] += 1;
+                $id = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['folder_widget_current_id'];
             }
 
-            if (!isset($_SESSION['upload']['folder_widgets'])) {
-                $_SESSION['upload']['folder_widgets'] = array();
+            if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['folder_widgets'])) {
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['folder_widgets'] = array();
             }
-            $_SESSION['upload']['folder_widgets'][$id] = array();
-            $_SESSION['upload']['folder_widgets'][$id]['path'] = $folder;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['folder_widgets'][$id] = array();
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['folder_widgets'][$id]['path'] = $folder;
             $theWidget->setId($id);
         }
 
@@ -315,8 +315,8 @@ class UploadFactory
         //some uploads may have a redirect url set
         $key = 'redirect_url';
         $redirectUrl = null;
-        if(isset($_SESSION['upload']['handlers'][$uploadId][$key]))
-            $redirectUrl = $_SESSION['upload']['handlers'][$uploadId][$key];
+        if(isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$uploadId][$key]))
+            $redirectUrl = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['upload']['handlers'][$uploadId][$key];
         if($redirectUrl) {
             $uploader->setRedirectUrl($redirectUrl);
         }

@@ -737,37 +737,37 @@ class LanguageManager
         $this->template->loadTemplateFile('language_list.html');
         $this->pageTitle = $_ARRAYLANG['TXT_VARIABLE_LIST'];
 
-        if (!isset($_SESSION['lang'])) {
-            $_SESSION['lang'] = array();
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang'] = array();
         }
 
-        if (!isset($_SESSION['lang']['term'])) $_SESSION['lang']['term']="";
-        if (!isset($_SESSION['lang']['langId'])) $_SESSION['lang']['langId']="";
-        if (!isset($_SESSION['lang']['status'])) $_SESSION['lang']['status']="";
-        if (!isset($_SESSION['lang']['zone'])) $_SESSION['lang']['zone']="both";
-        if (!isset($_SESSION['lang']['moduleId'])) $_SESSION['lang']['moduleId'] = "";
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['term'])) \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['term']="";
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['langId'])) \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['langId']="";
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['status'])) \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['status']="";
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['zone'])) \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['zone']="both";
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['moduleId'])) \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['moduleId'] = "";
 
         if (isset($_POST['term'])) {
-            $_SESSION['lang']['term']= contrexx_addslashes($_POST['term']);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['term']= contrexx_addslashes($_POST['term']);
         }
         if (isset($_POST['lang'])) {
-            $_SESSION['lang']['langId']=intval($_POST['lang']);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['langId']=intval($_POST['lang']);
         }
         if (isset($_POST['status'])) {
-            $_SESSION['lang']['status']=intval($_POST['status']);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['status']=intval($_POST['status']);
         }
         if (isset($_POST['zone'])) {
-            $_SESSION['lang']['zone']= contrexx_addslashes($_POST['zone']);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['zone']= contrexx_addslashes($_POST['zone']);
         }
         if (isset($_POST['module'])) {
-            $_SESSION['lang']['moduleId'] = intval($_POST['module']);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['moduleId'] = intval($_POST['module']);
         }
 
-        $term = $_SESSION['lang']['term'];
-        $lang = $_SESSION['lang']['langId'];
-        $status = $_SESSION['lang']['status'];
-        $zone = $_SESSION['lang']['zone'];
-        $module = $_SESSION['lang']['moduleId'];
+        $term = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['term'];
+        $lang = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['langId'];
+        $status = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['status'];
+        $zone = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['zone'];
+        $module = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['lang']['moduleId'];
 
         if ($zone=="frontend") {
             $selected1="selected";

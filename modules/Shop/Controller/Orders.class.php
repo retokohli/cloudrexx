@@ -1097,13 +1097,13 @@ if (!$limit) {
             $shipmentId = $objResult->fields['shipment_id'];
             if ($processorType == 'external') {
                 // External payment types are considered instant.
-                // See $_SESSION['shop']['isInstantPayment'].
+                // See \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['isInstantPayment'].
                 if ($shipmentId == 0) {
                     // instant, download -> completed
                     $newOrderStatus = Order::STATUS_COMPLETED;
                 } else {
                     // There is a shipper, so this order will bedelivered.
-                    // See $_SESSION['shop']['isDelivery'].
+                    // See \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()['shop']['isDelivery'].
                     // instant, delivery -> paid
                     $newOrderStatus = Order::STATUS_PAID;
                 }

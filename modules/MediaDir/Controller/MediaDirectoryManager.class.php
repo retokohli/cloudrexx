@@ -1087,12 +1087,12 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
      */
     function initFilterSession() {
 
-        if(!isset($_SESSION[$this->moduleName])){
-            $_SESSION[$this->moduleName] = array();
+        if(!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$this->moduleName])){
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$this->moduleName] = array();
         }
 
-        if (!isset($_SESSION[$this->moduleName]['searchFilter'])) {
-            $_SESSION[$this->moduleName]['searchFilter'] = array(
+        if (!isset(\Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$this->moduleName]['searchFilter'])) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$this->moduleName]['searchFilter'] = array(
                             'cat_id'    => null,
                             'level_id'  => null,
                             'form_id'   => null,
@@ -1111,25 +1111,25 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         $this->initFilterSession();
 
         if(isset($_REQUEST['cat_id'])) {
-            $_SESSION[$this->moduleName]['searchFilter']['cat_id'] = intval($_REQUEST['cat_id']);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$this->moduleName]['searchFilter']['cat_id'] = intval($_REQUEST['cat_id']);
         }
         if(isset($_REQUEST['level_id'])) {
-            $_SESSION[$this->moduleName]['searchFilter']['level_id'] = intval($_REQUEST['level_id']);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$this->moduleName]['searchFilter']['level_id'] = intval($_REQUEST['level_id']);
         }
 
         if(isset($_REQUEST['form_id'])) {
-            $_SESSION[$this->moduleName]['searchFilter']['form_id'] = intval($_REQUEST['form_id']);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$this->moduleName]['searchFilter']['form_id'] = intval($_REQUEST['form_id']);
         }
 
         if(isset($_REQUEST['term'])){
-            $_SESSION[$this->moduleName]['searchFilter']['term'] = ($_REQUEST['term'] != $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM']) ?  $_REQUEST['term'] : null;
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$this->moduleName]['searchFilter']['term'] = ($_REQUEST['term'] != $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM']) ?  $_REQUEST['term'] : null;
         }
 
         //assign the searchFilter session values to corresponding variables
-        $intCategoryId = $_SESSION[$this->moduleName]['searchFilter']['cat_id'];
-        $intLevelId    = $_SESSION[$this->moduleName]['searchFilter']['level_id'];
-        $intFormId     = $_SESSION[$this->moduleName]['searchFilter']['form_id'];
-        $strTerm       = $_SESSION[$this->moduleName]['searchFilter']['term'];
+        $intCategoryId = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$this->moduleName]['searchFilter']['cat_id'];
+        $intLevelId    = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$this->moduleName]['searchFilter']['level_id'];
+        $intFormId     = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$this->moduleName]['searchFilter']['form_id'];
+        $strTerm       = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->getSession()[$this->moduleName]['searchFilter']['term'];
 
         $objCategories = new MediaDirectoryCategory(null, null, 1, $this->moduleName);
         $catDropdown = $objCategories->listCategories(null, 3, $intCategoryId);
