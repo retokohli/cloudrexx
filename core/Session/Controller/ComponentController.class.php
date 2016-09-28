@@ -67,6 +67,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return \cmsSession Session instance
      */
     public function getSession() {
-        return \cmsSession::getInstance();
+        return \Cx\Core\Session\Model\Entity\Session::getInstance();
     }
 }
