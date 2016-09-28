@@ -64,4 +64,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
 
+    /**
+     * Returns the current session or opens a new one if none exists yet
+     * @return \cmsSession Session instance
+     */
+    public function getSession() {
+        return \cmsSession::getInstance();
+    }
 }
