@@ -1383,11 +1383,11 @@ class CalendarManager extends CalendarLibrary
      * @return string
      */
     function parseCsvData($data, $format) {
+        $data = html_entity_decode($data, ENT_QUOTES);
         if ($format === 'export_csv_excel') {
             $data = utf8_decode($data);
         }
-        $csvData = html_entity_decode($data, ENT_QUOTES);
-        return $csvData;
+        return $data;
     }
 
     /**
