@@ -87,9 +87,14 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
             $urlString .= '/' . $langCode;
         }
         $urlString .= '/'. $inputSlug;
-        $url      = new \Cx\Core\Routing\Url('http://example.com' . $urlString);
-        $resolver = new \Cx\Core\Routing\Resolver($url, $language, self::$em, '', $this->mockFallbackLanguages, false);
-        $resolver->resolve();
+        try {
+            \DBG::log('http://example.com' . $urlString);
+            $url      = new \Cx\Core\Routing\Url('http://example.com' . $urlString);
+            $resolver = new \Cx\Core\Routing\Resolver($url, $language, self::$em, '', $this->mockFallbackLanguages, false);
+            $resolver->resolve();
+        } catch (\Exception $ex) {
+            // Nothing to do
+        }
         $p = $resolver->getPage();
         $this->assertEquals($expectedSlug, $p->getSlug());
     }
@@ -102,13 +107,20 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
     public function resolverDataProvider()
     {
         return array(
-            array(1, 'Simple-content-page'),
+            // Content
             array(2, 'Simple-content-page'),
-            array(null, 'Alias-for-content-page', 'Simple-content-page'),
-            array(1, 'SymLink-page'),
-            array(2, 'SymLink-page'),
-            array(1, 'Application-page'),
-            array(2, 'Application-page'),
+            // Application
+            array(2, 'Simple-application-page'),
+            // Fallback -> Content
+            array(1, 'Fallback-to-content-page'),
+            // Fallback -> Application
+            array(1, 'Fallback-to-application-page'),
+            // Symlink -> Content
+            array(2, 'Simple-symlink-to-content-page'),
+            // Symlink -> Application
+            array(2, 'Simple-symlink-to-application-page'),
+
+            //array(1, '?section=Access', 'Simple-content-page'), // it uses global variable $_REQUEST
         );
     }
 }
