@@ -208,15 +208,28 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\Html\Sigma $template Template file to parse locales in
      */
     public function parseLocaleList($template) {
-        if (!$template->blockExists('alternate_locale_list')) {
+        if (!$template->blockExists('locale_alternate_list')) {
             return;
         }
         $currentPage = $this->cx->getPage();
+        $listProtectedPages = \Cx\Core\Setting\Controller\Setting::getValue(
+            'coreListProtectedPages',
+            'Config'
+        ) == 'on';
         foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
             $langId = $lang['id'];
             $lang = $lang['lang'];
             $langPage = $currentPage->getNode()->getPage($langId);
-            if (!$langPage) {
+            // if page is not translated, inactive (incl. scheduled publishing) or protected
+            if (
+                !$langPage ||
+                !$langPage->isActive() ||
+                (
+                    !$listProtectedPages &&
+                    $langPage->isFrontendProtected() &&
+                    !\Permission::checkAccess($langPage->getFrontendAccessId(), 'dynamic', true)
+                )
+            ) {
                 continue;
             }
             $template->setVariable(array(
@@ -227,7 +240,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 //'COUNTRY_NAME' => ,
                 //'COUNTRY_CODE' => ,
             ));
-            $template->parse('alternate_locale_list');
+            $template->parse('locale_alternate_list');
         }
     }
 }
