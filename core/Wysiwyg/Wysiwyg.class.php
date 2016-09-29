@@ -333,7 +333,7 @@ class Wysiwyg
             $processTime = \Cx\Core\Core\Controller\Cx::instanciate()->getStartTime();
 
             //Pattern to extract the image data-urls from the given content
-            $pattern = '/<img\s+[^>]*src=([\'\"])([^\1]*)\1[^>]*>/si';
+            $pattern = '/<img\s+[^>]*src=([\'\"])([^\'\"]*)\1[^>]*>/si';
 
             //Get the file path and filename prefix
             $filePath   = is_callable($path) ? call_user_func($path) : $path;
@@ -360,7 +360,7 @@ class Wysiwyg
             $content    = preg_replace_callback(
                             $pattern, 
                             function ($imgMatches) use ($args, &$movedFiles) {
-                                if (!preg_match('/^data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([^\'\"]*)\s*/si', $imgMatches[2], $dataMatches)) {
+                                if (!preg_match('/^data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)(.*)\s*/si', $imgMatches[2], $dataMatches)) {
                                     return '';
                                 }
                                 //Check if the content have base64 content, if so proceed further
