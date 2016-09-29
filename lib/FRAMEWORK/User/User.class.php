@@ -546,7 +546,7 @@ class User extends User_Profile
         $objFWUser = FWUser::getFWUserObject();
         if ($deleteOwnAccount || $this->id != $objFWUser->objUser->getId()) {
             if (!$this->isLastAdmin()) {
-                \Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));    
+                \Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
                 if ($objDatabase->Execute(
                 'DELETE tblU, tblP, tblG, tblA, tblN
                 FROM `'.DBPREFIX.'access_users` AS tblU
@@ -556,7 +556,7 @@ class User extends User_Profile
                 LEFT JOIN `'.DBPREFIX.'access_user_network` AS tblN ON tblN.`user_id` = tblU.`id`
                 WHERE tblU.`id` = '.$this->id) !== false
             ) {
-                \Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));    
+                \Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
                 return true;
                 } else {
                     $this->error_msg[] = sprintf($_CORELANG['TXT_ACCESS_USER_DELETE_FAILED'], $this->username);
@@ -904,7 +904,7 @@ class User extends User_Profile
      * @param   boolean $forceReload    Set to TRUE to refetch the user
                                         from the database. Otherwise, the
                                         user will be loaded from cache,
-                                        in case it has been loaded 
+                                        in case it has been loaded
                                         before. Defaults to FALSE.
      * @return  mixed   Instance of \User if successful. Otherwise FALSE.
      */
@@ -1070,7 +1070,7 @@ class User extends User_Profile
      * @param   boolean $forceReload    Set to TRUE to refetch the user
                                         from the database. Otherwise, the
                                         user will be loaded from cache,
-                                        in case it has been loaded 
+                                        in case it has been loaded
                                         before. Defaults to FALSE.
      * @throws UserException
      * @return boolean  TRUE on success, otherwise FALSE
@@ -1712,7 +1712,7 @@ class User extends User_Profile
         // This is a pseudo emulation of doctrine's own event system behavior which triggers
         // the postUpdate event on an entity only in case the entity has actually been altered.
         $userChangeStatus = null;
-        
+
         if (!$this->validateUsername()) {
             return false;
         }
@@ -1722,7 +1722,7 @@ class User extends User_Profile
         if ($this->networks) {
             $this->networks->save();
         }
-        
+
         if ($this->id) {
             // update existing account
             \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
@@ -1733,10 +1733,10 @@ class User extends User_Profile
                 $generatedPassword = $this->make_password();
                 $this->setPassword($generatedPassword);
             }
-            
+
             \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
             $this->createUser();
-            
+
             if(!\FWValidator::isEmpty($generatedPassword)) {
                 $this->sendUserAccountInvitationMail($generatedPassword);
             }
@@ -1765,14 +1765,14 @@ class User extends User_Profile
         } else {
             \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
         }
-        
+
         return true;
     }
-    
+
     /**
      * Send a invitation mail to the created user.
      * It used the old mail function
-     * 
+     *
      * @param string $generatedPassword
      */
     protected function sendUserAccountInvitationMail($generatedPassword) {
@@ -1845,7 +1845,7 @@ class User extends User_Profile
     }
 
     /**
-     * @param  mixed    $userChanged	If $userChanged is provided, then in case any account
+     * @param  mixed    $userChanged    If $userChanged is provided, then in case any account
      *                                  changes are being flushed to the database, $userChanged
      *                                  will be set to TRUE, otherwise it'll be left untouched.
      */
@@ -1993,7 +1993,7 @@ class User extends User_Profile
      *
      * Stores the group associations of the loaded user.
      * Returns TRUE on success, FALSE on failure.
-     * @param  mixed    $associationChange	If $associationChange is provided, then in case any
+     * @param  mixed    $associationChange    If $associationChange is provided, then in case any
      *                                      group association changes are being flushed to the
      *                                      database, $associationChange will be set to TRUE,
      *                                      otherwise it'll be left untouched.
@@ -2038,7 +2038,7 @@ class User extends User_Profile
 
     /**
      * Store the user's newsletter-list-subscriptions to the database
-     * @param  mixed    $subscriptionChange	If $subscriptionChange is provided, then in case any
+     * @param  mixed    $subscriptionChange    If $subscriptionChange is provided, then in case any
      *                                      newsletter list subscription changes are being
      *                                      flushed to the database, $subscriptionChange will
      *                                      be set to TRUE, otherwise it'll be left untouched.
@@ -2181,7 +2181,7 @@ class User extends User_Profile
 
 
     public function login($backend = false)
-    {        
+    {
 
         if ($this->loggedIn) return true;
         if(isset($_SESSION)
@@ -2834,7 +2834,7 @@ class User extends User_Profile
         }
         return $result->fields['id'];
     }
-    
+
     /**
      * Returns this user's timezone
      * @todo Implement a way to detect the real timezone
@@ -2843,7 +2843,7 @@ class User extends User_Profile
      */
     public function getTimezone() {
         global $_CONFIG;
-        
+
         return new \DateTimeZone($_CONFIG['timezone']);
     }
 
