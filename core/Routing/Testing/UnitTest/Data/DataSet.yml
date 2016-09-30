@@ -962,9 +962,9 @@ contrexx_content_page:
     cssNavName: ""
     skin: 0
     useSkinForAllChannels: 0
-    metatitle: "simlink to redirect to "
-    metadesc: "simlink to redirect to "
-    metakeys: "simlink to redirect to "
+    metatitle: "Symlink to redirect to content"
+    metadesc: "Symlink to redirect to content"
+    metakeys: "Symlink to redirect to content"
     metarobots: 1
     editingStatus: ""
     protection: 0
@@ -1316,9 +1316,9 @@ contrexx_content_page:
     cssNavName: ""
     skin: 0
     useSkinForAllChannels: 0
-    metatitle: "symlink fallback to "
-    metadesc: "symlink fallback to "
-    metakeys: "symlink fallback to "
+    metatitle: "symlink redirect to fallback to content"
+    metadesc: "symlink redirect to fallback to content"
+    metakeys: "symlink redirect to fallback to content"
     metarobots: 1
     editingStatus: ""
     protection: 0
@@ -1352,9 +1352,9 @@ contrexx_content_page:
     cssNavName: ""
     skin: 0
     useSkinForAllChannels: 0
-    metatitle: "symlink "
-    metadesc: "symlink "
-    metakeys: "symlink "
+    metatitle: "symlink redirect to fallback to application"
+    metadesc: "symlink redirect to fallback to application"
+    metakeys: "symlink redirect to fallback to application"
     metarobots: 1
     editingStatus: ""
     protection: 0

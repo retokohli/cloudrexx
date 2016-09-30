@@ -119,6 +119,114 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
             array(2, 'Simple-symlink-to-content-page'),
             // Symlink -> Application
             array(2, 'Simple-symlink-to-application-page'),
+            // Redirect -> Content
+            array(2, 'Simple-redirect-to-content-page', 'Simple-content-page'),
+            // Redirect -> Application
+            array(2, 'Simple-redirect-to-application-page', 'Simple-application-page'),
+            // Alias -> Content
+            array(null, 'Simple-alias-for-content-page', 'Simple-content-page'),
+            // Alias -> Application
+            array(null, 'Simple-alias-for-application-page', 'Simple-application-page'),
+            // Redirect -> Symlink -> Content
+            array(2, 'Redirect-to-symlink-content-page', 'Simple-symlink-to-content-page'),
+            // Redirect -> Symlink -> Application
+            array(2, 'Redirect-to-symlink-application-page', 'Simple-symlink-to-application-page'),
+            // Redirect -> Fallback -> Content
+            array(1, 'Redirect-to-fallback-content-page', 'Simple-content-page'),
+            // Redirect -> Fallback -> Application
+            array(1, 'Redirect-to-fallback-application-page', 'Simple-application-page'),
+            // Fallback -> Symlink -> Content
+            array(1, 'Fallback-symlink-to-content-page'),
+            // Fallback -> Symlink -> Application
+            array(1, 'Fallback-symlink-to-application-page'),
+            // Symlink -> Redirect -> Content
+            array(2, 'Symlink-to-redirect-to-content', 'Simple-content-page'),
+            // Symlink -> Redirect -> Application
+            array(2, 'Symlink-to-redirect-to-application', 'Simple-application-page'),
+            // Symlink -> Fallback -> Content
+            array(1, 'Symlink-to-fallback-to-content'),
+            // Symlink -> Fallback -> Application
+            array(1, 'Symlink-to-fallback-to-application'),
+            // Alias -> Redirect -> Content
+            array(null, 'alias-redirect-to-content-page', 'Simple-content-page'),
+            // Alias -> Redirect -> Application
+            array(null, 'alias-redirect-to-application-page', 'Simple-application-page'),
+            // Alias -> Fallback -> Content
+            array(null, 'alias-fallback-to-content-page'),
+            // Alias -> Fallback -> Application
+            array(null, 'alias-fallback-to-application-page'),
+            // Alias -> Symlink -> Content
+            array(null, 'alias-symlink-to-content-page', 'Simple-symlink-to-content-page'),
+            // Alias -> Symlink -> Application
+            array(null, 'alias-symlink-to-application-page', 'Simple-symlink-to-application-page'),
+            // Symlink -> Fallback -> Redirect -> Content
+            array(1, 'symlink-fallback-to-redirect-to-content', 'Simple-content-page'),
+            // Symlink -> Fallback -> Redirect -> Application
+            array(1, 'symlink-fallback-to-redirect-to-application', 'Simple-application-page'),
+            // Symlink -> Redirect -> Fallback -> Content
+            array(1, 'symlink-redirect-to-fallback-to-content'),
+            // Symlink -> Redirect -> Fallback -> Application
+            array(1, 'symlink-redirect-to-fallback-to-application'),
+            // Fallback -> Symlink -> Redirect -> Content
+            array(1, 'Fallback-symlink-to-redirect-to-content', 'Simple-content-page'),
+            // Fallback -> Symlink -> Redirect -> Application
+            array(1, 'Fallback-symlink-to-redirect-to-application', 'Simple-application-page'),
+            // Fallback -> Redirect -> Symlink -> Content
+            array(1, 'Fallback-redirect-to-symlink-content-page', 'Simple-symlink-to-content-page'),
+            // Fallback -> Redirect -> Symlink -> Application
+            array(1, 'Fallback-redirect-to-symlink-application-page', 'Simple-symlink-to-application-page'),
+            // Redirect -> Symlink -> Fallback -> Content
+            array(1, 'redirect-to-symlink-to-fallback-to-content', 'Symlink-to-fallback-to-content'),
+            // Redirect -> Symlink -> Fallback -> Application
+            array(1, 'redirect-to-symlink-to-fallback-to-application', 'Symlink-to-fallback-to-application'),
+            // Redirect -> Fallback -> Symlink -> Content
+            array(1, 'redirect-to-fallback-to-symlink-to-content', 'Simple-symlink-to-content-page'),
+            // Redirect -> Fallback -> Symlink -> Application
+            array(1, 'redirect-to-fallback-to-symlink-to-application', 'Simple-symlink-to-application-page'),
+            // Alias -> Symlink -> Redirect -> Content
+            array(null, 'alias-symlink-redirect-to-content', 'Symlink-to-redirect-to-content'),
+            // Alias -> Symlink -> Redirect -> Application
+            array(null, 'alias-symlink-to-redirect-to-application', 'Symlink-to-redirect-to-application'),
+            // Alias -> Fallback -> Symlink -> Content
+            array(null, 'alias-fallback-symlink-to-content-page'),
+            // Alias -> Fallback -> Symlink -> Application
+            array(null, 'alias-fallback-symlink-to-application-page'),
+            // Alias -> Fallback -> Redirect -> Content
+            array(null, 'alias-fallback-redirect-to-content-page'),
+            // Alias -> Fallback -> Redirect -> Application
+            array(null, 'alias-fallback-redirect-to-application-page'),
+            // Alias -> Redirect -> Symlink -> Content
+            array(null, 'alias-redirect-to-symlink-content-page', 'Simple-symlink-to-content-page'),
+            // Alias -> Redirect -> Symlink -> Application
+            array(null, 'alias-redirect-to-symlink-application-page', 'Simple-symlink-to-application-page'),
+            // Alias -> Redirect -> Fallback -> Content
+            array(null, 'alias-redirect-to-fallback-content-page'),
+            // Alias -> Redirect -> Fallback -> Application
+            array(null, 'alias-redirect-to-fallback-application-page'),
+            // Alias -> Symlink -> Redirect -> Fallback -> Content
+            array(null, 'alias-symlink-redirect-to-fallback-to-content'),
+            // Alias -> Symlink -> Redirect -> Fallback -> Application
+            array(null, 'alias-symlink-redirect-to-fallback-to-application'),
+            // Alias -> Symlink -> Fallback -> Redirect -> Content
+            array(null, 'alias-symlink-fallback-to-redirect-to-content'),
+            // Alias -> Symlink -> Fallback -> Redirect -> Application
+            array(null, 'alias-symlink-fallback-to-redirect-to-application'),
+            // Alias -> Fallback -> Redirect -> Symlink -> Content
+            array(null, 'alias-Fallback-redirect-to-symlink-content-page'),
+            // Alias -> Fallback -> Redirect -> Symlink -> Application
+            array(null, 'alias-Fallback-redirect-to-symlink-application-page'),
+            // Alias -> Fallback -> Symlink -> Redirect -> Content
+            array(null, 'alias-Fallback-symlink-to-redirect-to-content'),
+            // Alias -> Fallback -> Symlink -> Redirect -> Application
+            array(null, 'alias-Fallback-symlink-to-redirect-to-application'),
+            // Alias -> Redirect -> Fallback -> Symlink -> Content
+            array(null, 'alias-redirect-to-fallback-to-symlink-to-content'),
+            // Alias -> Redirect -> Fallback -> Symlink -> Application
+            array(null, 'alias-redirect-to-fallback-to-symlink-to-application'),
+            // Alias -> Redirect -> Symlink -> Fallback -> Content
+            array(null, 'alias-redirect-to-symlink-to-fallback-to-content'),
+            // Alias -> Redirect -> Symlink -> Fallback -> Application
+            array(null, 'alias-redirect-to-symlink-to-fallback-to-application'),
 
             //array(1, '?section=Access', 'Simple-content-page'), // it uses global variable $_REQUEST
         );
