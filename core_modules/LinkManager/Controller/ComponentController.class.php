@@ -98,19 +98,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function getUrlResponse($url)
     {
-        static $request = null;
-
         //If the argument url is empty then return
         if (empty($url)) {
             return false;
         }
 
-        //If the request is null then create and store a new object of HTTP_Request
-        if ($request === null) {
-            $request = new \HTTP_Request2();
-        }
-
         try {
+            $request = new \HTTP_Request2();
             $request->setUrl($url);
             // ignore ssl issues
             // otherwise, cloudrexx does not activate 'https'
