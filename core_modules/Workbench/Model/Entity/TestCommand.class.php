@@ -321,18 +321,31 @@ class TestCommand extends Command {
     {
         require_once $this->phpUnitPath . '/PHPUnit/Util/Filesystem.php';
         
-        if (
-               strpos($class, 'PHPUnit_') === 0
+        if (   strpos($class, 'PHPUnit_') === 0
             || strpos($class, 'PHP_') === 0
             || strpos($class, 'Text_') === 0
             || strpos($class, 'File_') === 0
             || strpos($class, 'Doctrine') === 0
             || strpos($class, 'SebastianBergmann') === 0
-           ) {
-           $file = \PHPUnit_Util_Filesystem::classNameToFilename($class);
-           if (file_exists($this->phpUnitPath . '/'. $file)) {
-               require_once $file;
-           }
+        ) {
+            $file = \PHPUnit_Util_Filesystem::classNameToFilename($class);
+            if (file_exists($this->phpUnitPath . '/' . $file)) {
+                require_once $file;
+                return;
+            }
+            $staticClassMap = array(
+                'SebastianBergmann\\Diff\\LCS\\LongestCommonSubsequence'
+                    => $this->phpUnitPath . '/SebastianBergmann/Diff/LCS/LongestCommonSubsequence.php',
+                'SebastianBergmann\\Diff\\LCS\\MemoryEfficientImplementation'
+                    => $this->phpUnitPath . '/SebastianBergmann/Diff/LCS/MemoryEfficientLongestCommonSubsequenceImplementation.php',
+                'SebastianBergmann\\Diff\\LCS\\TimeEfficientImplementation'
+                    => $this->phpUnitPath . '/SebastianBergmann/Diff/LCS/TimeEfficientLongestCommonSubsequenceImplementation.php',
+            );
+            if (   array_key_exists($class, $staticClassMap)
+                && file_exists($staticClassMap[$class])
+            ) {
+                require_once $staticClassMap[$class];
+            }
         }
     }
 
