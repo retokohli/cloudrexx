@@ -74,12 +74,17 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
     public function testResolver(
         $language = null,
         $inputSlug = '',
-        $expectedSlug = null
+        $expectedSlug = null,
+        $request = array()
     ) {
         global $url;
 
         if (null === $expectedSlug) {
             $expectedSlug = $inputSlug;
+        }
+        if (!empty($request)) {
+            $_REQUEST = array_merge($_REQUEST, $request);
+            $_GET     = array_merge($_GET, $request);
         }
         $urlString = '';
         if (null !== $language) {
@@ -96,6 +101,7 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
             // Nothing to do
         }
         $p = $resolver->getPage();
+        $this->assertInstanceOf('\Cx\Core\ContentManager\Model\Entity\Page', $p);
         $this->assertEquals($expectedSlug, $p->getSlug());
     }
 
@@ -227,8 +233,31 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
             array(null, 'alias-redirect-to-symlink-to-fallback-to-content'),
             // Alias -> Redirect -> Symlink -> Fallback -> Application
             array(null, 'alias-redirect-to-symlink-to-fallback-to-application'),
+            
+            // duplicate slugs
+            array(2, 'News'),
+            array(2, 'Duplicate-News'),
+            array(2, 'Home'),
+            array(2, 'Duplicate-Home'),
 
-            //array(1, '?section=Access', 'Simple-content-page'), // it uses global variable $_REQUEST
+            // test home page
+            array(2, '', 'Home'),
+
+            // legacy page test
+            array(2, '?section=Access', 'Simple-application-page', array('section' => 'Access')),
         );
     }
+
+    /**
+     * @expectedException Cx\Core\Core\Controller\InstanceException
+     */
+    public function testInExistPage()
+    {
+        global $url;
+
+        $url      = new \Cx\Core\Routing\Url('http://example.com/en/not-exists-url');
+        $resolver = new \Cx\Core\Routing\Resolver($url, 2, self::$em, '', $this->mockFallbackLanguages, false);
+        $resolver->resolve();
+    }
+
 }

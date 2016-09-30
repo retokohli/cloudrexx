@@ -2,7 +2,7 @@ contrexx_content_node:
   -
     id: 1
     lft: 1
-    rgt: 106
+    rgt: 114
     lvl: 0
   -
     id: 532
@@ -315,6 +315,30 @@ contrexx_content_node:
     parent_id: 1
     lft: 104
     rgt: 105
+    lvl: 1
+  -
+    id: 584
+    parent_id: 1
+    lft: 106
+    rgt: 107
+    lvl: 1
+  -
+    id: 585
+    parent_id: 1
+    lft: 108
+    rgt: 109
+    lvl: 1
+  -
+    id: 586
+    parent_id: 1
+    lft: 110
+    rgt: 111
+    lvl: 1
+  -
+    id: 587
+    parent_id: 1
+    lft: 112
+    rgt: 113
     lvl: 1
 contrexx_content_page:
   -
@@ -2158,4 +2182,148 @@ contrexx_content_page:
     display: 1
     active: 1
     target: "[[NODE_561_1]]"
+    cmd: ""
+  -
+    id: 734
+    node_id: 584
+    nodeIdShadowed: 584
+    lang: 2
+    type: "application"
+    caching: 0
+    updatedAt: "2016-09-30 19:06:44"
+    updatedBy: "noreply@contrexx.com"
+    title: "News"
+    linkTarget: ""
+    contentTitle: "News"
+    slug: "News"
+    content: "<p>{APPLICATION_DATA}</p>\r\n"
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "News"
+    metadesc: "News"
+    metakeys: "News"
+    metarobots: 1
+    editingStatus: ""
+    protection: 0
+    frontendAccessId: 0
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: ""
+    module: "News"
+    cmd: ""
+  -
+    id: 735
+    node_id: 585
+    nodeIdShadowed: 585
+    lang: 2
+    type: "application"
+    caching: 0
+    updatedAt: "2016-09-30 19:08:00"
+    updatedBy: "noreply@contrexx.com"
+    title: "Duplicate News"
+    linkTarget: ""
+    contentTitle: "Duplicate News"
+    slug: "Duplicate-News"
+    content: "<p>{APPLICATION_DATA}</p>\r\n"
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "Duplicate News"
+    metadesc: "Duplicate News"
+    metakeys: "Duplicate News"
+    metarobots: 1
+    editingStatus: ""
+    protection: 0
+    frontendAccessId: 0
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: ""
+    module: "News"
+    cmd: ""
+  -
+    id: 736
+    node_id: 586
+    nodeIdShadowed: 586
+    lang: 2
+    type: "application"
+    caching: 0
+    updatedAt: "2016-09-30 19:18:59"
+    updatedBy: "noreply@contrexx.com"
+    title: "Home"
+    linkTarget: ""
+    contentTitle: "Home"
+    slug: "Home"
+    content: "<p>{APPLICATION_DATA}</p>\r\n"
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "Home"
+    metadesc: "Home"
+    metakeys: "Home"
+    metarobots: 1
+    editingStatus: ""
+    protection: 0
+    frontendAccessId: 0
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: ""
+    module: "Home"
+    cmd: ""
+  -
+    id: 737
+    node_id: 587
+    nodeIdShadowed: 587
+    lang: 2
+    type: "application"
+    caching: 0
+    updatedAt: "2016-09-30 19:20:31"
+    updatedBy: "noreply@contrexx.com"
+    title: "Duplicate Home"
+    linkTarget: ""
+    contentTitle: "Duplicate Home"
+    slug: "Duplicate-Home"
+    content: "<p>{APPLICATION_DATA}</p>\r\n"
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "Duplicate Home"
+    metadesc: "Duplicate Home"
+    metakeys: "Duplicate Home"
+    metarobots: 1
+    editingStatus: ""
+    protection: 0
+    frontendAccessId: 0
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: ""
+    module: "Home"
     cmd: ""
