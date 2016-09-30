@@ -227,6 +227,7 @@ class Downloads extends DownloadsLibrary
 
             if ($objDownload->load(!empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0)
                 && (!$objDownload->getExpirationDate() || $objDownload->getExpirationDate() > time())
+                && $objDownload->getActiveStatus()
             ) {
                 /* DOWNLOAD DETAIL PAGE */
                 $this->pageTitle = contrexx_raw2xhtml($objDownload->getName(FRONTEND_LANG_ID));
