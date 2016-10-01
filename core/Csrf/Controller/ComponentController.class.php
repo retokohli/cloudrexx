@@ -59,10 +59,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function registerEventListeners()
     {
-        $evm = $this->cx->getEvents();
-
-        $evm->addEvent('sessionDestroy');
-        $evm->addEventListener('sessionDestroy', $this);
+        $this->cx->getEvents()->addEventListener('sessionDestroy', $this);
     }
 
     /**
@@ -122,7 +119,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function onEvent($eventName, array $eventArgs) {
         switch ($eventName) {
-            case 'csrfDestroy':
+            case 'sessionDestroy':
                 $em = $this->cx->getDb()->getEntityManager();
                 $sessionId = isset($eventArgs['sessionId']) ? $eventArgs['sessionId'] : '';
                 if (empty($sessionId)) {

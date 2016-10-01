@@ -50,7 +50,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // does not exist a backend, nor a frontend controller of this component.
         return array();
     }
-      /**
+
+    /**
      * Do something before resolving is done
      * 
      * @param \Cx\Core\Routing\Url                      $request    The URL object for this request
@@ -64,4 +65,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
 
+    /**
+     * Registers the event
+     *
+     * New logs can be added using:
+     * $this->cx->getEvents()->triggerEvent('SysLog/Add', array(
+     *     'severity' => 'INFO',
+     *     'message' => 'my log message',
+     *     'data' => 'additional debugging data',
+     * ));
+     */
+    public function registerEvents() {
+        $this->cx->getEvents()->addEvent('sessionDestroy');
+    }
 }
