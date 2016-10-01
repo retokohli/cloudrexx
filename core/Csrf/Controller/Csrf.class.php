@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,11 +24,11 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Csrf Class
  * Protect against Csrf attacks
- * 
+ *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      David Vogt <david.vogt@comvation.com>
  * @since       2.1.3
@@ -148,7 +148,7 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
         \DBG::stack();
         header(self::__enhance_header($header), $replace, $httpResponseCode);
     }
-    
+
     /**
      * Redirect
      *
@@ -169,10 +169,10 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
         if (headers_sent()) {
             return false;
         }
-        
+
         $url = \Cx\Core\Routing\Url::fromMagic($url);
         $url = $url->toString(); // use absolute url
-        
+
         self::header('Location: '. $url);
 
         if (    $rfc2616 && isset($_SERVER['REQUEST_METHOD']) &&
@@ -249,7 +249,7 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
         if (self::__is_ajax()) {
             return;
         }
-        
+
         if (!is_object($tpl)) {
             \DBG::msg("self::add_placeholder(): fix this call, that ain't a template object! (Stack follows)");
             \DBG::stack();
@@ -370,9 +370,9 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
             'IMAGES_PATH'       => ASCMS_ADMIN_WEB_PATH.'/images/csrfprotection',
         ));
         $tpl->parse();
-        
+
         $endcode = $tpl->get();
-        
+
         // replace links from before contrexx 3
         $ls = new \LinkSanitizer(
             $cx,
@@ -380,7 +380,7 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
             $endcode
         );
         $endcode = $ls->replace();
-        
+
         echo $endcode;
         die();
     }
