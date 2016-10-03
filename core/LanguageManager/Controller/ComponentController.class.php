@@ -187,4 +187,60 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         $this->cx->getEvents()->addEvent('languageStatusUpdate');
     }
+
+    /**
+     * Do something before main template gets parsed
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
+     * @param \Cx\Core\Html\Sigma                       $template   The main template
+     */
+    public function preFinalize(\Cx\Core\Html\Sigma $template) {
+        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
+        $this->parseLocaleList($template);
+    }
+    
+    /**
+     * Parses locale list in a template file
+     * @todo Does language list only for now. Update as soon as locales are available
+     * @param \Cx\Core\Html\Sigma $template Template file to parse locales in
+     */
+    public function parseLocaleList($template) {
+        if (!$template->blockExists('locale_alternate_list')) {
+            return;
+        }
+        $currentPage = $this->cx->getPage();
+        $listProtectedPages = \Cx\Core\Setting\Controller\Setting::getValue(
+            'coreListProtectedPages',
+            'Config'
+        ) == 'on';
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+            $langId = $lang['id'];
+            $lang = $lang['lang'];
+            $langPage = $currentPage->getNode()->getPage($langId);
+            // if page is not translated, inactive (incl. scheduled publishing) or protected
+            if (
+                !$langPage ||
+                !$langPage->isActive() ||
+                (
+                    !$listProtectedPages &&
+                    $langPage->isFrontendProtected() &&
+                    !\Permission::checkAccess($langPage->getFrontendAccessId(), 'dynamic', true)
+                )
+            ) {
+                continue;
+            }
+            $template->setVariable(array(
+                'PAGE_LINK' => contrexx_raw2xhtml(\Cx\Core\Routing\Url::fromPage($langPage)->toString()),
+                'PAGE_TITLE' => contrexx_raw2xhtml($langPage->getTitle()),
+                'LOCALE' => $lang,
+                'LANGUAGE_CODE' => $lang,
+                //'COUNTRY_NAME' => ,
+                //'COUNTRY_CODE' => ,
+            ));
+            $template->parse('locale_alternate_list');
+        }
+    }
 }
