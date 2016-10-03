@@ -3715,10 +3715,6 @@ INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`
 INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (42,'youtubeHeight','300',1);
 INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (43,'youtubeWidth','400',1);
 INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (44,'youtubeHeight','300',1);
-INSERT INTO `contrexx_module_directory_settings_google` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (1,'googleSeach','0',2);
-INSERT INTO `contrexx_module_directory_settings_google` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (2,'googleResults','',1);
-INSERT INTO `contrexx_module_directory_settings_google` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (26,'googleId','',1);
-INSERT INTO `contrexx_module_directory_settings_google` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (27,'googleLang','',1);
 INSERT INTO `contrexx_module_directory_vote` (`id`, `feed_id`, `vote`, `count`, `client`, `time`) VALUES (8,30,12,2,'2fcd8694488a86ce475bf72aae0891fa','1291972976');
 INSERT INTO `contrexx_module_directory_vote` (`id`, `feed_id`, `vote`, `count`, `client`, `time`) VALUES (9,26,2,1,'fa54a587d9deb29e0ea679a53fdbf171','1342424017');
 INSERT INTO `contrexx_module_directory_vote` (`id`, `feed_id`, `vote`, `count`, `client`, `time`) VALUES (10,27,7,1,'fa54a587d9deb29e0ea679a53fdbf171','1342424866');
