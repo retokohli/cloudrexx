@@ -3145,13 +3145,31 @@ die("Shop::processRedirect(): This method is obsolete!");
         }
         if (   Cart::get_price()
             || $_SESSION['shop']['shipment_price']
-            || $_SESSION['shop']['vat_price']) {
+            || $_SESSION['shop']['vat_price']
+        ) {
             self::$objTemplate->setVariable(array(
                 'SHOP_PAYMENT_PRICE' => Currency::formatPrice(
                     $_SESSION['shop']['payment_price']),
                 'SHOP_PAYMENT_MENU' => self::get_payment_menu(),
             ));
+
+            if (    !(!Cart::needs_shipment() && Cart::get_price() <= 0)
+                &&  self::$objTemplate->blockExists('shop_payment_payment_methods')
+                &&  $paymentMethods = Payment::getPaymentMethods($_SESSION['shop']['countryId'])
+            ) {
+                foreach ($paymentMethods as $paymentId => $paymentName) {
+                    $selected = ($_SESSION['shop']['paymentId'] == $paymentId)
+                        ? 'selected="selected"' : '';
+                    self::$objTemplate->setVariable(array(
+                        'SHOP_PAYMENT_PAYMENT_METHOD_ID'       => contrexx_raw2xhtml($paymentId),
+                        'SHOP_PAYMENT_PAYMENT_METHOD_NAME'     => contrexx_raw2xhtml($paymentName),
+                        'SHOP_PAYMENT_PAYMENT_METHOD_SELECTED' => $selected,
+                    ));
+                    self::$objTemplate->parse('shop_payment_payment_methods');
+                }
+            }
         }
+
         if (empty($_SESSION['shop']['coupon_code'])) {
             $_SESSION['shop']['coupon_code'] = '';
         }
