@@ -1159,77 +1159,66 @@ class Market extends MarketLibrary
             'txt'
         );
 
-        $today                 = mktime(0, 0, 0, date("m")  , date("d"), date("Y"));
-        $searchTermOrg         = contrexx_addslashes($_GET['term']);
-        $searchTerm         = contrexx_addslashes($_GET['term']);
-        $tmpTerm = '';
-        $query_search = '';
-        $catId = '';
-        if (isset($_GET['catid'])) {
-            $catId = intval($_GET['catid']);
-        }
-        $array = explode(' ', $searchTerm);
+        $searchTermOrg = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
+        $catId         = isset($_GET['catid']) ? contrexx_input2int($_GET['catid']) : 0;
+        $type          = isset($_GET['type']) ? contrexx_input2raw($_GET['type']) : '';
+        $price         = isset($_GET['price']) ? contrexx_input2raw($_GET['price']) : '';
+        $where         = array('status = 1');
+        $tmpTerm       = '';
+        $array = explode(' ', $searchTermOrg);
         for($x = 0; $x < count($array); $x++) {
             $tmpTerm .= $array[$x].'%';
         }
 
         $searchTerm    = substr($tmpTerm, 0, -1);
         $searchTermExp = "&amp;check=norm&amp;term=".$searchTermOrg;
-
         if ($_GET['check'] == 'exp') {
-
             $searchTermExp = "&amp;check=exp&amp;term=".$searchTermOrg;
-
-            if ($_GET['catid'] != '') {
-                $query_search         .="AND catid LIKE ('%".$_GET['catid']."%') ";
-                $searchTermExp        .= "&amp;catid=".$_GET['catid'];
-            }
-            if ($_GET['type'] != '') {
-                $query_search         .="AND type LIKE ('%".$_GET['type']."%') ";
-                $searchTermExp        .= "&amp;type=".$_GET['type'];
+            if (!empty($catId)) {
+                $where[] = 'catid LIKE ("%' . $catId . '%")';
+                $searchTermExp .= '&amp;catid=' . $catId;
             }
 
-            if ($_GET['price'] != '') {
-                $query_search         .="AND price <= ".$_GET['price']." ";
-                $searchTermExp        .= "&amp;price=".$_GET['price'];
+            if (!empty($type)) {
+                $where[] = 'type LIKE ("%' . contrexx_input2db($type) . '%")';
+                $searchTermExp .= '&amp;type=' . $type;
+            }
+
+            if (!empty($price)) {
+                $where[] = 'price <= ' . contrexx_input2db($price);
+                $searchTermExp .= '&amp;price=' . $price;
             }
         }
 
         switch ($_GET['sort']) {
             case 'title':
-                $sort                = "title";
-                $sortPaging            = "&amp;sort=title";
-            break;
+                $sort = "title";
+                $sortPaging = "&amp;sort=title";
+                break;
             case 'enddate':
-                $sort                = "enddate";
-                $sortPaging            = "&amp;sort=enddate";
-            break;
+                $sort = "enddate";
+                $sortPaging = "&amp;sort=enddate";
+                break;
             case 'price':
-                $sort                = "price";
-                $sortPaging            = "&amp;sort=price";
-            break;
+                $sort = "price";
+                $sortPaging = "&amp;sort=price";
+                break;
             default:
-                $sort                = "sort_id, enddate";
-                $sortPaging            = "";
-            break;
+                $sort = "sort_id, enddate";
+                $sortPaging = "";
+                break;
         }
 
-        if (isset($_GET['way'])) {
-            $way         = $_GET['way']=='ASC' ? 'DESC' : 'ASC';
-            $wayPaging     = '&way='.$_GET['way'];
-        }else{
-            $way         = 'ASC';
-            $wayPaging     = '';
-        }
-
+        $way = isset($_GET['way']) && ($_GET['way'] == 'ASC') ? 'DESC' : 'ASC';
         $this->_objTpl->setVariable(array(
             'MARKET_ENDDATE_SORT'   => "index.php?section=Market&amp;cmd=search&amp;id=".$catId.$searchTermExp."&amp;sort=enddate&amp;way=".$way,
             'MARKET_TITLE_SORT'     => "index.php?section=Market&amp;cmd=search&amp;id=".$catId.$searchTermExp."&amp;sort=title&amp;way=".$way,
             'MARKET_PRICE_SORT'     => "index.php?section=Market&amp;cmd=search&amp;id=".$catId.$searchTermExp."&amp;sort=price&amp;way=".$way,
         ));
 
-        if ($_GET['term'] != '') {
-            $specialFieldsQuery = $this->getSpecialFieldsQueryPart($objDatabase);
+        $score = '';
+        $specialFieldsQuery = $this->getSpecialFieldsQueryPart($objDatabase);
+        if (!empty($searchTermOrg)) {
             $specialFieldsComparision = $this->getSpecialFieldsQueryPart(
                 $objDatabase,
                 null,
@@ -1237,154 +1226,139 @@ class Market extends MarketLibrary
                 "('%$searchTerm%')",
                 'OR '
             );
-            $query="SELECT  id,
-                            title,
-                            description,
-                            price,
-                            picture,
-                            userid,
-                            enddate,
-                            premium,
-                            " . $specialFieldsQuery . ",
-                      MATCH (title,description) AGAINST ('%$searchTerm%') AS score
-                       FROM ".DBPREFIX."module_market
-                      WHERE (title LIKE ('%$searchTerm%')
-                              OR description LIKE ('%$searchTerm%')
-                              OR " . $specialFieldsComparision . "
-                            )
-                         ".$query_search."
-                        AND status = '1'
-                   ORDER BY score DESC, ".$sort." ".$way."";
+            $where[] = '(title LIKE ("%' . $searchTerm . '%")
+                OR description LIKE ("%' . $searchTerm . '%")
+                OR ' . $specialFieldsComparision . ')';
+            $score = ', MATCH (title,description) AGAINST ("%' . $searchTerm . '%") AS score';
+        }
+        $query   =
+            'SELECT id,
+                    title,
+                    description,
+                    price,
+                    picture,
+                    userid,
+                    enddate,
+                    premium,
+                    ' . $specialFieldsQuery . $score . '
+            FROM ' . DBPREFIX . 'module_market' .
+            (!empty($where) ? ' WHERE ' . implode(' AND ', $where) : '') .
+            ' ORDER BY ' . (!empty($score) ? 'score DESC, ' : '') . $sort . ' ' . $way;
 
-            /////// START PAGING ///////
-            $pos= intval($_GET['pos']);
-            $objResult = $objDatabase->Execute($query);
-            $count = $objResult->RecordCount();
-            if ($count > $this->settings['paging']) {
-                $paging = getPaging($count, $pos, "&amp;section=Market&amp;cmd=search".$searchTermExp."&amp;sort=".$sort."&amp;way=".$way, "<b>Inserate</b>", true, $this->settings['paging']);
-            }
-            $this->_objTpl->setVariable('SEARCH_PAGING', $paging);
-            $objResult = $objDatabase->SelectLimit($query, $this->settings['paging'], $pos);
-            /////// END PAGING ///////
+        /////// START PAGING ///////
+        $pos = intval($_GET['pos']);
+        $objResult = $objDatabase->Execute($query);
+        $count = $objResult ? $objResult->RecordCount() : 0;
+        if ($count > $this->settings['paging']) {
+            $paging = getPaging($count, $pos, "&amp;section=Market&amp;cmd=search".$searchTermExp."&amp;sort=".$sort."&amp;way=".$way, "<b>Inserate</b>", true, $this->settings['paging']);
+        }
+        $this->_objTpl->setVariable('SEARCH_PAGING', $paging);
+        $objResult = $objDatabase->SelectLimit($query, $this->settings['paging'], $pos);
+        /////// END PAGING ///////
 
-            if ($objResult !== false) {
-                $i = 0;
-                while (!$objResult->EOF) {
-                    if (empty($objResult->fields['picture'])) {
-                        $objResult->fields['picture'] = 'no_picture.gif';
+        if ($objResult !== false) {
+            $i = 0;
+            while (!$objResult->EOF) {
+                if (empty($objResult->fields['picture'])) {
+                    $objResult->fields['picture'] = 'no_picture.gif';
+                }
+
+                $info = getimagesize($this->mediaPath . 'pictures/' . $objResult->fields['picture']);
+                $height = '';
+                $width = '';
+
+                if ($info[0] <= $info[1]) {
+                    if ($info[1] > 50) {
+                        $faktor = $info[1] / 50;
+                        $height = 50;
+                        $width = $info[0] / $faktor;
+                    } else {
+                        $height = $info[1];
+                        $width = $info[0];
                     }
-
-                    $info         = getimagesize($this->mediaPath.'pictures/'.$objResult->fields['picture']);
-                    $height     = '';
-                    $width         = '';
-
-                       if ($info[0] <= $info[1]) {
+                } else {
+                    $faktor = $info[0] / 80;
+                    $result = $info[1] / $faktor;
+                    if ($result > 50) {
                         if ($info[1] > 50) {
-                            $faktor = $info[1]/50;
+                            $faktor = $info[1] / 50;
                             $height = 50;
-                            $width    = $info[0]/$faktor;
+                            $width = $info[0] / $faktor;
                         } else {
                             $height = $info[1];
                             $width = $info[0];
                         }
-                    }else{
-                        $faktor = $info[0]/80;
-                        $result = $info[1]/$faktor;
-                        if ($result > 50) {
-                            if ($info[1] > 50) {
-                                $faktor = $info[1]/50;
-                                $height = 50;
-                                $width    = $info[0]/$faktor;
-                            }else{
-                                $height = $info[1];
-                                $width = $info[0];
-                            }
-                        }else{
-                            if ($info[0] > 80) {
-                                $width = 80;
-                                $height = $info[1]/$faktor;
-                            }else{
-                                $width = $info[0];
-                                $height = $info[1];
-                            }
+                    } else {
+                        if ($info[0] > 80) {
+                            $width = 80;
+                            $height = $info[1] / $faktor;
+                        } else {
+                            $width = $info[0];
+                            $height = $info[1];
                         }
                     }
+                }
 
-                    $width != '' ? $width = 'width="'.round($width,0).'"' : $width = '';
-                    $height != '' ? $height = 'height="'.round($height,0).'"' : $height = '';
+                $width != '' ? $width = 'width="' . round($width, 0) . '"' : $width = '';
+                $height != '' ? $height = 'height="' . round($height, 0) . '"' : $height = '';
 
-                    $image = '<img src="'.$this->mediaWebPath.'pictures/'.$objResult->fields['picture'].'" '.$width.'" '.$height.'" border="0" alt="'.$objResult->fields['title'].'" />';
+                $image = '<img src="' . $this->mediaWebPath . 'pictures/' . $objResult->fields['picture'] . '" ' . $width . '" ' . $height . '" border="0" alt="' . $objResult->fields['title'] . '" />';
 
 
-                    $objFWUser = \FWUser::getFWUserObject();
-                    $objUser = $objFWUser->objUser->getUser($objResult->fields['userid']);
-                    if ($objUser) {
-                        $city = $objUser->getProfileAttribute('city');
-                    }
-                       if ($objResult->fields['premium'] == 1) {
-                           $row = "marketRow1";
-                       }else{
-                           $row = $i%2==0 ? "marketRow2" : "marketRow3";
-                       }
+                $objFWUser = \FWUser::getFWUserObject();
+                $objUser = $objFWUser->objUser->getUser($objResult->fields['userid']);
+                if ($objUser) {
+                    $city = $objUser->getProfileAttribute('city');
+                }
+                if ($objResult->fields['premium'] == 1) {
+                    $row = "marketRow1";
+                } else {
+                    $row = $i % 2 == 0 ? "marketRow2" : "marketRow3";
+                }
 
-                       $enddate = date("d.m.Y", $objResult->fields['enddate']);
+                $enddate = date("d.m.Y", $objResult->fields['enddate']);
 
-                       if ($objResult->fields['price'] == 'forfree') {
-                           $price = $_ARRAYLANG['TXT_MARKET_FREE'];
-                       }elseif ($objResult->fields['price'] == 'agreement') {
-                           $price = $_ARRAYLANG['TXT_MARKET_ARRANGEMENT'];
-                       }else{
-                           $price = $objResult->fields['price'].' '.$this->settings['currency'];
-                       }
+                if ($objResult->fields['price'] == 'forfree') {
+                    $price = $_ARRAYLANG['TXT_MARKET_FREE'];
+                } elseif ($objResult->fields['price'] == 'agreement') {
+                    $price = $_ARRAYLANG['TXT_MARKET_ARRANGEMENT'];
+                } else {
+                    $price = $objResult->fields['price'] . ' ' . $this->settings['currency'];
+                }
 
-                       $this->_objTpl->setVariable(array(
-                        'MARKET_ENDDATE'                => $enddate,
-                        'MARKET_TITLE'                    => $objResult->fields['title'],
-                        'MARKET_DESCRIPTION'            => substr($objResult->fields['description'], 0, 110)."<a href='index.php?section=Market&amp;cmd=detail&amp;id=".$objResult->fields['id']."' target='_self'>[...]</a>",
-                        'MARKET_PRICE'                    => $price,
-                        'MARKET_PICTURE'                => $image,
-                        'MARKET_ROW'                    => $row,
-                        'MARKET_DETAIL'                    => "index.php?section=Market&amp;cmd=detail&amp;id=".$objResult->fields['id'],
-                        'MARKET_ID'                        => $objResult->fields['id'],
-                        'MARKET_CITY'                    => $city,
-                    ));
-
-                    $this->parseSpecialFields(
-                        $objDatabase,
-                        $this->_objTpl,
-                        $objResult->fields,
-                        0,
-                        'val'
-                    );
-
-                    $this->_objTpl->parse('showEntries');
-                    $objResult->MoveNext();
-                    $i++;
-                   }
-
-               }
-
-               if ($count <= 0) {
                 $this->_objTpl->setVariable(array(
-                    'MARKET_NO_ENTRIES_FOUND'            => $_ARRAYLANG['TXT_MARKET_NO_ENTRIES_FOUND'],
+                    'MARKET_ENDDATE' => $enddate,
+                    'MARKET_TITLE' => $objResult->fields['title'],
+                    'MARKET_DESCRIPTION' => substr($objResult->fields['description'], 0, 110) . "<a href='index.php?section=Market&amp;cmd=detail&amp;id=" . $objResult->fields['id'] . "' target='_self'>[...]</a>",
+                    'MARKET_PRICE' => $price,
+                    'MARKET_PICTURE' => $image,
+                    'MARKET_ROW' => $row,
+                    'MARKET_DETAIL' => "index.php?section=Market&amp;cmd=detail&amp;id=" . $objResult->fields['id'],
+                    'MARKET_ID' => $objResult->fields['id'],
+                    'MARKET_CITY' => $city,
                 ));
 
-                $this->_objTpl->parse('noEntries');
-                $this->_objTpl->hideBlock('showEntries');
-            }
+                $this->parseSpecialFields(
+                        $objDatabase, $this->_objTpl, $objResult->fields, 0, 'val'
+                );
 
-        }else{
+                $this->_objTpl->parse('showEntries');
+                $objResult->MoveNext();
+                $i++;
+            }
+        }
+
+        if ($count <= 0) {
             $this->_objTpl->setVariable(array(
-                'MARKET_NO_ENTRIES_FOUND'            => $_ARRAYLANG['TXT_MARKET_SEARCH_INSERT'],
+                'MARKET_NO_ENTRIES_FOUND' => $_ARRAYLANG['TXT_MARKET_NO_ENTRIES_FOUND'],
             ));
 
             $this->_objTpl->parse('noEntries');
             $this->_objTpl->hideBlock('showEntries');
-            $this->_objTpl->hideBlock('showEntriesHeader');
         }
 
-           $this->_objTpl->setVariable(array(
-            'TXT_MARKET_SEARCHTERM'            => $searchTermOrg,
+        $this->_objTpl->setVariable(array(
+            'TXT_MARKET_SEARCHTERM' => $searchTermOrg,
         ));
 
         $this->_objTpl->parse('showEntriesHeader');
