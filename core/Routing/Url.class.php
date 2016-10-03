@@ -811,6 +811,21 @@ class Url {
         }
         return new Url($protocol.'://'.$host.$offset.'/'.$langDir.$path.$getParams, true);
     }
+    
+    /**
+     * Returns the URL object for a command mode command accessed via HTTP(s)
+     * @param string $command Command mode command name
+     * @param array $arguments List of non-named arguments
+     * @param array $parameters List of named parameters (key=>value style array)
+     * @return \Cx\Core\Routing\Url Url object for the supplied command name
+     */
+    public static function fromApi($command, $arguments, $parameters) {
+        $url = \Cx\Core\Routing\Url::fromDocumentRoot();
+        $url->setMode('backend');
+        $url->setPath('api/' . $command . '/' . implode('/', $arguments));
+        $url->setParams($parameters);
+        return $url;
+    }
 
     /**
      * Returns an absolute or relative link
