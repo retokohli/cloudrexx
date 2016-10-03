@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,10 +24,10 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * YamlSettingEventListener
- *  
+ *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @author      CLOUDREXX Development Team <info@cloudrexx.com>
@@ -39,7 +39,7 @@ namespace Cx\Core\Config\Model\Event;
 
 /**
  * YamlSettingEventListenerException
- * 
+ *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
@@ -50,7 +50,7 @@ class YamlSettingEventListenerException extends \Exception {}
 
 /**
  * YamlSettingEventListener
- * 
+ *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
@@ -59,11 +59,11 @@ class YamlSettingEventListenerException extends \Exception {}
  */
 class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     public function preUpdate($eventArgs) {
-        global $_CONFIG,$_ARRAYLANG;
+        global $_CONFIG,$_ARRAYLANG, $objCache;
         try {
             $objSetting = $eventArgs->getEntity();
             $value = $objSetting->getValue();
-            
+
             switch ($objSetting->getName()) {
                 case 'timezone':
                     if (!in_array($value, timezone_identifiers_list())) {
@@ -71,7 +71,7 @@ class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListe
                         throw new YamlSettingEventListenerException($_ARRAYLANG['TXT_CORE_TIMEZONE_INVALID']);
                     }
                     break;
-             
+
                 case 'domainUrl':
                     $arrMatch = array();
                     if (preg_match('#^https?://(.*)$#', $value, $arrMatch)) {
@@ -108,6 +108,23 @@ class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListe
                     $value = \Cx\Core\Config\Controller\Config::checkAccessibility($protocol) ? $value : 'off';
                     $objSetting->setValue($value);
                     break;
+                
+                case 'cacheReverseProxy':
+                case 'cacheProxyCacheConfig':
+                    if ($value != $_CONFIG[$objSetting->getName()]) {
+                        // drop reverse proxy cache
+                        $objCache->clearReverseProxyCache('*');
+                    }
+                    break;
+                
+                case 'cacheSsiOutput':
+                case 'cacheSsiType':
+                case 'cacheSsiProcessorConfig':
+                    if ($value != $_CONFIG[$objSetting->getName()]) {
+                        // drop esi/ssi cache
+                        $objCache->clearSsiCache();
+                    }
+                    break;
             }
         } catch (YamlSettingEventListenerException $e) {
             \DBG::msg($e->getMessage());
@@ -121,7 +138,7 @@ class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListe
             \DBG::msg($e->getMessage());
         }
     }
-    
+
     public function onEvent($eventName, array $eventArgs) {
         \DBG::msg(__METHOD__);
         if ($eventName == 'postFlush') {
