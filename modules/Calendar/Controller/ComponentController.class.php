@@ -114,9 +114,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             || strpos($themesPages['sidebar'], $eventsPlaceholder) !== false
                             || strpos($page_template, $eventsPlaceholder) !== false
                         ) {
-                            $category = 0;
+                            $category = null;
                             $matches = array();
-                            if (preg_match('/\{CATEGORY_([0-9]+)\}/', trim($themesPages['calendar_headlines' . $visibleI]), $matches)) {
+                            if (preg_match('/\{CALENDAR_CATEGORY_([0-9]+)\}/', $themesPages['calendar_headlines' . $visibleI], $matches)) {
                                 $category = $matches[1];
                             }
                             $calHeadlinesObj = new \Cx\Modules\Calendar\Controller\CalendarHeadlines($themesPages['calendar_headlines'.$visibleI]);
