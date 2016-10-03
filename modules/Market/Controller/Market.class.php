@@ -1175,7 +1175,7 @@ class Market extends MarketLibrary
         if ($_GET['check'] == 'exp') {
             $searchTermExp = "&amp;check=exp&amp;term=".$searchTermOrg;
             if (!empty($catId)) {
-                $where[] = 'catid LIKE ("%' . $catId . '%")';
+                $where[] = 'catid = ' . $catId;
                 $searchTermExp .= '&amp;catid=' . $catId;
             }
 
@@ -1223,13 +1223,13 @@ class Market extends MarketLibrary
                 $objDatabase,
                 null,
                 'LIKE',
-                "('%$searchTerm%')",
+                '("%' . contrexx_input2db($searchTerm) . '%")',
                 'OR '
             );
-            $where[] = '(title LIKE ("%' . $searchTerm . '%")
-                OR description LIKE ("%' . $searchTerm . '%")
+            $where[] = '(title LIKE ("%' . contrexx_input2db($searchTerm) . '%")
+                OR description LIKE ("%' . contrexx_input2db($searchTerm) . '%")
                 OR ' . $specialFieldsComparision . ')';
-            $score = ', MATCH (title,description) AGAINST ("%' . $searchTerm . '%") AS score';
+            $score = ', MATCH (title,description) AGAINST ("%' . contrexx_input2db($searchTerm) . '%") AS score';
         }
         $query   =
             'SELECT id,
