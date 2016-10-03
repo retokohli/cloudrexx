@@ -206,7 +206,7 @@ class Resolver {
 
 
 
-                        global $section, $command, $history, $sessionObj, $url, $_CORELANG,
+                        global $section, $command, $history, $url, $_CORELANG,
                                 $page, $pageId, $themesPages,
                                 $page_template,
                                 $isRegularPageRequest, $now, $start, $end, $plainSection;
@@ -229,8 +229,9 @@ class Resolver {
                         // Regular page request
                         if ($isRegularPageRequest) {
                         // TODO: history (empty($history) ? )
-                            if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($sessionObj)) {
-                                $sessionObj = \cmsSession::getInstance();
+                            if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($_SESSION)) {
+                                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                                $sessionObj = $cx->getComponent('Session')->getSession();
                             }
                             $this->init($url, $this->lang, \Env::get('em'), ASCMS_INSTANCE_OFFSET.\Env::get('virtualLanguageDirectory'), \FWLanguage::getFallbackLanguageArray());
                             try {
@@ -677,8 +678,6 @@ class Resolver {
 
     public function legacyResolve($url, $section, $command)
     {
-        global $sessionObj;
-
         $objFWUser = \FWUser::getFWUserObject();
 
         /*
@@ -703,9 +702,8 @@ class Resolver {
         // b(, a): fallback if section and cmd are specified
         if ($section) {
             if ($section == 'logout') {
-                if (empty($sessionObj)) {
-                    $sessionObj = \cmsSession::getInstance();
-                }
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                $sessionObj = $cx->getComponent('Session')->getSession();
                 if ($objFWUser->objUser->login()) {
                     $objFWUser->logout();
                 }
@@ -847,8 +845,6 @@ class Resolver {
      * @param int $history (optional) Revision of page to use, 0 means current, default 0
      */
     public function checkPageFrontendProtection($page, $history = 0) {
-        global $sessionObj;
-
         $page_protected = $page->isFrontendProtected();
         $pageAccessId = $page->getFrontendAccessId();
         if ($history) {
@@ -876,7 +872,8 @@ class Resolver {
             && (   !isset($_REQUEST['section'])
                 || $_REQUEST['section'] != 'Login')
         ) {
-            if (empty($sessionObj)) $sessionObj = \cmsSession::getInstance();
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $sessionObj = $cx->getComponent('Session')->getSession();
             $_SESSION->cmsSessionStatusUpdate('frontend');
             if (\FWUser::getFWUserObject()->objUser->login()) {
                 if ($page_protected) {

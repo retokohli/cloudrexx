@@ -24,6 +24,9 @@
             if (cat.value == "") {
                 errorMsg = errorMsg + "- {TXT_MARKET_CATEGORIE}\n";
             }
+            if (price.value == "" && !forfree.checked && !agreement.checked) {
+                errorMsg = errorMsg + "- {TXT_MARKET_PRICE}\n";
+            }
             {END_DATE_JS}
             if (userdetails.value == "") {
                 errorMsg = errorMsg + "- {TXT_MARKET_USER_DETAIL}\n";
@@ -100,12 +103,12 @@
         <p><label for="price">{TXT_MARKET_PRICE}<font color="red"> *</font></label><input type="text" id="price" name="price" maxlength="100" value=""></p>
         <p>
 <span class="checkbox">
-<label class="description" for="forfree"><input type="checkbox" name="forfree" value="1" />{TXT_MARKET_FOR_FREE}</label>
+<label class="description" for="forfree"><input type="checkbox" name="forfree" id="forfree" value="1" />{TXT_MARKET_FOR_FREE}</label>
 </span>
 </p>
         <p>
 <span class="checkbox">
-<label class="description" for="agreement"><input type="checkbox" name="agreement" value="1" />{TXT_MARKET_AGREEMENT}</label>
+<label class="description" for="agreement"><input type="checkbox" name="agreement" id="agreement" value="1" />{TXT_MARKET_AGREEMENT}</label>
 </span>
 </p>
         <!-- BEGIN end_date_dropdown -->

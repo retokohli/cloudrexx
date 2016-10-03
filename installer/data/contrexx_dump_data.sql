@@ -739,6 +739,7 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (112,'DateTime','
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (113,'DataAccess','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (114,'DataSource','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (115,'Sync','core_module');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (116,'Model','core');
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (1,NULL,1,336,0);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (2,1,2,3,1);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (3,34,11,12,2);
@@ -3715,10 +3716,6 @@ INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`
 INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (42,'youtubeHeight','300',1);
 INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (43,'youtubeWidth','400',1);
 INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (44,'youtubeHeight','300',1);
-INSERT INTO `contrexx_module_directory_settings_google` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (1,'googleSeach','0',2);
-INSERT INTO `contrexx_module_directory_settings_google` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (2,'googleResults','',1);
-INSERT INTO `contrexx_module_directory_settings_google` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (26,'googleId','',1);
-INSERT INTO `contrexx_module_directory_settings_google` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (27,'googleLang','',1);
 INSERT INTO `contrexx_module_directory_vote` (`id`, `feed_id`, `vote`, `count`, `client`, `time`) VALUES (8,30,12,2,'2fcd8694488a86ce475bf72aae0891fa','1291972976');
 INSERT INTO `contrexx_module_directory_vote` (`id`, `feed_id`, `vote`, `count`, `client`, `time`) VALUES (9,26,2,1,'fa54a587d9deb29e0ea679a53fdbf171','1342424017');
 INSERT INTO `contrexx_module_directory_vote` (`id`, `feed_id`, `vote`, `count`, `client`, `time`) VALUES (10,27,7,1,'fa54a587d9deb29e0ea679a53fdbf171','1342424866');
@@ -5674,6 +5671,7 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variab
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (113,'DataAccess','Cloudrexx AG','TXT_CORE_MODULE_DATAACCESS_DESCRIPTION','y',1,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (114,'DataSource','Cloudrexx AG','TXT_CORE_MODULE_DATASOURCE_DESCRIPTION','y',1,0,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (115,'Sync','Cloudrexx AG','TXT_CORE_MODULE_SYNC_DESCRIPTION','y',1,1,1,1,NULL);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (116,'Model','Cloudrexx AG','TXT_CORE_MODEL_DESCRIPTION','y',1,1,1,1,NULL);
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (1,'image_cut_width','500');
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (2,'image_cut_height','500');
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (3,'image_scale_width','800');
