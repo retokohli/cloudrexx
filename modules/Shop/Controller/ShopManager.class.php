@@ -448,7 +448,8 @@ class ShopManager extends ShopLibrary
                         ? contrexx_input2raw($_POST['importCsvUploaderId'])
                         : '';
         if (!empty($fileName) && !empty($uploaderId)) {
-            $objSession = \cmsSession::getInstance();
+            $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+            $objSession = $cx->getComponent('Session')->getSession();
             $tmpFile    = $objSession->getTempPath() . '/' . $uploaderId . '/' . $fileName;
             $fileExists = \Cx\Lib\FileSystem\FileSystem::exists($tmpFile);
         }

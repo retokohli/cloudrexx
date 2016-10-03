@@ -511,7 +511,8 @@ class DirectoryLibrary
             return 'error';
         }
 
-        $objSession = \cmsSession::getInstance();
+        $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objSession = $cx->getComponent('Session')->getSession();
         $tempPath   = $objSession->getTempPath() .'/' . $uploaderId . '/' . $fileName;
         //Check the uploaded file exists in /tmp folder
         if (!\Cx\Lib\FileSystem\FileSystem::exists($tempPath)) {
