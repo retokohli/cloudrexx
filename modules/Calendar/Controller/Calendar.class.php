@@ -415,6 +415,9 @@ class Calendar extends CalendarLibrary
 
         $dateFormat = $this->getDateFormat(1);
 
+        \JS::activate('cx');
+        \JS::activate('jqueryui');
+
         $javascript = <<< EOF
 <script language="JavaScript" type="text/javascript">
 
@@ -1204,8 +1207,8 @@ UPLOADER;
      */
     protected function getUploaderCode($fieldKey, $fieldName, $uploadCallBack = "uploadFinished", $allowImageOnly = true)
     {
-        \cmsSession::getInstance();
         $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getComponent('Session')->getSession();
         try {
             $uploader      = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
             $uploaderId    = $uploader->getId();

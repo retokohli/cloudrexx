@@ -829,6 +829,15 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
+         * Get the start time
+         * 
+         * @return array
+         */
+        public function getStartTime() {
+            return $this->startTime;
+        }
+
+        /**
          * Stops time measurement and returns page parsing time
          * @return int Time needed to parse page in seconds
          */
@@ -1186,6 +1195,19 @@ namespace Cx\Core\Core\Controller {
                 $componentControllerClass = '\\Cx\\Core\\Core\\Model\\Entity\\SystemComponentController';
             }
             return new $componentControllerClass($component, $this);
+        }
+        
+        /**
+         * Returns the ComponentController for the given component
+         * @deprecated All new classes should have access to $this->getComponent()
+         * @param string $name Component name
+         * @return \Cx\Core\Core\Model\Entity\SystemComponentController Component main controller
+         */
+        public function getComponent($name) {
+            $em = $this->getDb()->getEntityManager();
+            $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+            $component = $componentRepo->findOneBy(array('name' => $name));
+            return $component;
         }
 
         /**

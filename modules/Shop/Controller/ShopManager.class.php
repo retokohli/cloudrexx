@@ -448,7 +448,8 @@ class ShopManager extends ShopLibrary
                         ? contrexx_input2raw($_POST['importCsvUploaderId'])
                         : '';
         if (!empty($fileName) && !empty($uploaderId)) {
-            $objSession = \cmsSession::getInstance();
+            $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+            $objSession = $cx->getComponent('Session')->getSession();
             $tmpFile    = $objSession->getTempPath() . '/' . $uploaderId . '/' . $fileName;
             $fileExists = \Cx\Lib\FileSystem\FileSystem::exists($tmpFile);
         }
@@ -2087,27 +2088,6 @@ if ($test === NULL) {
         return $result;
     }
 
-
-    function delFile($file)
-    {
-        @unlink($file);
-        clearstatcache();
-        if (@file_exists($file)) {
-            $filesys = eregi_replace('/', '\\', $file);
-            @system('del '.$filesys);
-            clearstatcache();
-            // don't work in safemode
-            if (@file_exists($file)) {
-                @chmod ($file, 0775);
-                @unlink($file);
-            }
-        }
-        clearstatcache();
-        if (@file_exists($file)) return false;
-        return true;
-    }
-
-
     /**
      * Manage products
      *
@@ -3255,15 +3235,20 @@ if ($test === NULL) {
         // However, the design doesn't like it.  Limit to the current one.
         $arrLanguages = array(FRONTEND_LANG_ID => $arrLanguages[FRONTEND_LANG_ID]);
         $i = 0;
+
+        \JS::activate('schedule-publish-tooltip', array());
         foreach ($arrProducts as $objProduct) {
-            $productStatus = '';
-            $productStatusValue = '';
-            $productStatusPicture = 'status_red.gif';
-            if ($objProduct->getStatus()) {
-                $productStatus = \Html::ATTRIBUTE_CHECKED;
-                $productStatusValue = 1;
-                $productStatusPicture = 'status_green.gif';
+            $productStatus = 'inactive';
+            if ($objProduct->active()) {
+                $hasScheduledPublishing =   $objProduct->date_start() != '0000-00-00 00:00:00'
+                                         || $objProduct->date_end() != '0000-00-00 00:00:00';
+                $productStatus = 'active';
+                if ($hasScheduledPublishing) {
+                    $productStatus =  $objProduct->getActiveByScheduledPublishing()
+                                    ? 'scheduled active' : 'scheduled inactive';
+                }
             }
+
             $discount_active = '';
             $specialOfferValue = '';
             if ($objProduct->discount_active()) {
@@ -3288,9 +3273,7 @@ if ($test === NULL) {
                 'SHOP_PRODUCT_DISTRIBUTION' => $objProduct->distribution(),
                 'SHOP_PRODUCT_STOCK' => $objProduct->stock(),
                 'SHOP_PRODUCT_SHORT_DESC' => $objProduct->short(),
-                'SHOP_PRODUCT_STATUS' => $productStatus,
-                'SHOP_PRODUCT_STATUS_PICTURE' => $productStatusPicture,
-                'SHOP_ACTIVE_VALUE_OLD' => $productStatusValue,
+                'SHOP_PRODUCT_STATUS_CLASS' => $productStatus,
                 'SHOP_SORT_ORDER' => $objProduct->ord(),
 //                'SHOP_DISTRIBUTION_MENU' => Distribution::getDistributionMenu($objProduct->distribution(), "distribution[".$objProduct->id()."]"),
 //                'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($objProduct->weight()),
