@@ -525,13 +525,13 @@ class ForumLibrary
      * handles the upload of a file
      *
      * @param string $inputName name of the HTML input element used to upload the file
-     * 
-     * @return array $uploadedFileInfo array containing the properties for the uploaded file, 
+     *
+     * @return array $uploadedFileInfo array containing the properties for the uploaded file,
      *                                 false when upload has failed
      */
     function _handleUpload($inputName)
     {
-        global $_ARRAYLANG, $sessionObj;
+        global $_ARRAYLANG;
 
         $fileName = isset($_POST[$inputName]) ? contrexx_input2raw($_POST[$inputName]) : '';
         if (empty($fileName)) {
@@ -549,9 +549,8 @@ class ForumLibrary
         }
 
         //Re-initialize the $sessionObj if it is empty
-        if (empty($sessionObj)) {
-            $sessionObj = \cmsSession::getInstance();
-        }
+        $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        $sessionObj = $cx->getComponent('Session')->getSession();
         $tempPath = $sessionObj->getTempPath() . '/' . $uploaderId . '/' . $fileName;
         if (!\Cx\Lib\FileSystem\FileSystem::exists($tempPath)) {
             return false;
