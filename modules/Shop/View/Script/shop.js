@@ -313,7 +313,7 @@ function productOptionsUploaderCallback(data) {
         }
         var optionsPrice = 0;
         $form.find('.product-option-field').each(function () {
-            switch ($jq(this).prop("tagName")) {
+            switch ($jq(this).prop('tagName')) {
                 case 'SELECT':
                     $jq(this).find('option:selected').each(function () {
                         var price     = parseFloat($jq(this).data('price'));
