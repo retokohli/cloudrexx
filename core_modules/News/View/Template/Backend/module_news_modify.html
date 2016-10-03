@@ -67,8 +67,8 @@
                 if (newsElLinkText == '') {
                     newsElLinkText = url;
                 }
-                // splitting the A-tag is required to prevent the CSRF system from adding a token to the href attribute
-                newsInsertLink(document.getElementById(newsElInsertBox), '<'+'a href="'+url+'">'+newsElLinkText+'</a>');
+                // splitting the href attribute of the A-tag is required to prevent the CSRF component and LinkSanitizer from modifying the code
+                newsInsertLink(document.getElementById(newsElInsertBox), '<a hr' + 'ef="'+url+'">'+newsElLinkText+'</a>');
                 break;
         }
     }

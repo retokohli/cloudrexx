@@ -114,7 +114,11 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
         return array(
             'getCountries',
             'getBlocks',
-            'getBlockContent',
+            'getBlockContent' => new \Cx\Core_Modules\Access\Model\Entity\Permission(
+                null,
+                array('get', 'cli'),
+                false
+            ),
             'saveBlockContent' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, array('post'), true)
         );
     }
@@ -193,12 +197,6 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
      */
     public function getBlockContent($params) {
         global $_CORELANG, $objDatabase;
-
-        // security check
-        if (   !\FWUser::getFWUserObject()->objUser->login()
-            || !\Permission::checkAccess(76, 'static', true)) {
-            throw new NoPermissionException($_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']);
-        }
 
         // check for necessary arguments
         if (empty($params['get']['block']) || empty($params['get']['lang'])) {

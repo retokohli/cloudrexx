@@ -513,8 +513,8 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
      * @see Contact::$submissionId
      */
     protected function handleUniqueId() {
-        global $sessionObj;
-        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $sessionObj = $cx->getComponent('Session')->getSession();
 
         $id = 0;
         if(isset($_REQUEST['unique_id'])) { //an id is specified - we're handling a page reload
@@ -537,12 +537,9 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
      * Inits the uploader when displaying a contact form.
      */
     protected function initUploader($fieldId, $restrictUpload2SingleFile = true) {
-        global $sessionObj;
-
         try {
-            if (!isset($sessionObj)) {
-                $sessionObj = \cmsSession::getInstance();
-            }
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $sessionObj = $cx->getComponent('Session')->getSession();
 
             $uploader   = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
             //set instance name so we are able to catch the instance with js
@@ -1562,9 +1559,8 @@ CODE;
      */
     protected static function getTemporaryUploadPath($fieldId)
     {
-        global $sessionObj;
-
-        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $sessionObj = $cx->getComponent('Session')->getSession();
 
         $tempPath = $_SESSION->getTempPath();
         $tempWebPath = $_SESSION->getWebTempPath();
