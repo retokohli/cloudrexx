@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Manages settings stored in the database or file system
  *
@@ -97,6 +97,7 @@ class Setting{
     const TYPE_RADIO = 'radio';
     const TYPE_DATE  = 'date';
     const TYPE_DATETIME  = 'datetime';
+    const TYPE_IMAGE  = 'image';
     // Not implemented
     //const TYPE_SUBMIT = 'submit';
     /**
@@ -120,9 +121,9 @@ class Setting{
 
     public static $arrSettings = array();
     protected static $engines = array(
-	'Database' => '\Cx\Core\Setting\Model\Entity\DbEngine',
-	'FileSystem' => '\Cx\Core\Setting\Model\Entity\FileSystem',
-	'Yaml'	=> '\Cx\Core\Setting\Model\Entity\YamlEngine',
+    'Database' => '\Cx\Core\Setting\Model\Entity\DbEngine',
+    'FileSystem' => '\Cx\Core\Setting\Model\Entity\FileSystem',
+    'Yaml'    => '\Cx\Core\Setting\Model\Entity\YamlEngine',
     );
 
     protected static $engine = 'Database';
@@ -743,7 +744,35 @@ class Setting{
                 case self::TYPE_DATETIME:
                     $element = \Html::getDatetimepicker($name, array('defaultDate' => $value), 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"');
                     break;
-
+                case self::TYPE_IMAGE:
+                    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                    if (    !empty($arrSetting['value'])
+                        &&  \Cx\Lib\FileSystem\FileSystem::exists($cx->getWebsitePath() . '/' . $arrSetting['value'])
+                    ) {
+                        $element .= \Html::getImageByPath(
+                            $cx->getWebsitePath() . '/' . $arrSetting['value'],
+                            'id="' . $name . 'Image" '
+                        ) . '&nbsp;&nbsp;';
+                    }
+                    $element .= \Html::getHidden($name, $arrSetting['value'], $name);
+                    $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
+                    $mediaBrowser->setCallback($name.'Callback');
+                    $mediaBrowser->setOptions(array('type' => 'button','data-cx-mb-views' => 'filebrowser'));
+                    $element .= $mediaBrowser->getXHtml($_ARRAYLANG['TXT_BROWSE']);
+                    \JS::registerCode('
+                        function ' . $name . 'Callback(data) {
+                            if (data.type === "file" && data.data[0]) {
+                                var filePath = data.data[0].datainfo.filepath;
+                                jQuery("#' . $name . '").val(filePath);
+                                jQuery("#' . $name . 'Image").attr("src", filePath);
+                            }
+                        }
+                        jQuery(document).ready(function(){
+                            var imgSrc = jQuery("#' . $name . 'Image").attr("src");
+                            jQuery("#' . $name . 'Image").attr("src", imgSrc + "?t=" + new Date().getTime());
+                        });
+                    ');
+                    break;
                 // Default to text input fields
               case self::TYPE_TEXT:
               case self::TYPE_EMAIL:
@@ -945,6 +974,18 @@ class Setting{
                         : $value);
                         // 20120508
                   case self::TYPE_RADIO:
+                      break;
+                  case self::TYPE_IMAGE:
+                      $cx      = \Cx\Core\Core\Controller\Cx::instanciate();
+                      $options = json_decode($arrSettings[$name]['values'], true);
+                      if ($options['type'] && $options['type'] == 'copy') {
+                          \Cx\Lib\FileSystem\FileSystem::copy_file(
+                              $cx->getWebsitePath() . $value,
+                              $cx->getWebsitePath() . '/' . $arrSettings[$name]['value'],
+                              true
+                          );
+                          $value = $arrSettings[$name]['value'];
+                      }
                       break;
                   default:
                         // Regular value of any other type
@@ -1180,8 +1221,8 @@ class Setting{
                 self::$arrSettings[self::getInstanceId()][$section]['default_engine'] = $engine;
             }
             return true;
-	}
-	return false;
+    }
+    return false;
     }
 
     /**

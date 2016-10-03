@@ -721,22 +721,16 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `author` varchar(255) NOT NULL,
   `all_day` tinyint(1) NOT NULL DEFAULT '0',
   `location_type` tinyint(1) NOT NULL DEFAULT '1',
-  `place` varchar(255) NOT NULL,
   `place_id` int(11) NOT NULL,
   `place_street` varchar(255) DEFAULT NULL,
   `place_zip` varchar(10) DEFAULT NULL,
-  `place_city` varchar(255) DEFAULT NULL,
-  `place_country` varchar(255) DEFAULT NULL,
   `place_website` varchar(255) NOT NULL DEFAULT '',
   `place_link` varchar(255) NOT NULL,
   `place_phone` varchar(20) NOT NULL DEFAULT '',
   `place_map` varchar(255) NOT NULL,
   `host_type` tinyint(1) NOT NULL DEFAULT '1',
-  `org_name` varchar(255) NOT NULL,
   `org_street` varchar(255) NOT NULL,
   `org_zip` varchar(10) NOT NULL,
-  `org_city` varchar(255) NOT NULL,
-  `org_country` varchar(255) NOT NULL,
   `org_website` varchar(255) NOT NULL DEFAULT '',
   `org_link` varchar(255) NOT NULL,
   `org_phone` varchar(20) NOT NULL DEFAULT '',
@@ -752,6 +746,12 @@ CREATE TABLE `contrexx_module_calendar_event_field` (
   `teaser` text DEFAULT NULL,
   `description` mediumtext,
   `redirect` varchar(255) NOT NULL,
+  `place` varchar(255) NOT NULL,
+  `place_city` varchar(255) NOT NULL,
+  `place_country` varchar(255) NOT NULL,
+  `org_name` varchar(255) NOT NULL,
+  `org_city` varchar(255) NOT NULL,
+  `org_country` varchar(255) NOT NULL,
   KEY `lang_field` (`title`),
   KEY `fk_contrexx_module_calendar_note_field_contrexx_module_calend1` (`event_id`),
   FULLTEXT KEY `eventIndex` (`title`,`teaser`,`description`)
@@ -790,6 +790,7 @@ CREATE TABLE `contrexx_module_calendar_registration` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
   `event_id` int(7) NOT NULL,
   `date` int(15) NOT NULL,
+  `submission_date` timestamp NULL DEFAULT '0000-00-00 00:00:00',
   `host_name` varchar(255) NOT NULL,
   `ip_address` varchar(15) NOT NULL,
   `type` int(1) NOT NULL,
@@ -2272,6 +2273,11 @@ CREATE TABLE `contrexx_module_market` (
   `spez_field_3` varchar(255) NOT NULL,
   `spez_field_4` varchar(255) NOT NULL,
   `spez_field_5` varchar(255) NOT NULL,
+  `spez_field_6` VARCHAR(255) NOT NULL,
+  `spez_field_7` VARCHAR(255) NOT NULL,
+  `spez_field_8` VARCHAR(255) NOT NULL,
+  `spez_field_9` VARCHAR(255) NOT NULL,
+  `spez_field_10` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
   FULLTEXT KEY `description` (`description`),
   FULLTEXT KEY `title` (`description`,`title`)
@@ -2636,6 +2642,7 @@ CREATE TABLE `contrexx_module_news` (
   `allow_comments` tinyint(1) NOT NULL DEFAULT '0',
   `enable_related_news` tinyint(1) NOT NULL DEFAULT '0',
   `enable_tags` tinyint(1) NOT NULL DEFAULT '0',
+  `redirect_new_window` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_news_categories` (
@@ -2800,13 +2807,6 @@ CREATE TABLE `contrexx_module_newsletter_category` (
   `notification_email` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `name` (`name`)
-) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_newsletter_confirm_mail` (
-  `id` int(1) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL DEFAULT '',
-  `content` longtext NOT NULL,
-  `recipients` text NOT NULL,
-  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_newsletter_email_link` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,

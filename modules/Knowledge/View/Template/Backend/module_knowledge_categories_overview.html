@@ -12,17 +12,17 @@ var notAllowedMsg = "{NOT_ALLOWED_MSG}";
 
 function selectMultiAction()
 {
-	with (document.frmShowEntries) {
-		switch (frmShowEntries_MultiAction.value) {
-			case 'delete':
-				if (confirm('{TXT_ENTRIES_SUBMIT_DELETE_JS}')) {
-					action='?cmd=Knowledge{MODULE_INDEX}&act=multiactionEntry';
-					submit();
-				}
-			break;
-			default: //do nothing
-		}
-	}
+  with (document.frmShowEntries) {
+    switch (frmShowEntries_MultiAction.value) {
+      case 'delete':
+        if (confirm('{TXT_ENTRIES_SUBMIT_DELETE_JS}')) {
+          action='?cmd=Knowledge{MODULE_INDEX}&act=multiactionEntry';
+          submit();
+        }
+      break;
+      default: //do nothing
+    }
+  }
 }
 
 /**
@@ -283,9 +283,9 @@ var updateSort = function(id)
                             </tr>
                         </table>
 
-    				    <div class="subcategories">
-    				        {SUB}
-    				    </div>
+                <div class="subcategories">
+                    {SUB}
+                </div>
                     </li>
                     <!-- END row -->
                     {ROWS}
