@@ -1133,7 +1133,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      *
      * @param array $options options array
      */
-    private static function initScheduledPublishing($options)
+    protected static function initScheduledPublishing($options)
     {
         global $_CORELANG;
 

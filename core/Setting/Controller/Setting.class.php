@@ -749,7 +749,10 @@ class Setting{
                     if (    !empty($arrSetting['value'])
                         &&  \Cx\Lib\FileSystem\FileSystem::exists($cx->getWebsitePath() . '/' . $arrSetting['value'])
                     ) {
-                        $element .= \Html::getImageByPath($cx->getWebsitePath() . '/' . $arrSetting['value']) . '&nbsp;&nbsp;';
+                        $element .= \Html::getImageByPath(
+                            $cx->getWebsitePath() . '/' . $arrSetting['value'],
+                            'id="' . $name . 'Image" '
+                        ) . '&nbsp;&nbsp;';
                     }
                     $element .= \Html::getHidden($name, $arrSetting['value'], $name);
                     $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
@@ -761,8 +764,13 @@ class Setting{
                             if (data.type === "file" && data.data[0]) {
                                 var filePath = data.data[0].datainfo.filepath;
                                 jQuery("#' . $name . '").val(filePath);
+                                jQuery("#' . $name . 'Image").attr("src", filePath);
                             }
                         }
+                        jQuery(document).ready(function(){
+                            var imgSrc = jQuery("#' . $name . 'Image").attr("src");
+                            jQuery("#' . $name . 'Image").attr("src", imgSrc + "?t=" + new Date().getTime());
+                        });
                     ');
                     break;
                 // Default to text input fields
