@@ -130,7 +130,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     if ($image !== '') {
                         $page->setMetaimage($image);
                     } else {
-                        $page->setMetaimage('/settings/default.png');
+                        $page->setMetaimage(\Cx\Core\Setting\Controller\Setting::getValue('defaultMetaimage', 'Config'));
                     }
                 }
                 break;
