@@ -141,7 +141,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
         $objTemplate->setVariable("CONTENT_NAVIGATION", "   "
             .($_CONFIG['blockStatus'] == '1'
                  ? "<a href='index.php?cmd=Block&amp;act=overview' class='".($this->act == '' || $this->act == 'overview' || $this->act == 'del' ? 'active' : '')."'>".$_ARRAYLANG['TXT_BLOCK_OVERVIEW']."</a>
-                    <a href='index.php?cmd=Block&amp;act=modify' class='".($this->act == 'modify' ? 'active' : '')."'>".$_ARRAYLANG['TXT_BLOCK_ADD_BLOCK']."</a>"
+                    <a href='index.php?cmd=Block&amp;act=modify" . (isset($_GET['catId']) ? '&amp;catId=' . $_GET['catId'] : '') . "' class='".($this->act == 'modify' ? 'active' : '')."'>".$_ARRAYLANG['TXT_BLOCK_ADD_BLOCK']."</a>"
                  : "")
             ."<a href='index.php?cmd=Block&amp;act=categories' class='".($this->act == 'categories' ? 'active' : '')."'>".$_ARRAYLANG['TXT_BLOCK_CATEGORIES']."</a>"
              ."<a href='index.php?cmd=Block&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_BLOCK_SETTINGS']."</a>");
@@ -265,8 +265,8 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
         $this->_pageTitle = $_ARRAYLANG['TXT_BLOCK_BLOCKS'];
         $this->_objTpl->loadTemplateFile('module_block_overview.html');
 
-        $catId = !empty($_REQUEST['catId']) ? intval($_REQUEST['catId']) : 0;
-
+        $catId = !empty($_REQUEST['catId']) ? contrexx_input2int($_REQUEST['catId']) : 0;
+        $categoryParam = $catId ? '&catId=' . $catId : '';
         $this->_objTpl->setVariable(array(
             'TXT_BLOCK_BLOCKS'                  => $_ARRAYLANG['TXT_BLOCK_BLOCKS'],
             'TXT_BLOCK_NAME'                    => $_ARRAYLANG['TXT_BLOCK_NAME'],
@@ -294,6 +294,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'BLOCK_CATEGORIES_DROPDOWN'         => $this->_getCategoriesDropdown($catId),
             'DIRECTORY_INDEX'                   => CONTREXX_DIRECTORY_INDEX,
             'CSRF_PARAM'                        => \Cx\Core\Csrf\Controller\Csrf::param(),
+            'BLOCK_FORM_CATEGORY_PARAM'         => $categoryParam
         ));
 
         $arrBlocks = $this->getBlocks($catId);
@@ -309,9 +310,9 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
         $rowNr = 0;
         foreach ($arrBlocks as $blockId => $arrBlock) {
             if ($arrBlock['active'] ==  '1') {
-                $status = '<a href="index.php?cmd=Block&amp;act=deactivate&amp;blockId='.$blockId.'" title="'.$_ARRAYLANG['TXT_BLOCK_ACTIVE'].'"><img src="../core/Core/View/Media/icons/led_green.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_ACTIVE'].'" /></a>';
+                $status = '<a href="index.php?cmd=Block&amp;act=deactivate&amp;blockId=' . $blockId . $categoryParam . '" title="'.$_ARRAYLANG['TXT_BLOCK_ACTIVE'].'"><img src="../core/Core/View/Media/icons/led_green.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_ACTIVE'].'" /></a>';
             } else {
-                $status = '<a href="index.php?cmd=Block&amp;act=activate&amp;blockId='.$blockId.'" title="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'"><img src="../core/Core/View/Media/icons/led_red.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'" /></a>';
+                $status = '<a href="index.php?cmd=Block&amp;act=activate&amp;blockId=' . $blockId . $categoryParam . '" title="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'"><img src="../core/Core/View/Media/icons/led_red.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'" /></a>';
             }
 
             $blockPlaceholder = $this->blockNamePrefix . $blockId;
@@ -395,6 +396,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
                 'BLOCK_DELETE'                => sprintf($_ARRAYLANG['TXT_BLOCK_DELETE_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
                 'BLOCK_STATUS'                => $status,
                 'BLOCK_LANGUAGES_NAME'        => $langString,
+                'BLOCK_CATEGORY_PARAM'        => $categoryParam
             ));
             $this->_objTpl->parse('blockBlockList');
 
@@ -698,6 +700,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'style' => 'display:none'
         ));
 
+        $catId                  = !empty($_GET['catId']) ? contrexx_input2int($_GET['catId']) : 0;
         $blockId                = !empty($_REQUEST['blockId']) ? intval($_REQUEST['blockId']) : 0;
         $blockCat               = 0;
         $blockName              = '';
@@ -779,6 +782,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             );
         }
 
+        $categoryParam = !empty($catId) ? '&catId=' . $catId : '';
         if (isset($_POST['block_save_block'])) {
             $blockCat               = !empty($_POST['blockCat']) ? intval($_POST['blockCat']) : 0;
             $blockContent           = isset($_POST['blockFormText_']) ? array_map('contrexx_input2raw', $_POST['blockFormText_']) : array();
@@ -809,7 +813,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
                 if ($this->_updateBlock($blockId, $blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockWysiwygEditor, $blockLangActive)) {
                     if ($this->storePlaceholderSettings($blockId, $blockGlobal, $blockDirect, $blockCategory, $blockGlobalAssociatedPageIds, $blockDirectAssociatedPageIds, $blockCategoryAssociatedPageIds)) {
                         $this->storeTargetingSettings($blockId, $targetingStatus, $targeting);
-                        \Cx\Core\Csrf\Controller\Csrf::header('location: index.php?cmd=Block&modified=true&blockname='.$blockName);
+                        \Cx\Core\Csrf\Controller\Csrf::header('location: index.php?cmd=Block&modified=true&blockname=' . $blockName . $categoryParam);
                         exit;
                     }
                 }
@@ -818,7 +822,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
                 if ($blockId = $this->_addBlock($blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockWysiwygEditor, $blockLangActive)) {
                     if ($this->storePlaceholderSettings($blockId, $blockGlobal, $blockDirect, $blockCategory, $blockGlobalAssociatedPageIds, $blockDirectAssociatedPageIds, $blockCategoryAssociatedPageIds)) {
                         $this->storeTargetingSettings($blockId, $targetingStatus, $targeting);
-                        \Cx\Core\Csrf\Controller\Csrf::header('location: index.php?cmd=Block&added=true&blockname='.$blockName);
+                        \Cx\Core\Csrf\Controller\Csrf::header('location: index.php?cmd=Block&added=true&blockname=' . $blockName . $categoryParam);
                         exit;
                     }
                 }
@@ -866,6 +870,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'BLOCK_START'                       => !empty($blockStart) ? strftime('%Y-%m-%d %H:%M', $blockStart) : $blockStart,
             'BLOCK_END'                         => !empty($blockEnd) ? strftime('%Y-%m-%d %H:%M', $blockEnd) : $blockEnd,
             'BLOCK_WYSIWYG_EDITOR'              => $blockWysiwygEditor == 1 ? 'checked="checked"' : '',
+            'BLOCK_CATEGORY_PARAM'              => $categoryParam,
 
             // random placeholders
             'BLOCK_RANDOM'                      => $blockRandom == '1' ? 'checked="checked"' : '',
@@ -1218,7 +1223,8 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             }
         }
 
-        \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=Block");
+        $categoryParam = isset($_GET['catId']) ? '&catId=' . $_GET['catId'] : '';
+        \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?cmd=Block' . $categoryParam);
     }
 
     /**
@@ -1248,7 +1254,8 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             }
         }
 
-        \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=Block");
+        $categoryParam = isset($_GET['catId']) ? '&catId=' . $_GET['catId'] : '';
+        \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?cmd=Block' . $categoryParam);
     }
 
     /**
