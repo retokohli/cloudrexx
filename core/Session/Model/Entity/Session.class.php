@@ -343,7 +343,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                   FROM
                     `". DBPREFIX ."session_variable`
                   WHERE
-                    `sessionid` = '{static::getInstance()->sessionid}'
+                    `sessionid` = '" . static::getInstance()->sessionid . "'
                   AND
                     `parent_id` = '$varId'";
 
@@ -787,7 +787,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                   FROM
                     `". DBPREFIX ."session_variable`
                   WHERE
-                    `sessionid` = '{static::getInstance()->sessionid}'
+                    `sessionid` = '" . static::getInstance()->sessionid . "'
                   AND
                     `parent_id` = '" . intval($keyId) ."'";
 
@@ -920,7 +920,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                   FROM
                     `". DBPREFIX ."session_variable`
                   WHERE
-                    `sessionid` = '{static::getInstance()->sessionid}'
+                    `sessionid` = '" . static::getInstance()->sessionid . "'
                   AND
                     `parent_id` = '". intval($parentId) ."'
                   AND
