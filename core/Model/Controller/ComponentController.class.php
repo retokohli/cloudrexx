@@ -52,7 +52,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * PostInit hook to add entity validation
      * @param \Cx\Core\Core\Controller\Cx $cx Cx class instance
      */
-    public function postInit(Cx\Core\Core\Controller\Cx $cx) {
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx) {
         // init cx validation
         $cx->getEvents()->addEventListener(
             'model/onFlush',

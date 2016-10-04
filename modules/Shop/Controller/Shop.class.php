@@ -1866,7 +1866,7 @@ die("Failed to update the Cart!");
                             '<select name="productOption['.$attribute_id.
                             ']" id="productOption-'.
                             $product_id.'-'.$attribute_id.'-'.$domId.
-                            '" style="width:180px;">'."\n".
+                            '" class="product-option-field" style="width:180px;">'."\n".
                             '<option value="0">'.
                             $objAttribute->getName().'&nbsp;'.
                             $_ARRAYLANG['TXT_CHOOSE']."</option>\n";
@@ -1905,7 +1905,7 @@ die("Failed to update the Cart!");
                             '<select name="productOption['.$attribute_id.
                             ']" id="productOption-'.
                             $product_id.'-'.$attribute_id.'-'.$domId.
-                            '" style="width:180px;">'."\n".
+                            '" class="product-option-field" style="width:180px;">'."\n".
                             // If there is only one option to choose from,
                             // why bother the customer at all?
 // NOTE: To always prepend the default "please choose" option, comment the condition
@@ -1945,16 +1945,18 @@ die("Failed to update the Cart!");
                           case Attribute::TYPE_MENU_OPTIONAL:
                             $selectValues .=
                                 '<option value="'.$option_id.'" '.
-                                ($selected ? 'selected="selected"' : '').
+                                ($arrOption['price'] != 0 ? 'data-price="'. $arrOption['price'] .'" ' : '')
+                                .($selected ? 'selected="selected"' : '').
                                 ' >'.$arrOption['value'].$option_price.
                                 "</option>\n";
                             break;
                           case Attribute::TYPE_RADIOBUTTON:
                             $selectValues .=
-                                '<input type="radio" name="productOption['.
+                                '<input class="product-option-field" type="radio" name="productOption['.
                                 $attribute_id.']" id="productOption-'.
                                 $product_id.'-'.$attribute_id.'-'.$domId.
                                 '" value="'.$option_id.'"'.
+                                ($arrOption['price'] != 0 ? ' data-price="'. $arrOption['price'] .'"' : '').
                                 ($selected ? ' checked="checked"' : '').
                                 ' /><label for="productOption-'.
                                 $product_id.'-'.$attribute_id.'-'.$domId.
@@ -1963,10 +1965,11 @@ die("Failed to update the Cart!");
                             break;
                           case Attribute::TYPE_CHECKBOX:
                             $selectValues .=
-                                '<input type="checkbox" name="productOption['.
+                                '<input class="product-option-field" type="checkbox" name="productOption['.
                                 $attribute_id.']['.$i.']" id="productOption-'.
                                 $product_id.'-'.$attribute_id.'-'.$domId.
                                 '" value="'.$option_id.'"'.
+                                ($arrOption['price'] != 0 ? ' data-price="'. $arrOption['price'] .'" ' : '').
                                 ($selected ? ' checked="checked"' : '').
                                 ' /><label for="productOption-'.
                                 $product_id.'-'.$attribute_id.'-'.$domId.
@@ -1977,6 +1980,7 @@ die("Failed to update the Cart!");
                             $selectValues .=
                                 '<option value="'.$option_id.'"'.
                                 ($selected ? ' selected="selected"' : '').
+                                ($arrOption['price'] != 0 ? ' data-price="'. $arrOption['price'] .'" ' : '').
                                 ' >'.$arrOption['value'].$option_price.
                                 "</option>\n";
                             break;
