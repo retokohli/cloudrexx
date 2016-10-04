@@ -2088,27 +2088,6 @@ if ($test === NULL) {
         return $result;
     }
 
-
-    function delFile($file)
-    {
-        @unlink($file);
-        clearstatcache();
-        if (@file_exists($file)) {
-            $filesys = eregi_replace('/', '\\', $file);
-            @system('del '.$filesys);
-            clearstatcache();
-            // don't work in safemode
-            if (@file_exists($file)) {
-                @chmod ($file, 0775);
-                @unlink($file);
-            }
-        }
-        clearstatcache();
-        if (@file_exists($file)) return false;
-        return true;
-    }
-
-
     /**
      * Manage products
      *
@@ -2360,6 +2339,7 @@ if ($test === NULL) {
         $discount_group_article_id = $_POST['discount_group_article_id'];
 //DBG::log("ShopManager::store_product(): Set \$discount_group_article_id to $discount_group_article_id");
         $keywords = contrexx_input2raw($_POST['keywords']);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
         for ($i = 1; $i <= 3; ++$i) {
             // Images outside the above directory are copied to the shop image folder.
@@ -2377,7 +2357,24 @@ if ($test === NULL) {
             }
             // Update the posted path (used below)
             $_POST['productImage'.$i] = $picture;
+
+            //Set the image width and height If empty
+            if (   !empty($_POST['productImage' . $i . '_width'])
+                && !empty($_POST['productImage' . $i . '_height'])
+            ) {
+                continue;
+            }
+
+            $picturePath = $cx->getWebsiteImagesShopPath(). '/' . $picture;
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($picturePath)) {
+                continue;
+            }
+
+            $pictureSize = getimagesize($picturePath);
+            $_POST['productImage' . $i . '_width']  = $pictureSize[0];
+            $_POST['productImage' . $i . '_height'] = $pictureSize[1];
         }
+
         // add all to pictures DBstring
         $imageName =
                  base64_encode($_POST['productImage1'])
@@ -3256,15 +3253,20 @@ if ($test === NULL) {
         // However, the design doesn't like it.  Limit to the current one.
         $arrLanguages = array(FRONTEND_LANG_ID => $arrLanguages[FRONTEND_LANG_ID]);
         $i = 0;
+
+        \JS::activate('schedule-publish-tooltip', array());
         foreach ($arrProducts as $objProduct) {
-            $productStatus = '';
-            $productStatusValue = '';
-            $productStatusPicture = 'status_red.gif';
-            if ($objProduct->getStatus()) {
-                $productStatus = \Html::ATTRIBUTE_CHECKED;
-                $productStatusValue = 1;
-                $productStatusPicture = 'status_green.gif';
+            $productStatus = 'inactive';
+            if ($objProduct->active()) {
+                $hasScheduledPublishing =   $objProduct->date_start() != '0000-00-00 00:00:00'
+                                         || $objProduct->date_end() != '0000-00-00 00:00:00';
+                $productStatus = 'active';
+                if ($hasScheduledPublishing) {
+                    $productStatus =  $objProduct->getActiveByScheduledPublishing()
+                                    ? 'scheduled active' : 'scheduled inactive';
+                }
             }
+
             $discount_active = '';
             $specialOfferValue = '';
             if ($objProduct->discount_active()) {
@@ -3289,9 +3291,7 @@ if ($test === NULL) {
                 'SHOP_PRODUCT_DISTRIBUTION' => $objProduct->distribution(),
                 'SHOP_PRODUCT_STOCK' => $objProduct->stock(),
                 'SHOP_PRODUCT_SHORT_DESC' => $objProduct->short(),
-                'SHOP_PRODUCT_STATUS' => $productStatus,
-                'SHOP_PRODUCT_STATUS_PICTURE' => $productStatusPicture,
-                'SHOP_ACTIVE_VALUE_OLD' => $productStatusValue,
+                'SHOP_PRODUCT_STATUS_CLASS' => $productStatus,
                 'SHOP_SORT_ORDER' => $objProduct->ord(),
 //                'SHOP_DISTRIBUTION_MENU' => Distribution::getDistributionMenu($objProduct->distribution(), "distribution[".$objProduct->id()."]"),
 //                'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($objProduct->weight()),

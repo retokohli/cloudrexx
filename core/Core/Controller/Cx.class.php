@@ -829,6 +829,15 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
+         * Get the start time
+         * 
+         * @return array
+         */
+        public function getStartTime() {
+            return $this->startTime;
+        }
+
+        /**
          * Stops time measurement and returns page parsing time
          * @return int Time needed to parse page in seconds
          */
