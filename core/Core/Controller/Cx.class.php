@@ -580,6 +580,21 @@ namespace Cx\Core\Core\Controller {
          * @var \Cx\Core\MediaSource\Model\Entity\MediaSourceManager
          */
         protected $mediaSourceManager;
+        
+        /*
+         * @var integer
+         */
+        protected $memoryLimit = 48;
+
+        protected $endcode;
+
+        /**
+         * @return mixed
+         */
+        public function getEndcode()
+        {
+            return $this->endcode;
+        }
 
         /**
          * This creates instances of this class
@@ -1189,7 +1204,15 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * This tries to set the memory limit if its lower than 32 megabytes
+         * @param integer $memoryLimit
+         */
+        public function setMemoryLimit($memoryLimit)
+        {
+            $this->memoryLimit = $memoryLimit;
+        }
+
+        /**
+         * This tries to set the memory limit if its lower than the needed memory limit
          */
         protected function tryToSetMemoryLimit() {
             $memoryLimit = array();
@@ -1197,20 +1220,8 @@ namespace Cx\Core\Core\Controller {
             if (!isset($memoryLimit[0])) {
                 return;
             }
-            $this->memoryLimit = $memoryLimit[0];
-
-            global $objCache;
-            if (
-                $objCache->getUserCacheEngine() == \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_APC ||
-                $objCache->getOpCacheEngine() == \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_APC
-            ) {
-                if ($this->memoryLimit < 32) {
-                    ini_set('memory_limit', '32M');
-                }
-            } else {
-                if ($this->memoryLimit < 48) {
-                    ini_set('memory_limit', '48M');
-                }
+            if ($memoryLimit[0] < $this->memoryLimit) {
+                ini_set('memory_limit', $this->memoryLimit . 'M');
             }
         }
 
@@ -1300,21 +1311,9 @@ namespace Cx\Core\Core\Controller {
          * @global type $objInit
          */
         protected function init() {
-            global $objDatabase, $objInit, $objCache, $_DBCONFIG, $_CONFIG;
+            global $objDatabase, $objInit, $_DBCONFIG, $_CONFIG;
 
-            /**
-             * Start caching with op cache, user cache and cloudrexx caching
-             */
-            $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
-            if ($this->mode == self::MODE_FRONTEND) {
-                $objCache->deactivateNotUsedOpCaches();
-            } elseif (!isset($_GET['cmd']) || $_GET['cmd'] != 'settings') {
-                $objCache->deactivateNotUsedOpCaches();
-            }
             $this->tryToSetMemoryLimit();
-
-            // start cloudrexx caching
-            $objCache->startContrexxCaching();
 
             /**
              * Include all the required files.
@@ -1514,8 +1513,9 @@ namespace Cx\Core\Core\Controller {
             $this->setPostContentLoadPlaceholders();    // Set Placeholders
 
             $this->preFinalize();                       // Call pre finalize hook scripts
-            $this->finalize();                          // Set template vars and display content
+            $this->finalize();                          // Set template vars
             $this->postFinalize();                      // Call post finalize hook scripts
+            echo $this->endcode;                        // Display content
         }
 
         /**
@@ -2036,7 +2036,6 @@ namespace Cx\Core\Core\Controller {
          * @todo Remove usage of globals
          * @global type $themesPages
          * @global null $moduleStyleFile
-         * @global type $objCache
          * @global array $_CONFIG
          * @global type $subMenuTitle
          * @global type $_CORELANG
@@ -2044,7 +2043,7 @@ namespace Cx\Core\Core\Controller {
          * @global type $cmd
          */
         protected function finalize() {
-            global $themesPages, $moduleStyleFile, $objCache, $_CONFIG,
+            global $themesPages, $moduleStyleFile, $_CONFIG,
                     $subMenuTitle, $_CORELANG, $plainCmd, $cmd;
 
             if ($this->mode == self::MODE_FRONTEND) {
@@ -2129,9 +2128,7 @@ namespace Cx\Core\Core\Controller {
                     $this->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
                     $endcode
                 );
-                $endcode = $ls->replace();
-                
-                echo $objCache->endContrexxCaching($this->resolvedPage, $endcode);
+                $this->endcode = $ls->replace();
             } else {
                 // backend meta navigation
                 if ($this->template->blockExists('backend_metanavigation')) {
@@ -2239,9 +2236,7 @@ namespace Cx\Core\Core\Controller {
                     $this->getCodeBaseOffsetPath() . $this->getBackendFolderName() . '/',
                     $endcode
                 );
-                $endcode = $ls->replace();
-
-                echo $endcode;
+                $this->endcode = $ls->replace();
             }
 
             \DBG::log("(Cx: {$this->id}) Request parsing completed after $parsingTime");

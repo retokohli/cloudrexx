@@ -454,6 +454,7 @@ class SystemComponentController extends Controller {
      * Do something after main template got parsed
      *
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * @param string                                    $endcode The endcode
      */
-    public function postFinalize() {}
+    public function postFinalize(&$endcode) {}
 }
