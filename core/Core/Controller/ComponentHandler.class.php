@@ -135,6 +135,30 @@ class ComponentHandler {
     }
 
     /**
+     * Calls hook scripts on legacy and non-legacy components after they are loaded
+     */
+    public function callPostComponentLoadHooks() {
+        foreach ($this->components as $componentName) {
+            if ($this->checkLegacy('postComponentLoad', $componentName)) {
+                continue;
+            }
+        }
+        $this->systemComponentRepo->callPostComponentLoadHooks();
+    }
+
+    /**
+     * Calls hook scripts on legacy and non-legay components after initialization
+     */
+    public function callPostInitHooks() {
+        foreach ($this->components as $componentName) {
+            if ($this->checkLegacy('postInit', $componentName)) {
+                continue;
+            }
+        }
+        $this->systemComponentRepo->callPostInitHooks();
+    }
+
+    /**
      * Calls hook scripts on legacy and non-legacy components to register events
      * @param string $mode (optional) One of 'all', 'proper' and 'legacy', default is 'all'
      */
@@ -252,14 +276,15 @@ class ComponentHandler {
 
     /**
      * Calls hook scripts on legacy and non-legacy components after finalizing
+     * @param string $endcode The cx endcode passed by reference
      */
-    public function callPostFinalizeHooks() {
+    public function callPostFinalizeHooks(&$endcode) {
         foreach ($this->components as $componentName) {
             if ($this->checkLegacy('postFinalize', $componentName)) {
                 continue;
             }
         }
-        $this->systemComponentRepo->callPostFinalizeHooks();
+        $this->systemComponentRepo->callPostFinalizeHooks($endcode);
     }
 
     /**

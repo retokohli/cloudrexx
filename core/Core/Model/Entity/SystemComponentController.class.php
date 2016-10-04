@@ -307,6 +307,22 @@ class SystemComponentController extends Controller {
     public function postInit(\Cx\Core\Core\Controller\Cx $cx) {}
 
     /**
+     * Do something before component load
+     * * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * This event must be registered in the preComponentLoad-Hook definition
+     * file config/preComponentLoadHooks.yml.
+     */
+    public function preComponentLoad() {}
+
+    /**
+     * Do something after component load
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     */
+    public function postComponentLoad() {}
+
+    /**
      * Register your events here
      *
      * Do not do anything else here than list statements like

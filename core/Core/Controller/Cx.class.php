@@ -749,15 +749,22 @@ namespace Cx\Core\Core\Controller {
                 $this->handleCustomizing();
 
                 /**
-                 * Load all components to have them ready and initialize request and license
-                 * Request is not initialized for command mode
+                 * Initialize license
                  */
-                $this->postInit();
+                $this->preComponentLoad();
 
                 /*
                  * Loads all active components
                  */
                 $this->loadComponents();
+                
+                $this->postComponentLoad();
+
+                /**
+                 * Load all components to have them ready and initialize request
+                 * Request is not initialized for command mode
+                 */
+                $this->postInit();
 
                 /**
                  * Since we have a valid state now, we can start executing
@@ -1141,40 +1148,23 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Calls post-init hooks
-         * Post-Init hooks are defined in /config/postInitHooks.yml.
+         * Calls preComponentLoad-Hooks
+         * PreComponentLoad-Hooks are defined in /config/preComponentLoadHooks.yml
          *
          * @throws \Exception
          */
-        protected function callPostInitHooks() {
+        protected function callPreComponentLoadHooks() {
             try {
-                $filename = $this->getWebsiteConfigPath() . '/postInitHooks.yml';
+                $filename = $this->getWebsiteConfigPath() . '/preComponentLoadHooks.yml';
                 $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename);
                 foreach ($objDataSet as $componentDefinition) {
-                    $this->eventManager->triggerEvent(
-                        'preComponent',
-                        array(
-                            'componentName' => $componentDefinition['name'],
-                            'component' => null,
-                            'hook' => 'postInit',
-                        )
-                    );
                     $componentController = $this->getComponentControllerByNameAndType($componentDefinition['name'], $componentDefinition['type']);
-                    $componentController->postInit($this);
-                    $this->eventManager->triggerEvent(
-                        'postComponent',
-                        array(
-                            'componentName' => $componentDefinition['name'],
-                            'component' => null,
-                            'hook' => 'postInit',
-                        )
-                    );
+                    $componentController->preComponentLoad();
                 }
             } catch (\Cx\Core_Modules\Listing\Model\Entity\DataSetException $e) {
-                throw new \Exception('Error in processing postInit-hooks: '.$e->getMessage());
+                throw new \Exception('Error in processing preComponentLoad-hooks: '.$e->getMessage());
             }
         }
-
 
         /**
          * Get component controller object by given component name and type
@@ -1409,9 +1399,18 @@ namespace Cx\Core\Core\Controller {
                         break;
                 }
             }
-            $this->license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $this->getDb()->getAdoDb());
             //call post-init hooks
-            $this->callPostInitHooks();
+            $this->ch->callPostInitHooks();
+        }
+
+        /**
+         * Initialize license and call pre-component-load hook scripts
+         * @throws \Cx\Core\Model\DbException
+         * @throws \Exception
+         */
+        protected function preComponentLoad() {
+            $this->license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $this->getDb()->getAdoDb());
+            $this->callpreComponentLoadHooks();
         }
 
         /**
@@ -1419,6 +1418,13 @@ namespace Cx\Core\Core\Controller {
          */
         protected function loadComponents() {
             $this->ch = new \Cx\Core\Core\Controller\ComponentHandler($this->license, $this->mode == self::MODE_FRONTEND, $this->db->getEntityManager());
+        }
+
+        /**
+         * Call post-component-load hook scripts
+         */
+        protected function postComponentLoad() {
+            $this->ch->callPostComponentLoadHooks();
         }
 
         /* STAGE 3: loadContrexx(), call hook scripts */
@@ -2246,7 +2252,7 @@ namespace Cx\Core\Core\Controller {
          * Calls hooks after call to finalize()
          */
         protected function postFinalize() {
-            $this->ch->callPostFinalizeHooks();
+            $this->ch->callPostFinalizeHooks($this->endcode);
         }
 
         /* GETTERS */

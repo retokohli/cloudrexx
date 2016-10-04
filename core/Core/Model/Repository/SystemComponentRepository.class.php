@@ -250,6 +250,28 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
+     * Call hook script of all SystemComponents after they are loaded
+     */
+    public function callPostComponentLoadHooks() {
+        $this->callHooks(
+            'postComponentLoad',
+            array()
+        );
+    }
+
+    /**
+     * Call hook script of all SystemComponents after initalization
+     */
+    public function callPostInitHooks() {
+        $this->callHooks(
+            'postInit',
+            array(
+                $this->cx,
+            )
+        );
+    }
+
+    /**
      * Call hook script of all SystemComponents to register events
      */
     public function callRegisterEventsHooks() {
@@ -380,12 +402,13 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
 
     /**
      * Call hook script of all SystemComponents after finalization
+     * @param string $encode The cx endcode passed by reference
      */
-    public function callPostFinalizeHooks() {
+    public function callPostFinalizeHooks(&$endcode) {
         $this->callHooks(
             'postFinalize',
             array(
-                $this->cx->getEndcode()
+                &$endcode,
             )
         );
     }
