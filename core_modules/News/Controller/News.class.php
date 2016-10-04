@@ -926,7 +926,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_TYPE'                      => ($this->arrSettings['news_use_types'] == 1 ? $_ARRAYLANG['TXT_TYPE'] : ''),
             'TXT_DATE'                      => $_ARRAYLANG['TXT_DATE'],
             'TXT_TITLE'                     => $_ARRAYLANG['TXT_TITLE'],
-            'TXT_NEWS_MESSAGE'              => $_ARRAYLANG['TXT_NEWS_MESSAGE']
+            'TXT_NEWS_MESSAGE'              => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
+            'TXT_NEWS_HEADLINE'             => $_ARRAYLANG['TXT_NEWS_HEADLINE'],
+        ));
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_NEWS_MORE'                 => $_ARRAYLANG['TXT_NEWS_MORE'],
+            'TXT_NEWS_MORE_INFO'            => $_ARRAYLANG['TXT_NEWS_MORE_INFO'],
         ));
 
         $query = '  SELECT      n.id                AS newsid,
@@ -1214,7 +1219,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $this->_objTpl->setVariable(array(
             'TXT_DATE'              => $_ARRAYLANG['TXT_DATE'],
             'TXT_TITLE'             => $_ARRAYLANG['TXT_TITLE'],
-            'TXT_NEWS_MESSAGE'      => $_ARRAYLANG['TXT_NEWS_MESSAGE']
+            'TXT_NEWS_MESSAGE'      => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
+            'TXT_NEWS_HEADLINE'     => $_ARRAYLANG['TXT_NEWS_HEADLINE'],
+        ));
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_NEWS_MORE'         => $_ARRAYLANG['TXT_NEWS_MORE'],
+            'TXT_NEWS_MORE_INFO'    => $_ARRAYLANG['TXT_NEWS_MORE_INFO'],
         ));
 
         $query = '  SELECT      n.id                AS newsid,
