@@ -790,6 +790,7 @@ CREATE TABLE `contrexx_module_calendar_registration` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
   `event_id` int(7) NOT NULL,
   `date` int(15) NOT NULL,
+  `submission_date` timestamp NULL DEFAULT '0000-00-00 00:00:00',
   `host_name` varchar(255) NOT NULL,
   `ip_address` varchar(15) NOT NULL,
   `type` int(1) NOT NULL,
@@ -1491,14 +1492,6 @@ CREATE TABLE `contrexx_module_directory_rel_dir_level` (
   PRIMARY KEY (`dir_id`,`level_id`)
 ) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_directory_settings` (
-  `setid` int(6) unsigned NOT NULL AUTO_INCREMENT,
-  `setname` varchar(250) NOT NULL DEFAULT '',
-  `setvalue` text NOT NULL,
-  `settyp` int(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`setid`),
-  KEY `setname` (`setname`)
-) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_directory_settings_google` (
   `setid` int(6) unsigned NOT NULL AUTO_INCREMENT,
   `setname` varchar(250) NOT NULL DEFAULT '',
   `setvalue` text NOT NULL,

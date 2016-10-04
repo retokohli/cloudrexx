@@ -92,7 +92,50 @@ class ViewManager
      * Required files
      * @var array
      */
-    public $filenames = array("index.html","style.css","content.html","home.html","navbar.html","navbar2.html","navbar3.html","subnavbar.html","subnavbar2.html","subnavbar3.html","sidebar.html","shopnavbar.html","shopnavbar2.html","shopnavbar3.html","headlines.html","events.html","events2.html","events3.html","events4.html","events5.html","events6.html","events7.html","events8.html","events9.html","events10.html","javascript.js","buildin_style.css","directory.html","component.yml","forum.html","podcast.html","blog.html","immo.html");
+    public $filenames = array(
+        'index.html',
+        'style.css',
+        'content.html',
+        'home.html',
+        'navbar.html',
+        'navbar2.html',
+        'navbar3.html',
+        'subnavbar.html',
+        'subnavbar2.html',
+        'subnavbar3.html',
+        'sidebar.html',
+        'shopnavbar.html',
+        'shopnavbar2.html',
+        'shopnavbar3.html',
+        'headlines.html',
+        'headlines2.html',
+        'headlines3.html',
+        'headlines4.html',
+        'headlines5.html',
+        'headlines6.html',
+        'headlines7.html',
+        'headlines8.html',
+        'headlines9.html',
+        'headlines10.html',
+        'events.html',
+        'events2.html',
+        'events3.html',
+        'events4.html',
+        'events5.html',
+        'events6.html',
+        'events7.html',
+        'events8.html',
+        'events9.html',
+        'events10.html',
+        'javascript.js',
+        'buildin_style.css',
+        'directory.html',
+        'component.yml',
+        'forum.html',
+        'podcast.html',
+        'blog.html',
+        'immo.html',
+    );
 
     /**
      * Required directories
@@ -172,7 +215,8 @@ class ViewManager
 
         //define the Pclzip Temporary Directory
         if (!defined('PCLZIP_TEMPORARY_DIR')) {
-            define('PCLZIP_TEMPORARY_DIR', \cmsSession::getInstance()->getTempPath() . '/');
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            define('PCLZIP_TEMPORARY_DIR', $cx->getComponent('Session')->getSession()->getTempPath() . '/');
         }
     }
 
@@ -1017,16 +1061,13 @@ CODE;
     */
     public function getUploadedFileFromUploader($uploaderId)
     {
-        global $sessionObj;
-
         if (empty($uploaderId)) {
             \DBG::log('Uploader id is empty');
             return false;
         }
 
-        if (empty($sessionObj)) {
-            $sessionObj = \cmsSession::getInstance();
-        }
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $sessionObj = $cx->getComponent('Session')->getSession();
 
         $uploaderFolder = $sessionObj->getTempPath() . '/' . $uploaderId;
 
