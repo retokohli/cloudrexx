@@ -2339,6 +2339,7 @@ if ($test === NULL) {
         $discount_group_article_id = $_POST['discount_group_article_id'];
 //DBG::log("ShopManager::store_product(): Set \$discount_group_article_id to $discount_group_article_id");
         $keywords = contrexx_input2raw($_POST['keywords']);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
         for ($i = 1; $i <= 3; ++$i) {
             // Images outside the above directory are copied to the shop image folder.
@@ -2356,7 +2357,24 @@ if ($test === NULL) {
             }
             // Update the posted path (used below)
             $_POST['productImage'.$i] = $picture;
+
+            //Set the image width and height If empty
+            if (   !empty($_POST['productImage' . $i . '_width'])
+                && !empty($_POST['productImage' . $i . '_height'])
+            ) {
+                continue;
+            }
+
+            $picturePath = $cx->getWebsiteImagesShopPath(). '/' . $picture;
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($picturePath)) {
+                continue;
+            }
+
+            $pictureSize = getimagesize($picturePath);
+            $_POST['productImage' . $i . '_width']  = $pictureSize[0];
+            $_POST['productImage' . $i . '_height'] = $pictureSize[1];
         }
+
         // add all to pictures DBstring
         $imageName =
                  base64_encode($_POST['productImage1'])
