@@ -1308,6 +1308,26 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
     {
         global $_ARRAYLANG, $_CONFIG, $objDatabase;
 
+        if (isset($_POST['saveSettings']) && !empty($_POST['blockSettings'])) {
+            $blockGlobalSeperator =   isset($_POST['blockSettings']['blockGlobalSeperator'])
+                                    ? contrexx_input2db($_POST['blockSettings']['blockGlobalSeperator']) : '';
+            $markParsedBlock      = isset($_POST['blockSettings']['markParsedBlock']) ? 1 : 0;
+            $query = '
+                UPDATE
+                    `'. DBPREFIX .'module_block_settings`
+                SET
+                    `value` = (CASE `name`
+                                WHEN "blockGlobalSeperator" THEN "'. $blockGlobalSeperator .'"
+                                WHEN "markParsedBlock" THEN "'. $markParsedBlock .'"
+                               END)
+                WHERE
+                    `name` IN ("blockGlobalSeperator", "markParsedBlock")
+            ';
+            $objDatabase->Execute($query);
+
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?cmd=Block&act=settings');
+        }
+
         $this->_pageTitle = $_ARRAYLANG['TXT_BLOCK_SETTINGS'];
         $this->_objTpl->loadTemplateFile('module_block_settings.html');
 
@@ -1321,35 +1341,35 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'TXT_BLOCK_BLOCK_GLOBAL'                    => $_ARRAYLANG['TXT_BLOCK_BLOCK_GLOBAL'],
             'TXT_BLOCK_GLOBAL_SEPERATOR'                => $_ARRAYLANG['TXT_BLOCK_GLOBAL_SEPERATOR'],
             'TXT_BLOCK_GLOBAL_SEPERATOR_INFO'           => $_ARRAYLANG['TXT_BLOCK_GLOBAL_SEPERATOR_INFO'],
+            'TXT_BLOCK_MARK_PARSED_BLOCK'               => $_ARRAYLANG['TXT_BLOCK_MARK_PARSED_BLOCK'],
             'TXT_BLOCK_SAVE'                            => $_ARRAYLANG['TXT_BLOCK_SAVE'],
         ));
 
-        $objResult = $objDatabase->Execute("SELECT  value
-                                            FROM    ".DBPREFIX."module_block_settings
-                                            WHERE   name='blockGlobalSeperator'
-                                            ");
+        $objResult = $objDatabase->Execute('
+            SELECT
+                `name`,
+                `value`
+            FROM
+                `'. DBPREFIX .'module_block_settings`
+            WHERE
+                `name` IN ("blockGlobalSeperator", "markParsedBlock")
+        ');
+        $settings = array();
         if ($objResult !== false) {
             while (!$objResult->EOF) {
-                $blockGlobalSeperator   = $objResult->fields['value'];
+                $settings[$objResult->fields['name']] = $objResult->fields['value'];
                 $objResult->MoveNext();
             }
         }
 
         $this->_objTpl->setVariable(array(
-            'BLOCK_GLOBAL_SEPERATOR'                        => addslashes($blockGlobalSeperator),
+            'BLOCK_GLOBAL_SEPERATOR'  =>   isset($settings['blockGlobalSeperator'])
+                                         ? contrexx_raw2xhtml($settings['blockGlobalSeperator']) : '',
+            'BLOCK_MARK_PARSED_BLOCK' =>   !empty($settings['markParsedBlock'])
+                                         ? 'checked="checked"' : '',
+            'BLOCK_USE_BLOCK_SYSTEM'  => $_CONFIG['blockStatus'] == '1' ? 'checked="checked"' : '',
+            'BLOCK_USE_BLOCK_RANDOM'  => $_CONFIG['blockRandom'] == '1' ? 'checked="checked"' : '',
         ));
 
-        $this->_objTpl->setVariable('BLOCK_USE_BLOCK_SYSTEM', $_CONFIG['blockStatus'] == '1' ? 'checked="checked"' : '');
-        $this->_objTpl->setVariable('BLOCK_USE_BLOCK_RANDOM', $_CONFIG['blockRandom'] == '1' ? 'checked="checked"' : '');
-
-
-        if (isset($_POST['saveSettings'])) {
-            foreach ($_POST['blockSettings'] as $setName => $setValue){
-                $query = "UPDATE ".DBPREFIX."module_block_settings SET value='".contrexx_addslashes($setValue)."' WHERE name='".$setName."'";
-                $objDatabase->Execute($query);
-            }
-
-            \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?cmd=Block&act=settings');
-        }
     }
 }

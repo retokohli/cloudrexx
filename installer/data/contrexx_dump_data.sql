@@ -3015,6 +3015,7 @@ INSERT INTO `contrexx_module_block_rel_lang_content` (`block_id`, `lang_id`, `co
 INSERT INTO `contrexx_module_block_rel_lang_content` (`block_id`, `lang_id`, `content`, `active`) VALUES (29,2,'<img alt=\"Slider 1\" height=\"500\" src=\"images/content/slideshow/slide_1.jpg\" width=\"1200\" />\r\n<h1>Be<font color=\"#0A85C8\">Smart.</font></h1>',1);
 INSERT INTO `contrexx_module_block_rel_lang_content` (`block_id`, `lang_id`, `content`, `active`) VALUES (30,2,'<img alt=\"Slider 2\" height=\"500\" src=\"images/content/slideshow/slide_2.jpg\" width=\"1200\" />\r\n<h1>Be<font color=\"#0A85C8\">Sucessful.</font></h1>',1);
 INSERT INTO `contrexx_module_block_settings` (`id`, `name`, `value`) VALUES (1,'blockGlobalSeperator','<br /><br />');
+INSERT INTO `contrexx_module_block_settings` (`id`, `name`, `value`) VALUES (2, 'markParsedBlock', '0');
 INSERT INTO `contrexx_module_blog_categories` (`category_id`, `lang_id`, `is_active`, `name`) VALUES (1,1,'1','Allgemein');
 INSERT INTO `contrexx_module_blog_categories` (`category_id`, `lang_id`, `is_active`, `name`) VALUES (1,2,'1','General');
 INSERT INTO `contrexx_module_blog_categories` (`category_id`, `lang_id`, `is_active`, `name`) VALUES (1,3,'1','General');
