@@ -83,9 +83,8 @@ class CalendarHeadlines extends CalendarLibrary
             $endDate = new \DateTime();
             $endDate->setTime(23, 59, 59);
             $endDate->modify('+10 years');
-            $categoryId = intval($categoryId);
-            if (!$categoryId) {
-                $categoryId = intval($this->arrSettings['headlinesCategory']) != 0 ? intval($this->arrSettings['headlinesCategory']) : null;
+            if (!$categoryId && !empty($this->arrSettings['headlinesCategory'])) {
+                $categoryId = intval($this->arrSettings['headlinesCategory']);
             }
 
             $startPos = 0;
@@ -110,7 +109,6 @@ class CalendarHeadlines extends CalendarLibrary
 
         if($this->arrSettings['headlinesStatus'] == 1) {
             if($this->_objTpl->blockExists('calendar_headlines_row')) {
-                $categoryId = intval($categoryId);
                 self::loadEventManager($categoryId);
                 if (!empty($this->objEventManager->eventList)) {
                     $this->objEventManager->showEventList($this->_objTpl);
