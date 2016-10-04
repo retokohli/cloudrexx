@@ -1311,7 +1311,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
         if (isset($_POST['saveSettings']) && !empty($_POST['blockSettings'])) {
             $blockGlobalSeperator =   isset($_POST['blockSettings']['blockGlobalSeperator'])
                                     ? contrexx_input2db($_POST['blockSettings']['blockGlobalSeperator']) : '';
-            $markParsedBlock      = isset($_POST['blockSettings']['markParsedBlock']) ? 1 : 0;
+            $markParsedBlock      = isset($_POST['blockSettings']['markParsedBlock']);
             $query = '
                 UPDATE
                     `'. DBPREFIX .'module_block_settings`
@@ -1320,8 +1320,6 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
                                 WHEN "blockGlobalSeperator" THEN "'. $blockGlobalSeperator .'"
                                 WHEN "markParsedBlock" THEN "'. $markParsedBlock .'"
                                END)
-                WHERE
-                    `name` IN ("blockGlobalSeperator", "markParsedBlock")
             ';
             $objDatabase->Execute($query);
 
