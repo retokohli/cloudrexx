@@ -300,3 +300,54 @@ function productOptionsUploaderCallback(data) {
         uploaderInputBox.val(fileName);
     }
 }
+
+!(function ($jq) {
+    function updateProductPrice($form)
+    {
+        if (!$form.find('.price .shop-product-price').length) {
+            return;
+        }
+        var productPrice = parseFloat($form.find('.price .shop-product-price').data('price'));
+        if (isNaN(productPrice)) {
+            return;
+        }
+        var optionsPrice = 0;
+        $form.find('.product-option-field').each(function () {
+            switch ($jq(this).prop('tagName')) {
+                case 'SELECT':
+                    $jq(this).find('option:selected').each(function () {
+                        var price     = parseFloat($jq(this).data('price'));
+                        optionsPrice += !isNaN(price) ? price : 0;
+                    });
+                    break;
+                case 'INPUT':
+                    if ($jq(this).is(':checked')) {
+                        var price     = parseFloat($jq(this).data('price'));
+                        optionsPrice += !isNaN(price) ? price : 0;
+                    }
+                    break;
+            }
+        });
+        var newPrice = productPrice + optionsPrice;
+        if ($form.find('.price .shop-product-price s').length) {
+            $form.find('.price .shop-product-price s').html(newPrice.toFixed(2));
+        } else {
+            $form.find('.price .shop-product-price').html(newPrice.toFixed(2));
+        }
+        if (!$form.find('.price .discount').length || !$form.find('.price .discount .shop-product-discount-price').length) {
+            return;
+        }
+        var productDiscountPrice = parseFloat($form.find('.price .discount .shop-product-discount-price').data('price'));
+        var newDiscountPrice     = productDiscountPrice + optionsPrice;
+        $form.find('.price .discount .shop-product-discount-price').html(newDiscountPrice.toFixed(2));
+    }
+    $jq(function () {
+        $jq('.product-option-field').change(function () {
+            updateProductPrice($jq(this).closest('form'));
+        });
+        // hack: shop product price might be wrapped with <s>
+        $jq('.shop-product-price, .shop-product-discount-price').each(function () {
+           $jq(this).data( 'price', $jq(this).text() );
+        });
+    });
+})(cx.jQuery);

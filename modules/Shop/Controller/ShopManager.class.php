@@ -448,7 +448,8 @@ class ShopManager extends ShopLibrary
                         ? contrexx_input2raw($_POST['importCsvUploaderId'])
                         : '';
         if (!empty($fileName) && !empty($uploaderId)) {
-            $objSession = \cmsSession::getInstance();
+            $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+            $objSession = $cx->getComponent('Session')->getSession();
             $tmpFile    = $objSession->getTempPath() . '/' . $uploaderId . '/' . $fileName;
             $fileExists = \Cx\Lib\FileSystem\FileSystem::exists($tmpFile);
         }
@@ -2087,27 +2088,6 @@ if ($test === NULL) {
         return $result;
     }
 
-
-    function delFile($file)
-    {
-        @unlink($file);
-        clearstatcache();
-        if (@file_exists($file)) {
-            $filesys = eregi_replace('/', '\\', $file);
-            @system('del '.$filesys);
-            clearstatcache();
-            // don't work in safemode
-            if (@file_exists($file)) {
-                @chmod ($file, 0775);
-                @unlink($file);
-            }
-        }
-        clearstatcache();
-        if (@file_exists($file)) return false;
-        return true;
-    }
-
-
     /**
      * Manage products
      *
@@ -2359,6 +2339,7 @@ if ($test === NULL) {
         $discount_group_article_id = $_POST['discount_group_article_id'];
 //DBG::log("ShopManager::store_product(): Set \$discount_group_article_id to $discount_group_article_id");
         $keywords = contrexx_input2raw($_POST['keywords']);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
         for ($i = 1; $i <= 3; ++$i) {
             // Images outside the above directory are copied to the shop image folder.
@@ -2376,7 +2357,24 @@ if ($test === NULL) {
             }
             // Update the posted path (used below)
             $_POST['productImage'.$i] = $picture;
+
+            //Set the image width and height If empty
+            if (   !empty($_POST['productImage' . $i . '_width'])
+                && !empty($_POST['productImage' . $i . '_height'])
+            ) {
+                continue;
+            }
+
+            $picturePath = $cx->getWebsiteImagesShopPath(). '/' . $picture;
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($picturePath)) {
+                continue;
+            }
+
+            $pictureSize = getimagesize($picturePath);
+            $_POST['productImage' . $i . '_width']  = $pictureSize[0];
+            $_POST['productImage' . $i . '_height'] = $pictureSize[1];
         }
+
         // add all to pictures DBstring
         $imageName =
                  base64_encode($_POST['productImage1'])
