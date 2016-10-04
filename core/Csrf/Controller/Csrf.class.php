@@ -445,7 +445,8 @@ class Csrf {
     private static function __setkey($key, $value)
     {
         if (!isset($_SESSION[self::$sesskey])) {
-            \cmsSession::getInstance();
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getComponent('Session')->getSession();
             $_SESSION[self::$sesskey] = array();
         }
         $_SESSION[self::$sesskey][$key] = $value;
