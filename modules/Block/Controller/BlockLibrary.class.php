@@ -1034,19 +1034,22 @@ CONTENT;
      */
     public function getSettings()
     {
-        global $objDatabase;
 
         static $settings = array();
         if (!empty($settings)) {
             return $settings;
         }
 
-        $setting = $objDatabase->Execute('
+        $query = '
             SELECT
                 `name`,
                 `value`
             FROM
-                `'. DBPREFIX .'module_block_settings`');
+                `'. DBPREFIX .'module_block_settings`';
+        $setting = \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getDb()
+                    ->getAdoDb()
+                    ->Execute($query);
         if (false === $setting) {
             return array();
         }
