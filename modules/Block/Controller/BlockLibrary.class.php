@@ -1050,7 +1050,7 @@ CONTENT;
                     ->getDb()
                     ->getAdoDb()
                     ->Execute($query);
-        if (false === $setting) {
+        if ($setting === false) {
             return array();
         }
         while (!$setting->EOF) {
