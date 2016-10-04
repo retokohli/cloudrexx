@@ -558,6 +558,15 @@ class InitCMS
         //$this->templates['style']                 = $this->getThemeFileContent($themesPath, 'style.css');
         $this->templates['buildin_style']           = $this->getThemeFileContent($themesPath, 'buildin_style.css');
         $this->templates['calendar_headlines']      = $this->getThemeFileContent($themesPath, 'events.html');
+        $this->templates['calendar_headlines2']     = $this->getThemeFileContent($themesPath, 'events2.html');
+        $this->templates['calendar_headlines3']     = $this->getThemeFileContent($themesPath, 'events3.html');
+        $this->templates['calendar_headlines4']     = $this->getThemeFileContent($themesPath, 'events4.html');
+        $this->templates['calendar_headlines5']     = $this->getThemeFileContent($themesPath, 'events5.html');
+        $this->templates['calendar_headlines6']     = $this->getThemeFileContent($themesPath, 'events6.html');
+        $this->templates['calendar_headlines7']     = $this->getThemeFileContent($themesPath, 'events7.html');
+        $this->templates['calendar_headlines8']     = $this->getThemeFileContent($themesPath, 'events8.html');
+        $this->templates['calendar_headlines9']     = $this->getThemeFileContent($themesPath, 'events9.html');
+        $this->templates['calendar_headlines10']    = $this->getThemeFileContent($themesPath, 'events10.html');
         $this->templates['directory_content']       = $this->getThemeFileContent($themesPath, 'directory.html');
         $this->templates['forum_content']           = $this->getThemeFileContent($themesPath, 'forum.html');
         $this->templates['podcast_content']         = $this->getThemeFileContent($themesPath, 'podcast.html');
