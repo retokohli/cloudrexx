@@ -1015,11 +1015,7 @@ class BlockLibrary
         }
 
         if (!empty($settings['markParsedBlock'])) {
-            $content = <<<CONTENT
-    <!-- start $placeholderName -->
-    $content
-    <!-- end $placeholderName -->
-CONTENT;
+            $content = "<!-- start $placeholderName -->$content<!-- end $placeholderName -->";
         }
 
         $code = str_replace('{' . $placeholderName . '}', $content, $code);
