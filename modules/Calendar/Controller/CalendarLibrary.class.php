@@ -949,7 +949,7 @@ EOF;
         $entity,
         $methodName,
         $relation,
-        $joinEntityRelation
+        $joinEntityRelation = null
     ) {
         if (!$entity || empty($methodName) || empty($relation)) {
             return null;
@@ -961,7 +961,7 @@ EOF;
 
         if ($relation == 'oneToMany') {
             foreach ($entity->$methodName() as $subEntity) {
-                if ($joinEntityRelation[$methodName]) {
+                if ($joinEntityRelation && $joinEntityRelation[$methodName]) {
                     $this->detachJoinedEntity(
                         $subEntity,
                         $joinEntityRelation[$methodName],
@@ -971,7 +971,7 @@ EOF;
                 $this->em->detach($subEntity);
             }
         } else if ($relation == 'manyToOne') {
-            if ($joinEntityRelation[$methodName]) {
+            if ($joinEntityRelation && $joinEntityRelation[$methodName]) {
                 $this->detachJoinedEntity(
                     $entity->$methodName(),
                     $joinEntityRelation[$methodName],

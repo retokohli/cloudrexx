@@ -311,11 +311,11 @@ class CalendarRegistration extends CalendarLibrary
             /* } */
         }
 
-        $regId = intval($data['regid']);
-        $eventId = intval($data['id']);
-        $formId = intval($data['form']);
-        $eventDate = intval($data['date']);
-        $userId = intval($data['userid']);
+        $regId     = contrexx_input2int($data['regid']);
+        $eventId   = contrexx_input2int($data['id']);
+        $formId    = contrexx_input2int($data['form']);
+        $eventDate = contrexx_input2int($data['date']);
+        $userId    = contrexx_input2int($data['userid']);
 
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
 
@@ -341,19 +341,19 @@ class CalendarRegistration extends CalendarLibrary
             FROM
                 `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field`
             WHERE
-                `form` = '. $formId .'
+                `form` = '. contrexx_raw2db($formId) .'
             AND
                 `type` = "seating"
             LIMIT 1
         ';
         $objResult = $objDatabase->Execute($query);
 
-        $numSeating = intval($data['registrationField'][$objResult->fields['id']]);
+        $numSeating = contrexx_input2int($data['registrationField'][$objResult->fields['id']]);
         $type       =   empty($regId) && intval($objEvent->getFreePlaces() - $numSeating) < 0
-                      ? 2 : (isset($data['registrationType']) ? intval($data['registrationType']) : 1);
+                      ? 2 : (isset($data['registrationType']) ? contrexx_input2int($data['registrationType']) : 1);
         $this->saveIn = intval($type);
-        $paymentMethod = intval($data['paymentMethod']);
-        $paid = intval($data['paid']);
+        $paymentMethod = contrexx_input2int($data['paymentMethod']);
+        $paid = contrexx_input2int($data['paid']);
         $hostName = 0;
         $ipAddress = 0;
         $key = $this->generateKey();
@@ -398,18 +398,18 @@ class CalendarRegistration extends CalendarLibrary
             );
             $submissionDate = $this->getDbDateTimeFromIntern($this->getInternDateTimeFromUser());
             $query = 'INSERT INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration
-                        SET `event_id`         = ' . $eventId . ',
+                        SET `event_id`         = ' . contrexx_raw2db($eventId) . ',
                             `submission_date`  = "' . $submissionDate->format('Y-m-d H:i:s') .'",
-                            `date`             = ' . $eventDate . ',
+                            `date`             = ' . contrexx_raw2db($eventDate) . ',
                             `host_name`        = "' . $hostName . '",
                             `ip_address`       = "' . $ipAddress . '",
-                            `type`             = ' . $type . ',
+                            `type`             = ' . contrexx_raw2db($type) . ',
                             `key`              = "' . $key . '",
-                            `user_id`          = ' . $userId . ',
+                            `user_id`          = ' . contrexx_raw2db($userId) . ',
                             `lang_id`          = ' . $_LANGID . ',
                             `export`           = 0,
-                            `payment_method`   = ' . $paymentMethod . ',
-                            `paid`             = ' . $paid . ' ';
+                            `payment_method`   = ' . contrexx_raw2db($paymentMethod) . ',
+                            `paid`             = ' . contrexx_raw2db($paid);
 
             $objResult = $objDatabase->Execute($query);
             
@@ -438,17 +438,17 @@ class CalendarRegistration extends CalendarLibrary
                 ), true
             );
             $query = 'UPDATE `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration`
-                         SET `event_id` = '.$eventId.',
-                             `date` = '.$eventDate.',
-                             `host_name` = '.$hostName.',
-                             `ip_address` = '.$ipAddress.',
-                             `key` = "'.$key.'",
-                             `user_id` = '.$userId.',
-                             `type`    = '.$type.',
-                             `lang_id` = '.$_LANGID.',
-                             `payment_method` = '.$paymentMethod.',
-                             `paid` = '.$paid.'
-                       WHERE `id` = '.$regId;
+                        SET `event_id`       = ' . contrexx_raw2db($eventId) . ',
+                            `date`           = ' . contrexx_raw2db($eventDate) . ',
+                            `host_name`      = ' . $hostName . ',
+                            `ip_address`     = ' . $ipAddress . ',
+                            `key`            = "' . $key . '",
+                            `user_id`        = ' . contrexx_raw2db($userId) . ',
+                            `type`           = ' . contrexx_raw2db($type) . ',
+                            `lang_id`        = ' . $_LANGID . ',
+                            `payment_method` = ' . contrexx_raw2db($paymentMethod) . ',
+                            `paid`           = ' . contrexx_raw2db($paid) . '
+                        WHERE `id` = ' . contrexx_raw2db($regId);
 
             $objResult = $objDatabase->Execute($query);
 
@@ -465,7 +465,7 @@ class CalendarRegistration extends CalendarLibrary
                 $this->triggerEvent('model/preRemove', $formFieldValueEntity);
             }
             $deleteQuery = 'DELETE FROM '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value
-                            WHERE `reg_id` = '.$this->id;
+                            WHERE `reg_id` = ' . contrexx_raw2db($this->id);
 
             $objDeleteResult = $objDatabase->Execute($deleteQuery);
 
@@ -504,9 +504,10 @@ class CalendarRegistration extends CalendarLibrary
                 ), true
             );
 
-            $query = 'INSERT INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value
-                        (`reg_id`, `field_id`, `value`)
-                        VALUES (' . $this->id . ', ' . $formFieldId . ', "' . $formFieldValue . '")';
+            $query = 'INSERT INTO ' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_registration_form_field_value
+                        SET `reg_id`   = ' . contrexx_raw2db($this->id) . '
+                            `field_id` = ' . contrexx_raw2db($formFieldId) . '
+                            `value`    = "'. contrexx_raw2db($formFieldValue) .'")';
             $objResult = $objDatabase->Execute($query);
 
             if ($objResult === false) {
@@ -571,7 +572,7 @@ class CalendarRegistration extends CalendarLibrary
                 }
             }
 
-            $formFieldValues[$id] = contrexx_input2db($value);
+            $formFieldValues[$id] = contrexx_input2raw($value);
         }
 
         return $formFieldValues;

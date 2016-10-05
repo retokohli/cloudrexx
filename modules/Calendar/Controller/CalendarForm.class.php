@@ -352,7 +352,7 @@ class CalendarForm extends CalendarLibrary
             return false;
         }
 
-        $formTitle   = contrexx_addslashes($data['formTitle']);
+        $formTitle   = contrexx_input2raw($data['formTitle']);
         $inputFields = $this->getInputFieldsAsArray($data);
         $formData    = array(
             'fields'    => array('title' => $formTitle),
@@ -388,7 +388,7 @@ class CalendarForm extends CalendarLibrary
                                   (`status`,`order`,`title`)
                            VALUES ('0',
                                    '99',
-                                   '".$formTitle."')";
+                                   '" . contrexx_raw2db($formTitle) . "')";
 
             $objResult = $objDatabase->Execute($query);
 
@@ -396,7 +396,7 @@ class CalendarForm extends CalendarLibrary
                 return false;
             }
             
-            $this->id = intval($objDatabase->Insert_ID());
+            $this->id = $objDatabase->Insert_ID();
             $form = $this->getFormEntity($this->id);
         } else {
             //Trigger preUpdate event for Form Entity
@@ -423,8 +423,8 @@ class CalendarForm extends CalendarLibrary
                 ), true
             );
             $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form
-                         SET `title` =  '".$formTitle."'
-                       WHERE id = '".intval($this->id)."'";
+                         SET `title` =  '" . contrexx_raw2db($formTitle) . "'
+                       WHERE id = '" . contrexx_input2db($this->id) . "'";
 
             $objResult = $objDatabase->Execute($query);
 
@@ -482,9 +482,9 @@ class CalendarForm extends CalendarLibrary
                 `'. DBPREFIX .'module_'. $this->moduleTablePrefix .'_registration_form_field_name` AS fn,
                 `'. DBPREFIX .'module_'. $this->moduleTablePrefix .'_registration_form_field` AS ff
             WHERE
-                fn.`form_id` = '. contrexx_input2int($this->id) .'
+                fn.`form_id` = '. contrexx_input2db($this->id) .'
             AND
-                ff.`form` ='. contrexx_input2int($this->id) .'
+                ff.`form` ='. contrexx_input2db($this->id) .'
         ';
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
@@ -527,12 +527,12 @@ class CalendarForm extends CalendarLibrary
                 INSERT INTO
                     `'. DBPREFIX .'module_'. $this->moduleTablePrefix .'_registration_form_field`
                 SET
-                    `id`          =  '. contrexx_input2int($fieldId) .',
-                    `form`        =  '. contrexx_input2int($this->id) .',
-                    `type`        = "'. $fieldValue['type'] .'",
+                    `id`          =  '. contrexx_raw2db($fieldId) .',
+                    `form`        =  '. contrexx_input2db($this->id) .',
+                    `type`        = "'. contrexx_raw2db($fieldValue['type']) .'",
                     `required`    =  '. $fieldValue['required'] .',
-                    `order`       =  '. $fieldValue['order'] .',
-                    `affiliation` = "'. $fieldValue['affiliation'] .'"
+                    `order`       =  '. contrexx_raw2db($fieldValue['order']) .',
+                    `affiliation` = "'. contrexx_raw2db($fieldValue['affiliation']) .'"
             ';
 
             $objResult = $objDatabase->Execute($query);
@@ -567,11 +567,11 @@ class CalendarForm extends CalendarLibrary
                     INSERT INTO
                         `' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_registration_form_field_name`
                     SET
-                        `field_id` =  '. contrexx_input2int($fieldId) . ',
-                        `form_id`  =  '. $fieldNameValues['formId'] .',
-                        `lang_id`  =  '. $fieldNameValues['langId'] .',
-                        `name`     = "'. $fieldNameValues['name'] .'",
-                        `default`  = "'. $fieldNameValues['default'] .'"';
+                        `field_id` =  '. contrexx_raw2db($fieldId) . ',
+                        `form_id`  =  '. contrexx_raw2db($fieldNameValues['formId']) .',
+                        `lang_id`  =  '. contrexx_raw2db($fieldNameValues['langId']) .',
+                        `name`     = "'. contrexx_raw2db($fieldNameValues['name']) .'",
+                        `default`  = "'. contrexx_raw2db($fieldNameValues['default']) .'"';
 
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult !== false && $formFieldNameEntity) {
@@ -606,14 +606,14 @@ class CalendarForm extends CalendarLibrary
 
         $inputFields = array();
         foreach ($data['inputfield'] as $intFieldId => $arrField) {
-            $inputFields[$intFieldId] = array(
+            $inputFields[contrexx_input2int($intFieldId)] = array(
                 'fields'    => array(
                     'id'          => contrexx_input2int($intFieldId),
-                    'type'        => contrexx_input2db($arrField['type']),
+                    'type'        => contrexx_input2raw($arrField['type']),
                     'required'    => isset($arrField['required']) ? 1 : 0,
                     'order'       => contrexx_input2int($arrField['order']),
                     'affiliation' => isset($arrField['affiliation'])
-                    ? contrexx_input2db($arrField['affiliation']) : ''
+                    ? contrexx_input2raw($arrField['affiliation']) : ''
                 ),
                 'formFieldNames'  => array()
             );
@@ -670,11 +670,11 @@ class CalendarForm extends CalendarLibrary
                     $strFieldDefaultValue = $arrField['default_value'][0];
                 }
                 $formFieldNames[] = array(
-                    'fieldId'   => $intFieldId,
+                    'fieldId'   => contrexx_input2int($intFieldId),
                     'formId'    => contrexx_input2int($this->id),
-                    'name'      => contrexx_input2db($strFieldName),
+                    'name'      => contrexx_input2raw($strFieldName),
                     'langId'    => contrexx_input2int($arrLang['id']),
-                    'default'   => contrexx_input2db($strFieldDefaultValue)
+                    'default'   => contrexx_input2raw($strFieldDefaultValue)
                 );
             }
             $inputFields[$intFieldId]['formFieldNames'] = $formFieldNames;

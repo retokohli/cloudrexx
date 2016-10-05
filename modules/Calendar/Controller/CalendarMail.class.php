@@ -203,22 +203,30 @@ class CalendarMail extends CalendarLibrary
     {
         global $objDatabase;
 
-        $mailByAction = $this
+        $mailByActions = $this
             ->em->getRepository('Cx\Modules\Calendar\Model\Entity\Mail')
-            ->findOneBy(array('actionId' => $this->action_id));
-        $mailByAction->setIsDefault(0);
-        $mailByAction->setVirtual(true);
-        //Trigger preUpdate event for Mail Entity
-        $this->triggerEvent('model/preUpdate', $mailByAction, null, true);
+            ->findBy(array('actionId' => $this->action_id));
+        if ($mailByActions) {
+            foreach ($mailByActions as $mailByAction) {
+                $mailByAction->setIsDefault(0);
+                $mailByAction->setVirtual(true);
+                //Trigger preUpdate event for Mail Entity
+                $this->triggerEvent('model/preUpdate', $mailByAction, null, true);
+            }
+        }
         $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_mail
                      SET is_default = '0'
                    WHERE action_id = '".intval($this->action_id)."'";
 
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
-            //Trigger postUpdate event for Mail Entity
-            $this->triggerEvent('model/postUpdate', $mailByAction);
-            $this->triggerEvent('model/postFlush');
+            if ($mailByActions) {
+                foreach ($mailByActions as $mailByAction) {
+                    //Trigger postUpdate event for Mail Entity
+                    $this->triggerEvent('model/postUpdate', $mailByAction);
+                    $this->triggerEvent('model/postFlush');
+                }
+            }
         }
 
         $mail = $this->getMailEntity($this->id, array('isDefault' => 1));
@@ -281,13 +289,13 @@ class CalendarMail extends CalendarLibrary
     {
         global $objDatabase;
 
-        $title          = contrexx_addslashes(contrexx_strip_tags($data['title']));
-        $content_text   = contrexx_addslashes(contrexx_strip_tags($data['content_text']));
-        $content_html   = contrexx_addslashes($data['content_html']);
-        $lang_id        = intval($data['lang']);
-        $action_id      = intval($data['action']);
-        $recipients     = contrexx_addslashes(contrexx_strip_tags($data['recipients']));
-        
+        $title          = contrexx_input2raw($data['title']);
+        $content_text   = contrexx_input2raw($data['content_text']);
+        $content_html   = contrexx_input2raw($data['content_html']);
+        $lang_id        = contrexx_input2int($data['lang']);
+        $action_id      = contrexx_input2int($data['action']);
+        $recipients     = contrexx_input2raw($data['recipients']);
+
         $formData = array(
             'title'       => $title,
             'contentText' => $content_text,
@@ -300,20 +308,25 @@ class CalendarMail extends CalendarLibrary
         if (intval($this->id) == 0) {
             //Trigger prePersist event for Mail Entity
             $this->triggerEvent('model/prePersist', $mail, null, true);
-            $query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_mail
-                                  (`title`,`content_text`,`content_html`,`recipients`,`lang_id`,`action_id`,`status`)
-                           VALUES ('".$title."','".$content_text."','".$content_html."','".$recipients."','".$lang_id."','".$action_id."','0')";
+            $query = 'INSERT INTO ' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_mail
+                        SET `title`        = "' . contrexx_raw2db($title) . '",
+                            `content_text` = "' . contrexx_raw2db($content_text) .  '",
+                            `content_html` = "' . contrexx_raw2db($content_html) . '",
+                            `recipients`   = "' . contrexx_raw2db($recipients) . '",
+                            `lang_id`      = "' . contrexx_raw2db($lang_id) . '",
+                            `action_id`    = "' . contrexx_raw2db($action_id) . '",
+                            `status`       = "0"';
         } else {
             //Trigger preUpdate event for Mail Entity
             $this->triggerEvent('model/preUpdate', $mail, null, true);
-            $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_mail
-                         SET `title` = '".$title."',
-                             `content_text` = '".$content_text."',
-                             `content_html` = '".$content_html."',
-                             `recipients` = '".$recipients."',
-                             `lang_id` = '".$lang_id."',
-                             `action_id` = '".$action_id."'
-                       WHERE `id` = '".intval($this->id)."'";
+            $query = 'UPDATE ' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_mail
+                        SET `title`        = "' . contrexx_raw2db($title) . '",
+                            `content_text` = "' . contrexx_raw2db($content_text) . '",
+                            `content_html` = "' . contrexx_raw2db($content_html) . '",
+                            `recipients`   = "' . contrexx_raw2db($recipients) . '",
+                            `lang_id`      = "' . contrexx_raw2db($lang_id) . '",
+                            `action_id`    = "' . contrexx_raw2db($action_id) . '"
+                        WHERE `id` = "' . contrexx_input2db($this->id) . '"';
         }
 
         $objResult = $objDatabase->Execute($query);
