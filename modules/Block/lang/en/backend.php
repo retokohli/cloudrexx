@@ -149,4 +149,4 @@ $_ARRAYLANG['TXT_BLOCK_TARGETING_INFO_EXCLUDE'] = 'This Content Pane will be sho
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_GLOBAL_INACTIVE'] = 'This Content Pane is not included in the global placeholder [[BLOCK_GLOBAL]]';
 $_ARRAYLANG['TXT_BLOCK_DIRECT_INFO_SHOW_ALL_PAGES'] = 'This Content Pane gets displayed on all pages in its own placeholder %s';
 $_ARRAYLANG['TXT_BLOCK_DIRECT_INFO_SHOW_SELECTED_PAGES'] = 'This Content Pane gets displayed on the following pages in its own placeholder %s:';
-$_ARRAYLANG['TXT_BLOCK_MARK_PARSED_BLOCK'] = 'Mark parsed panes in HTML code';
+$_ARRAYLANG['TXT_BLOCK_MARK_PARSED_BLOCK'] = 'Enclose content panes by HTML comment';
