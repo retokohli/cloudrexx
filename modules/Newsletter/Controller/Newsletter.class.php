@@ -109,7 +109,7 @@ class Newsletter extends NewsletterLib
         global $objDatabase, $_ARRAYLANG;
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
-        $userEmail = isset($_GET['email']) ? contrexx_input2raw(urldecode($_GET['email'])) : '';
+        $userEmail = isset($_GET['email']) ? rawurldecode(contrexx_input2raw($_GET['email'])) : '';
         $count     = 0;
         if (!empty($userEmail)) {
             $query     = "SELECT id FROM ".DBPREFIX."module_newsletter_user where status=0 and email='". contrexx_raw2db($userEmail) ."'";
