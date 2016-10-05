@@ -424,7 +424,7 @@ class CalendarForm extends CalendarLibrary
             );
             $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form
                          SET `title` =  '" . contrexx_raw2db($formTitle) . "'
-                       WHERE id = '" . contrexx_input2db($this->id) . "'";
+                       WHERE id = '" . contrexx_raw2db($this->id) . "'";
 
             $objResult = $objDatabase->Execute($query);
 
@@ -482,9 +482,9 @@ class CalendarForm extends CalendarLibrary
                 `'. DBPREFIX .'module_'. $this->moduleTablePrefix .'_registration_form_field_name` AS fn,
                 `'. DBPREFIX .'module_'. $this->moduleTablePrefix .'_registration_form_field` AS ff
             WHERE
-                fn.`form_id` = '. contrexx_input2db($this->id) .'
+                fn.`form_id` = '. contrexx_raw2db($this->id) .'
             AND
-                ff.`form` ='. contrexx_input2db($this->id) .'
+                ff.`form` ='. contrexx_raw2db($this->id) .'
         ';
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
@@ -528,7 +528,7 @@ class CalendarForm extends CalendarLibrary
                     `'. DBPREFIX .'module_'. $this->moduleTablePrefix .'_registration_form_field`
                 SET
                     `id`          =  '. contrexx_raw2db($fieldId) .',
-                    `form`        =  '. contrexx_input2db($this->id) .',
+                    `form`        =  '. contrexx_raw2db($this->id) .',
                     `type`        = "'. contrexx_raw2db($fieldValue['type']) .'",
                     `required`    =  '. $fieldValue['required'] .',
                     `order`       =  '. contrexx_raw2db($fieldValue['order']) .',

@@ -326,7 +326,7 @@ class CalendarMail extends CalendarLibrary
                             `recipients`   = "' . contrexx_raw2db($recipients) . '",
                             `lang_id`      = "' . contrexx_raw2db($lang_id) . '",
                             `action_id`    = "' . contrexx_raw2db($action_id) . '"
-                        WHERE `id` = "' . contrexx_input2db($this->id) . '"';
+                        WHERE `id` = "' . contrexx_raw2db($this->id) . '"';
         }
 
         $objResult = $objDatabase->Execute($query);
