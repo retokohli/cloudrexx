@@ -2383,6 +2383,7 @@ cx.cm.getCurrentLang = function() {
  */
 cx.cm.setCurrentLang = function(newLang) {
     cx.cm.getTree().jstree("set_lang", newLang);
+    cx.jQuery('.chzn-select').trigger("chosen:updated");
 }
 
 /**

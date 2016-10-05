@@ -1834,11 +1834,11 @@ class Config
     protected  function generateThumbnail($post)
     {
         // release the locks, session not needed
-        $session = \cmsSession::getInstance();
+        $cx = Cx::instanciate();
+
+        $session = $cx->getComponent('Session')->getSession();
         $session->releaseLocks();
         session_write_close();
-
-        $cx = Cx::instanciate();
 
         $key = $_GET['key'];
         if (!preg_match("/[A-Z0-9]{5}/i", $key)){
@@ -1986,7 +1986,9 @@ class Config
     function getThumbProgress()
     {
         // release the locks, session not needed
-        $session = \cmsSession::getInstance();
+        $cx = Cx::instanciate();
+
+        $session = $cx->getComponent('Session')->getSession();
         $session->releaseLocks();
         session_write_close();
 
