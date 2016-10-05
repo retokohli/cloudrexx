@@ -1189,4 +1189,16 @@ class InitCMS
     {
         return !empty($this->customContentTemplate) && strlen($this->customContentTemplate) > 0 ? true : false;
     }
+
+    /**
+     * Return the current theme id
+     * Note: This vaule is available only in frontend mode
+     *
+     * @return integer
+     */
+    public function getCurrentThemeId()
+    {
+        return $this->currentThemesId;
+    }
+
 }
