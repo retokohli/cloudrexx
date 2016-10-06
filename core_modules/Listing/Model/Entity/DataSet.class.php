@@ -211,14 +211,13 @@ class DataSet implements \Iterator {
      */
     public static function importFromFile(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $filename, $useCache = true) {
         // TODO: Drop $objCache and use Cx\Core_Modules\Cache\Controller\ComponentController instead
-        global $objCache;
+        $cache = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache');
+        if (!$cache) {
+            $useCache = false;
+        }
         if ($useCache) {
-            if (!$objCache) {
-                $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
-            }
-            $cacheDriver = $objCache->getDoctrineCacheDriver();
             // try to load imported from cache
-            $objImport = $cacheDriver->fetch($filename);
+            $objImport = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->fetch($filename);
             if ($objImport) {
                 return $objImport;
             }
@@ -231,7 +230,7 @@ class DataSet implements \Iterator {
             throw new DataSetException("Failed to load data from file $filename!");
         }
         if ($useCache) { // store imported to cache
-            $cacheDriver->save($filename, $objImport);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->save($filename, $objImport);
         }
         return $objImport;
     }
@@ -254,7 +253,6 @@ class DataSet implements \Iterator {
      */
     public function exportToFile(\Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface, $filename, $useCache = true) {
         // TODO: Drop $objCache and use Cx\Core_Modules\Cache\Controller\ComponentController instead
-        global $objCache;
         try {
             $objFile = new \Cx\Lib\FileSystem\File($filename);
             $objFile->touch();
@@ -262,11 +260,7 @@ class DataSet implements \Iterator {
             $objFile->write($export);
             // delete old key from cache, to reload it on the next import
             if ($useCache) {
-                if (!$objCache) {
-                    $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
-                }
-                $cacheDriver = $objCache->getDoctrineCacheDriver();
-                $cacheDriver->delete($filename);
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->delete($filename);
             }
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());

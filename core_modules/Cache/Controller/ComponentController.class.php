@@ -45,7 +45,17 @@ namespace Cx\Core_Modules\Cache\Controller;
  * @subpackage  coremodule_cache
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
+    /**
+     * cache instance
+     * @var \Cx\Core_Modules\Cache\Controller\Cache
+     */
     protected $cache;
+
+    /**
+     * doctrine cache driver instance
+     * @var mixed
+     */
+    protected $cacheDriver;
     
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
@@ -58,6 +68,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {
         $this->cache = new \Cx\Core_Modules\Cache\Controller\Cache();
+        $this->cacheDriver = $this->cache->getDoctrineCacheDriver();
         if ($this->cx->getMode() == $cx::MODE_FRONTEND) {
             $this->cache->deactivateNotUsedOpCaches();
         } elseif (!isset($_GET['cmd']) || $_GET['cmd'] != 'settings') {
@@ -90,8 +101,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return mixed     The item
      */
     public function fetch($id) {
-        $cacheDriver = $this->cache->getDoctrineCacheDriver();
-        return $cacheDriver->fetch($id);
+        return $this->cacheDriver->fetch($id);
     }
 
     /**
@@ -101,8 +111,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param int $lifeTime Expiraton time of the item (if it equals zero, the item never expires)
      */
     public function save($id, $data, $lifeTime = 0) {
-        $cacheDriver = $this->cache->getDoctrineCacheDriver();
-        $cacheDriver->save($id, $data, $lifeTime);
+        $this->cacheDriver->save($id, $data, $lifeTime);
     }
 
     /**
@@ -110,7 +119,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param string $id Id of the item
      */
     public function delete($id) {
-        $cacheDriver = $this->cache->getDoctrineCacheDriver();
-        $cacheDriver->delete($id);
+        $this->cacheDriver->delete($id);
+    }
+
+    /**
+     * @return object The doctrine cache driver object
+     */
+    public function getCacheDriver()
+    {
+        return $this->cacheDriver;
     }
 }
