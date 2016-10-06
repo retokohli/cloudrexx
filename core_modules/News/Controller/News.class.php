@@ -204,6 +204,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $newsCommentActive  = $objResult->fields['commentactive'];
         $lastUpdate         = $objResult->fields['changelog'];
         $text               = $objResult->fields['text'];
+        $newsTeaser         = '';
         $redirect           = contrexx_raw2xhtml($objResult->fields['redirect']);
         $sourceHref         = contrexx_raw2xhtml($objResult->fields['source']);
         $url1Href           = contrexx_raw2xhtml($objResult->fields['url1']);
@@ -244,8 +245,10 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $newstitle = $this->newsTitle;
         $this->newsText = $text;
         $this->newsThumbnail = $objResult->fields['newsThumbImg'];
-        $newsTeaser = nl2br($objResult->fields['teaser_text']);
-        \LinkGenerator::parseTemplate($newsTeaser);
+        if ($this->arrSettings['news_use_teaser_text']) {
+            $newsTeaser = nl2br($objResult->fields['teaser_text']);
+            \LinkGenerator::parseTemplate($newsTeaser);
+        }
 
         $objSubResult = $objDatabase->Execute('SELECT count(`id`) AS `countComments` FROM `'.DBPREFIX.'module_news_comments` WHERE `newsid` = '.$newsid);
         //Get the Category list
@@ -728,7 +731,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $this->_objTpl->setVariable(array(
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_ID'            => $newsid,
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_CSS'           => 'row'.($i % 2 + 1),
-               'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_TEASER'        => nl2br($objResult->fields['teaser_text']),
+               'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_TEASER'        => $this->arrSettings['news_use_teaser_text'] ? nl2br($objResult->fields['teaser_text']) : '',
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_TITLE'         => contrexx_raw2xhtml($newstitle),
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_DATE'          => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['newsdate']),
@@ -1044,7 +1047,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $this->_objTpl->setVariable(array(
                    'NEWS_ID'             => $newsid,
                    'NEWS_CSS'            => 'row'.($i % 2 + 1),
-                   'NEWS_TEASER'         => nl2br($objResult->fields['teaser_text']),
+                   'NEWS_TEASER'         => $this->arrSettings['news_use_teaser_text'] ? nl2br($objResult->fields['teaser_text']) : '',
                    'NEWS_TITLE'          => contrexx_raw2xhtml($newstitle),
                    'NEWS_LONG_DATE'      => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
                    'NEWS_DATE'           => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['newsdate']),
@@ -1299,7 +1302,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $this->_objTpl->setVariable(array(
                    'NEWS_ID'            => $newsid,
                    'NEWS_CSS'           => 'row'.($i % 2 + 1),
-                   'NEWS_TEASER'        => nl2br($objResult->fields['teaser_text']),
+                   'NEWS_TEASER'        => $this->arrSettings['news_use_teaser_text'] ? nl2br($objResult->fields['teaser_text']) : '',
                    'NEWS_TITLE'         => contrexx_raw2xhtml($newstitle),
                    'NEWS_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
                    'NEWS_DATE'          => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['newsdate']),
@@ -2263,7 +2266,7 @@ RSS2JSCODE;
                     $this->_objTpl->setVariable(array(
                        'NEWS_ARCHIVE_ID'            => $newsid,
                        'NEWS_ARCHIVE_CSS'           => 'row'.($i % 2 + 1),
-                       'NEWS_ARCHIVE_TEASER'        => nl2br($news['teaser_text']),
+                       'NEWS_ARCHIVE_TEASER'        => $this->arrSettings['news_use_teaser_text'] ? nl2br($news['teaser_text']) : '',
                        'NEWS_ARCHIVE_TITLE'         => contrexx_raw2xhtml($newstitle),
                        'NEWS_ARCHIVE_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$news['date']),
                        'NEWS_ARCHIVE_DATE'          => date(ASCMS_DATE_FORMAT_DATE, $news['date']),

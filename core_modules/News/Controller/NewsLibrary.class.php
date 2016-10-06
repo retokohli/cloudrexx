@@ -2079,7 +2079,7 @@ class NewsLibrary
                                 ? substr(strip_tags($currentRelatedDetails['text']), 0, 247) . '...'
                                 : strip_tags($currentRelatedDetails['text']),
 
-                        'NEWS_RELATED_NEWS_TEASER_TEXT'    => nl2br($currentRelatedDetails['teaser_text']),
+                        'NEWS_RELATED_NEWS_TEASER_TEXT'    => $this->arrSettings['news_use_teaser_text'] ? nl2br($currentRelatedDetails['teaser_text']) : '',
 
                         'NEWS_RELATED_NEWS_AUTHOR'         => contrexx_raw2xhtml($author),
                         'NEWS_RELATED_NEWS_PUBLISHER'      => contrexx_raw2xhtml($publisher),
