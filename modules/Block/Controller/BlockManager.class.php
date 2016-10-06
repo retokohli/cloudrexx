@@ -1340,6 +1340,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'TXT_BLOCK_GLOBAL_SEPERATOR'                => $_ARRAYLANG['TXT_BLOCK_GLOBAL_SEPERATOR'],
             'TXT_BLOCK_GLOBAL_SEPERATOR_INFO'           => $_ARRAYLANG['TXT_BLOCK_GLOBAL_SEPERATOR_INFO'],
             'TXT_BLOCK_MARK_PARSED_BLOCK'               => $_ARRAYLANG['TXT_BLOCK_MARK_PARSED_BLOCK'],
+            'TXT_BLOCK_MARK_PARSED_BLOCK_INFO'          => $_ARRAYLANG['TXT_BLOCK_MARK_PARSED_BLOCK_INFO'],
             'TXT_BLOCK_SAVE'                            => $_ARRAYLANG['TXT_BLOCK_SAVE'],
         ));
 

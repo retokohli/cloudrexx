@@ -19,7 +19,11 @@
         </tr>
         <tr class="row1">
           <td >{TXT_BLOCK_MARK_PARSED_BLOCK}</td>
-          <td ><input type="checkbox" name="blockSettings[markParsedBlock]" value="1" {BLOCK_MARK_PARSED_BLOCK} /></td>
+          <td >
+              <input type="checkbox" name="blockSettings[markParsedBlock]" value="1" {BLOCK_MARK_PARSED_BLOCK} />
+              <span class="icon-info tooltip-trigger"></span>
+              <span class="tooltip-message">{TXT_BLOCK_MARK_PARSED_BLOCK_INFO}</span>
+          </td>
         </tr>
       </tbody>
     </table>

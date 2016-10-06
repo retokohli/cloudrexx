@@ -150,3 +150,5 @@ $_ARRAYLANG['TXT_BLOCK_DISPLAY_GLOBAL_INACTIVE'] = 'This Content Pane is not inc
 $_ARRAYLANG['TXT_BLOCK_DIRECT_INFO_SHOW_ALL_PAGES'] = 'This Content Pane gets displayed on all pages in its own placeholder %s';
 $_ARRAYLANG['TXT_BLOCK_DIRECT_INFO_SHOW_SELECTED_PAGES'] = 'This Content Pane gets displayed on the following pages in its own placeholder %s:';
 $_ARRAYLANG['TXT_BLOCK_MARK_PARSED_BLOCK'] = 'Enclose content panes by HTML comment';
+$_ARRAYLANG['TXT_BLOCK_MARK_PARSED_BLOCK_INFO'] = 'By activating this option, all content panes will be enclosed by a HTML comment in the website output (frontend) like the following: <br />
+&lt;!-- start BLOCK_1 --&gt;Content of pane&lt;!-- end BLOCK_1 --&gt;';
