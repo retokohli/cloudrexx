@@ -703,6 +703,26 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     }
 
     /**
+     * Set metaimage
+     *
+     * @param string $metaimage
+     */
+    public function setMetaimage($metaimage)
+    {
+        $this->metaimage = $metaimage;
+    }
+
+    /**
+     * Get metaimage
+     *
+     * @return string $metaimage
+     */
+    public function getMetaimage()
+    {
+        return $this->metaimage;
+    }
+
+    /**
      * Set start
      *
      * @param date $start
