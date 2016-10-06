@@ -548,7 +548,29 @@ class User_Setting_Mail
 
     function getPlaceholders()
     {
-        return array_map(create_function('$langVar', 'global $_CORELANG;return $_CORELANG[$langVar];'), $this->arrAvailableTypes[$this->type]['placeholders']);
+        $arrPlaceholders = array_map(
+            create_function(
+                '$langVar',
+                'global $_CORELANG;return $_CORELANG[$langVar];'
+            ),
+            $this->arrAvailableTypes[$this->type]['placeholders']
+        );
+
+        if ($this->type == 'reg_confirm') {
+            $objFWUser = \FWUser::getFWUserObject();
+            $objFWUser->objUser->objAttribute->first();
+            while (!$objFWUser->objUser->objAttribute->EOF) {
+                $objAttribute = $objFWUser->objUser->objAttribute->getById(
+                    $objFWUser->objUser->objAttribute->getId()
+                );
+
+                $name = '[[USER_' . strtoupper($objFWUser->objUser->objAttribute->getId()) . ']]';
+                $arrPlaceholders[$name] = $objFWUser->objUser->objAttribute->getName(BACKEND_LANG_ID);
+                $objFWUser->objUser->objAttribute->next();
+            }
+        }
+
+        return $arrPlaceholders;
     }
 
     function getFormats()
@@ -556,5 +578,3 @@ class User_Setting_Mail
         return array_map(create_function('$langVar', 'global $_CORELANG;return $_CORELANG[$langVar];'), $this->arrAvailableFormats);
     }
 }
-
-?>

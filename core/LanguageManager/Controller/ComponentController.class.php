@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,10 +24,10 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Main controller for Language Manager
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
@@ -38,22 +38,71 @@ namespace Cx\Core\LanguageManager\Controller;
 
 /**
  * Main controller for Language Manager
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  core_languagemanager
  */
-class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
+class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController implements \Cx\Core\Event\Model\Entity\EventListener {
+
+    /**
+     * @var array List of components who's language already is in $_ARRAYLANG
+     */
+    protected $componentsWithLoadedLang = array();
+
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
         return array();
     }
 
+    public function registerEventListeners() {
+        $this->cx->getEvents()->addEventListener('preComponent', $this);
+    }
+
+    /**
+     * Event handler to load component language
+     * @param string $eventName Name of triggered event, should always be static::EVENT_NAME
+     * @param array $eventArgs Supplied arguments, should be an array (see DBG message below)
+     */
+    public function onEvent($eventName, array $eventArgs) {
+        global $_ARRAYLANG;
+
+        // we might be in a hook where lang is not yet initialized (before resolve)
+        if (!count($_ARRAYLANG)) {
+            $_ARRAYLANG = array();
+        }
+
+        $frontend = $this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND;
+        $objInit = \Env::get('init');
+        switch ($eventName) {
+            case 'preComponent':
+                // Skip if this component's lang already is in $_ARRAYLANG
+                if (
+                    in_array(
+                        $eventArgs['componentName'],
+                        $this->componentsWithLoadedLang
+                    )
+                ) {
+                    return;
+                }
+
+                $_ARRAYLANG = array_merge(
+                    $_ARRAYLANG,
+                    $objInit->getComponentSpecificLanguageData(
+                        $eventArgs['componentName'],
+                        $frontend
+                    )
+                );
+                $this->componentsWithLoadedLang[] = $eventArgs['componentName'];
+                break;
+        }
+    }
+
      /**
      * Load your component.
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -66,13 +115,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         \Permission::checkAccess(22, 'static');
         $objLanguageManager = new \Cx\Core\LanguageManager\Controller\LanguageManager();
         $objLanguageManager->getLanguagePage();
-                
-        $this->cx->getTemplate()->setRoot($cachedRoot);        
+
+        $this->cx->getTemplate()->setRoot($cachedRoot);
     }
-    
+
     /**
      * Do something after resolving is done
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -128,6 +177,70 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
             default:
                 break;
+        }
+    }
+
+    /**
+     * Register the events
+     */
+    public function registerEvents()
+    {
+        $this->cx->getEvents()->addEvent('languageStatusUpdate');
+    }
+
+    /**
+     * Do something before main template gets parsed
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
+     * @param \Cx\Core\Html\Sigma                       $template   The main template
+     */
+    public function preFinalize(\Cx\Core\Html\Sigma $template) {
+        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
+        $this->parseLocaleList($template);
+    }
+    
+    /**
+     * Parses locale list in a template file
+     * @todo Does language list only for now. Update as soon as locales are available
+     * @param \Cx\Core\Html\Sigma $template Template file to parse locales in
+     */
+    public function parseLocaleList($template) {
+        if (!$template->blockExists('locale_alternate_list')) {
+            return;
+        }
+        $currentPage = $this->cx->getPage();
+        $listProtectedPages = \Cx\Core\Setting\Controller\Setting::getValue(
+            'coreListProtectedPages',
+            'Config'
+        ) == 'on';
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+            $langId = $lang['id'];
+            $lang = $lang['lang'];
+            $langPage = $currentPage->getNode()->getPage($langId);
+            // if page is not translated, inactive (incl. scheduled publishing) or protected
+            if (
+                !$langPage ||
+                !$langPage->isActive() ||
+                (
+                    !$listProtectedPages &&
+                    $langPage->isFrontendProtected() &&
+                    !\Permission::checkAccess($langPage->getFrontendAccessId(), 'dynamic', true)
+                )
+            ) {
+                continue;
+            }
+            $template->setVariable(array(
+                'PAGE_LINK' => contrexx_raw2xhtml(\Cx\Core\Routing\Url::fromPage($langPage)->toString()),
+                'PAGE_TITLE' => contrexx_raw2xhtml($langPage->getTitle()),
+                'LOCALE' => $lang,
+                'LANGUAGE_CODE' => $lang,
+                //'COUNTRY_NAME' => ,
+                //'COUNTRY_CODE' => ,
+            ));
+            $template->parse('locale_alternate_list');
         }
     }
 }

@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Page
  *
@@ -76,6 +76,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     const TYPE_CONTENT = 'content';
     const TYPE_APPLICATION = 'application';
     const TYPE_REDIRECT = 'redirect';
+    const TYPE_SYMLINK = 'symlink';
     const TYPE_FALLBACK = 'fallback';
     const TYPE_ALIAS = 'alias';
 
@@ -126,7 +127,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      * @deprecated Use NodePlaceholder::... directly instead
      */
     const NODE_URL_LANG_ID = \Cx\Core\Routing\NodePlaceholder::NODE_URL_LANG_ID;
-    
+
     /**
      * @var integer $id
      */
@@ -162,7 +163,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      * @var string $customContent
      */
     protected $customContent;
-    
+
     /**
      * @var integer $useCustomContentForAllChannels
      */
@@ -172,7 +173,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      * @var string $applicationTemplate
      */
     protected $applicationTemplate;
-    
+
     /**
      * @var integer $useCustomApplicationTemplateForAllChannels
      */
@@ -202,6 +203,11 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      * @var string $metarobots
      */
     protected $metarobots;
+
+    /**
+     * @var string $metaimage
+     */
+    protected $metaimage;
 
     /**
      * @var date $start
@@ -262,7 +268,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      * @var Cx\Core\ContentManager\Model\Entity\Skin
      */
     protected $skin;
-    
+
     /**
      * @var integer $useSkinForAllChannels
      */
@@ -281,17 +287,17 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      * @var string $slug
      */
     protected $slug;
-    
+
     /**
      * @var string $contentTitle
      */
     protected $contentTitle;
-    
+
     /**
      * @var string $linkTarget
      */
     protected $linkTarget;
-    
+
     /**
      * @var integer $frontendAccessId
      */
@@ -301,17 +307,17 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      * @var integer $backendAccessId
      */
     protected $backendAccessId;
-    
+
     /**
      * @var integer $protection
      */
     protected $protection;
-    
+
     /**
      * @var string $cssNavName
      */
     protected $cssNavName;
-    
+
     /**
      * @var string $updatedBy
      */
@@ -328,6 +334,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         $this->content = '';
         $this->metadesc = '';
         $this->metakeys = '';
+        $this->metaimage = '';
         $this->editingStatus = '';
         $this->active = false;
         $this->display = true;
@@ -350,6 +357,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             'cssName' => new \CxValidateString(array('maxlength' => 255)),
             'metatitle' => new \CxValidateString(array('maxlength' => 255)),
             'metarobots' => new \CxValidateString(array('maxlength' => 255)),
+            'metaimage' => new \CxValidateString(array('maxlength' => 255)),
             //'start' => maybe date? format?
             //'end' => maybe date? format?
             'editingStatus' => new \CxValidateString(array('maxlength' => 16)),
@@ -357,7 +365,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             //active is boolean, not checked
             'target' => new \CxValidateString(array('maxlength' => 255)),
             'module' => new \CxValidateString(array('alphanumeric' => true)),
-            'cmd' => new \CxValidateRegexp(array('pattern' => '/^[-A-Za-z0-9_]+$/')),            
+            'cmd' => new \CxValidateRegexp(array('pattern' => '/^[-A-Za-z0-9_]+$/')),
         );
     }
 
@@ -431,7 +439,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         $wasEmpty = $this->getSlug() == '';
 
         $this->title = $title;
-        
+
         if($wasEmpty)
             $this->refreshSlug();
 
@@ -540,7 +548,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     {
         return $this->customContent;
     }
-    
+
     /**
      * Get useCustomContentForAllChannels
      *
@@ -550,7 +558,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     {
         $this->useCustomContentForAllChannels = $useCustomContentForAllChannels;
     }
-    
+
     /**
      * Get useCustomContentForAllChannels
      *
@@ -560,7 +568,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     {
         return $this->useCustomContentForAllChannels;
     }
-    
+
     /**
      * Set applicationTemplate
      *
@@ -580,7 +588,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     {
         return $this->applicationTemplate;
     }
-    
+
     /**
      * Get useCustomApplicationTemplateForAllChannels
      *
@@ -590,7 +598,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     {
         $this->useCustomApplicationTemplateForAllChannels = $useCustomApplicationTemplateForAllChannels;
     }
-    
+
     /**
      * Get useCustomApplicationTemplateForAllChannels
      *
@@ -600,7 +608,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     {
         return $this->useCustomApplicationTemplateForAllChannels;
     }
-    
+
     /**
      * Set cssName
      *
@@ -699,6 +707,26 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     public function getMetarobots()
     {
         return empty($this->metarobots) ? 0 : 1;
+    }
+
+    /**
+     * Set metaimage
+     *
+     * @param string $metaimage
+     */
+    public function setMetaimage($metaimage)
+    {
+        $this->metaimage = $metaimage;
+    }
+
+    /**
+     * Get metaimage
+     *
+     * @return string $metaimage
+     */
+    public function getMetaimage()
+    {
+        return $this->metaimage;
     }
 
     /**
@@ -831,8 +859,19 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
                     $status .= 'broken ';
                 }
             }
+        } else if ($this->getType() == self::TYPE_SYMLINK) {
+            $status .= 'symlink ';
+            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            try {
+                $targetPage = $pageRepo->getTargetPage($this);
+                if (!$targetPage->isActive()){
+                    throw new PageRepositoryException("Page is not active");
+                }
+            } catch (PageRepositoryException $e){
+                $status .= 'broken ';
+            }
         }
-        
+
         if ($this->getDisplay()) $status .= "active ";
         else $status .= "inactive ";
 
@@ -864,7 +903,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             $this->active = false;
             $this->display = false;
         }
-        
+
     }
 
     /**
@@ -924,7 +963,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     public function getTargetNodeId() {
         if(!$this->isTargetInternal())
             return 0;
-        
+
         $c = $this->cutTarget();
         return intval($c['nodeId']);
     }
@@ -932,7 +971,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     protected function cutTarget() {
         $t = $this->getTarget();
         $matches = array();
-        
+
         if (!preg_match('/\[\['.self::NODE_URL_PCRE.'\]\](\S*)?/ix', $t, $matches)) {
             return array(
                 'nodeId'      => null,
@@ -942,13 +981,13 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
                 'queryString' => $t,
             );
         }
-        
+
         $nodeId      = empty($matches[self::NODE_URL_NODE_ID]) ? 0                : $matches[self::NODE_URL_NODE_ID];
         $module      = empty($matches[self::NODE_URL_MODULE])  ? ''               : $matches[self::NODE_URL_MODULE];
         $cmd         = empty($matches[self::NODE_URL_CMD])     ? ''               : $matches[self::NODE_URL_CMD];
         $langId      = empty($matches[self::NODE_URL_LANG_ID]) ? FRONTEND_LANG_ID : $matches[self::NODE_URL_LANG_ID];
         $queryString = empty($matches[6]) ? '' : $matches[6];
-        
+
         return array(
             'nodeId'      => $nodeId,
             'module'      => $module,
@@ -1108,7 +1147,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     {
         return $this->skin;
     }
-    
+
     /**
      * Set useSkinForAllChannels
      *
@@ -1118,7 +1157,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     {
         $this->useSkinForAllChannels = $useSkinForAllChannels;
     }
-    
+
     /**
      * Get useSkinForAllChannels
      *
@@ -1128,7 +1167,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     {
         return $this->useSkinForAllChannels;
     }
-    
+
     /**
      * @var boolean $caching
      */
@@ -1185,10 +1224,10 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         foreach ($this->getNode()->getParent()->getChildren() as $child) {
             $page = $child->getPage($this->getLang());
             if ($page && $page !== $this) {
-                $slugs[] = $page->getSlug();
+                $slugs[] = strtolower($page->getSlug());
             }
         }
-        while ($this->getSlug() == '' || in_array($this->getSlug(), $slugs)) {
+        while ($this->getSlug() == '' || in_array(strtolower($this->getSlug()), $slugs)) {
             $this->nextSlug();
         }
         // Alias slugs must not be equal to an existing file or folder
@@ -1224,7 +1263,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             }
         }
         //workaround, this method is regenerated each time
-        parent::validate(); 
+        parent::validate();
     }
 
     public function setUpdatedAtToNow()
@@ -1271,7 +1310,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     {
         return $this->updatedBy;
     }
-    
+
     /**
      * Whether page access from frontend is protected.
      * @return boolean
@@ -1293,11 +1332,11 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         if($accessId === false)
             throw new PageException('protecting Page failed: Permission system could not create a new dynamic access id');
 
-        return $accessId;            
+        return $accessId;
     }
-    
+
     protected function eraseAccessId($id) {
-        \Permission::removeAccess($id, 'dynamic');        
+        \Permission::removeAccess($id, 'dynamic');
     }
 
     /**
@@ -1382,7 +1421,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     {
         if (!empty($slug)) {
             $this->slug = $this->slugify($slug);
-            
+
             if(!$nextSlugCall) {
                 $this->slugSuffix = 0;
                 $this->slugBase = $this->slug;
@@ -1417,7 +1456,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             $includeName = true, $includeMetaData = true,
             $includeProtection = true, $followRedirects = false,
             $followFallbacks = false, $page = null) {
-        
+
         $targetPage = null;
         if ($followRedirects && $this->getType() == self::TYPE_REDIRECT) {
             $targetPage = $this->getTargetNodeId()->getPage($this->getTargetLangId());
@@ -1437,11 +1476,11 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
                     $followFallbacks
             );
         }
-        
+
         if (!$page) {
             $page = new \Cx\Core\ContentManager\Model\Entity\Page();
         }
-        
+
         if ($includeName) {
             $page->setContentTitle($this->getContentTitle());
             $page->setTitle($this->getTitle());
@@ -1461,12 +1500,13 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         } else {
             $page->setCmd('');
         }
-        
+
         if ($includeMetaData) {
             $page->setMetatitle($this->getMetatitle());
             $page->setMetadesc($this->getMetadesc());
             $page->setMetakeys($this->getMetakeys());
             $page->setMetarobots($this->getMetarobots());
+            $page->setMetaimage($this->getMetaimage());
         }
 
         $page->setNode($this->getNode());
@@ -1485,17 +1525,17 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         $page->setTarget($this->getTarget());
         $page->setLinkTarget($this->getLinkTarget());
         $page->setUpdatedBy(\FWUser::getFWUserObject()->objUser->getUsername());
-        
+
         if ($includeProtection) {
             if (!$this->copyProtection($page, true) ||
                 !$this->copyProtection($page, false)) {
                 return null;
             }
         }
-        
+
         return $page;
     }
-    
+
     /**
      * Clones the protection of this page to another page
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page to get the same protection as $this
@@ -1523,7 +1563,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         }
         return true;
     }
-    
+
     /**
      * Creates a copy of this page which belongs to another node.
      *
@@ -1542,7 +1582,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             $includeModuleAndCmd=true, $includeName = true,
             $includeMetaData = true, $includeProtection = true,
             $followRedirects = false, $followFallbacks = false, $page = null) {
-        
+
         $copy = $this->copy(
                 $includeContent,
                 $includeModuleAndCmd,
@@ -1557,7 +1597,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         $destinationNode->addPage($copy);
         return $copy;
     }
-    
+
     /**
      * Creates a copy of this page with a different language.
      * @todo Define what to do if destination lang is not the fallback of $this->getLang() (always follow fallbacks or do not copy content)
@@ -1576,7 +1616,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             $includeModuleAndCmd=true, $includeName = true,
             $includeMetaData = true, $includeProtection = true,
             $followRedirects = false, $followFallbacks = false, $page = null) {
-        
+
         $copy = $this->copy(
                 $includeContent,
                 $includeModuleAndCmd,
@@ -1684,7 +1724,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      */
     // DO NOT set protection directly, use setFrontend/BackendProtected instead.
     /*public function setProtection($protection)
-      { 
+      {
       $this->protection = $protection;
       }*/
 
@@ -1705,10 +1745,10 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     public function isVirtual() {
         return $this->isVirtual;
     }
-    
+
     /**
      * Sets this pages virtual flag
-     * @param boolean $virtual 
+     * @param boolean $virtual
      */
     public function setVirtual($virtual = true) {
         if ($this->isVirtual && !$virtual) {
@@ -1716,21 +1756,25 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         }
         $this->isVirtual = $virtual;
     }
-    
+
     /**
      * Copies the content from the other page given.
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page
+     * @param boolean $includeThemeOptions (optional) Wheter to adopt theme options as well (default false)
      */
-    public function getFallbackContentFrom($page) {
+    public function setContentOf($page, $includeThemeOptions = false) {
         $this->isVirtual = true;
         $this->content = $page->getContent();
         $this->module = $page->getModule();
         $this->cmd = $page->getCmd();
-        $this->skin = $page->getSkin();
-        $this->customContent = $page->getCustomContent();
-        $this->cssName = $page->getCssName();
+        if ($includeThemeOptions) {
+            $this->skin = $page->getSkin();
+            $this->customContent = $page->getCustomContent();
+            $this->applicationTemplate = $page->getApplicationTemplate();
+            $this->cssName = $page->getCssName();
+        }
         $this->cssNavName = $page->getCssNavName();
-        
+
         $this->type = $page->getType();
         $this->target = $page->getTarget();
    }
@@ -1754,7 +1798,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     {
         return $this->cssNavName;
     }
-    
+
     /**
      * Stores changes to the aliases for this page
      * @param Array List of alias slugs
@@ -1780,7 +1824,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             }
         }
     }
-    
+
     /**
      * Returns an array of alias pages for a page
      * @return Array<Cx\Core\ContentManager\Model\Entity\Page>
@@ -1794,16 +1838,16 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             'type' => self::TYPE_ALIAS,
             'target' => $target,
         );
-        
+
         // find aliases with language specified
         $target = '[[' . self::PLACEHOLDER_PREFIX . $this->getNode()->getId() . '_' . $this->getLang() . ']]';
         $crit2 = array(
             'type' => self::TYPE_ALIAS,
             'target' => $target,
         );
-        
+
         $pageRepo = \Env::get('em')->getRepository("Cx\Core\ContentManager\Model\Entity\Page");
-        
+
         // merge both resultsets
         $aliases = array_merge(
                 $pageRepo->findBy($crit1, true),
@@ -1832,12 +1876,12 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     {
         $this->protection = $protection;
     }
-    
+
     /**
      * Sanitize tree.
      * Translates all missing parent pages in the desired language
      * @param int $targetLang Language ID of the branch to sanitize
-     * @return type 
+     * @return type
      */
     public function setupPath($targetLang) {
         $node  = $this->getNode()->getParent();
@@ -1846,7 +1890,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         if ($targetLang == $sourceLang) {
             $sourceLang = \FWLanguage::getDefaultLangId();
         }
-        
+
         if (!empty($pages) && !isset($pages[$targetLang])) {
             $page = $pages[$sourceLang]->copyToLang(
                 $targetLang,
@@ -1869,7 +1913,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
 
     /**
      * Get a pages' path starting with a slash
-     * 
+     *
      * @return string path, e.g. '/This/Is/It'
      */
     public function getPath() {
@@ -1892,7 +1936,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         $path = $this->getPath($this);
         return $protocolAndDomainWithPathOffset . '/' . \FWLanguage::getLanguageCodeById($this->lang) .$path . $params;
     }
-    
+
     /**
      * Returns the page with the same language of the parent node
      * e.g. $this->getNode()->getParent()->getPage($this->lang)
@@ -1900,6 +1944,10 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      * @throws PageException If parent page can not be found
      */
     public function getParent() {
+        // virtual pages may not have a node. Throw an exception instead of dying.
+        if (!$this->getNode() && $this->isVirtual()) {
+            throw new PageException('Virtual page has no node');
+        }
         $parentNode = $this->getNode()->getParent();
         if (!$parentNode) {
             throw new PageException('Parent node not found (my page id is ' . $this->getId() . ')');
@@ -1910,7 +1958,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         }
         return $parent;
     }
-    
+
     /**
      * Returns an array of child pages (pages of the same language of all subnodes)
      * @return array List of page objects
@@ -1926,7 +1974,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         }
         return $children;
     }
-    
+
     /**
      * Returns the fallback page of this page
      * @return \Cx\Core\ContentManager\Model\Entity\Page Fallback page or null if none
@@ -1941,10 +1989,10 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         }
         return $this->getNode()->getPage($fallbackLanguage);
     }
-    
+
     /**
      * Returns the DateTime object for the modification time (for use in sitemap or so)
-     * @return \DateTime DateTime Object 
+     * @return \DateTime DateTime Object
      */
     public function getLastModificationDateTime() {
         $timestamp = $this->getUpdatedAt();
@@ -1954,7 +2002,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         }
         return $timestamp;
     }
-    
+
     /**
      * Returns the change frequency in XY (for use in sitemap or so)
      * @todo do something more sensful than checking for module
@@ -1966,17 +2014,17 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         }
         return 'weekly';
     }
-    
+
     /**
      * Returns the blocks related to this page
-     * @return array 
+     * @return array
      */
     public function getRelatedBlocks() {
         $blockLib = new \Cx\Modules\Block\Controller\BlockLibrary();
         $blocks = $blockLib->_getBlocksForPageId($this->getId());
         return $blocks;
     }
-    
+
     /**
      * Sets relations to blocks
      * @param array $relatedBlocks list of block IDs
@@ -1985,7 +2033,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         $blockLib = new \Cx\Modules\Block\Controller\BlockLibrary();
         $blockLib->_setBlocksForPageId($this->getId(), $relatedBlocks);
     }
-    
+
     /**
      * Returns the current log for this page
      * @return \Cx\Core\ContentManager\Model\Entity\LogEntry Current page log
@@ -2002,7 +2050,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     public function isDraft() {
         return $this->getEditingStatus() != '';
     }
-    
+
     public function serialize() {
         return serialize(
             array(
@@ -2041,7 +2089,8 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
                 $this->updatedAt,
                 $this->updatedBy,
                 $this->metadesc,
-                $this->metakeys
+                $this->metakeys,
+                $this->metaimage
             )
         );
     }
@@ -2083,5 +2132,6 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         $this->updatedBy = $unserialized[33];
         $this->metadesc = $unserialized[34];
         $this->metakeys = $unserialized[35];
+        $this->metaimage = $unserialized[36];
     }
 }

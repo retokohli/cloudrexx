@@ -122,8 +122,8 @@ class GuestBook extends GuestBookLibrary {
         $this->_objTpl->setVariable("GUESTBOOK_TOTAL_ENTRIES", $count);
 
         $query = "    SELECT         id,
-								forename,
-								name,
+                                forename,
+                                name,
                                 gender,
                                 url,
                                 email,
@@ -209,7 +209,7 @@ class GuestBook extends GuestBookLibrary {
                 $errors .= $error . "<br />";
             }
         }
-        
+
         $checked = "checked=\"checked\"";
 
         if ($_POST['malefemale'] == "F") {
@@ -282,8 +282,8 @@ class GuestBook extends GuestBookLibrary {
 
         $query = "INSERT INTO " . DBPREFIX . "module_guestbook
                         (status,
-	                     forename,
-	                     name,
+                         forename,
+                         name,
                          gender,
                          url,
                          datetime,
@@ -293,8 +293,8 @@ class GuestBook extends GuestBookLibrary {
                          location,
                          lang_id)
                  VALUES ($status,
-						'" . addslashes($name) . "',
-						'" . addslashes($forename) . "',
+                        '" . addslashes($name) . "',
+                        '" . addslashes($forename) . "',
                         '" . addslashes($gender) . "',
                         '" . addslashes($url) . "',
                         '".date('Y-m-d H:i:s')."',
@@ -404,12 +404,8 @@ class GuestBook extends GuestBookLibrary {
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            if (isset($email)) {
-                $objMail->SetFrom($email);
-                $objMail->AddReplyTo($email);
-            } else {
-                $objMail->SetFrom($mailto);
-            }
+            $from = isset($email) ? $email : $mailto;
+            $objMail->SetFrom($from);
             $objMail->Subject = $subject;
             $objMail->IsHTML(false);
             $objMail->Body = $message;

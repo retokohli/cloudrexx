@@ -119,6 +119,8 @@ class Recommend extends RecommendLibrary
             'RECOM_TXT_PREVIEW'                => $_ARRAYLANG['TXT_PREVIEW_FRONTEND'],
             'RECOM_TXT_FEMALE'                => $_ARRAYLANG['TXT_FEMALE_FRONTEND'],
             'RECOM_TXT_MALE'                => $_ARRAYLANG['TXT_MALE_FRONTEND'],
+            'TXT_RECOMMEND_SEND'            => $_ARRAYLANG['TXT_RECOMMEND_SEND'],
+            'TXT_RECOMMEND_DELETE'          => $_ARRAYLANG['TXT_RECOMMEND_DELETE'],
         ));
 
         $this->_objTpl->setVariable(array(
@@ -212,6 +214,8 @@ class Recommend extends RecommendLibrary
                 'RECOM_TXT_FEMALE'                => $_ARRAYLANG['TXT_FEMALE_FRONTEND'],
                 'RECOM_TXT_MALE'                => $_ARRAYLANG['TXT_MALE_FRONTEND'],
                 'RECOM_TEXT'                    => $_ARRAYLANG['TXT_INTRODUCTION'],
+                'TXT_RECOMMEND_SEND'            => $_ARRAYLANG['TXT_RECOMMEND_SEND'],
+                'TXT_RECOMMEND_DELETE'          => $_ARRAYLANG['TXT_RECOMMEND_DELETE'],
             ));
 
             $this->_objTpl->setVariable(array(
@@ -277,7 +281,6 @@ class Recommend extends RecommendLibrary
 
                 $objMail->CharSet = CONTREXX_CHARSET;
                 $objMail->SetFrom($sendermail, $sendername);
-                $objMail->AddReplyTo($sendermail);
                 $objMail->Subject = $subject;
                 $objMail->IsHTML(false);
                 $objMail->Body = $body;
@@ -301,14 +304,7 @@ class Recommend extends RecommendLibrary
      */
     function isEmail($string)
     {
-        if (eregi('^' . '[a-z0-9]+([_\\.-][a-z0-9]+)*' .    //user
-            '@' . '([a-z0-9]+([\.-][a-z0-9]+)*)+' .            //domain
-            '\\.[a-z]{2,4}' .                                 //sld, tld
-            '$', $string)) {
-            return true;
-        } else {
-            return false;
-        }
+        return \FWValidator::isEmail($string);
     }
 
 

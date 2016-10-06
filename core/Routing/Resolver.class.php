@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Resolver
  *
@@ -68,6 +68,11 @@ class Resolver {
      * @var Cx\Core\ContentManager\Model\Entity\Page
      */
     protected $page = null;
+
+    /**
+     * @var Cx\Core\ContentManager\Model\Entity\Page
+     */
+    protected $urlPage = null;
 
     /**
      * Doctrine Cx\Core\ContentManager\Model\Repository\PageRepository
@@ -162,7 +167,7 @@ class Resolver {
         $this->historyId = !empty($_GET['history']) ? $_GET['history'] : 0;
         $this->sessionPage = !empty($_SESSION['page']) ? $_SESSION['page']->toArray() : array();
     }
-    
+
     public function resolve() {
         // $this->resolveAlias() also sets $this->page
         $aliaspage = $this->resolveAlias();
@@ -187,21 +192,21 @@ class Resolver {
             //only set langid according to url if the user has not explicitly requested a language change.
             if (!isset($_REQUEST['setLang'])) {
                 $this->lang = $extractedLanguage;
-            
+
             //the user wants to change the language, but we're still inside the wrong language directory.
             } else if($this->lang != $extractedLanguage) {
                 $this->redirectToCorrectLanguageDir();
             }
         }
-        
+
         // used for LinkGenerator
         define('FRONTEND_LANG_ID', $this->lang);
         // used to load template file
         \Env::get('init')->setFrontendLangId($this->lang);
-        
-        
-        
-                        global $section, $command, $history, $sessionObj, $url, $_CORELANG,
+
+
+
+                        global $section, $command, $history, $url, $_CORELANG,
                                 $page, $pageId, $themesPages,
                                 $page_template,
                                 $isRegularPageRequest, $now, $start, $end, $plainSection;
@@ -214,7 +219,7 @@ class Resolver {
                         // Initialize page meta
                         $page = null;
                         $pageAccessId = 0;
-                        $page_protected = $pageId = $themesPages = 
+                        $page_protected = $pageId = $themesPages =
                         $page_template = null;
 
                         // If standalone is set, then we will not have to initialize/load any content page related stuff
@@ -224,8 +229,9 @@ class Resolver {
                         // Regular page request
                         if ($isRegularPageRequest) {
                         // TODO: history (empty($history) ? )
-                            if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($sessionObj)) {
-                                $sessionObj = \cmsSession::getInstance();
+                            if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($_SESSION)) {
+                                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                                $sessionObj = $cx->getComponent('Session')->getSession();
                             }
                             $this->init($url, $this->lang, \Env::get('em'), ASCMS_INSTANCE_OFFSET.\Env::get('virtualLanguageDirectory'), \FWLanguage::getFallbackLanguageArray());
                             try {
@@ -359,15 +365,15 @@ class Resolver {
                                 $page_template = $themesPages['content'];
                             }
                         }
-        
+
         // this is the case for standalone and backend requests
         if (!$this->page) {
             return null;
         }
-        
+
         $this->page = clone $this->page;
         $this->page->setVirtual();
-        
+
         // check for further URL parts to resolve
         if (
             $this->page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION &&
@@ -381,6 +387,24 @@ class Resolver {
                 $componentController->resolve($parts, $this->page);
             }
         }
+        $canonicalPage = $this->page;
+        if (
+            $this->urlPage &&
+            $this->urlPage->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_SYMLINK
+        ) {
+            $canonicalPage = $this->pageRepo->getTargetPage($this->urlPage);
+        }
+
+        // don't set canonical page when replying with an application page
+        if ($canonicalPage->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION) {
+            return $this->page;
+        }
+
+        // set canonical page only in case it hasen't been set already
+        if (!preg_grep('/^Link:.*canonical["\']$/', headers_list())) {
+            header('Link: <' . \Cx\Core\Routing\Url::fromPage($canonicalPage)->toString() . '>; rel="canonical"');
+        }
+
         return $this->page;
     }
 
@@ -395,7 +419,7 @@ class Resolver {
 
         //(I) see what the model has for us, aliases only.
         $result = $this->pageRepo->getPagesAtPath($path, null, null, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_ALIAS_ONLY);
-        
+
         //(II) sort out errors
         if(!$result) {
             // no alias
@@ -413,7 +437,7 @@ class Resolver {
         if (!$page->isActive()) {
             throw new ResolverException('Alias found, but it is not active.');
         }
-        
+
         $langDir = $this->url->getLangDir();
         $frontendLang = defined('FRONTEND_LANG_ID') ? FRONTEND_LANG_ID : null;
         if (!empty($langDir) && $this->pageRepo->getPagesAtPath($langDir.'/'.$path, null, $frontendLang, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY)) {
@@ -421,16 +445,18 @@ class Resolver {
         }
 
         $this->page = $page;
-        
+
         $params = $this->url->getParamArray();
         if (
             (isset($params['external']) && $params['external'] == 'permanent') ||
             ($this->page->isTargetInternal() && preg_match('/[?&]external=permanent/', $this->page->getTarget()))
         ) {
             if ($this->page->isTargetInternal()) {
-                $params = array();
+                if (isset($params['external']) && $params['external'] == 'permanent') {
+                    unset($params['external']);
+                }
                 if (trim($this->page->getTargetQueryString()) != '') {
-                    $params = explode('&', $this->page->getTargetQueryString());
+                    $params = array_merge($params, explode('&', $this->page->getTargetQueryString()));
                 }
                 $target = \Cx\Core\Routing\Url::fromNodeId($this->page->getTargetNodeId(), $this->page->getTargetLangId(), $params);
             } else {
@@ -443,7 +469,7 @@ class Resolver {
         }
         return $this->page;
     }
-    
+
     public function redirectToCorrectLanguageDir() {
         $this->url->setLangDir(\FWLanguage::getLanguageCodeById($this->lang));
 
@@ -515,6 +541,9 @@ class Resolver {
             $this->url->setParams($this->url->getSuggestedParams());
 
             $this->page = $result['page'];
+        }
+        if (!$this->urlPage) {
+            $this->urlPage = clone $this->page;
         }
         /*
           the page we found could be a redirection.
@@ -622,7 +651,7 @@ class Resolver {
                             $langDir = '/' . $langCode;
                         }
                     }
-                    
+
                     header('Location: ' . ASCMS_INSTANCE_OFFSET . $langDir . '/' . $target);
                     exit;
                 }
@@ -649,8 +678,6 @@ class Resolver {
 
     public function legacyResolve($url, $section, $command)
     {
-        global $sessionObj;
-
         $objFWUser = \FWUser::getFWUserObject();
 
         /*
@@ -675,9 +702,8 @@ class Resolver {
         // b(, a): fallback if section and cmd are specified
         if ($section) {
             if ($section == 'logout') {
-                if (empty($sessionObj)) {
-                    $sessionObj = \cmsSession::getInstance();
-                }
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                $sessionObj = $cx->getComponent('Session')->getSession();
                 if ($objFWUser->objUser->login()) {
                     $objFWUser->logout();
                 }
@@ -694,7 +720,7 @@ class Resolver {
 
             // make legacy-requests case insensitive works only if database-collation is case insensitive as well
             $this->setSection($this->page->getModule(), $this->page->getCmd());
-            
+
             $this->checkPageFrontendProtection($this->page);
 
             $this->handleFallbackContent($this->page);
@@ -750,7 +776,10 @@ class Resolver {
         // See bug-report #1536
         $page = $this->pageRepo->findOneById($page->getId());
 
-        if($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK) {
+        if (
+            $page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK ||
+            $page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_SYMLINK
+        ) {
             // in case the first resolved page (= original requested page) is a fallback page
             // we must check here if this very page is active.
             // If we miss this check, we would only check if the referenced fallback page is active!
@@ -761,7 +790,11 @@ class Resolver {
             // if this page is protected, we do not follow fallback
             $this->checkPageFrontendProtection($page);
 
-            $fallbackPage = $this->getFallbackPage($page);
+            if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_SYMLINK) {
+                $fallbackPage = $this->pageRepo->getTargetPage($page);
+            } else {
+                $fallbackPage = $this->getFallbackPage($page);
+            }
 
             // due that the fallback is located within a different language
             // we must set $this->lang to the fallback's language.
@@ -773,7 +806,11 @@ class Resolver {
 
             // now lets resolve the page that is referenced by our fallback page
             $this->resolvePage(true);
-            $page->getFallbackContentFrom($this->page);
+            // fallback pages use theme options of their target page, symlink use their own
+            $page->setContentOf(
+                $this->page,
+                $page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK
+            );
 
             // Important: We must assigne a copy of $page to $this->path here.
             // Otherwise, the virtual fallback page ($this->page) will also
@@ -807,9 +844,7 @@ class Resolver {
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page to check
      * @param int $history (optional) Revision of page to use, 0 means current, default 0
      */
-    public function checkPageFrontendProtection($page, $history = 0) {        
-        global $sessionObj;
-        
+    public function checkPageFrontendProtection($page, $history = 0) {
         $page_protected = $page->isFrontendProtected();
         $pageAccessId = $page->getFrontendAccessId();
         if ($history) {
@@ -837,7 +872,8 @@ class Resolver {
             && (   !isset($_REQUEST['section'])
                 || $_REQUEST['section'] != 'Login')
         ) {
-            if (empty($sessionObj)) $sessionObj = \cmsSession::getInstance();
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $sessionObj = $cx->getComponent('Session')->getSession();
             $_SESSION->cmsSessionStatusUpdate('frontend');
             if (\FWUser::getFWUserObject()->objUser->login()) {
                 if ($page_protected) {

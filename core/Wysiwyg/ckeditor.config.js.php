@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -37,19 +37,10 @@ if (strpos(dirname(__FILE__), 'customizing') === false) {
 require_once($contrexx_path . '/core/Core/init.php');
 $cx = init('minimal');
 
-$sessionObj = \cmsSession::getInstance();
-$_SESSION->cmsSessionStatusUpdate('backend');
-$CSRF = '&'.\Cx\Core\Csrf\Controller\Csrf::key().'='.\Cx\Core\Csrf\Controller\Csrf::code();
+$sessionObj = $cx->getComponent('Session')->getSession();
+$sessionObj->cmsSessionStatusUpdate('backend');
 
-
-$langId = !empty($_GET['langId']) ? $_GET['langId'] : null;
 $pageId = !empty($_GET['pageId']) ? $_GET['pageId'] : null;
-
-//'&' must not be htmlentities, used in javascript
-$defaultBrowser   = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
-                   .'?cmd=FileBrowser&standalone=true&langId='.$langId.$CSRF;
-$linkBrowser      = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
-                   .'?cmd=FileBrowser&standalone=true&langId='.$langId.'&type=webpages'.$CSRF;
 
 //get the main domain
 $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
@@ -71,7 +62,7 @@ $ymlOption = $wysiwyg->getCustomCSSVariables($skinId);
 ?>
 //if the wysiwyg css not defined in the session, then load the css variables and put it into the session
 if(!cx.variables.get('css', 'wysiwyg')) {
-    cx.variables.set('css', [<?php echo '\'' . implode($ymlOption['css'], '\',\'') . '\'' ?>], 'wysiwyg');
+    cx.variables.set('css', [<?php if (count($ymlOption['css'])) { echo '\'' . implode($ymlOption['css'], '\',\'') . '\''; } ?>], 'wysiwyg');
     cx.variables.set('bodyClass', <?php echo '\'' . $ymlOption['bodyClass'] . '\'' ?>, 'wysiwyg');
     cx.variables.set('bodyId', <?php echo '\'' . $ymlOption['bodyId'] . '\'' ?>, 'wysiwyg');
 }
@@ -89,7 +80,7 @@ CKEDITOR.editorConfig = function( config )
     config.shiftEnterMode = CKEDITOR.ENTER_P;
     config.startupOutlineBlocks = true;
     config.allowedContent = true;
-    
+
     config.ignoreEmptyParagraph = false;
     config.protectedSource.push(/<i[^>]*><\/i>/g);
     config.protectedSource.push(/<span[^>]*><\/span>/g);
@@ -101,10 +92,8 @@ CKEDITOR.editorConfig = function( config )
     config.protectedSource.push(/<a[^>]*><\/a>/g);
 
     config.tabSpaces = 4;
-    config.baseHref = '<?php echo $cx->getRequest()->getUrl()->getProtocol() . '://' . $mainDomain . $cx->getWebsiteOffsetPath(); ?>/';
-
+    config.baseHref = '<?php echo \Cx\Core\Routing\Url::fromCapturedRequest('', $cx->getWebsiteOffsetPath(), array())->toString(); ?>';
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
-    
     config.templates_replaceContent = <?php echo \Cx\Core\Setting\Controller\Setting::getValue('replaceActualContents','Wysiwyg')? 'true' : 'false' ?>;
 
     config.toolbar_Full = config.toolbar_Small = [
@@ -150,7 +139,7 @@ CKEDITOR.editorConfig = function( config )
         ['Undo','Redo']
     ];
     config.extraPlugins = 'codemirror';
-    
+
     //Set the CSS Stuff
     config.contentsCss = cx.variables.get('css', 'wysiwyg');
     config.bodyClass = cx.variables.get('bodyClass', 'wysiwyg');
@@ -163,7 +152,7 @@ CKEDITOR.on('instanceReady',function(){
     for(var instanceName in CKEDITOR.instances) {
         //console.log( CKEDITOR.instances[instanceName] );
         loadingTemplates.button = CKEDITOR.instances[instanceName].getCommand("templates") //Reference to Template-Button
-        
+
         // Define Standard-Path
         //var path = CKEDITOR.plugins.getPath('templates')
         //var defaultPath = path.split("lib/ckeditor/")[0]+"customizing/lib/ckeditor"+path.split("lib/ckeditor")[1]+"templates/"
@@ -228,7 +217,7 @@ if (<?php
             dialogDefinition.getContents('info').remove('browse');
             dialogDefinition.getContents('Link').remove('browse');
         }
-        
+
         if (dialogName == 'flash') {
             dialogDefinition.getContents('info').remove('browse');
         }
@@ -243,7 +232,7 @@ cx.bind("loadingEnd", function(myArgs) {
             for(var instanceName in CKEDITOR.instances) {
                 //CKEDITOR.instances[instanceName].config.contentsCss =  data.wysiwygCssReload.css;
                 var is_same = (data.wysiwygCssReload.css).equals(cx.variables.get('css', 'wysiwyg')) && cx.variables.get('css', 'wysiwyg').every(function(element, index) {
-                    return element === data.wysiwygCssReload.css[index]; 
+                    return element === data.wysiwygCssReload.css[index];
                 });
                 if(!is_same){
                     //cant set the css on the run, so you must destroy the wysiwyg and recreate it
@@ -269,8 +258,8 @@ Array.prototype.equals = function (array) {
     if (!array) {
         return false;
     }
-    
-    // compare lengths - can save a lot of time 
+
+    // compare lengths - can save a lot of time
     if (this.length != array.length) {
         return false;
     }
