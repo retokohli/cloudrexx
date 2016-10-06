@@ -180,7 +180,7 @@ class Calendar extends CalendarLibrary
      *
      * @return null
      */
-    function getCalendarPage()
+    function getCalendarPage($page)
     {
         $this->loadEventManager();
         $id = !empty($_GET['id']) ? $_GET['id'] : 0 ;
@@ -198,7 +198,7 @@ class Calendar extends CalendarLibrary
         switch ($cmd) {
             case 'detail':
                 if( $id!= null && $_GET['date'] != null) {
-                    self::showEvent();
+                    self::showEvent($page);
                 } else {
                     \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName));
                     exit();
@@ -883,7 +883,7 @@ UPLOADER;
      *
      * @return null
      */
-    function showEvent()
+    function showEvent($page)
     {
         global $_ARRAYLANG, $_CORELANG, $_LANGID;
 
@@ -895,6 +895,23 @@ UPLOADER;
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         $this->pageTitle = html_entity_decode($this->objEventManager->eventList[0]->title, ENT_QUOTES, CONTREXX_CHARSET);
+
+        // Set the meta page description to the teaser text if displaying calendar details
+        $teaser = html_entity_decode($this->objEventManager->eventList[0]->teaser, ENT_QUOTES, CONTREXX_CHARSET);
+        if ($teaser !== '') {
+            $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET))));
+        } else {
+            $description = html_entity_decode($this->objEventManager->eventList[0]->description, ENT_QUOTES, CONTREXX_CHARSET);
+            $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($description, ENT_QUOTES, CONTREXX_CHARSET))));
+        }
+
+        // Set the meta page image to event picture if displaying calendar details
+        $picture = html_entity_decode($this->objEventManager->eventList[0]->pic, ENT_QUOTES, CONTREXX_CHARSET);
+        if ($picture !== '') {
+            $page->setMetaimage($picture);
+        } else {
+            $page->setMetaimage(\Cx\Core\Setting\Controller\Setting::getValue('defaultMetaimage', 'Config'));
+        }
 
         $this->_objTpl->setVariable(array(
             'TXT_'.$this->moduleLangVar.'_ATTACHMENT'        =>  $_ARRAYLANG['TXT_CALENDAR_ATTACHMENT'],
