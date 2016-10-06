@@ -621,21 +621,6 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
     }
 
     /**
-     * Delete all files in cache-folder
-     *
-     * @global     object    $objTemplate
-     * @global     array    $_ARRAYLANG
-     */
-    function deleteAllFiles($cacheEngine = null)
-    {
-        global $_ARRAYLANG, $objTemplate;
-
-        $this->_deleteAllFiles($cacheEngine);
-
-        $objTemplate->SetVariable('CONTENT_OK_MESSAGE', $_ARRAYLANG['TXT_CACHE_FOLDER_EMPTY']);
-    }
-
-    /**
      * Calls the related Clear Function from Lib and sets an OK-Message
      * @global array $_ARRAYLANG
      * @global object $objTemplate
@@ -648,7 +633,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         switch ($cacheEngine) {
             case 'cxEntries':
             case 'cxPages':
-                $this->deleteAllFiles($cacheEngine);
+                $this->_deleteAllFiles($cacheEngine);
                 break;
             case self::CACHE_ENGINE_APC:
             case 'apc':
