@@ -123,4 +123,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         $this->cx->getEvents()->addEventListener('SearchFindContent', new \Cx\Core\ContentManager\Model\Event\PageEventListener());
    }
+
+    public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        // Set meta image to default if it's not defined
+        if (empty($page->getMetaimage())) {
+            $page->setMetaimage(\Env::get('config')['defaultMetaimage']);
+        }
+    }
+
 }

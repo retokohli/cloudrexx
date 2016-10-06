@@ -119,7 +119,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
                     // Set the meta page description to the teaser text if displaying news details
                     $teaser = $newsObj->getTeaser();
-                    if ($teaser !== '') {
+                    if ($teaser) {
                         $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET))));
                     } else {
                         $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($newsObj->newsText, ENT_QUOTES, CONTREXX_CHARSET))));
@@ -127,10 +127,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
                     // Set the meta page image to the thumbnail if displaying news details
                     $image = $newsObj->newsThumbnail;
-                    if ($image !== '') {
+                    if ($image) {
                         $page->setMetaimage($image);
-                    } else {
-                        $page->setMetaimage(\Cx\Core\Setting\Controller\Setting::getValue('defaultMetaimage', 'Config'));
                     }
                 }
                 break;
