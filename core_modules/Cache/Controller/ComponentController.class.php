@@ -81,10 +81,36 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {}
 
     public function postFinalize(&$endcode) {
-        // TODO: Make sure this component controller is already instanciated
-        if (!$this->cache) {
-            $this->cache = new \Cx\Core_Modules\Cache\Controller\Cache();
-        }
         $endcode = $this->cache->endContrexxCaching($this->cx->getPage(), $endcode);
+    }
+
+    /**
+     * Wrapper to fetch an item from cache using the doctrine usercache cachedriver
+     * @param string $id Id of the item
+     * @return mixed     The item
+     */
+    public function fetch($id) {
+        $cacheDriver = $this->cache->getDoctrineCacheDriver();
+        return $cacheDriver->fetch($id);
+    }
+
+    /**
+     * Wrapper to save an item to cache using the doctrine user usercache cachedriver
+     * @param string $id Id of the item
+     * @param mixed $data data of the item
+     * @param int $lifeTime Expiraton time of the item (if it equals zero, the item never expires)
+     */
+    public function save($id, $data, $lifeTime = 0) {
+        $cacheDriver = $this->cache->getDoctrineCacheDriver();
+        $cacheDriver->save($id, $data, $lifeTime);
+    }
+
+    /**
+     * Wrapper to delete an item from cache using the doctrine usercache cache driver
+     * @param string $id Id of the item
+     */
+    public function delete($id) {
+        $cacheDriver = $this->cache->getDoctrineCacheDriver();
+        $cacheDriver->delete($id);
     }
 }
