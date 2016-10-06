@@ -204,20 +204,24 @@ class DataSet implements \Iterator {
     /**
      *
      * @param Cx\Core_Modules\Listing\Model\ImportInterface $importInterface
-     * @param type $filename
+     * @param string $filename
+     * @param boolean $useCache Wether to try to load the file from cache or not
      * @throws \Cx\Lib\FileSystem\FileSystemException
-     * @return type
+     * @return mixed
      */
-    public static function importFromFile(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $filename) {
+    public static function importFromFile(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $filename, $useCache = true) {
+        // TODO: Drop $objCache and use Cx\Core_Modules\Cache\Controller\ComponentController instead
         global $objCache;
-        if (!$objCache) {
-            $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
-        }
-        $cacheDriver = $objCache->getDoctrineCacheDriver();
-        // try to load imported from cache
-        $objImport = $cacheDriver->fetch($filename);
-        if ($objImport) {
-            return $objImport;
+        if ($useCache) {
+            if (!$objCache) {
+                $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
+            }
+            $cacheDriver = $objCache->getDoctrineCacheDriver();
+            // try to load imported from cache
+            $objImport = $cacheDriver->fetch($filename);
+            if ($objImport) {
+                return $objImport;
+            }
         }
         try {
             $objFile = new \Cx\Lib\FileSystem\File($filename);
@@ -226,8 +230,9 @@ class DataSet implements \Iterator {
             \DBG::msg($e->getMessage());
             throw new DataSetException("Failed to load data from file $filename!");
         }
-        // store imported to memcache
-        $cacheDriver->save($filename, $objImport);
+        if ($useCache) { // store imported to cache
+            $cacheDriver->save($filename, $objImport);
+        }
         return $objImport;
     }
 
@@ -243,22 +248,26 @@ class DataSet implements \Iterator {
     /**
      *
      * @param Cx\Core_Modules\Listing\Model\ExportInterface $exportInterface
-     * @param type $filename
+     * @param string $filename
+     * @param boolean $useCache
      * @throws \Cx\Lib\FileSystem\FileSystemException
      */
-    public function exportToFile(\Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface, $filename) {
+    public function exportToFile(\Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface, $filename, $useCache = true) {
+        // TODO: Drop $objCache and use Cx\Core_Modules\Cache\Controller\ComponentController instead
         global $objCache;
-        if (!$objCache) {
-            $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
-        }
-        $cacheDriver = $objCache->getDoctrineCacheDriver();
         try {
             $objFile = new \Cx\Lib\FileSystem\File($filename);
             $objFile->touch();
             $export = $this->export($exportInterface);
             $objFile->write($export);
             // delete old key from cache, to reload it on the next import
-            $cacheDriver->delete($filename);
+            if ($useCache) {
+                if (!$objCache) {
+                    $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
+                }
+                $cacheDriver = $objCache->getDoctrineCacheDriver();
+                $cacheDriver->delete($filename);
+            }
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
             throw new DataSetException("Failed to export data to file $filename!");
@@ -280,12 +289,13 @@ class DataSet implements \Iterator {
 
     /**
      *
-     * @param type $filename
+     * @param string $filename
+     * @param boolean $useCache Wether to try to load the file from cache or not
      * @throws \Cx\Lib\FileSystem\FileSystemException
      * @return type
      */
-    public static function load($filename) {
-        return self::importFromFile(self::getYamlInterface(), $filename);
+    public static function load($filename, $useCache = true) {
+        return self::importFromFile(self::getYamlInterface(), $filename, $useCache);
     }
 
     public function getDataType() {

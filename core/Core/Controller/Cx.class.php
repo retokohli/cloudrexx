@@ -1139,7 +1139,7 @@ namespace Cx\Core\Core\Controller {
         protected function callPreInitHooks() {
             try {
                 $filename = $this->getWebsiteConfigPath() . '/preInitHooks.yml';
-                $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename);
+                $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename, false);
                 foreach ($objDataSet as $componentDefinition) {
                     $componentController = $this->getComponentControllerByNameAndType($componentDefinition['name'], $componentDefinition['type']);
                     $componentController->preInit($this);
@@ -1160,7 +1160,7 @@ namespace Cx\Core\Core\Controller {
         protected function callPreComponentLoadHooks() {
             try {
                 $filename = $this->getWebsiteConfigPath() . '/preComponentLoadHooks.yml';
-                $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename);
+                $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename, false);
                 foreach ($objDataSet as $componentDefinition) {
                     // check if componentController was already loaded in preInit
                     if (array_key_exists($componentDefinition['name'], $this->preLoadedComponents)) {
