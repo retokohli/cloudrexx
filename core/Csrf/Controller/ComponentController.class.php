@@ -48,7 +48,13 @@ namespace Cx\Core\Csrf\Controller;
 
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController implements \Cx\Core\Event\Model\Entity\EventListener
 {
-    public function getControllerClasses() {
+    /**
+     * Get Controller classes
+     *
+     * @return type
+     */
+    public function getControllerClasses()
+    {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
         return array();

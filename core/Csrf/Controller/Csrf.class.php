@@ -37,6 +37,7 @@
  */
 
 namespace Cx\Core\Csrf\Controller;
+
 /**
  * This class provides protection against Csrf attacks.
  *
@@ -87,17 +88,41 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
      */
     static $active_decrease = 1;
 
+    /**
+     * @var boolean
+     */
     private static $already_added_code = false;
+
+    /**
+     * @var boolean
+     */
     private static $already_checked    = false;
 
+    /**
+     * @var string
+     */
     private static $formkey = 'csrf';
 
+    /**
+     * @var string
+     */
     private static $current_code = NULL;
 
+    /**
+     * @var boolean
+     */
     private static $frontend_mode = false;
 
+    /**
+     * @var Cx\Core\Csrf\Model\Repository\CsrfRepository
+     */
     private static $csrfRepo;
 
+    /**
+     * Generate a CSRF token
+     *
+     * @return mixed boolean|string
+     */
     private static function __get_code()
     {
         // don't generate a CSRF token in case the user is not signed-in
@@ -111,7 +136,6 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
         self::__setkey(self::$current_code, self::$validity_count);
         return self::$current_code;
     }
-
 
     /**
      * An utility function to patch URLs specifically in
@@ -135,7 +159,6 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
         $url = self::enhanceURI($result[2]);
         return "$hdr: $url";
     }
-
 
     /**
      * Acts as a replacement for header() calls that handle URLs.
@@ -185,7 +208,6 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
         return true;
     }
 
-
     /**
      * Adds the CSRF protection code to the URI specified by $uri.
      *
@@ -203,7 +225,6 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
         $uri .= (strstr($uri, '?') ? '&' : '?')."$key=$val";
         return $uri;
     }
-
 
     /**
      * Call this to add a CSRF protection code to all the
@@ -231,7 +252,6 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
         $code = self::__get_code();
         output_add_rewrite_var(self::$formkey, $code);
     }
-
 
     /**
      * Adds a placeholder for the CSRF code to the given template.
@@ -262,7 +282,6 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
         return true;
     }
 
-
     /**
      * Returns the anti-CSRF code's form key.
      * You can build your own URLs together
@@ -272,7 +291,6 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
     {
         return self::$formkey;
     }
-
 
     /**
      * Returns the anti-CSRF code for the current
@@ -284,7 +302,6 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
         return self::__get_code();
     }
 
-
     /**
      * Returns a key/value pair ready to use in an URL.
      */
@@ -293,7 +310,6 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
         if (!self::__is_logged_in()) return '';
         return self::key().'='.self::code();
     }
-
 
     /**
      * Call this if you need to protect critical work.
@@ -329,7 +345,9 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
         }
     }
 
-
+    /**
+     * Show the security warning while the CSRF token is wrong/expired/not set
+     */
     private static function __kill()
     {
         global $_CORELANG;
@@ -385,7 +403,15 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
         die();
     }
 
-
+    /**
+     * Parse request parameter for form
+     *
+     * @param string $key        parameter name
+     * @param string $value      parameter value
+     * @param array  $arrSubKeys subkeys
+     *
+     * @return string
+     */
     private static function parseRequestParametersForForm($key, $value, $arrSubKeys=array())
     {
         $elem = '';
@@ -401,7 +427,13 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
         return $elem;
     }
 
-
+    /**
+     * Parse form value
+     *
+     * @param string $str string value for parse
+     *
+     * @return string
+     */
     private static function __formval($str)
     {
         return htmlspecialchars(contrexx_stripslashes($str), ENT_QUOTES, CONTREXX_CHARSET);
@@ -426,7 +458,11 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
         \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->flush();
     }
 
-
+    /**
+     * Check current request is ajax
+     *
+     * @return boolean
+     */
     private static function __is_ajax()
     {
         return (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
@@ -531,7 +567,6 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
         return false;
     }
 
-
     /**
      * Remove the CSRF protection parameter from the query string and referrer
      */
@@ -550,6 +585,9 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
         !empty($_SERVER['argv'])         ? $_SERVER['argv']         = preg_grep($csrfUrlModifierPattern, $_SERVER['argv'], PREG_GREP_INVERT) : false;
     }
 
+    /**
+     * set frontend mode
+     */
     public static function setFrontendMode()
     {
         self::$frontend_mode = true;
