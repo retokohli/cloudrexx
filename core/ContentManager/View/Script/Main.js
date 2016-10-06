@@ -965,6 +965,7 @@ cx.cm = function(target) {
                 "page_metatitle",
                 "page_metadesc",
                 "page_metakeys",
+                "page_metaimage",
                 "page_slug"
             ];
             cx.jQuery.each(fields, function(index, el) {
@@ -2801,6 +2802,7 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     cx.jQuery('#page input[name="page[metatitle]"]').val(page.metatitle);
     cx.jQuery('#page textarea[name="page[metadesc]"]').val(page.metadesc);
     cx.jQuery('#page textarea[name="page[metakeys]"]').val(page.metakeys);
+    cx.jQuery('#page input[name="page[metaimage]"]').val(page.metaimage);
 
     // tab access protection
     cx.jQuery('#page input[name="page[protection_frontend]"]').prop('checked', page.frontend_protection);
@@ -3176,4 +3178,15 @@ cx.cm.getPagePath = function(pageId) {
         pageId = cx.cm.getParentPageId(pageId);
     }
     return path;
+}
+
+/**
+ * Sets new meta image from media browser callback
+ * @param data
+ */
+cx.cm.setSelectedMetaimage = function (data) {
+    if (data.type == 'file') {
+        var url = data.data[0].datainfo;
+        document.getElementById('page_metaimage').value = url.filepath;
+    }
 }

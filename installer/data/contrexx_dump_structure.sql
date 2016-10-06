@@ -219,6 +219,7 @@ CREATE TABLE `contrexx_content_page` (
   `metadesc` text NOT NULL,
   `metakeys` text NOT NULL,
   `metarobots` varchar(7) DEFAULT NULL,
+  `metaimage` varchar(255) DEFAULT NULL,
   `start` timestamp NULL DEFAULT NULL,
   `end` timestamp NULL DEFAULT NULL,
   `editingStatus` varchar(16) NOT NULL,

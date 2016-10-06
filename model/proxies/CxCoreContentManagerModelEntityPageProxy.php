@@ -213,6 +213,18 @@ class CxCoreContentManagerModelEntityPageProxy extends \Cx\Core\ContentManager\M
         return parent::getMetarobots();
     }
 
+    public function setMetaimage($metaimage)
+    {
+        $this->_load();
+        return parent::setMetaimage($metaimage);
+    }
+
+    public function getMetaimage()
+    {
+        $this->_load();
+        return parent::getMetaimage();
+    }
+
     public function setStart($start)
     {
         $this->_load();
@@ -738,7 +750,7 @@ class CxCoreContentManagerModelEntityPageProxy extends \Cx\Core\ContentManager\M
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'nodeIdShadowed', 'lang', 'type', 'caching', 'updatedAt', 'updatedBy', 'title', 'linkTarget', 'contentTitle', 'slug', 'content', 'sourceMode', 'customContent', 'useCustomContentForAllChannels', 'applicationTemplate', 'useCustomApplicationTemplateForAllChannels', 'cssName', 'cssNavName', 'skin', 'useSkinForAllChannels', 'metatitle', 'metadesc', 'metakeys', 'metarobots', 'start', 'end', 'editingStatus', 'protection', 'frontendAccessId', 'backendAccessId', 'display', 'active', 'target', 'module', 'cmd', 'node');
+        return array('__isInitialized__', 'id', 'nodeIdShadowed', 'lang', 'type', 'caching', 'updatedAt', 'updatedBy', 'title', 'linkTarget', 'contentTitle', 'slug', 'content', 'sourceMode', 'customContent', 'useCustomContentForAllChannels', 'applicationTemplate', 'useCustomApplicationTemplateForAllChannels', 'cssName', 'cssNavName', 'skin', 'useSkinForAllChannels', 'metatitle', 'metadesc', 'metakeys', 'metarobots', 'metaimage', 'start', 'end', 'editingStatus', 'protection', 'frontendAccessId', 'backendAccessId', 'display', 'active', 'target', 'module', 'cmd', 'node');
     }
 
     public function __clone()
