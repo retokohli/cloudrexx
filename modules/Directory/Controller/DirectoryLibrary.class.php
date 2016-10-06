@@ -511,7 +511,8 @@ class DirectoryLibrary
             return 'error';
         }
 
-        $objSession = \cmsSession::getInstance();
+        $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objSession = $cx->getComponent('Session')->getSession();
         $tempPath   = $objSession->getTempPath() .'/' . $uploaderId . '/' . $fileName;
         //Check the uploaded file exists in /tmp folder
         if (!\Cx\Lib\FileSystem\FileSystem::exists($tempPath)) {
@@ -1950,13 +1951,6 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                                                         'lon' =>$arrGoogleStartPoint[1],
                                                         'zoom' =>$arrGoogleStartPoint[2]);
                 }
-                $objResult->MoveNext();
-            }
-        }
-        $objResult = $objDatabase->Execute("SELECT setname, setvalue, settyp FROM ".DBPREFIX."module_directory_settings_google");
-        if ($objResult !== false) {
-            while(!$objResult->EOF) {
-                $settings['google'][$objResult->fields['setname']] = $objResult->fields['setvalue'];
                 $objResult->MoveNext();
             }
         }

@@ -188,11 +188,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // Get the data to insert in the database
         $cdate = time();
         $dbuser = htmlspecialchars(addslashes($user), ENT_QUOTES, CONTREXX_CHARSET);
-        $dbuser = mysql_escape_string($dbuser);
+        $dbuser = contrexx_raw2db($dbuser);
         $dbgpcs = htmlspecialchars(addslashes($gpcs), ENT_QUOTES, CONTREXX_CHARSET);
-        $dbgpcs = mysql_escape_string($dbgpcs);
-        $where = addslashes("$file : $line");
-        $where = mysql_escape_string($where);
+        $dbgpcs = contrexx_raw2db($dbgpcs);
+        $where  = addslashes("$file : $line");
+        $where  = contrexx_raw2db($where);
 
         // Insert the intrusion in the database
         $objDatabase->Execute("INSERT INTO ".DBPREFIX."ids (timestamp, type, remote_addr, http_x_forwarded_for, http_via, user, gpcs, file)

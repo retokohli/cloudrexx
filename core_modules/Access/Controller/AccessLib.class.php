@@ -1705,7 +1705,8 @@ JS
     protected function addUploadedImagesToProfile($objUser, &$arrProfile, $arrImages, $uploaderId)
     {
         global $_CORELANG;
-        $objSession = \cmsSession::getInstance();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objSession = $cx->getComponent('Session')->getSession();
         $arrErrorMsg = array();
 
         foreach ($arrImages as $attribute => $arrHistories) {
