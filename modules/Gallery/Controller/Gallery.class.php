@@ -1232,7 +1232,7 @@ END;
     */
     function addComment()
     {
-        global $objDatabase, $objCache, $_ARRAYLANG, $objTemplate;
+        global $objDatabase, $_ARRAYLANG, $objTemplate;
 
         $intPicId    = intval($_POST['frmGalComAdd_PicId']);
         $categoryId = $this->getCategoryId($intPicId);
@@ -1274,7 +1274,7 @@ END;
                 'INSERT INTO '.DBPREFIX.'module_gallery_comments '.
                 'SET picid='.$intPicId.', date='.time().', ip="'.$_SERVER['REMOTE_ADDR'].'", '.
                 'name="'.$strName.'", email="'.$strEmail.'", www="'.$strWWW.'", comment="'.$strComment.'"');
-            $objCache->_deleteAllFiles();
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->_deleteAllFiles();
             $objTemplate->SetVariable('CONTENT_OK_MESSAGE', $_ARRAYLANG['TXT_CACHE_FOLDER_EMPTY']);
         }
     }

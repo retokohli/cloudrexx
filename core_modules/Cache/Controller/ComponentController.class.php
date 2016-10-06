@@ -67,7 +67,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * Start caching with op cache, user cache and cloudrexx caching
      */
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {
-        $this->cache = new \Cx\Core_Modules\Cache\Controller\Cache();
+        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            $this->cache = new \Cx\Core_Modules\Cache\Controller\Cache();
+        } else { // load CacheLib for other modes than frontend
+            //- ATTENTION: never load CacheManager here, because it uses not yet defined constants which will cause a fatal error
+            $this->cache = new \Cx\Core_Modules\Cache\Controller\CacheLib();
+        }
         $this->cacheDriver = $this->cache->getDoctrineCacheDriver();
         if ($this->cx->getMode() == $cx::MODE_FRONTEND) {
             $this->cache->deactivateNotUsedOpCaches();
@@ -81,6 +86,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $this->cx->setMemoryLimit(32);
         }
         // start cloudrexx caching
+        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
         $this->cache->startContrexxCaching();
     }
 
@@ -92,6 +100,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {}
 
     public function postFinalize(&$endcode) {
+        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
         $endcode = $this->cache->endContrexxCaching($this->cx->getPage(), $endcode);
     }
 
@@ -120,6 +131,64 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function delete($id) {
         $this->cacheDriver->delete($id);
+    }
+
+    /**
+     * Wrapper to flush all cache instances
+     */
+    public function clearCache($cacheEngine = null) {
+        $this->cache->clearCache($cacheEngine);
+    }
+
+    /**
+     * Wrapper to drop a cache page on reverse proxy cache
+     * @param string $urlPatter URL pattern to drop on reverse cache proxy
+     */
+    public function clearReverseProxyCache($urlPattern) {
+        $this->cache->clearReverseProxyCache($urlPattern);
+    }
+
+    /**
+     * Wrapper to drop all cached ESI/SSI elements
+     */
+    public function clearSsiCache() {
+        $this->cache->clearSsiCache();
+    }
+
+    /**
+     * Wrapper to drop the ESI cache for a specific call
+     * @param string $adapterName (Json)Data adapter name
+     * @param string $adapterMethod (Json)Data method name
+     * @param array $params (optional) params for (Json)Data method call
+     */
+    public function clearSsiCachePage($adapterName, $adapterMethod, $params = array()) {
+        $this->cache->clearSsiCachePage($adapterName, $adapterMethod, $params);
+    }
+
+    /**
+     * Wrapper to get randomizedEsiContent
+     */
+    public function getRandomizedEsiContent($esiContentInfos) {
+        return $this->cache->getRandomizedEsiContent($esiContentInfos);
+    }
+
+    /**
+     * Wrapper to return the ESI/SSI content for a (json)data call
+     * @param string $adapterName (Json)Data adapter name
+     * @param string $adapterMethod (Json)Data method name
+     * @param array $params (optional) params for (Json)Data method call
+     * @return string ESI/SSI directives to put into HTML code
+     */
+    public function getEsiContent($adapterName, $adapterMethod, $params = array()) {
+        return $this->cache->getEsiContent($adapterName, $adapterMethod, $params);
+    }
+
+    /**
+     * Delete all cached file's of the cache system
+     * @param object $cacheEngine The user cache engine
+     */
+    function _deleteAllFiles($cacheEngine = null) {
+        $this->cache->_deleteAllFiles($cacheEngine);
     }
 
     /**

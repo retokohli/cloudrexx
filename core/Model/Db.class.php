@@ -288,12 +288,6 @@ namespace Cx\Core\Model {
                 return $this->em;
             }
 
-            // TODO: Remove global $objCache after all existing usages are replaced with the Cache ComponentController
-            global $objCache;
-            if (!$objCache) {
-                $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
-            }
-
             $config = new \Doctrine\ORM\Configuration();
 
             //$config->setResultCacheImpl($this->cacheDriver);

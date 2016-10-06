@@ -210,7 +210,6 @@ class DataSet implements \Iterator {
      * @return mixed
      */
     public static function importFromFile(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $filename, $useCache = true) {
-        // TODO: Drop $objCache and use Cx\Core_Modules\Cache\Controller\ComponentController instead
         $cache = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache');
         if (!$cache) {
             $useCache = false;
@@ -252,7 +251,6 @@ class DataSet implements \Iterator {
      * @throws \Cx\Lib\FileSystem\FileSystemException
      */
     public function exportToFile(\Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface, $filename, $useCache = true) {
-        // TODO: Drop $objCache and use Cx\Core_Modules\Cache\Controller\ComponentController instead
         try {
             $objFile = new \Cx\Lib\FileSystem\File($filename);
             $objFile->touch();
