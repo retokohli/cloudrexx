@@ -64,7 +64,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 define('CALENDAR_MANDATE', MODULE_INDEX);
 
                 $objCalendar = new \Cx\Modules\Calendar\Controller\Calendar($page->getContent(), MODULE_INDEX);
-                $page->setContent($objCalendar->getCalendarPage());
+                $page->setContent($objCalendar->getCalendarPage($page));
                 if ($objCalendar->pageTitle) {
                     $page->setTitle($objCalendar->pageTitle);
                     $page->setContentTitle($objCalendar->pageTitle);
