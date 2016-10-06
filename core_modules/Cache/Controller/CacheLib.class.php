@@ -128,7 +128,6 @@ class CacheLib
         $this->initOPCaching();
         $this->initUserCaching();
         $this->getActivatedCacheEngines();
-        $this->getDoctrineCacheDriver();
     }
 
     /**
@@ -137,7 +136,7 @@ class CacheLib
     function _deleteAllFiles($cacheEngine = null)
     {
         if (!in_array($cacheEngine, array('cxPages', 'cxEntries'))) {
-            $this->doctrineCacheEngine->deleteAll();
+            $this->getDoctrineCacheDriver()->deleteAll();
             return;
         }
         $handleDir = opendir($this->strCachePath);
@@ -151,7 +150,7 @@ class CacheLib
                             }
                             break;
                         case 'cxEntries':
-                            $this->doctrineCacheEngine->deleteAll();
+                            $this->getDoctrineCacheDriver()->deleteAll();
                             break;
                         default:
                             unlink($this->strCachePath . $strFile);
