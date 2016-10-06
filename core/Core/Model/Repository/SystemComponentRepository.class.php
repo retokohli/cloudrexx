@@ -412,4 +412,19 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
             )
         );
     }
+
+    /**
+     * Loads the systemComponent using the doctrine entity manager for the existing SystemComponentController and adds it to the repository
+     * @param array $preLoadedComponents An array containing the preloaded components
+     */
+    public function setPreLoadedComponents($preLoadedComponents) {
+        foreach($preLoadedComponents as $preLoadedComponent) {
+            // get systemComponent by name
+            $systemComponent = parent::findOneBy(array('name' => $preLoadedComponent->getName()));
+            // set systemComponent on existing systemComponentController
+            $preLoadedComponent->setSystemComponent($systemComponent);
+            // store the systemComponent with its now loaded id as key to the array of loaded components
+            $this->loadedComponents[$preLoadedComponent->getId()] = $preLoadedComponent;
+        }
+    }
 }

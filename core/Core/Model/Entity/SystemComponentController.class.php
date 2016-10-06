@@ -92,6 +92,14 @@ class SystemComponentController extends Controller {
     }
 
     /**
+     * Sets the SystemComponent this Controller decorates
+     * @return \Cx\Core\Core\Model\Entity\SystemComponent
+     */
+    public function setSystemComponent($systemComponent) {
+        $this->systemComponent = $systemComponent;
+    }
+
+    /**
      * Registers a controller instance
      * @param Controller $controller Controller to register
      * @return null

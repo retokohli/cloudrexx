@@ -100,12 +100,14 @@ class ComponentHandler {
      * @param \Cx\Core_Modules\License\License $license Current license
      * @param boolean $frontend Wheter we are in frontend mode or not
      * @param \Doctrine\ORM\EntityManager $em Doctrine entity manager
+     * @param array $preLoadedComponents An array containing the preloaded components
      */
-    public function __construct(\Cx\Core_Modules\License\License $license, $frontend, \Doctrine\ORM\EntityManager $em) {
+    public function __construct(\Cx\Core_Modules\License\License $license, $frontend, \Doctrine\ORM\EntityManager $em, $preLoadedComponents) {
         $this->legacyComponentHandler = new LegacyComponentHandler();
         $this->frontend = $frontend;
         //$this->components = $license->getLegalComponentsList();
         $this->systemComponentRepo = $em->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
+        $this->systemComponentRepo->setPreLoadedComponents($preLoadedComponents);
         $this->systemComponentRepo->findAll();
 
         $this->callRegisterEventsHooks();

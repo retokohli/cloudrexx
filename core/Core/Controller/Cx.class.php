@@ -588,6 +588,8 @@ namespace Cx\Core\Core\Controller {
 
         protected $endcode;
 
+        protected $preLoadedComponents = [];
+
         /**
          * @return mixed
          */
@@ -1141,6 +1143,8 @@ namespace Cx\Core\Core\Controller {
                 foreach ($objDataSet as $componentDefinition) {
                     $componentController = $this->getComponentControllerByNameAndType($componentDefinition['name'], $componentDefinition['type']);
                     $componentController->preInit($this);
+                    // store componentController in preLoadedCompnents, using the name as key
+                    $this->preLoadedComponents[$componentController->getName()] = $componentController;
                 }
             } catch (\Cx\Core_Modules\Listing\Model\Entity\DataSetException $e) {
                 throw new \Exception('Error in processing preInit-hooks: '.$e->getMessage());
@@ -1158,7 +1162,13 @@ namespace Cx\Core\Core\Controller {
                 $filename = $this->getWebsiteConfigPath() . '/preComponentLoadHooks.yml';
                 $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename);
                 foreach ($objDataSet as $componentDefinition) {
-                    $componentController = $this->getComponentControllerByNameAndType($componentDefinition['name'], $componentDefinition['type']);
+                    // check if componentController was already loaded in preInit
+                    if (array_key_exists($componentDefinition['name'], $this->preLoadedComponents)) {
+                        $componentController = $this->preLoadedComponents[$componentDefinition['name']];
+                    } else {
+                        $componentController = $this->getComponentControllerByNameAndType($componentDefinition['name'], $componentDefinition['type']);
+                        $this->preLoadedComponents[$componentController->getName()] = $componentController;
+                    }
                     $componentController->preComponentLoad();
                 }
             } catch (\Cx\Core_Modules\Listing\Model\Entity\DataSetException $e) {
@@ -1417,7 +1427,7 @@ namespace Cx\Core\Core\Controller {
          * Loads all active components
          */
         protected function loadComponents() {
-            $this->ch = new \Cx\Core\Core\Controller\ComponentHandler($this->license, $this->mode == self::MODE_FRONTEND, $this->db->getEntityManager());
+            $this->ch = new \Cx\Core\Core\Controller\ComponentHandler($this->license, $this->mode == self::MODE_FRONTEND, $this->db->getEntityManager(), $this->preLoadedComponents);
         }
 
         /**
