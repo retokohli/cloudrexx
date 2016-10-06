@@ -62,9 +62,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
     public function __construct()
     {
         $this->initContrexxCaching();
-        $this->initOPCaching();
-        $this->initUserCaching();
-        $this->getActivatedCacheEngines();
+        parent::__construct();
     }
 
     protected function initContrexxCaching()

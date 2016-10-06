@@ -119,12 +119,25 @@ class CacheLib
     protected $ssiProxy;
 
     /**
+     * Constructor
+     *
+     * @global array $_CONFIG
+     */
+    public function __construct()
+    {
+        $this->initOPCaching();
+        $this->initUserCaching();
+        $this->getActivatedCacheEngines();
+        $this->getDoctrineCacheDriver();
+    }
+
+    /**
      * Delete all cached file's of the cache system
      */
     function _deleteAllFiles($cacheEngine = null)
     {
         if (!in_array($cacheEngine, array('cxPages', 'cxEntries'))) {
-        \Env::get('cache')->deleteAll();
+            $this->doctrineCacheEngine->deleteAll();
             return;
         }
         $handleDir = opendir($this->strCachePath);
@@ -138,7 +151,7 @@ class CacheLib
                             }
                             break;
                         case 'cxEntries':
-                            \Env::get('cache')->deleteAll();
+                            $this->doctrineCacheEngine->deleteAll();
                             break;
                         default:
                             unlink($this->strCachePath . $strFile);
@@ -818,8 +831,6 @@ class CacheLib
                 $cache = $arrayCache;
                 break;
         }
-        // store the doctrine caching engine in the environment repository
-        \Env::set('cache', $cache);
         // set the doctrine cache engine to avoid getting it a second time
         $this->doctrineCacheEngine = $cache;
         return $cache;

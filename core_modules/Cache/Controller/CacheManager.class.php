@@ -88,9 +88,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             $objTemplate->SetVariable('CONTENT_STATUS_MESSAGE', $_ARRAYLANG['TXT_CACHE_ERR_NOTEXIST'] . $cx->getWebsiteCachePath());
         }
 
-        $this->initOPCaching();
-        $this->initUserCaching();
-        $this->getActivatedCacheEngines();
+        parent::__construct();
     }
 
     /**
