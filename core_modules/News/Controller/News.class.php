@@ -174,7 +174,6 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                         news.teaser_image_thumbnail_path AS newsThumbImg,
                                                         news.typeid             AS typeid,
                                                         news.allow_comments     AS commentactive,
-                                                        news.new_window         AS newWindow,
                                                         locale.text,
                                                         locale.title            AS title,
                                                         locale.teaser_text
@@ -1540,16 +1539,19 @@ cx.ready(function () {
         \$J('.newsTypeRedirect').change(function () {
             if (\$J(this).val() == 1) {
                 \$J('.newsRedirect').show();
+                \$J('.newsRedirectNewWindow').show();
                 \$J('.newsContent').hide();
             } else {
                 \$J('.newsContent').show();
                 \$J('.newsRedirect').hide();
+                \$J('.newsRedirectNewWindow').hide();
             }
         });
         if (\$J('input[type=reset]').length > 0) {
             \$J('input[type=reset]').click(function () {
                 \$J('.newsContent').show();
                 \$J('.newsRedirect').hide();
+                \$J('.newsRedirectNewWindow').hide();
             });
         }
     }
@@ -1610,9 +1612,7 @@ JSCODE;
         $data['newsTags'] = !empty($_POST['newsTags'])
             ? contrexx_input2raw($_POST['newsTags'])
             : array();
-        if (!empty(contrexx_input2raw($_POST['redirect_new_window']))) {
-            $data['redirectNewWindow'] = contrexx_input2raw($_POST['redirect_new_window']);
-        }
+        $data['redirectNewWindow'] = !empty($_POST['redirect_new_window']);
 
         return array(true, $data);
     }
@@ -1689,6 +1689,8 @@ EOF;
             'TXT_NEWS_TEASER_TEXT'      => $_ARRAYLANG['TXT_NEWS_TEASER_TEXT'],
             'TXT_SUBMIT_NEWS'           => $_ARRAYLANG['TXT_SUBMIT_NEWS'],
             'TXT_NEWS_REDIRECT'         => $_ARRAYLANG['TXT_NEWS_REDIRECT'],
+            'TXT_NEWS_REDIRECT_NEW_WINDOW'       => $_ARRAYLANG['TXT_NEWS_REDIRECT_NEW_WINDOW'],
+            'TXT_NEWS_REDIRECT_NEW_WINDOW_HELP'  => $_ARRAYLANG['TXT_NEWS_REDIRECT_NEW_WINDOW_HELP'],
             'TXT_NEWS_NEWS_URL'         => $_ARRAYLANG['TXT_NEWS_NEWS_URL'],
             'TXT_TYPE'                  => $_ARRAYLANG['TXT_TYPE'],
             'TXT_NEWS_INCLUDE_NEWS'              => $_ARRAYLANG['TXT_NEWS_INCLUDE_NEWS'],
