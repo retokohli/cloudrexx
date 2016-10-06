@@ -37,8 +37,8 @@ if (strpos(dirname(__FILE__), 'customizing') === false) {
 require_once($contrexx_path . '/core/Core/init.php');
 $cx = init('minimal');
 
-$sessionObj = \cmsSession::getInstance();
-$_SESSION->cmsSessionStatusUpdate('backend');
+$sessionObj = $cx->getComponent('Session')->getSession();
+$sessionObj->cmsSessionStatusUpdate('backend');
 
 $pageId = !empty($_GET['pageId']) ? $_GET['pageId'] : null;
 
