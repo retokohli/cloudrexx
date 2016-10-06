@@ -76,12 +76,6 @@ namespace Cx\Core\Model {
     class Db {
 
         /**
-         * Cloudrexx instance
-         * @var \Cx\Core\Core\Controller\Cx
-         */
-        protected $cx = null;
-
-        /**
          * PDO instance
          * @var \PDO
          */
@@ -118,13 +112,20 @@ namespace Cx\Core\Model {
         protected $dbUser;
 
         /**
+         * doctrine cache driver instance
+         * @var mixed
+         */
+        protected $cacheDriver;
+
+        /**
          * Creates a new instance of the database connection handler
          * @param \Cx\Core\Model\Model\Entity\Db $db Database connection details
          * @param \Cx\Core\Model\Model\Entity\DbUser $dbUser Database user details
          */
-        public function __construct(\Cx\Core\Model\Model\Entity\Db $db, \Cx\Core\Model\Model\Entity\DbUser $dbUser) {
+        public function __construct(\Cx\Core\Model\Model\Entity\Db $db, \Cx\Core\Model\Model\Entity\DbUser $dbUser, $cacheDriver) {
             $this->db = $db;
             $this->dbUser = $dbUser;
+            $this->cacheDriver = $cacheDriver;
         }
 
         /**
@@ -287,14 +288,17 @@ namespace Cx\Core\Model {
                 return $this->em;
             }
 
+            // TODO: Remove global $objCache after all existing usages are replaced with the Cache ComponentController
             global $objCache;
+            if (!$objCache) {
+                $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
+            }
 
             $config = new \Doctrine\ORM\Configuration();
 
-            $cache = $objCache->getDoctrineCacheDriver();
-            //$config->setResultCacheImpl($cache);
-            $config->setMetadataCacheImpl($cache);
-            $config->setQueryCacheImpl($cache);
+            //$config->setResultCacheImpl($this->cacheDriver);
+            $config->setMetadataCacheImpl($this->cacheDriver);
+            $config->setQueryCacheImpl($this->cacheDriver);
 
             $config->setProxyDir(ASCMS_MODEL_PROXIES_PATH);
             $config->setProxyNamespace('Cx\Model\Proxies');

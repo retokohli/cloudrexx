@@ -1219,6 +1219,13 @@ namespace Cx\Core\Core\Controller {
          * @return \Cx\Core\Core\Model\Entity\SystemComponentController Component main controller
          */
         public function getComponent($name) {
+            if (!$this->getDb()) {
+                // try to load the component from the preloaded components
+                if (isset($this->preLoadedComponents[$name])) {
+                    return $this->preLoadedComponents[$name];
+                }
+                return null;
+            }
             $em = $this->getDb()->getEntityManager();
             $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
             $component = $componentRepo->findOneBy(array('name' => $name));
@@ -1363,7 +1370,7 @@ namespace Cx\Core\Core\Controller {
             $objDbUser->setPassword($_DBCONFIG['password']);
 
             // Initialize database connection
-            $this->db = new \Cx\Core\Model\Db($objDb, $objDbUser);
+            $this->db = new \Cx\Core\Model\Db($objDb, $objDbUser, $this->getComponent('Cache')->getCacheDriver());
             $objDatabase = $this->db->getAdoDb();
             \Env::set('db', $objDatabase);
 
