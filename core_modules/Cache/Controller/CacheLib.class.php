@@ -846,7 +846,7 @@ class CacheLib
                 continue;
             }
             // security: abort if any mystirius characters are found
-            if (!preg_match('[a-zA-Z0-9-]', $params[$long])) {
+            if (!preg_match('/^[a-zA-Z0-9-]+$/', $params[$long])) {
                 return array();
             }
             $fileNameSearchParts[$short] = '_' . $short . $params[$long];
