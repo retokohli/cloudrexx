@@ -81,6 +81,7 @@ $_ARRAYLANG['TXT_STATS_CACHE_SIZE'] = 'Datenmenge der gespeicherten Daten';
 $_ARRAYLANG['TXT_DISPLAY_CONFIGURATION'] = 'Konfiguration einblenden';
 $_ARRAYLANG['TXT_HIDE_CONFIGURATION'] = 'Konfiguration ausblenden';
 $_ARRAYLANG['TXT_CACHE_REVERSE_PROXY'] = 'Reverse Proxy Cache';
+$_ARRAYLANG['TXT_INTERNAL_CACHE_SSI_CACHE'] = 'Internes Caching';
 $_ARRAYLANG['TXT_CACHE_REVERSE_PROXY_NONE'] = 'Keines';
 $_ARRAYLANG['TXT_CACHE_REVERSE_PROXY_VARNISH'] = 'Varnish';
 $_ARRAYLANG['TXT_CACHE_REVERSE_PROXY_NGINX'] = 'NGINX';
@@ -102,4 +103,3 @@ $_ARRAYLANG['TXT_CACHE_SSI_HELP_SYSTEM'] = 'Wenn ein SSI oder ESI kompatibler Pr
 $_ARRAYLANG['TXT_CACHE_SSI_HELP_TYPE'] = 'Der Servertyp wird benötigt, um zwischengespeicherte Daten aktualisieren zu können.';
 $_ARRAYLANG['TXT_CACHE_SSI_IP'] = 'IP-Adresse';
 $_ARRAYLANG['TXT_CACHE_SSI_PORT'] = 'Port';
-

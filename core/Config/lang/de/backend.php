@@ -116,6 +116,7 @@ $_ARRAYLANG['TXT_CORE_CONFIG_DASHBOARDNEWS'] = 'Dashboard News';
 $_ARRAYLANG['TXT_CORE_CONFIG_DASHBOARDSTATISTICS'] = 'Dashboard Statistiken';
 $_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEANALYTICSTRACKINGID'] = 'Google Analytics Tracking-ID';
 $_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEANALYTICSTRACKINGID_TOOLTIP_HELP'] = 'Geben Sie hier Ihre Google Analytics Tracking-ID ein. Diese finden Sie in Ihrem Google Analytics Konto unter Verwaltung => Tracking-Code.';
+$_ARRAYLANG['TXT_CORE_CONFIG_DEFAULTMETAIMAGE'] = 'Standard Metabild';
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY'] = 'Kennwort muss der Komplexitätsvoraussetzung entsprechen';
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY_TOOLTIP_HELP'] = 'Kennwort muss folgende Zeichen enthalten: Gross-, Kleinbuchstabe und Zahl';
 $_ARRAYLANG['TXT_CORE_CONFIG_ADVANCEDUPLOADBACKEND'] = 'Erweiterte Dateiuploadmöglickeiten';

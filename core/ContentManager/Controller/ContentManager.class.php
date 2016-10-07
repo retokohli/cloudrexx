@@ -163,6 +163,10 @@ class ContentManager extends \Module
             $alias_denial     = "block";
         }
 
+        $this->template->setVariable(array(
+            'CORE_CM_METAIMAGE_BUTTON' => self::showMediaBrowserButton('Metaimage')
+        ));
+
         $mediaBrowser = new MediaBrowser();
         $mediaBrowser->setCallback('target_page_callback');
         $mediaBrowser->setOptions(array(
@@ -518,5 +522,33 @@ class ContentManager extends \Module
         }
 
         return $folderNames;
+    }
+
+    /**
+     * Display the MediaBrowser button
+     *
+     * @global array $_ARRAYLANG
+     *
+     * @param string $name callback function name
+     * @param string $type mediabrowser type
+     *
+     * @return string
+     */
+    protected function showMediaBrowserButton($name, $type = 'filebrowser')
+    {
+        if (empty($name)) {
+            return;
+        }
+
+        global $_ARRAYLANG;
+
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
+        $mediaBrowser->setOptions(array(
+            'type' => 'button',
+            'data-cx-mb-views' => $type
+        ));
+        $mediaBrowser->setCallback('cx.cm.setSelected' . ucfirst($name));
+
+        return $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE']);
     }
 }
