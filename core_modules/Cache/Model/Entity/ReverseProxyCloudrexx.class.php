@@ -74,9 +74,12 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
             $glob = $strCachePath . '*';
         }
         
-        $searchParts = \Env::get('cache')->getCacheFileNameSearchPartsFromUrl($urlPattern);
-        if (count($searchParts)) {
-            $glob = $strCachePath . '*' . implode('*', $searchParts) . '*';
+        if (!$glob) {
+            global $objCache;
+            $searchParts = $objCache->getCacheFileNameSearchPartsFromUrl($urlPattern);
+            if (count($searchParts)) {
+                $glob = $strCachePath . '*' . implode('*', $searchParts) . '*';
+            }
         }
         
         if ($glob !== null) {
@@ -92,6 +95,16 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
         }
         
         $cacheFile = \Env::get('cache')->getCacheFileNameFromUrl($urlPattern);
+        $file = new \Cx\Lib\FileSystem\File($strCachePath . $cacheFile);
+        $file->delete();
+        
+        // make sure HTTP and HTTPS files are dropped
+        if (substr($urlPattern, 0, 5) == 'https') {
+            $urlPattern = 'http' . substr($urlPattern, 5);
+        } else if (substr($urlPattern, 0, 4) == 'http') {
+            $urlPattern = 'https' . substr($urlPattern, 4);
+        }
+        $cacheFile = md5($urlPattern);
         $file = new \Cx\Lib\FileSystem\File($strCachePath . $cacheFile);
         $file->delete();
     }
