@@ -1706,6 +1706,11 @@ class Config
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'cache')){
                         throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheSsiProcessorConfig");
                 }
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('internalSsiCache')
+                    && !\Cx\Core\Setting\Controller\Setting::add('internalSsiCache', isset($existingConfig['internalSsiCache']) ? $existingConfig['internalSsiCache'] : 'off', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'cache')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for internalSsiCache");
+                }
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheUserCacheMemcacheConfig')
                     && !\Cx\Core\Setting\Controller\Setting::add('cacheUserCacheMemcacheConfig', isset($existingConfig['cacheUserCacheMemcacheConfig']) ? $existingConfig['cacheUserCacheMemcacheConfig'] : '{"ip":"127.0.0.1","port":11211}', 1,
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'cache')){

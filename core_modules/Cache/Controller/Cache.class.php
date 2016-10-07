@@ -209,12 +209,13 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         );
         
         // Replace include tags
+        $settings = $this->getSettings();
         $htmlCode = preg_replace_callback(
             '#<esi:include src="([^"]+)" onerror="continue"/>#',
-            function($matches) use (&$apiUrlString, &$cxNotYetInitialized) {
+            function($matches) use (&$apiUrlString, &$cxNotYetInitialized, $settings) {
                 // return cached content if available
-                $cacheFile = md5($matches[1]);
-                if (file_exists($this->strCachePath . $cacheFile)) {
+                $cacheFile = $this->getCacheFileNameFromUrl($matches[1]);
+                if ($settings['internalSsiCache'] == 'on' && file_exists($this->strCachePath . $cacheFile)) {
                     if (filemtime($this->strCachePath . $cacheFile) > (time() - $this->intCachingTime)) {
                         return file_get_contents($this->strCachePath . $cacheFile);
                     } else {
@@ -270,8 +271,10 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 }
                 $content = $response['data']['content'];
                 
-                $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
-                $file->write($content);
+                if ($settings['internalSsiCache'] == 'on') {
+                    $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
+                    $file->write($content);
+                }
 
                 return $content;
             },

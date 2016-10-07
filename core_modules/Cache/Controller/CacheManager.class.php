@@ -94,24 +94,6 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
     }
 
     /**
-     * Creates an array containing all important cache-settings
-     *
-     * @global     object    $objDatabase
-     * @return    array    $arrSettings
-     */
-    function getSettings() {
-        $arrSettings = array();
-        \Cx\Core\Setting\Controller\Setting::init('Config', NULL,'Yaml');
-        $ymlArray = \Cx\Core\Setting\Controller\Setting::getArray('Config', null);
-
-        foreach ($ymlArray as $key => $ymlValue){
-            $arrSettings[$key] = $ymlValue['value'];
-        }
-
-        return $arrSettings;
-    }
-
-    /**
      * Show settings of the module
      *
      * @global     object    $objTemplate
@@ -151,7 +133,6 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             'TXT_CACHE_INSTALLATION_STATE' => $_ARRAYLANG['TXT_CACHE_INSTALLATION_STATE'],
             'TXT_CACHE_ACTIVE_STATE' => $_ARRAYLANG['TXT_CACHE_ACTIVE_STATE'],
             'TXT_CACHE_CONFIGURATION_STATE' => $_ARRAYLANG['TXT_CACHE_CONFIGURATION_STATE'],
-            'TXT_CACHING' => $_ARRAYLANG['TXT_CACHING'],
             'TXT_SETTINGS_SAVE' => $_ARRAYLANG['TXT_SAVE'],
             'TXT_SETTINGS_ON' => $_ARRAYLANG['TXT_ACTIVATED'],
             'TXT_SETTINGS_OFF' => $_ARRAYLANG['TXT_DEACTIVATED'],
@@ -174,6 +155,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             'TXT_DISPLAY_CONFIGURATION' => $_ARRAYLANG['TXT_DISPLAY_CONFIGURATION'],
             'TXT_HIDE_CONFIGURATION' => $_ARRAYLANG['TXT_HIDE_CONFIGURATION'],
         ));
+        $this->objTpl->setVariable($_ARRAYLANG);
 
         if ($this->objSettings->isWritable()) {
             $this->objTpl->parse('cache_submit_button');
@@ -297,6 +279,8 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             'SETTINGS_SSI_CACHE_STATUS_INTERN'  => ($this->arrSettings['cacheSsiOutput'] == 'intern') ? 'selected' : '',
             'SETTINGS_SSI_CACHE_STATUS_SSI' => ($this->arrSettings['cacheSsiOutput'] == 'ssi') ? 'selected' : '',
             'SETTINGS_SSI_CACHE_STATUS_ESI' => ($this->arrSettings['cacheSsiOutput'] == 'esi') ? 'selected' : '',
+            'INTERNAL_SSI_CACHE_ON' => ($this->arrSettings['internalSsiCache'] == 'on') ? 'checked' : '',
+            'INTERNAL_SSI_CACHE_OFF' => ($this->arrSettings['internalSsiCache'] != 'on') ? 'checked' : '',
             'SETTINGS_SSI_CACHE_TYPE_VARNISH' => ($this->arrSettings['cacheSsiType'] == 'varnish') ? 'selected' : '',
             'SETTINGS_SSI_CACHE_TYPE_NGINX' => ($this->arrSettings['cacheSsiType'] == 'nginx') ? 'selected' : '',
             'SETTINGS_EXPIRATION' => intval($this->arrSettings['cacheExpiration']),
@@ -340,12 +324,12 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         \Cx\Core\Setting\Controller\Setting::init('Config', 'cache','Yaml');
         \Cx\Core\Setting\Controller\Setting::set('cacheEnabled', $_POST['cachingStatus']);
         \Cx\Core\Setting\Controller\Setting::set('cacheExpiration', intval($_POST['cachingExpiration']));
-        \Cx\Core\Setting\Controller\Setting::set('cacheUserCache', contrexx_input2db($_POST['usercache']));
         \Cx\Core\Setting\Controller\Setting::set('cacheOPCache', contrexx_input2db($_POST['opcache']));
         \Cx\Core\Setting\Controller\Setting::set('cacheOpStatus', contrexx_input2db($_POST['cacheOpStatus']));
         \Cx\Core\Setting\Controller\Setting::set('cacheOpStatus', contrexx_input2db($_POST['cacheOpStatus']));
         \Cx\Core\Setting\Controller\Setting::set('cacheDbStatus', contrexx_input2db($_POST['cacheDbStatus']));
         \Cx\Core\Setting\Controller\Setting::set('cacheReverseProxy', contrexx_input2db($_POST['cacheReverseProxy']));
+        \Cx\Core\Setting\Controller\Setting::set('internalSsiCache', contrexx_input2db($_POST['internalSsiCache']));
         $oldSsiValue = $_CONFIG['cacheSsiOutput'];
         \Cx\Core\Setting\Controller\Setting::set('cacheSsiOutput', contrexx_input2db($_POST['cacheSsiOutput']));
         \Cx\Core\Setting\Controller\Setting::set('cacheSsiType', contrexx_input2db($_POST['cacheSsiType']));
