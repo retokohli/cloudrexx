@@ -56,8 +56,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
     
     /**
      * @var string $apiUrlString
-     * annot be initialized yet, if Contrexx caching is active DB is not
-     * present yet, which means that Url::from* does not work
+     * This cannot be set to it's value until DB is initialized (since Url::from* needs DB)
      */
     protected $apiUrlString = '';
 
