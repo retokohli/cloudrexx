@@ -285,16 +285,17 @@ class CacheLib
             $_CONFIG['cacheSsiOutput'] == 'intern' ||
             !in_array(
                 $_CONFIG['cacheSsiOutput'],
-                explode(
-                    ',',
-                    \Cx\Core\Config\Controller\Config::getSsiOutputModes()
+                array(
+                    'intern',
+                    'ssi',
+                    'esi',
                 )
             ) ||
             !in_array(
                 $_CONFIG['cacheSsiType'],
-                explode(
-                    ',',
-                    \Cx\Core\Config\Controller\Config::getSsiTypes()
+                array(
+                    'varnish',
+                    'nginx',
                 )
             )
         ) {
