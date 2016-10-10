@@ -104,7 +104,7 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
         } else if (substr($urlPattern, 0, 4) == 'http') {
             $urlPattern = 'https' . substr($urlPattern, 4);
         }
-        $cacheFile = md5($urlPattern);
+        $cacheFile = \Env::get('cache')->getCacheFileNameFromUrl($urlPattern);
         $file = new \Cx\Lib\FileSystem\File($strCachePath . $cacheFile);
         $file->delete();
     }
