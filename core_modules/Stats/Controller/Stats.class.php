@@ -1124,14 +1124,14 @@ class Stats extends StatsLibrary
     function _addIpToExclusionList($ip, $remarks) {
         global $objDatabase;
 
-	// Get current user name
+        // Get current user name
         $objFWUser = \FWUser::getFWUserObject();
         $userName = $objFWUser->objUser->getRealUsername();
 
-	// Trim before inserting
+        // Trim before inserting
         $ip = trim($ip);
 
-	// Currently only fully qualified IP addresses or subnet massks.
+        // Currently only fully qualified IP addresses or subnet massks.
         if(preg_match('/^(?:[0-9|\*]{1,3}\.){3}[0-9|\*]{1,3}$/', $ip)) {
             $query = '
                 INSERT INTO
@@ -1143,9 +1143,9 @@ class Stats extends StatsLibrary
                     )
                 VALUES
                     (
-                        \'' . $ip . '\',
-                        \'' . $remarks . '\',
-                        \'' . $userName . '\'
+                        \'' . contrexx_input2raw($ip) . '\',
+                        \'' . contrexx_input2raw($remarks) . '\',
+                        \'' . contrexx_input2raw($userName) . '\'
                     )
             ';
             $objDatabase->Execute($query);
@@ -1163,7 +1163,7 @@ class Stats extends StatsLibrary
             DELETE FROM
                 `' . DBPREFIX . 'stats_exclude_ip`
             WHERE
-                `id` = ' . $id;
+                `id` = ' . intval($id);
         $objDatabase->Execute($query);
     }
 
@@ -1299,11 +1299,11 @@ class Stats extends StatsLibrary
             foreach ($this->arrExcludeIpList as $excludeIp) {
                 $this->_objTpl->setVariable(array(
                     'STATS_EXCLUSION_LIST_ROW_CLASS'    => $rowClass % 2 == 0 ? 'row2' : 'row1',
-                    'STATS_EXCLUSION_LIST_ID'           => $excludeIp['id'],
-                    'STATS_EXCLUSION_LIST_IP'           => $excludeIp['ip_address'],
-                    'STATS_EXCLUSION_LIST_REMARKS'      => $excludeIp['remarks'],
-                    'STATS_EXCLUSION_LIST_USER'         => $excludeIp['username'],
-                    'STATS_EXCLUSION_LIST_DATE'         => $excludeIp['timestamp']
+                    'STATS_EXCLUSION_LIST_ID'           => contrexx_raw2xhtml($excludeIp['id']),
+                    'STATS_EXCLUSION_LIST_IP'           => contrexx_raw2xhtml($excludeIp['ip_address']),
+                    'STATS_EXCLUSION_LIST_REMARKS'      => contrexx_raw2xhtml($excludeIp['remarks']),
+                    'STATS_EXCLUSION_LIST_USER'         => contrexx_raw2xhtml($excludeIp['username']),
+                    'STATS_EXCLUSION_LIST_DATE'         => contrexx_raw2xhtml($excludeIp['timestamp'])
                 ));
                 $this->_objTpl->parse('stats_exclusion');
                 $rowClass++;

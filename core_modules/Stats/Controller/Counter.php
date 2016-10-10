@@ -230,7 +230,7 @@ class Counter
             FROM
                 `' . DBPREFIX . 'stats_exclude_ip`
             WHERE
-                ' . $ip . ' REGEXP ip_address
+                ' . $ip . ' REGEXP `ip_address`
         ';
         if (($objResult = $objDb->Execute($query))) {
             $count = $objResult->RecordCount();
