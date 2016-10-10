@@ -27,7 +27,7 @@
 
 /**
  * Main controller for News
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
@@ -38,7 +38,7 @@ namespace Cx\Core_Modules\News\Controller;
 
 /**
  * Main controller for News
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
@@ -57,10 +57,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getControllersAccessableByJson() {
         return array('JsonNews');
     }
-    
+
     /**
      * Returns a list of command mode commands provided by this component
-     * 
+     *
      * @return array List of command names
      */
     public function getCommandsForCommandMode() {
@@ -69,7 +69,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     /**
      * Execute api command
-     * 
+     *
      * @param string $command Name of command to execute
      * @param array  $arguments List of arguments for the command
      * @param array  $dataArguments (optional) List of data arguments for the command
@@ -84,7 +84,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (!defined('FRONTEND_LANG_ID')) {
             define('FRONTEND_LANG_ID', 1);
         }
-        
+
         switch ($command) {
             case 'News':
                 switch ($subcommand) {
@@ -101,7 +101,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     /**
      * Load your component.
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -111,7 +111,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $newsObj = new News($page->getContent());
                 $page->setContent($newsObj->getNewsPage());
                 $newsObj->getPageTitle($page->getTitle());
-                
+
                 if (substr($page->getCmd(), 0, 7) == 'details') {
                     $page->setTitle($newsObj->newsTitle);
                     $page->setContentTitle($newsObj->newsTitle);
@@ -119,8 +119,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
                     // Set the meta page description to the teaser text if displaying news details
                     $teaser = $newsObj->getTeaser();
-                    if ($teaser !== null) {
+                    if ($teaser !== '') {
                         $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET))));
+                    } else {
+                        $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($newsObj->newsText, ENT_QUOTES, CONTREXX_CHARSET))));
+                    }
+
+                    // Set the meta page image to the thumbnail if displaying news details
+                    $image = $newsObj->newsThumbnail;
+                    if ($image !== '') {
+                        $page->setMetaimage($image);
+                    } else {
+                        $page->setMetaimage(\Cx\Core\Setting\Controller\Setting::getValue('defaultMetaimage', 'Config'));
                     }
                 }
                 break;
@@ -142,7 +152,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     /**
      * Do something before content is loaded from DB
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -152,7 +162,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // Get Headlines
                 $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsHeadlines.class.php';
                 if (file_exists($modulespath)) {
-                    for ($i = 0; $i < 5; $i++) {
+                    for ($i = 0; $i <= 10; $i++) {
                         $visibleI = '';
                         if ($i > 0) {
                             $visibleI = (string) $i;
@@ -195,7 +205,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $themesPages['sidebar'] = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['sidebar']);
                         $page_template          = str_replace($topNewsPlaceholder, $homeTopNews, $page_template);
                 }
-                        
+
                 // Get News categories
                 $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsLibrary.class.php';
                 $newsCategoriesPlaceholder = '{NEWS_CATEGORIES}';
@@ -207,13 +217,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                    ) {
                         $newsLib = new NewsLibrary();
                         $newsCategories = $newsLib->getNewsCategories();
-                            
+
                         $page->setContent(str_replace($newsCategoriesPlaceholder, $newsCategories, $page->getContent()));
                         $themesPages['index']   = str_replace($newsCategoriesPlaceholder, $newsCategories, $themesPages['index']);
                         $themesPages['sidebar'] = str_replace($newsCategoriesPlaceholder, $newsCategories, $themesPages['sidebar']);
                         $page_template          = str_replace($newsCategoriesPlaceholder, $newsCategories, $page_template);
                 }
-                        
+
                 // Get News Archives
                 $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsLibrary.class.php';
                 $newsArchivePlaceholder = '{NEWS_ARCHIVES}';
@@ -225,17 +235,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                    ) {
                         $newsLib = new NewsLibrary();
                         $newsArchive = $newsLib->getNewsArchiveList();
-                            
+
                         $page->setContent(str_replace($newsArchivePlaceholder, $newsArchive, $page->getContent()));
                         $themesPages['index']   = str_replace($newsArchivePlaceholder, $newsArchive, $themesPages['index']);
                         $themesPages['sidebar'] = str_replace($newsArchivePlaceholder, $newsArchive, $themesPages['sidebar']);
                         $page_template          = str_replace($newsArchivePlaceholder, $newsArchive, $page_template);
                 }
-                    
+
                 // Get recent News Comments
                 $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsRecentComments.class.php';
                 $newsCommentsPlaceholder = '{NEWS_RECENT_COMMENTS_FILE}';
-                        
+
                 if ( file_exists($modulespath)
                      && (  strpos($page->getContent(), $newsCommentsPlaceholder) !== false
                            || strpos($themesPages['index'], $newsCommentsPlaceholder) !== false
@@ -244,13 +254,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                    ) {
                         $newsLib = new NewsRecentComments($themesPages['news_recent_comments']);
                         $newsComments = $newsLib->getRecentNewsComments();
-                            
+
                         $page->setContent(str_replace($newsCommentsPlaceholder, $newsComments, $page->getContent()));
                         $themesPages['index']   = str_replace($newsCommentsPlaceholder, $newsComments, $themesPages['index']);
                         $themesPages['sidebar'] = str_replace($newsCommentsPlaceholder, $newsComments, $themesPages['sidebar']);
                         $page_template          = str_replace($newsCommentsPlaceholder, $newsComments, $page_template);
                 }
-                
+
                 //Teasers
                  $arrMatches = array();
                 // Set news teasers
@@ -283,11 +293,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 break;
         }
     }
-    
-    
+
+
     /**
      * Do something for search the content
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {

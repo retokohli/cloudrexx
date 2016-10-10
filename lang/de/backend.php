@@ -1295,6 +1295,8 @@ $_ARRAYLANG['TXT_CORE_CM_METADESC'] = 'Beschreibung';
 $_ARRAYLANG['TXT_CORE_CM_METADESC_INFO'] = 'Wird von Suchmaschinen als Beschreibung verwendet. Beispiel: Muster AG ist der schnellste Pizzakurier in Westeuropa';
 $_ARRAYLANG['TXT_CORE_CM_METAKEYS'] = 'Stichworte';
 $_ARRAYLANG['TXT_CORE_CM_METAKEYS_INFO'] = 'Werden von Suchmaschinen als zus&auml;tzliche Stichworte aufgenommen. Beispiele: Muster, Pizza, Europa, K&auml;se';
+$_ARRAYLANG['TXT_CORE_CM_METAIMAGE'] = 'Bild';
+$_ARRAYLANG['TXT_CORE_CM_METAIMAGE_INFO'] = 'Wird bei den sozialen Netzwerken als Vorschaubild dargestellt.';
 $_ARRAYLANG['TXT_CORE_CM_THEMES'] = 'Theme';
 $_ARRAYLANG['TXT_CORE_CM_THEMES_INFO'] = 'Die Seite wird im ausgew&auml;hlten Theme angezeigt.';
 $_ARRAYLANG['TXT_CORE_CM_CUSTOM_CONTENT'] = 'Inhaltsvorlage';
@@ -1454,3 +1456,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SYSTEM_MANAGEMENT']        = "Systemverwa
 
 $_ARRAYLANG['TXT_CORE_EDIT_USER_CRM_ACCOUNT'] = 'Dieser Benutzer ist verknüpft mit einem CRM Kontakt, klicken um direkt zum CRM Kontakt zu gelangen.';
 $_ARRAYLANG['TXT_CORE_NONE'] = 'Keine';
+
+$_ARRAYLANG['TXT_CORE_ACTIVE'] = "Aktiv";
+$_ARRAYLANG['TXT_CORE_INACTIVE'] = 'Inaktiv';
+$_ARRAYLANG['TXT_CORE_SCHEDULED_ACTIVE'] = 'Zeitgesteuerte Veröffentlichung aktiv';
+$_ARRAYLANG['TXT_CORE_SCHEDULED_INACTIVE'] = 'Deaktiviert aufgrund der zeitgesteuerten Veröffentlichung';
