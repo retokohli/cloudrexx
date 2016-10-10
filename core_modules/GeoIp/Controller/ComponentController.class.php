@@ -46,7 +46,7 @@ namespace Cx\Core_Modules\GeoIp\Controller;
  * @subpackage  coremodule_geoip
  * @version     1.0.0
  */
-class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
+class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController implements \Cx\Core\Json\JsonAdapter {
 
     /**
      * List of available locales (as IETF language tags)
