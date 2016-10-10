@@ -1719,11 +1719,6 @@ namespace Cx\Core\Core\Controller {
                 \LinkGenerator::parseTemplate($pageContent);
                 $this->resolvedPage->setContent($pageContent);
 
-                // Set meta image to default if it's not defined
-                if ($this->resolvedPage->getMetaimage() === '') {
-                    $this->resolvedPage->setMetaimage(\Cx\Core\Setting\Controller\Setting::getValue('defaultMetaimage', 'Config'));
-                }
-
                 $moduleStyleFile = null;
             } else if ($this->mode == self::MODE_BACKEND) {
                 // Skip the nav/language bar for modules which don't make use of either.
