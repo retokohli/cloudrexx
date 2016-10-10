@@ -202,12 +202,13 @@ class DataSet implements \Iterator {
     }
 
     /**
+     * Imports a DataSet from a file using an import interface
      *
-     * @param Cx\Core_Modules\Listing\Model\ImportInterface $importInterface
+     * @param Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface
      * @param string $filename
      * @param boolean $useCache Wether to try to load the file from cache or not
      * @throws \Cx\Lib\FileSystem\FileSystemException
-     * @return mixed
+     * @return \Cx\Core_Modules\Listing\Model\Entity\DataSet
      */
     public static function importFromFile(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $filename, $useCache = true) {
         if ($useCache) {
@@ -246,8 +247,9 @@ class DataSet implements \Iterator {
     }
 
     /**
+     * Exports a DataSet to a file using an export interface
      *
-     * @param Cx\Core_Modules\Listing\Model\ExportInterface $exportInterface
+     * @param Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface
      * @param string $filename
      * @param boolean $useCache
      * @throws \Cx\Lib\FileSystem\FileSystemException
@@ -263,7 +265,7 @@ class DataSet implements \Iterator {
                 $cache = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache');
                 if (!$cache) {
                     $useCache = false;
-                    throw new DataSetException("Cache component not available at this stage!");
+                    throw new DataSetException('Cache component not available at this stage!');
                 }
             }
             if ($useCache) {

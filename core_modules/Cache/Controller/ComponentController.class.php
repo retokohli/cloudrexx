@@ -46,8 +46,8 @@ namespace Cx\Core_Modules\Cache\Controller;
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
     /**
-     * cache instance
-     * @var \Cx\Core_Modules\Cache\Controller\Cache
+     * cache instance (can also be set to \Cx\Core_Modules\Cache\Controller\Cache, check preInit())
+     * @var \Cx\Core_Modules\Cache\Controller\CacheLib
      */
     protected $cache;
 
@@ -56,7 +56,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @var mixed
      */
     protected $cacheDriver;
-    
+
+    /**
+     * Returns all Controller class names for this component (except this)
+     *
+     * Since this comoponent only has this controller, this returns an empty array
+     * @return array List of Controller class names (without namespace)
+     */
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
@@ -64,7 +70,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Start caching with op cache, user cache and cloudrexx caching
+     * Start caching with op cache, user cache and cloudrexx caching (cloudrexx caching in frontend only)
+     * @param \Cx\Core\Core\Controller\Cx $cx The instance of \Cx\Core\Core\Controller\Cx
      */
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {
         if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
@@ -74,7 +81,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $this->cache = new \Cx\Core_Modules\Cache\Controller\CacheLib();
         }
         $this->cacheDriver = $this->cache->getDoctrineCacheDriver();
-        if ($this->cx->getMode() == $cx::MODE_FRONTEND) {
+        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             $this->cache->deactivateNotUsedOpCaches();
         } elseif (!isset($_GET['cmd']) || $_GET['cmd'] != 'settings') {
             $this->cache->deactivateNotUsedOpCaches();
@@ -92,6 +99,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $this->cache->startContrexxCaching();
     }
 
+    /**
+     * Ends the contrexx caching after the main template got parsed (frontend only)
+     * @param string $endcode The processed data to be sent to the client as response
+     */
     public function postFinalize(&$endcode) {
         if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             return;
@@ -128,6 +139,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     /**
      * Wrapper to flush all cache instances
+     * @param \Doctrine\Common\Cache\AbstractCache $cacheEngine The doctrine cache engine
      */
     public function clearCache($cacheEngine = null) {
         $this->cache->clearCache($cacheEngine);
@@ -160,6 +172,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     /**
      * Wrapper to get randomizedEsiContent
+     *
+     * Each entry of $esiContentInfos consists of an array like:
+     * array(
+     *     <adapterName>,
+     *     <adapterMethod>,
+     *     <params>,
+     * )
+     * @param array $esiContentInfos
+     * @return string ESI random include tag
      */
     public function getRandomizedEsiContent($esiContentInfos) {
         return $this->cache->getRandomizedEsiContent($esiContentInfos);
@@ -185,7 +206,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * @return object The doctrine cache driver object
+     * @return \Doctrine\Common\Cache\AbstractCache The doctrine cache driver object
      */
     public function getCacheDriver()
     {

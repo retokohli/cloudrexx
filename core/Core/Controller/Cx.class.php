@@ -581,17 +581,23 @@ namespace Cx\Core\Core\Controller {
          */
         protected $mediaSourceManager;
         
-        /*
-         * @var integer
+        /**
+         * @var integer The memory limit. Is set in init
          */
         protected $memoryLimit = 48;
 
+        /**
+         * @var string The processed data to be sent to the client as response
+         */
         protected $endcode;
 
+        /**
+         * @var array Contains the preloaded components from preInit and preComponentLoad
+         */
         protected $preLoadedComponents = [];
 
         /**
-         * @return mixed
+         * @return string The processed data which is set in finalize
          */
         public function getEndcode()
         {
@@ -755,7 +761,7 @@ namespace Cx\Core\Core\Controller {
                  */
                 $this->preComponentLoad();
 
-                /*
+                /**
                  * Loads all active components
                  */
                 $this->loadComponents();
@@ -763,7 +769,7 @@ namespace Cx\Core\Core\Controller {
                 $this->postComponentLoad();
 
                 /**
-                 * Load all components to have them ready and initialize request
+                 * Initialize request
                  * Request is not initialized for command mode
                  */
                 $this->postInit();
@@ -1413,7 +1419,7 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Late initializations. Loads components
+         * Initializes request
          */
         protected function postInit() {
             global $_CONFIG;
@@ -1450,7 +1456,7 @@ namespace Cx\Core\Core\Controller {
         protected function preComponentLoad() {
             global $_CONFIG;
             $this->license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $this->getDb()->getAdoDb());
-            $this->callpreComponentLoadHooks();
+            $this->callPreComponentLoadHooks();
         }
 
         /**

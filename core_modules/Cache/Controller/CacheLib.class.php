@@ -109,7 +109,7 @@ class CacheLib
     protected $memcached = null;
 
     /**
-     * @var object doctrine cache engine for the active user cache engine
+     * @var \Doctrine\Common\Cache\AbstractCache doctrine cache engine for the active user cache engine
      */
     protected $doctrineCacheEngine = null;
 
@@ -120,8 +120,6 @@ class CacheLib
 
     /**
      * Constructor
-     *
-     * @global array $_CONFIG
      */
     public function __construct()
     {
@@ -382,6 +380,9 @@ class CacheLib
         return $this->memcache;
     }
 
+    /**
+     * @return \Memcache The memcached object
+     */
     public function getMemcached() {
         return $this->memcached;
     }
@@ -809,7 +810,7 @@ class CacheLib
 
     /**
      * Detects the correct doctrine cache driver for the user caching engine in use
-     * @return object The doctrine cache driver object
+     * @return \Doctrine\Common\Cache\AbstractCache The doctrine cache driver object
      */
     public function getDoctrineCacheDriver() {
         if($this->doctrineCacheEngine) { // return cache engine if already set

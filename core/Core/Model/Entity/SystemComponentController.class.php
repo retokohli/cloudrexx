@@ -324,7 +324,7 @@ class SystemComponentController extends Controller {
     public function preComponentLoad() {}
 
     /**
-     * Do something after component load
+     * Do something after all active components are loaded
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
      * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
      */
