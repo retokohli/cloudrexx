@@ -173,8 +173,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             define('FRONTEND_LANG_ID', $params['get']['lang']);
         }
         $countryCode = $params['get']['country'];
-        $countryId = \Cx\Core\Country\Controller\Country::getIdByAlpha2($countryCode);
-        return array('content' => \Cx\Core\Country\Controller\Country::getNameById($countryId));
+        return array(
+            'content' => \Locale::getDisplayRegion(
+                '-' . $countryCode,
+                \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)
+            ),
+        );
     }
 
     /**
