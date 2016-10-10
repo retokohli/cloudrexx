@@ -46,13 +46,11 @@ namespace Cx\Core_Modules\Access\Controller;
  */
 class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
 {
-    public function __construct()
+    public function __construct(\Cx\Core\Html\Sigma $objTemplate)
     {
-        global $objTemplate;
+        parent::__construct($objTemplate);
 
-        parent::__construct();
-
-        $this->_objTpl = &$objTemplate;
+        $this->_objTpl = $objTemplate;
     }
 
 
@@ -277,5 +275,3 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
     }
 
 }
-
-?>
