@@ -845,8 +845,7 @@ class CacheLib
                 $cache = new \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver\FileSystemCache($this->strCachePath);
                 break;
             default:
-                $arrayCache = new \Doctrine\Common\Cache\ArrayCache();
-                $cache = $arrayCache;
+                $cache = new \Doctrine\Common\Cache\ArrayCache();
                 break;
         }
         // set the doctrine cache engine to avoid getting it a second time

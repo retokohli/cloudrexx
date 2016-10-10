@@ -92,13 +92,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $this->cache->startContrexxCaching();
     }
 
-    /**
-     * Load your component.
-     *
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
-     */
-    public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {}
-
     public function postFinalize(&$endcode) {
         if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             return;
@@ -187,7 +180,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * Delete all cached file's of the cache system
      * @param object $cacheEngine The user cache engine
      */
-    function _deleteAllFiles($cacheEngine = null) {
+    function deleteAllFiles($cacheEngine = null) {
         $this->cache->_deleteAllFiles($cacheEngine);
     }
 

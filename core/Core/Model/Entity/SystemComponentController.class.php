@@ -478,7 +478,7 @@ class SystemComponentController extends Controller {
      * Do something after main template got parsed
      *
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
-     * @param string                                    $endcode The endcode
+     * @param string                                    $endcode The processed data to be sent to the client as response
      */
     public function postFinalize(&$endcode) {}
 }

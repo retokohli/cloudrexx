@@ -1448,6 +1448,7 @@ namespace Cx\Core\Core\Controller {
          * @throws \Exception
          */
         protected function preComponentLoad() {
+            global $_CONFIG;
             $this->license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $this->getDb()->getAdoDb());
             $this->callpreComponentLoadHooks();
         }

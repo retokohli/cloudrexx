@@ -210,13 +210,15 @@ class DataSet implements \Iterator {
      * @return mixed
      */
     public static function importFromFile(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $filename, $useCache = true) {
-        $cache = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache');
-        if (!$cache) {
-            $useCache = false;
+        if ($useCache) {
+            $cache = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache');
+            if (!$cache) {
+                $useCache = false;
+            }
         }
         if ($useCache) {
             // try to load imported from cache
-            $objImport = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->fetch($filename);
+            $objImport = $cache->fetch($filename);
             if ($objImport) {
                 return $objImport;
             }
@@ -229,7 +231,7 @@ class DataSet implements \Iterator {
             throw new DataSetException("Failed to load data from file $filename!");
         }
         if ($useCache) { // store imported to cache
-            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->save($filename, $objImport);
+            $cache->save($filename, $objImport);
         }
         return $objImport;
     }
@@ -258,7 +260,14 @@ class DataSet implements \Iterator {
             $objFile->write($export);
             // delete old key from cache, to reload it on the next import
             if ($useCache) {
-                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->delete($filename);
+                $cache = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache');
+                if (!$cache) {
+                    $useCache = false;
+                    throw new DataSetException("Cache component not available at this stage!");
+                }
+            }
+            if ($useCache) {
+                $cache->delete($filename);
             }
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
