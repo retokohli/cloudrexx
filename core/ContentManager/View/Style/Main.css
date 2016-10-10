@@ -1071,6 +1071,13 @@ div.date img{
     margin: 0;
 }
 
+#page input + button,
+#page textarea + button,
+#page select + button,
+#page button + button {
+    margin-left: 5px;
+}
+
 #page .hideDrafts input,
 #page .hideDrafts label {
     float: none;

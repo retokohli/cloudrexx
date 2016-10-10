@@ -829,6 +829,15 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
+         * Get the start time
+         * 
+         * @return array
+         */
+        public function getStartTime() {
+            return $this->startTime;
+        }
+
+        /**
          * Stops time measurement and returns page parsing time
          * @return int Time needed to parse page in seconds
          */
@@ -1186,6 +1195,19 @@ namespace Cx\Core\Core\Controller {
                 $componentControllerClass = '\\Cx\\Core\\Core\\Model\\Entity\\SystemComponentController';
             }
             return new $componentControllerClass($component, $this);
+        }
+        
+        /**
+         * Returns the ComponentController for the given component
+         * @deprecated All new classes should have access to $this->getComponent()
+         * @param string $name Component name
+         * @return \Cx\Core\Core\Model\Entity\SystemComponentController Component main controller
+         */
+        public function getComponent($name) {
+            $em = $this->getDb()->getEntityManager();
+            $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+            $component = $componentRepo->findOneBy(array('name' => $name));
+            return $component;
         }
 
         /**
@@ -1697,6 +1719,11 @@ namespace Cx\Core\Core\Controller {
                 \LinkGenerator::parseTemplate($pageContent);
                 $this->resolvedPage->setContent($pageContent);
 
+                // Set meta image to default if it's not defined
+                if ($this->resolvedPage->getMetaimage() === '') {
+                    $this->resolvedPage->setMetaimage(\Cx\Core\Setting\Controller\Setting::getValue('defaultMetaimage', 'Config'));
+                }
+
                 $moduleStyleFile = null;
             } else if ($this->mode == self::MODE_BACKEND) {
                 // Skip the nav/language bar for modules which don't make use of either.
@@ -1932,6 +1959,7 @@ namespace Cx\Core\Core\Controller {
                 'METAKEYS'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetakeys()) : '',
                 'METADESC'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetadesc()) : '',
                 'METAROBOTS'                     => $metarobots ? 'all' : 'none',
+                'METAIMAGE'                      => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetaimage()) : '',
                 'CONTENT_TITLE'                  => $this->resolvedPage->getContentTitle(),
                 'CONTENT_TEXT'                   => $this->resolvedPage->getContent(),
                 'CSS_NAME'                       => contrexx_raw2xhtml($this->resolvedPage->getCssName()),
