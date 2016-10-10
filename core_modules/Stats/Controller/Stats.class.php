@@ -1264,6 +1264,12 @@ class Stats extends StatsLibrary
             'TXT_EXCLUSION_LIST_DELETE_MARKED' => $_ARRAYLANG['TXT_EXCLUSION_LIST_DELETE_MARKED']
         ));
 
+        \ContrexxJavascript::getInstance()->setVariable(
+            'really',
+            $_ARRAYLANG['TXT_EXCLUSION_LIST_DELETE_REALLY'],
+            'stats/lang'
+        );
+
         $this->_objTpl->setVariable(array(
             'STATS_SETTINGS_MAKE_STATISTICS'    => $this->arrConfig['make_statistics']['status'] ? "checked=\"checked\"" : "",
             'STATS_SETTINGS_STATUS'                => $this->arrConfig['make_statistics']['status'] ? "block" : "none",

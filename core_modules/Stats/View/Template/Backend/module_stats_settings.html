@@ -16,13 +16,13 @@ function toggleSettings(objCheck, objDiv) {
   }
 }
 function deleteIp(id) {
-        if (confirm('Wollen Sie diese IP Adresse(s) löschen?\nDiese Aktion kann nicht rückgängig gemacht werden!')) {
+        if (confirm(cx.variables.get('really', 'stats/lang'))) {
                 window.location.replace('index.php?cmd=stats&stat=settings&act=deleteIp&id='+id+'&{CSRF_PARAM}&tab=statsExclusionList');
         }
 }
 function deleteIps(form)
 {
-    if (confirm('Wollen Sie diese IP Adresse(s) löschen?\nDiese Aktion kann nicht rückgängig gemacht werden!')) {
+    if (confirm(cx.variables.get('really', 'stats/lang'))) {
         var f = document.getElementById(form);
         f.action = 'index.php?cmd=stats&stat=settings&act=deleteIps&{CSRF_PARAM}&tab=statsExclusionList';
         f.method = 'post';

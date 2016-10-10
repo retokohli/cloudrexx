@@ -178,3 +178,4 @@ $_ARRAYLANG['TXT_EXCLUSION_LIST_DATE'] = "Datum";
 $_ARRAYLANG['TXT_EXCLUSION_LIST_USER'] = "Benutzer";
 $_ARRAYLANG['TXT_EXCLUSION_LIST_ADD_IP'] = "IP Adresse hinzufügen";
 $_ARRAYLANG['TXT_EXCLUSION_LIST_DELETE_MARKED'] = "Markierte löschen";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_DELETE_REALLY'] = "Wollen Sie diese IP Adresse(n) löschen?\nDiese Aktion kann nicht rückgängig gemacht werden!";
