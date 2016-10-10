@@ -33,14 +33,14 @@
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     cloudrexx
- * @subpackage  core_language
+ * @subpackage  core_locale
  */
 
 global $_ARRAYLANG;
 
 // General module info:
-$_ARRAYLANG['TXT_CORE_LANGUAGE'] = 'Language';
-$_ARRAYLANG['TXT_CORE_LANGUAGE_DESCRIPTION'] = 'Handles language versions by their country and/or the effective language.';
+$_ARRAYLANG['TXT_CORE_LOCALE'] = 'Locale';
+$_ARRAYLANG['TXT_CORE_LOCALE_DESCRIPTION'] = 'Handles language versions by their country and/or the effective language.';
 
 // Module ACTs:
-$_ARRAYLANG['TXT_CORE_LANGUAGE_ACT_DEFAULT'] = 'Frontend';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACT_DEFAULT'] = 'Frontend';
