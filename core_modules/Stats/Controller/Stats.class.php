@@ -1132,8 +1132,22 @@ class Stats extends StatsLibrary
         $ip = trim($ip);
 
 	// Currently only fully qualified IP addresses or subnet massks.
-        if(preg_match("/[0-9|\*]{1,3}\.[0-9|\*]{1,3}\.[0-9|\*]{1,3}\.[0-9|\*]{1,3}/", $ip) == 1) {
-            $query = "`INSERT INTO ".DBPREFIX."stats_exclude_ip(ip_address,remarks,username) VALUES('".$ip."','" . $remarks . "','" . $userName . "')`";
+        if(preg_match('/^(?:[0-9|\*]{1,3}\.){3}[0-9|\*]{1,3}$/', $ip)) {
+            $query = '
+                INSERT INTO
+                    `' . DBPREFIX . 'stats_exclude_ip`
+                    (
+                        `ip_address`,
+                        `remarks`,
+                        `username`
+                    )
+                VALUES
+                    (
+                        \'' . $ip . '\',
+                        \'' . $remarks . '\',
+                        \'' . $userName . '\'
+                    )
+            ';
             $objDatabase->Execute($query);
         }
     }
@@ -1141,11 +1155,15 @@ class Stats extends StatsLibrary
     /**
      * Delete a IP address from the exclusion list.
      *
-     * @param id ID of the IP address to delete.
+     * @param int $id ID of the IP address to delete.
      */
     function _delIpFromExclusionList($id) {
         global $objDatabase;
-        $query = "`DELETE FROM ".DBPREFIX."stats_exclude_ip WHERE id=".$id."`";
+        $query = '
+            DELETE FROM
+                `' . DBPREFIX . 'stats_exclude_ip`
+            WHERE
+                `id` = ' . $id;
         $objDatabase->Execute($query);
     }
 
@@ -1156,7 +1174,7 @@ class Stats extends StatsLibrary
      */
     function _delIpsFromExclusionList($ids) {
         foreach ($ids as $id) {
-            _delIpFromExclusionList($id);
+            $this->_delIpFromExclusionList($id);
         }
     }
 
@@ -1272,7 +1290,7 @@ class Stats extends StatsLibrary
             'STATS_SETTINGS_PAGING_LIMIT_VISITOR_DETAILS'    => $this->arrConfig['paging_limit_visitor_details']['value'],
         ));
 
-        // Initialite exclude list
+        // Initialize exclude list
         $this->_initExclusionList();
         
         // set client details
@@ -1280,7 +1298,7 @@ class Stats extends StatsLibrary
             $rowClass = 1;
             foreach ($this->arrExcludeIpList as $excludeIp) {
                 $this->_objTpl->setVariable(array(
-                    'STATS_EXCLUSION_LIST_ROW_CLASS'    => $rowClass % 2 == 0 ? "row2" : "row1",
+                    'STATS_EXCLUSION_LIST_ROW_CLASS'    => $rowClass % 2 == 0 ? 'row2' : 'row1',
                     'STATS_EXCLUSION_LIST_ID'           => $excludeIp['id'],
                     'STATS_EXCLUSION_LIST_IP'           => $excludeIp['ip_address'],
                     'STATS_EXCLUSION_LIST_REMARKS'      => $excludeIp['remarks'],

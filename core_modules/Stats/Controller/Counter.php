@@ -224,7 +224,14 @@ class Counter
      */
     function _skipIps($ip) {
         global $objDb;
-        $query = "`SELECT * FROM ".DBPREFIX."stats_exclude_ip WHERE '" . $ip . "' REGEXP ip_address`";
+        $query = '
+            SELECT
+                `id`
+            FROM
+                `' . DBPREFIX . 'stats_exclude_ip`
+            WHERE
+                ' . $ip . ' REGEXP ip_address
+        ';
         if (($objResult = $objDb->Execute($query))) {
             $count = $objResult->RecordCount();
         }
