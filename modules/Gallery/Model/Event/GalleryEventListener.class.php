@@ -93,4 +93,19 @@ class GalleryEventListener extends DefaultEventListener {
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 
+    /**
+     * Clear all Ssi cache
+     *
+     * @param array $eventArgs Event args
+     */
+    public function galleriesClearSsiCache(array $eventArgs)
+    {
+        global $objCache;
+
+        // clear ssi cache
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+            $objCache->clearSsiCachePage('Gallery', 'getLastImage', array('langId' => $lang['id']));
+        }
+    }
+
 }

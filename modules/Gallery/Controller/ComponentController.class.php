@@ -51,7 +51,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array();
     }
 
-     /**
+    /**
+     * Returns a list of JsonAdapter class names
+     *
+     * @return array List of ComponentController classes
+     */
+    public function getControllersAccessableByJson() {
+        return array('JsonGallery');
+    }
+
+    /**
      * Load your component.
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
@@ -91,7 +100,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $page_template, $themesPages, $latestImage;
+        global $page_template, $themesPages, $objCache;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $objGalleryHome = new GalleryHomeContent();
@@ -109,19 +118,45 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $themesPages['sidebar'] = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), $themesPages['sidebar']);
                     }
                 }
-                if ($objGalleryHome->checkLatest()) {
-                    $latestImage = $objGalleryHome->getLastImage();
-                    if (preg_match('/{GALLERY_LATEST}/', \Env::get('cx')->getPage()->getContent())) {
-                        \Env::get('cx')->getPage()->setContent(str_replace('{GALLERY_LATEST}', $latestImage, \Env::get('cx')->getPage()->getContent()));
+                $galleryLatestImg = $objCache->getEsiContent(
+                    'Gallery',
+                    'getLastImage'
+                );
+                if (!empty($galleryLatestImg)) {
+                    if (
+                        preg_match(
+                            '/{GALLERY_LATEST}/',
+                            \Env::get('cx')->getPage()->getContent()
+                        )
+                    ) {
+                        \Env::get('cx')->getPage()->setContent(
+                            str_replace(
+                                '{GALLERY_LATEST}',
+                                $galleryLatestImg,
+                                \Env::get('cx')->getPage()->getContent()
+                            )
+                        );
                     }
                     if (preg_match('/{GALLERY_LATEST}/', $page_template)) {
-                        $page_template = str_replace('{GALLERY_LATEST}', $latestImage, $page_template);
+                        $page_template = str_replace(
+                            '{GALLERY_LATEST}',
+                            $galleryLatestImg,
+                            $page_template
+                        );
                     }
                     if (preg_match('/{GALLERY_LATEST}/', $themesPages['index'])) {
-                        $themesPages['index'] = str_replace('{GALLERY_LATEST}', $latestImage, $themesPages['index']);
+                        $themesPages['index'] = str_replace(
+                            '{GALLERY_LATEST}',
+                            $galleryLatestImg,
+                            $themesPages['index']
+                        );
                     }
                     if (preg_match('/{GALLERY_LATEST}/', $themesPages['sidebar'])) {
-                        $themesPages['sidebar'] = str_replace('{GALLERY_LATEST}', $latestImage, $themesPages['sidebar']);
+                        $themesPages['sidebar'] = str_replace(
+                            '{GALLERY_LATEST}',
+                            $galleryLatestImg,
+                            $themesPages['sidebar']
+                        );
                     }
                 }
                 break;
@@ -145,6 +180,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $eventListener = new \Cx\Modules\Gallery\Model\Event\GalleryEventListener($this->cx);
         $this->cx->getEvents()->addEventListener('SearchFindContent', $eventListener);
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
+        $this->cx->getEvents()->addEventListener('galleriesClearSsiCache', $eventListener);
+    }
+
+    /**
+     * Register the events
+     */
+    public function registerEvents()
+    {
+        $this->cx->getEvents()->addEvent('galleriesClearSsiCache');
     }
 
 }
