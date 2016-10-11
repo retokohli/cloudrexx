@@ -264,11 +264,8 @@ class DataSet implements \Iterator {
             if ($useCache) {
                 $cache = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache');
                 if (!$cache) {
-                    $useCache = false;
                     throw new DataSetException('Cache component not available at this stage!');
                 }
-            }
-            if ($useCache) {
                 $cache->delete($filename);
             }
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
