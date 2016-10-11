@@ -33,11 +33,6 @@ class Frontend extends \Cx\Model\Base\EntityBase
     private $locale;
 
     /**
-     * @var Cx\Core\Country\Model\Entity\Country
-     */
-    private $alpha2;
-
-    /**
      * @var Cx\Core\Locale\Model\Entity\Frontend
      */
     private $frontend;
@@ -150,26 +145,6 @@ class Frontend extends \Cx\Model\Base\EntityBase
     public function setLocale(\Cx\Core\Locale\Model\Entity\Locale $locale)
     {
         $this->locale = $locale;
-    }
-
-    /**
-     * Get alpha2
-     *
-     * @return Cx\Core\Country\Model\Entity\Country $alpha2
-     */
-    public function getAlpha2()
-    {
-        return $this->alpha2;
-    }
-
-    /**
-     * Set alpha2
-     *
-     * @param Cx\Core\Country\Model\Entity\Country $alpha2
-     */
-    public function setAlpha2(\Cx\Core\Country\Model\Entity\Country $alpha2)
-    {
-        $this->alpha2 = $alpha2;
     }
 
     /**
