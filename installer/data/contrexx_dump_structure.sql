@@ -3555,6 +3555,14 @@ CREATE TABLE `contrexx_stats_country` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique` (`country`)
 ) ENGINE=MyISAM;
+CREATE TABLE `contrexx_stats_exclude_ip` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ip_address` varchar(60) NOT NULL DEFAULT '',
+  `remarks` varchar(255) DEFAULT '',
+  `timestamp` timestamp NOT NULL,
+  `user_id` int(5) unsigned DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_stats_hostname` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `hostname` varchar(255) binary NOT NULL DEFAULT '',
@@ -3723,13 +3731,5 @@ CREATE TABLE `contrexx_voting_system` (
   `additional_email` tinyint(1) NOT NULL DEFAULT '0',
   `additional_city` tinyint(1) NOT NULL DEFAULT '0',
   `additional_comment` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_stats_exclude_ip` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `ip_address` varchar(60) NOT NULL DEFAULT '',
-  `remarks` varchar(255) DEFAULT '',
-  `timestamp` timestamp NOT NULL,
-  `username` varchar(255) DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;

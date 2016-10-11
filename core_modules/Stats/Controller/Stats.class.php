@@ -1126,7 +1126,7 @@ class Stats extends StatsLibrary
 
         // Get current user name
         $objFWUser = \FWUser::getFWUserObject();
-        $userName = $objFWUser->objUser->getRealUsername();
+        $userId = $objFWUser->objUser->getId();
 
         // Trim before inserting
         $ip = trim($ip);
@@ -1139,13 +1139,13 @@ class Stats extends StatsLibrary
                     (
                         `ip_address`,
                         `remarks`,
-                        `username`
+                        `user_id`
                     )
                 VALUES
                     (
-                        \'' . contrexx_input2raw($ip) . '\',
-                        \'' . contrexx_input2raw($remarks) . '\',
-                        \'' . contrexx_input2raw($userName) . '\'
+                        \'' . contrexx_input2db($ip) . '\',
+                        \'' . contrexx_input2db($remarks) . '\',
+                        \'' . contrexx_input2db($userId) . '\'
                     )
             ';
             $objDatabase->Execute($query);
@@ -1188,7 +1188,7 @@ class Stats extends StatsLibrary
     * @see    _saveSettings();
     */
     function _showSettings() {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_CORELANG;
 
         if (isset($_POST['save_stats_settings']) && !empty($_POST['save_stats_settings'])) {
             $this->strErrMessage .= $this->_saveSettings();
@@ -1261,7 +1261,10 @@ class Stats extends StatsLibrary
             'TXT_EXCLUSION_LIST_REMARKS'       => $_ARRAYLANG['TXT_EXCLUSION_LIST_REMARKS'],
             'TXT_EXCLUSION_LIST_USER'          => $_ARRAYLANG['TXT_EXCLUSION_LIST_USER'],
             'TXT_EXCLUSION_LIST_DATE'          => $_ARRAYLANG['TXT_EXCLUSION_LIST_DATE'],
-            'TXT_EXCLUSION_LIST_DELETE_MARKED' => $_ARRAYLANG['TXT_EXCLUSION_LIST_DELETE_MARKED']
+            'TXT_EXCLUSION_LIST_DELETE_MARKED' => $_ARRAYLANG['TXT_EXCLUSION_LIST_DELETE_MARKED'],
+            'TXT_EXCLUSION_LIST_REMARKS'       => $_ARRAYLANG['TXT_EXCLUSION_LIST_REMARKS'],
+            'TXT_EXCLUSION_LIST_DESC'          => $_ARRAYLANG['TXT_EXCLUSION_LIST_DESC'],
+            'TXT_CORE_FUNCTIONS'               => $_CORELANG['TXT_CORE_FUNCTIONS'],
         ));
 
         \ContrexxJavascript::getInstance()->setVariable(
@@ -1303,21 +1306,21 @@ class Stats extends StatsLibrary
         if (count($this->arrExcludeIpList)>0) {
             $rowClass = 1;
             foreach ($this->arrExcludeIpList as $excludeIp) {
+                $user = \FWUser::getFWUserObject()->objUser->getUser($excludeIp['user_id']);
                 $this->_objTpl->setVariable(array(
                     'STATS_EXCLUSION_LIST_ROW_CLASS'    => $rowClass % 2 == 0 ? 'row2' : 'row1',
                     'STATS_EXCLUSION_LIST_ID'           => contrexx_raw2xhtml($excludeIp['id']),
                     'STATS_EXCLUSION_LIST_IP'           => contrexx_raw2xhtml($excludeIp['ip_address']),
                     'STATS_EXCLUSION_LIST_REMARKS'      => contrexx_raw2xhtml($excludeIp['remarks']),
-                    'STATS_EXCLUSION_LIST_USER'         => contrexx_raw2xhtml($excludeIp['username']),
+                    'STATS_EXCLUSION_LIST_USER'         => contrexx_raw2xhtml(\FWUser::getParsedUserTitle($user)),
                     'STATS_EXCLUSION_LIST_DATE'         => contrexx_raw2xhtml($excludeIp['timestamp'])
                 ));
                 $this->_objTpl->parse('stats_exclusion');
                 $rowClass++;
             }
+            $this->_objTpl->touchBlock('stats_exclusion_list');
         } else {
-            $this->_objTpl->setVariable(array(
-                'TXT_NO_DATA_AVAILABLE' => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
-            ));
+            $this->_objTpl->hideBlock('stats_exclusion_list');
         }
     }
 }

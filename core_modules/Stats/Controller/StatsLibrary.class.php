@@ -1777,7 +1777,7 @@ class StatsLibrary
                 `ip_address`,
                 `remarks`,
                 `timestamp`,
-                `username`
+                `user_id`
             FROM
                 `' . DBPREFIX . 'stats_exclude_ip`
             ORDER BY
@@ -1790,7 +1790,7 @@ class StatsLibrary
                     'ip_address' => $objResult->fields['ip_address'],
                     'remarks'    => $objResult->fields['remarks'],
                     'timestamp'  => date(ASCMS_DATE_FORMAT, strtotime($objResult->fields['timestamp'])),
-                    'username'   => $objResult->fields['username']
+                    'user_id'    => $objResult->fields['user_id']
                 );
                 array_push($this->arrExcludeIpList, $arrExcludeIp);
                 $objResult->MoveNext();

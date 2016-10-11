@@ -169,13 +169,16 @@ $_ARRAYLANG['TXT_PAGING_LIMIT'] = "Anzeigelimit für Statistikauswertung";
 $_ARRAYLANG['TXT_PAGING_LIMIT_VISITOR_DETAILS'] = "Anzeigelimit für Besucherdetails";
 $_ARRAYLANG['TXT_IMAGE_EDIT_SHOW'] = "Anzeigen";
 $_ARRAYLANG['TXT_STATS_COUNT_VISIOTR_NUMBER'] = "Nummer des aktuellen Besuchers berechnen. Diese Option muss aktiviert sein, falls Sie den Platzhalter [[VISITOR_NUMBER]] im Frontend verwenden wollen.";
-$_ARRAYLANG['TXT_EXCLUSION_LIST'] = "IP Adressen ignorieren";
-$_ARRAYLANG['TXT_EXCLUSION_LIST_IP_TABLE'] = "Ignorierte IP Adressen";
+$_ARRAYLANG['TXT_EXCLUSION_LIST'] = "IP-Adressen ausschließen";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_IP_TABLE'] = "Ausgeschloßene IP-Adressen";
 $_ARRAYLANG['TXT_EXCLUSION_LIST_ID'] = "ID";
-$_ARRAYLANG['TXT_EXCLUSION_LIST_IP'] = "IP Adresse";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_IP'] = "IP-Adresse";
 $_ARRAYLANG['TXT_EXCLUSION_LIST_REMARKS'] = "Bemerkungen";
-$_ARRAYLANG['TXT_EXCLUSION_LIST_DATE'] = "Datum";
-$_ARRAYLANG['TXT_EXCLUSION_LIST_USER'] = "Benutzer";
-$_ARRAYLANG['TXT_EXCLUSION_LIST_ADD_IP'] = "IP Adresse hinzufügen";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_DATE'] = "Hinzugefügt am";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_USER'] = "Hinzugefügt von";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_ADD_IP'] = "IP-Adresse ausschließen";
 $_ARRAYLANG['TXT_EXCLUSION_LIST_DELETE_MARKED'] = "Markierte löschen";
-$_ARRAYLANG['TXT_EXCLUSION_LIST_DELETE_REALLY'] = "Wollen Sie diese IP Adresse(n) löschen?\nDiese Aktion kann nicht rückgängig gemacht werden!";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_DELETE_REALLY'] = "Wollen Sie diese IP-Adresse(n) löschen?\nDiese Aktion kann nicht rückgängig gemacht werden!";
+$_ARRAYLANG['TXT_EXCLUSION_LIST_DESC'] = "Erfassen Sie IP-Adressen (oder Subnetze in der Form 192.168.*.*), welche von der Statistik ausgeschloßen werden sollen:";
+
+

@@ -211,28 +211,36 @@ cx.jQuery(document).ready(function() {
   <form name="stats_exclude_form" id="stats_exclude_form" action="index.php?cmd=stats&amp;stat=settings&amp;tab=statsExclusionList" method="post">
     <table cellspacing="0" cellpadding="1" width="100%" border="0" class="adminlist">
       <tr>
-	<th>&nbsp;{TXT_EXCLUSION_LIST}</th>
+        <th colspan="2">{TXT_EXCLUSION_LIST}</th>
+      </tr>
+      <tr class="row3">
+        <td colspan="2">{TXT_EXCLUSION_LIST_DESC}</td>
       </tr>
       <tr class="row1">
-	<td nowrap="nowrap">
-	  <label for="options_add_ip">{TXT_EXCLUSION_LIST_IP}:&nbsp;<input id="options_add_ip" name="add_ip" type="text" value="" /><label>
-	  <label for="options_remarks">{TXT_EXCLUSION_LIST_REMARKS}:&nbsp;<input id="options_remarks" name="remarks" type="text" value="" /><label>
-          <button type="submit" id="exclusion_list_add_ip">{TXT_EXCLUSION_LIST_ADD_IP}</button>
-	</td>
+        <td nowrap="nowrap" width="20%"><label for="options_add_ip">{TXT_EXCLUSION_LIST_IP}<label></td>
+        <td><input id="options_add_ip" name="add_ip" style="width:300px" type="text" value="" /></td>
+      </tr>
+      <tr class="row2">
+        <td nowrap="nowrap" width="20%"><label for="options_remarks">{TXT_EXCLUSION_LIST_REMARKS}<label></td>
+        <td nowrap="nowrap"><input id="options_remarks" style="width:300px" name="remarks" type="text" value="" />
       </tr>
     </table>
+    <br />
+    <button type="submit" id="exclusion_list_add_ip">{TXT_EXCLUSION_LIST_ADD_IP}</button>
+    <br />
+    <br />
+    <!-- BEGIN stats_exclusion_list -->
     <table cellspacing="0" cellpadding="1" width="100%" border="0" class="adminlist">
       <tr>
-        <th colspan="7">&nbsp;{TXT_EXCLUSION_LIST_IP_TABLE}</th>
+        <th colspan="7">{TXT_EXCLUSION_LIST_IP_TABLE}</th>
       </tr>
-      <!-- BEGIN stats_exclusion_list -->
-      <tr class="row1">
-        <td nowrap="nowrap" width="20px"><b>#</b></td>
+      <tr class="row3">
+        <td nowrap="nowrap" width="20px" style="text-align:center;"><b>#</b></td>
         <td nowrap="nowrap" width="20%"><b>{TXT_EXCLUSION_LIST_IP}</b></td>
         <td nowrap="nowrap" width="75%"><b>{TXT_EXCLUSION_LIST_REMARKS}</b></td>
         <td nowrap="nowrap" width="10%"><b>{TXT_EXCLUSION_LIST_USER}</b></td>
         <td nowrap="nowrap" width="10%"><b>{TXT_EXCLUSION_LIST_DATE}</b></td>
-        <td nowrap="nowrap" width="40px"></td>
+        <td nowrap="nowrap" width="40px">{TXT_CORE_FUNCTIONS}</td>
       </tr>
       <!-- BEGIN stats_exclusion -->
       <tr class="{STATS_EXCLUSION_LIST_ROW_CLASS}" style="vertical-align:top;">
@@ -248,17 +256,12 @@ cx.jQuery(document).ready(function() {
         </td>
       </tr>
       <!-- END stats_exclusion -->
-      <!-- END stats_exclusion_list -->
-      <!-- BEGIN stats_exclusion_list_nodata -->
-      <tr class="row1">
-        <td nowrap="nowrap" width="100%" colspan="7">{TXT_NO_DATA_AVAILABLE}</td>
-      </tr>
-      <!-- END stats_exclusion_list_nodata -->
     </table>
     <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
     <a href="#" onclick="changeCheckboxes('stats_exclude_form','selectedIps[]',true); return false;">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
     <a href="#" onclick="changeCheckboxes('stats_exclude_form','selectedIps[]',false); return false;">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <input type="button" name="delete" value="{TXT_EXCLUSION_LIST_DELETE_MARKED}" onclick="deleteIps('stats_exclude_form');" />&nbsp;&nbsp;
+    <!-- END stats_exclusion_list -->
   </form>
 </div>
 <!-- end exclusion list div -->
