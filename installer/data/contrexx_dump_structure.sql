@@ -243,6 +243,30 @@ CREATE TABLE `contrexx_core_country` (
   `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_core_locale_locale` (
+  `iso_1` CHAR(2) NOT NULL,
+  `iso_3` CHAR(3) NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `source` TINYINT(1) NOT NULL,
+  PRIMARY KEY (`iso_1`)
+) ENGINE=InnoDB ;
+CREATE TABLE `contrexx_core_locale_frontend` (
+  `iso_1` CHAR(2) NOT NULL,
+  `label` VARCHAR(255) NULL,
+  `country` CHAR(2) NULL,
+  `fallback` CHAR(2) NULL,
+  `source_locale` CHAR(2) NOT NULL,
+  PRIMARY KEY (`iso_1`),
+  CONSTRAINT `fk_country_alpha2` FOREIGN KEY (`country`) REFERENCES `contrexx_core_country` (`alpha2`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_fallback_id` FOREIGN KEY (`fallback`) REFERENCES `contrexx_core_locale_frontend` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_source_locale` FOREIGN KEY (`source_locale`) REFERENCES `contrexx_core_locale_locale` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_iso_1_locale_frontend` FOREIGN KEY (`iso_1`) REFERENCES `contrexx_core_locale_locale` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB ;
+CREATE TABLE `contrexx_core_locale_backend` (
+  `iso_1` CHAR(2) NOT NULL,
+  PRIMARY KEY (`iso_1`),
+  CONSTRAINT `fk_iso_1_locale_backend` FOREIGN KEY (`iso_1`) REFERENCES `contrexx_core_locale_locale` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_core_mail_template` (
   `key` tinytext NOT NULL,
   `section` tinytext NOT NULL,
@@ -3526,6 +3550,14 @@ CREATE TABLE `contrexx_skins` (
   UNIQUE KEY `theme_unique` (`themesname`),
   UNIQUE KEY `folder_unique` (`foldername`)
 ) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_core_view_frontend` (
+  `language` CHAR(2) NOT NULL,
+  `theme` INT(2) UNSIGNED NULL,
+  `channel` ENUM('default', 'mobile', 'print', 'pdf', 'app') NULL,
+  PRIMARY KEY (`language`),
+  CONSTRAINT `fk_frontend_language` FOREIGN KEY (`language`) REFERENCES `contrexx_core_locale_locale` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_frontend_theme` FOREIGN KEY (`theme`) REFERENCES `contrexx_skins` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_stats_browser` (
   `id` int(6) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) binary NOT NULL DEFAULT '',
