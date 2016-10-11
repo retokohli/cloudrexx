@@ -194,11 +194,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         ) {
             return;
         }
+        $cache = $this->getComponent('Cache');
 
         // TODO: ESI variable should be registered in another way
-        global $objCache;
         $countryCodeEsi = '$(GEO{\'country_code\'})';
-        $countryNameEsi = $objCache->getEsiContent(
+        $countryNameEsi = $cache->getEsiContent(
             $this->getName(),
             'getCountryName',
             array(
@@ -216,8 +216,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         //Set the country name and code as cx.variables
         $objJS = \ContrexxJavascript::getInstance();
         $objJS->setVariable(array(
-            'countryName'   => trim($objCache->internalEsiParsing($countryNameEsi)),
-            'countryCode'   => trim($objCache->internalEsiParsing($countryCodeEsi)),
+            'countryName'   => trim($cache->internalEsiParsing($countryNameEsi)),
+            'countryCode'   => trim($cache->internalEsiParsing($countryCodeEsi)),
         ), 'geoIp');
     }
 
