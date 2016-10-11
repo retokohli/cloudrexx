@@ -123,6 +123,7 @@ class CacheLib
      */
     public function __construct()
     {
+        $this->setCachePath();
         $this->initOPCaching();
         $this->initUserCaching();
         $this->getActivatedCacheEngines();
@@ -157,6 +158,29 @@ class CacheLib
                 }
             }
             closedir($handleDir);
+        }
+    }
+
+    /**
+     * Sets the cache path
+     */
+    protected function setCachePath() {
+        // check the cache directory
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $this->checkCacheDir($cx);
+        $this->strCachePath = $cx->getWebsiteCachePath() . '/';
+    }
+
+    /**
+     * Makes sure that the cache directory exists and is writable
+     * @param \Cx\Core\Core\Controller\Cx $cx The contrexx instance
+     */
+    protected function checkCacheDir($cx) {
+        if (!is_dir($cx->getWebsiteCachePath())) {
+            \Cx\Lib\FileSystem\FileSystem::make_folder($cx->getWebsiteCachePath());
+        }
+        if (!is_writable($cx->getWebsiteCachePath())) {
+            \Cx\Lib\FileSystem\FileSystem::makeWritable($cx->getWebsiteCachePath());
         }
     }
 

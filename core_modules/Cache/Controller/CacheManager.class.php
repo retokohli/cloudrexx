@@ -234,7 +234,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             && $this->getUserCacheActive()
         ){
             $this->objTpl->touchBlock('memcachedCachingStats');
-            $memcachedStats = $this->memcache->getStats();
+            $memcachedStats = $this->memcached->getStats();
         }else{
             $this->objTpl->hideBlock('memcachedCachingStats');
         }

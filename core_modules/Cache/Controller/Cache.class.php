@@ -68,23 +68,13 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      */
     public function __construct()
     {
-        $this->initContrexxCaching();
         parent::__construct();
+        $this->initContrexxCaching();
     }
 
     protected function initContrexxCaching()
     {
         global $_CONFIG;
-
-        // check the cache directory
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        if (!is_dir($cx->getWebsiteCachePath())) {
-            \Cx\Lib\FileSystem\FileSystem::make_folder($cx->getWebsiteCachePath());
-        }
-        if (!is_writable($cx->getWebsiteCachePath())) {
-            \Cx\Lib\FileSystem\FileSystem::makeWritable($cx->getWebsiteCachePath());
-        }
-        $this->strCachePath = $cx->getWebsiteCachePath() . '/';
 
         // in case the request's origin is from a mobile devie
         // and this is the first request (the InitCMS object wasn't yet
