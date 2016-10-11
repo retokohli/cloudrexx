@@ -69,9 +69,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
     public function __construct()
     {
         $this->initContrexxCaching();
-        $this->initOPCaching();
-        $this->initUserCaching();
-        $this->getActivatedCacheEngines();
+        parent::__construct();
     }
 
     protected function initContrexxCaching()
@@ -206,9 +204,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      * @return string Parsed HTML code
      */
     public function internalEsiParsing($htmlCode, $cxNotYetInitialized = false) {
-        global $objCache;
         
-        if (!is_a($objCache->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx')) {
+        if (!is_a($this->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx')) {
             return $htmlCode;
         }
         
