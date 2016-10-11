@@ -1,0 +1,61 @@
+Cx\Core\Locale\Model\Entity\Frontend:
+  type: entity
+  table: core_locale_frontend
+  repositoryClass: Cx\Core\Locale\Model\Repository\FrontendRepository
+  indexes:
+    fk_country_alpha2:
+      columns: [ country ]
+    fk_fallback_id:
+      columns: [ fallback ]
+    fk_source_locale_idx:
+      columns: [ source_locale ]
+  id:
+    iso_1:
+      type: string
+      length: 2
+  fields:
+    label:
+      type: string
+      length: 255
+      nullable: true
+    country:
+      type: string
+      length: 2
+      nullable: true
+  uniqueConstraints:
+    unique_country_locale:
+      columns: [ country ]
+  oneToMany:
+    fallbacks:
+      targetEntity: Frontend
+      mappedBy: frontendIso1
+      joinColumn:
+        name: iso_1
+        referencedColumnName: fallback
+  manyToOne:
+    locale:
+      targetEntity: Locale
+      inversedBy: iso1s
+      joinColumn:
+        name: iso_1
+        referencedColumnName: iso_1
+    alpha2:
+      targetEntity: Cx\Core\Country\Model\Entity\Country
+      inversedBy: languages
+      joinColumn:
+        name: country
+        referencedColumnName: alpha2
+        nullable: true
+    frontend:
+      targetEntity: Frontend
+      inversedBy: languages
+      joinColumn:
+        name: fallback
+        referencedColumnName: iso_1
+        nullable: true
+    sourceLocale:
+      targetEntity: Locale
+      inversedBy: sourceLocales
+      joinColumn:
+        name: source_locale
+        referencedColumnName: iso_1

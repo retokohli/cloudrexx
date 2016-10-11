@@ -1,0 +1,15 @@
+Cx\Core\Locale\Model\Entity\Backend:
+  type: entity
+  table: core_locale_backend
+  repositoryClass: Cx\Core\Locale\Model\Repository\BackendRepository
+  id:
+    iso_1:
+      type: string
+      length: 2
+  manyToOne:
+    locale:
+      targetEntity: Locale
+      inversedBy: iso1s
+      joinColumn:
+        name: iso_1
+        referencedColumnName: iso_1

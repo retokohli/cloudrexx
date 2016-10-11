@@ -1,0 +1,33 @@
+Cx\Core\View\Model\Entity\Frontend:
+  type: entity
+  table: core_view_frontend
+  repositoryClass: Cx\Core\View\Model\Repository\FrontendRepository
+  indexes:
+    fk_frontend_theme_idx:
+      columns: [ theme ]
+  id:
+    language:
+      type: string
+      length: 2
+  fields:
+    theme:
+      type: integer
+      nullable: true
+      unsigned: true
+    channel:
+      type: string
+      nullable: true
+  manyToOne:
+    :
+      targetEntity: Cx\Core\Locale\Model\Entity\
+      inversedBy: frontends
+      joinColumn:
+        name: language
+        referencedColumnName: iso_1
+    skin:
+      targetEntity: \Model\Entity\Skin
+      inversedBy: frontends
+      joinColumn:
+        name: theme
+        referencedColumnName: id
+        nullable: true

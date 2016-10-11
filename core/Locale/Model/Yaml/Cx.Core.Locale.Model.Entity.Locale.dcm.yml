@@ -1,0 +1,43 @@
+Cx\Core\Locale\Model\Entity\Locale:
+  type: entity
+  table: core_locale
+  repositoryClass: Cx\Core\Locale\Model\Repository\Repository
+  id:
+    iso_1:
+      type: string
+      length: 2
+  fields:
+    iso_3:
+      type: string
+      length: 3
+      nullable: true
+    name:
+      type: string
+      length: 255
+    source:
+      type: boolean
+  oneToMany:
+    iso1s:
+      targetEntity: Backend
+      mappedBy: iso1
+      joinColumn:
+        name: iso_1
+        referencedColumnName: iso_1
+    sourceLocales:
+      targetEntity: Frontend
+      mappedBy: sourceLocale
+      joinColumn:
+        name: iso_1
+        referencedColumnName: source_locale
+    iso1s:
+      targetEntity: Frontend
+      mappedBy: iso1
+      joinColumn:
+        name: iso_1
+        referencedColumnName: iso_1
+    languages:
+      targetEntity: Frontend
+      mappedBy: frontend
+      joinColumn:
+        name: iso_1
+        referencedColumnName: language
