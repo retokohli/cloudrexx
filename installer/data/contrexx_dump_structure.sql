@@ -236,12 +236,11 @@ CREATE TABLE `contrexx_content_page` (
   CONSTRAINT `contrexx_content_page_ibfk_3` FOREIGN KEY (`node_id`) REFERENCES `contrexx_content_node` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_core_country` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `alpha2` char(2) NOT NULL DEFAULT '',
   `alpha3` char(3) NOT NULL DEFAULT '',
   `ord` int(5) unsigned NOT NULL DEFAULT '0',
-  `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`alpha2`),
+  UNIQUE KEY `alpha3` (`alpha3`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_core_mail_template` (
   `key` tinytext NOT NULL,
