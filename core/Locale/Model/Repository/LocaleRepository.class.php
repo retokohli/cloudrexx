@@ -1,6 +1,6 @@
 <?php
 
-namespace Cx\Core\Locale\Model\LocaleRepository;
+namespace Cx\Core\Locale\Model\Repository;
 
 use Doctrine\ORM\EntityRepository;
 

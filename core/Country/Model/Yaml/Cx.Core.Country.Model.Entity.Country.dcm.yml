@@ -20,7 +20,7 @@ Cx\Core\Country\Model\Entity\Country:
       columns: [ alpha3 ]
   oneToMany:
     countries:
-      targetEntity: Frontend
+      targetEntity: Cx\Core\Locale\Model\Entity\Frontend
       mappedBy: country
       joinColumn:
         name: alpha2
