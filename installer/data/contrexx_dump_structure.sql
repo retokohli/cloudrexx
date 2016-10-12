@@ -279,7 +279,6 @@ CREATE TABLE `contrexx_core_locale_frontend` (
 CREATE TABLE `contrexx_core_locale_locale` (
   `iso_1` char(2) COLLATE utf8_unicode_ci NOT NULL,
   `iso_3` char(3) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `source` tinyint(1) NOT NULL,
   PRIMARY KEY (`iso_1`)
 ) ENGINE=InnoDB;
