@@ -741,6 +741,7 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (114,'DataSource'
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (115,'Sync','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (116,'Model','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (118,'Locale','core');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (119,'Country','core');
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (1,NULL,1,336,0);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (2,1,2,3,1);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (3,34,11,12,2);
@@ -5857,6 +5858,7 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variab
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (115,'Sync','Cloudrexx AG','TXT_CORE_MODULE_SYNC_DESCRIPTION','y',1,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (116,'Model','Cloudrexx AG','TXT_CORE_MODEL_DESCRIPTION','y',1,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (118,'Locale','Cloudrexx AG','TXT_CORE_LOCALE_DESCRIPTION','y',1,1,1,1,NULL);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (119,'Country','Cloudrexx AG','TXT_CORE_COUNTRY_DESCRIPTION','y',1,1,1,1,NULL);
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (1,'image_cut_width','500');
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (2,'image_cut_height','500');
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (3,'image_scale_width','800');
