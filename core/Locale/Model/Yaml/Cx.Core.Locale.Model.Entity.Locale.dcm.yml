@@ -1,7 +1,7 @@
 Cx\Core\Locale\Model\Entity\Locale:
   type: entity
-  table: core_locale
-  repositoryClass: Cx\Core\Locale\Model\Repository\Repository
+  table: core_locale_locale
+  repositoryClass: Cx\Core\Locale\Model\Repository\LocaleRepository
   id:
     iso_1:
       type: string
@@ -11,9 +11,6 @@ Cx\Core\Locale\Model\Entity\Locale:
       type: string
       length: 3
       nullable: true
-    name:
-      type: string
-      length: 255
     source:
       type: boolean
   oneToMany:

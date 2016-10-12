@@ -235,7 +235,7 @@ CREATE TABLE `contrexx_content_page` (
   KEY `IDX_D8E86F54460D9FD7` (`node_id`),
   CONSTRAINT `contrexx_content_page_ibfk_3` FOREIGN KEY (`node_id`) REFERENCES `contrexx_content_node` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
 ) ENGINE=InnoDB ;
-CREATE TABLE `contrexx_core_country` (
+CREATE TABLE `contrexx_core_country_country` (
   `alpha2` char(2) NOT NULL DEFAULT '',
   `alpha3` char(3) NOT NULL DEFAULT '',
   `ord` int(5) unsigned NOT NULL DEFAULT '0',
@@ -270,7 +270,7 @@ CREATE TABLE `contrexx_core_locale_frontend` (
   `fallback` char(2) COLLATE utf8_unicode_ci DEFAULT NULL,
   `source_locale` char(2) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`iso_1`),
-  CONSTRAINT `contrexx_core_locale_frontend_ibfk_country` FOREIGN KEY (`country`) REFERENCES `contrexx_core_country` (`alpha2`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `contrexx_core_locale_frontend_ibfk_country` FOREIGN KEY (`country`) REFERENCES `contrexx_core_country_country` (`alpha2`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `contrexx_core_locale_frontend_ibfk_fallback` FOREIGN KEY (`fallback`) REFERENCES `contrexx_core_locale_frontend` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `contrexx_core_locale_frontend_ibfk_iso_1` FOREIGN KEY (`iso_1`) REFERENCES `contrexx_core_locale_locale` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `contrexx_core_locale_frontend_ibfk_source_locale` FOREIGN KEY (`source_locale`) REFERENCES `contrexx_core_locale_locale` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION

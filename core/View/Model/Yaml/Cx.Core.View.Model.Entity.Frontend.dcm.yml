@@ -3,7 +3,7 @@ Cx\Core\View\Model\Entity\Frontend:
   table: core_view_frontend
   repositoryClass: Cx\Core\View\Model\Repository\FrontendRepository
   indexes:
-    fk_frontend_theme_idx:
+    contrexx_core_view_frontend_ibfk_theme:
       columns: [ theme ]
   id:
     language:
