@@ -5,8 +5,7 @@ namespace Cx\Core\Locale\Model\Entity;
 /**
  * Cx\Core\Locale\Model\Entity\Locale
  */
-class Locale extends \Cx\Model\Base\EntityBase
-{
+class Locale extends \Cx\Model\Base\EntityBase {
     /**
      * @var string $iso_1
      */
@@ -18,19 +17,14 @@ class Locale extends \Cx\Model\Base\EntityBase
     private $iso_3;
 
     /**
-     * @var string $name
-     */
-    private $name;
-
-    /**
      * @var boolean $source
      */
     private $source;
 
     /**
-     * @var Cx\Core\Locale\Model\Entity\Frontend
+     * @var Cx\Core\Locale\Model\Entity\Backend
      */
-    private $iso1s;
+    private $iso1Backends;
 
     /**
      * @var Cx\Core\Locale\Model\Entity\Frontend
@@ -40,13 +34,29 @@ class Locale extends \Cx\Model\Base\EntityBase
     /**
      * @var Cx\Core\Locale\Model\Entity\Frontend
      */
+    private $iso1Frontends;
+
+    /**
+     * @var Cx\Core\Locale\Model\Entity\Frontend
+     */
     private $languages;
 
     public function __construct()
     {
-        $this->iso1s = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->sourceLocales = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->languages = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->iso1Backends = new \Doctrine\Common\Collections\ArrayCollection();
+    $this->sourceLocales = new \Doctrine\Common\Collections\ArrayCollection();
+    $this->iso1Frontends = new \Doctrine\Common\Collections\ArrayCollection();
+    $this->languages = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
+     * Set iso_1
+     *
+     * @param string $iso1
+     */
+    public function setIso1($iso1)
+    {
+        $this->iso_1 = $iso1;
     }
 
     /**
@@ -60,13 +70,13 @@ class Locale extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Set iso_1
+     * Set iso_3
      *
-     * @param string $iso1
+     * @param string $iso3
      */
-    public function setIso1($iso1)
+    public function setIso3($iso3)
     {
-        $this->iso_1 = $iso1;
+        $this->iso_3 = $iso3;
     }
 
     /**
@@ -80,33 +90,13 @@ class Locale extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Set iso_3
+     * Set source
      *
-     * @param string $iso3
+     * @param boolean $source
      */
-    public function setIso3($iso3)
+    public function setSource($source)
     {
-        $this->iso_3 = $iso3;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string $name
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+        $this->source = $source;
     }
 
     /**
@@ -120,33 +110,23 @@ class Locale extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Set source
+     * Add iso1Backends
      *
-     * @param boolean $source
+     * @param Cx\Core\Locale\Model\Entity\Backend $iso1Backends
      */
-    public function setSource($source)
+    public function addIso1Backends(\Cx\Core\Locale\Model\Entity\Backend $iso1Backends)
     {
-        $this->source = $source;
+        $this->iso1Backends[] = $iso1Backends;
     }
 
     /**
-     * Add iso1s
+     * Get iso1Backends
      *
-     * @param Cx\Core\Locale\Model\Entity\Frontend $iso1s
+     * @return Doctrine\Common\Collections\Collection $iso1Backends
      */
-    public function addIso1s(\Cx\Core\Locale\Model\Entity\Frontend $iso1s)
+    public function getIso1Backends()
     {
-        $this->iso1s[] = $iso1s;
-    }
-
-    /**
-     * Get iso1s
-     *
-     * @return Doctrine\Common\Collections\Collection $iso1s
-     */
-    public function getIso1s()
-    {
-        return $this->iso1s;
+        return $this->iso1Backends;
     }
 
     /**
@@ -167,6 +147,26 @@ class Locale extends \Cx\Model\Base\EntityBase
     public function getSourceLocales()
     {
         return $this->sourceLocales;
+    }
+
+    /**
+     * Add iso1Frontends
+     *
+     * @param Cx\Core\Locale\Model\Entity\Frontend $iso1Frontends
+     */
+    public function addIso1Frontends(\Cx\Core\Locale\Model\Entity\Frontend $iso1Frontends)
+    {
+        $this->iso1Frontends[] = $iso1Frontends;
+    }
+
+    /**
+     * Get iso1Frontends
+     *
+     * @return Doctrine\Common\Collections\Collection $iso1Frontends
+     */
+    public function getIso1Frontends()
+    {
+        return $this->iso1Frontends;
     }
 
     /**

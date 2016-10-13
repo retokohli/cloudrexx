@@ -5,8 +5,7 @@ namespace Cx\Core\Locale\Model\Entity;
 /**
  * Cx\Core\Locale\Model\Entity\Frontend
  */
-class Frontend extends \Cx\Model\Base\EntityBase
-{
+class Frontend extends \Cx\Model\Base\EntityBase {
     /**
      * @var string $iso_1
      */
@@ -16,11 +15,6 @@ class Frontend extends \Cx\Model\Base\EntityBase
      * @var string $label
      */
     private $label;
-
-    /**
-     * @var string $country
-     */
-    private $country;
 
     /**
      * @var Cx\Core\Locale\Model\Entity\Frontend
@@ -33,18 +27,38 @@ class Frontend extends \Cx\Model\Base\EntityBase
     private $locale;
 
     /**
-     * @var Cx\Core\Locale\Model\Entity\Frontend
+     * @var Cx\Core\Country\Model\Entity\Country
      */
-    private $frontend;
+    private $country;
 
     /**
      * @var Cx\Core\Locale\Model\Entity\Locale
      */
     private $sourceLocale;
 
+    /**
+     * @var Cx\Core\Locale\Model\Entity\Frontend
+     */
+    private $frontend;
+
+    /**
+     * @var Cx\Core\Locale\Model\Entity\Frontend
+     */
+    private $fallback;
+
     public function __construct()
     {
         $this->fallbacks = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
+     * Set iso_1
+     *
+     * @param string $iso1
+     */
+    public function setIso1($iso1)
+    {
+        $this->iso_1 = $iso1;
     }
 
     /**
@@ -58,26 +72,6 @@ class Frontend extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Set iso_1
-     *
-     * @param string $iso1
-     */
-    public function setIso1($iso1)
-    {
-        $this->iso_1 = $iso1;
-    }
-
-    /**
-     * Get label
-     *
-     * @return string $label
-     */
-    public function getLabel()
-    {
-        return $this->label;
-    }
-
-    /**
      * Set label
      *
      * @param string $label
@@ -88,23 +82,13 @@ class Frontend extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Get country
+     * Get label
      *
-     * @return string $country
+     * @return string $label
      */
-    public function getCountry()
+    public function getLabel()
     {
-        return $this->country;
-    }
-
-    /**
-     * Set country
-     *
-     * @param string $country
-     */
-    public function setCountry($country)
-    {
-        $this->country = $country;
+        return $this->label;
     }
 
     /**
@@ -128,16 +112,6 @@ class Frontend extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Get locale
-     *
-     * @return Cx\Core\Locale\Model\Entity\Locale $locale
-     */
-    public function getLocale()
-    {
-        return $this->locale;
-    }
-
-    /**
      * Set locale
      *
      * @param Cx\Core\Locale\Model\Entity\Locale $locale
@@ -148,23 +122,43 @@ class Frontend extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Get frontend
+     * Get locale
      *
-     * @return Cx\Core\Locale\Model\Entity\Frontend $frontend
+     * @return Cx\Core\Locale\Model\Entity\Locale $locale
      */
-    public function getFrontend()
+    public function getLocale()
     {
-        return $this->frontend;
+        return $this->locale;
     }
 
     /**
-     * Set frontend
+     * Set country
      *
-     * @param Cx\Core\Locale\Model\Entity\Frontend $frontend
+     * @param Cx\Core\Country\Model\Entity\Country $country
      */
-    public function setFrontend(\Cx\Core\Locale\Model\Entity\Frontend $frontend)
+    public function setCountry(\Cx\Core\Country\Model\Entity\Country $country)
     {
-        $this->frontend = $frontend;
+        $this->country = $country;
+    }
+
+    /**
+     * Get country
+     *
+     * @return Cx\Core\Country\Model\Entity\Country $country
+     */
+    public function getCountry()
+    {
+        return $this->country;
+    }
+
+    /**
+     * Set sourceLocale
+     *
+     * @param Cx\Core\Locale\Model\Entity\Locale $sourceLocale
+     */
+    public function setSourceLocale(\Cx\Core\Locale\Model\Entity\Locale $sourceLocale)
+    {
+        $this->sourceLocale = $sourceLocale;
     }
 
     /**
@@ -178,12 +172,42 @@ class Frontend extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Set sourceLocale
+     * Set frontend
      *
-     * @param Cx\Core\Locale\Model\Entity\Locale $sourceLocale
+     * @param Cx\Core\Locale\Model\Entity\Frontend $frontend
      */
-    public function setSourceLocale(\Cx\Core\Locale\Model\Entity\Locale $sourceLocale)
+    public function setFrontend(\Cx\Core\Locale\Model\Entity\Frontend $frontend)
     {
-        $this->sourceLocale = $sourceLocale;
+        $this->frontend = $frontend;
+    }
+
+    /**
+     * Get frontend
+     *
+     * @return Cx\Core\Locale\Model\Entity\Frontend $frontend
+     */
+    public function getFrontend()
+    {
+        return $this->frontend;
+    }
+
+    /**
+     * Set fallback
+     *
+     * @param Cx\Core\Locale\Model\Entity\Frontend $fallback
+     */
+    public function setFallback(\Cx\Core\Locale\Model\Entity\Frontend $fallback)
+    {
+        $this->fallback = $fallback;
+    }
+
+    /**
+     * Get fallback
+     *
+     * @return Cx\Core\Locale\Model\Entity\Frontend $fallback
+     */
+    public function getFallback()
+    {
+        return $this->fallback;
     }
 }
