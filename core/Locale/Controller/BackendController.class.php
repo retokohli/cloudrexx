@@ -26,24 +26,42 @@
  */
 
 /**
- * This is the english language file for backend mode.
- * This file is included by Cloudrexx and all entries are set as placeholder
- * values for backend ACT template by SystemComponentBackendController
+ * Backend controller to create the locale backend view.
  *
- * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
+ * @copyright   Cloudrexx AG
  * @author      Manuel Schenk <manuel.schenk@comvation.com>
  * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
  * @package     cloudrexx
  * @subpackage  core_locale
+ * @version     5.0.0
  */
 
-global $_ARRAYLANG;
+namespace Cx\Core\Locale\Controller;
 
-// General module info:
-$_ARRAYLANG['TXT_CORE_LOCALE'] = 'Locale';
-$_ARRAYLANG['TXT_CORE_LOCALE_DESCRIPTION'] = 'Handles language versions by their country and/or the effective language.';
+/**
+ * Backend controller to create the locale backend view.
+ * @copyright   Cloudrexx AG
+ * @author      Manuel Schenk <manuel.schenk@comvation.com>
+ * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
+ * @package     cloudrexx
+ * @subpackage  core_locale
+ * @version     5.0.0
+ */
+class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
 
-// Module ACTs:
-$_ARRAYLANG['TXT_CORE_LOCALE_ACT_DEFAULT'] = 'Frontend';
-$_ARRAYLANG['TXT_CORE_LOCALE_ACT_FRONTEND'] = 'Frontend';
-$_ARRAYLANG['TXT_CORE_LOCALE_ACT_BACKEND'] = 'Backend';
+    /**
+     * Returns a list of available commands (?act=XY)
+     * @return array List of acts
+     */
+    public function getCommands() {
+        return array('Frontend', 'Backend');
+    }
+
+    /**
+     * Return true here if you want the first tab to be an entity view
+     * @return boolean True if overview should be shown, false otherwise
+     */
+    protected function showOverviewPage() {
+        return false;
+    }
+}

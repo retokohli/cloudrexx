@@ -26,24 +26,37 @@
  */
 
 /**
- * This is the english language file for backend mode.
- * This file is included by Cloudrexx and all entries are set as placeholder
- * values for backend ACT template by SystemComponentBackendController
+ * This is the locale component controller
  *
- * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
+ * @copyright   Cloudrexx AG
  * @author      Manuel Schenk <manuel.schenk@comvation.com>
  * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
  * @package     cloudrexx
  * @subpackage  core_locale
+ * @version     5.0.0
  */
 
-global $_ARRAYLANG;
+namespace Cx\Core\Locale\Controller;
 
-// General module info:
-$_ARRAYLANG['TXT_CORE_LOCALE'] = 'Locale';
-$_ARRAYLANG['TXT_CORE_LOCALE_DESCRIPTION'] = 'Handles language versions by their country and/or the effective language.';
+/**
+ * This is the locale component controller
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Manuel Schenk <manuel.schenk@comvation.com>
+ * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
+ * @package     cloudrexx
+ * @subpackage  core_locale
+ * @version     5.0.0
+ */
+class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
 
-// Module ACTs:
-$_ARRAYLANG['TXT_CORE_LOCALE_ACT_DEFAULT'] = 'Frontend';
-$_ARRAYLANG['TXT_CORE_LOCALE_ACT_FRONTEND'] = 'Frontend';
-$_ARRAYLANG['TXT_CORE_LOCALE_ACT_BACKEND'] = 'Backend';
+    /**
+     * Returns all Controller class names for this component (except this)
+     *
+     * Be sure to return all your controller classes if you add your own
+     * @return array List of Controller class names (without namespace)
+     */
+    public function getControllerClasses() {
+        return array('Backend');
+    }
+}
