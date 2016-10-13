@@ -9,37 +9,37 @@ class Locale extends \Cx\Model\Base\EntityBase {
     /**
      * @var string $iso_1
      */
-    private $iso_1;
+    protected $iso_1;
 
     /**
      * @var string $iso_3
      */
-    private $iso_3;
+    protected $iso_3;
 
     /**
      * @var boolean $source
      */
-    private $source;
+    protected $source;
 
     /**
      * @var Cx\Core\Locale\Model\Entity\Backend
      */
-    private $iso1Backends;
+    protected $iso1Backends;
 
     /**
      * @var Cx\Core\Locale\Model\Entity\Frontend
      */
-    private $sourceLocales;
+    protected $sourceLocales;
 
     /**
      * @var Cx\Core\Locale\Model\Entity\Frontend
      */
-    private $iso1Frontends;
+    protected $iso1Frontends;
 
     /**
      * @var Cx\Core\Locale\Model\Entity\Frontend
      */
-    private $languages;
+    protected $languages;
 
     public function __construct()
     {

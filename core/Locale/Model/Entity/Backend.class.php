@@ -9,12 +9,12 @@ class Backend extends \Cx\Model\Base\EntityBase {
     /**
      * @var string $iso_1
      */
-    private $iso_1;
+    protected $iso_1;
 
     /**
      * @var Cx\Core\Locale\Model\Entity\Locale
      */
-    private $locale;
+    protected $locale;
 
 
     /**

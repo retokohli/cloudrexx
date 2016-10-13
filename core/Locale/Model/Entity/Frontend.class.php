@@ -9,42 +9,42 @@ class Frontend extends \Cx\Model\Base\EntityBase {
     /**
      * @var string $iso_1
      */
-    private $iso_1;
+    protected $iso_1;
 
     /**
      * @var string $label
      */
-    private $label;
+    protected $label;
 
     /**
      * @var Cx\Core\Locale\Model\Entity\Frontend
      */
-    private $fallbacks;
+    protected $fallbacks;
 
     /**
      * @var Cx\Core\Locale\Model\Entity\Locale
      */
-    private $locale;
+    protected $locale;
 
     /**
      * @var Cx\Core\Country\Model\Entity\Country
      */
-    private $country;
+    protected $country;
 
     /**
      * @var Cx\Core\Locale\Model\Entity\Locale
      */
-    private $sourceLocale;
+    protected $sourceLocale;
 
     /**
      * @var Cx\Core\Locale\Model\Entity\Frontend
      */
-    private $frontend;
+    protected $frontend;
 
     /**
      * @var Cx\Core\Locale\Model\Entity\Frontend
      */
-    private $fallback;
+    protected $fallback;
 
     public function __construct()
     {
