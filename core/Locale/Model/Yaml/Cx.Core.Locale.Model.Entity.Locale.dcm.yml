@@ -14,9 +14,9 @@ Cx\Core\Locale\Model\Entity\Locale:
     source:
       type: boolean
   oneToMany:
-    iso1s:
+    iso1Backends:
       targetEntity: Backend
-      mappedBy: iso1
+      mappedBy: locale
       joinColumn:
         name: iso_1
         referencedColumnName: iso_1
@@ -26,15 +26,9 @@ Cx\Core\Locale\Model\Entity\Locale:
       joinColumn:
         name: iso_1
         referencedColumnName: source_locale
-    iso1s:
+    iso1Frontends:
       targetEntity: Frontend
-      mappedBy: iso1
+      mappedBy: locale
       joinColumn:
         name: iso_1
         referencedColumnName: iso_1
-    languages:
-      targetEntity: Frontend
-      mappedBy: frontend
-      joinColumn:
-        name: iso_1
-        referencedColumnName: language

@@ -9,7 +9,7 @@ Cx\Core\Locale\Model\Entity\Backend:
   manyToOne:
     locale:
       targetEntity: Locale
-      inversedBy: iso1s
+      inversedBy: iso1Backends
       joinColumn:
         name: iso_1
         referencedColumnName: iso_1

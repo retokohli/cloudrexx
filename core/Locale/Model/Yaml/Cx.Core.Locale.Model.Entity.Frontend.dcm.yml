@@ -23,15 +23,12 @@ Cx\Core\Locale\Model\Entity\Frontend:
       columns: [ country ]
   oneToMany:
     fallbacks:
-      targetEntity: Frontend
-      mappedBy: frontendIso1
-      joinColumn:
-        name: iso_1
-        referencedColumnName: fallback
+      targetEntity: Cx\Core\Locale\Model\Entity\Frontend
+      mappedBy: fallback
   manyToOne:
     locale:
       targetEntity: Locale
-      inversedBy: iso1s
+      inversedBy: iso1Frontends
       joinColumn:
         name: iso_1
         referencedColumnName: iso_1
@@ -42,16 +39,15 @@ Cx\Core\Locale\Model\Entity\Frontend:
         name: country
         referencedColumnName: alpha2
         nullable: true
-    frontend:
-      targetEntity: Frontend
-      inversedBy: languages
-      joinColumn:
-        name: fallback
-        referencedColumnName: iso_1
-        nullable: true
     sourceLocale:
       targetEntity: Locale
       inversedBy: sourceLocales
       joinColumn:
         name: source_locale
+        referencedColumnName: iso_1
+    fallback:
+      targetEntity: Cx\Core\Locale\Model\Entity\Frontend
+      inversedBy: fallbacks
+      joinColumn:
+        name: fallback
         referencedColumnName: iso_1
