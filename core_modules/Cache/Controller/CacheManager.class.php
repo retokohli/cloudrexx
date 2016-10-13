@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Cache
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
@@ -68,7 +68,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
     function __construct()
     {
         global $objTemplate, $_ARRAYLANG, $objInit;
-        
+
         $this->objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/Cache/View/Template/Backend');
         $langData = $objInit->loadLanguageData('Cache');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->objTpl);
@@ -77,37 +77,20 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $this->arrSettings = $this->getSettings();
         $this->objSettings = new \Cx\Core\Config\Controller\Config();
 
-        if (is_dir(ASCMS_CACHE_PATH)) {
-            if (is_writable(ASCMS_CACHE_PATH)) {
-                $this->strCachePath = ASCMS_CACHE_PATH . '/';
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (is_dir($cx->getWebsiteCachePath())) {
+            if (is_writable($cx->getWebsiteCachePath())) {
+                $this->strCachePath = $cx->getWebsiteCachePath() . '/';
             } else {
-                $objTemplate->SetVariable('CONTENT_STATUS_MESSAGE', $_ARRAYLANG['TXT_CACHE_ERR_NOTWRITABLE'] . ASCMS_CACHE_PATH);
+                $objTemplate->SetVariable('CONTENT_STATUS_MESSAGE', $_ARRAYLANG['TXT_CACHE_ERR_NOTWRITABLE'] . $cx->getWebsiteCachePath());
             }
         } else {
-            $objTemplate->SetVariable('CONTENT_STATUS_MESSAGE', $_ARRAYLANG['TXT_CACHE_ERR_NOTEXIST'] . ASCMS_CACHE_PATH);
+            $objTemplate->SetVariable('CONTENT_STATUS_MESSAGE', $_ARRAYLANG['TXT_CACHE_ERR_NOTEXIST'] . $cx->getWebsiteCachePath());
         }
-        
+
         $this->initOPCaching();
         $this->initUserCaching();
         $this->getActivatedCacheEngines();
-    }
-
-    /**
-     * Creates an array containing all important cache-settings
-     *
-     * @global     object    $objDatabase
-     * @return    array    $arrSettings
-     */
-    function getSettings() {
-        $arrSettings = array();
-        \Cx\Core\Setting\Controller\Setting::init('Config', NULL,'Yaml');
-        $ymlArray = \Cx\Core\Setting\Controller\Setting::getArray('Config', null);
-
-        foreach ($ymlArray as $key => $ymlValue){
-            $arrSettings[$key] = $ymlValue['value'];
-        }
-
-        return $arrSettings;
     }
 
     /**
@@ -150,7 +133,6 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             'TXT_CACHE_INSTALLATION_STATE' => $_ARRAYLANG['TXT_CACHE_INSTALLATION_STATE'],
             'TXT_CACHE_ACTIVE_STATE' => $_ARRAYLANG['TXT_CACHE_ACTIVE_STATE'],
             'TXT_CACHE_CONFIGURATION_STATE' => $_ARRAYLANG['TXT_CACHE_CONFIGURATION_STATE'],
-            'TXT_CACHING' => $_ARRAYLANG['TXT_CACHING'],
             'TXT_SETTINGS_SAVE' => $_ARRAYLANG['TXT_SAVE'],
             'TXT_SETTINGS_ON' => $_ARRAYLANG['TXT_ACTIVATED'],
             'TXT_SETTINGS_OFF' => $_ARRAYLANG['TXT_DEACTIVATED'],
@@ -172,10 +154,8 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             'TXT_DEACTIVATED' => $_ARRAYLANG['TXT_DEACTIVATED'],
             'TXT_DISPLAY_CONFIGURATION' => $_ARRAYLANG['TXT_DISPLAY_CONFIGURATION'],
             'TXT_HIDE_CONFIGURATION' => $_ARRAYLANG['TXT_HIDE_CONFIGURATION'],
-            'TXT_CACHE_VARNISH'    => $_ARRAYLANG['TXT_CACHE_VARNISH'],
-            'TXT_CACHE_PROXY_IP'    => $_ARRAYLANG['TXT_CACHE_PROXY_IP'],
-            'TXT_CACHE_PROXY_PORT'  => $_ARRAYLANG['TXT_CACHE_PROXY_PORT']
         ));
+        $this->objTpl->setVariable($_ARRAYLANG);
 
         if ($this->objSettings->isWritable()) {
             $this->objTpl->parse('cache_submit_button');
@@ -183,7 +163,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             $this->objTpl->hideBlock('cache_submit_button');
             $objTemplate->SetVariable('CONTENT_STATUS_MESSAGE', implode("<br />\n", $this->objSettings->strErrMessage));
         }
-        
+
         // parse op cache engines
         $this->parseOPCacheEngines();
         // parse user cache engines
@@ -191,7 +171,8 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
         $this->parseMemcacheSettings();
         $this->parseMemcachedSettings();
-        $this->parseVarnishSettings();
+        $this->parseReverseProxySettings();
+        $this->parseSsiProcessorSettings();
 
         $intFoldersizePages = 0;
         $intFoldersizeEntries = 0;
@@ -214,7 +195,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             $intFoldersizeEntries = filesize($this->strCachePath) - $intFoldersizePages - filesize($this->strCachePath . '.htaccess');
             closedir($handleFolder);
         }
-        
+
         if (   $this->isInstalled(self::CACHE_ENGINE_APC)
             && $this->isConfigured(self::CACHE_ENGINE_APC)
             && (
@@ -276,15 +257,15 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         }
         $apcMaxSizeKb = isset($apcSmaInfo['num_seg']) && isset($apcSmaInfo['seg_size']) ? $apcSmaInfo['num_seg']*$apcSmaInfo['seg_size'] / 1024 : 0;
         $apcSizeKb = isset($apcCacheInfo['mem_size']) ? $apcCacheInfo['mem_size'] / 1024 : 0;
-        
+
         $opcacheSizeCount = !isset($opCacheStatus) || $opCacheStatus == false ? 0 : $opCacheStatus['opcache_statistics']['num_cached_scripts'];
         $opcacheSizeKb = (!isset($opCacheStatus) || $opCacheStatus == false ? 0 : $opCacheStatus['memory_usage']['used_memory']) / (1024 * 1024);
         $opcacheMaxSizeKb = isset($opCacheConfig['directives']['opcache.memory_consumption']) ? $opCacheConfig['directives']['opcache.memory_consumption'] / (1024 * 1024) : 0;
-        
+
         $memcacheEntriesCount = isset($memcacheStats['curr_items']) ? $memcacheStats['curr_items'] : 0;
         $memcacheSizeMb = isset($memcacheStats['bytes']) ? $memcacheStats['bytes'] / (1024 *1024) : 0;
         $memcacheMaxSizeMb = isset($memcacheStats['limit_maxbytes']) ? $memcacheStats['limit_maxbytes'] / (1024 *1024) : 0;
-        
+
         $this->objTpl->setVariable(array(
             'SETTINGS_STATUS_ON' => ($this->arrSettings['cacheEnabled'] == 'on') ? 'checked' : '',
             'SETTINGS_STATUS_OFF' => ($this->arrSettings['cacheEnabled'] == 'off') ? 'checked' : '',
@@ -292,8 +273,16 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             'SETTINGS_OP_CACHE_STATUS_OFF'  => ($this->arrSettings['cacheOpStatus'] == 'off') ? 'checked' : '',
             'SETTINGS_DB_CACHE_STATUS_ON'   => ($this->arrSettings['cacheDbStatus'] == 'on') ? 'checked' : '',
             'SETTINGS_DB_CACHE_STATUS_OFF'  => ($this->arrSettings['cacheDbStatus'] == 'off') ? 'checked' : '',
-            'SETTINGS_VARNISH_CACHE_STATUS_ON'  => ($this->arrSettings['cacheVarnishStatus'] == 'on') ? 'checked' : '',
-            'SETTINGS_VARNISH_CACHE_STATUS_OFF' => ($this->arrSettings['cacheVarnishStatus'] == 'off') ? 'checked' : '',            
+            'SETTINGS_CACHE_REVERSE_PROXY_NONE'  => ($this->arrSettings['cacheReverseProxy'] == 'none') ? 'selected' : '',
+            'SETTINGS_CACHE_REVERSE_PROXY_VARNISH' => ($this->arrSettings['cacheReverseProxy'] == 'varnish') ? 'selected' : '',
+            'SETTINGS_CACHE_REVERSE_PROXY_NGINX' => ($this->arrSettings['cacheReverseProxy'] == 'nginx') ? 'selected' : '',
+            'SETTINGS_SSI_CACHE_STATUS_INTERN'  => ($this->arrSettings['cacheSsiOutput'] == 'intern') ? 'selected' : '',
+            'SETTINGS_SSI_CACHE_STATUS_SSI' => ($this->arrSettings['cacheSsiOutput'] == 'ssi') ? 'selected' : '',
+            'SETTINGS_SSI_CACHE_STATUS_ESI' => ($this->arrSettings['cacheSsiOutput'] == 'esi') ? 'selected' : '',
+            'INTERNAL_SSI_CACHE_ON' => ($this->arrSettings['internalSsiCache'] == 'on') ? 'checked' : '',
+            'INTERNAL_SSI_CACHE_OFF' => ($this->arrSettings['internalSsiCache'] != 'on') ? 'checked' : '',
+            'SETTINGS_SSI_CACHE_TYPE_VARNISH' => ($this->arrSettings['cacheSsiType'] == 'varnish') ? 'selected' : '',
+            'SETTINGS_SSI_CACHE_TYPE_NGINX' => ($this->arrSettings['cacheSsiType'] == 'nginx') ? 'selected' : '',
             'SETTINGS_EXPIRATION' => intval($this->arrSettings['cacheExpiration']),
             'STATS_CONTREXX_FILESYSTEM_CHACHE_PAGES_COUNT' => $intFilesPages,
             'STATS_FOLDERSIZE_PAGES'                => number_format($intFoldersizePages / 1024, 2, '.', '\''),
@@ -335,33 +324,57 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         \Cx\Core\Setting\Controller\Setting::init('Config', 'cache','Yaml');
         \Cx\Core\Setting\Controller\Setting::set('cacheEnabled', $_POST['cachingStatus']);
         \Cx\Core\Setting\Controller\Setting::set('cacheExpiration', intval($_POST['cachingExpiration']));
-        \Cx\Core\Setting\Controller\Setting::set('cacheUserCache', contrexx_input2db($_POST['usercache']));
         \Cx\Core\Setting\Controller\Setting::set('cacheOPCache', contrexx_input2db($_POST['opcache']));
         \Cx\Core\Setting\Controller\Setting::set('cacheOpStatus', contrexx_input2db($_POST['cacheOpStatus']));
         \Cx\Core\Setting\Controller\Setting::set('cacheOpStatus', contrexx_input2db($_POST['cacheOpStatus']));
         \Cx\Core\Setting\Controller\Setting::set('cacheDbStatus', contrexx_input2db($_POST['cacheDbStatus']));
-        \Cx\Core\Setting\Controller\Setting::set('cacheVarnishStatus', contrexx_input2db($_POST['cacheVarnishStatus']));
+        \Cx\Core\Setting\Controller\Setting::set('cacheReverseProxy', contrexx_input2db($_POST['cacheReverseProxy']));
+        \Cx\Core\Setting\Controller\Setting::set('internalSsiCache', contrexx_input2db($_POST['internalSsiCache']));
+        $oldSsiValue = $_CONFIG['cacheSsiOutput'];
+        \Cx\Core\Setting\Controller\Setting::set('cacheSsiOutput', contrexx_input2db($_POST['cacheSsiOutput']));
+        \Cx\Core\Setting\Controller\Setting::set('cacheSsiType', contrexx_input2db($_POST['cacheSsiType']));
 
-        if(!empty($_POST['memcacheSettingIp']) || !empty($_POST['memcacheSettingPort'])){
-            $settings = json_encode(
-                array(
-                    'ip'   => !empty($_POST['memcacheSettingIp']) ? contrexx_input2raw($_POST['memcacheSettingIp']) : '127.0.0.1',
-                    'port' => !empty($_POST['memcacheSettingPort']) ? intval($_POST['memcacheSettingPort']) : '11211',
-                )
-            );
-            \Cx\Core\Setting\Controller\Setting::set('cacheUserCacheMemcacheConfig', $settings);
+        foreach (
+            array(
+                'cacheUserCacheMemcacheConfig' => array(
+                    'key' => 'memcacheSetting',
+                    'defaultPort' => 11211,
+                ),
+                'cacheProxyCacheConfig' => array(
+                    'key' => 'reverseProxy',
+                    'defaultPort' => 8080,
+                ),
+                'cacheSsiProcessorConfig' => array(
+                    'key' => 'ssiProcessor',
+                    'defaultPort' => 8080,
+                ),
+            )
+            as
+            $settingName => $settings
+        ) {
+            $hostnamePortSetting = $settings['key'];
+            if (
+                !empty($_POST[$hostnamePortSetting . 'Ip']) ||
+                !empty($_POST[$hostnamePortSetting . 'Port'])
+            ) {
+                $settings = json_encode(
+                    array(
+                        'ip'   => (
+                            !empty($_POST[$hostnamePortSetting . 'Ip']) ?
+                            contrexx_input2raw($_POST[$hostnamePortSetting . 'Ip']) :
+                            '127.0.0.1'
+                        ),
+                        'port' => (
+                            !empty($_POST[$hostnamePortSetting . 'Port']) ?
+                            intval($_POST[$hostnamePortSetting . 'Port']) :
+                            $defaultPort
+                        ),
+                    )
+                );
+                \Cx\Core\Setting\Controller\Setting::set($settingName, $settings);
+            }
         }
-        
-        if(!empty($_POST['varnishCachingIp']) || !empty($_POST['varnishCachingPort'])){
-            $settings = json_encode(
-                array(
-                    'ip'   => !empty($_POST['varnishCachingIp']) ? contrexx_input2raw($_POST['varnishCachingIp']) : '127.0.0.1',
-                    'port' => !empty($_POST['varnishCachingPort']) ? intval($_POST['varnishCachingPort']) : '8080',
-                )
-            );
-            \Cx\Core\Setting\Controller\Setting::set('cacheProxyCacheVarnishConfig', $settings);
-        }
-        
+
         \Cx\Core\Setting\Controller\Setting::updateAll();
         $this->arrSettings = $this->getSettings();
         $this->initUserCaching(); // reinit user caches (especially memcache)
@@ -369,13 +382,17 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $this->getActivatedCacheEngines();
         $this->clearCache($this->getOpCacheEngine());
 
+        if ($oldSsiValue != contrexx_input2db($_POST['cacheSsiOutput'])) {
+            $this->_deleteAllFiles('cxPages');
+        }
+
         if (!count($this->objSettings->strErrMessage)) {
             $objTemplate->SetVariable('CONTENT_OK_MESSAGE', $_ARRAYLANG['TXT_SETTINGS_UPDATED']);
         } else {
             $objTemplate->SetVariable('CONTENT_STATUS_MESSAGE', implode("<br />\n", $this->objSettings->strErrMessage));
         }
     }
-    
+
     private function parseOPCacheEngines() {
         $cachingEngines = array(
             self::CACHE_ENGINE_APC => array(),
@@ -392,7 +409,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         if ($this->isConfigured(self::CACHE_ENGINE_APC)) {
             $cachingEngines[self::CACHE_ENGINE_APC]['configured'] = true;
         }
-        
+
         if ($this->isInstalled(self::CACHE_ENGINE_ZEND_OPCACHE)) {
             $cachingEngines[self::CACHE_ENGINE_ZEND_OPCACHE]['installed'] = true;
         }
@@ -402,7 +419,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         if ($this->isConfigured(self::CACHE_ENGINE_ZEND_OPCACHE)) {
             $cachingEngines[self::CACHE_ENGINE_ZEND_OPCACHE]['configured'] = true;
         }
-        
+
         if ($this->isInstalled(self::CACHE_ENGINE_XCACHE)) {
             $cachingEngines[self::CACHE_ENGINE_XCACHE]['installed'] = true;
         }
@@ -412,7 +429,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         if ($this->isConfigured(self::CACHE_ENGINE_XCACHE)) {
             $cachingEngines[self::CACHE_ENGINE_XCACHE]['configured'] = true;
         }
-        
+
         foreach ($cachingEngines as $engine => $data) {
             $installationIcon = $activeIcon = $configurationIcon = 'led_red.gif';
             if (isset($data['installed']) && isset($data['active']) && isset($data['configured'])) {
@@ -435,7 +452,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             $this->objTpl->setVariable($engine . '_OPCACHE_CONFIGURATION_ICON', $configurationIcon);
         }
     }
-    
+
     private function parseUserCacheEngines() {
         $cachingEngines = array(
             self::CACHE_ENGINE_APC => array(),
@@ -454,7 +471,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         if ($this->isConfigured(self::CACHE_ENGINE_APC, true)) {
             $cachingEngines[self::CACHE_ENGINE_APC]['configured'] = true;
         }
-        
+
         if ($this->isInstalled(self::CACHE_ENGINE_MEMCACHE)) {
             $cachingEngines[self::CACHE_ENGINE_MEMCACHE]['installed'] = true;
         }
@@ -474,7 +491,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         if ($this->isConfigured(self::CACHE_ENGINE_MEMCACHED)) {
             $cachingEngines[self::CACHE_ENGINE_MEMCACHED]['configured'] = true;
         }
-        
+
         if ($this->isInstalled(self::CACHE_ENGINE_XCACHE)) {
             $cachingEngines[self::CACHE_ENGINE_XCACHE]['installed'] = true;
         }
@@ -484,7 +501,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         if ($this->isConfigured(self::CACHE_ENGINE_XCACHE, true)) {
             $cachingEngines[self::CACHE_ENGINE_XCACHE]['configured'] = true;
         }
-        
+
         if ($this->isConfigured(self::CACHE_ENGINE_FILESYSTEM)) {
             $cachingEngines[self::CACHE_ENGINE_FILESYSTEM] = array(
                 'installed' => true,
@@ -514,23 +531,35 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             $this->objTpl->setVariable($engine . '_USERCACHE_CONFIGURATION_ICON', $configurationIcon);
         }
     }
-    
+
     protected function parseMemcacheSettings() {
         $configuration = $this->getMemcacheConfiguration();
         $this->objTpl->setVariable('MEMCACHE_USERCACHE_CONFIG_IP', contrexx_raw2xhtml($configuration['ip']));
         $this->objTpl->setVariable('MEMCACHE_USERCACHE_CONFIG_PORT', contrexx_raw2xhtml($configuration['port']));
     }
-    
+
     protected function parseMemcachedSettings() {
         $configuration = $this->getMemcachedConfiguration();
         $this->objTpl->setVariable('MEMCACHED_USERCACHE_CONFIG_IP', contrexx_raw2xhtml($configuration['ip']));
         $this->objTpl->setVariable('MEMCACHED_USERCACHE_CONFIG_PORT', contrexx_raw2xhtml($configuration['port']));
     }
-    
-    protected function parseVarnishSettings(){
-        $configuration = $this->getVarnishConfiguration();
-        $this->objTpl->setVariable('VARNISH_PROXYCACHE_CONFIG_IP', contrexx_raw2xhtml($configuration['ip']));
-        $this->objTpl->setVariable('VARNISH_PROXYCACHE_CONFIG_PORT', contrexx_raw2xhtml($configuration['port']));
+
+    /**
+     * Parses reverse proxy settings to current template
+     */
+    protected function parseReverseProxySettings(){
+        $configuration = $this->getReverseProxyConfiguration();
+        $this->objTpl->setVariable('PROXYCACHE_CONFIG_IP', contrexx_raw2xhtml($configuration['ip']));
+        $this->objTpl->setVariable('PROXYCACHE_CONFIG_PORT', contrexx_raw2xhtml($configuration['port']));
+    }
+
+    /**
+     * Parses reverse ESI/SSI processor settings to current template
+     */
+    protected function parseSsiProcessorSettings(){
+        $configuration = $this->getSsiProcessorConfiguration();
+        $this->objTpl->setVariable('SSI_PROCESSOR_CONFIG_IP', contrexx_raw2xhtml($configuration['ip']));
+        $this->objTpl->setVariable('SSI_PROCESSOR_CONFIG_PORT', contrexx_raw2xhtml($configuration['port']));
     }
 
     /**
@@ -547,7 +576,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
         $objTemplate->SetVariable('CONTENT_OK_MESSAGE', $_ARRAYLANG['TXT_CACHE_FOLDER_EMPTY']);
     }
-    
+
     /**
      * Calls the related Clear Function from Lib and sets an OK-Message
      * @global array $_ARRAYLANG
@@ -555,9 +584,9 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
      * @param string $cacheEngine
      */
     public function forceClearCache($cacheEngine = null){
-        
+
         global $_ARRAYLANG, $objTemplate;
-        
+
         switch ($cacheEngine) {
             case 'cxEntries':
             case 'cxPages':
@@ -583,7 +612,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 $this->clearCache(null);
                 break;
         }
-        
+
         $objTemplate->SetVariable('CONTENT_OK_MESSAGE', $_ARRAYLANG['TXT_CACHE_EMPTY_SUCCESS']);
     }
 
