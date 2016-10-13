@@ -271,7 +271,6 @@ class Calendar extends CalendarLibrary
             $startYear  = isset($_GET['year']) ? $_GET['year'] : $this->startDate->format('Y');
 
             $this->startDate->setDate($startYear, $startMonth, $startDay);
-            $this->startDate->setTime(0, 0, 0);
         }
 
         // get enddate
