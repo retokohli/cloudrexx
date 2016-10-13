@@ -272,7 +272,7 @@ class Calendar extends CalendarLibrary
 
             $this->startDate->setDate($startYear, $startMonth, $startDay);
             $this->getSettings();
-            if ($this->arrSettings['frontendPassedEvents'] == 0) {
+            if ($this->arrSettings['frontendPastEvents'] == 0) {
                 // if we want to show events of the whole day
                 // we need to set start date to 0:00
                 $this->startDate->setTime(0, 0, 0);
