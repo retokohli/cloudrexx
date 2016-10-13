@@ -26,46 +26,26 @@
  */
 
 /**
- * Backend controller to create the locale backend view.
+ * This is the german language file for backend mode.
+ * This file is included by Cloudrexx and all entries are set as placeholder
+ * values for backend ACT template by SystemComponentBackendController
  *
- * @copyright   Cloudrexx AG
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Manuel Schenk <manuel.schenk@comvation.com>
  * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
  * @package     cloudrexx
  * @subpackage  core_locale
- * @version     5.0.0
  */
 
-namespace Cx\Core\Locale\Controller;
+global $_ARRAYLANG;
 
-/**
- * Backend controller to create the locale backend view.
- * @copyright   Cloudrexx AG
- * @author      Manuel Schenk <manuel.schenk@comvation.com>
- * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
- * @package     cloudrexx
- * @subpackage  core_locale
- * @version     5.0.0
- */
-class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
+// General module info:
+$_ARRAYLANG['TXT_CORE_LOCALE'] = 'Lokalisierung';
+$_ARRAYLANG['TXT_CORE_LOCALE_DESCRIPTION'] = 'Steuert die Sprachversionen anhand des Landes und/oder der effektiven Sprache.';
 
-    /**
-     * Returns a list of available commands (?act=XY)
-     * @return array List of acts
-     */
-    public function getCommands() {
-        return array(
-            'Frontend' => array(
-                'Edit'
-            ),
-            'Backend');
-    }
-
-    /**
-     * Return true here if you want the first tab to be an entity view
-     * @return boolean True if overview should be shown, false otherwise
-     */
-    protected function showOverviewPage() {
-        return false;
-    }
-}
+// Module ACTs:
+$_ARRAYLANG['TXT_CORE_LOCALE_ACT_DEFAULT'] = 'Frontend';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACT_FRONTEND'] = 'Frontend';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACT_FRONTEND_DEFAULT'] = 'Übersicht';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACT_FRONTEND_EDIT'] = 'Bearbeiten';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACT_BACKEND'] = 'Backend';

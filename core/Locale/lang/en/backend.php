@@ -40,10 +40,12 @@
 global $_ARRAYLANG;
 
 // General module info:
-$_ARRAYLANG['TXT_CORE_LOCALE'] = 'Locale';
+$_ARRAYLANG['TXT_CORE_LOCALE'] = 'Localization';
 $_ARRAYLANG['TXT_CORE_LOCALE_DESCRIPTION'] = 'Handles language versions by their country and/or the effective language.';
 
 // Module ACTs:
 $_ARRAYLANG['TXT_CORE_LOCALE_ACT_DEFAULT'] = 'Frontend';
 $_ARRAYLANG['TXT_CORE_LOCALE_ACT_FRONTEND'] = 'Frontend';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACT_FRONTEND_DEFAULT'] = 'Overview';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACT_FRONTEND_EDIT'] = 'Edit';
 $_ARRAYLANG['TXT_CORE_LOCALE_ACT_BACKEND'] = 'Backend';
