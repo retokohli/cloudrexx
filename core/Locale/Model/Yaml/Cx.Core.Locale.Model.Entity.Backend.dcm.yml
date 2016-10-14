@@ -3,13 +3,19 @@ Cx\Core\Locale\Model\Entity\Backend:
   table: core_locale_backend
   repositoryClass: Cx\Core\Locale\Model\Repository\BackendRepository
   id:
+    id:
+      type: integer
+      unsigned: true
+      generator:
+        strategy: AUTO
+  fields:
     iso_1:
       type: string
       length: 2
-  manyToOne:
-    locale:
-      targetEntity: Locale
-      inversedBy: iso1Backends
+  oneToOne:
+    language:
+      targetEntity: Language
+      inversedBy: backend
       joinColumn:
         name: iso_1
         referencedColumnName: iso_1
