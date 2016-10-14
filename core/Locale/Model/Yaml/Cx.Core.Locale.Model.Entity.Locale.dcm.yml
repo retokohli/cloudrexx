@@ -2,33 +2,66 @@ Cx\Core\Locale\Model\Entity\Locale:
   type: entity
   table: core_locale_locale
   repositoryClass: Cx\Core\Locale\Model\Repository\LocaleRepository
+  indexes:
+    contrexx_core_locale_locale_ibfk_country:
+      columns: [ country ]
+    contrexx_core_locale_locale_ibfk_fallback:
+      columns: [ fallback ]
+    contrexx_core_locale_locale_ibfk_source_language:
+      columns: [ source_language ]
   id:
+    id:
+      type: integer
+      unsigned: true
+      generator:
+        strategy: AUTO
+  fields:
     iso_1:
       type: string
       length: 2
-  fields:
-    iso_3:
+    label:
       type: string
-      length: 3
+      length: 255
       nullable: true
-    source:
-      type: boolean
+    fallback:
+      type: integer
+      unsigned: true
+    source_language:
+      type: string
+      length: 2
+  uniqueConstraints:
+    unique_iso_1_country:
+      columns: [ iso_1, country ]
   oneToMany:
-    iso1Backends:
-      targetEntity: Backend
+    locales:
+      targetEntity: Locale
       mappedBy: locale
+      joinColumn:
+        name: id
+        referencedColumnName: fallback
+  manyToOne:
+    languageRelatedByIso1:
+      targetEntity: Language
+      inversedBy: localeRelatedByIso1s
       joinColumn:
         name: iso_1
         referencedColumnName: iso_1
-    sourceLocales:
-      targetEntity: Frontend
-      mappedBy: sourceLocale
+    country:
+      targetEntity: Cx\Core\Country\Model\Entity\Country
+      inversedBy: locales
       joinColumn:
-        name: iso_1
-        referencedColumnName: source_locale
-    iso1Frontends:
-      targetEntity: Frontend
-      mappedBy: locale
+        name: country
+        referencedColumnName: alpha2
+        nullable: true
+    locale:
+      targetEntity: Locale
+      inversedBy: locales
       joinColumn:
-        name: iso_1
+        name: fallback
+        referencedColumnName: id
+    languageRelatedBySourceLanguage:
+      targetEntity: Language
+      inversedBy: localeRelatedBySourceLanguages
+      joinColumn:
+        name: source_language
         referencedColumnName: iso_1

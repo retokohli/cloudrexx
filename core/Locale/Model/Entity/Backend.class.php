@@ -7,15 +7,30 @@ namespace Cx\Core\Locale\Model\Entity;
  */
 class Backend extends \Cx\Model\Base\EntityBase {
     /**
+     * @var integer $id
+     */
+    protected $id;
+
+    /**
      * @var string $iso_1
      */
     protected $iso_1;
 
     /**
-     * @var Cx\Core\Locale\Model\Entity\Locale
+     * @var \Cx\Core\Locale\Model\Entity\Language
      */
-    protected $locale;
+    protected $language;
 
+
+    /**
+     * Get id
+     *
+     * @return integer $id
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
     /**
      * Set iso_1
@@ -38,22 +53,22 @@ class Backend extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set locale
+     * Set language
      *
-     * @param Cx\Core\Locale\Model\Entity\Locale $locale
+     * @param \Cx\Core\Locale\Model\Entity\Language $language
      */
-    public function setLocale(\Cx\Core\Locale\Model\Entity\Locale $locale)
+    public function setLanguage(\Cx\Core\Locale\Model\Entity\Language $language)
     {
-        $this->locale = $locale;
+        $this->language = $language;
     }
 
     /**
-     * Get locale
+     * Get language
      *
-     * @return Cx\Core\Locale\Model\Entity\Locale $locale
+     * @return \Cx\Core\Locale\Model\Entity\Language $language
      */
-    public function getLocale()
+    public function getLanguage()
     {
-        return $this->locale;
+        return $this->language;
     }
 }

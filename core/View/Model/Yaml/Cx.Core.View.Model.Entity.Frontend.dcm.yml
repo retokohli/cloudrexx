@@ -9,7 +9,6 @@ Cx\Core\View\Model\Entity\Frontend:
     language:
       type: string
       length: 2
-  fields:
     theme:
       type: integer
       nullable: true
@@ -18,16 +17,9 @@ Cx\Core\View\Model\Entity\Frontend:
       type: string
       nullable: true
   manyToOne:
-    :
-      targetEntity: Cx\Core\Locale\Model\Entity\
+    localeRelatedByIso1s:
+      targetEntity: Cx\Core\Locale\Model\Entity\Language
       inversedBy: frontends
       joinColumn:
         name: language
         referencedColumnName: iso_1
-    skin:
-      targetEntity: \Model\Entity\Skin
-      inversedBy: frontends
-      joinColumn:
-        name: theme
-        referencedColumnName: id
-        nullable: true

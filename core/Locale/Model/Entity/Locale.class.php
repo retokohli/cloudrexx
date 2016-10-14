@@ -7,48 +7,70 @@ namespace Cx\Core\Locale\Model\Entity;
  */
 class Locale extends \Cx\Model\Base\EntityBase {
     /**
+     * @var integer $id
+     */
+    protected $id;
+
+    /**
      * @var string $iso_1
      */
     protected $iso_1;
 
     /**
-     * @var string $iso_3
+     * @var string $label
      */
-    protected $iso_3;
+    protected $label;
 
     /**
-     * @var boolean $source
+     * @var integer $fallback
      */
-    protected $source;
+    protected $fallback;
 
     /**
-     * @var Cx\Core\Locale\Model\Entity\Backend
+     * @var string $source_language
      */
-    protected $iso1Backends;
+    protected $source_language;
 
     /**
-     * @var Cx\Core\Locale\Model\Entity\Frontend
+     * @var \Cx\Core\Locale\Model\Entity\Locale
      */
-    protected $sourceLocales;
+    protected $locales;
 
     /**
-     * @var Cx\Core\Locale\Model\Entity\Frontend
+     * @var \Cx\Core\Locale\Model\Entity\Language
      */
-    protected $iso1Frontends;
+    protected $languageRelatedByIso1;
 
     /**
-     * @var Cx\Core\Locale\Model\Entity\Frontend
+     * @var \Cx\Core\Country\Model\Entity\Country
      */
-    protected $languages;
+    protected $country;
+
+    /**
+     * @var \Cx\Core\Locale\Model\Entity\Locale
+     */
+    protected $locale;
+
+    /**
+     * @var \Cx\Core\Locale\Model\Entity\Language
+     */
+    protected $languageRelatedBySourceLanguage;
 
     public function __construct()
     {
-        $this->iso1Backends = new \Doctrine\Common\Collections\ArrayCollection();
-    $this->sourceLocales = new \Doctrine\Common\Collections\ArrayCollection();
-    $this->iso1Frontends = new \Doctrine\Common\Collections\ArrayCollection();
-    $this->languages = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->locales = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
+    /**
+     * Get id
+     *
+     * @return integer $id
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
     /**
      * Set iso_1
      *
@@ -70,122 +92,162 @@ class Locale extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set iso_3
+     * Set label
      *
-     * @param string $iso3
+     * @param string $label
      */
-    public function setIso3($iso3)
+    public function setLabel($label)
     {
-        $this->iso_3 = $iso3;
+        $this->label = $label;
     }
 
     /**
-     * Get iso_3
+     * Get label
      *
-     * @return string $iso3
+     * @return string $label
      */
-    public function getIso3()
+    public function getLabel()
     {
-        return $this->iso_3;
+        return $this->label;
     }
 
     /**
-     * Set source
+     * Set fallback
      *
-     * @param boolean $source
+     * @param integer $fallback
      */
-    public function setSource($source)
+    public function setFallback($fallback)
     {
-        $this->source = $source;
+        $this->fallback = $fallback;
     }
 
     /**
-     * Get source
+     * Get fallback
      *
-     * @return boolean $source
+     * @return integer $fallback
      */
-    public function getSource()
+    public function getFallback()
     {
-        return $this->source;
+        return $this->fallback;
     }
 
     /**
-     * Add iso1Backends
+     * Set source_language
      *
-     * @param Cx\Core\Locale\Model\Entity\Backend $iso1Backends
+     * @param string $sourceLanguage
      */
-    public function addIso1Backends(\Cx\Core\Locale\Model\Entity\Backend $iso1Backends)
+    public function setSourceLanguage($sourceLanguage)
     {
-        $this->iso1Backends[] = $iso1Backends;
+        $this->source_language = $sourceLanguage;
     }
 
     /**
-     * Get iso1Backends
+     * Get source_language
      *
-     * @return Doctrine\Common\Collections\Collection $iso1Backends
+     * @return string $sourceLanguage
      */
-    public function getIso1Backends()
+    public function getSourceLanguage()
     {
-        return $this->iso1Backends;
+        return $this->source_language;
     }
 
     /**
-     * Add sourceLocales
+     * Add locales
      *
-     * @param Cx\Core\Locale\Model\Entity\Frontend $sourceLocales
+     * @param \Cx\Core\Locale\Model\Entity\Locale $locales
      */
-    public function addSourceLocales(\Cx\Core\Locale\Model\Entity\Frontend $sourceLocales)
+    public function addLocales(\Cx\Core\Locale\Model\Entity\Locale $locales)
     {
-        $this->sourceLocales[] = $sourceLocales;
+        $this->locales[] = $locales;
     }
 
     /**
-     * Get sourceLocales
+     * Get locales
      *
-     * @return Doctrine\Common\Collections\Collection $sourceLocales
+     * @return \Doctrine\Common\Collections\Collection $locales
      */
-    public function getSourceLocales()
+    public function getLocales()
     {
-        return $this->sourceLocales;
+        return $this->locales;
     }
 
     /**
-     * Add iso1Frontends
+     * Set languageRelatedByIso1
      *
-     * @param Cx\Core\Locale\Model\Entity\Frontend $iso1Frontends
+     * @param \Cx\Core\Locale\Model\Entity\Language $languageRelatedByIso1
      */
-    public function addIso1Frontends(\Cx\Core\Locale\Model\Entity\Frontend $iso1Frontends)
+    public function setLanguageRelatedByIso1(\Cx\Core\Locale\Model\Entity\Language $languageRelatedByIso1)
     {
-        $this->iso1Frontends[] = $iso1Frontends;
+        $this->languageRelatedByIso1 = $languageRelatedByIso1;
     }
 
     /**
-     * Get iso1Frontends
+     * Get languageRelatedByIso1
      *
-     * @return Doctrine\Common\Collections\Collection $iso1Frontends
+     * @return \Cx\Core\Locale\Model\Entity\Language $languageRelatedByIso1
      */
-    public function getIso1Frontends()
+    public function getLanguageRelatedByIso1()
     {
-        return $this->iso1Frontends;
+        return $this->languageRelatedByIso1;
     }
 
     /**
-     * Add languages
+     * Set country
      *
-     * @param Cx\Core\Locale\Model\Entity\Frontend $languages
+     * @param \Cx\Core\Country\Model\Entity\Country $country
      */
-    public function addLanguages(\Cx\Core\Locale\Model\Entity\Frontend $languages)
+    public function setCountry(\Cx\Core\Country\Model\Entity\Country $country)
     {
-        $this->languages[] = $languages;
+        $this->country = $country;
     }
 
     /**
-     * Get languages
+     * Get country
      *
-     * @return Doctrine\Common\Collections\Collection $languages
+     * @return \Cx\Core\Country\Model\Entity\Country $country
      */
-    public function getLanguages()
+    public function getCountry()
     {
-        return $this->languages;
+        return $this->country;
+    }
+
+    /**
+     * Set locale
+     *
+     * @param \Cx\Core\Locale\Model\Entity\Locale $locale
+     */
+    public function setLocale(\Cx\Core\Locale\Model\Entity\Locale $locale)
+    {
+        $this->locale = $locale;
+    }
+
+    /**
+     * Get locale
+     *
+     * @return \Cx\Core\Locale\Model\Entity\Locale $locale
+     */
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    /**
+     * Set languageRelatedBySourceLanguage
+     *
+     * @param \Cx\Core\Locale\Model\Entity\Language $languageRelatedBySourceLanguage
+     */
+    public function setLanguageRelatedBySourceLanguage(\Cx\Core\Locale\Model\Entity\Language $languageRelatedBySourceLanguage)
+    {
+        $this->languageRelatedBySourceLanguage = $languageRelatedBySourceLanguage;
+    }
+
+    /**
+     * Get languageRelatedBySourceLanguage
+     *
+     * @return \Cx\Core\Locale\Model\Entity\Language $languageRelatedBySourceLanguage
+     */
+    public function getLanguageRelatedBySourceLanguage()
+    {
+        return $this->languageRelatedBySourceLanguage;
     }
 }

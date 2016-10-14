@@ -5,31 +5,40 @@ namespace Cx\Core\Country\Model\Entity;
 /**
  * Cx\Core\Country\Model\Entity\Country
  */
-class Country extends \Cx\Model\Base\EntityBase
-{
+class Country extends \Cx\Model\Base\EntityBase {
     /**
      * @var string $alpha2
      */
-    private $alpha2;
+    protected $alpha2;
 
     /**
      * @var string $alpha3
      */
-    private $alpha3;
+    protected $alpha3;
 
     /**
      * @var integer $ord
      */
-    private $ord;
+    protected $ord;
 
     /**
-     * @var Cx\Core\Country\Model\Entity\Frontend
+     * @var Cx\Core\Locale\Model\Entity\Locale
      */
-    private $countries;
+    protected $locales;
 
     public function __construct()
     {
-        $this->countries = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->locales = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
+     * Set alpha2
+     *
+     * @param string $alpha2
+     */
+    public function setAlpha2($alpha2)
+    {
+        $this->alpha2 = $alpha2;
     }
 
     /**
@@ -43,13 +52,13 @@ class Country extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Set alpha2
+     * Set alpha3
      *
-     * @param string $alpha2
+     * @param string $alpha3
      */
-    public function setAlpha2($alpha2)
+    public function setAlpha3($alpha3)
     {
-        $this->alpha2 = $alpha2;
+        $this->alpha3 = $alpha3;
     }
 
     /**
@@ -63,13 +72,13 @@ class Country extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Set alpha3
+     * Set ord
      *
-     * @param string $alpha3
+     * @param integer $ord
      */
-    public function setAlpha3($alpha3)
+    public function setOrd($ord)
     {
-        $this->alpha3 = $alpha3;
+        $this->ord = $ord;
     }
 
     /**
@@ -83,32 +92,22 @@ class Country extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Set ord
+     * Add locales
      *
-     * @param integer $ord
+     * @param Cx\Core\Locale\Model\Entity\Locale $locales
      */
-    public function setOrd($ord)
+    public function addLocales(\Cx\Core\Locale\Model\Entity\Locale $locales)
     {
-        $this->ord = $ord;
+        $this->locales[] = $locales;
     }
 
     /**
-     * Add countries
+     * Get locales
      *
-     * @param Cx\Core\Country\Model\Entity\Frontend $countries
+     * @return Doctrine\Common\Collections\Collection $locales
      */
-    public function addCountries(\Cx\Core\Country\Model\Entity\Frontend $countries)
+    public function getLocales()
     {
-        $this->countries[] = $countries;
-    }
-
-    /**
-     * Get countries
-     *
-     * @return Doctrine\Common\Collections\Collection $countries
-     */
-    public function getCountries()
-    {
-        return $this->countries;
+        return $this->locales;
     }
 }

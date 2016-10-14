@@ -19,8 +19,8 @@ Cx\Core\Country\Model\Entity\Country:
     alpha3_UNIQUE:
       columns: [ alpha3 ]
   oneToMany:
-    countries:
-      targetEntity: Cx\Core\Locale\Model\Entity\Frontend
+    locales:
+      targetEntity: Cx\Core\Locale\Model\Entity\Locale
       mappedBy: country
       joinColumn:
         name: alpha2
