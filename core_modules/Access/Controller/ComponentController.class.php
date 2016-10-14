@@ -114,11 +114,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $objCache;
 
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $objTemplate = $this->cx->getTemplate();
+                $cache       = \Cx\Core\Core\Controller\Cx::instanciate()
+                                ->getComponent('Cache');
 
                 // ACCESS: parse access_logged_in[[1-10]] and access_logged_out[[1-10]] blocks
                 $this->parseLoggedInOutBlocks($objTemplate);
@@ -132,7 +133,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         )
                     ) {
                         $params  = $this->getParamsForEsiContent('access_currently_online_members');
-                        $content = $objCache->getEsiContent(
+                        $content = $cache->getEsiContent(
                             'Access',
                             'showCurrentlyOnlineUsers',
                             $params
@@ -153,7 +154,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         )
                     ) {
                         $params  = $this->getParamsForEsiContent('access_last_active_member_list');
-                        $content = $objCache->getEsiContent(
+                        $content = $cache->getEsiContent(
                             'Access',
                             'showLastActiveUsers',
                             $params
@@ -174,7 +175,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         )
                     ) {
                         $params  = $this->getParamsForEsiContent('access_latest_registered_member_list');
-                        $content = $objCache->getEsiContent(
+                        $content = $cache->getEsiContent(
                             'Access',
                             'showLatestRegisteredUsers',
                             $params
@@ -195,7 +196,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         )
                     ) {
                         $params  = $this->getParamsForEsiContent('access_birthday_member_list');
-                        $content = $objCache->getEsiContent(
+                        $content = $cache->getEsiContent(
                             'Access',
                             'showBirthdayUsers',
                             $params
@@ -254,7 +255,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $objTemplate = $template;
         }
 
-        global $objCache;
+        $cache = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache');
 
         $accessLoggedInOutBlockIdx = '';
         $accessLoggedInBlock       = 'access_logged_in';
@@ -269,7 +270,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 if ($page !== null) {
                     $params['page']  = $page->getId();
                 }
-                $content = $objCache->getEsiContent(
+                $content = $cache->getEsiContent(
                     'Access',
                     'showAccessLoggedInOrOut',
                     $params
@@ -284,7 +285,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 if ($page !== null) {
                     $params['page']  = $page->getId();
                 }
-                $content = $objCache->getEsiContent(
+                $content = $cache->getEsiContent(
                     'Access',
                     'showAccessLoggedInOrOut',
                     $params
