@@ -259,27 +259,30 @@ CREATE TABLE `contrexx_core_data_source` (
   UNIQUE KEY `identifier` (`identifier`)
 ) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_locale_backend` (
+  `id` int AUTO_INCREMENT NOT NULL,
   `iso_1` char(2) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`iso_1`),
-  CONSTRAINT `contrexx_core_locale_backend_ibfk_iso_1` FOREIGN KEY (`iso_1`) REFERENCES `contrexx_core_locale_locale` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  PRIMARY KEY (`id`),
+  CONSTRAINT `contrexx_core_locale_backend_ibfk_iso_1` FOREIGN KEY (`iso_1`) REFERENCES `contrexx_core_locale_language` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
-CREATE TABLE `contrexx_core_locale_frontend` (
-  `iso_1` char(2) COLLATE utf8_unicode_ci NOT NULL,
-  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `country` char(2) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `fallback` char(2) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `source_locale` char(2) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`iso_1`),
-  CONSTRAINT `contrexx_core_locale_frontend_ibfk_country` FOREIGN KEY (`country`) REFERENCES `contrexx_core_country_country` (`alpha2`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `contrexx_core_locale_frontend_ibfk_fallback` FOREIGN KEY (`fallback`) REFERENCES `contrexx_core_locale_frontend` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `contrexx_core_locale_frontend_ibfk_iso_1` FOREIGN KEY (`iso_1`) REFERENCES `contrexx_core_locale_locale` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `contrexx_core_locale_frontend_ibfk_source_locale` FOREIGN KEY (`source_locale`) REFERENCES `contrexx_core_locale_locale` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB;
-CREATE TABLE `contrexx_core_locale_locale` (
+CREATE TABLE `contrexx_core_locale_language` (
   `iso_1` char(2) COLLATE utf8_unicode_ci NOT NULL,
   `iso_3` char(3) COLLATE utf8_unicode_ci DEFAULT NULL,
   `source` tinyint(1) NOT NULL,
   PRIMARY KEY (`iso_1`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_core_locale_locale` (
+  `id` int AUTO_INCREMENT NOT NULL,
+  `iso_1` char(2) COLLATE utf8_unicode_ci NOT NULL,
+  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `country` char(2) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `fallback` int COLLATE utf8_unicode_ci NOT NULL,
+  `source_language` char(2) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `iso_1` (`iso_1`, `country`),
+  CONSTRAINT `contrexx_core_locale_locale_ibfk_country` FOREIGN KEY (`country`) REFERENCES `contrexx_core_country_country` (`alpha2`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `contrexx_core_locale_locale_ibfk_fallback` FOREIGN KEY (`fallback`) REFERENCES `contrexx_core_locale_locale` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `contrexx_core_locale_locale_ibfk_iso_1` FOREIGN KEY (`iso_1`) REFERENCES `contrexx_core_locale_language` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `contrexx_core_locale_locale_ibfk_source_language` FOREIGN KEY (`source_language`) REFERENCES `contrexx_core_locale_language` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_modules_access_permission` (
   `id` int(11) AUTO_INCREMENT NOT NULL,
@@ -469,8 +472,8 @@ CREATE TABLE `contrexx_core_view_frontend` (
   `language` char(2) COLLATE utf8_unicode_ci NOT NULL,
   `theme` int(2) unsigned DEFAULT NULL,
   `channel` enum('default','mobile','print','pdf','app') COLLATE utf8_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`language`),
-  CONSTRAINT `contrexx_core_view_frontend_ibfk_language` FOREIGN KEY (`language`) REFERENCES `contrexx_core_locale_locale` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  PRIMARY KEY (`language`,`theme`,`channel`),
+  CONSTRAINT `contrexx_core_view_frontend_ibfk_language` FOREIGN KEY (`language`) REFERENCES `contrexx_core_locale_language` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `contrexx_core_view_frontend_ibfk_theme` FOREIGN KEY (`theme`) REFERENCES `contrexx_skins` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_wysiwyg_template` (
