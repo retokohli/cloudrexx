@@ -170,7 +170,7 @@ class DocSysManager extends DocSysLibrary
             $pos = 0;
         }
         $paging = ($count > intval($_CONFIG['corePagingLimit'])
-            ? getPaging($count, $pos, '&cmd=DocSys' . MODULE_INDEX,
+            ? getPaging($count, $pos, '&cmd=DocSys&act=' . MODULE_INDEX,
                 $_ARRAYLANG['TXT_DOCSYS_DOCUMENTS'], true) : '');
         $row = 1;
         $this->_objTpl->setCurrentBlock('row');
