@@ -1242,6 +1242,7 @@ EOF;
           'zip'     => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_ZIP"],
           'city'    => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_CITY"],
           'country' => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_COUNTRY"],
+          'image'   => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_IMAGE"],
         );
 
         return $arrContexts;

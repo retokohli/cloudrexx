@@ -61,19 +61,25 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         global $_CORELANG, $subMenuTitle, $objTemplate;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-                    $objMediaDirectory = new MediaDirectory(\Env::get('cx')->getPage()->getContent(), $this->getName());
-                    $objMediaDirectory->pageTitle = \Env::get('cx')->getPage()->getTitle();
-                    $pageMetaTitle = \Env::get('cx')->getPage()->getMetatitle();
-                    $objMediaDirectory->metaTitle = $pageMetaTitle;
-                    \Env::get('cx')->getPage()->setContent($objMediaDirectory->getPage());
-                    if ($objMediaDirectory->getPageTitle() != '' && $objMediaDirectory->getPageTitle() != \Env::get('cx')->getPage()->getTitle()) {
-                        \Env::get('cx')->getPage()->setTitle($objMediaDirectory->getPageTitle());
-                        \Env::get('cx')->getPage()->setContentTitle($objMediaDirectory->getPageTitle());
-                        \Env::get('cx')->getPage()->setMetaTitle($objMediaDirectory->getPageTitle());
-                    }
-                    if ($objMediaDirectory->getMetaTitle() != '') {
-                        \Env::get('cx')->getPage()->setMetatitle($objMediaDirectory->getMetaTitle());
-                    }
+                $objMediaDirectory = new MediaDirectory(\Env::get('cx')->getPage()->getContent(), $this->getName());
+                $objMediaDirectory->pageTitle = \Env::get('cx')->getPage()->getTitle();
+                $pageMetaTitle = \Env::get('cx')->getPage()->getMetatitle();
+                $objMediaDirectory->metaTitle = $pageMetaTitle;
+                \Env::get('cx')->getPage()->setContent($objMediaDirectory->getPage());
+                if ($objMediaDirectory->getPageTitle() != '' && $objMediaDirectory->getPageTitle() != \Env::get('cx')->getPage()->getTitle()) {
+                    \Env::get('cx')->getPage()->setTitle($objMediaDirectory->getPageTitle());
+                    \Env::get('cx')->getPage()->setContentTitle($objMediaDirectory->getPageTitle());
+                    \Env::get('cx')->getPage()->setMetaTitle($objMediaDirectory->getPageTitle());
+                }
+                if ($objMediaDirectory->getMetaTitle() != '') {
+                    \Env::get('cx')->getPage()->setMetatitle($objMediaDirectory->getMetaTitle());
+                }
+                if ($objMediaDirectory->getMetaDescription() != '') {
+                    \Env::get('cx')->getPage()->setMetadesc($objMediaDirectory->getMetaDescription());
+                }
+                if ($objMediaDirectory->getMetaImage() != '') {
+                    \Env::get('cx')->getPage()->setMetaimage($objMediaDirectory->getMetaImage());
+                }
 
                 break;
 

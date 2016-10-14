@@ -179,21 +179,19 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
      * Does nothing but return if either
      *  - the visitor is a known spider bot, or
      *  - use_session() returns false
-     * @global  \Cx\Modules\Shop\Controller\cmsSession  $sessionObj
      * @return  void
      */
     private static function init_session()
     {
-        global $sessionObj;
-
-        if (empty($sessionObj)) {
+        if (empty($_SESSION)) {
             if (checkForSpider()) {
                 return;
             }
             if (!self::use_session()) {
                 return;
             }
-            $sessionObj = \cmsSession::getInstance();
+            $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+            $sessionObj = $cx->getComponent('Session')->getSession();
         }
         if (empty($_SESSION['shop'])) {
             $_SESSION['shop'] = array();
@@ -229,10 +227,8 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
         Vat::is_reseller(self::$objCustomer && self::$objCustomer->is_reseller());
         // The coupon code may be set when entering the Shop already
         if (isset($_REQUEST['coupon_code'])) {
-            global $sessionObj;
-            if (!$sessionObj) {
-                $sessionObj = \cmsSession::getInstance();
-            }
+            $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+            $sessionObj = $cx->getComponent('Session')->getSession();
             $_SESSION['shop']['coupon_code'] =
                 trim(strip_tags(contrexx_input2raw($_REQUEST['coupon_code'])));
 //\DBG::log("Coupon Code: Set to ".$_SESSION['shop']['coupon_code']);
@@ -1760,7 +1756,6 @@ die("Failed to update the Cart!");
      * Returns immediately, without doing anything, if no session is active.
      * The limit for the number of Products to remember is defined by the
      * {@see numof_remember_visited_products} class constant.
-     * @global \Cx\Modules\Shop\Controller\cmsSession $sessionObj
      * @param   integer     $product_id     The currently viewed Product ID
      * @return  void
      */
@@ -1871,7 +1866,7 @@ die("Failed to update the Cart!");
                             '<select name="productOption['.$attribute_id.
                             ']" id="productOption-'.
                             $product_id.'-'.$attribute_id.'-'.$domId.
-                            '" style="width:180px;">'."\n".
+                            '" class="product-option-field" style="width:180px;">'."\n".
                             '<option value="0">'.
                             $objAttribute->getName().'&nbsp;'.
                             $_ARRAYLANG['TXT_CHOOSE']."</option>\n";
@@ -1910,7 +1905,7 @@ die("Failed to update the Cart!");
                             '<select name="productOption['.$attribute_id.
                             ']" id="productOption-'.
                             $product_id.'-'.$attribute_id.'-'.$domId.
-                            '" style="width:180px;">'."\n".
+                            '" class="product-option-field" style="width:180px;">'."\n".
                             // If there is only one option to choose from,
                             // why bother the customer at all?
 // NOTE: To always prepend the default "please choose" option, comment the condition
@@ -1950,16 +1945,18 @@ die("Failed to update the Cart!");
                           case Attribute::TYPE_MENU_OPTIONAL:
                             $selectValues .=
                                 '<option value="'.$option_id.'" '.
-                                ($selected ? 'selected="selected"' : '').
+                                ($arrOption['price'] != 0 ? 'data-price="'. $arrOption['price'] .'" ' : '')
+                                .($selected ? 'selected="selected"' : '').
                                 ' >'.$arrOption['value'].$option_price.
                                 "</option>\n";
                             break;
                           case Attribute::TYPE_RADIOBUTTON:
                             $selectValues .=
-                                '<input type="radio" name="productOption['.
+                                '<input class="product-option-field" type="radio" name="productOption['.
                                 $attribute_id.']" id="productOption-'.
                                 $product_id.'-'.$attribute_id.'-'.$domId.
                                 '" value="'.$option_id.'"'.
+                                ($arrOption['price'] != 0 ? ' data-price="'. $arrOption['price'] .'"' : '').
                                 ($selected ? ' checked="checked"' : '').
                                 ' /><label for="productOption-'.
                                 $product_id.'-'.$attribute_id.'-'.$domId.
@@ -1968,10 +1965,11 @@ die("Failed to update the Cart!");
                             break;
                           case Attribute::TYPE_CHECKBOX:
                             $selectValues .=
-                                '<input type="checkbox" name="productOption['.
+                                '<input class="product-option-field" type="checkbox" name="productOption['.
                                 $attribute_id.']['.$i.']" id="productOption-'.
                                 $product_id.'-'.$attribute_id.'-'.$domId.
                                 '" value="'.$option_id.'"'.
+                                ($arrOption['price'] != 0 ? ' data-price="'. $arrOption['price'] .'" ' : '').
                                 ($selected ? ' checked="checked"' : '').
                                 ' /><label for="productOption-'.
                                 $product_id.'-'.$attribute_id.'-'.$domId.
@@ -1982,6 +1980,7 @@ die("Failed to update the Cart!");
                             $selectValues .=
                                 '<option value="'.$option_id.'"'.
                                 ($selected ? ' selected="selected"' : '').
+                                ($arrOption['price'] != 0 ? ' data-price="'. $arrOption['price'] .'" ' : '').
                                 ' >'.$arrOption['value'].$option_price.
                                 "</option>\n";
                             break;
@@ -3150,13 +3149,31 @@ die("Shop::processRedirect(): This method is obsolete!");
         }
         if (   Cart::get_price()
             || $_SESSION['shop']['shipment_price']
-            || $_SESSION['shop']['vat_price']) {
+            || $_SESSION['shop']['vat_price']
+        ) {
             self::$objTemplate->setVariable(array(
                 'SHOP_PAYMENT_PRICE' => Currency::formatPrice(
                     $_SESSION['shop']['payment_price']),
                 'SHOP_PAYMENT_MENU' => self::get_payment_menu(),
             ));
+
+            if (    !(!Cart::needs_shipment() && Cart::get_price() <= 0)
+                &&  self::$objTemplate->blockExists('shop_payment_payment_methods')
+                &&  $paymentMethods = Payment::getPaymentMethods($_SESSION['shop']['countryId'])
+            ) {
+                foreach ($paymentMethods as $paymentId => $paymentName) {
+                    $selected = ($_SESSION['shop']['paymentId'] == $paymentId)
+                        ? 'selected="selected"' : '';
+                    self::$objTemplate->setVariable(array(
+                        'SHOP_PAYMENT_PAYMENT_METHOD_ID'       => contrexx_raw2xhtml($paymentId),
+                        'SHOP_PAYMENT_PAYMENT_METHOD_NAME'     => contrexx_raw2xhtml($paymentName),
+                        'SHOP_PAYMENT_PAYMENT_METHOD_SELECTED' => $selected,
+                    ));
+                    self::$objTemplate->parse('shop_payment_payment_methods');
+                }
+            }
         }
+
         if (empty($_SESSION['shop']['coupon_code'])) {
             $_SESSION['shop']['coupon_code'] = '';
         }
@@ -4174,7 +4191,8 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (empty($uploaderId) || empty($fileName)) {
             return '';
         }
-        $objSession = \cmsSession::getInstance();
+        $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objSession = $cx->getComponent('Session')->getSession();
         $tmpFile    = $objSession->getTempPath() . '/' . $uploaderId . '/' . $fileName;
         if (!\Cx\Lib\FileSystem\FileSystem::exists($tmpFile)) {
             return '';
@@ -4322,7 +4340,7 @@ die("Shop::processRedirect(): This method is obsolete!");
      * - the customer puts an article into the cart.
      * In the above cases, this will return true, false otherwise.
      * If true is returned, the caller *MUST* verify the existence of an
-     * active session (by checking the state of global $sessionObj) and,
+     * active session (by checking the state of global $_SESSION) and,
      * if that is empty, instantiate it.  See {@see init()} for more.
      * @return  boolean     True if a session is required, false otherwise
      */

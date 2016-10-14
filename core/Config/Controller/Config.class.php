@@ -1414,6 +1414,11 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'otherConfigurations')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Google Analytics Tracking ID");
             }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('defaultMetaimage')
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultMetaimage', isset($existingConfig['defaultMetaimage']) ? $existingConfig['defaultMetaimage'] : '/themes/standard_4_0/images/og_logo_social_media.jpg', 8,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_IMAGE, '{"type":"reference"}', 'otherConfigurations')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default meta image");
+            }
 
             // core
             \Cx\Core\Setting\Controller\Setting::init('Config', 'core','Yaml', $configPath);
@@ -1834,11 +1839,11 @@ class Config
     protected  function generateThumbnail($post)
     {
         // release the locks, session not needed
-        $session = \cmsSession::getInstance();
+        $cx = Cx::instanciate();
+
+        $session = $cx->getComponent('Session')->getSession();
         $session->releaseLocks();
         session_write_close();
-
-        $cx = Cx::instanciate();
 
         $key = $_GET['key'];
         if (!preg_match("/[A-Z0-9]{5}/i", $key)){
@@ -1986,7 +1991,9 @@ class Config
     function getThumbProgress()
     {
         // release the locks, session not needed
-        $session = \cmsSession::getInstance();
+        $cx = Cx::instanciate();
+
+        $session = $cx->getComponent('Session')->getSession();
         $session->releaseLocks();
         session_write_close();
 

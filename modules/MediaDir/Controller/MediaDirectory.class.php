@@ -48,6 +48,8 @@ class MediaDirectory extends MediaDirectoryLibrary
 
     var $pageTitle;
     var $metaTitle;
+    var $metaDescription;
+    var $metaImage;
 
 
     var $arrNavtree = array();
@@ -498,9 +500,76 @@ class MediaDirectory extends MediaDirectoryLibrary
             $objEntry->listEntries($this->_objTpl, 2);
             $objEntry->updateHits($intEntryId);
 
-            //set meta title
-            $this->metaTitle .= " - ".$objEntry->arrEntries[$intEntryId]['entryFields'][0];
-            $this->pageTitle = $objEntry->arrEntries[$intEntryId]['entryFields'][0];
+            //set meta attributes
+            $entries = new MediaDirectoryEntry($this->moduleName);
+            $entries->getEntries($intEntryId, $intLevelId, $intCategoryId, null, null, null, 1, null, 1);
+            $entry = $entries->arrEntries[$intEntryId];
+
+            $objInputfields = new MediaDirectoryInputfield($entry['entryFormId'], false, $entry['entryTranslationStatus'], $this->moduleName);
+            $inputFields = $objInputfields->getInputfields();
+
+            $titleChanged = false;
+            $contentChanged = false;
+            $imageChanged = false;
+
+            foreach ($inputFields as $arrInputfield) {
+                $contextType = isset($arrInputfield['context_type']) ? $arrInputfield['context_type'] : '';
+                if (!in_array($contextType, array('title', 'content', 'image'))) {
+                    continue;
+                }
+                $strType = isset($arrInputfield['type_name']) ? $arrInputfield['type_name'] : '';
+                $strInputfieldClass = "\Cx\Modules\MediaDir\Model\Entity\MediaDirectoryInputfield" . ucfirst($strType);
+                try {
+                    $objInputfield = safeNew($strInputfieldClass, $this->moduleName);
+                    $arrTranslationStatus = (contrexx_input2int($arrInputfield['type_multi_lang']) == 1)
+                        ? $entry['entryTranslationStatus']
+                        : null;
+                    $arrInputfieldContent = $objInputfield->getContent($entry['entryId'], $arrInputfield, $arrTranslationStatus);
+                    switch ($contextType) {
+                        case 'title':
+                            $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE'];
+                            if ($inputfieldValue !== '') {
+                                $this->metaTitle = $inputfieldValue;
+                            }
+                            if ($inputfieldValue !== '') {
+                                $this->pageTitle = $inputfieldValue;
+                            }
+                            $titleChanged = true;
+                            break;
+                        case 'content':
+                            $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE'];
+                            if ($inputfieldValue !== '') {
+                                $this->metaDescription = $inputfieldValue;
+                            }
+                            $contentChanged = true;
+                            break;
+                        case 'image':
+                            $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE_SRC'];
+                            if ($inputfieldValue !== '') {
+                                $this->metaImage = $inputfieldValue;
+                            }
+                            $imageChanged = true;
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (\Exception $e) {
+                    \DBG::log($e->getMessage());
+                    continue;
+                }
+            }
+
+            $firstInputfieldValue = $entries->arrEntries[$intEntryId]['entryFields'][0];
+            if (!$titleChanged && $firstInputfieldValue !== '') {
+                $this->pageTitle = $firstInputfieldValue;
+                $this->metaTitle = $firstInputfieldValue;
+            }
+            if (!$contentChanged && $firstInputfieldValue !== '') {
+                $this->metaDescription = $firstInputfieldValue;
+            }
+            if (!$imageChanged) {
+                $this->metaImage = \Cx\Core\Setting\Controller\Setting::getValue('defaultMetaimage', 'Config');
+            }
 
             if(empty($objEntry->arrEntries)) {
                 $this->_objTpl->hideBlock($this->moduleNameLC.'EntryList');
@@ -1062,6 +1131,14 @@ class MediaDirectory extends MediaDirectoryLibrary
 
     function getMetaTitle() {
         return $this->metaTitle;
+    }
+
+    function getMetaDescription() {
+        return $this->metaDescription;
+    }
+
+    function getMetaImage() {
+        return $this->metaImage;
     }
 }
 ?>
