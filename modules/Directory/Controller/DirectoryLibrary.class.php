@@ -951,6 +951,9 @@ class DirectoryLibrary
 // TODO: Use language variable.
 //                $this->strOkMessage = "Eintrag".$entryName." erfolgreich erstellt.";
                 $this->strOkMessage = "Eintrag erfolgreich erstellt.";
+                \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getEvents()
+                    ->triggerEvent('directoriesClearSsiCache');
                 $status = $id;
                 $this->createRSS();
             }
@@ -1010,6 +1013,9 @@ class DirectoryLibrary
             //update xml
             $this->createRSS();
             $this->strOkMessage = $_ARRAYLANG['TXT_FEED_SUCCESSFULL_CONFIRM'];
+            \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getEvents()
+                ->triggerEvent('directoriesClearSsiCache');
         } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_FEED_CORRUPT_CONFIRM'];
         }
@@ -2260,6 +2266,9 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                 }
 
                 $this->strOkMessage = $_ARRAYLANG['TXT_FEED_SUCCESSFULL_ADDED'];
+                \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getEvents()
+                    ->triggerEvent('directoriesClearSsiCache');
                 $status = $dirId;
                 $this->createRSS();
             }

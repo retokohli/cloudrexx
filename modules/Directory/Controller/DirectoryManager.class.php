@@ -571,6 +571,9 @@ class DirectoryManager extends DirectoryLibrary
                                 onlyentries='".$levOnlyEntries."'");
         if ($objResult !== false) {
             $this->strOkMessage = $_ARRAYLANG['TXT_LEVEL_SUCCESSULL_ADDED'];
+            \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getEvents()
+                ->triggerEvent('directoriesClearSsiCache');
         } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_ADD_LEVEL_ERROR'];
         }
@@ -739,6 +742,9 @@ class DirectoryManager extends DirectoryLibrary
             if ($objResult !== false) {
                 $this->showLevels();
                 $this->strOkMessage = $_ARRAYLANG['TXT_LEVEL_SUCCESSFULL_EDIT'];
+                \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getEvents()
+                    ->triggerEvent('directoriesClearSsiCache');
             } else {
                 $this->strErrMessage = $_ARRAYLANG['TXT_LEVEL_EDIT_ERROR'];
             }
@@ -1069,6 +1075,9 @@ class DirectoryManager extends DirectoryLibrary
 
         //status
         $this->strOkMessage = $_ARRAYLANG['TXT_DIR_CAT_SUCCESSFULL_ADDED'];
+        \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getEvents()
+            ->triggerEvent('directoriesClearSsiCache');
     }
 
 
@@ -1249,6 +1258,9 @@ EOF;
                 }
                 break;
         }
+        \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getEvents()
+            ->triggerEvent('directoriesClearSsiCache');
     }
 
 
@@ -1398,6 +1410,9 @@ EOF;
             $this->restoreVoting($id);
             $this->strOkMessage = $_ARRAYLANG['TXT_DIR_FEED_SUCCESSFULL_DEL'];
             $this->dirLog ="";
+            \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getEvents()
+                ->triggerEvent('directoriesClearSsiCache');
         } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_DIR_CORRUPT_DEL'];
         }
@@ -1427,7 +1442,10 @@ EOF;
         }
 
         if ($status == '') {
-            $this->strOkMessage = $_ARRAYLANG['TXT_LEVEL_SUCCESSFULL_DEL'];;
+            $this->strOkMessage = $_ARRAYLANG['TXT_LEVEL_SUCCESSFULL_DEL'];
+            \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getEvents()
+                ->triggerEvent('directoriesClearSsiCache');
         } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_LEVEL_CORRUPT_DEL'];
         }
@@ -1499,6 +1517,9 @@ EOF;
         $this->deleteSubcategorie($catId);
 
         $this->strOkMessage = $_ARRAYLANG['TXT_DIR_CAT_SUCCESSFULL_DEL'];
+        \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getEvents()
+            ->triggerEvent('directoriesClearSsiCache');
     }
 
 
@@ -1596,6 +1617,9 @@ EOF;
         }
         //status
         $this->strOkMessage = $_ARRAYLANG['TXT_DIR_CHANGES_SAVED'];
+        \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getEvents()
+            ->triggerEvent('directoriesClearSsiCache');
     }
 
 
@@ -1620,6 +1644,9 @@ EOF;
         //status
         if ($objResult !== false) {
             $this->strOkMessage = $_ARRAYLANG['TXT_DIR_CHANGES_SAVED'];
+            \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getEvents()
+                ->triggerEvent('directoriesClearSsiCache');
         } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_ORDER_CORRUPT_EDIT'];
         }
@@ -1737,6 +1764,9 @@ EOF;
             if ($objResult !== false) {
                 $this->showCategories();
                 $this->strOkMessage = $_ARRAYLANG['TXT_CAT_SUCCESSFULL_EDIT'];
+                \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getEvents()
+                    ->triggerEvent('directoriesClearSsiCache');
             } else {
                 $this->strErrMessage = $_ARRAYLANG['TXT_CAT_CORRUPT_EDIT'];;
             }

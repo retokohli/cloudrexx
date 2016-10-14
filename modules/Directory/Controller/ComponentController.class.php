@@ -53,6 +53,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Returns a list of JsonAdapter class names
+     *
+     * @return array List of ComponentController classes
+     */
+    public function getControllersAccessableByJson() {
+        return array('JsonDirectory');
+    }
+
+    /**
      * Load your component.
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
@@ -99,22 +108,52 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
 
-        global $_CONFIG, $cl, $dirc, $themesPages, $page_template, $themesPages;
+        global $_CONFIG, $cl, $themesPages, $page_template, $themesPages, $objCache;
 
         // get Directory Homecontent
-        if ($_CONFIG['directoryHomeContent'] == '1') {
-            if ($cl->loadFile(ASCMS_MODULE_PATH . '/Directory/Controller/DirHomeContent.class.php')) {
+        if (
+            $_CONFIG['directoryHomeContent'] == '1' &&
+            $cl->loadFile(ASCMS_MODULE_PATH . '/Directory/Controller/DirHomeContent.class.php')
+        ) {
+            $directoryContent = $objCache->getEsiContent(
+                'Directory',
+                'getContent',
+                array(
+                    'template' => \Env::get('init')->getCurrentThemeId()
+                )
+            );
 
-                $dirc = $themesPages['directory_content'];
-                if (preg_match('/{DIRECTORY_FILE}/', \Env::get('cx')->getPage()->getContent())) {
-                    \Env::get('cx')->getPage()->setContent(str_replace('{DIRECTORY_FILE}', DirHomeContent::getObj($dirc)->getContent(), \Env::get('cx')->getPage()->getContent()));
-                }
-                if (preg_match('/{DIRECTORY_FILE}/', $page_template)) {
-                    $page_template = str_replace('{DIRECTORY_FILE}', DirHomeContent::getObj($dirc)->getContent(), $page_template);
-                }
-                if (preg_match('/{DIRECTORY_FILE}/', $themesPages['index'])) {
-                    $themesPages['index'] = str_replace('{DIRECTORY_FILE}', DirHomeContent::getObj($dirc)->getContent(), $themesPages['index']);
-                }
+            if (empty($directoryContent)) {
+                return;
+            }
+
+            if (
+                preg_match(
+                    '/{DIRECTORY_FILE}/',
+                    \Env::get('cx')->getPage()->getContent()
+                )
+            ) {
+                \Env::get('cx')->getPage()->setContent(
+                    str_replace(
+                        '{DIRECTORY_FILE}',
+                        $directoryContent,
+                        \Env::get('cx')->getPage()->getContent()
+                    )
+                );
+            }
+            if (preg_match('/{DIRECTORY_FILE}/', $page_template)) {
+                $page_template = str_replace(
+                    '{DIRECTORY_FILE}',
+                    $directoryContent,
+                    $page_template
+                );
+            }
+            if (preg_match('/{DIRECTORY_FILE}/', $themesPages['index'])) {
+                $themesPages['index'] = str_replace(
+                    '{DIRECTORY_FILE}',
+                    $directoryContent,
+                    $themesPages['index']
+                );
             }
         }
     }
@@ -153,4 +192,21 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         $this->cx->getEvents()->addEventListener('SearchFindContent', new \Cx\Modules\Directory\Model\Event\DirectoryEventListener());
    }
+
+    /**
+     * Register the events
+     */
+    public function registerEvents()
+    {
+        $this->cx->getEvents()->addEvent('directoriesClearSsiCache');
+    }
+
+    /**
+     * Register the Event listeners
+     */
+    public function registerEventListeners()
+    {
+        $directoryEventListener = new \Cx\Modules\Directory\Model\Event\DirectoryEventListener();
+        $this->cx->getEvents()->addEventListener('directoriesClearSsiCache', $directoryEventListener);
+    }
 }

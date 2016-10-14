@@ -76,4 +76,16 @@ class DirectoryEventListener implements \Cx\Core\Event\Model\Entity\EventListene
         $search->appendResult($categoryResult);
     }
 
+    /**
+     * Clear all Ssi cache
+     */
+    protected function directoriesClearSsiCache()
+    {
+        global $objCache;
+
+        // clear ssi cache
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+            $objCache->clearSsiCachePage('Directory', 'getContent', array('template' => $lang['themesid']));
+        }
+    }
 }

@@ -403,4 +403,23 @@ class Theme extends \Cx\Model\Base\EntityBase
     public function addDefault($type) {
         $this->defaults[] = $type;
     }
+
+    /**
+     * Get the contents from the given theme file path
+     *
+     * @param string $file Relative file path
+     *
+     * @return string File content
+     * @throws ThemeException When file not exists in the theme
+     */
+    public function getContentFromThemeFile($file)
+    {
+        $filePath = $this->getFilePath($file);
+        if (empty($filePath)) {
+            return false;
+        }
+
+        $content = file_get_contents($filePath);
+        return $content;
+    }
 }
