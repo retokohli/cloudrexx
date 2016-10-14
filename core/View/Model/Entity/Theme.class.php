@@ -195,6 +195,24 @@ class Theme extends \Cx\Model\Base\EntityBase
     }
 
     /**
+     * Get the contents from the given file path
+     *
+     * @param string    $file    Relative file path
+     *
+     * @return string File content, false when file not exits
+     */
+    public function getContentFromFile($file)
+    {
+        $filePath = $this->getFilePath($file);
+        if (empty($filePath)) {
+            return false;
+        }
+
+        $content = file_get_contents($filePath);
+        return $content;
+    }
+
+    /**
      * @return string the extra description includes the names of end devices, where
      * the theme is set as default
      */

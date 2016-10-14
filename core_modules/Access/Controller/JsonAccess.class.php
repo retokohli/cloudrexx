@@ -71,7 +71,13 @@ class JsonAccess implements \Cx\Core\Json\JsonAdapter
      */
     public function getAccessableMethods()
     {
-        return array('showCurrentlyOnlineUsers', 'showLastActiveUsers', 'showLatestRegisteredUsers', 'showBirthdayUsers');
+        return array(
+            'showCurrentlyOnlineUsers',
+            'showLastActiveUsers',
+            'showLatestRegisteredUsers',
+            'showBirthdayUsers',
+            'showAccessLoggedInOrOut',
+        );
     }
 
     /**
@@ -103,8 +109,7 @@ class JsonAccess implements \Cx\Core\Json\JsonAdapter
     {
         try {
             $content = $this->getAccessContentBlock(
-                $this->getPageFromInput($params),
-                $this->getThemeFromInput($params),
+                $params,
                 'access_currently_online_member_list'
             );
             return array(
@@ -131,8 +136,7 @@ class JsonAccess implements \Cx\Core\Json\JsonAdapter
     {
         try {
             $content = $this->getAccessContentBlock(
-                $this->getPageFromInput($params),
-                $this->getThemeFromInput($params),
+                $params,
                 'access_last_active_member_list'
             );
             return array(
@@ -159,8 +163,7 @@ class JsonAccess implements \Cx\Core\Json\JsonAdapter
     {
         try {
             $content = $this->getAccessContentBlock(
-                $this->getPageFromInput($params),
-                $this->getThemeFromInput($params),
+                $params,
                 'access_latest_registered_member_list'
             );
             return array(
@@ -187,8 +190,7 @@ class JsonAccess implements \Cx\Core\Json\JsonAdapter
     {
         try {
             $content = $this->getAccessContentBlock(
-                $this->getPageFromInput($params),
-                $this->getThemeFromInput($params),
+                $params,
                 'access_birthday_member_list'
             );
             return array(
@@ -197,6 +199,68 @@ class JsonAccess implements \Cx\Core\Json\JsonAdapter
                     'birthday',
                     'setBirthdayUsers'
                 )
+            );
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            return array('content' => '');
+        }
+    }
+
+    /**
+     * Parse the access login or logout block's
+     *
+     * @param array $params User input parameters
+     *
+     * @return array
+     */
+    public function showAccessLoggedInOrOut($params)
+    {
+        try {
+            $blockIdx   =  !empty($params['get']['block'])
+                         ? contrexx_input2int($params['get']['block']) : '';
+            $accessType =  !empty($params['get']['type'])
+                         ? contrexx_input2raw($params['get']['type']) : 'logged_in';
+            $pageId     =  !empty($params['get']['page'])
+                         ? contrexx_input2int($params['get']['page']) : 0;
+            $tplBlock = 'access_logged_' . ($accessType == 'logged_in' ? 'in' : 'out') . $blockIdx;
+            if (!empty($pageId)) {
+                $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()
+                            ->getDb()
+                            ->getEntityManager()
+                            ->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+                $result = $pageRepo->findOneById($pageId);
+                if (!$result) {
+                    return array('content' => '');
+                }
+                $page    = $result[0];
+                $matches = null;
+                if (preg_match(
+                    '/<!--\s+BEGIN\s+('. $tplBlock .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                    $page->getContent(),
+                    $matches
+                )) {
+                    $content = $matches[2];
+                }
+            } else {
+                $content  = $this->getAccessContentBlock(
+                    $params,
+                    $tplBlock
+                );
+            }
+            $objFWUser  = \FWUser::getFWUserObject();
+            $isLoggedIn = $objFWUser->objUser->login();
+            $responseContent = '';
+            if ($accessType == 'logged_in' && $isLoggedIn) {
+                $template = new \Cx\Core\Html\Sigma();
+                $template->setTemplate($content);
+                $objFWUser->setLoggedInInfos($template, $tplBlock);
+                $responseContent = $template->get();
+            }
+            if ($accessType == 'logged_out' && !$isLoggedIn) {
+                $responseContent = $content;
+            }
+            return array(
+                'content' => $responseContent
             );
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());
@@ -234,32 +298,36 @@ class JsonAccess implements \Cx\Core\Json\JsonAdapter
     /**
      * Get the template block to parse the access placeholders
      *
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page   Page instance
-     * @param \Cx\Core\View\Model\Entity\Theme          $theme  Theme instance
-     * @param string                                    $block  Access block
+     * @param array     $params     Input params
+     * @param string    $block      Access block
      *
      * @return string
      * @throws JsonAccessException
      */
     protected function getAccessContentBlock(
-        \Cx\Core\ContentManager\Model\Entity\Page $page,
-        \Cx\Core\View\Model\Entity\Theme $theme,
+        $params = array(),
         $block = ''
     ) {
-        $content = $this->getContentFromThemeFile($theme, 'index.html');
-        if (!preg_match(
-            '/<!--\s+BEGIN\s+'. $block .'\s+-->(.*)<!--\s+END\s+'. $block .'\s+-->/s',
-             $content
-        )) {
-            $content = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
-        }
-        $matches = null;
-        if (preg_match(
-            '/<!--\s+BEGIN\s+'. $block .'\s+-->(.*)<!--\s+END\s+'. $block .'\s+-->/s',
-            $content,
-            $matches
-        )) {
-            return $matches[1];
+        try {
+            $theme = $this->getThemeFromInput($params);
+            $file  =  !empty($params['get']['file'])
+                    ? contrexx_input2raw($params['get']['file']) : '';
+            if (empty($file)) {
+                throw new JsonAccessException(__METHOD__ .': the input file cannot be empty');
+            }
+            $content = $theme->getContentFromFile($file);
+            $matches = null;
+            if (   $content
+                && preg_match(
+                    '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                    $content,
+                    $matches
+                )
+            ) {
+                return $matches[2];
+            }
+        } catch (\Exception $ex) {
+            \DBG::log($ex->getMessage());
         }
         throw new JsonAccessException('The block '. $block .' not exists');
     }
@@ -283,62 +351,5 @@ class JsonAccess implements \Cx\Core\Json\JsonAdapter
             throw new JsonAccessException('The theme id '. $themeId .' does not exists.');
         }
         return $theme;
-    }
-
-    /**
-     * Get page from the input parameters
-     *
-     * @param array $params User input array
-     *
-     * @return \Cx\Core\ContentManager\Model\Entity\Page instance of the page
-     * @throws JsonAccessException
-     */
-    protected function getPageFromInput($params)
-    {
-        $pageId  = !empty($params['get']['pageId']) ? contrexx_input2int($params['get']['pageId']) : 0;
-        if (empty($pageId)) {
-            throw new JsonAccessException('The page id is empty in the request');
-        }
-        $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()
-                    ->getDb()
-                    ->getEntityManager()
-                    ->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
-        $page     = $pageRepo->findById($pageId);
-        if (!$page) {
-            throw new JsonAccessException('The page id '. $pageId .' does not exists.');
-        }
-        return $page[0];
-    }
-
-    /**
-     * Get the contents from the given theme file path
-     *
-     * @param \Cx\Core\View\Model\Entity\Theme $theme   Theme instance
-     * @param string                           $file    Relative file path
-     * @return string File content
-     * @throws JsonNewsException When file not exists in the theme
-     */
-    protected function getContentFromThemeFile(\Cx\Core\View\Model\Entity\Theme $theme, $file)
-    {
-        $filePath = $theme->getFilePath($file);
-        if (empty($filePath)) {
-            throw new JsonNewsException('The file => '. $file .' not exists in Theme => ' . $theme->getThemesname());
-        }
-
-        $content = file_get_contents($filePath);
-        return $content;
-    }
-
-    /**
-     * Check whether the file exists in the template
-     *
-     * @param \Cx\Core\View\Model\Entity\Theme  $theme  Theme instance
-     * @param string                            $file   Filename
-     *
-     * @return boolean True when file exists in the theme, false otherwise
-     */
-    protected function isThemeFileExists(\Cx\Core\View\Model\Entity\Theme $theme, $file)
-    {
-        return !\FWValidator::isEmpty($theme->getFilePath($file));
     }
 }

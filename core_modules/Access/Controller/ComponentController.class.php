@@ -97,9 +97,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-                $content = \Env::get('cx')->getPage()->getContent();
-                \FWUser::parseLoggedInOutBlocks($content);
-                \Env::get('cx')->getPage()->setContent($content);
+                $content = $page->getContent();
+                $this->parseLoggedInOutBlocks($content, $page);
+                $page->setContent($content);
                 break;
 
             default:
@@ -114,14 +114,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $objCache, $objInit;
+        global $objCache;
 
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $objTemplate = $this->cx->getTemplate();
 
-                // ACCESS: parse access_logged_in[1-9] and access_logged_out[1-9] blocks
-                \FWUser::parseLoggedInOutBlocks($objTemplate);
+                // ACCESS: parse access_logged_in[[1-10]] and access_logged_out[[1-10]] blocks
+                $this->parseLoggedInOutBlocks($objTemplate);
 
                 // currently online users
                 if ($objTemplate->blockExists('access_currently_online_member_list')) {
@@ -131,13 +131,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             || $objTemplate->blockExists('access_currently_online_members')
                         )
                     ) {
+                        $params  = $this->getParamsForEsiContent('access_currently_online_members');
                         $content = $objCache->getEsiContent(
                             'Access',
                             'showCurrentlyOnlineUsers',
-                            array(
-                                'pageId'   => $page->getId(),
-                                'template' => $objInit->getCurrentThemeId(),
-                            )
+                            $params
                         );
                         $objTemplate->replaceBlock('access_currently_online_member_list', $content);
                         $objTemplate->touchBlock('access_currently_online_member_list');
@@ -154,13 +152,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             || $objTemplate->blockExists('access_last_active_members')
                         )
                     ) {
+                        $params  = $this->getParamsForEsiContent('access_last_active_member_list');
                         $content = $objCache->getEsiContent(
                             'Access',
                             'showLastActiveUsers',
-                            array(
-                                'pageId'   => $page->getId(),
-                                'template' => $objInit->getCurrentThemeId(),
-                            )
+                            $params
                         );
                         $objTemplate->replaceBlock('access_last_active_member_list', $content);
                         $objTemplate->touchBlock('access_last_active_member_list');
@@ -177,13 +173,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             || $objTemplate->blockExists('access_latest_registered_members')
                         )
                     ) {
+                        $params  = $this->getParamsForEsiContent('access_latest_registered_member_list');
                         $content = $objCache->getEsiContent(
                             'Access',
                             'showLatestRegisteredUsers',
-                            array(
-                                'pageId'   => $page->getId(),
-                                'template' => $objInit->getCurrentThemeId(),
-                            )
+                            $params
                         );
                         $objTemplate->replaceBlock('access_latest_registered_member_list', $content);
                         $objTemplate->touchBlock('access_latest_registered_member_list');
@@ -200,13 +194,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             || $objTemplate->blockExists('access_birthday_members')
                         )
                     ) {
+                        $params  = $this->getParamsForEsiContent('access_birthday_member_list');
                         $content = $objCache->getEsiContent(
                             'Access',
                             'showBirthdayUsers',
-                            array(
-                                'pageId'   => $page->getId(),
-                                'template' => $objInit->getCurrentThemeId(),
-                            )
+                            $params
                         );
                         $objTemplate->replaceBlock('access_birthday_member_list', $content);
                         $objTemplate->touchBlock('access_birthday_member_list');
@@ -216,9 +208,160 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 }
                 break;
 
-
             default:
                 break;
+        }
+    }
+
+    /**
+     * Callback function for parseLoggedInOutBlocks
+     *
+     * @param mixed     $template   Instance of \Cx\Core\Html\Sigma or html content
+     * @param mixed     $page       Instance of Page or null
+     *
+     * @return string
+     */
+    public function callbackLoggedInOutBlocks($template, $page)
+    {
+        $objTemplate = new \Cx\Core\Html\Sigma('.');
+        $objTemplate->setTemplate($template[0]);
+        $this->parseLoggedInOutBlocks($objTemplate, $page);
+        return $objTemplate->get();
+    }
+
+    /**
+     * Parse logged in/out blocks
+     *
+     * @param mixed     $template   Instance of \Cx\Core\Html\Sigma or html content
+     * @param mixed     $page       Instance of Page or null
+     *
+     * @return null
+     */
+    public function parseLoggedInOutBlocks(&$template, $page = null)
+    {
+        if (!($template instanceof \Cx\Core\Html\Sigma)) {
+            $instance = $this;
+            $template = preg_replace_callback(
+                    '/<!--\s+BEGIN\s+(access_logged_(?:in|out)[0-9]*)\s+-->.*<!--\s+END\s+\1\s+-->/sm',
+                    function($matches) use ($instance, $page) {
+                        return $instance->callbackLoggedInOutBlocks($matches, $page);
+                    },
+                    $template
+            );
+            return;
+            // content provided instead of \Cx\Core\Html\Sigma object
+        } else {
+            $objTemplate = $template;
+        }
+
+        global $objCache;
+
+        $accessLoggedInOutBlockIdx = '';
+        $accessLoggedInBlock       = 'access_logged_in';
+        $accessLoggedOutBlock      = 'access_logged_out';
+        while ($accessLoggedInOutBlockIdx <= 10) {
+            $accessLoggedInTplBlock = $accessLoggedInBlock.$accessLoggedInOutBlockIdx;
+            $accessLoggedOutTplBlock = $accessLoggedOutBlock.$accessLoggedInOutBlockIdx;
+            if ($objTemplate->blockExists($accessLoggedInTplBlock)) {
+                $params  = $this->getParamsForEsiContent($accessLoggedInTplBlock);
+                $params['block'] = $accessLoggedInOutBlockIdx;
+                $params['type']  = 'logged_in';
+                if ($page !== null) {
+                    $params['page']  = $page->getId();
+                }
+                $content = $objCache->getEsiContent(
+                    'Access',
+                    'showAccessLoggedInOrOut',
+                    $params
+                );
+                $objTemplate->replaceBlock($accessLoggedInTplBlock, $content);
+                $objTemplate->touchBlock($accessLoggedInTplBlock);
+            }
+            if ($objTemplate->blockExists($accessLoggedOutTplBlock)) {
+                $params  = $this->getParamsForEsiContent($accessLoggedOutTplBlock);
+                $params['block'] = $accessLoggedInOutBlockIdx;
+                $params['type']  = 'logged_out';
+                if ($page !== null) {
+                    $params['page']  = $page->getId();
+                }
+                $content = $objCache->getEsiContent(
+                    'Access',
+                    'showAccessLoggedInOrOut',
+                    $params
+                );
+                $objTemplate->replaceBlock($accessLoggedOutTplBlock, $content);
+                $objTemplate->touchBlock($accessLoggedOutTplBlock);
+            }
+            $accessLoggedInOutBlockIdx++;
+        }
+    }
+
+    /**
+     * Get parameter array for esi/ssi request
+     *
+     * @param string $block Name of parsing block
+     *
+     * @return array Parameter's list
+     */
+    protected function getParamsForEsiContent($block)
+    {
+        global $objInit;
+
+        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $theme           = $themeRepository->findById($objInit->getCurrentThemeId());
+
+        $content = $theme->getContentFromFile('index.html');
+        if (   $content
+            && preg_match(
+                '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                $content
+            )
+        ) {
+            return array(
+                'template' => $theme->getId(),
+                'file'     => 'index.html',
+            );
+        }
+        if ($objInit->hasCustomContent()) {
+            if (!empty($objInit->customContentTemplate)) {
+                $channelTheme    = $themeRepository->findById($objInit->channelThemeId);
+                $content         = $channelTheme->getContentFromFile($objInit->customContentTemplate);
+                if (   $content
+                    && preg_match(
+                        '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                         $content
+                    )
+                ) {
+                    return array(
+                        'template' => $channelTheme->getId(),
+                        'file'     => $objInit->customContentTemplate,
+                    );
+                }
+                $content = $theme->getContentFromFile($objInit->customContentTemplate);
+                if (   $content
+                    && preg_match(
+                        '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                         $content
+                    )
+                ) {
+                    return array(
+                        'template' => $theme->getId(),
+                        'file'     => $objInit->customContentTemplate,
+                    );
+                }
+            }
+        }
+        $content = $theme->getContentFromFile('content.html');
+        if (   $content
+            && preg_match(
+                '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                $content
+            )
+        ) {
+            return array(
+                'template' => $theme->getId(),
+                'file'     => 'content.html',
+            );
         }
     }
 

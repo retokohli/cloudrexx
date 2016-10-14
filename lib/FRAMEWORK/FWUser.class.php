@@ -345,63 +345,15 @@ class FWUser extends User_Setting
         return implode('<br />', $this->arrStatusMsg['error']);
     }
 
-
-    private static function loadTemplate($template)
-    {
-        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_THEMES_PATH);
-        $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-        $objTemplate->setTemplate($template[0]);
-        self::parseLoggedInOutBlocks($objTemplate);
-        return $objTemplate->get();
-    }
-
-
-    public static function parseLoggedInOutBlocks(&$template)
-    {
-        $accessLoggedInOutBlockIdx = '';
-        $accessLoggedInBlock = 'access_logged_in';
-        $accessLoggedInTplBlock = $accessLoggedInBlock.$accessLoggedInOutBlockIdx;
-        $accessLoggedOutBlock = 'access_logged_out';
-        $accessLoggedOutTplBlock = $accessLoggedOutBlock.$accessLoggedInOutBlockIdx;
-
-        if (!is_object($template)) {
-            // content provided instead of \Cx\Core\Html\Sigma object
-            $template = preg_replace_callback('/<!--\s+BEGIN\s+(access_logged_(?:in|out)[0-9]*)\s+-->.*<!--\s+END\s+\1\s+-->/sm', array('self', 'loadTemplate'), $template);
-            return;
-        } else {
-            $objTemplate = $template;
-        }
-
-        while ($accessLoggedInOutBlockIdx <= 10) {
-            // parse access_logged_in[_[1-10]] blocks
-            if ($objTemplate->blockExists($accessLoggedInTplBlock)) {
-                $objFWUser = FWUser::getFWUserObject();
-                if ($objFWUser->objUser->login()) {
-                    $objFWUser->setLoggedInInfos($objTemplate, $accessLoggedInTplBlock);
-                    $objTemplate->touchBlock($accessLoggedInTplBlock);
-                } else {
-                    $objTemplate->hideBlock($accessLoggedInTplBlock);
-                }
-            }
-
-            // parse access_logged_out[_[1-10]] blocks
-            if ($objTemplate->blockExists($accessLoggedOutTplBlock)) {
-                $objFWUser = FWUser::getFWUserObject();
-                if ($objFWUser->objUser->login()) {
-                    $objTemplate->hideBlock($accessLoggedOutTplBlock);
-                } else {
-                    $objTemplate->touchBlock($accessLoggedOutTplBlock);
-                }
-            }
-
-            $accessLoggedInOutBlockIdx++;
-            $accessLoggedInTplBlock = $accessLoggedInBlock.$accessLoggedInOutBlockIdx;
-            $accessLoggedOutTplBlock = $accessLoggedOutBlock.$accessLoggedInOutBlockIdx;
-        }
-    }
-
-
-    private function setLoggedInInfos($objTemplate, $blockName = '')
+    /**
+     * Parse the logged user information into the given template instance
+     *
+     * @param \Cx\Core\Html\Sigma   $objTemplate    Instance of template
+     * @param string                $blockName      Parse block name
+     *
+     * @return boolean
+     */
+    public function setLoggedInInfos($objTemplate, $blockName = '')
     {
         global $_CORELANG;
 
