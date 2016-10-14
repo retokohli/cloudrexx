@@ -276,6 +276,10 @@ class Calendar extends CalendarLibrary
                 // if we want to show events of the whole day
                 // we need to set start date to 0:00
                 $this->startDate->setTime(0, 0, 0);
+            } else {
+                // this is a very dirty hack! this only works in timezone
+                // Europe/Zurich during DST period
+                $this->startDate->sub(new \DateInterval('PT2H'));
             }
         }
 
