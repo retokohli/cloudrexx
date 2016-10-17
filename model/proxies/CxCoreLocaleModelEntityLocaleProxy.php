@@ -180,7 +180,7 @@ class CxCoreLocaleModelEntityLocaleProxy extends \Cx\Core\Locale\Model\Entity\Lo
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'iso_1', 'label', 'fallback', 'source_language', 'locales', 'languageRelatedByIso1', 'country', 'locale', 'languageRelatedBySourceLanguage');
+        return array('__isInitialized__', 'id', 'iso1', 'label', 'fallback', 'sourceLanguage', 'locales', 'languageRelatedByIso1', 'country', 'locale', 'languageRelatedBySourceLanguage');
     }
 
     public function __clone()

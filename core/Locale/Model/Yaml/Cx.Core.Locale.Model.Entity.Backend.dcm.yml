@@ -9,7 +9,8 @@ Cx\Core\Locale\Model\Entity\Backend:
       generator:
         strategy: AUTO
   fields:
-    iso_1:
+    iso1:
+      column: iso_1
       type: string
       length: 2
   oneToOne:

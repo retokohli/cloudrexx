@@ -16,7 +16,8 @@ Cx\Core\Locale\Model\Entity\Locale:
       generator:
         strategy: AUTO
   fields:
-    iso_1:
+    iso1:
+      column: iso_1
       type: string
       length: 2
     label:
@@ -26,7 +27,8 @@ Cx\Core\Locale\Model\Entity\Locale:
     fallback:
       type: integer
       unsigned: true
-    source_language:
+    sourceLanguage:
+      column: source_language
       type: string
       length: 2
   uniqueConstraints:

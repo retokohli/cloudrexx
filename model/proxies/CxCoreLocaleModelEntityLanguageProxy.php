@@ -27,6 +27,18 @@ class CxCoreLocaleModelEntityLanguageProxy extends \Cx\Core\Locale\Model\Entity\
     }
 
     
+    public function setId($iso1)
+    {
+        $this->_load();
+        return parent::setId($iso1);
+    }
+
+    public function getId()
+    {
+        $this->_load();
+        return parent::getId();
+    }
+
     public function setIso1($iso1)
     {
         $this->_load();
@@ -150,7 +162,7 @@ class CxCoreLocaleModelEntityLanguageProxy extends \Cx\Core\Locale\Model\Entity\
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'iso_1', 'iso_3', 'source', 'backend', 'frontends', 'localeRelatedBySourceLanguages', 'localeRelatedByIso1s');
+        return array('__isInitialized__', 'iso1', 'iso3', 'source', 'backend', 'frontends', 'localeRelatedBySourceLanguages', 'localeRelatedByIso1s');
     }
 
     public function __clone()

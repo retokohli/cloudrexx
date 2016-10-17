@@ -7,14 +7,14 @@ namespace Cx\Core\Locale\Model\Entity;
  */
 class Language extends \Cx\Model\Base\EntityBase {
     /**
-     * @var string $iso_1
+     * @var string $iso1
      */
-    protected $iso_1;
+    protected $iso1;
 
     /**
-     * @var string $iso_3
+     * @var string $iso3
      */
-    protected $iso_3;
+    protected $iso3;
 
     /**
      * @var boolean $source
@@ -47,45 +47,67 @@ class Language extends \Cx\Model\Base\EntityBase {
     $this->localeRelatedBySourceLanguages = new \Doctrine\Common\Collections\ArrayCollection();
     $this->localeRelatedByIso1s = new \Doctrine\Common\Collections\ArrayCollection();
     }
+
+    /**
+     * Set iso1
+     * TODO: Remove this method after doctrine update
+     *
+     * @param string $iso1
+     */
+    public function setId($iso1) {
+        $this->setIso1($iso1);
+    }
+
+    /**
+     * Get iso1
+     * This method fixes the error when getting the identifier in the metadata class info,
+     * which automatically calls getId() on an entity to get the identifier
+     * TODO: Remove this method after doctrine update
+     *
+     * @return  string $iso1
+     */
+    public function getId() {
+        return $this->getIso1();
+    }
     
     /**
-     * Set iso_1
+     * Set iso1
      *
      * @param string $iso1
      */
     public function setIso1($iso1)
     {
-        $this->iso_1 = $iso1;
+        $this->iso1 = $iso1;
     }
 
     /**
-     * Get iso_1
+     * Get iso1
      *
      * @return string $iso1
      */
     public function getIso1()
     {
-        return $this->iso_1;
+        return $this->iso1;
     }
 
     /**
-     * Set iso_3
+     * Set iso3
      *
      * @param string $iso3
      */
     public function setIso3($iso3)
     {
-        $this->iso_3 = $iso3;
+        $this->iso3 = $iso3;
     }
 
     /**
-     * Get iso_3
+     * Get iso3
      *
      * @return string $iso3
      */
     public function getIso3()
     {
-        return $this->iso_3;
+        return $this->iso3;
     }
 
     /**
