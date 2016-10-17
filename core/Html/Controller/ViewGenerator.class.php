@@ -349,7 +349,7 @@ class ViewGenerator {
                 $this->storeSingleValuedAssociation(
                     $associationMapping['targetEntity'],
                     array(
-                        $associationMapping['joinColumns'][0]['referencedColumnName'] => $entityData[$secondOffset],
+                        $entityClassMetadata->getFieldName($associationMapping['joinColumns'][0]['referencedColumnName']) => $entityData[$secondOffset],
                     ),
                     $entity,
                     'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $associationMapping['fieldName'])))
@@ -371,7 +371,7 @@ class ViewGenerator {
                 $this->storeSingleValuedAssociation(
                     $associationMapping['targetEntity'],
                     array(
-                        $associationMapping['joinColumns'][0]['referencedColumnName'] => $foreignEntityData[$secondOffset],
+                        $entityClassMetadata->getFieldName($associationMapping['joinColumns'][0]['referencedColumnName']) => $foreignEntityData[$secondOffset],
                     ),
                     $entity,
                     'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $associationMapping['fieldName'])))
