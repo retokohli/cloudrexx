@@ -3154,7 +3154,7 @@ CREATE TABLE `contrexx_module_shop_order_attributes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `item_id` int(10) unsigned NOT NULL DEFAULT '0',
   `attribute_name` varchar(255) NOT NULL DEFAULT '',
-  `option_name` varchar(255) NOT NULL DEFAULT '',
+  `option_name` TEXT NOT NULL DEFAULT '',
   `price` decimal(9,2) NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`id`),
   KEY `item_id` (`item_id`)
