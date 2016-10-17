@@ -244,7 +244,7 @@ class PodcastManager extends PodcastLib
         $mediaCount = &$this->_getMediaCount($categoryId);
 
         if ($mediaCount > $_CONFIG['corePagingLimit']) {
-            $paging = getPaging($mediaCount, $pos, '&cmd=Podcast&categoryId='.$categoryId, $_ARRAYLANG['TXT_PODCAST_MEDIA']);
+            $paging = getPaging($mediaCount, $pos, '&cmd=Podcast&act=&categoryId='.$categoryId, $_ARRAYLANG['TXT_PODCAST_MEDIA']);
             $this->_objTpl->setVariable('PODCAST_PAGING', $paging."<br /><br />\n");
         }
 

@@ -1385,7 +1385,7 @@ class SurveyManager extends SurveyLibrary {
         // TODO: Never used
         $intPerPage         = $this->getPagingLimit();
 
-        $strPagingSource    = getPaging($this->countEntries('survey_surveygroup'), $intPos, '&amp;cmd=Survey', false, $intPerPage);
+        $strPagingSource    = getPaging($this->countEntries('survey_surveygroup'), $intPos, '&amp;cmd=Survey&act=', false, $intPerPage);
         $this->_objTpl->setVariable('ENTRIES_PAGING', $strPagingSource);
         $limit = $this->getPagingLimit();                 //how many items to show per page
         $start = ($intPos) ? $intPos : 0;
