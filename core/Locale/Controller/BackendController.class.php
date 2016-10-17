@@ -47,13 +47,15 @@ namespace Cx\Core\Locale\Controller;
  * @subpackage  core_locale
  * @version     5.0.0
  */
-class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
+class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController
+{
 
     /**
      * Returns a list of available commands (?act=XY)
      * @return array List of acts
      */
-    public function getCommands() {
+    public function getCommands()
+    {
         return array('Locale', 'Backend');
     }
 
@@ -61,7 +63,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * Return true here if you want the first tab to be an entity view
      * @return boolean True if overview should be shown, false otherwise
      */
-    protected function showOverviewPage() {
+    protected function showOverviewPage()
+    {
         return false;
     }
 
@@ -93,14 +96,14 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'header' => $_ARRAYLANG['TXT_CORE_LOCALE_ACT_BACKEND'],
                     'fields' => array(
                         'id' => array(
-                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID']
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID'],
                         ),
                         'iso_1' => array(
-                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO_1']
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO_1'],
                         ),
                         'language' => array(
-                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_LANGUAGE']
-                        )
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_LANGUAGE'],
+                        ),
                     ),
                     'functions' => array(
                         'add' => true,
@@ -108,32 +111,61 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'delete' => true,
                         'sorting' => true,
                         'paging' => true,
-                        'filtering' => false
-                    )
+                        'filtering' => false,
+                    ),
                 );
                 break;
             case 'Cx\Core\Locale\Model\Entity\Locale':
+                if (!isset($_GET['order'])) {
+                    $_GET['order'] = 'id';
+                }
                 return array(
                     'header' => $_ARRAYLANG['TXT_CORE_LOCALE_ACT_LOCALE'],
                     'fields' => array(
                         'id' => array(
-                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID']
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID'],
+                            'tooltip' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID'],
                         ),
                         'iso_1' => array(
-                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO_1']
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO_1'],
+                            'tooltip' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO_1'],
                         ),
                         'label' => array(
-                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_LABEL']
-                        ),
-                        'fallback' => array(
-                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_FALLBACK']
-                        ),
-                        'sourceLanguage' => array(
-                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_SOURCE_LANGUAGE']
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_LABEL'],
                         ),
                         'country' => array(
-                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_COUNTRY']
-                        )
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_COUNTRY'],
+                        ),
+                        'fallback' => array(
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_FALLBACK'],
+                            'table' => array(
+                                'parse' => function ($value, $rowData) {
+                                    $em = $this->cx->getDb()->getEntityManager();
+                                    $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
+                                    $locale = $localeRepo->find($value);
+                                    return $locale->getLabel();
+                                },
+                            ),
+                        ),
+                        'source_language' => array(
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_SOURCE_LANGUAGE'],
+                        ),
+                        'locale' => array(
+                            'showOverview' => false,
+                            'showDetail' => false,
+                        ),
+                        'locales' => array(
+                            'showOverview' => false,
+                            'showDetail' => false,
+                        ),
+                        'languageRelatedByIso1' => array(
+                            'showOverview' => false,
+                            'showDetail' => false,
+                        ),
+                        'languageRelatedBySourceLanguage' => array(
+                            'showOverview' => false,
+                            'showDetail' => false,
+                        ),
                     ),
                     'functions' => array(
                         'add' => true,
@@ -141,8 +173,26 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'delete' => true,
                         'sorting' => true,
                         'paging' => true,
-                        'filtering' => false
-                    )
+                        'filtering' => false,
+                    ),
+                    'order' => array(
+                        'overview' => array(
+                            'id',
+                            'label',
+                            'iso_1',
+                            'source_language',
+                            'country',
+                            'fallback',
+                        ),
+                        'form' => array(
+                            'id',
+                            'label',
+                            'iso_1',
+                            'source_language',
+                            'country',
+                            'fallback',
+                        ),
+                    ),
                 );
                 break;
             default:
@@ -154,9 +204,30 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'delete' => true,
                         'sorting' => true,
                         'paging' => true,
-                        'filtering' => false
-                    )
+                        'filtering' => false,
+                    ),
                 );
         }
+    }
+
+    /**
+     * Returns the object to parse a wiew with
+     *
+     * If you overwrite this and return anything else than string, filter will not work
+     * @return string|array|object An entity class name, entity, array of entities or DataSet
+     */
+    protected function getViewGeneratorParseObjectForEntityClass($entityClassName) {
+        if ($entityClassName == 'Cx\Core\Locale\Model\Entity\Locale') {
+            $em = $this->cx->getDb()->getEntityManager();
+            $localeRepo = $em->getRepository($entityClassName);
+            $parseObject = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($localeRepo->findAll());
+            //for ($i = 0; $i <= $parseObject->length(); $i++) {
+            //    $parseObject->add($i, array('Default' => 'Yes'));
+            //}
+            $parseObject->add(1, array('Default' => 'Yes'));
+            $parseObject->add(2, array('Default' => 'Yes'));
+            return $parseObject;
+        }
+        return $entityClassName;
     }
 }
