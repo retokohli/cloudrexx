@@ -54,11 +54,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @return array List of acts
      */
     public function getCommands() {
-        return array(
-            'Frontend' => array(
-                'Edit'
-            ),
-            'Backend');
+        return array('Locale', 'Backend');
     }
 
     /**
@@ -67,5 +63,100 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     protected function showOverviewPage() {
         return false;
+    }
+
+    /**
+     * This function returns the ViewGeneration options for a given entityClass
+     *
+     * @access protected
+     * @global $_ARRAYLANG
+     * @param $entityClassName contains the FQCN from entity
+     * @return array with options
+     */
+    protected function getViewGeneratorOptions($entityClassName)
+    {
+        global $_ARRAYLANG;
+
+        $classNameParts = explode('\\', $entityClassName);
+        $classIdentifier = end($classNameParts);
+
+        $langVarName = 'TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier);
+        if (isset($_ARRAYLANG[$langVarName])) {
+            $header = $_ARRAYLANG[$langVarName];
+        } else {
+            $header = $_ARRAYLANG['TXT_CORE_LOCALE_ACT_DEFAULT'];
+        }
+
+        switch ($entityClassName) {
+            case 'Cx\Core\Locale\Model\Entity\Backend':
+                return array(
+                    'header' => $_ARRAYLANG['TXT_CORE_LOCALE_ACT_BACKEND'],
+                    'fields' => array(
+                        'id' => array(
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID']
+                        ),
+                        'iso_1' => array(
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO_1']
+                        ),
+                        'language' => array(
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_LANGUAGE']
+                        )
+                    ),
+                    'functions' => array(
+                        'add' => true,
+                        'edit' => true,
+                        'delete' => true,
+                        'sorting' => true,
+                        'paging' => true,
+                        'filtering' => false
+                    )
+                );
+                break;
+            case 'Cx\Core\Locale\Model\Entity\Locale':
+                return array(
+                    'header' => $_ARRAYLANG['TXT_CORE_LOCALE_ACT_LOCALE'],
+                    'fields' => array(
+                        'id' => array(
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID']
+                        ),
+                        'iso_1' => array(
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO_1']
+                        ),
+                        'label' => array(
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_LABEL']
+                        ),
+                        'fallback' => array(
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_FALLBACK']
+                        ),
+                        'sourceLanguage' => array(
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_SOURCE_LANGUAGE']
+                        ),
+                        'country' => array(
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_COUNTRY']
+                        )
+                    ),
+                    'functions' => array(
+                        'add' => true,
+                        'edit' => true,
+                        'delete' => true,
+                        'sorting' => true,
+                        'paging' => true,
+                        'filtering' => false
+                    )
+                );
+                break;
+            default:
+                return array(
+                    'header' => $header,
+                    'functions' => array(
+                        'add' => true,
+                        'edit' => true,
+                        'delete' => true,
+                        'sorting' => true,
+                        'paging' => true,
+                        'filtering' => false
+                    )
+                );
+        }
     }
 }
