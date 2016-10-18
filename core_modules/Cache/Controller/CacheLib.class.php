@@ -1057,20 +1057,18 @@ class CacheLib
      *
      * @return array Parameter's list
      */
-    protected function getParamsByFindBlockExistsInTpl($block, $page = null)
+    public function getParamsByFindBlockExistsInTpl($block, $page = null)
     {
         global $objInit;
 
         //Check $block exists in page content, If so return page id as parameter's list
-        if ($page instanceof \Cx\Core\ContentManager\Model\Entity\Page) {
-            $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()
-                        ->getDb()
-                        ->getEntityManager()
-                        ->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-            $page     = $pageRepo->findOneById($page->getId());
-            if (
-                $page &&
-                preg_match(
+        if (
+            $page != null &&
+            ($page instanceof \Cx\Core\ContentManager\Model\Entity\Page) &&
+            $page->getId() &&
+            $page->getContent()
+        ) {
+            if (preg_match(
                     '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
                     $page->getContent()
                 )
