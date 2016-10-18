@@ -72,4 +72,55 @@ class AccessEventListener extends DefaultEventListener
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 
+    /**
+     * Access event listener for clearing esi cache
+     *
+     * @param array $eventArgs
+     *
+     * @return null
+     */
+    public function clearEsiCache($eventArgs)
+    {
+        if (empty($eventArgs) || $eventArgs[0] != 'Access') {
+            return;
+        }
+        global $objInit;
+
+        $accessBlocks = array(
+            // jsonAdaptor => block name
+            'showCurrentlyOnlineUsers'  => 'access_currently_online_members',
+            'showLastActiveUsers'       => 'access_last_active_member_list',
+            'showLatestRegisteredUsers' => 'access_latest_registered_member_list',
+            'showBirthdayUsers'         => 'access_birthday_member_list',
+        );
+        $themeRepo   = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $themesBlock = array();
+        foreach ($themeRepo->findAll() as $theme) {
+            $themeId = $theme->getId();
+            $searchTemplateFiles = array_merge(
+                array('index.html', 'home.html'),
+                $objInit->getCustomContentTemplatesForTheme($theme)
+            );
+            foreach ($accessBlocks as $adaptor => $block) {
+                $themesBlock[$themeId][$adaptor] = array();
+                foreach ($searchTemplateFiles as $file) {
+                    if ($theme->isBlockExistsInfile($file, $block)) {
+                        $themesBlock[$themeId][$adaptor][] = $file;
+                    }
+                }
+            }
+        }
+        foreach ($themesBlock as $themeId => $adaptorArray) {
+            foreach ($adaptorArray as $adaptor => $file) {
+                $this->cx->getComponent('Cache')->clearSsiCachePage(
+                    'Access',
+                    $adaptor,
+                    array(
+                        'template' => $themeId,
+                        'file'     => $file,
+                    )
+                );
+            }
+        }
+    }
 }
