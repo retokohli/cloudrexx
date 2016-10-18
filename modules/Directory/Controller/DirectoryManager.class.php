@@ -573,7 +573,7 @@ class DirectoryManager extends DirectoryLibrary
             $this->strOkMessage = $_ARRAYLANG['TXT_LEVEL_SUCCESSULL_ADDED'];
             \Cx\Core\Core\Controller\Cx::instanciate()
                 ->getEvents()
-                ->triggerEvent('directoriesClearSsiCache');
+                ->triggerEvent('clearEsiCache', array('Directory'));
         } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_ADD_LEVEL_ERROR'];
         }
@@ -744,7 +744,7 @@ class DirectoryManager extends DirectoryLibrary
                 $this->strOkMessage = $_ARRAYLANG['TXT_LEVEL_SUCCESSFULL_EDIT'];
                 \Cx\Core\Core\Controller\Cx::instanciate()
                     ->getEvents()
-                    ->triggerEvent('directoriesClearSsiCache');
+                    ->triggerEvent('clearEsiCache', array('Directory'));
             } else {
                 $this->strErrMessage = $_ARRAYLANG['TXT_LEVEL_EDIT_ERROR'];
             }
@@ -1077,7 +1077,7 @@ class DirectoryManager extends DirectoryLibrary
         $this->strOkMessage = $_ARRAYLANG['TXT_DIR_CAT_SUCCESSFULL_ADDED'];
         \Cx\Core\Core\Controller\Cx::instanciate()
             ->getEvents()
-            ->triggerEvent('directoriesClearSsiCache');
+            ->triggerEvent('clearEsiCache', array('Directory'));
     }
 
 
@@ -1260,7 +1260,7 @@ EOF;
         }
         \Cx\Core\Core\Controller\Cx::instanciate()
             ->getEvents()
-            ->triggerEvent('directoriesClearSsiCache');
+            ->triggerEvent('clearEsiCache', array('Directory'));
     }
 
 
@@ -1412,7 +1412,7 @@ EOF;
             $this->dirLog ="";
             \Cx\Core\Core\Controller\Cx::instanciate()
                 ->getEvents()
-                ->triggerEvent('directoriesClearSsiCache');
+                ->triggerEvent('clearEsiCache', array('Directory'));
         } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_DIR_CORRUPT_DEL'];
         }
@@ -1445,7 +1445,7 @@ EOF;
             $this->strOkMessage = $_ARRAYLANG['TXT_LEVEL_SUCCESSFULL_DEL'];
             \Cx\Core\Core\Controller\Cx::instanciate()
                 ->getEvents()
-                ->triggerEvent('directoriesClearSsiCache');
+                ->triggerEvent('clearEsiCache', array('Directory'));
         } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_LEVEL_CORRUPT_DEL'];
         }
@@ -1519,7 +1519,7 @@ EOF;
         $this->strOkMessage = $_ARRAYLANG['TXT_DIR_CAT_SUCCESSFULL_DEL'];
         \Cx\Core\Core\Controller\Cx::instanciate()
             ->getEvents()
-            ->triggerEvent('directoriesClearSsiCache');
+            ->triggerEvent('clearEsiCache', array('Directory'));
     }
 
 
@@ -1619,7 +1619,7 @@ EOF;
         $this->strOkMessage = $_ARRAYLANG['TXT_DIR_CHANGES_SAVED'];
         \Cx\Core\Core\Controller\Cx::instanciate()
             ->getEvents()
-            ->triggerEvent('directoriesClearSsiCache');
+            ->triggerEvent('clearEsiCache', array('Directory'));
     }
 
 
@@ -1646,7 +1646,7 @@ EOF;
             $this->strOkMessage = $_ARRAYLANG['TXT_DIR_CHANGES_SAVED'];
             \Cx\Core\Core\Controller\Cx::instanciate()
                 ->getEvents()
-                ->triggerEvent('directoriesClearSsiCache');
+                ->triggerEvent('clearEsiCache', array('Directory'));
         } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_ORDER_CORRUPT_EDIT'];
         }
@@ -1766,7 +1766,7 @@ EOF;
                 $this->strOkMessage = $_ARRAYLANG['TXT_CAT_SUCCESSFULL_EDIT'];
                 \Cx\Core\Core\Controller\Cx::instanciate()
                     ->getEvents()
-                    ->triggerEvent('directoriesClearSsiCache');
+                    ->triggerEvent('clearEsiCache', array('Directory'));
             } else {
                 $this->strErrMessage = $_ARRAYLANG['TXT_CAT_CORRUPT_EDIT'];;
             }

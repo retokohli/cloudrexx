@@ -2051,58 +2051,103 @@ $this->arrRows[2] = '';
 
     /**
      * Get latest directory entries
-     * @access    public
-     * @param    string $pageContent
-     * @param     string
+     *
+     * @param array $arrBlocks array of the availble blocks for parsing entries
      */
     function getBlockLatest($arrBlocks)
     {
         global $objDatabase, $objTemplate;
 
         $i = 0;
-        $numBlocks = count($arrBlocks);
-        //get latest
-        $query = "
-            SELECT id, title, description, logo, `date`
-              FROM ".DBPREFIX."module_directory_dir
-             WHERE status != 0
-             ORDER BY id DESC
-        ";
+        //get latest entries
+        $query = '
+            SELECT `id`, `title`, `description`, `logo`, `date`
+              FROM `' . DBPREFIX . 'module_directory_dir`
+            WHERE `status` != 0
+            ORDER BY `id` DESC
+        ';
         $objResult = $objDatabase->SelectLimit($query, $this->settings['latest_content']['value']);
+        $cache = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache');
+        $blockName = 'directoryLatest_row_';
         if ($objResult) {
             while (!$objResult->EOF) {
-                if (!empty($objResult->fields['logo'])) {
-                    $logo =
-                        '<img src="'.$this->mediaWebPath.'thumbs/'.
-                        $objResult->fields['logo'].'" border="0" alt="'.
-                        stripslashes($objResult->fields['title']).'" />';
-                } else {
-                    $logo = '';
-                }
-                if (strlen($objResult->fields['description']) > 60) {
-                    $points = "...";
-                } else {
-                    $points = "";
-                }
-                $parts= explode("\n", wordwrap($objResult->fields['description'], 60, "\n"));
+                $params = $arrBlocks[$i];
+                $params['blockId'] = $objResult->fields['id'];
+                $content = $cache->getEsiContent(
+                    'Directory',
+                    'getBlockById',
+                    $params
+                );
 
-                // set variables
-                $objTemplate->setVariable(array(
-                    'DIRECTORY_DATE' => date("d.m.Y", $objResult->fields['date']),
-                    'DIRECTORY_TITLE' => stripslashes($objResult->fields['title']),
-                    'DIRECTORY_DESC' => $parts[0].$points,
-                    'DIRECTORY_LOGO' => $logo,
-                    'DIRECTORY_ID' => $objResult->fields['id'],
-                ));
-                $blockId = $arrBlocks[$i];
-                $objTemplate->parse('directoryLatest_row_'.$blockId);
-                if ($i < $numBlocks-1) {
+                ${$blockName . $params['block']}[] = $content;
+                if ($i < (count($arrBlocks) - 1)) {
                     ++$i;
                 } else {
                     $i = 0;
                 }
                 $objResult->MoveNext();
             }
+        }
+
+        foreach($arrBlocks as $arrBlock) {
+            $objTemplate->replaceBlock(
+                $blockName . $arrBlock['block'],
+                implode(' ', ${$blockName . $arrBlock['block']})
+            );
+            $objTemplate->touchBlock($blockName . $arrBlock['block']);
+        }
+    }
+
+
+    /**
+     * Parse the directory entry values by id
+     *
+     * @param \Cx\Core\Html\Sigma $template
+     * @param integer             $id
+     *
+     * @return boolean
+     */
+    public function parseBlockById(\Cx\Core\Html\Sigma $template, $id = 0)
+    {
+        if (empty($id)) {
+            return false;
+        }
+
+        $objDatabase = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
+        $query = 'SELECT `id`, `title`, `description`, `logo`, `date`
+                    FROM `' . DBPREFIX . 'module_directory_dir`
+                  WHERE `id` = ' . $id . ' AND `status` != 0';
+        $entry = $objDatabase->Execute($query);
+        if ($entry !== false) {
+            $logo = '';
+            if (!empty($entry->fields['logo'])) {
+                $logo = \Html::getImageByPath(
+                    $this->mediaWebPath . 'thumbs/' . $entry->fields['logo'],
+                    'border="0" alt="' . contrexx_raw2xhtml($entry->fields['title']) . '"'
+                );
+            }
+
+            $points = '';
+            if (strlen($entry->fields['description']) > 60) {
+                $points = "...";
+            }
+            $parts= explode(
+                '\n',
+                wordwrap(
+                    contrexx_raw2xhtml($entry->fields['description']),
+                    60,
+                    '\n'
+                )
+            );
+
+            // set variables
+            $template->setVariable(array(
+                'DIRECTORY_DATE'  => date('d.m.Y', $entry->fields['date']),
+                'DIRECTORY_TITLE' => contrexx_raw2xhtml($entry->fields['title']),
+                'DIRECTORY_DESC'  => $parts[0] . $points,
+                'DIRECTORY_LOGO'  => $logo,
+                'DIRECTORY_ID'    => contrexx_raw2xhtml($entry->fields['id'])
+            ));
         }
     }
 

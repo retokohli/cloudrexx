@@ -70,7 +70,8 @@ class JsonDirectory implements JsonAdapter {
      */
     public function getAccessableMethods() {
         return array(
-            'getContent'
+            'getContent',
+            'getBlockById'
         );
     }
 
@@ -93,20 +94,58 @@ class JsonDirectory implements JsonAdapter {
     /**
      * Get content
      *
-     * @param type $params
-     * @return type
+     * @param array $params User input parameters
+     *
+     * @return array
      */
     public function getContent($params)
     {
         try {
             $theme   = $this->getThemeFromInput($params);
-            $content = $theme->getContentFromThemeFile('directory.html');
+            $content = $theme->getContentFromFile('directory.html');
         } catch (JsonDirectoryException $e) {
             \DBG::log($e->getMessage());
             return array('content' => '');
         }
 
         return array('content' => DirHomeContent::getObj($content)->getContent());
+    }
+
+    /**
+     * Get Block content by id
+     *
+     * @param array $params User input parameters
+     *
+     * @return array
+     */
+    public function getBlockById($params)
+    {
+        try {
+            $blockIdx = isset($params['get']['block'])
+                ? contrexx_input2int($params['get']['block']) : '';
+            $blockId  = isset($params['get']['blockId'])
+                ? contrexx_input2int($params['get']['blockId']) : 0;
+            $file     = !empty($params['get']['file'])
+                    ? contrexx_input2raw($params['get']['file']) : '';
+            $tplBlock = 'directoryLatest_row_' . $blockIdx;
+            $theme    = $this->getThemeFromInput($params);
+            $content  = $theme->getContentBlockFromTpl($file, $tplBlock);
+            if (!$content) {
+                throw new JsonDirectoryException('The block '. $tplBlock .' not exists');
+            }
+
+            $template = new \Cx\Core\Html\Sigma();
+            $template->setTemplate($content);
+            $objDirectory = new Directory('');
+            $objDirectory->parseBlockById($template, $blockId, $tplBlock);
+
+            return array(
+                'content' => $template->get()
+            );
+        } catch (JsonDirectoryException $e) {
+            \DBG::log($e->getMessage());
+            return array('content' => '');
+        }
     }
 
     /**

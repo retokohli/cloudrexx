@@ -108,24 +108,21 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
 
-        global $_CONFIG, $cl, $themesPages, $page_template, $themesPages, $objCache;
+        global $_CONFIG, $cl, $themesPages, $page_template, $themesPages;
 
         // get Directory Homecontent
         if (
             $_CONFIG['directoryHomeContent'] == '1' &&
             $cl->loadFile(ASCMS_MODULE_PATH . '/Directory/Controller/DirHomeContent.class.php')
         ) {
-            $directoryContent = $objCache->getEsiContent(
+            $cache = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache');
+            $directoryContent = $cache->getEsiContent(
                 'Directory',
                 'getContent',
                 array(
                     'template' => \Env::get('init')->getCurrentThemeId()
                 )
             );
-
-            if (empty($directoryContent)) {
-                return;
-            }
 
             if (
                 preg_match(
@@ -168,19 +165,27 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         global $directoryCheck, $objTemplate, $cl, $objDirectory, $_CORELANG;
 
         // Directory Show Latest
-        $directoryCheck = array();
+        $directoryCheck     = array();
+        $directoryBlockName = 'directoryLatest_row_';
+        $cache = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache');
         for ($i = 1; $i <= 10; $i++) {
-            if ($objTemplate->blockExists('directoryLatest_row_' . $i)) {
-                array_push($directoryCheck, $i);
+            $params = $cache->getParamsByFindBlockExistsInTpl($directoryBlockName . $i, $page);
+            if (
+                !empty($params) &&
+                $objTemplate->blockExists($directoryBlockName . $i)
+            ) {
+                $params['block']  = $i;
+                $directoryCheck[] = $params;
             }
         }
-        if (!empty($directoryCheck)
-                /** @ignore */ && $cl->loadFile(ASCMS_MODULE_PATH . '/Directory/Controller/Directory.class.php')) {
+
+        if (
+            !empty($directoryCheck) &&
+            $cl->loadFile(ASCMS_MODULE_PATH . '/Directory/Controller/Directory.class.php')
+        ) {
             $objDirectory = new Directory('');
-            if (!empty($directoryCheck)) {
-                $objTemplate->setVariable('TXT_DIRECTORY_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
-                $objDirectory->getBlockLatest($directoryCheck);
-            }
+            $objTemplate->setVariable('TXT_DIRECTORY_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
+            $objDirectory->getBlockLatest($directoryCheck);
         }
     }
 
@@ -191,14 +196,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         $this->cx->getEvents()->addEventListener('SearchFindContent', new \Cx\Modules\Directory\Model\Event\DirectoryEventListener());
-   }
-
-    /**
-     * Register the events
-     */
-    public function registerEvents()
-    {
-        $this->cx->getEvents()->addEvent('directoriesClearSsiCache');
     }
 
     /**
@@ -207,6 +204,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function registerEventListeners()
     {
         $directoryEventListener = new \Cx\Modules\Directory\Model\Event\DirectoryEventListener();
-        $this->cx->getEvents()->addEventListener('directoriesClearSsiCache', $directoryEventListener);
+        $this->cx->getEvents()->addEventListener('clearEsiCache', $directoryEventListener);
     }
 }

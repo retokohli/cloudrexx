@@ -79,13 +79,16 @@ class DirectoryEventListener implements \Cx\Core\Event\Model\Entity\EventListene
     /**
      * Clear all Ssi cache
      */
-    protected function directoriesClearSsiCache()
+    protected function clearEsiCache($eventArgs)
     {
-        global $objCache;
+        if (empty($eventArgs) || $eventArgs != 'Directory') {
+            return;
+        }
 
         // clear ssi cache
+        $cache = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache');
         foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
-            $objCache->clearSsiCachePage('Directory', 'getContent', array('template' => $lang['themesid']));
+            $cache->clearSsiCachePage('Directory', 'getContent', array('template' => $lang['themesid']));
         }
     }
 }
