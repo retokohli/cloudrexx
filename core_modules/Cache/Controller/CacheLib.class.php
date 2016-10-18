@@ -1048,4 +1048,108 @@ class CacheLib
         }
         return $subPages;
     }
+
+    /**
+     * Get parameter array for esi/ssi request
+     *
+     * @param string                                    $block name of the block
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page  page object
+     *
+     * @return array Parameter's list
+     */
+    protected function getParamsByFindBlockExistsInTpl($block, $page = null)
+    {
+        global $objInit;
+
+        //Check $block exists in page content, If so return page id as parameter's list
+        if ($page instanceof \Cx\Core\ContentManager\Model\Entity\Page) {
+            $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()
+                        ->getDb()
+                        ->getEntityManager()
+                        ->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            $page     = $pageRepo->findOneById($page->getId());
+            if (
+                $page &&
+                preg_match(
+                    '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                    $page->getContent()
+                )
+            ) {
+                return array('page' => $page->getId());
+            }
+        }
+
+        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $theme           = $themeRepository->findById($objInit->getCurrentThemeId());
+
+        //Check $block exists in index.html,
+        //If so return theme id and filename as parameter's list
+        $indexContent = $theme->getContentFromFile('index.html');
+        if (
+            $indexContent &&
+            preg_match(
+                '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                $indexContent
+            )
+        ) {
+            return array(
+                'template' => $theme->getId(),
+                'file'     => 'index.html'
+            );
+        }
+
+        if (
+            $objInit->hasCustomContent() &&
+            !empty($objInit->customContentTemplate)
+        ) {
+            //Check $block exists in custom content template using channelTheme,
+            //If so return channelTheme id and filename as parameter's list
+            $channelTheme  = $themeRepository->findById($objInit->channelThemeId);
+            $customContent = $channelTheme->getContentFromFile($objInit->customContentTemplate);
+            if (
+                $customContent &&
+                preg_match(
+                    '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                    $customContent
+                )
+            ) {
+                return array(
+                    'template' => $channelTheme->getId(),
+                    'file'     => $objInit->customContentTemplate
+                );
+            }
+            //Check $block exists in custom content template using defaultTheme,
+            //If so return defaultTheme id and filename as parameter's list
+            $content = $theme->getContentFromFile($objInit->customContentTemplate);
+            if (
+                $content &&
+                preg_match(
+                    '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                    $content
+                )
+            ) {
+                return array(
+                    'template' => $theme->getId(),
+                    'file'     => $objInit->customContentTemplate
+                );
+            }
+        }
+
+        //Check $block exists in content.html,
+        //If so return theme id and filename as parameter's list
+        $content = $theme->getContentFromFile('content.html');
+        if (
+            $content &&
+            preg_match(
+                '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                $content
+            )
+        ) {
+            return array(
+                'template' => $theme->getId(),
+                'file'     => 'content.html'
+            );
+        }
+        return array();
+    }
 }
