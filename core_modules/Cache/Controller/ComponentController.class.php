@@ -70,6 +70,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Register events
+     */
+    public function registerEvents()
+    {
+        $this->cx->getEvents()->addEvent('clearEsiCache');
+    }
+
+    /**
      * Start caching with op cache, user cache and cloudrexx caching (cloudrexx caching in frontend only)
      * @param \Cx\Core\Core\Controller\Cx $cx The instance of \Cx\Core\Core\Controller\Cx
      */
