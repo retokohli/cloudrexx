@@ -247,6 +247,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             ) {
                 return array('page' => $page->getId());
             }
+            return array();
         }
 
         $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
@@ -254,14 +255,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         //Check $block exists in index.html,
         //If so return theme id and filename as parameter's list
-        $indexContent = $theme->getContentFromFile('index.html');
-        if (
-            $indexContent &&
-            preg_match(
-                '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
-                $indexContent
-            )
-        ) {
+        if ($theme->isBlockExistsInfile('index.html', $block)) {
             return array(
                 'template' => $theme->getId(),
                 'file'     => 'index.html'
@@ -275,14 +269,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             //Check $block exists in custom content template using channelTheme,
             //If so return channelTheme id and filename as parameter's list
             $channelTheme  = $themeRepository->findById($objInit->channelThemeId);
-            $customContent = $channelTheme->getContentFromFile($objInit->customContentTemplate);
-            if (
-                $customContent &&
-                preg_match(
-                    '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
-                    $customContent
-                )
-            ) {
+            if ($channelTheme->isBlockExistsInfile($objInit->customContentTemplate, $block)) {
                 return array(
                     'template' => $channelTheme->getId(),
                     'file'     => $objInit->customContentTemplate
@@ -290,14 +277,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
             //Check $block exists in custom content template using defaultTheme,
             //If so return defaultTheme id and filename as parameter's list
-            $content = $theme->getContentFromFile($objInit->customContentTemplate);
-            if (
-                $content &&
-                preg_match(
-                    '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
-                    $content
-                )
-            ) {
+            if ($theme->isBlockExistsInfile($objInit->customContentTemplate, $block)) {
                 return array(
                     'template' => $theme->getId(),
                     'file'     => $objInit->customContentTemplate
@@ -307,14 +287,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         //Check $block exists in content.html,
         //If so return theme id and filename as parameter's list
-        $content = $theme->getContentFromFile('content.html');
-        if (
-            $content &&
-            preg_match(
-                '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
-                $content
-            )
-        ) {
+        if ($theme->isBlockExistsInfile('content.html', $block)) {
             return array(
                 'template' => $theme->getId(),
                 'file'     => 'content.html'

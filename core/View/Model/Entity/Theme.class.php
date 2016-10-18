@@ -456,4 +456,26 @@ class Theme extends \Cx\Model\Base\EntityBase
         \DBG::log('The block '. $block .' not exists');
         return false;
     }
+
+    /**
+     * Check whether the given block exists in the file
+     *
+     * @param string    $file   File name
+     * @param string    $block  Template block
+     *
+     * @return boolean  True when block exists false otherwise
+     */
+    public function isBlockExistsInfile($file, $block)
+    {
+        $content = $this->getContentFromFile($file);
+        if (   !$content
+            || !preg_match(
+                '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                $content
+            )
+        ) {
+            return false;
+        }
+        return true;
+    }
 }
