@@ -132,7 +132,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             || $objTemplate->blockExists('access_currently_online_members')
                         )
                     ) {
-                        $params  = $this->getParamsForEsiContent('access_currently_online_members');
+                        $params  = $cache->getParamsByFindBlockExistsInTpl('access_currently_online_members');
                         $content = $cache->getEsiContent(
                             'Access',
                             'showCurrentlyOnlineUsers',
@@ -153,7 +153,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             || $objTemplate->blockExists('access_last_active_members')
                         )
                     ) {
-                        $params  = $this->getParamsForEsiContent('access_last_active_member_list');
+                        $params  = $cache->getParamsByFindBlockExistsInTpl('access_last_active_member_list');
                         $content = $cache->getEsiContent(
                             'Access',
                             'showLastActiveUsers',
@@ -174,7 +174,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             || $objTemplate->blockExists('access_latest_registered_members')
                         )
                     ) {
-                        $params  = $this->getParamsForEsiContent('access_latest_registered_member_list');
+                        $params  = $cache->getParamsByFindBlockExistsInTpl('access_latest_registered_member_list');
                         $content = $cache->getEsiContent(
                             'Access',
                             'showLatestRegisteredUsers',
@@ -195,7 +195,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             || $objTemplate->blockExists('access_birthday_members')
                         )
                     ) {
-                        $params  = $this->getParamsForEsiContent('access_birthday_member_list');
+                        $params  = $cache->getParamsByFindBlockExistsInTpl('access_birthday_member_list');
                         $content = $cache->getEsiContent(
                             'Access',
                             'showBirthdayUsers',
@@ -264,7 +264,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $accessLoggedInTplBlock = $accessLoggedInBlock.$accessLoggedInOutBlockIdx;
             $accessLoggedOutTplBlock = $accessLoggedOutBlock.$accessLoggedInOutBlockIdx;
             if ($objTemplate->blockExists($accessLoggedInTplBlock)) {
-                $params  = $this->getParamsForEsiContent($accessLoggedInTplBlock);
+                $params  = $cache->getParamsByFindBlockExistsInTpl($accessLoggedInTplBlock);
                 $params['block'] = $accessLoggedInOutBlockIdx;
                 $params['type']  = 'logged_in';
                 if ($page !== null) {
@@ -279,7 +279,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $objTemplate->touchBlock($accessLoggedInTplBlock);
             }
             if ($objTemplate->blockExists($accessLoggedOutTplBlock)) {
-                $params  = $this->getParamsForEsiContent($accessLoggedOutTplBlock);
+                $params  = $cache->getParamsByFindBlockExistsInTpl($accessLoggedOutTplBlock);
                 $params['block'] = $accessLoggedInOutBlockIdx;
                 $params['type']  = 'logged_out';
                 if ($page !== null) {
@@ -294,75 +294,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $objTemplate->touchBlock($accessLoggedOutTplBlock);
             }
             $accessLoggedInOutBlockIdx++;
-        }
-    }
-
-    /**
-     * Get parameter array for esi/ssi request
-     *
-     * @param string $block Name of parsing block
-     *
-     * @return array Parameter's list
-     */
-    protected function getParamsForEsiContent($block)
-    {
-        global $objInit;
-
-        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
-        $theme           = $themeRepository->findById($objInit->getCurrentThemeId());
-
-        $content = $theme->getContentFromFile('index.html');
-        if (   $content
-            && preg_match(
-                '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
-                $content
-            )
-        ) {
-            return array(
-                'template' => $theme->getId(),
-                'file'     => 'index.html',
-            );
-        }
-        if ($objInit->hasCustomContent()) {
-            if (!empty($objInit->customContentTemplate)) {
-                $channelTheme    = $themeRepository->findById($objInit->channelThemeId);
-                $content         = $channelTheme->getContentFromFile($objInit->customContentTemplate);
-                if (   $content
-                    && preg_match(
-                        '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
-                         $content
-                    )
-                ) {
-                    return array(
-                        'template' => $channelTheme->getId(),
-                        'file'     => $objInit->customContentTemplate,
-                    );
-                }
-                $content = $theme->getContentFromFile($objInit->customContentTemplate);
-                if (   $content
-                    && preg_match(
-                        '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
-                         $content
-                    )
-                ) {
-                    return array(
-                        'template' => $theme->getId(),
-                        'file'     => $objInit->customContentTemplate,
-                    );
-                }
-            }
-        }
-        $content = $theme->getContentFromFile('content.html');
-        if (   $content
-            && preg_match(
-                '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
-                $content
-            )
-        ) {
-            return array(
-                'template' => $theme->getId(),
-                'file'     => 'content.html',
-            );
         }
     }
 
