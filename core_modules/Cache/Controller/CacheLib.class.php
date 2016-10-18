@@ -106,6 +106,12 @@ class CacheLib
     protected $opCacheEngine = null;
     protected $userCacheEngine = null;
     protected $memcache = null;
+    protected $memcached = null;
+
+    /**
+     * @var \Doctrine\Common\Cache\AbstractCache doctrine cache engine for the active user cache engine
+     */
+    protected $doctrineCacheEngine = null;
 
     /**
      * @var \Cx\Lib\ReverseProxy\Model\Entity\ReverseProxyProxy SSI proxy
@@ -113,12 +119,23 @@ class CacheLib
     protected $ssiProxy;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->setCachePath();
+        $this->initOPCaching();
+        $this->initUserCaching();
+        $this->getActivatedCacheEngines();
+    }
+
+    /**
      * Delete all cached file's of the cache system
      */
     function _deleteAllFiles($cacheEngine = null)
     {
         if (!in_array($cacheEngine, array('cxPages', 'cxEntries'))) {
-        \Env::get('cache')->deleteAll();
+            $this->getDoctrineCacheDriver()->deleteAll();
             return;
         }
         $handleDir = opendir($this->strCachePath);
@@ -132,7 +149,7 @@ class CacheLib
                             }
                             break;
                         case 'cxEntries':
-                            \Env::get('cache')->deleteAll();
+                            $this->getDoctrineCacheDriver()->deleteAll();
                             break;
                         default:
                             unlink($this->strCachePath . $strFile);
@@ -141,6 +158,29 @@ class CacheLib
                 }
             }
             closedir($handleDir);
+        }
+    }
+
+    /**
+     * Sets the cache path
+     */
+    protected function setCachePath() {
+        // check the cache directory
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $this->checkCacheDir($cx);
+        $this->strCachePath = $cx->getWebsiteCachePath() . '/';
+    }
+
+    /**
+     * Makes sure that the cache directory exists and is writable
+     * @param \Cx\Core\Core\Controller\Cx $cx The contrexx instance
+     */
+    protected function checkCacheDir($cx) {
+        if (!is_dir($cx->getWebsiteCachePath())) {
+            \Cx\Lib\FileSystem\FileSystem::make_folder($cx->getWebsiteCachePath());
+        }
+        if (!is_writable($cx->getWebsiteCachePath())) {
+            \Cx\Lib\FileSystem\FileSystem::makeWritable($cx->getWebsiteCachePath());
         }
     }
 
@@ -213,11 +253,6 @@ class CacheLib
             unset($this->memcache); // needed for reinitialization
             if (class_exists('\Memcache')) {
                 $memcache = new \Memcache();
-                if (@$memcache->connect($memcacheConfiguration['ip'], $memcacheConfiguration['port'])) {
-                    $this->memcache = $memcache;
-                }
-            } elseif (class_exists('\Memcached')) {
-                $memcache = new \Memcached();
                 if (@$memcache->addServer($memcacheConfiguration['ip'], $memcacheConfiguration['port'])) {
                     $this->memcache = $memcache;
                 }
@@ -233,11 +268,11 @@ class CacheLib
             || $_CONFIG['cacheUserCache'] == self::CACHE_ENGINE_MEMCACHED)
         ) {
             $memcachedConfiguration = $this->getMemcachedConfiguration();
-            unset($this->memcache); // needed for reinitialization
+            unset($this->memcached); // needed for reinitialization
             if (class_exists('\Memcached')) {
-                $memcache = new \Memcached();
-                if (@$memcache->addServer($memcachedConfiguration['ip'], $memcachedConfiguration['port'])) {
-                    $this->memcache = $memcache;
+                $memcached = new \Memcached();
+                if (@$memcached->addServer($memcachedConfiguration['ip'], $memcachedConfiguration['port'])) {
+                    $this->memcached = $memcached;
                 }
             }
             if ($this->isConfigured(self::CACHE_ENGINE_MEMCACHED)) {
@@ -370,6 +405,13 @@ class CacheLib
         return $this->memcache;
     }
 
+    /**
+     * @return \Memcache The memcached object
+     */
+    public function getMemcached() {
+        return $this->memcached;
+    }
+
     public function getAllUserCacheEngines() {
         return array(self::CACHE_ENGINE_APC, self::CACHE_ENGINE_MEMCACHE, self::CACHE_ENGINE_MEMCACHED, self::CACHE_ENGINE_XCACHE);
     }
@@ -485,7 +527,7 @@ class CacheLib
             case self::CACHE_ENGINE_MEMCACHE:
                 return $this->memcache ? true : false;
             case self::CACHE_ENGINE_MEMCACHED:
-                return $this->memcache ? true : false;
+                return $this->memcached ? true : false;
             case self::CACHE_ENGINE_XCACHE:
                 $setting = 'xcache.cacher';
                 break;
@@ -514,7 +556,7 @@ class CacheLib
             case self::CACHE_ENGINE_MEMCACHE:
                 return $this->memcache ? true : false;
             case self::CACHE_ENGINE_MEMCACHED:
-                return $this->memcache ? true : false;
+                return $this->memcached ? true : false;
             case self::CACHE_ENGINE_XCACHE:
                 if ($user) {
                     return (
@@ -755,26 +797,10 @@ class CacheLib
             return;
         }
         //$this->memcache->flush(); //<- not like this!!!
-        $keys = array();
-        $allSlabs = $this->memcache->getExtendedStats('slabs');
-
-        foreach ($allSlabs as $server => $slabs) {
-            if (is_array($slabs)) {
-                foreach (array_keys($slabs) as $slabId) {
-                    $dump = $this->memcache->getExtendedStats('cachedump', (int) $slabId);
-                    if ($dump) {
-                        foreach ($dump as $entries) {
-                            if ($entries) {
-                                $keys = array_merge($keys, array_keys($entries));
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        $keys = $this->memcached->getAllKeys();
         foreach($keys as $key){
             if(strpos($key, $this->getCachePrefix()) !== false){
-                $this->memcache->delete($key);
+                $this->memcached->delete($key);
             }
         }
     }
@@ -807,7 +833,53 @@ class CacheLib
     protected function getCachePrefix()
     {
         global $_DBCONFIG;
-        return $_DBCONFIG['database'].'.'.DBPREFIX;
+        return $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'];
+    }
+
+    /**
+     * Detects the correct doctrine cache driver for the user caching engine in use
+     * @return \Doctrine\Common\Cache\AbstractCache The doctrine cache driver object
+     */
+    public function getDoctrineCacheDriver() {
+        if($this->doctrineCacheEngine) { // return cache engine if already set
+            return $this->doctrineCacheEngine;
+        }
+        $userCacheEngine = $this->getUserCacheEngine();
+        // check if user caching is active
+        if (!$this->getUserCacheActive()) {
+            $userCacheEngine = \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_OFF;
+        }
+        switch ($userCacheEngine) {
+            case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_APC:
+                $cache = new \Doctrine\Common\Cache\ApcCache();
+                $cache->setNamespace($this->getCachePrefix());
+                break;
+            case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_MEMCACHE:
+                $memcache = $this->getMemcache();
+                $cache = new \Doctrine\Common\Cache\MemcacheCache();
+                $cache->setMemcache($memcache);
+                $cache->setNamespace($this->getCachePrefix());
+                break;
+            case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_MEMCACHED:
+                $memcached = $this->getMemcached();
+                $cache = new \Doctrine\Common\Cache\MemcachedCache();
+                $cache->setMemcached($memcached);
+                $cache->setNamespace($this->getCachePrefix());
+                break;
+            case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_XCACHE:
+                $cache = new \Doctrine\Common\Cache\XcacheCache();
+                $cache->setNamespace($this->getCachePrefix());
+                break;
+            case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_FILESYSTEM:
+                $cache = new \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver\FileSystemCache($this->strCachePath);
+                break;
+            default:
+                $cache = new \Doctrine\Common\Cache\ArrayCache();
+                break;
+        }
+        // set the doctrine cache engine to avoid getting it a second time
+        $this->doctrineCacheEngine = $cache;
+        return $cache;
     }
 
     /**
@@ -975,5 +1047,109 @@ class CacheLib
             $this->getPagesPointingTo($subPage, $subPages);
         }
         return $subPages;
+    }
+
+    /**
+     * Get parameter array for esi/ssi request
+     *
+     * @param string                                    $block name of the block
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page  page object
+     *
+     * @return array Parameter's list
+     */
+    protected function getParamsByFindBlockExistsInTpl($block, $page = null)
+    {
+        global $objInit;
+
+        //Check $block exists in page content, If so return page id as parameter's list
+        if ($page instanceof \Cx\Core\ContentManager\Model\Entity\Page) {
+            $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()
+                        ->getDb()
+                        ->getEntityManager()
+                        ->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            $page     = $pageRepo->findOneById($page->getId());
+            if (
+                $page &&
+                preg_match(
+                    '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                    $page->getContent()
+                )
+            ) {
+                return array('page' => $page->getId());
+            }
+        }
+
+        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $theme           = $themeRepository->findById($objInit->getCurrentThemeId());
+
+        //Check $block exists in index.html,
+        //If so return theme id and filename as parameter's list
+        $indexContent = $theme->getContentFromFile('index.html');
+        if (
+            $indexContent &&
+            preg_match(
+                '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                $indexContent
+            )
+        ) {
+            return array(
+                'template' => $theme->getId(),
+                'file'     => 'index.html'
+            );
+        }
+
+        if (
+            $objInit->hasCustomContent() &&
+            !empty($objInit->customContentTemplate)
+        ) {
+            //Check $block exists in custom content template using channelTheme,
+            //If so return channelTheme id and filename as parameter's list
+            $channelTheme  = $themeRepository->findById($objInit->channelThemeId);
+            $customContent = $channelTheme->getContentFromFile($objInit->customContentTemplate);
+            if (
+                $customContent &&
+                preg_match(
+                    '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                    $customContent
+                )
+            ) {
+                return array(
+                    'template' => $channelTheme->getId(),
+                    'file'     => $objInit->customContentTemplate
+                );
+            }
+            //Check $block exists in custom content template using defaultTheme,
+            //If so return defaultTheme id and filename as parameter's list
+            $content = $theme->getContentFromFile($objInit->customContentTemplate);
+            if (
+                $content &&
+                preg_match(
+                    '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                    $content
+                )
+            ) {
+                return array(
+                    'template' => $theme->getId(),
+                    'file'     => $objInit->customContentTemplate
+                );
+            }
+        }
+
+        //Check $block exists in content.html,
+        //If so return theme id and filename as parameter's list
+        $content = $theme->getContentFromFile('content.html');
+        if (
+            $content &&
+            preg_match(
+                '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                $content
+            )
+        ) {
+            return array(
+                'template' => $theme->getId(),
+                'file'     => 'content.html'
+            );
+        }
+        return array();
     }
 }

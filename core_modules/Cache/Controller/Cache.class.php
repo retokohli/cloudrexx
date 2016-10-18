@@ -61,25 +61,13 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      */
     public function __construct()
     {
+        parent::__construct();
         $this->initContrexxCaching();
-        $this->initOPCaching();
-        $this->initUserCaching();
-        $this->getActivatedCacheEngines();
     }
 
     protected function initContrexxCaching()
     {
         global $_CONFIG;
-
-        // check the cache directory
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        if (!is_dir($cx->getWebsiteCachePath())) {
-            \Cx\Lib\FileSystem\FileSystem::make_folder($cx->getWebsiteCachePath());
-        }
-        if (!is_writable($cx->getWebsiteCachePath())) {
-            \Cx\Lib\FileSystem\FileSystem::makeWritable($cx->getWebsiteCachePath());
-        }
-        $this->strCachePath = $cx->getWebsiteCachePath() . '/';
 
         // in case the request's origin is from a mobile devie
         // and this is the first request (the InitCMS object wasn't yet
@@ -184,9 +172,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      * @return string Parsed HTML code
      */
     public function internalEsiParsing($htmlCode, $cxNotYetInitialized = false) {
-        global $objCache;
         
-        if (!is_a($objCache->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx')) {
+        if (!is_a($this->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx')) {
             return $htmlCode;
         }
         
