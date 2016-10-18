@@ -195,24 +195,6 @@ class Theme extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Get the contents from the given file path
-     *
-     * @param string    $file    Relative file path
-     *
-     * @return string File content, false when file not exits
-     */
-    public function getContentFromFile($file)
-    {
-        $filePath = $this->getFilePath($file);
-        if (empty($filePath)) {
-            return false;
-        }
-
-        $content = file_get_contents($filePath);
-        return $content;
-    }
-
-    /**
      * @return string the extra description includes the names of end devices, where
      * the theme is set as default
      */
@@ -420,5 +402,58 @@ class Theme extends \Cx\Model\Base\EntityBase
 
     public function addDefault($type) {
         $this->defaults[] = $type;
+    }
+
+    /**
+     * Get the contents from the given theme file path
+     *
+     * @param string $file Relative file path
+     *
+     * @return string File content
+     * @throws ThemeException When file not exists in the theme
+     */
+    public function getContentFromFile($file)
+    {
+        $filePath = $this->getFilePath($file);
+        if (empty($filePath)) {
+            return false;
+        }
+
+        $content = file_get_contents($filePath);
+        return $content;
+    }
+
+    /**
+     * Get the content block from template file
+     *
+     * @param string $file  name of the file
+     * @param string $block name of the block
+     *
+     * @return mixed boolean|string
+     */
+    public function getContentBlockFromTpl($file, $block)
+    {
+        if (empty($file) || empty($block)) {
+            return false;
+        }
+
+        try {
+            $content = $this->getContentFromFile($file);
+            $matches = null;
+            if (
+                $content &&
+                preg_match(
+                    '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                    $content,
+                    $matches
+                )
+            ) {
+                return $matches[2];
+            }
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+        }
+        \DBG::log('The block '. $block .' not exists');
+        return false;
     }
 }

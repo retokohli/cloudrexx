@@ -158,8 +158,8 @@ class CacheLib
                 }
             }
             closedir($handleDir);
-    }
         }
+    }
 
     /**
      * Sets the cache path
@@ -206,7 +206,7 @@ class CacheLib
         if ($this->isInstalled(self::CACHE_ENGINE_ZEND_OPCACHE)) {
             ini_set('opcache.save_comments', 1);
             ini_set('opcache.load_comments', 1);
-            ini_set('opcache.enable', 1);
+            @ini_set('opcache.enable', 1);
 
             if (
                 !$this->isActive(self::CACHE_ENGINE_ZEND_OPCACHE) ||
@@ -320,16 +320,17 @@ class CacheLib
             $_CONFIG['cacheSsiOutput'] == 'intern' ||
             !in_array(
                 $_CONFIG['cacheSsiOutput'],
-                explode(
-                    ',',
-                    \Cx\Core\Config\Controller\Config::getSsiOutputModes()
+                array(
+                    'intern',
+                    'ssi',
+                    'esi',
                 )
             ) ||
             !in_array(
                 $_CONFIG['cacheSsiType'],
-                explode(
-                    ',',
-                    \Cx\Core\Config\Controller\Config::getSsiTypes()
+                array(
+                    'varnish',
+                    'nginx',
                 )
             )
         ) {
@@ -715,14 +716,17 @@ class CacheLib
      */
     protected function getDomainsAndPorts() {
         $domainsAndPorts = array();
+        $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
+        $domains = $domainRepo->findAll();
         foreach (array('http', 'https') as $protocol) {
             foreach ($domains as $domain) {
                 $domainsAndPorts[] = array(
-                    $domain,
+                    $domain->getName(),
                     \Cx\Core\Setting\Controller\Setting::getValue('portFrontend' . strtoupper($protocol), 'Config')
                 );
             }
         }
+        return $domainsAndPorts;
 
         $requestDomain = $_CONFIG['domainUrl'];
         $domainOffset  = ASCMS_PATH_OFFSET;
@@ -895,7 +899,7 @@ class CacheLib
 
         return $arrSettings;
     }
-    
+
     /**
      * Returns the validated file search parts of the URL
      * @param string $url URL to parse
@@ -925,7 +929,7 @@ class CacheLib
         }
         return $fileNameSearchParts;
     }
-    
+
     /**
      * Gets the local cache file name for an URL
      * @param string $url URL to get file name for
@@ -934,5 +938,218 @@ class CacheLib
     public function getCacheFileNameFromUrl($url) {
         $fileName = md5($url);
         return $fileName . implode('', $this->getCacheFileNameSearchPartsFromUrl($url));
+    }
+
+    /**
+     * Delete all specific file from cache-folder
+     */
+    function deleteSingleFile($intPageId) {
+        $intPageId = intval($intPageId);
+        if ( 0 < $intPageId ) {
+            $files = glob( $this->strCachePath . '*_' . $intPageId );
+            if ( count( $files ) ) {
+                foreach ( $files as $file ) {
+                    @unlink( $file );
+                }
+            }
+        }
+    }
+
+    /**
+     * Delete all cached files for a component from cache-folder
+     */
+    function deleteComponentFiles($componentName)
+    {
+        $pages = array();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
+        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        // get all application pages
+        $applicationPages = $pageRepo->findBy(array(
+            'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
+            'module' => $componentName,
+        ));
+        foreach ($applicationPages as $page) {
+            $pages[$page->getId()] = $page;
+            // get all fallbacks to them
+            // get all symlinks to them
+            $pages += $this->getPagesPointingTo($page);
+        }
+        // foreach of the above
+        foreach ($pages as $pageId=>$page) {
+            $this->deleteSingleFile($pageId);
+        }
+    }
+    
+    /**
+     * Generates a list of pages pointing to $page
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page to get referencing pages for
+     * @param array $subPages (optional, by reference) Do not use, internal
+     * @return array List of pages (ID as key, page object as value)
+     */
+    protected function getPagesPointingTo($page, &$subPages = array()) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
+        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $fallback_lang_codes = \FWLanguage::getFallbackLanguageArray();
+        $active_langs = \FWLanguage::getActiveFrontendLanguages();
+
+        // get all active languages and their fallbacks
+        // $fallbacks[<langId>] = <fallsBackToLangId>
+        // if <langId> has no fallback <fallsBackToLangId> will be null
+        $fallbacks = array();
+        foreach ($active_langs as $lang) {
+            $fallbacks[\FWLanguage::getLanguageCodeById($lang['id'])] = ((array_key_exists($lang['id'], $fallback_lang_codes)) ? \FWLanguage::getLanguageCodeById($fallback_lang_codes[$lang['id']]) : null);
+        }
+
+        // get all symlinks and fallbacks to it
+        $query = '
+            SELECT
+                p
+            FROM
+                Cx\Core\ContentManager\Model\Entity\Page p
+            WHERE
+                (
+                    p.type = "symlink" AND
+                    (
+                        p.target LIKE "%NODE_' . $page->getNode()->getId() . '%"';
+        if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION) {
+            $query .= ' OR
+                        p.target LIKE "%NODE_' . strtoupper($page->getModule()) . '%"';
+        }
+        $query .= '
+                    )
+                ) OR
+                (
+                    p.type = "fallback" AND
+                    p.node_id = ' . $page->getNode()->getId() . '
+                )
+        ';
+
+        foreach ($em->createQuery($query)->getResult() as $subPage) {
+            if ($subPage->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_SYMLINK) {
+                $subPages[$subPage->getId()] = $subPage;
+            } else if ($subPage->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK) {
+                // check if $subPage is a fallback to $page
+                $targetLang = $page->getLang();
+                $currentLang = $subPage->getLang();
+                while ($currentLang && $currentLang != $targetLang) {
+                    $currentLang = $fallbacks[$currentLang];
+                }
+                if ($currentLang) {
+                    $subPages[$subPage->getId()] = $subPage;
+                }
+            }
+        }
+
+        // recurse!
+        foreach ($subPages as $subPage) {
+            $this->getPagesPointingTo($subPage, $subPages);
+        }
+        return $subPages;
+    }
+
+    /**
+     * Get parameter array for esi/ssi request
+     *
+     * @param string                                    $block name of the block
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page  page object
+     *
+     * @return array Parameter's list
+     */
+    protected function getParamsByFindBlockExistsInTpl($block, $page = null)
+    {
+        global $objInit;
+
+        //Check $block exists in page content, If so return page id as parameter's list
+        if ($page instanceof \Cx\Core\ContentManager\Model\Entity\Page) {
+            $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()
+                        ->getDb()
+                        ->getEntityManager()
+                        ->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            $page     = $pageRepo->findOneById($page->getId());
+            if (
+                $page &&
+                preg_match(
+                    '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                    $page->getContent()
+                )
+            ) {
+                return array('page' => $page->getId());
+            }
+        }
+
+        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $theme           = $themeRepository->findById($objInit->getCurrentThemeId());
+
+        //Check $block exists in index.html,
+        //If so return theme id and filename as parameter's list
+        $indexContent = $theme->getContentFromFile('index.html');
+        if (
+            $indexContent &&
+            preg_match(
+                '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                $indexContent
+            )
+        ) {
+            return array(
+                'template' => $theme->getId(),
+                'file'     => 'index.html'
+            );
+        }
+
+        if (
+            $objInit->hasCustomContent() &&
+            !empty($objInit->customContentTemplate)
+        ) {
+            //Check $block exists in custom content template using channelTheme,
+            //If so return channelTheme id and filename as parameter's list
+            $channelTheme  = $themeRepository->findById($objInit->channelThemeId);
+            $customContent = $channelTheme->getContentFromFile($objInit->customContentTemplate);
+            if (
+                $customContent &&
+                preg_match(
+                    '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                    $customContent
+                )
+            ) {
+                return array(
+                    'template' => $channelTheme->getId(),
+                    'file'     => $objInit->customContentTemplate
+                );
+            }
+            //Check $block exists in custom content template using defaultTheme,
+            //If so return defaultTheme id and filename as parameter's list
+            $content = $theme->getContentFromFile($objInit->customContentTemplate);
+            if (
+                $content &&
+                preg_match(
+                    '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                    $content
+                )
+            ) {
+                return array(
+                    'template' => $theme->getId(),
+                    'file'     => $objInit->customContentTemplate
+                );
+            }
+        }
+
+        //Check $block exists in content.html,
+        //If so return theme id and filename as parameter's list
+        $content = $theme->getContentFromFile('content.html');
+        if (
+            $content &&
+            preg_match(
+                '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                $content
+            )
+        ) {
+            return array(
+                'template' => $theme->getId(),
+                'file'     => 'content.html'
+            );
+        }
+        return array();
     }
 }
