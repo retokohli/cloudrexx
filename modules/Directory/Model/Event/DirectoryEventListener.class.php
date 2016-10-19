@@ -85,10 +85,50 @@ class DirectoryEventListener implements \Cx\Core\Event\Model\Entity\EventListene
             return;
         }
 
-        // clear ssi cache
-        $cache = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache');
+        // clear home page cache
+        $cache = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getComponent('Cache');
         foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
-            $cache->clearSsiCachePage('Directory', 'getContent', array('template' => $lang['themesid']));
+            $cache->clearSsiCachePage(
+                'Directory',
+                'getContent',
+                array('template' => $lang['themesid'])
+            );
+        }
+
+        //clear latest entries cache
+        $directory = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getComponent('Directory');
+        $arrBlocks = $directory->getLatestTplBlockDetails($cache, null, null);
+        if (empty($arrBlocks)) {
+            return;
+        }
+
+        $objDirectory = new Directory('');
+        $entryIds = $objDirectory->getBlockLatestIds();
+        if (!$entryIds) {
+            return;
+        }
+
+        $i = 0;
+        foreach ($entryIds as $entryId) {
+            $params = $arrBlocks[$i];
+            $cache->clearSsiCachePage(
+                'Directory',
+                'getBlockById',
+                array(
+                    'template' => contrexx_input2int($params['template']),
+                    'file'     => contrexx_input2int($params['file']),
+                    'block'    => contrexx_input2int($params['block']),
+                    'blockId'  => contrexx_input2int($entryId)
+                )
+            );
+
+            if ($i < (count($arrBlocks) - 1)) {
+                ++$i;
+            } else {
+                $i = 0;
+            }
         }
     }
 }

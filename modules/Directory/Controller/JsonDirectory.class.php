@@ -88,7 +88,11 @@ class JsonDirectory implements JsonAdapter {
      * @return Object
      */
     public function getDefaultPermissions() {
-        return new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false);
+        return new \Cx\Core_Modules\Access\Model\Entity\Permission(
+            null,
+            null,
+            false
+        );
     }
 
     /**
@@ -108,7 +112,9 @@ class JsonDirectory implements JsonAdapter {
             return array('content' => '');
         }
 
-        return array('content' => DirHomeContent::getObj($content)->getContent());
+        return array(
+            'content' => DirHomeContent::getObj($content)->getContent()
+        );
     }
 
     /**
@@ -131,7 +137,9 @@ class JsonDirectory implements JsonAdapter {
             $theme    = $this->getThemeFromInput($params);
             $content  = $theme->getContentBlockFromTpl($file, $tplBlock);
             if (!$content) {
-                throw new JsonDirectoryException('The block '. $tplBlock .' not exists');
+                throw new JsonDirectoryException(
+                    'The block '. $tplBlock .' not exists'
+                );
             }
 
             $template = new \Cx\Core\Html\Sigma();
@@ -154,18 +162,24 @@ class JsonDirectory implements JsonAdapter {
      * @param array $params User input array
      *
      * @return \Cx\Core\View\Model\Entity\Theme Theme instance
-     * @throws JsonDirectoryException When theme id empty or theme does not exits in the system
+     * @throws JsonDirectoryException When theme id empty or
+     * theme does not exits in the system
      */
     protected function getThemeFromInput($params)
     {
-        $themeId  = !empty($params['get']['template']) ? contrexx_input2int($params['get']['template']) : 0;
+        $themeId  = !empty($params['get']['template'])
+            ? contrexx_input2int($params['get']['template']) : 0;
         if (empty($themeId)) {
-            throw new JsonDirectoryException('The theme id is empty in the request');
+            throw new JsonDirectoryException(
+                'The theme id is empty in the request'
+            );
         }
         $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
         $theme           = $themeRepository->findById($themeId);
         if (!$theme) {
-            throw new JsonDirectoryException('The theme id '. $themeId .' does not exists.');
+            throw new JsonDirectoryException(
+                'The theme id '. $themeId .' does not exists.'
+            );
         }
         return $theme;
     }

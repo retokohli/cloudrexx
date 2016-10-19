@@ -2051,14 +2051,11 @@ $this->arrRows[2] = '';
 
     /**
      * Get latest directory entries
-     *
-     * @param array $arrBlocks array of the availble blocks for parsing entries
      */
-    function getBlockLatest($arrBlocks)
+    function getBlockLatestIds()
     {
-        global $objDatabase, $objTemplate;
+        global $objDatabase;
 
-        $i = 0;
         //get latest entries
         $query = '
             SELECT `id`, `title`, `description`, `logo`, `date`
@@ -2066,36 +2063,20 @@ $this->arrRows[2] = '';
             WHERE `status` != 0
             ORDER BY `id` DESC
         ';
-        $objResult = $objDatabase->SelectLimit($query, $this->settings['latest_content']['value']);
-        $cache = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache');
-        $blockName = 'directoryLatest_row_';
+        $objResult = $objDatabase->SelectLimit(
+            $query,
+            $this->settings['latest_content']['value']
+        );
+
+        $entries = array();
         if ($objResult) {
             while (!$objResult->EOF) {
-                $params = $arrBlocks[$i];
-                $params['blockId'] = $objResult->fields['id'];
-                $content = $cache->getEsiContent(
-                    'Directory',
-                    'getBlockById',
-                    $params
-                );
-
-                ${$blockName . $params['block']}[] = $content;
-                if ($i < (count($arrBlocks) - 1)) {
-                    ++$i;
-                } else {
-                    $i = 0;
-                }
+                $entries[] = $objResult->fields['id'];
                 $objResult->MoveNext();
             }
         }
 
-        foreach($arrBlocks as $arrBlock) {
-            $objTemplate->replaceBlock(
-                $blockName . $arrBlock['block'],
-                implode(' ', ${$blockName . $arrBlock['block']})
-            );
-            $objTemplate->touchBlock($blockName . $arrBlock['block']);
-        }
+        return $entries;
     }
 
 
@@ -2113,7 +2094,8 @@ $this->arrRows[2] = '';
             return false;
         }
 
-        $objDatabase = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
+        $objDatabase = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getDb()->getAdoDb();
         $query = 'SELECT `id`, `title`, `description`, `logo`, `date`
                     FROM `' . DBPREFIX . 'module_directory_dir`
                   WHERE `id` = ' . $id . ' AND `status` != 0';
@@ -2123,7 +2105,8 @@ $this->arrRows[2] = '';
             if (!empty($entry->fields['logo'])) {
                 $logo = \Html::getImageByPath(
                     $this->mediaWebPath . 'thumbs/' . $entry->fields['logo'],
-                    'border="0" alt="' . contrexx_raw2xhtml($entry->fields['title']) . '"'
+                    'border="0" alt="' .
+                    contrexx_raw2xhtml($entry->fields['title']) . '"'
                 );
             }
 

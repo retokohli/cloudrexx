@@ -106,16 +106,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page The resolved page
      */
 
-    public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-
+    public function preContentLoad(
+        \Cx\Core\ContentManager\Model\Entity\Page $page
+    ) {
         global $_CONFIG, $cl, $themesPages, $page_template, $themesPages;
 
         // get Directory Homecontent
         if (
             $_CONFIG['directoryHomeContent'] == '1' &&
-            $cl->loadFile(ASCMS_MODULE_PATH . '/Directory/Controller/DirHomeContent.class.php')
+            $cl->loadFile(
+                ASCMS_MODULE_PATH . '/Directory/Controller/DirHomeContent.class.php'
+            )
         ) {
-            $cache = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache');
+            $cache = \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getComponent('Cache');
             $directoryContent = $cache->getEsiContent(
                 'Directory',
                 'getContent',
@@ -158,35 +162,97 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Do something after content is loaded from DB
      *
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page The resolved page
      */
-    public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+    public function postContentLoad(
+        \Cx\Core\ContentManager\Model\Entity\Page $page
+    ) {
+        global $objTemplate, $_CORELANG;
 
-        global $directoryCheck, $objTemplate, $cl, $objDirectory, $_CORELANG;
-
-        // Directory Show Latest
-        $directoryCheck     = array();
+        //Show Latest Directories
         $directoryBlockName = 'directoryLatest_row_';
-        $cache = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache');
+        $cache = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getComponent('Cache');
+        $arrBlocks = $this->getLatestTplBlockDetails(
+            $cache,
+            $page,
+            $objTemplate
+        );
+        if (empty($arrBlocks)) {
+            return;
+        }
+
+        $objDirectory = new Directory('');
+        $objTemplate->setVariable(
+            'TXT_DIRECTORY_LATEST',
+            $_CORELANG['TXT_DIRECTORY_LATEST']
+        );
+        $entryIds = $objDirectory->getBlockLatestIds();
+        if (!$entryIds) {
+            return;
+        }
+        $i = 0;
+        foreach ($entryIds as $entryId) {
+            $params = $arrBlocks[$i];
+            $params['blockId'] = $entryId;
+            $content = $cache->getEsiContent(
+                'Directory',
+                'getBlockById',
+                $params
+            );
+
+            ${$directoryBlockName . $params['block']}[] = $content;
+            if ($i < (count($arrBlocks) - 1)) {
+                ++$i;
+            } else {
+                $i = 0;
+            }
+        }
+        foreach($arrBlocks as $arrBlock) {
+            $objTemplate->replaceBlock(
+                $directoryBlockName . $arrBlock['block'],
+                implode(' ', ${$directoryBlockName . $arrBlock['block']})
+            );
+            $objTemplate->touchBlock(
+                $directoryBlockName . $arrBlock['block']
+            );
+        }
+    }
+
+    /**
+     * Get the latest template block name and its details
+     *
+     * @param \Cx\Core_Modules\Cache\Controller\ComponentController $cache
+     * @param \Cx\Core\ContentManager\Model\Entity\Page             $page
+     * @param \Cx\Core\Html\Sigma                                   $template
+     *
+     * @return array
+     */
+    public function getLatestTplBlockDetails(
+        \Cx\Core_Modules\Cache\Controller\ComponentController $cache,
+        $page = null,
+        $template = null
+    ) {
+        $arrBlocks = array();
+        $blockName = 'directoryLatest_row_';
         for ($i = 1; $i <= 10; $i++) {
-            $params = $cache->getParamsByFindBlockExistsInTpl($directoryBlockName . $i, $page);
+            $params = $cache->getParamsByFindBlockExistsInTpl(
+                $blockName . $i,
+                $page
+            );
             if (
                 !empty($params) &&
-                $objTemplate->blockExists($directoryBlockName . $i)
+                (
+                    $template == null ||
+                    $template->blockExists($blockName . $i)
+                )
             ) {
-                $params['block']  = $i;
-                $directoryCheck[] = $params;
+                $params['block'] = $i;
+                $arrBlocks[]     = $params;
             }
         }
 
-        if (
-            !empty($directoryCheck) &&
-            $cl->loadFile(ASCMS_MODULE_PATH . '/Directory/Controller/Directory.class.php')
-        ) {
-            $objDirectory = new Directory('');
-            $objTemplate->setVariable('TXT_DIRECTORY_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
-            $objDirectory->getBlockLatest($directoryCheck);
-        }
+        return $arrBlocks;
     }
 
     /**
