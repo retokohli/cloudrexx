@@ -219,6 +219,7 @@ CREATE TABLE `contrexx_content_page` (
   `metadesc` text NOT NULL,
   `metakeys` text NOT NULL,
   `metarobots` varchar(7) DEFAULT NULL,
+  `metaimage` varchar(255) DEFAULT NULL,
   `start` timestamp NULL DEFAULT NULL,
   `end` timestamp NULL DEFAULT NULL,
   `editingStatus` varchar(16) NOT NULL,
@@ -790,6 +791,7 @@ CREATE TABLE `contrexx_module_calendar_registration` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
   `event_id` int(7) NOT NULL,
   `date` int(15) NOT NULL,
+  `submission_date` timestamp NULL DEFAULT '0000-00-00 00:00:00',
   `host_name` varchar(255) NOT NULL,
   `ip_address` varchar(15) NOT NULL,
   `type` int(1) NOT NULL,
@@ -1491,14 +1493,6 @@ CREATE TABLE `contrexx_module_directory_rel_dir_level` (
   PRIMARY KEY (`dir_id`,`level_id`)
 ) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_directory_settings` (
-  `setid` int(6) unsigned NOT NULL AUTO_INCREMENT,
-  `setname` varchar(250) NOT NULL DEFAULT '',
-  `setvalue` text NOT NULL,
-  `settyp` int(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`setid`),
-  KEY `setname` (`setname`)
-) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_directory_settings_google` (
   `setid` int(6) unsigned NOT NULL AUTO_INCREMENT,
   `setname` varchar(250) NOT NULL DEFAULT '',
   `setvalue` text NOT NULL,
@@ -2272,6 +2266,11 @@ CREATE TABLE `contrexx_module_market` (
   `spez_field_3` varchar(255) NOT NULL,
   `spez_field_4` varchar(255) NOT NULL,
   `spez_field_5` varchar(255) NOT NULL,
+  `spez_field_6` VARCHAR(255) NOT NULL,
+  `spez_field_7` VARCHAR(255) NOT NULL,
+  `spez_field_8` VARCHAR(255) NOT NULL,
+  `spez_field_9` VARCHAR(255) NOT NULL,
+  `spez_field_10` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
   FULLTEXT KEY `description` (`description`),
   FULLTEXT KEY `title` (`description`,`title`)
@@ -2435,7 +2434,7 @@ CREATE TABLE `contrexx_module_mediadir_inputfields` (
   `required` int(10) NOT NULL,
   `order` int(10) NOT NULL,
   `show_in` int(10) NOT NULL,
-  `context_type` enum('none','title','content','address','zip','city','country') NOT NULL,
+  `context_type` enum('none','title','content','address','zip','city','country','image') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_mediadir_level_names` (
@@ -3155,7 +3154,7 @@ CREATE TABLE `contrexx_module_shop_order_attributes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `item_id` int(10) unsigned NOT NULL DEFAULT '0',
   `attribute_name` varchar(255) NOT NULL DEFAULT '',
-  `option_name` varchar(255) NOT NULL DEFAULT '',
+  `option_name` TEXT NOT NULL DEFAULT '',
   `price` decimal(9,2) NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`id`),
   KEY `item_id` (`item_id`)

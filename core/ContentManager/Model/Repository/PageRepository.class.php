@@ -1020,7 +1020,6 @@ class PageRepository extends EntityRepository {
         $page->setMetadesc($title);
         $page->setMetakeys($title);
         $page->setMetarobots('index');
-        $page->setMetatitle($title);
         $page->setUpdatedBy(\FWUser::getFWUserObject()->objUser->getUsername());
         return $page;
     }

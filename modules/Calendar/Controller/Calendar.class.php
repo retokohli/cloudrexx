@@ -180,7 +180,7 @@ class Calendar extends CalendarLibrary
      *
      * @return null
      */
-    function getCalendarPage()
+    function getCalendarPage($page)
     {
         $this->loadEventManager();
         $id = !empty($_GET['id']) ? $_GET['id'] : 0 ;
@@ -198,7 +198,7 @@ class Calendar extends CalendarLibrary
         switch ($cmd) {
             case 'detail':
                 if( $id!= null && $_GET['date'] != null) {
-                    self::showEvent();
+                    self::showEvent($page);
                 } else {
                     \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName));
                     exit();
@@ -271,7 +271,12 @@ class Calendar extends CalendarLibrary
             $startYear  = isset($_GET['year']) ? $_GET['year'] : $this->startDate->format('Y');
 
             $this->startDate->setDate($startYear, $startMonth, $startDay);
-            $this->startDate->setTime(0, 0, 0);
+            $this->getSettings();
+            if ($this->arrSettings['frontendPastEvents'] == 0) {
+                // if we want to show events of the whole day
+                // we need to set start date to 0:00
+                $this->startDate->setTime(0, 0, 0);
+            }
         }
 
         // get enddate
@@ -361,27 +366,29 @@ class Calendar extends CalendarLibrary
             $this->author = null;
         }
 
-        if (
-            $this->startDate->format('H:i:s') == '00:00:00' &&
-            $this->endDate->format('H:i:s') == '00:00:00'
-        ) {
-            $this->endDate->setTime('23', '59', '59');
-        }
-        $internDateTime = new \DateTime('now');
-        $dbDateTime = $this->getComponent('DateTime')->createDateTimeForDb('now');
-        $internDateTimeOffset = $internDateTime->getOffset();
-        $dbDateTimeOffset = $dbDateTime->getOffset();
-        if ($internDateTimeOffset > $dbDateTimeOffset) {
-            $timeOffset = $internDateTimeOffset - $dbDateTimeOffset;
-        } else {
-            $timeOffset = $dbDateTimeOffset - $internDateTimeOffset;
-        }
-        if ($timeOffset > 0) {
-            $this->startDate->add(new \DateInterval('PT' . $timeOffset . 'S'));
-            $this->endDate->add(new \DateInterval('PT' . $timeOffset . 'S'));
-        } else {
-            $this->startDate->sub(new \DateInterval('PT' . $timeOffset . 'S'));
-            $this->endDate->sub(new \DateInterval('PT' . $timeOffset . 'S'));
+        if ($this->startDate !== null && $this->endDate !== null) {
+            if (
+                $this->startDate->format('H:i:s') == '00:00:00' &&
+                $this->endDate->format('H:i:s') == '00:00:00'
+            ) {
+                $this->endDate->setTime('23', '59', '59');
+            }
+            $internDateTime = new \DateTime('now');
+            $dbDateTime = $this->getComponent('DateTime')->createDateTimeForDb('now');
+            $internDateTimeOffset = $internDateTime->getOffset();
+            $dbDateTimeOffset = $dbDateTime->getOffset();
+            if ($internDateTimeOffset > $dbDateTimeOffset) {
+                $timeOffset = $internDateTimeOffset - $dbDateTimeOffset;
+            } else {
+                $timeOffset = $dbDateTimeOffset - $internDateTimeOffset;
+            }
+            if ($timeOffset > 0) {
+                $this->startDate->add(new \DateInterval('PT' . $timeOffset . 'S'));
+                $this->endDate->add(new \DateInterval('PT' . $timeOffset . 'S'));
+            } else {
+                $this->startDate->sub(new \DateInterval('PT' . $timeOffset . 'S'));
+                $this->endDate->sub(new \DateInterval('PT' . $timeOffset . 'S'));
+            }
         }
 
         $this->objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($this->startDate,$this->endDate,$this->categoryId,$this->searchTerm,true,$this->needAuth,true,$this->startPos,$this->numEvents,$this->sortDirection,true,$this->author);
@@ -414,6 +421,9 @@ class Calendar extends CalendarLibrary
         $this->getSettings();
 
         $dateFormat = $this->getDateFormat(1);
+
+        \JS::activate('cx');
+        \JS::activate('jqueryui');
 
         $javascript = <<< EOF
 <script language="JavaScript" type="text/javascript">
@@ -878,7 +888,7 @@ UPLOADER;
      *
      * @return null
      */
-    function showEvent()
+    function showEvent($page)
     {
         global $_ARRAYLANG, $_CORELANG, $_LANGID;
 
@@ -890,6 +900,21 @@ UPLOADER;
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         $this->pageTitle = html_entity_decode($this->objEventManager->eventList[0]->title, ENT_QUOTES, CONTREXX_CHARSET);
+
+        // Set the meta page description to the teaser text if displaying calendar details
+        $teaser = html_entity_decode($this->objEventManager->eventList[0]->teaser, ENT_QUOTES, CONTREXX_CHARSET);
+        if ($teaser) {
+            $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags($teaser)));
+        } else {
+            $description = html_entity_decode($this->objEventManager->eventList[0]->description, ENT_QUOTES, CONTREXX_CHARSET);
+            $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags($description)));
+        }
+
+        // Set the meta page image to event picture if displaying calendar details
+        $picture = $this->objEventManager->eventList[0]->pic;
+        if ($picture) {
+            $page->setMetaimage($picture);
+        }
 
         $this->_objTpl->setVariable(array(
             'TXT_'.$this->moduleLangVar.'_ATTACHMENT'        =>  $_ARRAYLANG['TXT_CALENDAR_ATTACHMENT'],
@@ -1204,8 +1229,8 @@ UPLOADER;
      */
     protected function getUploaderCode($fieldKey, $fieldName, $uploadCallBack = "uploadFinished", $allowImageOnly = true)
     {
-        \cmsSession::getInstance();
         $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getComponent('Session')->getSession();
         try {
             $uploader      = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
             $uploaderId    = $uploader->getId();
