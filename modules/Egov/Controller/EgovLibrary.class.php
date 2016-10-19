@@ -404,7 +404,7 @@ class EgovLibrary {
 
     function getSourceCode($id, $preview=false, $flagBackend=false)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG, $_CORELANG;
 
         $arrFields = EgovLibrary::getFormFields($id);
         $flagYellowbill = false;
@@ -421,6 +421,21 @@ class EgovLibrary {
               : "index.php?section=Egov&amp;id=$id"
             );
 
+        $messages = '';
+        if (\Message::have()) {
+            $messageTemplate = <<<MESSAGETEMPLATE
+    <!-- BEGIN messages -->
+    <div class="{MESSAGE_CLASS}">
+        {MESSAGE_TEXT}
+    </div>
+    <!-- END messages -->
+MESSAGETEMPLATE;
+            $template = new \Cx\Core\Html\Sigma('.');
+            $template->setTemplate($messageTemplate);
+            \Message::show($template);
+            $messages = $template->get();
+        }
+
         //$sourcecode = $this->_getJsSourceCode($id, $arrFields, $preview, $flagBackend).
         $sourcecode = $this->_getJsSourceCode($arrFields, $preview, $flagBackend).
 // TODO: This index is never set
@@ -429,6 +444,7 @@ class EgovLibrary {
             "<div id=\"contactFormError\" style=\"color: red; display: none;\">".
             "<br />".$_ARRAYLANG['TXT_EGOV_CHECK_YOUR_INPUT'].
             "</div>\n<br />\n".
+            $messages.
             "<!-- BEGIN contact_form -->\n".
             "<form action=\"$FormActionTarget\" ".
             "method=\"post\" enctype=\"multipart/form-data\" ".
@@ -574,6 +590,16 @@ class EgovLibrary {
                     '</option>';
             }
             $sourcecode .= "</select>\n</td></tr>";
+        }
+
+        if (!$flagBackend && !\FWUser::getFWUserObject()->objUser->login()) {
+            $captcha     = \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getCode();
+            $sourcecode .= <<<CAPTCHACODE
+        <tr>
+            <td>{$_CORELANG['TXT_CORE_CAPTCHA']}</td>
+            <td>$captcha</td>
+        </tr>
+CAPTCHACODE;
         }
 
         $sourcecode .=

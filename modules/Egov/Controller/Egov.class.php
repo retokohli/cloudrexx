@@ -580,13 +580,22 @@ $yellowpayForm
 
     function _ProductsList()
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
         $result = '';
         if (isset($_REQUEST['result'])) {
             // Returned from payment
             $result = $this->payment();
         } elseif (isset($_REQUEST['send'])) {
+            if (   !\FWUser::getFWUserObject()->objUser->login()
+                && !\Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->check()
+            ) {
+                $productId = !empty($_REQUEST['id']) ? contrexx_input2int($_REQUEST['id']) : 0;
+                \Message::error($_ARRAYLANG['TXT_EGOV_CAPTCHA_ERROR']);
+                \Cx\Core\Csrf\Controller\Csrf::redirect(
+                    \Cx\Core\Routing\Url::fromModuleAndCmd('Egov', 'detail', '', array('id' => $productId))
+                );
+            }
             // Store order and launch payment, if necessary
             $result = $this->_saveOrder();
         }
