@@ -104,7 +104,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     // replace global product blocks
                     $page->setContent(
                         preg_replace_callback(
-                            '/<!-- BEGIN (block_shop_products_category_(?:\d+) -->).*<!-- END \1/s',
+                            '/<!--\s+BEGIN\s+(block_shop_products_category_(?:\d+)\s+-->).*<!--\s+END\s+\1/s',
                             function ($matches) {
                                 $blockTemplate = new \Cx\Core\Html\Sigma();
                                 $blockTemplate->setTemplate($matches[0]);
