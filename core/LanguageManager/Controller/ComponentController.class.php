@@ -309,9 +309,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return string replaced text
      */
     public function replaceInternationalCharacters($text) {
-        foreach (static::$REPLACEMENT_CHARLIST as $search=>$replace) {
-            $text = preg_replace('/' . preg_quote($search) . '/', $replace, $text);
-        }
+        $text = str_replace(
+            array_keys(static::$REPLACEMENT_CHARLIST),
+            static::$REPLACEMENT_CHARLIST,
+            $text
+        );
         return $text;
     }
 }

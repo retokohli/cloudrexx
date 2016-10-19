@@ -3123,7 +3123,7 @@ cx.cm.updateHistoryTableHighlighting = function() {
 cx.cm.slugify = function(string) {
     // replace international characters
     cx.jQuery.each(cx.variables.get("charReplaceList"), function(search, replace) {
-        string = string.replace(new RegExp(search), replace);
+        string = string.replace(search, replace);
     });
     // replace spaces
     string = string.replace(/\s+/g, '-');
