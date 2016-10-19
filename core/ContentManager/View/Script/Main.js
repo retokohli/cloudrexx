@@ -3121,13 +3121,13 @@ cx.cm.updateHistoryTableHighlighting = function() {
 }
 
 cx.cm.slugify = function(string) {
+    // replace international characters
+    cx.jQuery.each(cx.variables.get("charReplaceList"), function(search, replace) {
+        string = string.replace(new RegExp(search), replace);
+    });
+    // replace spaces
     string = string.replace(/\s+/g, '-');
-    string = string.replace(/ä/g, 'ae');
-    string = string.replace(/ö/g, 'oe');
-    string = string.replace(/ü/g, 'ue');
-    string = string.replace(/Ä/g, 'Ae');
-    string = string.replace(/Ö/g, 'Oe');
-    string = string.replace(/Ü/g, 'Ue');
+    // replace all non-url characters
     string = string.replace(/[^a-zA-Z0-9-_]/g, '');
     return string;
 }

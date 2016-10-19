@@ -47,6 +47,65 @@ namespace Cx\Core\LanguageManager\Controller;
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController implements \Cx\Core\Event\Model\Entity\EventListener {
 
     /**
+     * List of replacements for additional characters for slugifier
+     * @var array $replacementCharlist
+     */
+    public static $REPLACEMENT_CHARLIST = array(
+        // German
+        'ä' => 'ae',
+        'Ä' => 'Ae',
+        'ö' => 'oe',
+        'Ö' => 'Oe',
+        'ß' => 'ss',
+        'ü' => 'ue',
+        'Ü' => 'Ue',
+        // French
+        'à' => 'a',
+        'À' => 'A',
+        'â' => 'a',
+        'Â' => 'A',
+        'æ' => 'ae',
+        'Æ' => 'Ae',
+        'Ç' => 'C',
+        'ç' => 'c',
+        'é' => 'e',
+        'É' => 'E',
+        'è' => 'e',
+        'È' => 'E',
+        'ë' => 'e',
+        'Ë' => 'E',
+        'ê' => 'e',
+        'Ê' => 'E',
+        'ï' => 'i',
+        'Ï' => 'I',
+        'î' => 'i',
+        'Î' => 'I',
+        'ô' => 'o',
+        'Ô' => 'O',
+        'Œ' => 'Oe',
+        'œ' => 'oe',
+        'ù' => 'u',
+        'Ù' => 'U',
+        'û' => 'u',
+        'Û' => 'U',
+        'ÿ' => 'y',
+        'Ÿ' => 'Y',
+        // Spanish
+        'á' => 'a',
+        'Á' => 'A',
+        'í' => 'i',
+        'Í' => 'I',
+        'ñ' => 'n',
+        'Ñ' => 'N',
+        'ó' => 'o',
+        'Ó' => 'O',
+        'ú' => 'u',
+        'Ú' => 'U',
+        '¡' => '!',
+        '¿' => '?',
+    );
+
+    /**
      * @var array List of components who's language already is in $_ARRAYLANG
      */
     protected $componentsWithLoadedLang = array();
@@ -242,5 +301,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             ));
             $template->parse('locale_alternate_list');
         }
+    }
+
+    /**
+     * Replaces international characters (like German umlauts)
+     * @param string $text Text to replace
+     * @return string replaced text
+     */
+    public function replaceInternationalCharacters($text) {
+        foreach (static::$REPLACEMENT_CHARLIST as $search=>$replace) {
+            $text = preg_replace('/' . preg_quote($search) . '/', $replace, $text);
+        }
+        return $text;
     }
 }
