@@ -863,6 +863,8 @@ class EgovManager extends EgovLibrary
                 'ORDER_DATE' => $objResult->fields['order_date'],
                 'ORDER_ID' => $objResult->fields['order_id'],
                 'ORDER_STATE' => EgovLibrary::MaskState($objResult->fields['order_state']),
+                'EGOV_ORDER_AMOUNT' => EgovLibrary::GetProduktValue('product_price', $objResult->fields['order_product']),
+                'EGOV_ORDER_RESERVATION_DATE' => $this->ParseFormValues('Reservieren für das ausgewählte Datum', $objResult->fields['order_values']),
                 'ORDER_PRODUCT' => EgovLibrary::GetProduktValue('product_name', $objResult->fields['order_product']),
                 'ORDER_NAME' =>
                     $this->ParseFormValues('Vorname', $objResult->fields['order_values']).
