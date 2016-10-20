@@ -73,6 +73,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      *
      * @access protected
      * @global $_ARRAYLANG
+     * @global $_CONFIG
      * @param $entityClassName contains the FQCN from entity
      * @return array with options
      */
@@ -137,6 +138,21 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'country' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_COUNTRY'],
                         ),
+                        'default' => array(
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_DEFAULT'],
+                            'type' => 'radio',
+                            'table' => array(
+                                'parse' => function ($value, $rowData) {
+                                    global $_CONFIG;
+                                    return \Html::getRadio(
+                                        'langDefaultStatus',
+                                        $rowData['id'],
+                                        false,
+                                        $rowData['id'] == $_CONFIG['defaultLocaleId']
+                                        );
+                                },
+                            ),
+                        ),
                         'fallback' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_FALLBACK'],
                             'table' => array(
@@ -183,6 +199,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'label',
                             'iso1',
                             'country',
+                            'default',
                             'fallback',
                         ),
                         'form' => array(
@@ -221,11 +238,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             $em = $this->cx->getDb()->getEntityManager();
             $localeRepo = $em->getRepository($entityClassName);
             $parseObject = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($localeRepo->findAll());
-            //for ($i = 0; $i <= $parseObject->length(); $i++) {
-            //    $parseObject->add($i, array('Default' => 'Yes'));
-            //}
-            $parseObject->add(1, array('Default' => 'Yes'));
-            $parseObject->add(2, array('Default' => 'Yes'));
+            foreach ($parseObject as $index => $value) {
+                $parseObject->add($index, array('default' => false));
+            }
             return $parseObject;
         }
         return $entityClassName;
