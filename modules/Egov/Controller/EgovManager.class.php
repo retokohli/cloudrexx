@@ -857,6 +857,12 @@ class EgovManager extends EgovLibrary
                 default:
                     break;
             }
+            $reservedDateVal = $objResult->fields['order_reservation_date'];
+            $reservationDateFormat = '';
+            if ($reservedDateVal != '0000-00-00 00:00:00') {
+                $reservationDate = new \DateTime("$reservedDateVal");
+                $reservationDateFormat = $reservationDate->format('d.m.Y');
+            }
             $this->objTemplate->setVariable(array(
                 'ORDERS_ROWCLASS' => (++$i % 2 ? 'row2' : 'row1'),
                 'ORDER_ID' => $objResult->fields['order_id'],
@@ -864,7 +870,7 @@ class EgovManager extends EgovLibrary
                 'ORDER_ID' => $objResult->fields['order_id'],
                 'ORDER_STATE' => EgovLibrary::MaskState($objResult->fields['order_state']),
                 'EGOV_ORDER_AMOUNT' => EgovLibrary::GetProduktValue('product_price', $objResult->fields['order_product']),
-                'EGOV_ORDER_RESERVATION_DATE' => $this->ParseFormValues('Reservieren für das ausgewählte Datum', $objResult->fields['order_values']),
+                'EGOV_ORDER_RESERVATION_DATE' => $reservationDateFormat,
                 'ORDER_PRODUCT' => EgovLibrary::GetProduktValue('product_name', $objResult->fields['order_product']),
                 'ORDER_NAME' =>
                     $this->ParseFormValues('Vorname', $objResult->fields['order_values']).
@@ -1507,17 +1513,20 @@ class EgovManager extends EgovLibrary
         }
 
         $quantity = 0;
+        $reservationDateFormat = '0000-00-00 00:00:00';
         if (EgovLibrary::GetProduktValue('product_per_day', $product_id) == 'yes') {
             $quantity = intval($_REQUEST['contactFormField_Quantity']);
-            $FormValue = EgovLibrary::GetSettings('set_calendar_date_label').'::'.contrexx_addslashes(strip_tags($_REQUEST['contactFormField_1000'])).';;'.$FormValue;
+            $reservationDate = isset($_POST['contactFormField_1000'])? contrexx_input2raw($_POST['contactFormField_1000']): '';
             $FormValue = $_ARRAYLANG['TXT_EGOV_QUANTITY'].'::'.$quantity.';;'.$FormValue;
+            list ($day, $month, $year) = explode('.', $reservationDate);
+            $reservationDateFormat = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $day, $year));
         }
 
         $objDatabase->Execute("
             INSERT INTO ".DBPREFIX."module_egov_orders (
-                order_date, order_ip, order_product, order_values
+                order_date, order_ip, order_product, order_values, order_reservation_date
             ) VALUES (
-                '$datum_db', '$ip_adress', '$product_id', '$FormValue'
+                '$datum_db', '$ip_adress', '$product_id', '$FormValue', '$reservationDateFormat'
             )
         ");
         $order_id = $objDatabase->Insert_ID();
