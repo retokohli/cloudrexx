@@ -27,6 +27,7 @@ Cx\Core\Locale\Model\Entity\Locale:
     fallback:
       type: integer
       unsigned: true
+      nullable: true
     sourceLanguage:
       column: source_language
       type: string
