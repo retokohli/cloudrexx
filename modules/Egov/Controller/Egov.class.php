@@ -586,18 +586,6 @@ $yellowpayForm
         if (isset($_REQUEST['result'])) {
             // Returned from payment
             $result = $this->payment();
-        } elseif (isset($_REQUEST['send'])) {
-            if (   !\FWUser::getFWUserObject()->objUser->login()
-                && !\Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->check()
-            ) {
-                $productId = !empty($_REQUEST['id']) ? contrexx_input2int($_REQUEST['id']) : 0;
-                \Message::error($_ARRAYLANG['TXT_EGOV_CAPTCHA_ERROR']);
-                \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd('Egov', 'detail', '', array('id' => $productId))
-                );
-            }
-            // Store order and launch payment, if necessary
-            $result = $this->_saveOrder();
         }
         // Fix/replace HTML and line breaks, which will all fail in the
         // alert() call.
@@ -648,6 +636,31 @@ $yellowpayForm
 
         if (empty($_REQUEST['id'])) {
             return;
+        }
+        if (   isset($_POST['send'])
+            && (   \FWUser::getFWUserObject()->objUser->login()
+                || \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->check()
+            )
+        ) {
+            // Store order and launch payment, if necessary
+            $result = $this->_saveOrder();
+            // Fix/replace HTML and line breaks, which will all fail in the
+            // alert() call.
+            $result =
+                html_entity_decode(
+                    strip_tags(
+                        preg_replace(
+                            '/\<br\s*?\/?\>/', '\n',
+                            preg_replace('/[\n\r]/', '', $result)
+                        )
+                    ), ENT_QUOTES, CONTREXX_CHARSET
+                );
+            $this->objTemplate->setVariable(
+                'EGOV_JS',
+                "<script type=\"text/javascript\">\n".
+                "// <![CDATA[\n$result\n// ]]>\n".
+                "</script>\n"
+            );
         }
         $query = "
             SELECT product_id, product_name, product_desc, product_price ".
