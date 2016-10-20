@@ -311,16 +311,12 @@ class EgovManager extends EgovLibrary
                 $StatusChecked = '';
             }
         }
-        $AutoJaChecked = '';
-        $AutoNeinChecked = 'checked="checked"';
-        if (EgovLibrary::GetProduktValue('product_autostatus', $product_id) == 1) {
-            $AutoJaChecked = 'checked="checked"';
-            $AutoNeinChecked = '';
-        }
-        $electro_checked = '';
-        if (EgovLibrary::GetProduktValue('product_electro', $product_id) == 1) {
-            $electro_checked = 'checked="checked"';
-        }
+        $productAutoStatus = EgovLibrary::GetProduktValue('product_autostatus', $product_id);
+        $autoStatusYes         = $productAutoStatus == 1 ? 'checked="checked"' : '';
+        $autoStatusNo          = $productAutoStatus == 0 ? 'checked="checked"' : '';
+        $autoStatusElectro     = $productAutoStatus == 2 ? 'checked="checked"' : '';
+        $autoStatusReservation = $productAutoStatus == 3 ? 'checked="checked"' : '';
+
         $ProductSenderName = EgovLibrary::GetProduktValue('product_sender_name', $product_id);
         if ($ProductSenderName == '') {
             $ProductSenderName = EgovLibrary::GetSettings('set_sender_name');
@@ -365,9 +361,10 @@ class EgovManager extends EgovLibrary
             'PRODUCT_ID' => $product_id,
             'EGOV_JS_SUBMIT_FUNCTION' => $jsSubmitFunction,
             'STATE_CHECKED' => $StatusChecked,
-            'AUTOSTATUS_CHECKED_YES' => $AutoJaChecked,
-            'AUTOSTATUS_CHECKED_NO' => $AutoNeinChecked,
-            'ELECTRO_CHECKED' => $electro_checked,
+            'AUTOSTATUS_CHECKED_YES' => $autoStatusYes,
+            'AUTOSTATUS_CHECKED_NO' => $autoStatusNo,
+            'AUTOSTATUS_CHECKED_ELECTRO' => $autoStatusElectro,
+            'AUTOSTATUS_CHECKED_RESERVATION' => $autoStatusReservation,
             'PRODUCT_FORM_FILE' => EgovLibrary::GetProduktValue("product_file", $product_id),
             'PRODUCT_SENDER_NAME' => $ProductSenderName,
             'PRODUCT_SENDER_EMAIL' => $ProductSenderEmail,
@@ -1024,8 +1021,8 @@ class EgovManager extends EgovLibrary
             $productFile = '';
             $FileErr = 2;
         }
-        $productState = (isset($_POST['productState']) ? 1 : 0);
-        $productElectro = (isset($_POST['ElectroProduct']) ? 1 : 0);
+        $productState   = isset($_POST['productState']) ? contrexx_input2int($_POST['productState']) : 0;
+        $productElectro = !empty($_POST['productState']) && $_POST['productState'] == 2 ? 1 : 0;
 
         $uniqueFieldNames = true;
         $arrFields = $this->_getFormFieldsFromPost($uniqueFieldNames);
@@ -1739,6 +1736,7 @@ class EgovManager extends EgovLibrary
             1 => $_ARRAYLANG['TXT_STATE_OK'],
             2 => $_ARRAYLANG['TXT_STATE_NEW'],
             3 => $_ARRAYLANG['TXT_STATE_ALTERNATIVE'],
+            4 => $_ARRAYLANG['TXT_EGOV_ORDER_STATE_RESERVED'],
         );
         $strMenuOptions = '';
         foreach ($arrState as $index => $status) {

@@ -230,14 +230,6 @@ function SetUrl(url, width, height, alt) {
   }
 }
 
-function ShowProductFile(){
-  if(document.forms.frmProductEdit.ElectroProduct.checked==true){
-    document.getElementById('productFileLayer').style.display = 'block';
-  } else {
-    document.getElementById('productFileLayer').style.display = 'none';
-  }
-}
-
 function showOrHide(strElement) {
   if (document.getElementById(strElement).style.display == 'none') {
     document.getElementById(strElement).style.display = 'block';
@@ -245,6 +237,16 @@ function showOrHide(strElement) {
     document.getElementById(strElement).style.display = 'none';
   }
 }
+cx.jQuery(function(){
+    cx.jQuery('input[name=productAutoStatus]').change(function(){
+        if (cx.jQuery(this).val() == 2) {
+            cx.jQuery('#productFileLayer').show();
+        } else {
+            cx.jQuery('#productFileLayer').hide();
+        }
+    });
+    cx.jQuery('input[name=productAutoStatus]').trigger('change');
+});
 // -->
 </script>
 <div style="display:none;">
@@ -434,27 +436,34 @@ function showOrHide(strElement) {
           <td><input style="width: 670px;" type="text" name="productQuantityLimit" value="{EGOV_PRODUCT_QUANTITY_LIMIT}" maxlength="2" /></td>
         </tr>
         <tr class="row2">
-          <td>{TXT_EGOV_PRODUCT_ELECTRO}</td>
           <td>
-            <div style="float:left;">
-              <input type="checkbox" name="ElectroProduct" value="1" {ELECTRO_CHECKED} onclick="ShowProductFile();" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            </div>
-            <div style="float:left;" id="productFileLayer">{TXT_EGOV_PRODUCT_SELECT_FILE}
-              &nbsp;<input style="width: 450px;" type="text" name="productFile" id="productFile" value="{PRODUCT_FORM_FILE}" />
-              &nbsp;<input type="button" value="{TXT_BROWSE}" onClick="newsGetFileBrowser('productFile', 'image')" />
-            </div>
+              {TXT_EGOV_PRODUCT_AUTO}
+              <span class="icon-info tooltip-trigger"></span>
+              <span class="tooltip-message">{TXT_EGOV_ORDER_HANDLING_TOOLTIP}</span>
           </td>
-        </tr>
-        <tr class="row1">
-          <td>{TXT_EGOV_PRODUCT_AUTO}</td>
           <td>
             <input type="radio" name="productAutoStatus" value="1"
                 id="productAutoStatus_1" {AUTOSTATUS_CHECKED_YES} />
-            <label for="productAutoStatus_1">{TXT_EGOV_YES} ({TXT_EGOV_ORDER_STATE_AUTOMAIL})</label>
+            <label for="productAutoStatus_1">{TXT_EGOV_AUTOMATICALLY}</label>
             <br />
             <input type="radio" name="productAutoStatus" value="0"
                 id="productAutoStatus_0" {AUTOSTATUS_CHECKED_NO} />
-            <label for="productAutoStatus_0">{TXT_EGOV_NO}</label>
+            <label for="productAutoStatus_0">{TXT_EGOV_MANUALLY}</label>
+            <br />
+            <div>
+                <label>
+                    <input type="radio" name="productAutoStatus" value="2" {AUTOSTATUS_CHECKED_ELECTRO} />&nbsp;
+                    {TXT_EGOV_PRODUCT_ELECTRO}
+                </label>
+                <div id="productFileLayer">{TXT_EGOV_PRODUCT_SELECT_FILE}
+                  &nbsp;<input style="width: 450px;" type="text" name="productFile" id="productFile" value="{PRODUCT_FORM_FILE}" />
+                  &nbsp;<input type="button" value="{TXT_BROWSE}" onClick="newsGetFileBrowser('productFile', 'image')" />
+                </div>
+            </div>
+            <input type="radio" name="productAutoStatus" value="3"
+                id="productAutoStatus_3" {AUTOSTATUS_CHECKED_RESERVATION} />
+            <label for="productAutoStatus_3">{TXT_EGOV_RESERVATION}</label>
+            <br />
           </td>
         </tr>
         <tr class="row2" style="height:20px;">

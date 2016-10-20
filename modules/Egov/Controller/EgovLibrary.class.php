@@ -213,6 +213,8 @@ class EgovLibrary {
             case 3:
                 // Used when alternative payment methods are selected
                 return $_ARRAYLANG['TXT_STATE_ALTERNATIVE'];
+            case 4:
+                return $_ARRAYLANG['TXT_EGOV_ORDER_STATE_RESERVED'];
             default:
                 return 'unknown';
         }

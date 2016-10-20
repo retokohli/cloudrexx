@@ -141,7 +141,8 @@ class Egov extends EgovLibrary
         }
 
         $ReturnValue = '';
-        $newStatus = 1;
+        $autoStatus = self::GetProduktValue('product_autostatus', $product_id);
+        $newStatus  = $autoStatus == 3 ? 4 : 1;
         // Handle any kind of payment request
         if (!empty($_REQUEST['handler'])) {
             $ReturnValue = $this->payment($order_id, $product_amount);
@@ -247,8 +248,9 @@ class Egov extends EgovLibrary
         }
 
         // Update 29.10.2006 Statusmail automatisch abschicken || Produktdatei
+        $autoStatus = self::GetProduktValue('product_autostatus', $product_id);
         if (   self::GetProduktValue('product_electro', $product_id) == 1
-            || self::GetProduktValue('product_autostatus', $product_id) == 1
+            || in_array($autoStatus, array(1, 2, 3))
         ) {
             self::updateOrderStatus($order_id, $newStatus);
             $TargetMail = self::GetEmailAdress($order_id);

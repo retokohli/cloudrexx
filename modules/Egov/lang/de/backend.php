@@ -120,7 +120,7 @@ $_ARRAYLANG['TXT_EGOV_STTINGS_DATE_LABEL'] = "Bezeichnung für die Datumseingabe
 $_ARRAYLANG['TXT_EGOV_STTINGS_DATE_ENTRY_DESC'] = "Beschreibung für Datumeingabe";
 $_ARRAYLANG['TXT_BROWSE'] = "Durchsuchen";
 $_ARRAYLANG['TXT_EGOV_SOURCECODE'] = "Quelltext anzeigen";
-$_ARRAYLANG['TXT_EGOV_PRODUCT_AUTO'] = "Bestellungstatus";
+$_ARRAYLANG['TXT_EGOV_PRODUCT_AUTO'] = "Bestellverarbeitung";
 $_ARRAYLANG['TXT_EGOV_PRODUCT_ELECTRO'] = "Elektronisches Produkt";
 $_ARRAYLANG['TXT_EGOV_PRODUCT_SELECT_FILE'] = "Datei auswählen";
 $_ARRAYLANG['TXT_MARKED'] = "Markierte";
@@ -129,7 +129,6 @@ $_ARRAYLANG['TXT_IMGALT_DELETE'] = "Löschen";
 $_ARRAYLANG['TXT_EGOV_SELECTED'] = "Ausgewählt";
 $_ARRAYLANG['TXT_EGOV_NOT_SELECTED'] = "Nicht ausgewählt";
 $_ARRAYLANG['TXT_EGOV_QUANTITY'] = "Anzahl";
-$_ARRAYLANG['TXT_EGOV_ORDER_STATE_AUTOMAIL'] = "Bestellung wird automatisch angenommen und per E-Mail bestätigt.";
 $_ARRAYLANG['TXT_EGOV_SUBJECT'] = "Betreff";
 $_ARRAYLANG['EGOV_TXT_STATE_CHANGE'] = "Statusänderung";
 $_ARRAYLANG['EGOV_TXT_ORDER_ENTRY'] = "Bestelleingang";
@@ -184,6 +183,7 @@ $_ARRAYLANG['TXT_EGOV_PRODUCT_QUANTITY_LIMIT'] = "Wechsel auf \\\"Bald ausgebuch
 $_ARRAYLANG['TXT_EGOV_ALTERNATIVE_PAYMENT_METHODS'] = "Alternative Bezahlmethode";
 $_ARRAYLANG['TXT_EGOV_ALTERNATIVE_PAYMENT_NAMES'] = "Bezeichnung";
 $_ARRAYLANG['TXT_STATE_ALTERNATIVE'] = "Alternativ";
+$_ARRAYLANG['TXT_EGOV_ORDER_STATE_RESERVED'] = 'reserviert';
 
 $_ARRAYLANG['TXT_EGOV_POSTFINANCE'] = "PostFinance";
 $_ARRAYLANG['TXT_EGOV_POSTFINANCE_ACTIVATED'] = "PostFinance aktivieren";
@@ -194,3 +194,28 @@ $_ARRAYLANG['TXT_EGOV_POSTFINANCE_ACCEPTED_PAYMENT_METHODS'] = "Akzeptierte Zahl
 $_ARRAYLANG['TXT_EGOV_POSTFINANCE_HASH_SIGNATURE_IN'] = "SHA-IN Passphrase";
 $_ARRAYLANG['TXT_EGOV_POSTFINANCE_HASH_SIGNATURE_OUT'] = "SHA-OUT Passphrase";
 $_ARRAYLANG['TXT_EGOV_POSTFINANCE_USE_TESTSERVER'] = "Testserver verwenden";
+$_ARRAYLANG['TXT_EGOV_AUTOMATICALLY'] = 'Automatisch';
+$_ARRAYLANG['TXT_EGOV_MANUALLY'] = 'Manuel';
+$_ARRAYLANG['TXT_EGOV_RESERVATION'] = 'Reservation';
+$_ARRAYLANG['TXT_EGOV_ORDER_HANDLING_TOOLTIP'] = '
+<h3>Elektronisches Produkt</h3>
+<ul>
+    <li>Bestellung wird auf Status <strong>Erledigt</strong> gesetzt</li>
+    <li>E-Mail-Bestätigung wird mit ausgewählter Datei als Anhang versendet</li>
+</ul>
+<h3>Automatisch</h3>
+<ul>
+    <li>Bestellung wird auf Status <strong>Erledigt</strong> gesetzt</li>
+    <li>E-Mail-Bestätigung an Kunde wird ausgelöst
+</li>
+</ul>
+<h3>Reservation</h3>
+<ul>
+    <li>Bestellung wird auf Status <strong>Reserviert</strong> gesetzt</li>
+    <li>E-Mail-Bestätigung an Kunde wird ausgelöst</li>
+</ul>
+<h3>Manuel</h3>
+<ul>
+    <li>Bestellung wird im Status <strong>nicht bezahlt</strong> erfasst</li>
+    <li>E-Mail-Bestätigung an Kunde wird keine gesendet)</li>
+</ul>';

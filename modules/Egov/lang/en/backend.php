@@ -120,7 +120,7 @@ $_ARRAYLANG['TXT_EGOV_STTINGS_DATE_LABEL'] = "Description for date";
 $_ARRAYLANG['TXT_EGOV_STTINGS_DATE_ENTRY_DESC'] = "Description for date entry";
 $_ARRAYLANG['TXT_BROWSE'] = "Search";
 $_ARRAYLANG['TXT_EGOV_SOURCECODE'] = "Show sourcecode";
-$_ARRAYLANG['TXT_EGOV_PRODUCT_AUTO'] = "Status of order";
+$_ARRAYLANG['TXT_EGOV_PRODUCT_AUTO'] = "Order handling";
 $_ARRAYLANG['TXT_EGOV_PRODUCT_ELECTRO'] = "Electronic product";
 $_ARRAYLANG['TXT_EGOV_PRODUCT_SELECT_FILE'] = "Choose file";
 $_ARRAYLANG['TXT_MARKED'] = "Selected";
@@ -129,7 +129,6 @@ $_ARRAYLANG['TXT_IMGALT_DELETE'] = "Delete";
 $_ARRAYLANG['TXT_EGOV_SELECTED'] = "Selected";
 $_ARRAYLANG['TXT_EGOV_NOT_SELECTED'] = "Not selected";
 $_ARRAYLANG['TXT_EGOV_QUANTITY'] = "Quantity";
-$_ARRAYLANG['TXT_EGOV_ORDER_STATE_AUTOMAIL'] = "Order is accepted automatically and confirmed by e-mail";
 $_ARRAYLANG['TXT_EGOV_SUBJECT'] = "Subject";
 $_ARRAYLANG['EGOV_TXT_STATE_CHANGE'] = "Status modification";
 $_ARRAYLANG['EGOV_TXT_ORDER_ENTRY'] = "Incoming orders";
@@ -184,6 +183,7 @@ $_ARRAYLANG['TXT_EGOV_PRODUCT_QUANTITY_LIMIT'] = "Change to \\\"soon booked up\\
 $_ARRAYLANG['TXT_EGOV_ALTERNATIVE_PAYMENT_METHODS'] = "Alternative payment method";
 $_ARRAYLANG['TXT_EGOV_ALTERNATIVE_PAYMENT_NAMES'] = "Description";
 $_ARRAYLANG['TXT_STATE_ALTERNATIVE'] = "Alternatively";
+$_ARRAYLANG['TXT_EGOV_ORDER_STATE_RESERVED'] = 'reserved';
 
 $_ARRAYLANG['TXT_EGOV_POSTFINANCE'] = "PostFinance";
 $_ARRAYLANG['TXT_EGOV_POSTFINANCE_ACTIVATED'] = "Activate PostFinance";
@@ -194,3 +194,27 @@ $_ARRAYLANG['TXT_EGOV_POSTFINANCE_ACCEPTED_PAYMENT_METHODS'] = "Accepted payment
 $_ARRAYLANG['TXT_EGOV_POSTFINANCE_HASH_SIGNATURE_IN'] = "SHA-IN Passphrase";
 $_ARRAYLANG['TXT_EGOV_POSTFINANCE_HASH_SIGNATURE_OUT'] = "SHA-OUT Passphrase";
 $_ARRAYLANG['TXT_EGOV_POSTFINANCE_USE_TESTSERVER'] = "Use testserver";
+$_ARRAYLANG['TXT_EGOV_AUTOMATICALLY'] = 'Automatically';
+$_ARRAYLANG['TXT_EGOV_MANUALLY'] = 'Manually';
+$_ARRAYLANG['TXT_EGOV_RESERVATION'] = 'Reservation';
+$_ARRAYLANG['TXT_EGOV_ORDER_HANDLING_TOOLTIP'] = '
+<h3>Electronic product</h3>
+<ul>
+    <li>Order state is set to <strong>handled</strong></li>
+    <li>Email notification is sent with set attachment</li>
+</ul>
+<h3>Automatically</h3>
+<ul>
+    <li>Order state is set to <strong>handled</strong></li>
+    <li>Email notification is sent</li>
+</ul>
+<h3>Reservation</h3>
+<ul>
+    <li>Order state is set to <strong>reserved</strong></li>
+    <li>Email notification is sent</li>
+</ul>
+<h3>Manually</h3>
+<ul>
+    <li>Order state is set to <strong>not paid</strong></li>
+    <li>No email notification is being sent</li>
+</ul>';
