@@ -12,9 +12,9 @@ class Locale extends \Cx\Model\Base\EntityBase {
     protected $id;
 
     /**
-     * @var string $iso_1
+     * @var string $iso1
      */
-    protected $iso_1;
+    protected $iso1;
 
     /**
      * @var string $label
@@ -27,9 +27,9 @@ class Locale extends \Cx\Model\Base\EntityBase {
     protected $fallback;
 
     /**
-     * @var string $source_language
+     * @var string $sourceLanguage
      */
-    protected $source_language;
+    protected $sourceLanguage;
 
     /**
      * @var \Cx\Core\Locale\Model\Entity\Locale
@@ -72,23 +72,23 @@ class Locale extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set iso_1
+     * Set iso1
      *
      * @param string $iso1
      */
     public function setIso1($iso1)
     {
-        $this->iso_1 = $iso1;
+        $this->iso1 = $iso1;
     }
 
     /**
-     * Get iso_1
+     * Get iso1
      *
      * @return string $iso1
      */
     public function getIso1()
     {
-        return $this->iso_1;
+        return $this->iso1;
     }
 
     /**
@@ -132,23 +132,23 @@ class Locale extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set source_language
+     * Set sourceLanguage
      *
      * @param string $sourceLanguage
      */
     public function setSourceLanguage($sourceLanguage)
     {
-        $this->source_language = $sourceLanguage;
+        $this->sourceLanguage = $sourceLanguage;
     }
 
     /**
-     * Get source_language
+     * Get sourceLanguage
      *
      * @return string $sourceLanguage
      */
     public function getSourceLanguage()
     {
-        return $this->source_language;
+        return $this->sourceLanguage;
     }
 
     /**
@@ -196,7 +196,7 @@ class Locale extends \Cx\Model\Base\EntityBase {
      *
      * @param \Cx\Core\Country\Model\Entity\Country $country
      */
-    public function setCountry(\Cx\Core\Country\Model\Entity\Country $country)
+    public function setCountry(\Cx\Core\Country\Model\Entity\Country $country = null)
     {
         $this->country = $country;
     }

@@ -12,9 +12,9 @@ class Backend extends \Cx\Model\Base\EntityBase {
     protected $id;
 
     /**
-     * @var string $iso_1
+     * @var string $iso1
      */
-    protected $iso_1;
+    protected $iso1;
 
     /**
      * @var \Cx\Core\Locale\Model\Entity\Language
@@ -33,23 +33,23 @@ class Backend extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set iso_1
+     * Set iso1
      *
      * @param string $iso1
      */
     public function setIso1($iso1)
     {
-        $this->iso_1 = $iso1;
+        $this->iso1 = $iso1;
     }
 
     /**
-     * Get iso_1
+     * Get iso1
      *
      * @return string $iso1
      */
     public function getIso1()
     {
-        return $this->iso_1;
+        return $this->iso1;
     }
 
     /**
