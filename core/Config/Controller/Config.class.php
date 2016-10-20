@@ -1247,6 +1247,11 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTPS Port (Frontend)");
             }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('defaultLanguage')
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultLanguage',  isset($existingConfig['defaultLanguage']) ? $existingConfig['defaultLanguage'] : 'de', 10,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getLanguages()}', 'site') ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default language");
+            }
 
             //administrationArea group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea','Yaml', $configPath);
@@ -1725,6 +1730,24 @@ class Config
         $display = array();
         foreach ($domains As $domain) {
             $display[] = $domain->getId() . ':' . $domain->getNameWithPunycode();
+        }
+        return implode(',', $display);
+    }
+
+    /**
+     * Shows all languages
+     *
+     * @access  public
+     * @return  string
+     */
+    public static function getLanguages() {
+        $cx = Cx::instanciate();
+        $em = $cx->getDB()->getEntityManager();
+        $languageRepository = $em->getRepository('Cx\Core\Locale\Model\Entity\Language');
+        $languages = $languageRepository->findAll();
+        $display = array();
+        foreach ($languages As $language) {
+            $display[] = $language->getIso1();
         }
         return implode(',', $display);
     }

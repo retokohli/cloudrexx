@@ -87,6 +87,7 @@ $_ARRAYLANG['TXT_CORE_CONFIG_SESSIONLIFETIME'] = 'Session Dauer';
 $_ARRAYLANG['TXT_CORE_CONFIG_SESSIONLIFETIME_TOOLTIP_HELP'] = 'Die Session Zeit in Sekunden';
 $_ARRAYLANG['TXT_CORE_CONFIG_SESSIONLIFETIMEREMEMBERME'] = 'Session Dauer (Angemeldet bleiben)';
 $_ARRAYLANG['TXT_CORE_CONFIG_SESSIONLIFETIMEREMEMBERME_TOOLTIP_HELP'] = 'Die Session Zeit in Sekunden für Benutzer, die beim Login die Checkbox "Angemeldet bleiben" gesetzt haben.';
+$_ARRAYLANG['TXT_CORE_CONFIG_DEFAULTLANGUAGE'] = 'Standard Sprache';
 $_ARRAYLANG['TXT_CORE_CONFIG_DNSSERVER'] = 'DNS-Server';
 $_ARRAYLANG['TXT_CORE_CONFIG_DNSSERVER_TOOLTIP_HELP'] = 'Ein DNS-Server wird für die Abfrage eines MX-Lookup"s bei den Netzwerk Tools benötigt.';
 $_ARRAYLANG['TXT_CORE_CONFIG_COREADMINNAME'] = 'Name des Administrators';

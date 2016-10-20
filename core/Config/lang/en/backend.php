@@ -87,6 +87,7 @@ $_ARRAYLANG['TXT_CORE_CONFIG_SESSIONLIFETIME'] = 'Session length';
 $_ARRAYLANG['TXT_CORE_CONFIG_SESSIONLIFETIME_TOOLTIP_HELP'] = 'Session length in seconds';
 $_ARRAYLANG['TXT_CORE_CONFIG_SESSIONLIFETIMEREMEMBERME'] = 'Session length (remember me)';
 $_ARRAYLANG['TXT_CORE_CONFIG_SESSIONLIFETIMEREMEMBERME_TOOLTIP_HELP'] = 'Session length in seconds for users which have set the checkbox "Remember me" at login.';
+$_ARRAYLANG['TXT_CORE_CONFIG_DEFAULTLANGUAGE'] = 'Default Language';
 $_ARRAYLANG['TXT_CORE_CONFIG_DNSSERVER'] = 'DNS Server';
 $_ARRAYLANG['TXT_CORE_CONFIG_DNSSERVER_TOOLTIP_HELP'] = 'To be able to lookup MX records, a DNS ((domain name server) is needed.';
 $_ARRAYLANG['TXT_CORE_CONFIG_COREADMINNAME'] = 'Administrators Name';
