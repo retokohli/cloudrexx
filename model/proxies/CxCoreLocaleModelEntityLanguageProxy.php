@@ -51,7 +51,7 @@ class CxCoreLocaleModelEntityLanguageProxy extends \Cx\Core\Locale\Model\Entity\
         return parent::getIso1();
     }
 
-    public function setIso3($iso3)
+    public function setIso3($iso3 = NULL)
     {
         $this->_load();
         return parent::setIso3($iso3);

@@ -105,7 +105,7 @@ class CxCoreLocaleModelEntityLocaleProxy extends \Cx\Core\Locale\Model\Entity\Lo
         return parent::getLanguageRelatedByIso1();
     }
 
-    public function setCountry(\Cx\Core\Country\Model\Entity\Country $country)
+    public function setCountry(\Cx\Core\Country\Model\Entity\Country $country = NULL)
     {
         $this->_load();
         return parent::setCountry($country);

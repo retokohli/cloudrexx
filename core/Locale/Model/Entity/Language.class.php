@@ -95,7 +95,7 @@ class Language extends \Cx\Model\Base\EntityBase {
      *
      * @param string $iso3
      */
-    public function setIso3($iso3)
+    public function setIso3($iso3 = null)
     {
         $this->iso3 = $iso3;
     }

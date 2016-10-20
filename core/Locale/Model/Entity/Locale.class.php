@@ -196,7 +196,7 @@ class Locale extends \Cx\Model\Base\EntityBase {
      *
      * @param \Cx\Core\Country\Model\Entity\Country $country
      */
-    public function setCountry(\Cx\Core\Country\Model\Entity\Country $country)
+    public function setCountry(\Cx\Core\Country\Model\Entity\Country $country = null)
     {
         $this->country = $country;
     }
