@@ -1247,10 +1247,10 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTPS Port (Frontend)");
             }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('defaultLanguage')
-                && !\Cx\Core\Setting\Controller\Setting::add('defaultLanguage',  isset($existingConfig['defaultLanguage']) ? $existingConfig['defaultLanguage'] : 'de', 10,
-                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getLanguages()}', 'site') ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default language");
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('defaultLocaleId')
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultLocaleId',  isset($existingConfig['defaultLocaleId']) ? $existingConfig['defaultLocaleId'] : '0', 10,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getLocales()}', 'site') ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default Locale (Frontend)");
             }
 
             //administrationArea group
@@ -1312,6 +1312,11 @@ class Config
                 && !\Cx\Core\Setting\Controller\Setting::add('portBackendHTTPS', isset($existingConfig['portBackendHTTPS']) ? $existingConfig['portBackendHTTPS'] : 443, 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTPS Port (Backend)");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('defaultLanguage')
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultLanguage',  isset($existingConfig['defaultLanguage']) ? $existingConfig['defaultLanguage'] : 'de', 9,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getLanguages()}', 'administrationArea') ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default language (Backend)");
             }
 
             //security group
@@ -1748,6 +1753,24 @@ class Config
         $display = array();
         foreach ($languages As $language) {
             $display[] = $language->getIso1();
+        }
+        return implode(',', $display);
+    }
+
+    /**
+     * Shows all locales
+     *
+     * @access  public
+     * @return  string
+     */
+    public static function getLocales() {
+        $cx = Cx::instanciate();
+        $em = $cx->getDB()->getEntityManager();
+        $localeRepository = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
+        $locales = $localeRepository->findAll();
+        $display = array();
+        foreach ($locales As $locale) {
+            $display[] = $locale->getId() . ':' . $locale->getLabel();
         }
         return implode(',', $display);
     }
