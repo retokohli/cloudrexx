@@ -98,11 +98,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'id' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID'],
                         ),
-                        'iso_1' => array(
-                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO_1'],
+                        'iso1' => array(
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO1'],
                         ),
                         'language' => array(
-                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_LANGUAGE'],
+                            'showOverview' => false,
+                            'showDetail' => false,
                         ),
                     ),
                     'functions' => array(
@@ -126,9 +127,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID'],
                             'tooltip' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID'],
                         ),
-                        'iso_1' => array(
-                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO_1'],
-                            'tooltip' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO_1'],
+                        'iso1' => array(
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO1'],
+                            'tooltip' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO1'],
                         ),
                         'label' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_LABEL'],
@@ -147,8 +148,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 },
                             ),
                         ),
-                        'source_language' => array(
-                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_SOURCE_LANGUAGE'],
+                        'sourceLanguage' => array(
+                            'showOverview' => false,
+                            'showDetail' => false,
                         ),
                         'locale' => array(
                             'showOverview' => false,
@@ -179,16 +181,14 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'overview' => array(
                             'id',
                             'label',
-                            'iso_1',
-                            'source_language',
+                            'iso1',
                             'country',
                             'fallback',
                         ),
                         'form' => array(
                             'id',
                             'label',
-                            'iso_1',
-                            'source_language',
+                            'iso1',
                             'country',
                             'fallback',
                         ),
