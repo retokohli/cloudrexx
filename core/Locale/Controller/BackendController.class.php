@@ -160,7 +160,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                     $em = $this->cx->getDb()->getEntityManager();
                                     $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
                                     $locale = $localeRepo->find($value);
-                                    return $locale->getLabel();
+                                    if ($locale) {
+                                        return $locale->getLabel();
+                                    }
+                                    return null;
                                 },
                             ),
                         ),
