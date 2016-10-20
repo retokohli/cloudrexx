@@ -116,7 +116,7 @@ class Locale extends \Cx\Model\Base\EntityBase {
      *
      * @param integer $fallback
      */
-    public function setFallback($fallback)
+    public function setFallback($fallback = null)
     {
         $this->fallback = $fallback;
     }

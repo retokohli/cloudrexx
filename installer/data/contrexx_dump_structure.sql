@@ -275,7 +275,7 @@ CREATE TABLE `contrexx_core_locale_locale` (
   `iso_1` char(2) COLLATE utf8_unicode_ci NOT NULL,
   `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `country` char(2) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `fallback` int COLLATE utf8_unicode_ci NOT NULL,
+  `fallback` int COLLATE utf8_unicode_ci DEFAULT NULL,
   `source_language` char(2) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `iso_1` (`iso_1`, `country`),
