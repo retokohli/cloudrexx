@@ -204,6 +204,19 @@ function _egovUpdate()
         }
     }
 
+    // Add alternative payment method name field to Product table
+    if (!isset($arrProductColumns['ALTERNATIVE_NAMES'])) {
+        $query = "
+            ALTER TABLE ".DBPREFIX."module_egov_products
+            ADD `alternative_names` TEXT NOT NULL;
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+
+
     /********************************
      * EXTENSION:   Timezone        *
      * ADDED:       Contrexx v3.0.0 *
