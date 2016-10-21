@@ -204,46 +204,44 @@ function _egovUpdate()
         }
     }
 
-    // Add alternative payment method name field to Product table
-    if (!isset($arrProductColumns['ALTERNATIVE_NAMES'])) {
-        $query = "
-            ALTER TABLE ".DBPREFIX."module_egov_products
-            ADD `alternative_names` TEXT NOT NULL;
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
+    // Add reservation date to order table
+    if (!isset($arrORDERColumns['ORDER_RESERVATION_DATE'])) {
+        try {
+            \Cx\Lib\UpdateUtil::sql("ALTER TABLE ".DBPREFIX."module_egov_orders ADD `order_reservation_date` DATE NOT NULL DEFAULT '0000-00-00' AFTER `order_values`");
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
     }
 
-
-    /********************************
-     * EXTENSION:   Timezone        *
-     * ADDED:       Contrexx v3.0.0 *
-     ********************************/
+    // set order_reservation_date
     try {
-        \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_egov_orders` CHANGE `order_date` `order_date` TIMESTAMP NOT NULL DEFAULT "0000-00-00 00:00:00"');
+        $dateLabel = '';
+        $objResult = \Cx\Lib\UpdateUtil::sql('SELECT set_calendar_date_label FROM '.DBPREFIX.'module_egov_settings LIMIT 1');
+        if ($objResult->RecordCount()) {
+            $dateLabel = $objResult->fields['set_calendar_date_label'];
+        }
+        if (!empty($dateLabel)) {
+            $query = 'SELECT order_id, order_values FROM '.DBPREFIX.'module_egov_orders WHERE (order_reservation_date IS NULL OR order_reservation_date = "0000-00-00") AND order_values REGEXP "'.$dateLabel.'::[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+;;" LIMIT 100';
+            $objResult = \Cx\Lib\UpdateUtil::sql($query);
+            while ($objResult->RecordCount()) {
+                while (!$objResult->EOF) { 
+                    $reservationDate = null;
+                    if (preg_match('/'.preg_quote($dateLabel).'::(\d+)\.(\d+)\.(\d+);;/', $objResult->fields['order_values'], $matches)) {
+                        $day = $matches[1];
+                        $month = $matches[2];
+                        $year = $matches[3];
+                        $reservationDate = "$year-$month-$day";
+                        \Cx\Lib\UpdateUtil::sql('UPDATE '.DBPREFIX.'module_egov_orders SET order_reservation_date="'.$reservationDate.'" WHERE order_id='.$objResult->fields['order_id']);
+                    }
+                    $objResult->MoveNext();
+                }
+                $objResult = \Cx\Lib\UpdateUtil::sql($query);
+            }
+        }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
-    $arrOrderColumns = $objDatabase->MetaColumns(DBPREFIX.'module_egov_orders');
-    if ($arrOrderColumns === false) {
-        setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_egov_orders'));
-        return false;
-    }
-
-    // Add reservation date to order table
-    if (!isset($arrORDERColumns['ORDER_RESERVATION_DATE'])) {
-        $query = "
-            ALTER TABLE ".DBPREFIX."module_egov_orders
-            ADD `order_reservation_date` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00' AFTER `order_values`
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
 
     // migrate path to images and media
     $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
