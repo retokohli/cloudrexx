@@ -39,7 +39,7 @@
 global $_ARRAYLANG;
 
 // General module info:
-$_ARRAYLANG['TXT_MODULE_FAVORITELIST'] = 'Favourite';
+$_ARRAYLANG['TXT_MODULE_FAVORITELIST'] = 'FavoriteList';
 $_ARRAYLANG['TXT_MODULE_FAVORITELIST_DESCRIPTION'] = 'Here you can define and send lists containing things/elements.';
 
 // Module ACTs:

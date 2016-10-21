@@ -26,9 +26,9 @@
  */
 
 /**
- * This is the english language file for frontend mode.
+ * This is the english language file for backend mode.
  * This file is included by Cloudrexx and all entries are set as placeholder
- * values for frontent page template by SystemComponentFrontendController
+ * values for backend ACT template by SystemComponentBackendController
  *
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Manuel Schenk <manuel.schenk@comvation.com>
@@ -39,5 +39,9 @@
 global $_ARRAYLANG;
 
 // General module info:
-$_ARRAYLANG['TXT_MODULE_FAVORITELIST'] = 'FavoriteList';
+$_ARRAYLANG['TXT_MODULE_FAVORITELIST'] = 'Favourite';
 $_ARRAYLANG['TXT_MODULE_FAVORITELIST_DESCRIPTION'] = 'Here you can define and send lists containing things/elements.';
+
+// Module ACTs:
+$_ARRAYLANG['TXT_MODULE_FAVORITELIST_ACT_DEFAULT'] = 'Lists';
+$_ARRAYLANG['TXT_MODULE_FAVORITELIST_ACT_SETTINGS'] = 'Settings';
