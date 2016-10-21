@@ -486,7 +486,7 @@ FORMTEMPLATE;
             $inputField = '';
             $value      = isset($_POST['contactFormField_'.$fieldId])
                          ? contrexx_input2raw($_POST['contactFormField_'.$fieldId])
-                         : $arrField['attributes'];
+                         : (empty($_POST) ? $arrField['attributes'] : '');
             switch ($arrField['type']) {
                 case 'text':
                     $inputField = \Html::getInputText('contactFormField_'.$fieldId, $value);
@@ -501,12 +501,15 @@ FORMTEMPLATE;
                     $options = explode(',', $arrField['attributes']);
                     $inputField = '';
                     $nr = 0;
+                    $selectedArray = isset($_POST['contactFormField_'.$fieldId])
+                                    ? contrexx_input2raw($_POST['contactFormField_'.$fieldId])
+                                    : array();
                     foreach ($options as $option) {
                         $inputField .=
                                 "<span class=\"checkbox\"><label for=\"contactFormField_{$nr}_$fieldId\"><input type=\"checkbox\" " .
                                 "name=\"contactFormField_{$fieldId}[]\" " .
                                 "id=\"contactFormField_{$nr}_$fieldId\" " .
-                                (in_array($option, $value) ? 'checked="checked"' : '').
+                                (in_array($option, $selectedArray) ? 'checked="checked"' : '').
                                 "value=\"". contrexx_raw2xhtml($option) ."\" />" .
                                 "". contrexx_raw2xhtml($option) ."</label></span>\n";
                         ++$nr;
@@ -521,7 +524,7 @@ FORMTEMPLATE;
                     $inputField = \Html::getHidden('contactFormField_' . $fieldId, $value);
                     break;
                 case 'password':
-                    $inputField = \Html::getInputPassword('contactFormField_'. $fieldId);
+                    $inputField = \Html::getInputPassword('contactFormField_'. $fieldId, '');
                     break;
                 case 'radio':
                     $options = explode(',', $arrField['attributes']);
@@ -531,7 +534,7 @@ FORMTEMPLATE;
                         $inputField .=
                             "<span class=\"radio\"><label for=\"contactFormField_{$nr}_$fieldId\">" .
                             "<input type=\"radio\" name=\"contactFormField_$fieldId\" id=\"contactFormField_{$nr}_$fieldId\"" .
-                            (in_array($option, $value) ? 'checked="checked"' : '') .
+                            ($option == $value ? 'checked="checked"' : '') .
                             " value=\"". contrexx_raw2xhtml($option) ."\" />" .
                             "". contrexx_raw2xhtml($option) ."</label></span>\n";
                         ++$nr;
