@@ -245,7 +245,7 @@ cx.jQuery(function(){
             cx.jQuery('#productFileLayer').hide();
         }
     });
-    cx.jQuery('input[name=productAutoStatus]').trigger('change');
+    cx.jQuery('input[name=productAutoStatus]:checked').trigger('change');
 });
 // -->
 </script>
@@ -452,7 +452,7 @@ cx.jQuery(function(){
             <br />
             <div>
                 <label>
-                    <input type="radio" name="productAutoStatus" value="2" {AUTOSTATUS_CHECKED_ELECTRO} />&nbsp;
+                    <input type="radio" name="productAutoStatus" value="2" {AUTOSTATUS_CHECKED_ELECTRO} />
                     {TXT_EGOV_PRODUCT_ELECTRO}
                 </label>
                 <div id="productFileLayer">{TXT_EGOV_PRODUCT_SELECT_FILE}
@@ -590,11 +590,5 @@ cx.jQuery(function(){
   <br />
   <input type="submit" name="saveForm" value="{TXT_SAVE}" />
 </form>
-
-<script type="text/javascript">
-  <!--
-    ShowProductFile();
-  // -->
-</script>
 
 <!-- END module_gov_product_edit.html -->

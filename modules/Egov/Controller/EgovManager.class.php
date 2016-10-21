@@ -1628,10 +1628,12 @@ class EgovManager extends EgovLibrary
         }
 
         // Update 29.10.2006 Statusmail automatisch abschicken || Produktdatei
-        if (   EgovLibrary::GetProduktValue('product_electro', $product_id) == 1
-            || EgovLibrary::GetProduktValue('product_autostatus', $product_id) == 1
-        ) {
-            EgovLibrary::updateOrderStatus($order_id, 1);
+        $autoStatus = self::GetProduktValue('product_autostatus', $product_id);
+        if (   self::GetProduktValue('product_electro', $product_id) == 1
+            || in_array($autoStatus, array(1, 2, 3))
+         ) {
+            $status  = $autoStatus == 3 ? 4 : 1;
+            EgovLibrary::updateOrderStatus($order_id, $status);
             $TargetMail = EgovLibrary::GetEmailAdress($order_id);
             if ($TargetMail != '') {
                 $FromEmail = EgovLibrary::GetProduktValue('product_sender_email', $product_id);
