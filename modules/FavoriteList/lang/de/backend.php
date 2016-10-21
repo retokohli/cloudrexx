@@ -33,15 +33,16 @@
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Manuel Schenk <manuel.schenk@comvation.com>
  * @package     cloudrexx
- * @subpackage  module_favourite
+ * @subpackage  module_favoritelist
  */
 
 global $_ARRAYLANG;
 
 // General module info:
-$_ARRAYLANG['TXT_MODULE_FAVOURITE'] = 'Favourite';
-$_ARRAYLANG['TXT_MODULE_FAVOURITE_DESCRIPTION'] = 'Here you can define and send lists containing things/elements.';
+$_ARRAYLANG['TXT_MODULE_FAVORITELIST'] = 'Merkliste';
+$_ARRAYLANG['TXT_MODULE_FAVORITELIST_DESCRIPTION'] = 'Hier können Listen mit selbst definierten Dingen/Elementen erstellt und versendet werden.';
 
 // Module ACTs:
-$_ARRAYLANG['TXT_MODULE_FAVOURITE_ACT_DEFAULT'] = 'Lists';
-$_ARRAYLANG['TXT_MODULE_FAVOURITE_ACT_SETTINGS'] = 'Settings';
+$_ARRAYLANG['TXT_MODULE_FAVORITELIST_ACT_DEFAULT'] = 'Listen';
+$_ARRAYLANG['TXT_MODULE_FAVORITELIST_ACT_SETTINGS'] = 'Einstellungen';
+

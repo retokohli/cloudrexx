@@ -31,13 +31,13 @@
  * values for frontent page template by SystemComponentFrontendController
  *
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
- * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @author      Manuel Schenk <manuel.schenk@comvation.com>
  * @package     cloudrexx
- * @subpackage  module_favourite
+ * @subpackage  module_favoritelist
  */
 
 global $_ARRAYLANG;
 
 // General module info:
-$_ARRAYLANG['TXT_MODULE_FAVOURITE'] = 'Merkliste';
-$_ARRAYLANG['TXT_MODULE_FAVOURITE_DESCRIPTION'] = 'Hier können Listen mit selbst definierten Dingen/Elementen erstellt und versendet werden.';
+$_ARRAYLANG['TXT_MODULE_FAVORITELIST'] = 'Favourite';
+$_ARRAYLANG['TXT_MODULE_FAVORITELIST_DESCRIPTION'] = 'Here you can define and send lists containing things/elements.';

@@ -31,10 +31,10 @@
  * @copyright   Cloudrexx AG
  * @author      Manuel Schenk <manuel.schenk@comvation.com>
  * @package     cloudrexx
- * @subpackage  module_favourite
+ * @subpackage  module_favoritelist
  */
 
-namespace Cx\Modules\Favourite\Controller;
+namespace Cx\Modules\FavoriteList\Controller;
 
 /**
  * Specific FrontendController for this Component. Use this to easily create a frontent view
@@ -42,7 +42,7 @@ namespace Cx\Modules\Favourite\Controller;
  * @copyright   Cloudrexx AG
  * @author      Manuel Schenk <manuel.schenk@comvation.com>
  * @package     cloudrexx
- * @subpackage  module_favourite
+ * @subpackage  module_favoritelist
  */
 class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController {
 

@@ -644,7 +644,7 @@ INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scop
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (226,211,'function','backend','TXT_CORE_MODULE_MULTISITE_COMMUNICATION_MANAGEMENT',1,'index.php?cmd=MultiSite','_self',89,1,198);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (227,211,'function','backend','TXT_CORE_MODULE_MULTISITE_SYSTEM_MANAGEMENT',1,'index.php?cmd=MultiSite','_self',89,2,199);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (228,3,'navigation','backend','TXT_CORE_MODULE_GEOIP',1,'index.php?cmd=GeoIp','_self',111,14,201);
-INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (229,2,'navigation','global','TXT_MODULE_FAVOURITE',1,'index.php?cmd=Favourite','_self',121,0,202);
+INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (229,2,'navigation','global','TXT_MODULE_FAVORITELIST',1,'index.php?cmd=FavoriteList','_self',121,0,202);
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (2,'Stats','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (3,'Gallery','module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (4,'Newsletter','module');
@@ -741,7 +741,7 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (113,'DataAccess'
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (114,'DataSource','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (115,'Sync','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (116,'Model','core');
-INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (121,'Favourite','module');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (121,'FavoriteList','module');
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (1,NULL,1,336,0);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (2,1,2,3,1);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (3,34,11,12,2);
@@ -5675,7 +5675,7 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variab
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (114,'DataSource','Cloudrexx AG','TXT_CORE_MODULE_DATASOURCE_DESCRIPTION','y',1,0,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (115,'Sync','Cloudrexx AG','TXT_CORE_MODULE_SYNC_DESCRIPTION','y',1,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (116,'Model','Cloudrexx AG','TXT_CORE_MODEL_DESCRIPTION','y',1,1,1,1,NULL);
-INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (121,'Favourite','Cloudrexx AG','TXT_MODULE_FAVOURITE_DESCRIPTION','y',0,0,1,1,NULL);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (121,'FavoriteList','Cloudrexx AG','TXT_MODULE_FAVORITELIST_DESCRIPTION','y',0,0,1,1,NULL);
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (1,'image_cut_width','500');
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (2,'image_cut_height','500');
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (3,'image_scale_width','800');
