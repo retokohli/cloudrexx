@@ -572,8 +572,10 @@ Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] ge
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
         try {
             // add new options
-            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_mediadir_settings` (`name`, `value`) VALUES ('showLatestEntriesInOverview', '1')");
-            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_mediadir_settings` (`name`, `value`) VALUES ('showLatestEntriesInWebdesignTmpl', '1')");
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_mediadir_settings` (`id`, `name`, `value`) VALUES (50, 'showLatestEntriesInOverview', '1')");
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_mediadir_settings` (`id`, `name`, `value`) VALUES (51, 'showLatestEntriesInWebdesignTmpl', '1')");
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_mediadir_settings` (`id`, `name`, `value`) VALUES (52, 'legacyBehavior', '1')");
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_mediadir_settings` (`id`, `name`, `value`) VALUES (53, 'usePrettyUrls', '0')");
 
 
             // update inputfield_types

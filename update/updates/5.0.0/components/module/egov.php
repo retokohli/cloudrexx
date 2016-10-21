@@ -227,6 +227,24 @@ function _egovUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+    $arrOrderColumns = $objDatabase->MetaColumns(DBPREFIX.'module_egov_orders');
+    if ($arrOrderColumns === false) {
+        setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_egov_orders'));
+        return false;
+    }
+
+    // Add reservation date to order table
+    if (!isset($arrORDERColumns['ORDER_RESERVATION_DATE'])) {
+        $query = "
+            ALTER TABLE ".DBPREFIX."module_egov_orders
+            ADD `order_reservation_date` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00' AFTER `order_values`
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
+
     // migrate path to images and media
     $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
     $attributes = array(
