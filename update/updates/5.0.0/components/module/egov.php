@@ -204,6 +204,16 @@ function _egovUpdate()
         }
     }
 
+    /********************************
+     * EXTENSION:   Timezone        *
+     * ADDED:       Contrexx v3.0.0 *
+     ********************************/
+    try {
+        \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_egov_orders` CHANGE `order_date` `order_date` TIMESTAMP NOT NULL DEFAULT "0000-00-00 00:00:00"');
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
     // Add reservation date to order table
     if (!isset($arrORDERColumns['ORDER_RESERVATION_DATE'])) {
         try {
