@@ -580,7 +580,7 @@ $yellowpayForm
 
     function _ProductsList()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase;
 
         $result = '';
         if (isset($_REQUEST['result'])) {
