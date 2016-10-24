@@ -1515,7 +1515,7 @@ class EgovManager extends EgovLibrary
         $quantity = 0;
         $reservationDateFormat = '0000-00-00';
         if (EgovLibrary::GetProduktValue('product_per_day', $product_id) == 'yes') {
-            $quantity = isset ($_POST['contactFormField_Quantity']) ? contrexx_input2raw($_POST['contactFormField_Quantity']) : 0;
+            $quantity = isset ($_POST['contactFormField_Quantity']) ? contrexx_input2int($_POST['contactFormField_Quantity']) : 0;
             $reservationDate = isset($_POST['contactFormField_1000'])? contrexx_input2raw($_POST['contactFormField_1000']): '';
             $FormValue = EgovLibrary::GetSettings('set_calendar_date_label').'::'.$reservationDate.';;'.$FormValue;
             $FormValue = $_ARRAYLANG['TXT_EGOV_QUANTITY'].'::'.$quantity.';;'.$FormValue;

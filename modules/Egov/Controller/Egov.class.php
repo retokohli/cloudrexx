@@ -107,7 +107,7 @@ class Egov extends EgovLibrary
         }
 
         $quantity = (isset ($_POST['contactFormField_Quantity'])
-            ? contrexx_input2raw($_POST['contactFormField_Quantity'])
+            ? contrexx_input2int($_POST['contactFormField_Quantity'])
             : 0);
         $product_amount = self::GetProduktValue('product_price', $product_id);
         $reservationDateFormat = '0000-00-00';
