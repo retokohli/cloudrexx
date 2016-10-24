@@ -5,14 +5,16 @@ Cx\Modules\FavoriteList\Model\Entity\FormField:
   id:
     id:
       type: integer
+      generator:
+        strategy: AUTO
   fields:
     type:
-      type: string
+      type: enum
     name:
       type: string
       length: 255
     required:
-      type: integer
+      type: boolean
     order:
       type: integer
     values:

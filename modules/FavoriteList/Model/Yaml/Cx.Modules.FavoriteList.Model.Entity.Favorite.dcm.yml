@@ -2,17 +2,12 @@ Cx\Modules\FavoriteList\Model\Entity\Favorite:
   type: entity
   table: module_favoritelist_favorite
   repositoryClass: Cx\Modules\FavoriteList\Model\Repository\FavoriteRepository
-  indexes:
-    contrexx_idx:
-      columns: [ list_id ]
   id:
     id:
       type: integer
       generator:
         strategy: AUTO
   fields:
-    list_id:
-      type: integer
     title:
       type: string
       length: 255
@@ -44,4 +39,5 @@ Cx\Modules\FavoriteList\Model\Entity\Favorite:
       inversedBy: favorites
       joinColumn:
         name: list_id
+        nullable: false
         referencedColumnName: id

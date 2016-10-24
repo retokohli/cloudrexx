@@ -1752,10 +1752,10 @@ CREATE TABLE `contrexx_module_egov_settings` (
   KEY `set_id` (`set_id`)
 ) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_favoritelist_catalog` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `session_id` varchar(255) DEFAULT NULL,
   `name` varchar(255) NOT NULL,
-  `date` date NOT NULL,
+  `date` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_favoritelist_favorite` (
@@ -1772,7 +1772,7 @@ CREATE TABLE `contrexx_module_favoritelist_favorite` (
   CONSTRAINT `contrexx_module_favoritelist_favorite_ibfk_list_id` FOREIGN KEY (`list_id`) REFERENCES `contrexx_module_favoritelist_catalog` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_favoritelist_form_field` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `type` enum('inputtext','textarea','select','radio','checkbox','mail','salutation','firstname','lastname') NOT NULL,
   `name` varchar(255) NOT NULL,
   `required` int(1) NOT NULL DEFAULT '0',

@@ -136,4 +136,9 @@ class Catalog extends \Cx\Model\Base\EntityBase
     {
         return $this->favorites;
     }
+
+    public function __toString()
+    {
+        return $this->getName();
+    }
 }

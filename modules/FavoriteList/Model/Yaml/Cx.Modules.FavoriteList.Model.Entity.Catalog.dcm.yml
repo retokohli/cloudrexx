@@ -5,6 +5,8 @@ Cx\Modules\FavoriteList\Model\Entity\Catalog:
   id:
     id:
       type: integer
+      generator:
+        strategy: AUTO
   fields:
     session_id:
       type: string
@@ -14,7 +16,7 @@ Cx\Modules\FavoriteList\Model\Entity\Catalog:
       type: string
       length: 255
     date:
-      type: date
+      type: datetime
   oneToMany:
     favorites:
       targetEntity: Favorite
