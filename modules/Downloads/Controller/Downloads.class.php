@@ -1433,7 +1433,13 @@ JS_CODE;
         $objDownload->load(!empty($_GET['download']) ? intval($_GET['download']) : 0);
         if (!$objDownload->EOF) {
             // check if the download is expired
-            if ($objDownload->getExpirationDate() && $objDownload->getExpirationDate() < time()) {
+            if (
+                (
+                    $objDownload->getExpirationDate() &&
+                    $objDownload->getExpirationDate() < time()
+                ) ||
+                !$objDownload->getActiveStatus()
+            ) {
                 \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Error&id=404");
                 exit;
             }
