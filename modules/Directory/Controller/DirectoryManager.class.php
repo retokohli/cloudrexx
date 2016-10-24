@@ -1099,6 +1099,9 @@ class DirectoryManager extends DirectoryLibrary
                         $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_categories SET parentid=".$parentId." WHERE id='".$catKey."'");
                     }
                 }
+                \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getEvents()
+                    ->triggerEvent('clearEsiCache', array('Directory'));
                 break;
             case'movelevel':
                 foreach($_POST["formSelected"] as $levelName => $levelKey) {
@@ -1107,6 +1110,9 @@ class DirectoryManager extends DirectoryLibrary
                         $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_levels SET parentid=".$parentId." WHERE id='".$levelKey."'");
                     }
                 }
+                \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getEvents()
+                    ->triggerEvent('clearEsiCache', array('Directory'));
                 break;
             case'movefile':
                 // initialize variables
@@ -1255,12 +1261,12 @@ EOF;
                     }
                     $_SESSION['formSelected'] = null;
                     $this->showFiles('', '');
+                    \Cx\Core\Core\Controller\Cx::instanciate()
+                        ->getEvents()
+                        ->triggerEvent('clearEsiCache', array('Directory'));
                 }
                 break;
         }
-        \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getEvents()
-            ->triggerEvent('clearEsiCache', array('Directory'));
     }
 
 
@@ -1581,6 +1587,9 @@ EOF;
                 //change status
                 $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_levels SET status='".$levelStatus."' WHERE id='".$levelId."'");
 
+                \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getEvents()
+                    ->triggerEvent('clearEsiCache', array('Directory'));
                 \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?cmd=Directory&act=levels');
                 exit;
             } else {
@@ -1591,6 +1600,9 @@ EOF;
                 //change status
                 $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_categories SET status='".$catStatus."' WHERE id='".$catId."'");
 
+                \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getEvents()
+                    ->triggerEvent('clearEsiCache', array('Directory'));
                 \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?cmd=Directory');
                 exit;
             }

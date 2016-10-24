@@ -104,7 +104,7 @@ class DirectoryEventListener implements \Cx\Core\Event\Model\Entity\EventListene
             return;
         }
 
-        $objDirectory = new Directory('');
+        $objDirectory = new \Cx\Modules\Directory\Controller\Directory('');
         $entryIds = $objDirectory->getBlockLatestIds();
         if (!$entryIds) {
             return;
