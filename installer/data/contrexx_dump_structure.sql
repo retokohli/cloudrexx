@@ -1669,7 +1669,7 @@ CREATE TABLE `contrexx_module_egov_orders` (
   `order_ip` varchar(255) NOT NULL DEFAULT '',
   `order_product` int(11) NOT NULL DEFAULT '0',
   `order_values` text NOT NULL,
-  `order_reservation_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `order_reservation_date` date NOT NULL,
   `order_state` tinyint(4) NOT NULL DEFAULT '0',
   `order_quant` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`order_id`),

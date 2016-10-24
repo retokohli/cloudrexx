@@ -106,26 +106,27 @@ class Egov extends EgovLibrary
             $FormValue .= $arrField['name'].'::'.strip_tags(contrexx_addslashes($_REQUEST['contactFormField_'.$fieldId])).';;';
         }
 
-        $quantity = (isset ($_REQUEST['contactFormField_Quantity'])
-            ? intval($_REQUEST['contactFormField_Quantity'])
+        $quantity = (isset ($_POST['contactFormField_Quantity'])
+            ? contrexx_input2raw($_POST['contactFormField_Quantity'])
             : 0);
         $product_amount = self::GetProduktValue('product_price', $product_id);
-        $reservationDateFormat = '0000-00-00 00:00:00';
+        $reservationDateFormat = '0000-00-00';
         if (self::GetProduktValue('product_per_day', $product_id) == 'yes') {
             if ($quantity <= 0) {
                 return 'alert("'.$_ARRAYLANG['TXT_EGOV_SPECIFY_COUNT'].'");history.go(-1);';
             }
             $reservationDate = isset($_POST['contactFormField_1000'])? contrexx_input2raw($_POST['contactFormField_1000']): '';
+            $FormValue = self::GetSettings('set_calendar_date_label').'::'.$reservationDate.';;'.$FormValue;
             $FormValue = $_ARRAYLANG['TXT_EGOV_QUANTITY'].'::'.$quantity.';;'.$FormValue;
             list ($day, $month, $year) = explode('.', $reservationDate);
-            $reservationDateFormat = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $day, $year));
+            $reservationDateFormat = date('Y-m-d', mktime(0, 0, 0, $month, $day, $year));
         }
 
         $objDatabase->Execute("
             INSERT INTO ".DBPREFIX."module_egov_orders (
-                order_date, order_ip, order_product, order_values, order_reservation_date
+                order_date, order_ip, order_product, order_values, order_reservation_date, order_quant
             ) VALUES (
-                '$datum_db', '$ip_adress', '$product_id', '$FormValue', '$reservationDateFormat'
+                '$datum_db', '$ip_adress', '$product_id', '".contrexx_raw2db($FormValue)."', '$reservationDateFormat', '".contrexx_raw2db($quantity)."'
             )");
         $order_id = $objDatabase->Insert_ID();
         if (self::GetProduktValue('product_per_day', $product_id) == 'yes') {
