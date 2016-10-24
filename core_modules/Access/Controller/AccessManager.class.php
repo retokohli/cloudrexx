@@ -1241,6 +1241,9 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         $this->notifyUserAboutAccountStatusChange($objUser);
                     }
                     self::$arrStatusMsg['ok'][] = sprintf($objUser->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_USER_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_ACCESS_USER_DEACTIVATED_SUCCESSFULLY'], $objUser->getUsername());
+                    \Cx\Core\Core\Controller\Cx::instanciate()
+                        ->getEvents()
+                        ->triggerEvent('clearEsiCache', array('Access'));
                 } else {
                     self::$arrStatusMsg['error'] = array_merge(self::$arrStatusMsg['error'], $objUser->getErrorMsg());
                 }
@@ -1268,12 +1271,14 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         $arrIds = !empty($_REQUEST['id']) ? is_array($_REQUEST['id']) ? $_REQUEST['id'] : array($_REQUEST['id']) : array();
         $objFWUser = \FWUser::getFWUserObject();
 
+        $clearCache = false;
         if (count($arrIds) > 0) {
             foreach ($arrIds as $id) {
                 $objUser = $objFWUser->objUser->getUser($id);
                 if ($objUser) {
                     if ($objUser->delete()) {
                         self::$arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_ACCESS_USER_SUCCESSFULLY_DELETED'], contrexx_raw2xhtml($objUser->getUsername()));
+                        $clearCache = true;
                     } else {
                         self::$arrStatusMsg['error'] = array_merge(self::$arrStatusMsg['error'], $objUser->getErrorMsg());
                     }
@@ -1281,6 +1286,11 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     self::$arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ACCESS_NO_USER_WITH_ID'], $id);
                 }
             }
+        }
+        if ($clearCache) {
+            \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getEvents()
+                ->triggerEvent('clearEsiCache', array('Access'));
         }
         return $this->userList();
     }
@@ -2266,7 +2276,9 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                             self::$arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_SET_DEFAULT_EMAIL_ACCESS_FAILED'];
                         }
                     }
-
+                    \Cx\Core\Core\Controller\Cx::instanciate()
+                        ->getEvents()
+                        ->triggerEvent('clearEsiCache', array('Access'));
                 } else {
                     self::$arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_CONFIG_FAILED_SAVED'];
                     self::$arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_TRY_TO_REPEAT_OPERATION'];
