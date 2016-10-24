@@ -87,12 +87,23 @@ class AccessEventListener extends DefaultEventListener
         global $objInit;
 
         $accessBlocks = array(
-            // jsonAdaptor => block name
-            'showCurrentlyOnlineUsers'  => 'access_currently_online_members',
-            'showLastActiveUsers'       => 'access_last_active_member_list',
-            'showLatestRegisteredUsers' => 'access_latest_registered_member_list',
-            'showBirthdayUsers'         => 'access_birthday_member_list',
+            // block name => jsonAdaptor
+            'access_currently_online_members'      => 'showCurrentlyOnlineUsers',
+            'access_last_active_member_list'       => 'showLastActiveUsers',
+            'access_latest_registered_member_list' => 'showLatestRegisteredUsers',
+            'access_birthday_member_list'          => 'showBirthdayUsers',
         );
+        $accessLoggedInOutBlockIdx = '';
+        $accessLoggedInBlock       = 'access_logged_in';
+        $accessLoggedOutBlock      = 'access_logged_out';
+        while ($accessLoggedInOutBlockIdx <= 10) {
+            $accessLoggedInTplBlock  = $accessLoggedInBlock.$accessLoggedInOutBlockIdx;
+            $accessLoggedOutTplBlock = $accessLoggedOutBlock.$accessLoggedInOutBlockIdx;
+            $accessBlocks[$accessLoggedInTplBlock]  = 'showAccessLoggedInOrOut';
+            $accessBlocks[$accessLoggedOutTplBlock] = 'showAccessLoggedInOrOut';
+
+            $accessLoggedInOutBlockIdx++;
+        }
         $themeRepo   = new \Cx\Core\View\Model\Repository\ThemeRepository();
         $themesBlock = array();
         foreach ($themeRepo->findAll() as $theme) {
@@ -101,7 +112,7 @@ class AccessEventListener extends DefaultEventListener
                 array('index.html', 'home.html'),
                 $objInit->getCustomContentTemplatesForTheme($theme)
             );
-            foreach ($accessBlocks as $adaptor => $block) {
+            foreach ($accessBlocks as $block => $adaptor) {
                 $themesBlock[$themeId][$adaptor] = array();
                 foreach ($searchTemplateFiles as $file) {
                     if ($theme->isBlockExistsInfile($file, $block)) {
