@@ -1,0 +1,47 @@
+Cx\Modules\FavoriteList\Model\Entity\Favorite:
+  type: entity
+  table: module_favoritelist_favorite
+  repositoryClass: Cx\Modules\FavoriteList\Model\Repository\FavoriteRepository
+  indexes:
+    contrexx_idx:
+      columns: [ list_id ]
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    list_id:
+      type: integer
+    title:
+      type: string
+      length: 255
+    link:
+      type: string
+      length: 255
+      nullable: true
+    description:
+      type: text
+      nullable: true
+    info:
+      type: text
+      nullable: true
+    image_1:
+      type: string
+      length: 255
+      nullable: true
+    image_2:
+      type: string
+      length: 255
+      nullable: true
+    image_3:
+      type: string
+      length: 255
+      nullable: true
+  manyToOne:
+    catalog:
+      targetEntity: Catalog
+      inversedBy: favorites
+      joinColumn:
+        name: list_id
+        referencedColumnName: id

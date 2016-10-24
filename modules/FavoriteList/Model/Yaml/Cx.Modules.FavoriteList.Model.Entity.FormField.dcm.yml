@@ -1,0 +1,21 @@
+Cx\Modules\FavoriteList\Model\Entity\FormField:
+  type: entity
+  table: module_favoritelist_form_field
+  repositoryClass: Cx\Modules\FavoriteList\Model\Repository\FormFieldRepository
+  id:
+    id:
+      type: integer
+  fields:
+    type:
+      type: string
+    name:
+      type: string
+      length: 255
+    required:
+      type: integer
+    order:
+      type: integer
+    values:
+      type: string
+      length: 255
+      nullable: true
