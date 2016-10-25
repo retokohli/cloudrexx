@@ -175,7 +175,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             ->getComponent('Cache');
         $arrBlocks = $this->getLatestTplBlockDetails(
             $cache,
-            $page,
             $objTemplate
         );
         if (empty($arrBlocks)) {
@@ -223,23 +222,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * Get the latest template block name and its details
      *
      * @param \Cx\Core_Modules\Cache\Controller\ComponentController $cache
-     * @param \Cx\Core\ContentManager\Model\Entity\Page             $page
      * @param \Cx\Core\Html\Sigma                                   $template
      *
      * @return array
      */
     public function getLatestTplBlockDetails(
         \Cx\Core_Modules\Cache\Controller\ComponentController $cache,
-        $page = null,
         $template = null
     ) {
         $arrBlocks = array();
         $blockName = 'directoryLatest_row_';
         for ($i = 1; $i <= 10; $i++) {
-            $params = $cache->getParamsByFindBlockExistsInTpl(
-                $blockName . $i,
-                $page
-            );
+            $params = $cache->getParamsByFindBlockExistsInTpl($blockName . $i);
             if (
                 !empty($params) &&
                 (

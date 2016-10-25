@@ -84,6 +84,7 @@ class DirectoryEventListener implements \Cx\Core\Event\Model\Entity\EventListene
         if (empty($eventArgs) || $eventArgs != 'Directory') {
             return;
         }
+        global $objInit;
 
         // clear home page cache
         $cache = \Cx\Core\Core\Controller\Cx::instanciate()
@@ -97,37 +98,48 @@ class DirectoryEventListener implements \Cx\Core\Event\Model\Entity\EventListene
         }
 
         //clear latest entries cache
-        $directory = \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getComponent('Directory');
-        $arrBlocks = $directory->getLatestTplBlockDetails($cache, null, null);
-        if (empty($arrBlocks)) {
-            return;
-        }
-
         $objDirectory = new \Cx\Modules\Directory\Controller\Directory('');
-        $entryIds = $objDirectory->getBlockLatestIds();
+        $entryIds     = $objDirectory->getBlockLatestIds();
         if (!$entryIds) {
             return;
         }
 
-        $i = 0;
-        foreach ($entryIds as $entryId) {
-            $params = $arrBlocks[$i];
-            $cache->clearSsiCachePage(
-                'Directory',
-                'getBlockById',
-                array(
-                    'template' => contrexx_input2int($params['template']),
-                    'file'     => contrexx_input2int($params['file']),
-                    'block'    => contrexx_input2int($params['block']),
-                    'blockId'  => contrexx_input2int($entryId)
-                )
+        $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $blockName = 'directoryLatest_row_';
+        foreach ($themeRepo->findAll() as $theme) {
+            $themesBlock = array();
+            $themeId = $theme->getId();
+            $searchTemplateFiles = array_merge(
+                array('index.html', 'home.html', 'content.html'),
+                $objInit->getCustomContentTemplatesForTheme($theme)
             );
 
-            if ($i < (count($arrBlocks) - 1)) {
-                ++$i;
-            } else {
-                $i = 0;
+            $i = 1;
+            while ($i <= 10) {
+                foreach ($searchTemplateFiles as $tplFile) {
+                    if ($theme->isBlockExistsInfile($tplFile, $blockName.$i)) {
+                        $themesBlock[] = array(
+                            'file'  => $tplFile,
+                            'block' => $i
+                        );
+                    }
+                }
+                $i++;
+            }
+
+            foreach ($themesBlock as $arrDetails) {
+                foreach ($entryIds as $entryId) {
+                    $cache->clearSsiCachePage(
+                        'Directory',
+                        'getBlockById',
+                        array(
+                            'template' => $themeId,
+                            'file'     => $arrDetails['file'],
+                            'block'    => $arrDetails['block'],
+                            'blockId'  => $entryId
+                        )
+                    );
+                }
             }
         }
     }
