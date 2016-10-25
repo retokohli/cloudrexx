@@ -51,18 +51,6 @@ class CxModulesFavoriteListModelEntityCatalogProxy extends \Cx\Modules\FavoriteL
         return parent::setSessionId($sessionId);
     }
 
-    public function getName()
-    {
-        $this->_load();
-        return parent::getName();
-    }
-
-    public function setName($name)
-    {
-        $this->_load();
-        return parent::setName($name);
-    }
-
     public function getDate()
     {
         $this->_load();
@@ -85,6 +73,24 @@ class CxModulesFavoriteListModelEntityCatalogProxy extends \Cx\Modules\FavoriteL
     {
         $this->_load();
         return parent::getFavorites();
+    }
+
+    public function __toString()
+    {
+        $this->_load();
+        return parent::__toString();
+    }
+
+    public function getName()
+    {
+        $this->_load();
+        return parent::getName();
+    }
+
+    public function setName($name)
+    {
+        $this->_load();
+        return parent::setName($name);
     }
 
     public function __get($name)
@@ -117,16 +123,10 @@ class CxModulesFavoriteListModelEntityCatalogProxy extends \Cx\Modules\FavoriteL
         return parent::validate();
     }
 
-    public function __toString()
-    {
-        $this->_load();
-        return parent::__toString();
-    }
-
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'session_id', 'name', 'date', 'favorites');
+        return array('__isInitialized__', 'id', 'sessionId', 'name', 'date', 'favorites');
     }
 
     public function __clone()

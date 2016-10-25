@@ -180,7 +180,7 @@ class CxModulesFavoriteListModelEntityFavoriteProxy extends \Cx\Modules\Favorite
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'list_id', 'title', 'link', 'description', 'info', 'image_1', 'image_2', 'image_3', 'catalog');
+        return array('__isInitialized__', 'id', 'title', 'link', 'description', 'info', 'image1', 'image2', 'image3', 'catalog');
     }
 
     public function __clone()

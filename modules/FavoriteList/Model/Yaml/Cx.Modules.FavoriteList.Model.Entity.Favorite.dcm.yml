@@ -41,7 +41,6 @@ Cx\Modules\FavoriteList\Model\Entity\Favorite:
       targetEntity: Catalog
       inversedBy: favorites
       joinColumn:
-        name: listId
-        column: list_id
+        name: list_id
         nullable: false
         referencedColumnName: id

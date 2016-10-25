@@ -171,6 +171,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     ),
                     'order' => array(
                         'overview' => array(
+                            'id',
                             'catalog',
                             'title',
                             'link',
@@ -181,6 +182,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'image3',
                         ),
                         'form' => array(
+                            'id',
                             'catalog',
                             'title',
                             'link',
@@ -226,11 +228,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'order' => array(
                             'header' => $_ARRAYLANG['TXT_MODULE_FAVORITELIST_FIELD_ORDER'],
-                            'showDetail' => false,
                         ),
                         'values' => array(
                             'header' => $_ARRAYLANG['TXT_MODULE_FAVORITELIST_FIELD_VALUES'],
-                            'showOverview' => false,
                         ),
                     ),
                     'functions' => array(
@@ -240,6 +240,24 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'sorting' => true,
                         'paging' => true,
                         'filtering' => false,
+                    ),
+                    'order' => array(
+                        'overview' => array(
+                            'id',
+                            'name',
+                            'type',
+                            'required',
+                            'order',
+                            'values',
+                        ),
+                        'form' => array(
+                            'id',
+                            'name',
+                            'type',
+                            'required',
+                            'order',
+                            'values',
+                        ),
                     ),
                 );
                 break;
