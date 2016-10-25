@@ -697,31 +697,40 @@ class InitCMS
      *    'home_xy.html' ,
      *    [... more ...]
      *  )
-     * @param   integer   $themeId    The theme ID
+     * @param   mixed   $theme        The theme ID or Theme entity
      * @return  array                 The custom content template filename array
      */
-    public function getCustomContentTemplatesForTheme($themeId)
+    public function getCustomContentTemplatesForTheme($theme)
     {
-        global $objDatabase;
 
-        if ($themeId == 0)
-            $themeId = $this->currentThemesId;
-
-        $customTemplateForTheme = $this->themeRepository->findOneBy(array('id' => $themeId));
-        if (!$customTemplateForTheme)
+        if ($theme instanceof \Cx\Core\View\Model\Entity\Theme) {
+            $customTemplateForTheme = $theme;
+        } else {
+            if ($theme == 0) {
+                $themeId = $this->currentThemesId;
+            }
+            $customTemplateForTheme = $this->themeRepository->findOneBy(array('id' => $themeId));
+        }
+        if (!$customTemplateForTheme) {
             return array();
+        }
 
         $result = array();
         $templateFiles = array();
         $folder = $customTemplateForTheme->getFoldername();
-        if (file_exists(\Env::get('cx')->getCodeBaseThemesPath().'/'.$folder)) {
+        if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseThemesPath().'/'.$folder)) {
             $templateFiles = scandir(\Env::get('cx')->getCodeBaseThemesPath().'/'.$folder);
         }
-        if (file_exists(\Env::get('cx')->getWebsiteThemesPath().'/'.$folder)) {
-            $templateFiles = array_unique(array_merge($templateFiles, scandir(\Env::get('cx')->getWebsiteThemesPath().'/'.$folder)));
+        if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteThemesPath().'/'.$folder)) {
+            $templateFiles = array_unique(
+                array_merge(
+                    $templateFiles,
+                    scandir(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteThemesPath().'/'.$folder)
+                )
+            );
         }
 
-        foreach ($templateFiles as $f){
+        foreach ($templateFiles as $f) {
             $match = null;
             if (preg_match('/^(content|home)_(.+).html$/', $f, $match)) {
                 array_push($result, $f);
