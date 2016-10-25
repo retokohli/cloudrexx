@@ -231,7 +231,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function getParamsByFindBlockExistsInTpl($block, $page = null)
     {
-        global $objInit;
+        global $objInit, $plainSection;
 
         //Check $block exists in page content, If so return page id as parameter's list
         if (
@@ -259,6 +259,19 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return array(
                 'template' => $theme->getId(),
                 'file'     => 'index.html'
+            );
+        }
+
+        //Check $block exists in home.html
+        //If so return theme id and filename as parameter's list
+        if (
+            $plainSection == 'Home' &&
+            !$objInit->hasCustomContent() &&
+            $theme->isBlockExistsInfile('home.html', $block)
+        ) {
+            return array(
+                'template' => $theme->getId(),
+                'file'     => 'home.html'
             );
         }
 
