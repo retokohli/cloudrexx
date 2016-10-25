@@ -1570,6 +1570,7 @@ JSCODE;
         $this->_objTpl->setGlobalVariable(
             array(
                 'NEWS_STATUS_MESSAGE' => $msg,
+                'NEWS_STATUS_MESSAGE_CSS_CLASS' => $newsId ? 'text-success' : 'text-danger',
                 'TXT_CATEGORY_SELECT' => $_ARRAYLANG['TXT_CATEGORY_SELECT']
             )
         );
@@ -1836,7 +1837,8 @@ EOF;
         }
 
         $date = time();
-        $userid = \FWUser::getFWUserObject()->objUser->getId();
+        $userId = \FWUser::getFWUserObject()->objUser->getId();
+        $userName = \FWUser::getFWUserObject()->objUser->getUsername();
 
         $enable = intval($this->arrSettings['news_activate_submitted_news']);
         $query = "INSERT INTO `".DBPREFIX."module_news`
@@ -1848,7 +1850,9 @@ EOF;
                 `typeid` = '".contrexx_raw2db($data['newsType'])."',
                 `status` = '$enable',
                 `validated` = '$enable',
-                `userid` = '$userid',
+                `userid` = $userId,
+                `author_id` = $userId,
+                `author` = '$userName',
                 `changelog` = '$date',
                 `enable_tags`='" . $data['enableTags'] . "',
                 `enable_related_news`=" . $data['enableRelatedNews'] . ",
