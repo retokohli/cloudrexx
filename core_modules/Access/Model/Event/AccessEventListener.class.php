@@ -109,7 +109,7 @@ class AccessEventListener extends DefaultEventListener
         foreach ($themeRepo->findAll() as $theme) {
             $themeId = $theme->getId();
             $searchTemplateFiles = array_merge(
-                array('index.html', 'home.html'),
+                array('index.html', 'home.html', 'content.html'),
                 $objInit->getCustomContentTemplatesForTheme($theme)
             );
             foreach ($accessBlocks as $block => $adaptor) {
