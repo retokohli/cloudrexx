@@ -244,21 +244,17 @@ function _egovUpdate()
             $dateLabel = $objResult->fields['set_calendar_date_label'];
         }
         if (!empty($dateLabel)) {
-            $query = 'SELECT order_id, order_values FROM '.DBPREFIX.'module_egov_orders WHERE (order_reservation_date IS NULL OR order_reservation_date = "0000-00-00") AND order_values REGEXP "'.$dateLabel.'::[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+;;" LIMIT 100';
-            $objResult = \Cx\Lib\UpdateUtil::sql($query);
-            while ($objResult->RecordCount()) {
-                while (!$objResult->EOF) { 
-                    $reservationDate = null;
-                    if (preg_match('/'.preg_quote($dateLabel).'::(\d+)\.(\d+)\.(\d+);;/', $objResult->fields['order_values'], $matches)) {
-                        $day = $matches[1];
-                        $month = $matches[2];
-                        $year = $matches[3];
-                        $reservationDate = "$year-$month-$day";
-                        \Cx\Lib\UpdateUtil::sql('UPDATE '.DBPREFIX.'module_egov_orders SET order_reservation_date="'.$reservationDate.'" WHERE order_id='.$objResult->fields['order_id']);
-                    }
-                    $objResult->MoveNext();
+            $objResult = \Cx\Lib\UpdateUtil::sql('SELECT order_id, order_values FROM '.DBPREFIX.'module_egov_orders WHERE (order_reservation_date IS NULL OR order_reservation_date = "0000-00-00") AND order_values REGEXP "'.$dateLabel.'::[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+;;"');
+            while (!$objResult->EOF) {
+                $reservationDate = null;
+                if (preg_match('/'.preg_quote($dateLabel).'::(\d+)\.(\d+)\.(\d+);;/', $objResult->fields['order_values'], $matches)) {
+                    $day = $matches[1];
+                    $month = $matches[2];
+                    $year = $matches[3];
+                    $reservationDate = "$year-$month-$day";
+                    \Cx\Lib\UpdateUtil::sql('UPDATE '.DBPREFIX.'module_egov_orders SET order_reservation_date="'.$reservationDate.'" WHERE order_id='.$objResult->fields['order_id']);
                 }
-                $objResult = \Cx\Lib\UpdateUtil::sql($query);
+                $objResult->MoveNext();
             }
         }
     } catch (\Cx\Lib\UpdateException $e) {
