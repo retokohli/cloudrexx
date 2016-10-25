@@ -197,25 +197,9 @@ $_ARRAYLANG['TXT_EGOV_POSTFINANCE_USE_TESTSERVER'] = "Testserver verwenden";
 $_ARRAYLANG['TXT_EGOV_AUTOMATICALLY'] = 'Automatisch';
 $_ARRAYLANG['TXT_EGOV_MANUALLY'] = 'Manuel';
 $_ARRAYLANG['TXT_EGOV_RESERVATION'] = 'Reservation';
-$_ARRAYLANG['TXT_EGOV_ORDER_HANDLING_TOOLTIP'] = '
-<h3>Elektronisches Produkt</h3>
-<ul>
-    <li>Bestellung wird auf Status <strong>Erledigt</strong> gesetzt</li>
-    <li>E-Mail-Bestätigung wird mit ausgewählter Datei als Anhang versendet</li>
-</ul>
-<h3>Automatisch</h3>
-<ul>
-    <li>Bestellung wird auf Status <strong>Erledigt</strong> gesetzt</li>
-    <li>E-Mail-Bestätigung an Kunde wird ausgelöst
-</li>
-</ul>
-<h3>Reservation</h3>
-<ul>
-    <li>Bestellung wird auf Status <strong>Reserviert</strong> gesetzt</li>
-    <li>E-Mail-Bestätigung an Kunde wird ausgelöst</li>
-</ul>
-<h3>Manuel</h3>
-<ul>
-    <li>Bestellung wird im Status <strong>nicht bezahlt</strong> erfasst</li>
-    <li>E-Mail-Bestätigung an Kunde wird keine gesendet)</li>
-</ul>';
+$_ARRAYLANG['TXT_EGOV_ORDER_STATE_HANDLED_DESK'] = 'Bestellung wird auf Status <strong>Erledigt</strong> gesetzt';
+$_ARRAYLANG['TXT_EGOV_ORDER_STATE_RESERVE_DESK'] = 'Bestellung wird auf Status <strong>Reserviert</strong> gesetzt';
+$_ARRAYLANG['TXT_EGOV_ORDER_STATE_NOT_PAID_DESK'] = 'Bestellung wird im Status <strong>nicht bezahlt</strong> erfasst';
+$_ARRAYLANG['TXT_EGOV_ORDER_STATE_EMAIL_NOTIFICATION'] = 'E-Mail-Bestätigung an Kunde wird ausgelöst';
+$_ARRAYLANG['TXT_EGOV_ORDER_STATE_HANDLE_EMAIL_NOTIFICATION'] = 'E-Mail-Bestätigung wird mit ausgewählter Datei als Anhang versendet';
+$_ARRAYLANG['TXT_EGOV_ORDER_STATE_NOT_PAID_EMAIL_NOTIFICATION'] = 'E-Mail-Bestätigung an Kunde wird keine gesendet';

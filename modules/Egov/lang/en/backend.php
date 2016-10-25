@@ -197,24 +197,9 @@ $_ARRAYLANG['TXT_EGOV_POSTFINANCE_USE_TESTSERVER'] = "Use testserver";
 $_ARRAYLANG['TXT_EGOV_AUTOMATICALLY'] = 'Automatically';
 $_ARRAYLANG['TXT_EGOV_MANUALLY'] = 'Manually';
 $_ARRAYLANG['TXT_EGOV_RESERVATION'] = 'Reservation';
-$_ARRAYLANG['TXT_EGOV_ORDER_HANDLING_TOOLTIP'] = '
-<h3>Electronic product</h3>
-<ul>
-    <li>Order state is set to <strong>handled</strong></li>
-    <li>Email notification is sent with set attachment</li>
-</ul>
-<h3>Automatically</h3>
-<ul>
-    <li>Order state is set to <strong>handled</strong></li>
-    <li>Email notification is sent</li>
-</ul>
-<h3>Reservation</h3>
-<ul>
-    <li>Order state is set to <strong>reserved</strong></li>
-    <li>Email notification is sent</li>
-</ul>
-<h3>Manually</h3>
-<ul>
-    <li>Order state is set to <strong>not paid</strong></li>
-    <li>No email notification is being sent</li>
-</ul>';
+$_ARRAYLANG['TXT_EGOV_ORDER_STATE_HANDLED_DESK'] = 'Order state is set to <strong>handled</strong>';
+$_ARRAYLANG['TXT_EGOV_ORDER_STATE_RESERVE_DESK'] = 'Order state is set to <strong>reserved</strong>';
+$_ARRAYLANG['TXT_EGOV_ORDER_STATE_NOT_PAID_DESK'] = 'Order state is set to <strong>not paid</strong>';
+$_ARRAYLANG['TXT_EGOV_ORDER_STATE_EMAIL_NOTIFICATION'] = 'Email notification is sent';
+$_ARRAYLANG['TXT_EGOV_ORDER_STATE_HANDLE_EMAIL_NOTIFICATION'] = 'Email notification is sent with set attachment';
+$_ARRAYLANG['TXT_EGOV_ORDER_STATE_NOT_PAID_EMAIL_NOTIFICATION'] = 'No email notification is being sent';
