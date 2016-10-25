@@ -75,7 +75,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @param $entityClassName contains the FQCN from entity
      * @return array with options
      */
-    protected function getViewGeneratorOptions($entityClassName)
+    protected function getViewGeneratorOptions($entityClassName, $dataSetIdentifier = '')
     {
         global $_ARRAYLANG;
 
@@ -91,13 +91,16 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
         switch ($entityClassName) {
             case 'Cx\Modules\FavoriteList\Model\Entity\Catalog':
+                if (!isset($_GET['order'])) {
+                    $_GET['order'] = 'id';
+                }
                 return array(
                     'header' => $_ARRAYLANG['TXT_MODULE_FAVORITELIST_ACT_CATALOG'],
                     'fields' => array(
                         'id' => array(
                             'header' => $_ARRAYLANG['TXT_MODULE_FAVORITELIST_FIELD_ID'],
                         ),
-                        'session_id' => array(
+                        'sessionId' => array(
                             'showOverview' => false,
                             'showDetail' => false,
                         ),
@@ -124,6 +127,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 );
                 break;
             case 'Cx\Modules\FavoriteList\Model\Entity\Favorite':
+                if (!isset($_GET['order'])) {
+                    $_GET['order'] = 'id';
+                }
                 return array(
                     'header' => $_ARRAYLANG['TXT_MODULE_FAVORITELIST_ACT_FAVORITE'],
                     'fields' => array(
@@ -142,13 +148,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'info' => array(
                             'header' => $_ARRAYLANG['TXT_MODULE_FAVORITELIST_FIELD_INFO'],
                         ),
-                        'image_1' => array(
+                        'image1' => array(
                             'header' => $_ARRAYLANG['TXT_MODULE_FAVORITELIST_FIELD_IMAGE_1'],
                         ),
-                        'image_2' => array(
+                        'image2' => array(
                             'header' => $_ARRAYLANG['TXT_MODULE_FAVORITELIST_FIELD_IMAGE_2'],
                         ),
-                        'image_3' => array(
+                        'image3' => array(
                             'header' => $_ARRAYLANG['TXT_MODULE_FAVORITELIST_FIELD_IMAGE_3'],
                         ),
                         'catalog' => array(
@@ -170,9 +176,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'link',
                             'description',
                             'info',
-                            'image_1',
-                            'image_2',
-                            'image_3',
+                            'image1',
+                            'image2',
+                            'image3',
                         ),
                         'form' => array(
                             'catalog',
@@ -180,14 +186,17 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'link',
                             'description',
                             'info',
-                            'image_1',
-                            'image_2',
-                            'image_3',
+                            'image1',
+                            'image2',
+                            'image3',
                         ),
                     ),
                 );
                 break;
             case 'Cx\Modules\FavoriteList\Model\Entity\FormField':
+                if (!isset($_GET['order'])) {
+                    $_GET['order'] = 'id';
+                }
                 return array(
                     'header' => $_ARRAYLANG['TXT_MODULE_FAVORITELIST_ACT_FORMFIELD'],
                     'fields' => array(

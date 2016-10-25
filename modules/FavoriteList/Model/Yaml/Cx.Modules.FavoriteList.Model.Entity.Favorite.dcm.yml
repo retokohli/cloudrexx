@@ -21,15 +21,18 @@ Cx\Modules\FavoriteList\Model\Entity\Favorite:
     info:
       type: text
       nullable: true
-    image_1:
+    image1:
+      column: image_1
       type: string
       length: 255
       nullable: true
-    image_2:
+    image2:
+      column: image_2
       type: string
       length: 255
       nullable: true
-    image_3:
+    image3:
+      column: image_3
       type: string
       length: 255
       nullable: true
@@ -38,6 +41,7 @@ Cx\Modules\FavoriteList\Model\Entity\Favorite:
       targetEntity: Catalog
       inversedBy: favorites
       joinColumn:
-        name: list_id
+        name: listId
+        column: list_id
         nullable: false
         referencedColumnName: id

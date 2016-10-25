@@ -13,9 +13,9 @@ class Favorite extends \Cx\Model\Base\EntityBase
     protected $id;
 
     /**
-     * @var integer $list_id
+     * @var integer $listId
      */
-    protected $list_id;
+    protected $listId;
 
     /**
      * @var string $title
@@ -38,19 +38,19 @@ class Favorite extends \Cx\Model\Base\EntityBase
     protected $info;
 
     /**
-     * @var string $image_1
+     * @var string $image1
      */
-    protected $image_1;
+    protected $image1;
 
     /**
-     * @var string $image_2
+     * @var string $image2
      */
-    protected $image_2;
+    protected $image2;
 
     /**
-     * @var string $image_3
+     * @var string $image3
      */
-    protected $image_3;
+    protected $image3;
 
     /**
      * @var Cx\Modules\FavoriteList\Model\Entity\Catalog
@@ -69,23 +69,23 @@ class Favorite extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Get list_id
+     * Get listId
      *
      * @return integer $listId
      */
     public function getListId()
     {
-        return $this->list_id;
+        return $this->listId;
     }
 
     /**
-     * Set list_id
+     * Set listId
      *
      * @param integer $listId
      */
     public function setListId($listId)
     {
-        $this->list_id = $listId;
+        $this->listId = $listId;
     }
 
     /**
@@ -169,63 +169,63 @@ class Favorite extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Get image_1
+     * Get image1
      *
      * @return string $image1
      */
     public function getImage1()
     {
-        return $this->image_1;
+        return $this->image1;
     }
 
     /**
-     * Set image_1
+     * Set image1
      *
      * @param string $image1
      */
     public function setImage1($image1)
     {
-        $this->image_1 = $image1;
+        $this->image1 = $image1;
     }
 
     /**
-     * Get image_2
+     * Get image2
      *
      * @return string $image2
      */
     public function getImage2()
     {
-        return $this->image_2;
+        return $this->image2;
     }
 
     /**
-     * Set image_2
+     * Set image2
      *
      * @param string $image2
      */
     public function setImage2($image2)
     {
-        $this->image_2 = $image2;
+        $this->image2 = $image2;
     }
 
     /**
-     * Get image_3
+     * Get image3
      *
      * @return string $image3
      */
     public function getImage3()
     {
-        return $this->image_3;
+        return $this->image3;
     }
 
     /**
-     * Set image_3
+     * Set image3
      *
      * @param string $image3
      */
     public function setImage3($image3)
     {
-        $this->image_3 = $image3;
+        $this->image3 = $image3;
     }
 
     /**

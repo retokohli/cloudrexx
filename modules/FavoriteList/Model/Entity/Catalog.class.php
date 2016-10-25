@@ -13,9 +13,9 @@ class Catalog extends \Cx\Model\Base\EntityBase
     protected $id;
 
     /**
-     * @var string $session_id
+     * @var string $sessionId
      */
-    protected $session_id;
+    protected $sessionId;
 
     /**
      * @var string $name
@@ -58,43 +58,23 @@ class Catalog extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Get session_id
+     * Get sessionId
      *
      * @return string $sessionId
      */
     public function getSessionId()
     {
-        return $this->session_id;
+        return $this->sessionId;
     }
 
     /**
-     * Set session_id
+     * Set sessionId
      *
      * @param string $sessionId
      */
     public function setSessionId($sessionId)
     {
-        $this->session_id = $sessionId;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string $name
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+        $this->sessionId = $sessionId;
     }
 
     /**
@@ -140,5 +120,25 @@ class Catalog extends \Cx\Model\Base\EntityBase
     public function __toString()
     {
         return $this->getName();
+    }
+
+    /**
+     * Get name
+     *
+     * @return string $name
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
     }
 }

@@ -8,7 +8,8 @@ Cx\Modules\FavoriteList\Model\Entity\Catalog:
       generator:
         strategy: AUTO
   fields:
-    session_id:
+    sessionId:
+      column: session_id
       type: string
       length: 255
       nullable: true
@@ -23,4 +24,4 @@ Cx\Modules\FavoriteList\Model\Entity\Catalog:
       mappedBy: catalog
       joinColumn:
         name: id
-        referencedColumnName: list_id
+        referencedColumnName: listId
