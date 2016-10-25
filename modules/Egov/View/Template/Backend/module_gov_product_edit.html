@@ -442,14 +442,6 @@ cx.jQuery(function(){
               <span class="tooltip-message">{TXT_EGOV_ORDER_HANDLING_TOOLTIP}</span>
           </td>
           <td>
-            <input type="radio" name="productAutoStatus" value="1"
-                id="productAutoStatus_1" {AUTOSTATUS_CHECKED_YES} />
-            <label for="productAutoStatus_1">{TXT_EGOV_AUTOMATICALLY}</label>
-            <br />
-            <input type="radio" name="productAutoStatus" value="0"
-                id="productAutoStatus_0" {AUTOSTATUS_CHECKED_NO} />
-            <label for="productAutoStatus_0">{TXT_EGOV_MANUALLY}</label>
-            <br />
             <div>
                 <label>
                     <input type="radio" name="productAutoStatus" value="2" {AUTOSTATUS_CHECKED_ELECTRO} />
@@ -460,9 +452,17 @@ cx.jQuery(function(){
                   &nbsp;<input type="button" value="{TXT_BROWSE}" onClick="newsGetFileBrowser('productFile', 'image')" />
                 </div>
             </div>
+            <input type="radio" name="productAutoStatus" value="1"
+                id="productAutoStatus_1" {AUTOSTATUS_CHECKED_YES} />
+            <label for="productAutoStatus_1">{TXT_EGOV_AUTOMATICALLY}</label>
+            <br />
             <input type="radio" name="productAutoStatus" value="3"
                 id="productAutoStatus_3" {AUTOSTATUS_CHECKED_RESERVATION} />
             <label for="productAutoStatus_3">{TXT_EGOV_RESERVATION}</label>
+            <br />
+            <input type="radio" name="productAutoStatus" value="0"
+                id="productAutoStatus_0" {AUTOSTATUS_CHECKED_NO} />
+            <label for="productAutoStatus_0">{TXT_EGOV_MANUALLY}</label>
             <br />
           </td>
         </tr>
