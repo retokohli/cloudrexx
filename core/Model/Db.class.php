@@ -129,18 +129,16 @@ namespace Cx\Core\Model {
 
         /**
          * Creates a new instance by using an existing database connection
-         * @return  \Cx\Core\Model\Model\Entity\Db  $dbInfo Database connection infos
-         * @return  \Cx\Core\Model\Model\Entity\DbUser  $dbUser Database user connection infos
+         * @param \Cx\Core\Model\Model\Entity\Db  $dbInfo Database connection infos
+         * @param \Cx\Core\Model\Model\Entity\DbUser  $dbUser Database user connection infos
          * @param   \PDO    $pdo    Existing PDO connection
          * @param   \ADONewConnection   $adoDb  Existing AdoDb connection based on $pdo
          * @param   \Cx\Core\Model\Controller\EntityManager $em Existing Entity Manager object based on $pdo
          * @return  \Cx\Core\Model\Db   Instance based on existing database connection
          */
-        public static function fromExistingConnection(\Cx\Core\Model\Model\Entity\Db $dbInfo, \Cx\Core\Model\Model\Entity\DbUser $dbUser,
-                                                      \PDO $pdo, \ADONewConnection $adoDb, \Cx\Core\Model\Controller\EntityManager $em
-        ) {
+        public static function fromExistingConnection(\Cx\Core\Model\Model\Entity\Db $dbInfo, \Cx\Core\Model\Model\Entity\DbUser $dbUser, $pdo, $adoDb, $em) {
             // Bind database connection
-            $db = new static($dbConnection, $dbUser);
+            $db = new static($dbInfo, $dbUser);
             $db->setPdoConnection($pdo);
             $db->setAdoDb($adoDb);
             $db->setEntityManager($em);
