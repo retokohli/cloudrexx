@@ -9,7 +9,7 @@ Cx\Modules\FavoriteList\Model\Entity\FormField:
         strategy: AUTO
   fields:
     type:
-      type: enum
+      type: string
     name:
       type: string
       length: 255
@@ -17,7 +17,9 @@ Cx\Modules\FavoriteList\Model\Entity\FormField:
       type: boolean
     order:
       type: integer
+      column: `order`
     values:
       type: string
       length: 255
       nullable: true
+      column: `values`
