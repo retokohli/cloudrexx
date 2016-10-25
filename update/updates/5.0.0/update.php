@@ -1035,7 +1035,7 @@ function executeContrexxUpdate() {
         \DBG::msg('update: migrate media paths for content and blocks');
         $mediaPathContentDone = _migrateMediaPaths('page');
         $mediaPathTemplateDone = _migrateTemplateMediaPaths();
-        if ($mediaPathContentDone === false || $mediaPathBlockDone === false) {
+        if ($mediaPathContentDone === false || $mediaPathTemplateDone === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
                 setUpdateMsg(
                     sprintf($_CORELANG['TXT_UNABLE_TO_MIGRATE_MEDIA_PATH'], ''), 'title');
@@ -2861,7 +2861,7 @@ function _migrateTemplateMediaPaths($themeRepository = null) {
 function migratePageApplicationNames() {
         $componentNames = getNewComponentNames();
         $em = \Env::get('em');
-        $pages = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findBy(array('type' => Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION), true);
+        $pages = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findBy(array('type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION), true);
         foreach ($pages as $page) {
             if ($page) {
                 if (!checkMemoryLimit()) {
@@ -2870,9 +2870,14 @@ function migratePageApplicationNames() {
                 try {
                     // detect new component name
                     $matchedComponentNames = preg_grep('/^' . $page->getModule() . '$/i', $componentNames);
+
+                    // switch type to content if component is unknown or disambiguous
                     if (count($matchedComponentNames) != 1) {
-                        // TODO message
-                        return false;
+                        $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_CONTENT);
+                        $page->setModule(null);
+                        $page->setUpdatedAtToNow();
+                        $em->persist($page);
+                        continue;
                     }
                     $matchedComponentName = current($matchedComponentNames);
                     if (empty($matchedComponentName)) {

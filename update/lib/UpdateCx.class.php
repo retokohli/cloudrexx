@@ -64,7 +64,7 @@ class UpdateCx extends \Cx\Core\Core\Controller\Cx {
         $this->db = \Cx\Core\Model\Db::fromExistingConnection($objDb, $objDbUser, $connection, \Env::get('db'), \Env::get('em'));
 
         // initialize event manager
-        $this->eventManager = new \Cx\Core\Event\Controller\EventManager();
+        $this->eventManager = new \Cx\Core\Event\Controller\EventManager($this);
         new \Cx\Core\Event\Controller\ModelEventWrapper($this);
 
         // initialize license
