@@ -799,7 +799,7 @@ class EgovManager extends EgovLibrary
 
     function _orders()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
         $this->objTemplate->loadTemplateFile('module_gov_orders_overview.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_ORDERS'];
@@ -808,6 +808,7 @@ class EgovManager extends EgovLibrary
             $this->_strErrMessage = $_REQUEST['err'];
         }
 
+        $pos = (isset($_GET['pos'])) ? contrexx_input2int($_GET['pos']) : 0;
         // delete orders
         if (isset($_REQUEST['delete'])) {
             if (isset($_REQUEST['multi'])) {
@@ -842,39 +843,56 @@ class EgovManager extends EgovLibrary
                 ? ' WHERE order_product='.$_REQUEST["product"] : '')."
              ORDER BY order_id DESC";
         $objResult = $objDatabase->Execute($query);
-        $i = 0;
-        while (!$objResult->EOF) {
-            $stateImg = 'status_yellow.gif';
-            switch ($objResult->fields['order_state']) {
-                case 1:
-                    $stateImg = 'status_green.gif';
-                    break;
-                case 2:
-                    $stateImg = 'status_red.gif';
-                    break;
-                case 0:
-                case 3:
-                default:
-                    break;
+        if ($objResult && $objResult->RecordCount()) {
+            $paging = ($objResult->RecordCount() > $_CONFIG['corePagingLimit'])
+                ? getPaging(
+                    $objResult->RecordCount(),
+                    $pos,
+                    '&cmd=Egov&act=',
+                    '<strong>' . $_ARRAYLANG['TXT_ORDERS'] . '</strong>',
+                    true,
+                    $_CONFIG['corePagingLimit']
+                 )
+                : '';
+            $objResult = $objDatabase->SelectLimit(
+                $query,
+                $_CONFIG['corePagingLimit'],
+                $pos
+            );
+            $this->objTemplate->setVariable('EGOV_ORDER_PAGING', $paging);
+            $i = 0;
+            while (!$objResult->EOF) {
+                $stateImg = 'status_yellow.gif';
+                switch ($objResult->fields['order_state']) {
+                    case 1:
+                        $stateImg = 'status_green.gif';
+                        break;
+                    case 2:
+                        $stateImg = 'status_red.gif';
+                        break;
+                    case 0:
+                    case 3:
+                    default:
+                        break;
+                }
+                $this->objTemplate->setVariable(array(
+                    'ORDERS_ROWCLASS' => (++$i % 2 ? 'row2' : 'row1'),
+                    'ORDER_ID' => $objResult->fields['order_id'],
+                    'ORDER_DATE' => $objResult->fields['order_date'],
+                    'ORDER_ID' => $objResult->fields['order_id'],
+                    'ORDER_STATE' => EgovLibrary::MaskState($objResult->fields['order_state']),
+                    'ORDER_PRODUCT' => EgovLibrary::GetProduktValue('product_name', $objResult->fields['order_product']),
+                    'ORDER_NAME' =>
+                        $this->ParseFormValues('Vorname', $objResult->fields['order_values']).
+                        ' '.
+                        $this->ParseFormValues('Nachname', $objResult->fields['order_values']),
+                    'ORDER_STATE_IMG' => $stateImg,
+                    'ORDER_IP' => $objResult->fields['order_ip'],
+                ));
+                $this->objTemplate->parse('orders_row');
+                $objResult->MoveNext();
             }
-            $this->objTemplate->setVariable(array(
-                'ORDERS_ROWCLASS' => (++$i % 2 ? 'row2' : 'row1'),
-                'ORDER_ID' => $objResult->fields['order_id'],
-                'ORDER_DATE' => $objResult->fields['order_date'],
-                'ORDER_ID' => $objResult->fields['order_id'],
-                'ORDER_STATE' => EgovLibrary::MaskState($objResult->fields['order_state']),
-                'ORDER_PRODUCT' => EgovLibrary::GetProduktValue('product_name', $objResult->fields['order_product']),
-                'ORDER_NAME' =>
-                    $this->ParseFormValues('Vorname', $objResult->fields['order_values']).
-                    ' '.
-                    $this->ParseFormValues('Nachname', $objResult->fields['order_values']),
-                'ORDER_STATE_IMG' => $stateImg,
-                'ORDER_IP' => $objResult->fields['order_ip'],
-            ));
-            $this->objTemplate->parse('orders_row');
-            $objResult->MoveNext();
-        }
-        if ($i == 0) {
+        } else {
             $this->objTemplate->hideBlock('orders_row');
         }
     }
