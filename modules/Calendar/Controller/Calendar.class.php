@@ -277,9 +277,12 @@ class Calendar extends CalendarLibrary
                 // we need to set start date to 0:00
                 $this->startDate->setTime(0, 0, 0);
             } else {
-                // this is a very dirty hack! this only works in timezone
-                // Europe/Zurich during DST period
-                $this->startDate->sub(new \DateInterval('PT2H'));
+                // this is a very dirty hack and should not be necessary!
+                // this re-substracts the timezone offset, since it will be added
+                // twice below. This does not work for timezones with a negative
+                // offset to UTC!
+                $offsetSeconds = abs($this->getInternDateTimeFromUser()->getOffset());
+                $this->startDate->sub(new \DateInterval('PT' . $offsetSeconds . 'S'));
             }
         }
 
