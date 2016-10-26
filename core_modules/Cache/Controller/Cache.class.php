@@ -197,77 +197,89 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         
         // Replace include tags
         $settings = $this->getSettings();
-        $htmlCode = preg_replace_callback(
-            '#<esi:include src="([^"]+)" onerror="continue"/>#',
-            function($matches) use (&$apiUrlString, &$cxNotYetInitialized, $settings) {
-                // return cached content if available
-                $cacheFile = $this->getCacheFileNameFromUrl($matches[1]);
-                if ($settings['internalSsiCache'] == 'on' && file_exists($this->strCachePath . $cacheFile)) {
-                    if (filemtime($this->strCachePath . $cacheFile) > (time() - $this->intCachingTime)) {
-                        return file_get_contents($this->strCachePath . $cacheFile);
-                    } else {
-                        $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
-                        $file->delete();
-                    }
-                }
-                
-                if ($cxNotYetInitialized) {
-                    \Cx\Core\Core\Controller\Cx::instanciate(
-                        \Cx\Core\Core\Controller\Cx::MODE_MINIMAL,
-                        true,
-                        null,
-                        true
-                    );
-                    $cxNotYetInitialized = false;
-                }
-                
-                // Initialize only when needed, we need DB for this!
-                if (empty($apiUrlString)) {
-                    $apiUrlString = substr(\Cx\Core\Routing\Url::fromApi('', '', array()), 0, -1);
-                }
-                
-                $query = parse_url($matches[1], PHP_URL_QUERY);
-                $path = parse_url($matches[1], PHP_URL_PATH);
-                $params = array();
-                parse_str($query, $params);
-                
-                $pathParts = explode('/', str_replace($apiUrlString, '', $path));
-                if (
-                    count($pathParts) != 4 ||
-                    $pathParts[0] != 'Data' ||
-                    $pathParts[1] != 'Plain'
-                ) {
-                    return $matches[0];
-                }
-                $adapter = contrexx_input2raw($pathParts[2]);
-                $method = contrexx_input2raw($pathParts[3]);
-                unset($params['cmd']);
-                unset($params['object']);
-                unset($params['act']);
-                $arguments = array('get' => contrexx_input2raw($params));
-                
-                $json = new \Cx\Core\Json\JsonData();
-                $response = $json->data($adapter, $method, $arguments);
-                if (
-                    !isset($response['status']) ||
-                    $response['status'] != 'success' ||
-                    !isset($response['data']) ||
-                    !isset($response['data']['content'])
-                ) {
-                    return $matches[0];
-                }
-                $content = $response['data']['content'];
-                
-                if ($settings['internalSsiCache'] == 'on') {
+        $replaceEsiFn = function($matches) use (&$apiUrlString, &$cxNotYetInitialized, $settings) {
+            // return cached content if available
+            $cacheFile = $this->getCacheFileNameFromUrl($matches[1]);
+            if ($settings['internalSsiCache'] == 'on' && file_exists($this->strCachePath . $cacheFile)) {
+                if (filemtime($this->strCachePath . $cacheFile) > (time() - $this->intCachingTime)) {
+                    return file_get_contents($this->strCachePath . $cacheFile);
+                } else {
                     $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
-                    $file->write($content);
+                    $file->delete();
                 }
+            }
+            
+            if ($cxNotYetInitialized) {
+                \Cx\Core\Core\Controller\Cx::instanciate(
+                    \Cx\Core\Core\Controller\Cx::MODE_MINIMAL,
+                    true,
+                    null,
+                    true
+                );
+                $cxNotYetInitialized = false;
+            }
+            
+            // TODO: Somehow FRONTEND_LANG_ID is sometimes undefined here...
+            if (!defined('FRONTEND_LANG_ID')) {
+                define('FRONTEND_LANG_ID', 1);
+            }
+            
+            // Initialize only when needed, we need DB for this!
+            if (empty($apiUrlString)) {
+                $apiUrlString = substr(\Cx\Core\Routing\Url::fromApi('', '', array()), 0, -1);
+            }
+            
+            $query = parse_url($matches[1], PHP_URL_QUERY);
+            $path = parse_url($matches[1], PHP_URL_PATH);
+            $params = array();
+            parse_str($query, $params);
+            
+            $pathParts = explode('/', str_replace($apiUrlString, '', $path));
+            if (
+                count($pathParts) != 4 ||
+                $pathParts[0] != 'Data' ||
+                $pathParts[1] != 'Plain'
+            ) {
+                return '';
+            }
+            $adapter = contrexx_input2raw($pathParts[2]);
+            $method = contrexx_input2raw($pathParts[3]);
+            unset($params['cmd']);
+            unset($params['object']);
+            unset($params['act']);
+            $arguments = array('get' => contrexx_input2raw($params));
+            
+            $json = new \Cx\Core\Json\JsonData();
+            $response = $json->data($adapter, $method, $arguments);
+            if (
+                !isset($response['status']) ||
+                $response['status'] != 'success' ||
+                !isset($response['data']) ||
+                !isset($response['data']['content'])
+            ) {
+                return '';
+            }
+            $content = $response['data']['content'];
+                
+            if ($settings['internalSsiCache'] == 'on') {
+                $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
+                $file->write($content);
+            }
 
-                return $content;
-            },
-            $htmlCode
-        );
+            return $content;
+        };
         
+        do {
+            $htmlCode = preg_replace_callback(
+                '#<esi:include src="([^"]+)" onerror="continue"/>#',
+                $replaceEsiFn,
+                $htmlCode,
+                -1,
+                $count
+            );
+            // repeat replacement to recursively parse ESI-tags 
+        } while ($count);
+
         return $htmlCode;
     }
 
