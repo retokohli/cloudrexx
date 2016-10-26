@@ -118,8 +118,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 ASCMS_MODULE_PATH . '/Directory/Controller/DirHomeContent.class.php'
             )
         ) {
-            $cache = \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getComponent('Cache');
+            $cache = $this->cx->getComponent('Cache');
             $directoryContent = $cache->getEsiContent(
                 'Directory',
                 'getContent',
@@ -171,8 +170,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         //Show Latest Directories
         $directoryBlockName = 'directoryLatest_row_';
-        $cache = \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getComponent('Cache');
+        $cache = $this->cx->getComponent('Cache');
         $arrBlocks = $this->getLatestTplBlockDetails(
             $cache,
             $objTemplate

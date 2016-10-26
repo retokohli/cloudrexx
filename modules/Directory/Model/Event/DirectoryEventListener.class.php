@@ -44,7 +44,7 @@ namespace Cx\Modules\Directory\Model\Event;
  * @package     cloudrexx
  * @subpackage  module_directory
  */
-class DirectoryEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
+class DirectoryEventListener implements \Cx\Core\Event\Model\Entity\DefaultEventListener {
 
     public function onEvent($eventName, array $eventArgs) {
         $this->$eventName(current($eventArgs));
@@ -87,8 +87,7 @@ class DirectoryEventListener implements \Cx\Core\Event\Model\Entity\EventListene
         global $objInit;
 
         // clear home page cache
-        $cache = \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getComponent('Cache');
+        $cache = $this->cx->getComponent('Cache');
         foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
             $cache->clearSsiCachePage(
                 'Directory',
