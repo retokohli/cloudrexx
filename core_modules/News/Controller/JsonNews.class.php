@@ -88,7 +88,7 @@ class JsonNews implements JsonAdapter {
     /**
      * get all news list
      *
-     * @return json result
+     * @return \Cx\Lib\Net\Model\Entity\Response json result
      */
     public function getAllNews($data = array())
     {
@@ -143,6 +143,6 @@ class JsonNews implements JsonAdapter {
                 $objResult->MoveNext();
             }
         }
-        return $result;
+        return new \Cx\Lib\Net\Model\Entity\Response($result);
     }
 }

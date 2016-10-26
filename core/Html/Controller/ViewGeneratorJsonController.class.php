@@ -113,7 +113,7 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
      *
      * @access public
      * @param array $params data from ajax request
-     * @return json rendered form
+     * @return \Cx\Lib\Net\Model\Entity\Response rendered form
      */
     public function getViewOverJson($params)
     {
@@ -141,7 +141,9 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
             $entityClassObject,
             $options->toArray() // must be array and not recursiveArrayAccess object
         );
-        return $entityClassObjectView->render();
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            $entityClassObjectView->render()
+        );
     }
 
     /**
@@ -149,7 +151,7 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
      *
      * @param array $params supplied arguments from JsonData-request
      *
-     * @return array it contains status and record count
+     * @return \Cx\Lib\Net\Model\Entity\Response it contains status and record count
      * @throws \Exception
      */
     public function updateOrder($params) {
@@ -301,7 +303,12 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
                 $i++;
             }
             $em->flush();
-            return array('status' => 'success', 'recordCount' => $recordCount);
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    'status'      => 'success',
+                    'recordCount' => $recordCount
+                )
+            );
         } catch (\Exception $e) {
             throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_UPDATE_SORT_ORDER_FAILED']);
         }

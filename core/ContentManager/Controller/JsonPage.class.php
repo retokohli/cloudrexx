@@ -127,7 +127,7 @@ class JsonPage implements JsonAdapter {
      * Sends data to the client
      * @todo Clean up usage of $param
      * @param Array $params Client parameters
-     * @return Array Page as array
+     * @return \Cx\Lib\Net\Model\Entity\Response Page as array
      * @throws Exception If the page could not be found
      */
     public function get($params) {
@@ -182,7 +182,8 @@ class JsonPage implements JsonAdapter {
         $evm = $cx->getEvents();
         $evm->triggerEvent('wysiwygCssReload', array($pageArray, $additionalArguments));
         $pageArray['wysiwygCssReload'] = $additionalArguments->toArray();
-        return $pageArray;
+
+        return new \Cx\Lib\Net\Model\Entity\Response($pageArray);
     }
 
     /**
@@ -190,7 +191,9 @@ class JsonPage implements JsonAdapter {
      * @todo Clean up usage of $param and $_GET
      * @global Array $_CORELANG Core language data
      * @param Array $params Client parameters
-     * @return type
+     * @return \Cx\Lib\Net\Model\Entity\Response
+     * @throws \Exception
+     * @throws \Cx\Core\ContentManager\Model\Entity\PageException
      */
     public function set($params) {
         global $_CORELANG;
@@ -641,12 +644,14 @@ class JsonPage implements JsonAdapter {
             $version--;
         }
 
-        return array(
-            'reload' => $reload,
-            'id'     => $page->getId(),
-            'version'=> $version,
-            'node'   => $page->getNode()->getId(),
-            'lang'   => \FWLanguage::getLanguageCodeById($page->getLang()),
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            array(
+                'reload' => $reload,
+                'id'     => $page->getId(),
+                'version'=> $version,
+                'node'   => $page->getNode()->getId(),
+                'lang'   => \FWLanguage::getLanguageCodeById($page->getLang()),
+            )
         );
     }
 
@@ -654,6 +659,7 @@ class JsonPage implements JsonAdapter {
      * Sets multiple pages.
      *
      * @param  array  $params  Client parameters.
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function multipleSet($params) {
         register_shutdown_function(array($this, 'multipleSetShutdown'));
@@ -753,7 +759,7 @@ class JsonPage implements JsonAdapter {
         $this->multipleSetState = null;
         unset($nodeIdStack);
 
-        return $return;
+        return new \Cx\Lib\Net\Model\Entity\Response($return);
     }
 
     public function multipleSetShutdown() {
@@ -766,7 +772,8 @@ class JsonPage implements JsonAdapter {
     /**
      * Sets the page object in the session and returns the link to the page (frontend).
      * @param   array  $params
-     * @return  array  [link]     The link to the page (frontend).
+     * @return \Cx\Lib\Net\Model\Entity\Response [link]     The link to the page (frontend).
+     * @throws \Exception
      */
     public function setPagePreview($params) {
         global $_CORELANG;
@@ -781,6 +788,7 @@ class JsonPage implements JsonAdapter {
         $page['lang'] = $params['post']['page']['lang'];
 
         $_SESSION['page'] = $page;
+        return new \Cx\Lib\Net\Model\Entity\Response(true);
     }
 
     /**
@@ -1013,7 +1021,7 @@ class JsonPage implements JsonAdapter {
     /**
      * Returns the access data array
      * @param type $page Unused
-     * @return array Access data
+     * @return \Cx\Lib\Net\Model\Entity\Response Access data
      */
     public function getAccessData($page = null) {
         // TODO: add functionality for $page!=null (see below), DRY up #getFallbackPageArray
@@ -1025,7 +1033,7 @@ class JsonPage implements JsonAdapter {
         $accessData['frontend'] = array('groups' => $pg->getGroups(true), 'assignedGroups' => array());
         $accessData['backend'] = array('groups' => $pg->getGroups(false), 'assignedGroups' => array());
 
-        return $accessData;
+        return new \Cx\Lib\Net\Model\Entity\Response($accessData);
     }
 
     /**
@@ -1119,7 +1127,11 @@ class JsonPage implements JsonAdapter {
             'title' => $page->getContentTitle(),
             'type' => $page->getType(),
             'target' => $page->getTarget(),
-            'target_path' => $this->getPathByTarget(array('get' => array('target' => $page->getTarget()))),
+            'target_path' => $this->getPathByTarget(
+                array(
+                    'get' => array('target' => $page->getTarget())
+                )
+            )->getAbstractContent(),
             'module' => $page->getModule(),
             'area' => $page->getCmd(),
             'scheduled_publishing' => $scheduled_publishing,
@@ -1189,7 +1201,7 @@ class JsonPage implements JsonAdapter {
      * If the target page doesn't exist, the path of the error page will be returned.
      *
      * @param   array   $arguments
-     * @return  string  $path
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function getPathByTarget($arguments) {
         global $_CONFIG;
@@ -1212,20 +1224,20 @@ class JsonPage implements JsonAdapter {
 
             $target = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . $target;
         }
-
-        return $target;
+        return new \Cx\Lib\Net\Model\Entity\Response($target);
     }
 
     /**
      * Checks if the passed page or its redirect target page is broken.
      *
      * @param   array   $arguments
-     * @return  boolean
+     * @return \Cx\Lib\Net\Model\Entity\Response boolean
      */
     public function isBroken($arguments) {
+        $response = new \Cx\Lib\Net\Model\Entity\Response(true);
         if (isset($arguments['get']['pageId'])) {
             if (!\Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->find($arguments['get']['pageId'])) {
-                return true;
+                return $response;
             }
         }
 
@@ -1233,25 +1245,26 @@ class JsonPage implements JsonAdapter {
             $filePath = \Env::get('cx')->getClassLoader()->getFilePath($arguments['get']['pageRedirectPlaceholder']);
             //do not break the page, if the redirection shows to a valid file
             if (is_file($filePath)) {
-                return false;
+                $response->setAbstractContent(false);
+                return $response;
             }
             try {
                 //break the page, when the file or the placeholder does not exist
                 if (!\Cx\Core\Routing\NodePlaceholder::fromPlaceholder($arguments['get']['pageRedirectPlaceholder'])->getPage()) {
-                    return true;
+                    return $response;
                 }
             } catch (\Cx\Core\Routing\NodePlaceholderException $e) {
-                return true;
+                return $response;
             }
         }
-
-        return false;
+        $response->setAbstractContent(false);
+        return $response;
     }
 
     /**
      * load the application template based on the application, cmd and theme name
      *
-     * @return array
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function loadApplicationTemplate() {
 
@@ -1292,7 +1305,7 @@ class JsonPage implements JsonAdapter {
             $evm->triggerEvent('wysiwygCssReload', array(array('skin'=>$template), $additionalArguments));
             $result['wysiwygCssReload'] = $additionalArguments->toArray();
         }
-        return $result;
+        return new \Cx\Lib\Net\Model\Entity\Response($result);
     }
 
     /**

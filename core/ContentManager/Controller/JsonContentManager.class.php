@@ -81,6 +81,7 @@ class JsonContentManager implements JsonAdapter {
      * Saves the toggle statuses in the session.
      * @param Array $params Client parameters
      * @author Yannic Tschanz <yannic.tschanz@comvation.com>
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function saveToggleStatuses($params) {
         $arrToggleStatuses = array();
@@ -92,6 +93,8 @@ class JsonContentManager implements JsonAdapter {
             $_SESSION['contentManager'] = array();
         }
         $_SESSION['contentManager']['toggleStatuses'] = $arrToggleStatuses;
+
+        return new \Cx\Lib\Net\Model\Entity\Response(true);
     }
 
     /**
@@ -103,17 +106,19 @@ class JsonContentManager implements JsonAdapter {
      *  access      If this is true, the user can change access to pages
      *  publish     If this is true, the user can publish or decline drafts
      * @todo Move this method to the ContentManager class and use it everywhere
-     * @return array Array containing the permissions of the current user
+     * @return \Cx\Lib\Net\Model\Entity\Response Array containing the permissions of the current user
      */
     public function getAccess() {
         $global =   \Permission::checkAccess(6, 'static', true) &&
                     \Permission::checkAccess(35, 'static', true);
-        return array(
-            'global'    => $global,
-            'delete'    => $global && \Permission::checkAccess(26, 'static', true),
-            'create'    => $global && \Permission::checkAccess(5, 'static', true),
-            'access'    => $global && \Permission::checkAccess(36, 'static', true),
-            'publish'   => $global && \Permission::checkAccess(78, 'static', true),
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            array(
+                'global'    => $global,
+                'delete'    => $global && \Permission::checkAccess(26, 'static', true),
+                'create'    => $global && \Permission::checkAccess(5, 'static', true),
+                'access'    => $global && \Permission::checkAccess(36, 'static', true),
+                'publish'   => $global && \Permission::checkAccess(78, 'static', true),
+            )
         );
     }
 
@@ -133,6 +138,16 @@ class JsonContentManager implements JsonAdapter {
         return $this->performLanguageAction('link', $params);
     }
 
+    /**
+     * Perform language option based on action and given params
+     *
+     * @param atring    $action  Action string (copy, link)
+     * @param array     $params  Request params
+     *
+     * @return \Cx\Lib\Net\Model\Entity\Response 
+     *
+     * @throws \Cx\Core\ContentManager\ContentManagerException
+     */
     private function performLanguageAction($action, $params) {
         global $_CORELANG;
 
@@ -167,6 +182,7 @@ class JsonContentManager implements JsonAdapter {
             $offset = contrexx_input2raw($params['get']['offset']);
         }
         $result = $nodeRepo->translateRecursive($nodeRepo->getRoot(), $fromLang, $targetLang, $action == 'copy', $limit, $offset);
-        return $result;
+
+        return new \Cx\Lib\Net\Model\Entity\Response($result);
     }
 }

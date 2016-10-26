@@ -197,7 +197,7 @@ class JsonData {
      * @param boolean $setContentType (optional) If true (NOT default) the content type is set to application/json
      * @return String JSON data to return to client
      */
-    public function json($response, $setContentType = false) {
+    public function json(\Cx\Lib\Net\Model\Entity\Response $response, $setContentType = false) {
         $response->setParser(function($response) {
             $response->setContentType('application/json');
             return json_encode($response->getAbstractContent());

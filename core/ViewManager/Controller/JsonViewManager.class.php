@@ -92,6 +92,7 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
      * activate the selected theme as standard theme
      *
      * @global type $objDatabase
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function activateTheme() {
         global $objDatabase;
@@ -119,13 +120,13 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
                $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET `". $themeTypes[$themeType] ."` ='".intval($themeId)."' WHERE `frontend` = 1");
             }
         }
-
+        return new \Cx\Lib\Net\Model\Entity\Response(true);
     }
 
     /**
      * activate selected languages for the corresponding theme
      *
-     * @return array result
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function activateLanguages() {
 
@@ -160,14 +161,14 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
             );
         }
 
-        return $result;
+        return new \Cx\Lib\Net\Model\Entity\Response($result);
     }
 
     /**
      * Check whether the theme is selected for any of the active languages/custom theme for active languages/other theme
      *
      * @global \Cx\Core\ViewManager\Controller\type $_ARRAYLANG
-     * @return array result
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function checkThemeExistsByThemeId() {
         global $_ARRAYLANG;
@@ -220,13 +221,13 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
 
         }
 
-        return $result;
+        return new \Cx\Lib\Net\Model\Entity\Response($result);
     }
     /**
      * Delete selected theme and its theme folder
      *
      * @global type $_ARRAYLANG
-     * @return array status
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     function deleteThemeById() {
         global $_ARRAYLANG;
@@ -268,7 +269,12 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
 
             //Remove theme details from the database.
             if ($themeRepository->remove($theme)) {
-                return array('status' => 'success', 'message' => contrexx_raw2xhtml($theme->getThemesname()) .": ". $_ARRAYLANG['TXT_STATUS_SUCCESSFULLY_DELETE']);
+                return new \Cx\Lib\Net\Model\Entity\Response(
+                    array(
+                        'status' => 'success',
+                        'message' => contrexx_raw2xhtml($theme->getThemesname()) .": ". $_ARRAYLANG['TXT_STATUS_SUCCESSFULLY_DELETE']
+                    )
+                );
             }
         }
 
@@ -318,7 +324,7 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
      * delete the file or directory
      *
      * @param array $params supplied arguments from JsonData-request
-     * @return string
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function delete($params)
     {
@@ -328,7 +334,12 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
 
         $_ARRAYLANG = $objInit->loadLanguageData('ViewManager');
         if (empty($params['post']['themes']) || empty($params['post']['themesPage'])) {
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_PARAMS']);
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    'status'  => 'error',
+                    'message' => $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_PARAMS']
+                )
+            );
         }
 
         $filePath           = $params['post']['themesPage'];
@@ -336,7 +347,12 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
 
         $pathStripped = ltrim($params['post']['themesPage'], '/');
         if (empty($pathStripped)) {
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_PARAMS']);
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    'status'  => 'error',
+                    'message' => $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_PARAMS']
+                )
+            );
         }
 
         if (
@@ -361,19 +377,37 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
             }
 
             if (!$status) {
-                return array('status' => 'error', 'reload' => false, 'message' => $_ARRAYLANG['TXT_THEME_'. $operation .'_FAILED']);
+                return new \Cx\Lib\Net\Model\Entity\Response(
+                    array(
+                        'status' => 'error',
+                        'reload' => false,
+                        'message' => $_ARRAYLANG['TXT_THEME_'. $operation .'_FAILED']
+                    )
+                );
             }
-            return array('status' => 'success', 'reload' => true, 'message' =>  $succesMessage);
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    'status' => 'success',
+                    'reload' => true,
+                    'message' =>  $succesMessage
+                )
+            );
         }
 
-        return array('status' => 'error', 'reload' => false, 'message' => sprintf($_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_FILE_NOT_EXITS'], contrexx_input2xhtml($filePath)));
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            array(
+                'status'  => 'error',
+                'reload'  => false,
+                'message' => sprintf($_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_FILE_NOT_EXITS'], contrexx_input2xhtml($filePath))
+            )
+        );
     }
 
     /**
      * rename the file or directory
      *
      * @param array $params supplied arguments from JsonData-request
-     * @return string
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function rename($params)
     {
@@ -381,16 +415,33 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
 
         $_ARRAYLANG = $objInit->loadLanguageData('ViewManager');
         if (empty($params['post']['theme']) || empty($params['post']['oldName']) || empty($params['post']['newName'])) {
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_NAME']);
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    'status' => 'error',
+                    'message' => $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_NAME']
+                )
+            );
         }
         if ($params['post']['isFolder'] && preg_match('/^\./', trim($params['post']['newName']))) { // folder name should not start with dot(.)
-            return array('status' => 'error', 'reload' => false, 'message' => sprintf($_ARRAYLANG['TXT_THEME_FOLDER_NAME_NOT_ALLOWED'], contrexx_input2xhtml($params['post']['newName'])));
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    'status' => 'error',
+                    'reload' => false,
+                    'message' => sprintf($_ARRAYLANG['TXT_THEME_FOLDER_NAME_NOT_ALLOWED'], contrexx_input2xhtml($params['post']['newName']))
+                )
+            );
         }
 
         $matches = null;
         preg_match('@{([0-9A-Za-z._-]+)(:([_a-zA-Z][A-Za-z_0-9]*))?}@sm', $params['post']['newName'], $matches);
         if (!empty($matches)) {
-            return array('status' => 'error', 'reload' => false, 'message' => sprintf($_ARRAYLANG['TXT_THEME_NAME_NOT_ALLOWED'], contrexx_input2xhtml($params['post']['newName'])));
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    'status' => 'error',
+                    'reload' => false,
+                    'message' => sprintf($_ARRAYLANG['TXT_THEME_NAME_NOT_ALLOWED'], contrexx_input2xhtml($params['post']['newName']))
+                )
+            );
         }
 
         $currentThemeFolder = \Env::get('cx')->getWebsiteThemesPath() . '/'.$params['post']['theme'];
@@ -406,7 +457,13 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
             '/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_CORE
         );
         if (in_array($oldFilePath, $virtualDirs) || in_array('/'.$newFilePath, $virtualDirs)) {
-            return array('status' => 'error', 'reload' => false, 'message' => $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_RENAME_VIRTUAL_FOLDER']);
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    'status' => 'error',
+                    'reload' => false,
+                    'message' => $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_RENAME_VIRTUAL_FOLDER']
+                )
+            );
         }
 
         if (
@@ -425,34 +482,63 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
             $dirName = dirname($currentThemeFolder . $oldFilePath);
 
             if (!\FWValidator::is_file_ending_harmless($newFilePath)) {
-                return array('status' => 'error', 'reload' => false, 'message' => sprintf($_ARRAYLANG['TXT_THEME_FILE_EXTENSION_NOT_ALLOWED'], contrexx_input2xhtml($newFilePath)));
+                return new \Cx\Lib\Net\Model\Entity\Response(
+                    array(
+                        'status'  => 'error',
+                        'reload'  => false,
+                        'message' => sprintf($_ARRAYLANG['TXT_THEME_FILE_EXTENSION_NOT_ALLOWED'], contrexx_input2xhtml($newFilePath))
+                    )
+                );
             }
 
             if (\Cx\Lib\FileSystem\FileSystem::exists($dirName . '/'. $newFilePath)) {
-                return array('status' => 'error', 'reload' => false, 'message' => sprintf($_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_FILE_ALREADY_EXITS'], contrexx_input2xhtml($newFileName)));
+                return new \Cx\Lib\Net\Model\Entity\Response(
+                    array(
+                        'status'  => 'error',
+                        'reload'  => false,
+                        'message' => sprintf($_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_FILE_ALREADY_EXITS'], contrexx_input2xhtml($newFileName))
+                    )
+                );
             }
 
             \Cx\Lib\FileSystem\FileSystem::move($currentThemeFolder . $oldFilePath, $dirName . '/'. $newFilePath, true);
 
             if (!\Cx\Lib\FileSystem\FileSystem::exists($dirName . '/'. $newFilePath)) {
-                return array('status' => 'error', 'reload' => false, 'message' => $_ARRAYLANG['TXT_THEME_RENAME_FAILED']);
+                return new \Cx\Lib\Net\Model\Entity\Response(
+                    array(
+                        'status'  => 'error',
+                        'reload'  => false,
+                        'message' => $_ARRAYLANG['TXT_THEME_RENAME_FAILED']
+                    )
+                );
             }
 
             $path = preg_replace('#' . $currentThemeFolder . '#', '', $dirName . '/'. $newFilePath);
 
             $message = $isFolder ? $_ARRAYLANG['TXT_THEME_FOLDER_RENAME_SUCCESS'] : $_ARRAYLANG['TXT_THEME_FILE_RENAME_SUCCESS'];
-
-            return array('status' => 'success', 'reload' => true, 'path' => \Cx\Core\ViewManager\Controller\ViewManager::getThemeRelativePath($path), 'message' =>  $message);
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    'status'  => 'success',
+                    'reload'  => true,
+                    'path'    => \Cx\Core\ViewManager\Controller\ViewManager::getThemeRelativePath($path),
+                    'message' =>  $message
+                )
+            );
         }
-
-        return array('status' => 'error', 'reload' => false, 'message' => sprintf($_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_FILE_NOT_EXITS'], contrexx_input2xhtml($newFileName)));
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            array(
+                'status'  => 'error',
+                'reload'  => false,
+                'message' => sprintf($_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_FILE_NOT_EXITS'], contrexx_input2xhtml($newFileName))
+            )
+        );
     }
 
     /**
      * create new file or folder
      *
      * @param array $params supplied arguments from JsonData-request
-     * @return string
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function newWithin($params)
     {
@@ -460,17 +546,34 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
 
         $_ARRAYLANG = $objInit->loadLanguageData('ViewManager');
         if (empty($params['post']['theme']) || empty($params['post']['name'])) {
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_NAME']);
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    'status'  => 'error',
+                    'message' => $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_NAME']
+                )
+            );
         }
 
         if ($params['post']['isFolder'] && preg_match('/^\./', trim($params['post']['name']))) { // folder name should not start with dot(.)
-            return array('status' => 'error', 'reload' => false, 'message' => sprintf($_ARRAYLANG['TXT_THEME_FOLDER_NAME_NOT_ALLOWED'], contrexx_input2xhtml($params['post']['name'])));
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    'status'  => 'error',
+                    'reload'  => false,
+                    'message' => sprintf($_ARRAYLANG['TXT_THEME_FOLDER_NAME_NOT_ALLOWED'], contrexx_input2xhtml($params['post']['name']))
+                )
+            );
         }
 
         $matches = null;
         preg_match('@{([0-9A-Za-z._-]+)(:([_a-zA-Z][A-Za-z_0-9]*))?}@sm', $params['post']['name'], $matches);
         if (!empty($matches)) {
-            return array('status' => 'error', 'reload' => false, 'message' => sprintf($_ARRAYLANG['TXT_THEME_NAME_NOT_ALLOWED'], contrexx_input2xhtml($params['post']['newName'])));
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    'status'  => 'error',
+                    'reload'  => false,
+                    'message' => sprintf($_ARRAYLANG['TXT_THEME_NAME_NOT_ALLOWED'], contrexx_input2xhtml($params['post']['newName']))
+                )
+            );
         }
 
         // Cannot rename the virtual directory
@@ -484,18 +587,36 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
         // Create the theme folder, if it does not exist
         if (!\Cx\Lib\FileSystem\FileSystem::exists($currentThemeFolderDirPath)) {
             if (!\Cx\Lib\FileSystem\FileSystem::make_folder($currentThemeFolderDirPath)) {
-                return array('status' => 'error', 'reload' => false, 'message' => $_ARRAYLANG['TXT_THEME_NEWFILE_FAILED']);
+                return new \Cx\Lib\Net\Model\Entity\Response(
+                    array(
+                        'status'  => 'error',
+                        'reload'  => false,
+                        'message' => $_ARRAYLANG['TXT_THEME_NEWFILE_FAILED']
+                    )
+                );
             }
         }
 
         $newFileName               = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($params['post']['name']);
 
         if (!\FWValidator::is_file_ending_harmless($newFileName)) {
-            return array('status' => 'error', 'reload' => false, 'message' => sprintf($_ARRAYLANG['TXT_THEME_FILE_EXTENSION_NOT_ALLOWED'], contrexx_input2xhtml($newFileName)));
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    'status'  => 'error',
+                    'reload'  => false,
+                    'message' => sprintf($_ARRAYLANG['TXT_THEME_FILE_EXTENSION_NOT_ALLOWED'], contrexx_input2xhtml($newFileName))
+                )
+            );
         }
 
         if (in_array('/'.$newFileName, $virtualDirs)) {
-            return array('status' => 'error', 'reload' => false, 'message' => $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_VIRTUAL_FOLDER']);
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    'status'  => 'error',
+                    'reload'  => false,
+                    'message' => $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_VIRTUAL_FOLDER']
+                )
+            );
         }
 
         if (!\Cx\Lib\FileSystem\FileSystem::exists($currentThemeFolderDirPath.$newFileName)) {
@@ -508,11 +629,28 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
             }
 
             if (!$status) {
-                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_THEME_NEWFILE_FAILED']);
+                return new \Cx\Lib\Net\Model\Entity\Response(
+                    array(
+                        'status'  => 'error',
+                        'message' => $_ARRAYLANG['TXT_THEME_NEWFILE_FAILED']
+                    )
+                );
             }
-            return array('status' => 'success', 'reload' => true, 'message' => $succesMessage, 'path' => '/' .$newFileName);
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    'status'  => 'success',
+                    'reload'  => true,
+                    'message' => $succesMessage,
+                    'path' => '/' .$newFileName
+                )
+            );
         }
-        return array('status' => 'error', 'message' => sprintf($_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_FILE_ALREADY_EXITS'], contrexx_input2xhtml($newFileName)));
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            array(
+                'status'  => 'error',
+                'message' => sprintf($_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_FILE_ALREADY_EXITS'], contrexx_input2xhtml($newFileName))
+            )
+        );
     }
 
 }

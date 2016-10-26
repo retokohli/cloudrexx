@@ -85,7 +85,7 @@ class JsonCalendar implements JsonAdapter {
     /**
      * Returns all series dates from the given post data
      *
-     * @return array Array of dates
+     * @return \Cx\Lib\Net\Model\Entity\Response Array of dates
      */
     public function getExeceptionDates() {
         global $objInit, $_CORELANG;
@@ -95,6 +95,8 @@ class JsonCalendar implements JsonAdapter {
         }
 
         $calendarLib = new \Cx\Modules\Calendar\Controller\CalendarLibrary();
-        return $calendarLib->getExeceptionDates();
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            $calendarLib->getExeceptionDates()
+        );
     }
 }

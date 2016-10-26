@@ -132,7 +132,7 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
      *
      * @param array $params Get parameters,
      *
-     * @return array Array of countries
+     * @return \Cx\Lib\Net\Model\Entity\Response Array of countries
      */
     public function getCountries($params)
     {
@@ -151,15 +151,17 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
                 'val'   => $country['name'],
             );
         }
-        return array(
-            'countries' => $countries
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            array(
+                'countries' => $countries
+            )
         );
     }
 
     /**
      * Returns all available blocks for each language
      *
-     * @return array List of blocks (lang => id )
+     * @return \Cx\Lib\Net\Model\Entity\Response List of blocks (lang => id )
      */
     public function getBlocks() {
         global $objInit, $_CORELANG;
@@ -179,7 +181,7 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
                 'selected' => $block['global'] == 1,
             );
         }
-        return $data;
+        return new \Cx\Lib\Net\Model\Entity\Response($data);
     }
 
     /**
@@ -189,7 +191,7 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
      * @throws NoPermissionException
      * @throws NotEnoughArgumentsException
      * @throws NoBlockFoundException
-     * @return string the html content of the block
+     * @return \Cx\Lib\Net\Model\Entity\Response string the html content of the block
      */
     public function getBlockContent($params) {
         global $_CORELANG, $objDatabase;
@@ -239,7 +241,11 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
             $cx->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
             $result->fields['content']
         );
-        return array('content' => $ls->replace());
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            array(
+                'content' => $ls->replace()
+            )
+        );
     }
 
     /**
@@ -249,7 +255,7 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
      * @throws NoPermissionException
      * @throws NotEnoughArgumentsException
      * @throws BlockCouldNotBeSavedException
-     * @return boolean true if everything finished with success
+     * @return \Cx\Lib\Net\Model\Entity\Response boolean true if everything finished with success
      */
     public function saveBlockContent($params) {
         global $_CORELANG, $objDatabase;
@@ -294,6 +300,10 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
         );
         $this->messages[] = $_CORELANG['TXT_CORE_SAVED_BLOCK'];
 
-        return array('content' => $ls->replace());
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            array(
+                'content' => $ls->replace()
+            )
+        );
     }
 }
