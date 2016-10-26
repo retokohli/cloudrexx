@@ -98,13 +98,16 @@ class GalleryEventListener extends DefaultEventListener {
      *
      * @param array $eventArgs Event args
      */
-    public function galleriesClearSsiCache(array $eventArgs)
+    public function clearEsiCache(array $eventArgs)
     {
-        global $objCache;
+        if (empty($eventArgs) || $eventArgs != 'Gallery') {
+            return;
+        }
 
         // clear ssi cache
+        $cache = $this->cx->getComponent('Cache');
         foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
-            $objCache->clearSsiCachePage('Gallery', 'getLastImage', array('langId' => $lang['id']));
+            $cache->clearSsiCachePage('Gallery', 'getLastImage', array('langId' => $lang['id']));
         }
     }
 

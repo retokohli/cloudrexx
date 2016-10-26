@@ -100,70 +100,105 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $page_template, $themesPages, $objCache;
+        global $page_template, $themesPages, $_LANGID;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-                $objGalleryHome = new GalleryHomeContent();
-                if ($objGalleryHome->checkRandom()) {
-                    if (preg_match('/{GALLERY_RANDOM}/', \Env::get('cx')->getPage()->getContent())) {
-                        \Env::get('cx')->getPage()->setContent(str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), \Env::get('cx')->getPage()->getContent()));
-                    }
-                    if (preg_match('/{GALLERY_RANDOM}/', $page_template))  {
-                        $page_template = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), $page_template);
-                    }
-                    if (preg_match('/{GALLERY_RANDOM}/', $themesPages['index'])) {
-                        $themesPages['index'] = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), $themesPages['index']);
-                    }
-                    if (preg_match('/{GALLERY_RANDOM}/', $themesPages['sidebar'])) {
-                        $themesPages['sidebar'] = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), $themesPages['sidebar']);
+                $cache = $this->cx->getComponent('Cache');
+                //Parse gallery random image
+                $objGalleryHome  = new GalleryHomeContent();
+                $imageIds        = $objGalleryHome->getImageIds();
+                $esiContentInfos = array();
+                if ($imageIds) {
+                    foreach ($imageIds as $imgId) {
+                        $esiContentInfos[] = array(
+                            'Gallery',
+                            'getImageById',
+                            array('imgId' => $imgId, 'langId' => $_LANGID)
+                        );
                     }
                 }
-                $galleryLatestImg = $objCache->getEsiContent(
+
+                $galleryRandomImg = $cache->getRandomizedEsiContent(
+                    $esiContentInfos
+                );
+                $content = $this->cx->getPage()->getContent();
+                if (preg_match('/{GALLERY_RANDOM}/', $content)) {
+                    $this->parseContentIntoTpl(
+                        $content,
+                        $galleryRandomImg,
+                        '{GALLERY_RANDOM}'
+                    );
+                    $this->cx->getPage()->setContent($content);
+                }
+                $this->parseContentIntoTpl(
+                    $page_template,
+                    $galleryRandomImg,
+                    '{GALLERY_RANDOM}'
+                );
+                $this->parseContentIntoTpl(
+                    $themesPages['index'],
+                    $galleryRandomImg,
+                    '{GALLERY_RANDOM}'
+                );
+                $this->parseContentIntoTpl(
+                    $themesPages['sidebar'],
+                    $galleryRandomImg,
+                    '{GALLERY_RANDOM}'
+                );
+
+                //Parse gallery latest image
+                $galleryLatestImg = $cache->getEsiContent(
                     'Gallery',
                     'getLastImage'
                 );
-                if (!empty($galleryLatestImg)) {
-                    if (
-                        preg_match(
-                            '/{GALLERY_LATEST}/',
-                            \Env::get('cx')->getPage()->getContent()
-                        )
-                    ) {
-                        \Env::get('cx')->getPage()->setContent(
-                            str_replace(
-                                '{GALLERY_LATEST}',
-                                $galleryLatestImg,
-                                \Env::get('cx')->getPage()->getContent()
-                            )
-                        );
-                    }
-                    if (preg_match('/{GALLERY_LATEST}/', $page_template)) {
-                        $page_template = str_replace(
-                            '{GALLERY_LATEST}',
-                            $galleryLatestImg,
-                            $page_template
-                        );
-                    }
-                    if (preg_match('/{GALLERY_LATEST}/', $themesPages['index'])) {
-                        $themesPages['index'] = str_replace(
-                            '{GALLERY_LATEST}',
-                            $galleryLatestImg,
-                            $themesPages['index']
-                        );
-                    }
-                    if (preg_match('/{GALLERY_LATEST}/', $themesPages['sidebar'])) {
-                        $themesPages['sidebar'] = str_replace(
-                            '{GALLERY_LATEST}',
-                            $galleryLatestImg,
-                            $themesPages['sidebar']
-                        );
-                    }
+                $pageContent = $this->cx->getPage()->getContent();
+                if (preg_match('/{GALLERY_LATEST}/', $pageContent)) {
+                    $this->parseContentIntoTpl(
+                        $pageContent,
+                        $galleryLatestImg,
+                        '{GALLERY_LATEST}'
+                    );
+                    $this->cx->getPage()->setContent($pageContent);
                 }
+                $this->parseContentIntoTpl(
+                    $page_template,
+                    $galleryLatestImg,
+                    '{GALLERY_LATEST}'
+                );
+                $this->parseContentIntoTpl(
+                    $themesPages['index'],
+                    $galleryLatestImg,
+                    '{GALLERY_LATEST}'
+                );
+                $this->parseContentIntoTpl(
+                    $themesPages['sidebar'],
+                    $galleryLatestImg,
+                    '{GALLERY_LATEST}'
+                );
                 break;
             default:
                 break;
         }
+    }
 
+    /**
+     * Parse the gallery content into template content
+     *
+     * @param string $template template content
+     * @param string $content  parsing content
+     * @param string $pattern  pattern
+     *
+     * @return null
+     */
+    public function parseContentIntoTpl(&$template, $content, $pattern)
+    {
+        if (empty($template) || empty($pattern)) {
+            return;
+        }
+
+        if (preg_match('/' . $pattern . '/', $template)) {
+            $template = str_replace($pattern, $content, $template);
+        }
     }
 
     /**
@@ -180,15 +215,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $eventListener = new \Cx\Modules\Gallery\Model\Event\GalleryEventListener($this->cx);
         $this->cx->getEvents()->addEventListener('SearchFindContent', $eventListener);
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
-        $this->cx->getEvents()->addEventListener('galleriesClearSsiCache', $eventListener);
-    }
-
-    /**
-     * Register the events
-     */
-    public function registerEvents()
-    {
-        $this->cx->getEvents()->addEvent('galleriesClearSsiCache');
+        $this->cx->getEvents()->addEventListener('clearEsiCache', $eventListener);
     }
 
 }

@@ -69,7 +69,7 @@ class JsonGallery implements JsonAdapter {
      */
     public function getAccessableMethods()
     {
-        return array('getLastImage');
+        return array('getLastImage', 'getImageById');
     }
 
     /**
@@ -104,5 +104,28 @@ class JsonGallery implements JsonAdapter {
             return array('content' => '');
         }
         return array('content' => $objGalleryHome->getLastImage());
+    }
+
+    /**
+     * Get the image by id
+     *
+     * @param array $params User input array
+     *
+     * @return array
+     */
+    public function getImageById($params)
+    {
+        if (empty($params) || empty($params['get']['imgId'])) {
+            return array('content' => '');
+        }
+
+        $imgId = isset($params['get']['imgId'])
+            ? contrexx_input2int($params['get']['imgId']) : 0;
+        $objGalleryHome = new GalleryHomeContent();
+        if (!$objGalleryHome->checkRandom()) {
+            return array('content' => '');
+        }
+
+        return array('content' => $objGalleryHome->getImageById($imgId));
     }
 }

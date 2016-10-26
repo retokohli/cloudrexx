@@ -1624,7 +1624,7 @@ class GalleryManager extends GalleryLibrary
                                 WHERE     id='.$intImageId);
         \Cx\Core\Core\Controller\Cx::instanciate()
             ->getEvents()
-            ->triggerEvent('galleriesClearSsiCache');
+            ->triggerEvent('clearEsiCache');
     }
 
 
@@ -1665,7 +1665,7 @@ class GalleryManager extends GalleryLibrary
         $this->strOkMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_PICTURE_RESET'];
         \Cx\Core\Core\Controller\Cx::instanciate()
             ->getEvents()
-            ->triggerEvent('galleriesClearSsiCache');
+            ->triggerEvent('clearEsiCache');
     }
 
 
@@ -2001,7 +2001,7 @@ class GalleryManager extends GalleryLibrary
                                             WHERE     id='.$intPicId);
         \Cx\Core\Core\Controller\Cx::instanciate()
             ->getEvents()
-            ->triggerEvent('galleriesClearSsiCache');
+            ->triggerEvent('clearEsiCache');
 
         return $objResult->fields['catid'];
     }
@@ -3005,7 +3005,7 @@ $strFileNew = '';
                 $this->strOkMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_THUMBNAIL_VALIDATED'];
                 \Cx\Core\Core\Controller\Cx::instanciate()
                     ->getEvents()
-                    ->triggerEvent('galleriesClearSsiCache', array(array('status' => 'success')));
+                    ->triggerEvent('clearEsiCache', array(array('status' => 'success')));
             } else { // no category was selected, save the values and show an error message
                 $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_pictures
                                         SET     catid='.intval($_POST['validate_category']).',
@@ -3029,7 +3029,7 @@ $strFileNew = '';
             $this->strOkMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_PICTURE_DELETED'];
             \Cx\Core\Core\Controller\Cx::instanciate()
                 ->getEvents()
-                ->triggerEvent('galleriesClearSsiCache');
+                ->triggerEvent('clearEsiCache');
         }
     }
 
@@ -3195,7 +3195,7 @@ $strFileNew = '';
                 $this->strOkMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_THUMBNAIL_VALIDATED'];
                 \Cx\Core\Core\Controller\Cx::instanciate()
                     ->getEvents()
-                    ->triggerEvent('galleriesClearSsiCache');
+                    ->triggerEvent('clearEsiCache');
             }
         }
     }
@@ -3245,7 +3245,7 @@ $strFileNew = '';
         $this->strOkMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_PICTURE_DELETED'];
         \Cx\Core\Core\Controller\Cx::instanciate()
             ->getEvents()
-            ->triggerEvent('galleriesClearSsiCache');
+            ->triggerEvent('clearEsiCache');
     }
 
 
