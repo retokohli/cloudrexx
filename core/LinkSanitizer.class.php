@@ -69,9 +69,6 @@ class LinkSanitizer {
             (
                 # match all SRC and HREF attributes
                 \s+(src|href|action)\s*=\s*['\"]
-                |
-                # or match all CSS @import statements
-                @import\s+url\s*\(
             )
 
             # but only those who's values don't start with a slash..
