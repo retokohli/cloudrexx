@@ -274,9 +274,9 @@ class JsonData {
 
         try {
             $response = call_user_func(array($adapter, $realMethod), $arguments);
-            $response->setAbstractData(array(
+            $response->setAbstractContent(array(
                 'status'  => 'success',
-                'data'    => $response->getAbstractData(),
+                'data'    => $response->getAbstractContent(),
                 'message' => $adapter->getMessagesAsString()
             ));
             return $response;
