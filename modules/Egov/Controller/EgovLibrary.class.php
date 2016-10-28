@@ -486,7 +486,7 @@ FORMTEMPLATE;
             $inputField = '';
             $value      = isset($_POST['contactFormField_'.$fieldId])
                          ? contrexx_input2raw($_POST['contactFormField_'.$fieldId])
-                         : (empty($_POST) ? $arrField['attributes'] : '');
+                         : (!isset($_POST['submitContactForm']) ? $arrField['attributes'] : '');
             switch ($arrField['type']) {
                 case 'text':
                     $inputField = \Html::getInputText('contactFormField_'.$fieldId, $value);
