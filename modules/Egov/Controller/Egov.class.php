@@ -130,7 +130,7 @@ class Egov extends EgovLibrary
             )");
         $order_id = $objDatabase->Insert_ID();
         if (self::GetProduktValue('product_per_day', $product_id) == 'yes') {
-            list ($calD, $calM, $calY) = explode('[.]', contrexx_input2raw($_REQUEST['contactFormField_1000']));
+            list ($calD, $calM, $calY) = explode('.', contrexx_input2raw($_REQUEST['contactFormField_1000']));
             for($x = 0; $x < $quantity; ++$x) {
                 $objDatabase->Execute("
                     INSERT INTO ".DBPREFIX."module_egov_product_calendar (
@@ -300,7 +300,7 @@ class Egov extends EgovLibrary
                     $objMail->Body = $BodyText;
                     $objMail->AddAddress($TargetMail);
                     if (self::GetProduktValue('product_electro', $product_id) == 1) {
-                        $objMail->AddAttachment(ASCMS_PATH.self::GetProduktValue('product_file', $product_id));
+                        $objMail->AddAttachment(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().self::GetProduktValue('product_file', $product_id));
                     }
                     $objMail->Send();
                 }
@@ -668,6 +668,12 @@ $yellowpayForm
                 "</script>\n"
             );
         }
+
+        // $_REQUEST might get reset in Egov::_saveOrder()
+        if (empty($_REQUEST['id'])) {
+            return;
+        }
+
         $query = "
             SELECT product_id, product_name, product_desc, product_price ".
              "FROM ".DBPREFIX."module_egov_products

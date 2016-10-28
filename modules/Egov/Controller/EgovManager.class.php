@@ -652,13 +652,13 @@ class EgovManager extends EgovLibrary
 
         $this->objTemplate->loadTemplateFile('module_gov_order_edit.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_ORDER_EDIT'];
-        $order_id = (isset($_REQUEST['id']) ? $_REQUEST['id'] : 0);
+        $order_id = (isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
         $productId = EgovLibrary::GetOrderValue('order_product', $order_id);
         $FieldName = $FieldValue = NULL;
         if (isset($_REQUEST['update'])) {
             $query = "
                 UPDATE ".DBPREFIX."module_egov_orders
-                   SET order_state=".$_REQUEST['state']."
+                   SET order_state=".intval($_REQUEST['state'])."
                  WHERE order_id=$order_id
             ";
             if ($objDatabase->Execute($query)) {
@@ -836,7 +836,7 @@ class EgovManager extends EgovLibrary
             SELECT *
               FROM ".DBPREFIX."module_egov_orders".
               (!empty($_REQUEST['product'])
-                ? ' WHERE order_product='.$_REQUEST["product"] : '')."
+                ? ' WHERE order_product='.intval($_REQUEST["product"]) : '')."
              ORDER BY order_id DESC";
         $objResult = $objDatabase->Execute($query);
         $i = 0;
@@ -1689,7 +1689,7 @@ class EgovManager extends EgovLibrary
                     $objMail->Body = $BodyText;
                     $objMail->AddAddress($TargetMail);
                     if (EgovLibrary::GetProduktValue('product_electro', $product_id) == 1) {
-                        $objMail->AddAttachment(ASCMS_PATH.EgovLibrary::GetProduktValue('product_file', $product_id));
+                        $objMail->AddAttachment(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().EgovLibrary::GetProduktValue('product_file', $product_id));
                     }
                     $objMail->Send();
                 }
