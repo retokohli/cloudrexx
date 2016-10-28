@@ -219,6 +219,25 @@ class ListingController {
             //$data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet();
             $data = $this->entityClass;
 
+            // Drop filters for non-existing fields
+            foreach ($this->criteria as $field=>$crit) {
+                if (!isset(current(current($data))[$field])) {
+                    unset($this->criteria[$field]);
+                }
+            }
+            // filter data
+            if (count($this->criteria)) {
+                $data->filter(function($entry) {
+                    foreach ($this->criteria as $field=>$crit) {
+                        if ($entry[$field] == $crit) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+                $this->count = count($data);
+            }
+
             $data = $data->sort($this->order);
 
             // add sorting and filtering
