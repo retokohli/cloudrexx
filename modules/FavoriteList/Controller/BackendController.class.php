@@ -453,14 +453,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 );
                 break;
             case 'Cx\Modules\FavoriteList\Model\Entity\FormField':
-                if (!isset($_GET['order'])) {
-                    $_GET['order'] = 'id';
-                }
                 return array(
                     'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_ACT_FORMFIELD'],
                     'fields' => array(
                         'id' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_ID'],
+                            'showOverview' => false,
                         ),
                         'name' => array(
                             'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_NAME'],
@@ -497,22 +494,23 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'sorting' => true,
                         'paging' => true,
                         'filtering' => false,
+                        'sortBy' => [
+                            'field' => ['order' => SORT_ASC]
+                        ],
                     ),
                     'order' => array(
                         'overview' => array(
-                            'id',
+                            'order',
                             'name',
                             'type',
                             'required',
-                            'order',
                             'values',
                         ),
                         'form' => array(
-                            'id',
+                            'order',
                             'name',
                             'type',
                             'required',
-                            'order',
                             'values',
                         ),
                     ),
