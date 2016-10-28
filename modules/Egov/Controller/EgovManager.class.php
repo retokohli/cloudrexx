@@ -316,7 +316,6 @@ class EgovManager extends EgovLibrary
         $autoStatusNo          = $productAutoStatus == 0 ? 'checked="checked"' : '';
         $autoStatusElectro     = $productAutoStatus == 2 ? 'checked="checked"' : '';
         $autoStatusReservation = $productAutoStatus == 3 ? 'checked="checked"' : '';
-
         $ProductSenderName = EgovLibrary::GetProduktValue('product_sender_name', $product_id);
         if ($ProductSenderName == '') {
             $ProductSenderName = EgovLibrary::GetSettings('set_sender_name');
@@ -796,7 +795,7 @@ class EgovManager extends EgovLibrary
 
     function _orders()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
         $this->objTemplate->loadTemplateFile('module_gov_orders_overview.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_ORDERS'];
@@ -805,6 +804,7 @@ class EgovManager extends EgovLibrary
             $this->_strErrMessage = $_REQUEST['err'];
         }
 
+        $pos = (isset($_GET['pos'])) ? contrexx_input2int($_GET['pos']) : 0;
         // delete orders
         if (isset($_REQUEST['delete'])) {
             if (isset($_REQUEST['multi'])) {
@@ -839,47 +839,64 @@ class EgovManager extends EgovLibrary
                 ? ' WHERE order_product='.intval($_REQUEST["product"]) : '')."
              ORDER BY order_id DESC";
         $objResult = $objDatabase->Execute($query);
-        $i = 0;
-        while (!$objResult->EOF) {
-            $stateImg = 'status_yellow.gif';
-            switch ($objResult->fields['order_state']) {
-                case 1:
-                    $stateImg = 'status_green.gif';
-                    break;
-                case 2:
-                    $stateImg = 'status_red.gif';
-                    break;
-                case 0:
-                case 3:
-                default:
-                    break;
+        if ($objResult && $objResult->RecordCount()) {
+            $paging = ($objResult->RecordCount() > $_CONFIG['corePagingLimit'])
+                ? getPaging(
+                    $objResult->RecordCount(),
+                    $pos,
+                    '&cmd=Egov&act=',
+                    '<strong>' . $_ARRAYLANG['TXT_ORDERS'] . '</strong>',
+                    true,
+                    $_CONFIG['corePagingLimit']
+                 )
+                : '';
+            $objResult = $objDatabase->SelectLimit(
+                $query,
+                $_CONFIG['corePagingLimit'],
+                $pos
+            );
+            $this->objTemplate->setVariable('EGOV_ORDER_PAGING', $paging);
+            $i = 0;
+            while (!$objResult->EOF) {
+                $stateImg = 'status_yellow.gif';
+                switch ($objResult->fields['order_state']) {
+                    case 1:
+                        $stateImg = 'status_green.gif';
+                        break;
+                    case 2:
+                        $stateImg = 'status_red.gif';
+                        break;
+                    case 0:
+                    case 3:
+                    default:
+                        break;
+                }
+                $reservedDateVal = $objResult->fields['order_reservation_date'];
+                $reservationDateFormat = '';
+                if ($reservedDateVal != '0000-00-00') {
+                    $reservationDate = new \DateTime("$reservedDateVal");
+                    $reservationDateFormat = $reservationDate->format('d.m.Y');
+                }
+                $this->objTemplate->setVariable(array(
+                    'ORDERS_ROWCLASS' => (++$i % 2 ? 'row2' : 'row1'),
+                    'ORDER_ID' => $objResult->fields['order_id'],
+                    'ORDER_DATE' => $objResult->fields['order_date'],
+                    'ORDER_ID' => $objResult->fields['order_id'],
+                    'ORDER_STATE' => EgovLibrary::MaskState($objResult->fields['order_state']),
+                    'EGOV_ORDER_AMOUNT' => contrexx_raw2xhtml($objResult->fields['order_quant']),
+                    'EGOV_ORDER_RESERVATION_DATE' => $reservationDateFormat,
+                    'ORDER_PRODUCT' => EgovLibrary::GetProduktValue('product_name', $objResult->fields['order_product']),
+                    'ORDER_NAME' =>
+                        $this->ParseFormValues('Vorname', $objResult->fields['order_values']).
+                        ' '.
+                        $this->ParseFormValues('Nachname', $objResult->fields['order_values']),
+                    'ORDER_STATE_IMG' => $stateImg,
+                    'ORDER_IP' => $objResult->fields['order_ip'],
+                ));
+                $this->objTemplate->parse('orders_row');
+                $objResult->MoveNext();
             }
-            $reservedDateVal = $objResult->fields['order_reservation_date'];
-            $reservationDateFormat = '';
-            if ($reservedDateVal != '0000-00-00') {
-                $reservationDate = new \DateTime("$reservedDateVal");
-                $reservationDateFormat = $reservationDate->format('d.m.Y');
-            }
-            $this->objTemplate->setVariable(array(
-                'ORDERS_ROWCLASS' => (++$i % 2 ? 'row2' : 'row1'),
-                'ORDER_ID' => $objResult->fields['order_id'],
-                'ORDER_DATE' => $objResult->fields['order_date'],
-                'ORDER_ID' => $objResult->fields['order_id'],
-                'ORDER_STATE' => EgovLibrary::MaskState($objResult->fields['order_state']),
-                'EGOV_ORDER_AMOUNT' => contrexx_raw2xhtml($objResult->fields['order_quant']),
-                'EGOV_ORDER_RESERVATION_DATE' => $reservationDateFormat,
-                'ORDER_PRODUCT' => EgovLibrary::GetProduktValue('product_name', $objResult->fields['order_product']),
-                'ORDER_NAME' =>
-                    $this->ParseFormValues('Vorname', $objResult->fields['order_values']).
-                    ' '.
-                    $this->ParseFormValues('Nachname', $objResult->fields['order_values']),
-                'ORDER_STATE_IMG' => $stateImg,
-                'ORDER_IP' => $objResult->fields['order_ip'],
-            ));
-            $this->objTemplate->parse('orders_row');
-            $objResult->MoveNext();
-        }
-        if ($i == 0) {
+        } else {
             $this->objTemplate->hideBlock('orders_row');
         }
     }
@@ -1643,7 +1660,7 @@ class EgovManager extends EgovLibrary
         $autoStatus = self::GetProduktValue('product_autostatus', $product_id);
         if (   self::GetProduktValue('product_electro', $product_id) == 1
             || in_array($autoStatus, array(1, 2, 3))
-         ) {
+        ) {
             $status  = $autoStatus == 3 ? 4 : 1;
             EgovLibrary::updateOrderStatus($order_id, $status);
             $TargetMail = EgovLibrary::GetEmailAdress($order_id);
