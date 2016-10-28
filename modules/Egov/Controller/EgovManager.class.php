@@ -874,8 +874,7 @@ class EgovManager extends EgovLibrary
                 $reservedDateVal = $objResult->fields['order_reservation_date'];
                 $reservationDateFormat = '';
                 if ($reservedDateVal != '0000-00-00') {
-                    $reservationDate = new \DateTime("$reservedDateVal");
-                    $reservationDateFormat = $reservationDate->format('d.m.Y');
+                    $reservationDateFormat = $reservedDateVal;
                 }
                 $this->objTemplate->setVariable(array(
                     'ORDERS_ROWCLASS' => (++$i % 2 ? 'row2' : 'row1'),
