@@ -131,6 +131,12 @@ class ListingController {
      */
     protected $criteria = array();
 
+    /**
+     * Filter at least one field of the result must match
+     * @var string
+     */
+    protected $filter = '';
+
 
     private $paging;
 
@@ -146,7 +152,7 @@ class ListingController {
      * @param array $crit (optional) Doctrine style criteria array to use
      * @param array $options (Unused)
      */
-    public function __construct($entities, $crit = array(), $options = array()) {
+    public function __construct($entities, $crit = array(), $filter = '', $options = array()) {
         if (isset($options['paging'])) {
             $this->paging = $options['paging'];
         }
@@ -177,6 +183,7 @@ class ListingController {
             $this->entityClass = $entities;
         }
         $this->criteria = $crit;
+        $this->filter = $filter
 
         // todo: allow multiple listing controllers per page request
         $this->args = contrexx_input2raw($_GET);
@@ -194,6 +201,7 @@ class ListingController {
             'count'     => $this->count,
             'order'     => $this->order,
             'criteria'  => $this->criteria,
+            'filter'    => $this->filter,
             'entity'    => $this->entityName,
         );
         foreach ($this->handlers as $handler) {
@@ -203,6 +211,7 @@ class ListingController {
         $this->count    = $params['count'];
         $this->order    = $params['order'];
         $this->criteria = $params['criteria'];
+        $this->filter   = $params['filter'];
 
         // handle ajax requests
         if (false /* ajax request for this listing */) {
@@ -219,23 +228,31 @@ class ListingController {
             //$data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet();
             $data = $this->entityClass;
 
-            // Drop filters for non-existing fields
-            foreach ($this->criteria as $field=>$crit) {
-                if (!isset(current(current($data))[$field])) {
-                    unset($this->criteria[$field]);
-                }
-            }
             // filter data
             if (count($this->criteria)) {
                 $data->filter(function($entry) {
-                    foreach ($this->criteria as $field=>$crit) {
-                        if ($entry[$field] == $crit) {
+                    foreach ($entry as $field=>$data) {
+                        if (
+                            isset($this->criteria[$field]) &&
+                            $this->criteria[$field] != $data
+                        ) {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+                $this->count = count($data);
+            }
+
+            if (!empty($this->filter)) {
+                $data->filter(function($entry) {
+                    foreach ($entry as $field=>$data) {
+                        if (strpos($data, $this->filter) !== false) {
                             return true;
                         }
                     }
                     return false;
                 });
-                $this->count = count($data);
             }
 
             $data = $data->sort($this->order);
