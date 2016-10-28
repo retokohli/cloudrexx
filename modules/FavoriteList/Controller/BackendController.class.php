@@ -55,24 +55,19 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     protected $template;
 
     /**
-     * module name
-     * @var string $moduleName
-     */
-    protected $moduleName = 'FavoriteList';
-
-    /**
-     * module name for language placeholder
-     * @var string $moduleNameLang
-     */
-    protected $moduleNameLang = 'FAVORITELIST';
-
-    /**
      * Returns a list of available commands (?act=XY)
      * @return array List of acts
      */
     public function getCommands()
     {
-        return array('Catalog', 'Favorite', 'Settings');
+        return array(
+            'Catalog',
+            'Favorite',
+            'Settings' => array(
+                'Mailing',
+                'FormField',
+            ),
+        );
     }
 
     /**
@@ -88,6 +83,114 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     {
         global $_ARRAYLANG;
         global $_CONFIG;
+
+        try {
+            $configPath = $this->cx->getWebsiteConfigPath();
+            // fetch $_CONFIG data from settings.php file
+            // will be used for migration of basic configuration from contrexx_settings to \Cx\Core\Setting
+            $existingConfig = self::fetchConfigFromSettingsFile($this->cx->getWebsiteConfigPath() . '/settings.php');
+
+            // function group
+            \Cx\Core\Setting\Controller\Setting::init('FavoriteList', 'function', 'Yaml', $configPath);
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('functionMail')
+                && !\Cx\Core\Setting\Controller\Setting::add('functionMail', isset($existingConfig['functionMail']) ? $existingConfig['functionMail'] : 0, 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '', 'function')
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Function Mail");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('functionPrint')
+                && !\Cx\Core\Setting\Controller\Setting::add('functionPrint', isset($existingConfig['functionPrint']) ? $existingConfig['functionPrint'] : 0, 2,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '', 'function')
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Function Print");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('functionRecommendation')
+                && !\Cx\Core\Setting\Controller\Setting::add('functionRecommendation', isset($existingConfig['functionRecommendation']) ? $existingConfig['functionRecommendation'] : 0, 3,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '', 'function')
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Function Recommendation");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('functionInquiry')
+                && !\Cx\Core\Setting\Controller\Setting::add('functionInquiry', isset($existingConfig['functionInquiry']) ? $existingConfig['functionInquiry'] : 0, 4,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '', 'function')
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Function Inquiry");
+            }
+
+            // notification group
+            \Cx\Core\Setting\Controller\Setting::init('FavoriteList', 'notification', 'Yaml', $configPath);
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationMail')
+                && !\Cx\Core\Setting\Controller\Setting::add('notificationMail', isset($existingConfig['notificationMail']) ? $existingConfig['notificationMail'] : 0, 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '', 'notification')
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Mail");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationMailMail')
+                && !\Cx\Core\Setting\Controller\Setting::add('notificationMailMail', isset($existingConfig['notificationMailMail']) ? $existingConfig['notificationMailMail'] : '', 2,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'notification')
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Mail Mail");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationPrint')
+                && !\Cx\Core\Setting\Controller\Setting::add('notificationPrint', isset($existingConfig['notificationPrint']) ? $existingConfig['notificationPrint'] : 0, 3,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '', 'notification')
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Print");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationPrintMail')
+                && !\Cx\Core\Setting\Controller\Setting::add('notificationPrintMail', isset($existingConfig['notificationPrintMail']) ? $existingConfig['notificationPrintMail'] : '', 4,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'notification')
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Print Mail");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationRecommendation')
+                && !\Cx\Core\Setting\Controller\Setting::add('notificationRecommendation', isset($existingConfig['notificationRecommendation']) ? $existingConfig['notificationRecommendation'] : 0, 5,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '', 'notification')
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Recommendation");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationRecommendationMail')
+                && !\Cx\Core\Setting\Controller\Setting::add('notificationRecommendationMail', isset($existingConfig['notificationRecommendationMail']) ? $existingConfig['notificationRecommendationMail'] : '', 6,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'notification')
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Mail Recommendation");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationInquiry')
+                && !\Cx\Core\Setting\Controller\Setting::add('notificationInquiry', isset($existingConfig['notificationInquiry']) ? $existingConfig['notificationInquiry'] : 0, 7,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '', 'notification')
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Inquiry");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationInquiryMail')
+                && !\Cx\Core\Setting\Controller\Setting::add('notificationInquiryMail', isset($existingConfig['notificationInquiryMail']) ? $existingConfig['notificationInquiryMail'] : '', 8,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'notification')
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Inquiry Mail");
+            }
+
+            // pdf group
+            \Cx\Core\Setting\Controller\Setting::init('FavoriteList', 'pdf', 'Yaml', $configPath);
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('pdfLogo')
+                && !\Cx\Core\Setting\Controller\Setting::add('pdfLogo', isset($existingConfig['pdfLogo']) ? $existingConfig['pdfLogo'] : '', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'pdf')
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList PDF Logo");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('pdfAddress')
+                && !\Cx\Core\Setting\Controller\Setting::add('pdfAddress', isset($existingConfig['pdfAddress']) ? $existingConfig['pdfAddress'] : '', 2,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXTAREA, '', 'pdf')
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList PDF Address");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('pdfFooter')
+                && !\Cx\Core\Setting\Controller\Setting::add('pdfFooter', isset($existingConfig['pdfFooter']) ? $existingConfig['pdfFooter'] : '', 3,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXTAREA, '', 'pdf')
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList PDF Footer");
+            }
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+        }
 
         $this->template = $template;
 
@@ -109,7 +212,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         if (!$template->blockExists('mailing')) {
                             return;
                         }
-                        var_dump('mailing');
                         $template->setVariable(
                             'MAILING',
                             \Cx\Core\MailTemplate\Controller\MailTemplate::adminView(
@@ -120,65 +222,44 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             )->get()
                         );
                         break;
+                    case 'FormField':
+                        // Parse entity view generation pages
+                        $entityClassName = $this->getNamespace() . '\\Model\\Entity\\' . $cmd[1];
+                        $this->parseEntityClassPage($template, $entityClassName, $cmd[1]);
+                        break;
                     default:
-                        \Cx\Core\Setting\Controller\Setting::init($this->moduleName, 'config');
-                        //get post values
-                        $settings = isset($_POST['setting']) ? $_POST['setting'] : array();
-                        if (isset($_POST['save'])) {
-                            $includeFromSaveCheckbox = array(
-                                'functionMail',
-                                'functionPrint',
-                                'functionRecommendation',
-                                'functionInquiry',
-                                'notificationMail',
-                                'notificationPrint',
-                                'notificationRecommendation',
-                                'notificationInquiry',
-                            );
-                            $includeFromSaveText = array(
-                                'notificationMailMail',
-                                'notificationPrintMail',
-                                'notificationRecommendationMail',
-                                'notificationInquiryMail',
-                                'pdfLogo',
-                                'pdfAddress',
-                                'pdfFooter',
-                            );
-                            foreach ($settings as $settingName => $settingValue) {
-                                if (in_array($settingName, $includeFromSaveText)) {
-                                    \Cx\Core\Setting\Controller\Setting::set($settingName, $settingValue);
-                                    \Cx\Core\Setting\Controller\Setting::update($settingName);
-                                    \Message::ok($_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_MESSAGE_SUCCESS']);
-                                }
-                            }
-                            foreach ($includeFromSaveCheckbox as $settingName) {
-                                if ($settings[$settingName]) {
-                                    \Cx\Core\Setting\Controller\Setting::set($settingName, 1);
-                                } else {
-                                    \Cx\Core\Setting\Controller\Setting::set($settingName, 0);
-                                }
-                                \Cx\Core\Setting\Controller\Setting::update($settingName);
-                                \Message::ok($_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_MESSAGE_SUCCESS']);
-                            }
+                        //save the setting values
+                        \Cx\Core\Setting\Controller\Setting::init($this->getName(), null, 'Yaml');
+                        if (!empty($_POST['bsubmit'])) {
+                            \Cx\Core\Setting\Controller\Setting::storeFromPost();
                         }
-                        //get the settings values from DB
-                        $this->template->setVariable(array(
-                            $this->moduleNameLang . '_SETTINGS_FUNCTION_MAIL' => \Cx\Core\Setting\Controller\Setting::getValue('functionMail', $this->moduleName) ? 'checked="checked"' : '',
-                            $this->moduleNameLang . '_SETTINGS_FUNCTION_PRINT' => \Cx\Core\Setting\Controller\Setting::getValue('functionPrint', $this->moduleName) ? 'checked="checked"' : '',
-                            $this->moduleNameLang . '_SETTINGS_FUNCTION_RECOMMENDATION' => \Cx\Core\Setting\Controller\Setting::getValue('functionRecommendation', $this->moduleName) ? 'checked="checked"' : '',
-                            $this->moduleNameLang . '_SETTINGS_FUNCTION_INQUIRY' => \Cx\Core\Setting\Controller\Setting::getValue('functionInquiry', $this->moduleName) ? 'checked="checked"' : '',
-                            $this->moduleNameLang . '_SETTINGS_NOTIFICATION_MAIL' => \Cx\Core\Setting\Controller\Setting::getValue('notificationMail', $this->moduleName) ? 'checked="checked"' : '',
-                            $this->moduleNameLang . '_SETTINGS_NOTIFICATION_MAIL_MAIL' => \Cx\Core\Setting\Controller\Setting::getValue('notificationMailMail', $this->moduleName),
-                            $this->moduleNameLang . '_SETTINGS_NOTIFICATION_PRINT' => \Cx\Core\Setting\Controller\Setting::getValue('notificationPrint', $this->moduleName) ? 'checked="checked"' : '',
-                            $this->moduleNameLang . '_SETTINGS_NOTIFICATION_PRINT_MAIL' => \Cx\Core\Setting\Controller\Setting::getValue('notificationPrintMail', $this->moduleName),
-                            $this->moduleNameLang . '_SETTINGS_NOTIFICATION_RECOMMENDATION' => \Cx\Core\Setting\Controller\Setting::getValue('notificationRecommendation', $this->moduleName) ? 'checked="checked"' : '',
-                            $this->moduleNameLang . '_SETTINGS_NOTIFICATION_RECOMMENDATION_MAIL' => \Cx\Core\Setting\Controller\Setting::getValue('notificationRecommendationMail', $this->moduleName),
-                            $this->moduleNameLang . '_SETTINGS_NOTIFICATION_INQUIRY' => \Cx\Core\Setting\Controller\Setting::getValue('notificationInquiry', $this->moduleName) ? 'checked="checked"' : '',
-                            $this->moduleNameLang . '_SETTINGS_NOTIFICATION_INQUIRY_MAIL' => \Cx\Core\Setting\Controller\Setting::getValue('notificationInquiryMail', $this->moduleName),
-                            $this->moduleNameLang . '_SETTINGS_PDF_LOGO' => \Cx\Core\Setting\Controller\Setting::getValue('pdfLogo', $this->moduleName),
-                            $this->moduleNameLang . '_SETTINGS_PDF_ADDRESS' => \Cx\Core\Setting\Controller\Setting::getValue('pdfAddress', $this->moduleName),
-                            $this->moduleNameLang . '_SETTINGS_PDF_FOOTER' => \Cx\Core\Setting\Controller\Setting::getValue('pdfFooter', $this->moduleName),
-                        ));
+
+                        \Cx\Core\Setting\Controller\Setting::setEngineType($this->getName(), 'Yaml', 'function');
+                        \Cx\Core\Setting\Controller\Setting::show(
+                            $this->template,
+                            'index.php?cmd=' . $this->getName() . '&act=' . current($cmd),
+                            $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_SETTINGS_FUNCTION_DESCRIPTION'],
+                            $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_SETTINGS_FUNCTION'],
+                            'TXT_MODULE_' . strtoupper($this->getName()) . '_SETTINGS_'
+                        );
+
+                        \Cx\Core\Setting\Controller\Setting::setEngineType($this->getName(), 'Yaml', 'notification');
+                        \Cx\Core\Setting\Controller\Setting::show(
+                            $this->template,
+                            'index.php?cmd=' . $this->getName() . '&act=' . current($cmd),
+                            $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_SETTINGS_NOTIFICATION_DESCRIPTION'],
+                            $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_SETTINGS_NOTIFICATION'],
+                            'TXT_MODULE_' . strtoupper($this->getName()) . '_SETTINGS_'
+                        );
+
+                        \Cx\Core\Setting\Controller\Setting::setEngineType($this->getName(), 'Yaml', 'pdf');
+                        \Cx\Core\Setting\Controller\Setting::show(
+                            $this->template,
+                            'index.php?cmd=' . $this->getName() . '&act=' . current($cmd),
+                            $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_SETTINGS_PDF_DESCRIPTION'],
+                            $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_SETTINGS_PDF'],
+                            'TXT_MODULE_' . strtoupper($this->getName()) . '_SETTINGS_'
+                        );
                 }
                 break;
             case '':
@@ -187,6 +268,42 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     $template->touchBlock('overview');
                 }
         }
+    }
+
+    /**
+     * Load a settings.php file and return its configuration ($_CONFIG) as array
+     *
+     * @param   string $file The path to the settings.php file to load the $_CONFIG from
+     * @return  array           Returns an array containing the loaded $_CONFIG from $file.
+     *                          If $file does not exists or on error, it returns an empty array
+     */
+    static function fetchConfigFromSettingsFile($file)
+    {
+        if (!file_exists($file)) {
+            return array();
+        }
+
+        $settingsContent = file_get_contents($file);
+        // Execute code to load the settings into variable $_CONFIG.
+        //
+        // We must use eval() here as we must not use include(_once) here.
+        // As we are not populating the loaded $_CONFIG array into the global space,
+        // any later running components (in particular Cx\Core\Core\Controller\Cx)
+        // would not be able to load the $_CONFIG array as the settings.php file
+        // has already been loaded.
+        //
+        // The closing PHP tag is required as $settingsContent starts with a opening PHP tag (<?php).
+        try {
+            eval('?>' . $settingsContent);
+        } catch (\Exception $e) {
+            return array();
+        }
+
+        if (!isset($_CONFIG)) {
+            return array();
+        }
+
+        return $_CONFIG;
     }
 
     /**
@@ -218,7 +335,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         if (isset($_ARRAYLANG[$langVarName])) {
             $header = $_ARRAYLANG[$langVarName];
         } else {
-            $header = $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_ACT_DEFAULT'];
+            $header = $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_ACT_DEFAULT'];
         }
 
         switch ($entityClassName) {
@@ -227,25 +344,25 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     $_GET['order'] = 'id';
                 }
                 return array(
-                    'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_ACT_CATALOG'],
+                    'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_ACT_CATALOG'],
                     'fields' => array(
                         'id' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_ID'],
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_ID'],
                         ),
                         'sessionId' => array(
                             'showOverview' => false,
                             'showDetail' => false,
                         ),
                         'name' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_NAME'],
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_NAME'],
                             'table' => array(
                                 'parse' => function ($value, $rowData) {
-                                    return '<a href=\'FavoriteList/Favorite?list_id=' . $rowData['id'] . '\'>' . $value . '</a>';
+                                    return '<a href="' . $this->getName() . '/Favorite?catalog=' . $rowData['id'] . '">' . $value . '</a>';
                                 },
                             ),
                         ),
                         'date' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_DATE'],
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_DATE'],
                             'showDetail' => false,
                         ),
                         'favorites' => array(
@@ -268,34 +385,34 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     $_GET['order'] = 'id';
                 }
                 return array(
-                    'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_ACT_FAVORITE'],
+                    'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_ACT_FAVORITE'],
                     'fields' => array(
                         'id' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_ID'],
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_ID'],
                         ),
                         'title' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_TITLE'],
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_TITLE'],
                         ),
                         'link' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_LINK'],
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_LINK'],
                         ),
                         'description' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_DESCRIPTION'],
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_DESCRIPTION'],
                         ),
                         'info' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_INFO'],
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_INFO'],
                         ),
                         'image1' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_IMAGE_1'],
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_IMAGE_1'],
                         ),
                         'image2' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_IMAGE_2'],
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_IMAGE_2'],
                         ),
                         'image3' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_IMAGE_3'],
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_IMAGE_3'],
                         ),
                         'catalog' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_CATALOG'],
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_CATALOG'],
                         ),
                     ),
                     'filter_criteria' => array(
@@ -340,37 +457,37 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     $_GET['order'] = 'id';
                 }
                 return array(
-                    'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_ACT_FORMFIELD'],
+                    'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_ACT_FORMFIELD'],
                     'fields' => array(
                         'id' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_ID'],
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_ID'],
                         ),
                         'name' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_NAME'],
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_NAME'],
                         ),
                         'type' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_TYP'],
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_TYP'],
                             'type' => 'select',
                             'validValues' => array(
-                                'inputtext' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_INPUTTEXT'],
-                                'textarea' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_TEXTAREA'],
-                                'select' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_SELECT'],
-                                'radio' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_RADIO'],
-                                'checkbox' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_CHECKBOX'],
-                                'mail' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_MAIL'],
-                                'salutation' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_SALUTATION'],
-                                'firstname' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_FIRSTNAME'],
-                                'lastname' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_LASTNAME'],
+                                'inputtext' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_INPUTTEXT'],
+                                'textarea' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_TEXTAREA'],
+                                'select' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_SELECT'],
+                                'radio' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_RADIO'],
+                                'checkbox' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_CHECKBOX'],
+                                'mail' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_MAIL'],
+                                'salutation' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_SALUTATION'],
+                                'firstname' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_FIRSTNAME'],
+                                'lastname' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_LASTNAME'],
                             ),
                         ),
                         'required' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_REQUIRED'],
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_REQUIRED'],
                         ),
                         'order' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_ORDER'],
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_ORDER'],
                         ),
                         'values' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . $this->moduleNameLang . '_FIELD_VALUES'],
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_VALUES'],
                         ),
                     ),
                     'functions' => array(
