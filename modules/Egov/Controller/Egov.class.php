@@ -146,6 +146,10 @@ class Egov extends EgovLibrary
 
         $ReturnValue = '';
         $autoStatus = self::GetProduktValue('product_autostatus', $product_id);
+        // $autoStatus == MANUAL => ERLEDIGT (Note: updateOrder() will recheck $autoStatus and will not update the order_state in case $autoStatus is set to MANUAL => order_state will be left to NEW)
+        // $autoStatus == AUTOMATIC => ERLEDIG
+        // $autoStatus == ELECTRO => ERLEDIGT
+        // $autoStatus == RESERVATION => RESERVATION
         $newStatus  = $autoStatus == 3 ? 4 : 1;
         // Handle any kind of payment request
         if (!empty($_REQUEST['handler'])) {

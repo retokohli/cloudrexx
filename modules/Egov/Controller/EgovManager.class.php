@@ -1030,7 +1030,7 @@ class EgovManager extends EgovLibrary
             $FileErr = 2;
         }
         $productState   = isset($_POST['productState']) ? contrexx_input2int($_POST['productState']) : 0;
-        $productElectro = !empty($_POST['productState']) && $_POST['productState'] == 2 ? 1 : 0;
+        $productElectro = !empty($_POST['productAutoStatus']) && $_POST['productAutoStatus'] == 2 ? 1 : 0;
 
         $uniqueFieldNames = true;
         $arrFields = $this->_getFormFieldsFromPost($uniqueFieldNames);
@@ -1746,9 +1746,9 @@ class EgovManager extends EgovLibrary
         global $_ARRAYLANG;
 
         $arrState = array(
-            0 => $_ARRAYLANG['TXT_STATE_DELETED'],
+            0 => $_ARRAYLANG['TXT_STATE_NEW'],
             1 => $_ARRAYLANG['TXT_STATE_OK'],
-            2 => $_ARRAYLANG['TXT_STATE_NEW'],
+            2 => $_ARRAYLANG['TXT_STATE_DELETED'],
             3 => $_ARRAYLANG['TXT_STATE_ALTERNATIVE'],
             4 => $_ARRAYLANG['TXT_EGOV_ORDER_STATE_RESERVED'],
         );
