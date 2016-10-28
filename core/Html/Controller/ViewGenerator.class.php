@@ -566,7 +566,7 @@ class ViewGenerator {
                 $tpl->loadTemplateFile('NoEntries.html');
                 return $tpl->get().$addBtn;
             }
-            $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController($renderObject, array(), $this->options['functions']);
+            $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController($renderObject, contrexx_input2raw($_GET), $this->options['functions']);
             $renderObject = $listingController->getData();
             $this->options['functions']['vg_increment_number'] = $this->viewId;
             $backendTable = new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
