@@ -441,7 +441,7 @@ class EgovLibrary {
             "<br />\n";
         $i = 1;
 
-$formTemplate = <<<FORMTEMPLATE
+            $formTemplate = <<<FORMTEMPLATE
     <div class="table-responsive">
         <table class="table" summary="" border="0">
             <!-- BEGIN product_fields -->
