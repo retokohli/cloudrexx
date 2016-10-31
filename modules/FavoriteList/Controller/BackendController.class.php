@@ -472,9 +472,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 'radio' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_RADIO'],
                                 'checkbox' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_CHECKBOX'],
                                 'mail' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_MAIL'],
-                                'salutation' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_SALUTATION'],
-                                'firstname' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_FIRSTNAME'],
-                                'lastname' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_LASTNAME'],
                             ),
                         ),
                         'required' => array(

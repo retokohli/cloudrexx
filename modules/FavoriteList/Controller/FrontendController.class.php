@@ -53,16 +53,78 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
 
         switch ($cmd) {
             case 'mail':
-                var_dump('mail');
+                if (isset($_POST['send'])) {
+
+                }
                 break;
             case 'print':
-                var_dump('print');
                 break;
             case 'recommendation':
-                var_dump('recommendation');
+                if (isset($_POST['send'])) {
+
+                }
                 break;
             case 'inquiry':
-                var_dump('inquiry');
+                if (isset($_POST['send'])) {
+
+                } else {
+                    $em = $this->cx->getDb()->getEntityManager();
+                    $formFieldRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\FormField');
+                    $formFields = $formFieldRepo->findAll();
+                    $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($formFields);
+                    $dataSet->sortColumns(array('order' => 'ASC'));
+                    foreach ($dataSet as $formField) {
+                        $template->parse('favoritelist_form_field');
+                        $required = $formField['required'];
+                        if ($required) {
+                            $template->touchBlock('favoritelist_form_field_required');
+                        }
+                        switch ($formField['type']) {
+                            case 'text':
+                            case 'textarea':
+                            case 'mail':
+                                $template->setVariable(array(
+                                    'ID' => $formField['id'],
+                                    'REQUIRED' => $required ? 'required' : '',
+                                    'LABEL' => $formField['name'],
+                                ));
+                                $template->parse('favoritelist_form_field_' . $formField['type']);
+                                break;
+                            case 'select':
+                                $values = $formField['values'];
+                                $values = explode(',', str_replace(' ', '', $values));
+                                foreach ($values as $key => $value) {
+                                    $template->setVariable(array(
+                                        'INDEX' => $key,
+                                        'VALUE' => $value,
+                                        'ID' => $formField['id'],
+                                        'REQUIRED' => $required ? 'required' : '',
+                                        'LABEL' => $formField['name'],
+                                    ));
+                                    $template->parse('favoritelist_form_field_' . $formField['type'] . '_value');
+                                }
+                                $template->parse('favoritelist_form_field_' . $formField['type']);
+                                break;
+                            case 'radio':
+                            case 'checkbox':
+                                $values = $formField['values'];
+                                $values = explode(',', str_replace(' ', '', $values));
+                                foreach ($values as $key => $value) {
+                                    $template->setVariable(array(
+                                        'INDEX' => $key,
+                                        'VALUE' => $value,
+                                        'ID' => $formField['id'],
+                                        'REQUIRED' => $required ? 'required' : '',
+                                        'LABEL' => $formField['name'],
+                                        'VALUE' => $value,
+                                    ));
+                                    $template->parse('favoritelist_form_field_' . $formField['type']);
+                                }
+                                break;
+                            default:
+                        }
+                    }
+                }
                 break;
             default:
                 $em = $this->cx->getDb()->getEntityManager();

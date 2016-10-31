@@ -1773,7 +1773,7 @@ CREATE TABLE `contrexx_module_favoritelist_favorite` (
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_favoritelist_form_field` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `type` enum('inputtext','textarea','select','radio','checkbox','mail','salutation','firstname','lastname') NOT NULL,
+  `type` enum('text','textarea','select','radio','checkbox','mail') NOT NULL,
   `name` varchar(255) NOT NULL,
   `required` int(1) NOT NULL DEFAULT '0',
   `order` int(11) NOT NULL DEFAULT '0',
