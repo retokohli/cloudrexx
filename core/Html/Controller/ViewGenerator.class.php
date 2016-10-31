@@ -657,16 +657,21 @@ class ViewGenerator {
 
             // get doctrine field name, database field name and type for each field
             foreach($renderObject as $name => $value) {
-                if ($name == 'virtual' || in_array($name, $primaryKeyNames)) {
+                if (in_array($name, $primaryKeyNames)) {
                     continue;
                 }
 
-                $fieldDefinition['type'] = null;
-                if (!\Env::get('em')->getClassMetadata($entityClassWithNS)->hasAssociation($name)) {
-                    $fieldDefinition = $entityObject->getFieldMapping($name);
+                try {
+                    $fieldDefinition['type'] = null;
+                    if (!\Env::get('em')->getClassMetadata($entityClassWithNS)->hasAssociation($name)) {
+                        $fieldDefinition = $entityObject->getFieldMapping($name);
+                    }
+                    $this->options[$name]['type'] = $fieldDefinition['type'];
+                    $renderArray[$name] = $value;
+                } catch (\Doctrine\ORM\Mapping\MappingException $e) {
+                    // field is the virtual field or another not mapped one
+                    continue;
                 }
-                $this->options[$name]['type'] = $fieldDefinition['type'];
-                $renderArray[$name] = $value;
             }
 
             // load single-valued-associations
