@@ -189,6 +189,7 @@ function addProductToCart(objForm,quantity) {
                     }
                     break;
                 case 'text':
+                case 'textarea':
                     if (formElement.value != '') {
                         objProduct.options[optionId] = formElement.value;
                     }

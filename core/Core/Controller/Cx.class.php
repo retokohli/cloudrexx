@@ -1954,6 +1954,7 @@ namespace Cx\Core\Core\Controller {
                 'METAKEYS'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetakeys()) : '',
                 'METADESC'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetadesc()) : '',
                 'METAROBOTS'                     => $metarobots ? 'all' : 'none',
+                'METAIMAGE'                      => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetaimage()) : '',
                 'CONTENT_TITLE'                  => $this->resolvedPage->getContentTitle(),
                 'CONTENT_TEXT'                   => $this->resolvedPage->getContent(),
                 'CSS_NAME'                       => contrexx_raw2xhtml($this->resolvedPage->getCssName()),

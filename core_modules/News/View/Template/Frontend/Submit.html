@@ -78,6 +78,11 @@
             <label for="newsRedirect">{TXT_NEWS_NEWS_URL}</label>
             <input id="newsRedirect" name="newsRedirect" value="{NEWS_REDIRECT}" type="text"/>
         </div>
+        <div class="newsRedirectNewWindow" style="display: none;">
+            <label for="newsRedirectNewWindow">{TXT_NEWS_REDIRECT_NEW_WINDOW}</label>
+            <input id="newsRedirectNewWindow" type="checkbox" name="redirect_new_window" value="1" {NEWS_REDIRECT_NEW_WINDOW_CHECKED}>
+            <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_NEWS_REDIRECT_NEW_WINDOW_HELP}</span>
+        </div>
     </fieldset>
     <fieldset>
         <legend>{TXT_EXTERNAL_SOURCE}</legend>

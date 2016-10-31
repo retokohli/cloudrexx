@@ -205,6 +205,11 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     protected $metarobots;
 
     /**
+     * @var string $metaimage
+     */
+    protected $metaimage;
+
+    /**
      * @var date $start
      */
     protected $start;
@@ -329,6 +334,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         $this->content = '';
         $this->metadesc = '';
         $this->metakeys = '';
+        $this->metaimage = '';
         $this->editingStatus = '';
         $this->active = false;
         $this->display = true;
@@ -351,6 +357,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             'cssName' => new \CxValidateString(array('maxlength' => 255)),
             'metatitle' => new \CxValidateString(array('maxlength' => 255)),
             'metarobots' => new \CxValidateString(array('maxlength' => 255)),
+            'metaimage' => new \CxValidateString(array('maxlength' => 255)),
             //'start' => maybe date? format?
             //'end' => maybe date? format?
             'editingStatus' => new \CxValidateString(array('maxlength' => 16)),
@@ -700,6 +707,26 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     public function getMetarobots()
     {
         return empty($this->metarobots) ? 0 : 1;
+    }
+
+    /**
+     * Set metaimage
+     *
+     * @param string $metaimage
+     */
+    public function setMetaimage($metaimage)
+    {
+        $this->metaimage = $metaimage;
+    }
+
+    /**
+     * Get metaimage
+     *
+     * @return string $metaimage
+     */
+    public function getMetaimage()
+    {
+        return $this->metaimage;
     }
 
     /**
@@ -1479,6 +1506,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             $page->setMetadesc($this->getMetadesc());
             $page->setMetakeys($this->getMetakeys());
             $page->setMetarobots($this->getMetarobots());
+            $page->setMetaimage($this->getMetaimage());
         }
 
         $page->setNode($this->getNode());
@@ -2061,7 +2089,8 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
                 $this->updatedAt,
                 $this->updatedBy,
                 $this->metadesc,
-                $this->metakeys
+                $this->metakeys,
+                $this->metaimage
             )
         );
     }
@@ -2103,5 +2132,6 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         $this->updatedBy = $unserialized[33];
         $this->metadesc = $unserialized[34];
         $this->metakeys = $unserialized[35];
+        $this->metaimage = $unserialized[36];
     }
 }
