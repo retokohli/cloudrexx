@@ -12,24 +12,9 @@ class Locale extends \Cx\Model\Base\EntityBase {
     protected $id;
 
     /**
-     * @var string $iso1
-     */
-    protected $iso1;
-
-    /**
      * @var string $label
      */
     protected $label;
-
-    /**
-     * @var integer $fallback
-     */
-    protected $fallback;
-
-    /**
-     * @var string $sourceLanguage
-     */
-    protected $sourceLanguage;
 
     /**
      * @var \Cx\Core\Locale\Model\Entity\Locale
@@ -39,7 +24,7 @@ class Locale extends \Cx\Model\Base\EntityBase {
     /**
      * @var \Cx\Core\Locale\Model\Entity\Language
      */
-    protected $languageRelatedByIso1;
+    protected $iso1;
 
     /**
      * @var \Cx\Core\Country\Model\Entity\Country
@@ -49,12 +34,12 @@ class Locale extends \Cx\Model\Base\EntityBase {
     /**
      * @var \Cx\Core\Locale\Model\Entity\Locale
      */
-    protected $locale;
+    protected $fallback;
 
     /**
      * @var \Cx\Core\Locale\Model\Entity\Language
      */
-    protected $languageRelatedBySourceLanguage;
+    protected $sourceLanguage;
 
     public function __construct()
     {
@@ -69,26 +54,6 @@ class Locale extends \Cx\Model\Base\EntityBase {
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set iso1
-     *
-     * @param string $iso1
-     */
-    public function setIso1($iso1)
-    {
-        $this->iso1 = $iso1;
-    }
-
-    /**
-     * Get iso1
-     *
-     * @return string $iso1
-     */
-    public function getIso1()
-    {
-        return $this->iso1;
     }
 
     /**
@@ -112,46 +77,6 @@ class Locale extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set fallback
-     *
-     * @param integer $fallback
-     */
-    public function setFallback($fallback = null)
-    {
-        $this->fallback = $fallback;
-    }
-
-    /**
-     * Get fallback
-     *
-     * @return integer $fallback
-     */
-    public function getFallback()
-    {
-        return $this->fallback;
-    }
-
-    /**
-     * Set sourceLanguage
-     *
-     * @param string $sourceLanguage
-     */
-    public function setSourceLanguage($sourceLanguage)
-    {
-        $this->sourceLanguage = $sourceLanguage;
-    }
-
-    /**
-     * Get sourceLanguage
-     *
-     * @return string $sourceLanguage
-     */
-    public function getSourceLanguage()
-    {
-        return $this->sourceLanguage;
-    }
-
-    /**
      * Add locales
      *
      * @param \Cx\Core\Locale\Model\Entity\Locale $locales
@@ -172,23 +97,23 @@ class Locale extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set languageRelatedByIso1
+     * Set iso1
      *
-     * @param \Cx\Core\Locale\Model\Entity\Language $languageRelatedByIso1
+     * @param \Cx\Core\Locale\Model\Entity\Language $iso1
      */
-    public function setLanguageRelatedByIso1(\Cx\Core\Locale\Model\Entity\Language $languageRelatedByIso1)
+    public function setIso1(\Cx\Core\Locale\Model\Entity\Language $iso1)
     {
-        $this->languageRelatedByIso1 = $languageRelatedByIso1;
+        $this->iso1 = $iso1;
     }
 
     /**
-     * Get languageRelatedByIso1
+     * Get iso1
      *
-     * @return \Cx\Core\Locale\Model\Entity\Language $languageRelatedByIso1
+     * @return \Cx\Core\Locale\Model\Entity\Language $iso1
      */
-    public function getLanguageRelatedByIso1()
+    public function getIso1()
     {
-        return $this->languageRelatedByIso1;
+        return $this->iso1;
     }
 
     /**
@@ -212,42 +137,42 @@ class Locale extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set locale
+     * Set fallback
      *
-     * @param \Cx\Core\Locale\Model\Entity\Locale $locale
+     * @param \Cx\Core\Locale\Model\Entity\Locale $fallback
      */
-    public function setLocale(\Cx\Core\Locale\Model\Entity\Locale $locale)
+    public function setFallback(\Cx\Core\Locale\Model\Entity\Locale $fallback = null)
     {
-        $this->locale = $locale;
+        $this->fallback = $fallback;
     }
 
     /**
-     * Get locale
+     * Get fallback
      *
-     * @return \Cx\Core\Locale\Model\Entity\Locale $locale
+     * @return \Cx\Core\Locale\Model\Entity\Locale $fallback
      */
-    public function getLocale()
+    public function getFallback()
     {
-        return $this->locale;
+        return $this->fallback;
     }
 
     /**
-     * Set languageRelatedBySourceLanguage
+     * Set sourceLanguage
      *
-     * @param \Cx\Core\Locale\Model\Entity\Language $languageRelatedBySourceLanguage
+     * @param \Cx\Core\Locale\Model\Entity\Language $sourceLanguage
      */
-    public function setLanguageRelatedBySourceLanguage(\Cx\Core\Locale\Model\Entity\Language $languageRelatedBySourceLanguage)
+    public function setSourceLanguage(\Cx\Core\Locale\Model\Entity\Language $sourceLanguage)
     {
-        $this->languageRelatedBySourceLanguage = $languageRelatedBySourceLanguage;
+        $this->sourceLanguage = $sourceLanguage;
     }
 
     /**
-     * Get languageRelatedBySourceLanguage
+     * Get sourceLanguage
      *
-     * @return \Cx\Core\Locale\Model\Entity\Language $languageRelatedBySourceLanguage
+     * @return \Cx\Core\Locale\Model\Entity\Language $sourceLanguage
      */
-    public function getLanguageRelatedBySourceLanguage()
+    public function getSourceLanguage()
     {
-        return $this->languageRelatedBySourceLanguage;
+        return $this->sourceLanguage;
     }
 }

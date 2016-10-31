@@ -16,34 +16,22 @@ Cx\Core\Locale\Model\Entity\Locale:
       generator:
         strategy: AUTO
   fields:
-    iso1:
-      column: iso_1
-      type: string
-      length: 2
     label:
       type: string
       length: 255
       nullable: true
-    fallback:
-      type: integer
-      unsigned: true
-      nullable: true
-    sourceLanguage:
-      column: source_language
-      type: string
-      length: 2
   uniqueConstraints:
     unique_iso_1_country:
       columns: [ iso_1, country ]
   oneToMany:
     locales:
       targetEntity: Locale
-      mappedBy: locale
+      mappedBy: fallback
       joinColumn:
         name: id
         referencedColumnName: fallback
   manyToOne:
-    languageRelatedByIso1:
+    iso1:
       targetEntity: Language
       inversedBy: localeRelatedByIso1s
       joinColumn:
@@ -56,13 +44,14 @@ Cx\Core\Locale\Model\Entity\Locale:
         name: country
         referencedColumnName: alpha2
         nullable: true
-    locale:
+    fallback:
       targetEntity: Locale
       inversedBy: locales
       joinColumn:
         name: fallback
         referencedColumnName: id
-    languageRelatedBySourceLanguage:
+        nullable: true
+    sourceLanguage:
       targetEntity: Language
       inversedBy: localeRelatedBySourceLanguages
       joinColumn:
