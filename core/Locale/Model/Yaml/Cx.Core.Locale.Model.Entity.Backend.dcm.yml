@@ -8,13 +8,8 @@ Cx\Core\Locale\Model\Entity\Backend:
       unsigned: true
       generator:
         strategy: AUTO
-  fields:
-    iso1:
-      column: iso_1
-      type: string
-      length: 2
   oneToOne:
-    language:
+    iso1:
       targetEntity: Language
       inversedBy: backend
       joinColumn:

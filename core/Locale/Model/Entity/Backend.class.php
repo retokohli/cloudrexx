@@ -12,14 +12,9 @@ class Backend extends \Cx\Model\Base\EntityBase {
     protected $id;
 
     /**
-     * @var string $iso1
-     */
-    protected $iso1;
-
-    /**
      * @var \Cx\Core\Locale\Model\Entity\Language
      */
-    protected $language;
+    protected $iso1;
 
 
     /**
@@ -35,9 +30,9 @@ class Backend extends \Cx\Model\Base\EntityBase {
     /**
      * Set iso1
      *
-     * @param string $iso1
+     * @param \Cx\Core\Locale\Model\Entity\Language $iso1
      */
-    public function setIso1($iso1)
+    public function setIso1(\Cx\Core\Locale\Model\Entity\Language $iso1)
     {
         $this->iso1 = $iso1;
     }
@@ -45,30 +40,10 @@ class Backend extends \Cx\Model\Base\EntityBase {
     /**
      * Get iso1
      *
-     * @return string $iso1
+     * @return \Cx\Core\Locale\Model\Entity\Language $iso1
      */
     public function getIso1()
     {
         return $this->iso1;
-    }
-
-    /**
-     * Set language
-     *
-     * @param \Cx\Core\Locale\Model\Entity\Language $language
-     */
-    public function setLanguage(\Cx\Core\Locale\Model\Entity\Language $language)
-    {
-        $this->language = $language;
-    }
-
-    /**
-     * Get language
-     *
-     * @return \Cx\Core\Locale\Model\Entity\Language $language
-     */
-    public function getLanguage()
-    {
-        return $this->language;
     }
 }
