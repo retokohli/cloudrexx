@@ -49,14 +49,6 @@ namespace Cx\Modules\FavoriteList\Controller;
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController
 {
 
-    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponent $systemComponent, \Cx\Core\Core\Controller\Cx $cx)
-    {
-        parent::__construct($systemComponent, $cx);
-        $evm = $cx->getEvents();
-        $dateListener = new \Cx\Modules\FavoriteList\Model\Event\DateEventListener();
-        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Modules\\FavoriteList\\Model\\Entity\\Catalog', $dateListener);
-    }
-
     /**
      * Returns all Controller class names for this component (except this)
      *
@@ -66,5 +58,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getControllerClasses()
     {
         return array('Backend', 'Frontend');
+    }
+
+    public function registerEventListeners()
+    {
+        $evm = $this->cx->getEvents();
+        $catalogSaveListener = new \Cx\Modules\FavoriteList\Model\Event\CatalogSaveEventListener($this->cx);
+        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Modules\\FavoriteList\\Model\\Entity\\Catalog', $catalogSaveListener);
     }
 }
