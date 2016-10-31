@@ -52,7 +52,33 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *
      * @return array List of Controller class names (without namespace)
      */
-    public function getControllerClasses() {
+    public function getControllerClasses()
+    {
         return array('Backend');
+    }
+
+    /**
+     * Get all the list of PDF templates
+     *
+     * @return type
+     */
+    public function getPdfTemplates()
+    {
+        $repo = $this
+            ->cx
+            ->getDb()
+            ->getEntityManager()
+            ->getRepository('\Cx\Core_Modules\Pdf\Model\Entity\PdfTemplate');
+        $pdfTemplates = $repo->findBy(array('active' => 1));
+        if (!$pdfTemplates) {
+            return array();
+        }
+
+        $templates = array();
+        foreach ($pdfTemplates as $pdfTemplate) {
+            $templates[$pdfTemplate->getId()] = $pdfTemplate->getTitle();
+        }
+
+        return $templates;
     }
 }

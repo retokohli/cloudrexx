@@ -164,9 +164,30 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'header'       => $_ARRAYLANG[
                         $placeholderPrefix . '_HTML_CONTENT'
                     ],
+                    'tooltip'      => $_ARRAYLANG[
+                        $placeholderPrefix . '_HTML_CONTENT_TOOLTIP'
+                    ],
                     'showOverview' => false,
-                    'type'         => 'sourcecode',
-                    'options'      => array('mode' => 'html'),
+                    'formfield'    => function (
+                        $name,
+                        $type,
+                        $length,
+                        $value,
+                        $options
+                    ) {
+                        $editor = new \Cx\Core\Wysiwyg\Wysiwyg(
+                            $name,
+                            $value,
+                            'fullpage'
+                        );
+                        $span   = new \Cx\Core\Html\Model\Entity\HtmlElement(
+                            'span'
+                        );
+                        $span->addChild(
+                            new \Cx\Core\Html\Model\Entity\TextElement($editor)
+                        );
+                        return $span;
+                    }
                 ),
             ),
         );
