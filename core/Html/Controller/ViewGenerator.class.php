@@ -341,7 +341,7 @@ class ViewGenerator {
             }
 
             // save it:
-
+            $targetEntityMetadata = $em->getClassMetadata($associationMapping['targetEntity']);
             // case a) was open in form directly
             $firstOffset = str_replace('\\', '_', strtolower($associationMapping['sourceEntity']));
             $secondOffset = $associationMapping['fieldName'];
@@ -349,7 +349,7 @@ class ViewGenerator {
                 $this->storeSingleValuedAssociation(
                     $associationMapping['targetEntity'],
                     array(
-                        $entityClassMetadata->getFieldName($associationMapping['joinColumns'][0]['referencedColumnName']) => $entityData[$secondOffset],
+                        $targetEntityMetadata->getFieldName($associationMapping['joinColumns'][0]['referencedColumnName']) => $entityData[$secondOffset],
                     ),
                     $entity,
                     'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $associationMapping['fieldName'])))
@@ -371,7 +371,7 @@ class ViewGenerator {
                 $this->storeSingleValuedAssociation(
                     $associationMapping['targetEntity'],
                     array(
-                        $entityClassMetadata->getFieldName($associationMapping['joinColumns'][0]['referencedColumnName']) => $foreignEntityData[$secondOffset],
+                        $targetEntityMetadata->getFieldName($associationMapping['joinColumns'][0]['referencedColumnName']) => $foreignEntityData[$secondOffset],
                     ),
                     $entity,
                     'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $associationMapping['fieldName'])))
