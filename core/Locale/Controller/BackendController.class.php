@@ -157,13 +157,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_FALLBACK'],
                             'table' => array(
                                 'parse' => function ($value, $rowData) {
-                                    $em = $this->cx->getDb()->getEntityManager();
-                                    $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
-                                    $locale = $localeRepo->find($value);
-                                    if ($locale) {
-                                        return $locale->getLabel();
+                                    if (!is_object($value)) {
+                                        return '';
                                     }
-                                    return null;
+                                    return $value->getLabel();
                                 },
                             ),
                         ),
@@ -171,19 +168,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'showOverview' => false,
                             'showDetail' => false,
                         ),
-                        'locale' => array(
-                            'showOverview' => false,
-                            'showDetail' => false,
-                        ),
                         'locales' => array(
-                            'showOverview' => false,
-                            'showDetail' => false,
-                        ),
-                        'languageRelatedByIso1' => array(
-                            'showOverview' => false,
-                            'showDetail' => false,
-                        ),
-                        'languageRelatedBySourceLanguage' => array(
                             'showOverview' => false,
                             'showDetail' => false,
                         ),
