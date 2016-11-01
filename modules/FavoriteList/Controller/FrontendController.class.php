@@ -57,100 +57,98 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
 
         switch ($cmd) {
             case 'mail':
-                if ($catalog) {
-                    if (isset($_POST['send'])) {
-
-                    }
-                } else {
+                if (!$catalog) {
                     header('Location: ' . \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()));
+                }
+                if (isset($_POST['send'])) {
+
                 }
                 break;
             case 'print':
-                if ($catalog) {
-                    if (isset($_POST['send'])) {
-
-                    }
-                } else {
+                if (!$catalog) {
                     header('Location: ' . \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()));
+                }
+                if (isset($_POST['send'])) {
+
                 }
                 break;
             case 'recommendation':
-                if ($catalog) {
-                    if (isset($_POST['send'])) {
-
-                    }
-                } else {
+                if (!$catalog) {
                     header('Location: ' . \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()));
+                }
+                if (isset($_POST['send'])) {
+
                 }
                 break;
             case 'inquiry':
-                if ($catalog) {
-                    if (isset($_POST['send'])) {
+                if (!$catalog) {
+                    header('Location: ' . \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()));
+                }
+                if (isset($_POST['send'])) {
 
-                    } else {
-                        $em = $this->cx->getDb()->getEntityManager();
-                        $formFieldRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\FormField');
-                        $formFields = $formFieldRepo->findAll();
-                        $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($formFields);
-                        $dataSet->sortColumns(array('order' => 'ASC'));
-                        foreach ($dataSet as $formField) {
-                            $template->parse('favoritelist_form_field');
-                            $required = $formField['required'];
-                            if ($required) {
-                                $template->touchBlock('favoritelist_form_field_required');
-                            }
-                            switch ($formField['type']) {
-                                case 'text':
-                                case 'textarea':
-                                case 'mail':
+                } else {
+                    $em = $this->cx->getDb()->getEntityManager();
+                    $formFieldRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\FormField');
+                    $formFields = $formFieldRepo->findAll();
+                    $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($formFields);
+                    $dataSet->sortColumns(array('order' => 'ASC'));
+                    foreach ($dataSet as $formField) {
+                        $template->parse('favoritelist_form_field');
+                        $required = $formField['required'];
+                        if ($required) {
+                            $template->touchBlock('favoritelist_form_field_required');
+                        }
+                        switch ($formField['type']) {
+                            case 'text':
+                            case 'textarea':
+                            case 'mail':
+                                $template->setVariable(array(
+                                    'ID' => $formField['id'],
+                                    'REQUIRED' => $required ? 'required' : '',
+                                    'LABEL' => $formField['name'],
+                                ));
+                                $template->parse('favoritelist_form_field_' . $formField['type']);
+                                break;
+                            case 'select':
+                                $values = $formField['values'];
+                                $values = explode(',', str_replace(' ', '', $values));
+                                foreach ($values as $key => $value) {
                                     $template->setVariable(array(
+                                        'INDEX' => $key,
+                                        'VALUE' => $value,
                                         'ID' => $formField['id'],
                                         'REQUIRED' => $required ? 'required' : '',
                                         'LABEL' => $formField['name'],
                                     ));
+                                    $template->parse('favoritelist_form_field_' . $formField['type'] . '_value');
+                                }
+                                $template->parse('favoritelist_form_field_' . $formField['type']);
+                                break;
+                            case 'radio':
+                            case 'checkbox':
+                                $values = $formField['values'];
+                                $values = explode(',', str_replace(' ', '', $values));
+                                foreach ($values as $key => $value) {
+                                    $template->setVariable(array(
+                                        'INDEX' => $key,
+                                        'VALUE' => $value,
+                                        'ID' => $formField['id'],
+                                        'REQUIRED' => $required ? 'required' : '',
+                                        'LABEL' => $formField['name'],
+                                        'VALUE' => $value,
+                                    ));
                                     $template->parse('favoritelist_form_field_' . $formField['type']);
-                                    break;
-                                case 'select':
-                                    $values = $formField['values'];
-                                    $values = explode(',', str_replace(' ', '', $values));
-                                    foreach ($values as $key => $value) {
-                                        $template->setVariable(array(
-                                            'INDEX' => $key,
-                                            'VALUE' => $value,
-                                            'ID' => $formField['id'],
-                                            'REQUIRED' => $required ? 'required' : '',
-                                            'LABEL' => $formField['name'],
-                                        ));
-                                        $template->parse('favoritelist_form_field_' . $formField['type'] . '_value');
-                                    }
-                                    $template->parse('favoritelist_form_field_' . $formField['type']);
-                                    break;
-                                case 'radio':
-                                case 'checkbox':
-                                    $values = $formField['values'];
-                                    $values = explode(',', str_replace(' ', '', $values));
-                                    foreach ($values as $key => $value) {
-                                        $template->setVariable(array(
-                                            'INDEX' => $key,
-                                            'VALUE' => $value,
-                                            'ID' => $formField['id'],
-                                            'REQUIRED' => $required ? 'required' : '',
-                                            'LABEL' => $formField['name'],
-                                            'VALUE' => $value,
-                                        ));
-                                        $template->parse('favoritelist_form_field_' . $formField['type']);
-                                    }
-                                    break;
-                                default:
-                            }
+                                }
                         }
                     }
-                } else {
-                    header('Location: ' . \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()));
                 }
                 break;
             default:
-                if ($catalog) {
+                if (!$catalog) {
+                    $template->setVariable(array(
+                        strtoupper($this->getName()) . '_FAVORITE_LIST' => $_ARRAYLANG['TXT_MODULE_FAVORITELIST_MESSAGE_NO_LIST'],
+                    ));
+                } else {
                     $favorites = $catalog->getFavorites()->toArray();
                     $favoritesView = new \Cx\Core\Html\Controller\ViewGenerator(
                         $favorites,
@@ -168,10 +166,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                         strtoupper($this->getName()) . '_ACT_INQUIRY_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), 'inquiry'),
                     ));
                     $template->parse('favoritelist_favorite_list_actions');
-                } else {
-                    $template->setVariable(array(
-                        strtoupper($this->getName()) . '_FAVORITE_LIST' => $_ARRAYLANG['TXT_MODULE_FAVORITELIST_MESSAGE_NO_LIST'],
-                    ));
                 }
         }
     }
@@ -185,7 +179,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @param $entityClassName contains the FQCN from entity
      * @return array with options
      */
-    protected function getViewGeneratorOptions($entityClassName, $dataSetIdentifier = '')
+    protected
+    function getViewGeneratorOptions($entityClassName, $dataSetIdentifier = '')
     {
         global $_ARRAYLANG;
 
