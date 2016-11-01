@@ -150,8 +150,6 @@ class TestCommand extends Command {
             set_include_path($this->phpUnitPath . PATH_SEPARATOR . get_include_path());
         }
 
-        spl_autoload_register(array($this, 'phpunitAutoload'));
-
         unset($arguments[0]);
         unset($arguments[1]); // unset the arguments
         $command = new \Cx\Core\Model\Controller\PHPUnitTextUICommand();
@@ -312,28 +310,6 @@ class TestCommand extends Command {
         }
 
         return false;
-    }
-
-    /*
-     * Autoload function to load the PHPUnit class files.
-     */
-    function phpunitAutoload($class)
-    {
-        require_once $this->phpUnitPath . '/PHPUnit/Util/Filesystem.php';
-
-        if (
-               strpos($class, 'PHPUnit_') === 0
-            || strpos($class, 'PHP_') === 0
-            || strpos($class, 'Text_') === 0
-            || strpos($class, 'File_') === 0
-            || strpos($class, 'Doctrine') === 0
-            || strpos($class, 'SebastianBergmann') === 0
-           ) {
-           $file = \PHPUnit_Util_Filesystem::classNameToFilename($class);
-           if (file_exists($this->phpUnitPath . '/'. $file)) {
-               require_once $file;
-           }
-        }
     }
 
     /**

@@ -100,12 +100,27 @@ class ClassLoader {
         if (substr($name, 0, 1) == '\\') {
             $name = substr($name, 1);
         }
+
+        // Load the PHPUnit class files.
+        if (   strpos($name, 'PHPUnit_') === 0
+            || strpos($name, 'PHP_') === 0
+            || strpos($name, 'Text_') === 0
+            || strpos($name, 'File_') === 0
+            || strpos($name, 'Doctrine') === 0
+            || strpos($name, 'SebastianBergmann') === 0
+        ) {
+            $phpUnitPath = $this->cx->getCodeBaseLibraryPath() .'/PHPUnit';
+            if ($this->loadFile($phpUnitPath . '/PHPUnit/Util/Filesystem.php')) {
+                $file = \PHPUnit_Util_Filesystem::classNameToFilename($name);
+                if ($this->loadFile($phpUnitPath . '/'. $file)) {
+                    return true;
+                }
+            }
+        }
+
         $parts = explode('\\', $name);
         // new classes should be in namespace \Cx\something
         if (!in_array(current($parts), array('Cx', 'Doctrine', 'Gedmo', 'DoctrineExtension', 'Symfony')) || count($parts) < 2) {
-            return false;
-        }
-        if (substr($name, 0, 8) == 'PHPUnit_') {
             return false;
         }
 
