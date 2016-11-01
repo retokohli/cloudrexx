@@ -620,6 +620,15 @@ die("MailTemplate::init(): Empty section!");
             }
             if ($strip) self::clearEmptyPlaceholders($value);
         }
+        if ($arrTemplate['attach_pdf'] && isset($arrTemplate['pdf_template'])) {
+            $pdf = \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getComponent('Pdf');
+            $pdfAttachment = $pdf->generatePDF(
+                $arrTemplate['pdf_template'],
+                $substitution,
+                $arrTemplate['key']
+            );
+        }
 //DBG::log("MailTemplate::send(): Substituted: ".var_export($arrTemplate, true));
 //echo("MailTemplate::send(): Substituted:<br /><pre>".nl2br(htmlentities(var_export($arrTemplate, true), ENT_QUOTES, CONTREXX_CHARSET))."</PRE><hr />");
 //die();//return true;
@@ -666,6 +675,10 @@ die("MailTemplate::init(): Empty section!");
         // Applicable to attachments stored with the MailTemplate only!
         $arrTemplate['attachments'] =
             self::attachmentsToArray($arrTemplate['attachments']);
+        if (isset($pdfAttachment)) {
+            $arrTemplate['attachments'][$pdfAttachment['filePath']] =
+                $pdfAttachment['fileName'];
+        }
 //DBG::log("MailTemplate::send(): Template Attachments: ".var_export($arrTemplate['attachments'], true));
         // Now the MailTemplates' attachments index is guaranteed to
         // contain an array.

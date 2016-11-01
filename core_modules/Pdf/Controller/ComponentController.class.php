@@ -81,4 +81,58 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         return $templates;
     }
+
+    /**
+     * Generate PDF Document
+     *
+     * @param integer $pdfTemplateId id of the PDF Template
+     * @param array   $substitution  array of substitution values
+     * @param string  $mailTplKey    MailTemplate key
+     *
+     * @return mixed boolean|string
+     */
+    public function generatePDF($pdfTemplateId, $substitution, $mailTplKey)
+    {
+        if (empty($pdfTemplateId) || empty($mailTplKey)) {
+            return;
+        }
+
+        $repo = $this
+            ->cx
+            ->getDb()
+            ->getEntityManager()
+            ->getRepository('\Cx\Core_Modules\Pdf\Model\Entity\PdfTemplate');
+        $pdfTemplates = $repo->findOneBy(array('id' => $pdfTemplateId));
+        if (!$pdfTemplates || !$pdfTemplates->getHtmlContent()) {
+            return;
+        }
+
+        $tplContent = $pdfTemplates->getHtmlContent();
+        \Cx\Core\MailTemplate\Controller\MailTemplate::substitute(
+            $tplContent,
+            $substitution,
+            true
+        );
+
+        $this
+            ->cx
+            ->getClassLoader()
+            ->getFilePath($this->cx->getCodeBaseCorePath() . '/pdf.class.php');
+        $session          = $this->cx->getComponent('Session')->getSession();
+        $dateTime         = new \DateTime();
+        $title            = $mailTplKey . '.pdf';
+        $fileName         = $mailTplKey . '_' .
+            $dateTime->format('d_m_Y_h_s_i') . '.pdf';
+        $pdf              = new \PDF();
+        $pdf->title       = $title;
+        $pdf->content     = $tplContent;
+        $pdf->filePath    = $session->getTempPath() . '/' . $fileName;
+        $pdf->destination = 'F';
+        $pdf->Create();
+
+        return array(
+            'filePath' => $session->getWebTempPath() . '/' . $fileName,
+            'fileName' => $title
+        );
+    }
 }

@@ -163,10 +163,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'htmlContent' => array(
                     'header'       => $_ARRAYLANG[
                         $placeholderPrefix . '_HTML_CONTENT'
-                    ],
-                    'tooltip'      => $_ARRAYLANG[
-                        $placeholderPrefix . '_HTML_CONTENT_TOOLTIP'
-                    ],
+                    ] . '&nbsp;&nbsp;<span class="tooltip-trigger icon-info">'
+                    . '</span><span class="tooltip-message">' .
+                    $_ARRAYLANG[$placeholderPrefix . '_HTML_CONTENT_TOOLTIP'] .
+                    '</span>',
                     'showOverview' => false,
                     'formfield'    => function (
                         $name,
