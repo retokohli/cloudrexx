@@ -56,6 +56,13 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
     );
 
     /**
+     * Domain url of the installation
+     *
+     * @var string
+     */
+    protected $domainUrl;
+
+    /**
      * Constructs a test case with the given name.
      *
      * @param string    $name
@@ -64,8 +71,35 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
      */
     public function __construct($name = null, array $data = array(), $dataName = '')
     {
+        global $_CONFIG;
+
         parent::__construct($name, $data, $dataName);
         $this->dataSetFolder = $this->cx->getCodeBaseCorePath() . '/Routing/Testing/UnitTest/Data';
+
+        // $_CONFIG is not defined in cli mode
+        $this->domainUrl = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . $this->cx->getCodeBaseOffsetPath();
+    }
+
+    /**
+     * Sends the request to given urlSlug and
+     * return the response header
+     *
+     * @param string $urlSlug Url string
+     *
+     * @return array Response header array
+     */
+    protected function getResponseHeaders($urlSlug)
+    {
+        $request = new \HTTP_Request2($this->domainUrl . $urlSlug, \HTTP_Request2::METHOD_POST);
+        $request->setConfig(array(
+            'ssl_verify_host' => false,
+            'ssl_verify_peer' => false,
+            'follow_redirects' => true,
+            'strict_redirects' => true,
+        ));
+        $response = $request->send();
+
+        return $response->getHeader();
     }
 
     /**
@@ -75,11 +109,12 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
         $language = null,
         $inputSlug = '',
         $expectedSlug = null,
-        $request = array()
+        $request = array(),
+        $expectedCanonicalUrl = ''
     ) {
         global $url;
 
-        if (null === $expectedSlug) {
+        if ($expectedSlug === null) {
             $expectedSlug = $inputSlug;
         }
         if (!empty($request)) {
@@ -87,7 +122,7 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
             $_GET     = array_merge($_GET, $request);
         }
         $urlString = '';
-        if (null !== $language) {
+        if ($language !== null) {
             $langCode   = \FWLanguage::getLanguageCodeById($language);
             $urlString .= '/' . $langCode;
         }
@@ -103,6 +138,17 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
         $p = $resolver->getPage();
         $this->assertInstanceOf('\Cx\Core\ContentManager\Model\Entity\Page', $p);
         $this->assertEquals($expectedSlug, $p->getSlug());
+
+        $responseHeaders = $this->getResponseHeaders($urlString);
+        if (!empty($expectedCanonicalUrl)) {
+            $this->assertTrue(isset($responseHeaders['link']));
+            $canonicalUrl = '';
+            $matches      = null;
+            if (preg_match('/^<(.*)>;\srel=\"canonical\"$/', $responseHeaders['link'], $matches)) {
+                $canonicalUrl = $matches[1];
+            }
+            $this->assertEquals($canonicalUrl, $this->domainUrl . $expectedCanonicalUrl);
+        }
     }
 
     /**
