@@ -40,7 +40,7 @@ global $_ARRAYLANG;
 
 // Let's start with module info:
 $_ARRAYLANG['TXT_CORE_MODULE_PDF'] = 'PDF Templates';
-$_ARRAYLANG['TXT_CORE_MODULE_PDF_DESCRIPTION'] = 'With this module you can manage the PDF templates';
+$_ARRAYLANG['TXT_CORE_MODULE_PDF_DESCRIPTION'] = 'Generate PDF documents from HTML templates';
 
 // Here come the ACTs:
 $_ARRAYLANG['TXT_CORE_MODULE_PDF_ACT_DEFAULT'] = 'Overview';
