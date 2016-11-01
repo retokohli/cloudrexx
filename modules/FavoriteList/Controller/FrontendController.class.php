@@ -160,12 +160,33 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                     );
                     $template->setVariable(array(
                         strtoupper($this->getName()) . '_FAVORITE_LIST' => $favoritesView,
-                        strtoupper($this->getName()) . '_ACT_MAIL_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), 'mail'),
-                        strtoupper($this->getName()) . '_ACT_PRINT_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), 'print'),
-                        strtoupper($this->getName()) . '_ACT_RECOMMENDATION_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), 'recommendation'),
-                        strtoupper($this->getName()) . '_ACT_INQUIRY_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), 'inquiry'),
                     ));
                     $template->parse('favoritelist_favorite_list_actions');
+                    \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function');
+                    if (\Cx\Core\Setting\Controller\Setting::getValue('functionMail', 'function')) {
+                        $template->setVariable(array(
+                            strtoupper($this->getName()) . '_ACT_MAIL_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), 'mail'),
+                        ));
+                        $template->parse('favoritelist_favorite_list_actions_mail');
+                    }
+                    if (\Cx\Core\Setting\Controller\Setting::getValue('functionPrint', 'function')) {
+                        $template->setVariable(array(
+                            strtoupper($this->getName()) . '_ACT_PRINT_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), 'print'),
+                        ));
+                        $template->parse('favoritelist_favorite_list_actions_print');
+                    }
+                    if (\Cx\Core\Setting\Controller\Setting::getValue('functionRecommendation', 'function')) {
+                        $template->setVariable(array(
+                            strtoupper($this->getName()) . '_ACT_RECOMMENDATION_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), 'recommendation'),
+                        ));
+                        $template->parse('favoritelist_favorite_list_actions_recommendation');
+                    }
+                    if (\Cx\Core\Setting\Controller\Setting::getValue('functionInquiry', 'function')) {
+                        $template->setVariable(array(
+                            strtoupper($this->getName()) . '_ACT_INQUIRY_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), 'inquiry'),
+                        ));
+                        $template->parse('favoritelist_favorite_list_actions_inquiry');
+                    }
                 }
         }
     }
