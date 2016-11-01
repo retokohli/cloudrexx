@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -27,7 +27,7 @@
 
 /**
  * This is the controllers for GeoIp
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
@@ -39,45 +39,99 @@ namespace Cx\Core_Modules\GeoIp\Controller;
 
 /**
  * This is the main controller for GeoIp
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  coremodule_geoip
  * @version     1.0.0
  */
-class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
-    
+class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController implements \Cx\Core\Json\JsonAdapter {
+
     /**
      * List of available locales (as IETF language tags)
-     * 
+     *
      * @var array
      */
     protected $availableLocale = array('de', 'en', 'fr', 'ru', 'es', 'ja', 'pt-BR', 'zh-CN');
 
     /**
      * Default locale, specified as IETF language tag
-     * 
+     *
      * @var string
      */
     protected $defaultLocale = 'en';
-    
+
     /**
      * Client record
-     * 
+     *
      * @var \GeoIp2\Model\Country
      */
     protected $clientRecord;
 
     /**
      * Returns all Controller class names for this component (except this)
-     * 
+     *
      * @return array List of Controller class names (without namespace)
      */
     public function getControllerClasses() {
         return array('Backend', 'Default');
     }
-    
+
+    /**
+     * Wrapper to __call()
+     * Thank you Zend!
+     * @return string ComponentName
+     */
+    public function getName() {
+        return parent::getName();
+    }
+
+    /**
+     * Returns a list of JsonAdapter class names
+     *
+     * The array values might be a class name without namespace. In that case
+     * the namespace \Cx\{component_type}\{component_name}\Controller is used.
+     * If the array value starts with a backslash, no namespace is added.
+     *
+     * Avoid calculation of anything, just return an array!
+     * @return array List of ComponentController classes
+     */
+    public function getControllersAccessableByJson() {
+        return array('ComponentController');
+    }
+
+    /**
+     * Returns default permission as object
+     * @return Object
+     */
+    public function getDefaultPermissions() {
+        return new \Cx\Core_Modules\Access\Model\Entity\Permission(
+            null,
+            null,
+            false
+        );
+    }
+
+    /**
+     * Returns an array of method names accessable from a JSON request
+     * @return array List of method names
+     */
+    public function getAccessableMethods() {
+        return array(
+            'getCountryCode',
+            'getCountryName',
+        );
+    }
+
+    /**
+     * Returns all messages as string
+     * @return String HTML encoded error messages
+     */
+    public function getMessagesAsString() {
+        return '';
+    }
+
     /**
      * Hook - After resolving the page
      *
@@ -109,6 +163,33 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
     }
+    
+    /**
+     * JsonAdapter method to return given country code
+     * This is kind of a dummy method, but it is used to generate ESI/SSI content
+     * @param array $params Request params
+     * @return string ISO Alpha-2 Country code
+     */
+    public function getCountryCode($params) {
+        if (!isset($params['get']) || !isset($params['get']['country'])) {
+            return '';
+        }
+        return array('content' => $params['get']['country']);
+    }
+    
+    /**
+     * JsonAdapter method to return country name
+     * @param array $params Request params
+     * @return string Country name
+     */
+    public function getCountryName($params) {
+        if (!defined('FRONTEND_LANG_ID')) {
+            define('FRONTEND_LANG_ID', $params['get']['lang']);
+        }
+        $countryCode = current($this->getCountryCode($params));
+        $countryId = \Cx\Core\Country\Controller\Country::getIdByAlpha2($countryCode);
+        return array('content' => \Cx\Core\Country\Controller\Country::getNameById($countryId));
+    }
 
     /**
      * Do GeoIp processing after content is loaded from DB
@@ -127,19 +208,35 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         $countryName = $this->clientRecord->country->name;
         $countryCode = $this->clientRecord->country->isoCode;
+        
+        global $objCache;
+        $countryNameEsi = $objCache->getEsiContent(
+            $this->getName(),
+            'getCountryName',
+            array(
+                'country' => $countryCode,
+            )
+        );
+        $countryCodeEsi = $objCache->getEsiContent(
+            $this->getName(),
+            'getCountryCode',
+            array(
+                'country' => $countryCode,
+            )
+        );
 
         //Parse the country name and code
         $objTemplate = $this->cx->getTemplate();
         $objTemplate->setVariable(array(
-            'GEOIP_COUNTRY_NAME' => $countryName,
-            'GEOIP_COUNTRY_CODE' => $countryCode
+            'GEOIP_COUNTRY_NAME' => $countryNameEsi,
+            'GEOIP_COUNTRY_CODE' => $countryCodeEsi,
         ));
 
         //Set the country name and code as cx.variables
         $objJS = \ContrexxJavascript::getInstance();
         $objJS->setVariable(array(
-            'countryName'   => $countryName,
-            'countryCode'   => $countryCode
+            'countryName'   => trim($objCache->internalEsiParsing($countryNameEsi)),
+            'countryCode'   => trim($objCache->internalEsiParsing($countryCodeEsi)),
         ), 'geoIp');
     }
 
@@ -174,7 +271,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     /**
      * Get the client record
-     * 
+     *
      * @return GeoIp2\Model\Country
      */
     public function getClientRecord() {
