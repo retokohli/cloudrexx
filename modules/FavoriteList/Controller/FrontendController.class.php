@@ -105,7 +105,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                                 $template->setVariable(array(
                                     'ID' => $formField['id'],
                                     'REQUIRED' => $required ? 'required' : '',
-                                    'LABEL' => $formField['name'],
+                                    'LABEL' => contrexx_raw2xhtml($formField['name']),
                                 ));
                                 $template->parse('favoritelist_form_field_' . $formField['type']);
                                 break;
@@ -115,10 +115,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                                 foreach ($values as $key => $value) {
                                     $template->setVariable(array(
                                         'INDEX' => $key,
-                                        'VALUE' => $value,
+                                        'VALUE' => contrexx_raw2xhtml($value),
                                         'ID' => $formField['id'],
                                         'REQUIRED' => $required ? 'required' : '',
-                                        'LABEL' => $formField['name'],
+                                        'LABEL' => contrexx_raw2xhtml($formField['name']),
                                     ));
                                     $template->parse('favoritelist_form_field_' . $formField['type'] . '_value');
                                 }
@@ -131,11 +131,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                                 foreach ($values as $key => $value) {
                                     $template->setVariable(array(
                                         'INDEX' => $key,
-                                        'VALUE' => $value,
+                                        'VALUE' => contrexx_raw2xhtml($value),
                                         'ID' => $formField['id'],
                                         'REQUIRED' => $required ? 'required' : '',
-                                        'LABEL' => $formField['name'],
-                                        'VALUE' => $value,
+                                        'LABEL' => contrexx_raw2xhtml($formField['name']),
                                     ));
                                     $template->parse('favoritelist_form_field_' . $formField['type']);
                                 }
