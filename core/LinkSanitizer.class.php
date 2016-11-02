@@ -77,6 +77,13 @@ class LinkSanitizer {
             # but only those who's values don't start with a slash..
             (?=[^\/])
 
+            # ..and neither start with a placeholder..
+            (?!{[A-Z_0-9]+})
+            (?!\[\[[A-Z_0-9]+\]\])
+
+            # ..and neither start with a template block..
+            (?!<!-- (?:BEGIN|END) [a-z_0-9]+ -->)
+
             # ..and neither start with a protocol (http:, ftp:, javascript:, mailto:, etc)
             (?![a-zA-Z]+:)
 
