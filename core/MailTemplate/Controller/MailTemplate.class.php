@@ -1433,7 +1433,14 @@ die("MailTemplate::init(): Empty section!");
                     break;
                 case 'pdf_template':
                     $arrOptions = $cx->getComponent('Pdf')->getPdfTemplates();
-                    $input      = \Html::getSelect($name, $arrOptions, $value);
+                    $input      = \Html::getSelect(
+                        $name,
+                        $arrOptions,
+                        $value,
+                        false,
+                        '',
+                        'style="width:300px;"'
+                    );
                     break;
                 case 'html':
                     $input = \Html::getCheckbox(

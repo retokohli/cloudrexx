@@ -92,12 +92,12 @@ class PDF extends HTML2FPDF
     /**
      * @var string $destination
      */
-    public $destination;
+    public $destination = '';
 
     /**
      * @var string $filePath
      */
-    public $filePath;
+    public $filePath = '';
 
     function __construct()
     {
