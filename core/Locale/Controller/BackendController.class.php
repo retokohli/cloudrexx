@@ -257,8 +257,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             ),
                         ),
                         'sourceLanguage' => array(
-                            'showOverview' => false,
-                            'showDetail' => false,
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_SOURCE_LANGUAGE'],
                         ),
                         'locales' => array(
                             'showOverview' => false,
