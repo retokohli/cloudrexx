@@ -103,34 +103,61 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @param \Cx\Core\Html\Sigma $template Template for cmd Backend
      */
     public function parseBackendPage($template) {
-        global $_ARRAYLANG;
+        global $_CONFIG;
 
         // load backend.css
         \JS::registerCSS($this->cx->getCoreFolderName() . '/Html/View/Style/Backend.css');
 
         // parse active language dropdown
-        if (!$template->blockExists('backend_languages')) {
+        if (!$template->blockExists('source_languages')) {
             return;
         }
         $em = $this->cx->getDb()->getEntityManager();
-        // get all backend languages from repository
-        $backendLangRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Backend');
-        $languages = $backendLangRepo->findAll();
-        // build options array for select
+        // get source languages from repository
+        $languageRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Language');
+        $criteria = array('source' => true);
+        $languages = $languageRepo->findBy($criteria);
+
+        // build options array for select with source languages
         $selectOptions = array();
         foreach ($languages as $language) {
-            $selectOptions[$language->getId()] = $language->getIso1();
+            $selectOptions[$language->getIso1()] = $language->getIso1();
         }
+
+        // get already active backend languages
+        $backendRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Backend');
+        $backendLanguages = $backendRepo->findAll();
+
+        // create array of already active backend languages
+        $activeLanguages = array();
+        $selectedLanguages = array();
+        foreach($backendLanguages as $backendLanguage) {
+            // use the effective iso1 code as key for the array, to make the preselecting of getOptions() work
+            $selectedLanguages[$backendLanguage->getIso1()->getIso1()] = true;
+            // store id => iso1 of backend language in active languages to use for default language dropdown
+            $activeLanguages[$backendLanguage->getId()] = $backendLanguage->getIso1();
+        }
+
         // create multiple select with all languages as options
-        $attributes = 'multiple data-placeholder="' . $_ARRAYLANG['TXT_CORE_LOCALE_BACKEND_SELECT_ACTIVE_LANGUAGES'] . '"';
-        $activeLangSelect = \Html::getSelect(
-            'activeLanguages',
+        $activeLangOptions = \Html::getOptions(
             $selectOptions,
-            '', // TODO: preselect active languages
-            'activeLanguages',
-            '',
-            $attributes);
-        $template->setVariable('BACKEND_LANGUAGES', $activeLangSelect);
+            $selectedLanguages
+        );
+        $template->setVariable('SOURCE_LANGUAGES', $activeLangOptions);
+
+        // parse default language dropdown
+        if (!$template->blockExists('default_language')) {
+            return;
+        }
+
+        // create single select with active languages as options
+        $defaultLanguageSelect = \Html::getSelect(
+            'defaultLanguage',
+            $activeLanguages,
+            $_CONFIG['defaultLanguageId'], // preselect default language from settings
+            'defaultLanguage'
+        );
+        $template->setVariable('BACKEND_DEFAULT_LANGUAGE', $defaultLanguageSelect);
     }
 
     /**

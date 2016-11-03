@@ -11,9 +11,19 @@
         <div class="group">
             <label for="activeLanguages">{TXT_CORE_LOCALE_BACKEND_ACTIVE_LANGUAGES}</label>
             <div class="controls">
-                <!-- BEGIN backend_languages -->
-                {BACKEND_LANGUAGES}
-                <!-- END backend_languages -->
+                <!-- BEGIN source_languages -->
+                <select name="activeLanguages" id="activeLanguages" multiple data-placeholder="{TXT_CORE_LOCALE_BACKEND_SELECT_ACTIVE_LANGUAGES}">
+                    {SOURCE_LANGUAGES}
+                </select>
+                <!-- END source_languages -->
+            </div>
+        </div>
+        <div class="group">
+            <label for="defaultLanguage">{TXT_CORE_LOCALE_BACKEND_DEFAULT_LANGUAGE}</label>
+            <div class="controls">
+                <!-- BEGIN default_language -->
+                {BACKEND_DEFAULT_LANGUAGE}
+                <!-- END default_language -->
             </div>
         </div>
     </fieldset>
