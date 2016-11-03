@@ -242,7 +242,7 @@ CREATE TABLE `contrexx_core_country_country` (
   `ord` int(5) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`alpha2`),
   UNIQUE KEY `alpha3` (`alpha3`)
-) ENGINE=MyISAM ;
+) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_core_mail_template` (
   `key` tinytext NOT NULL,
   `section` tinytext NOT NULL,
