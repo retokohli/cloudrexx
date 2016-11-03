@@ -1,0 +1,20 @@
+<script type="text/javascript">
+    cx.jQuery(document).ready(function() {
+        cx.jQuery('#activeLanguages').chosen({
+            width: '250px'
+        });
+    });
+</script>
+<!-- TODO: Implement action to store changes -->
+<form name="localeBackendForm" method="post" class="cx-ui" style="overflow: visible">
+    <fieldset style="overflow: visible">
+        <div class="group">
+            <label for="activeLanguages">{TXT_CORE_LOCALE_BACKEND_ACTIVE_LANGUAGES}</label>
+            <div class="controls">
+                <!-- BEGIN backend_languages -->
+                {BACKEND_LANGUAGES}
+                <!-- END backend_languages -->
+            </div>
+        </div>
+    </fieldset>
+</form>

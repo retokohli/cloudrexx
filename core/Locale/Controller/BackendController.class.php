@@ -69,6 +69,71 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     }
 
     /**
+     * Use this to parse your backend page
+     *
+     * You will get the template located in /View/Template/{CMD}.html
+     * You can access Cx class using $this->cx
+     * To show messages, use \Message class
+     * @param \Cx\Core\Html\Sigma $template Template for current CMD
+     * @param array $cmd CMD separated by slashes
+     */
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
+        global $_ARRAYLANG;
+
+        switch (current($cmd)) {
+            case 'Backend':
+                // We don't want to parse the entity view
+                $this->parseBackendPage($template);
+                return;
+                break;
+            default:
+                // Parse entity view generation pages
+                $entityClassName = $this->getNamespace() . '\\Model\\Entity\\' . current($cmd);
+                if (in_array($entityClassName, $this->getEntityClasses())) {
+                    $this->parseEntityClassPage($template, $entityClassName, current($cmd));
+                    return;
+                }
+                break;
+        }
+    }
+
+    /**
+     * Parses the localization configuration page for backend
+     *
+     * @param \Cx\Core\Html\Sigma $template Template for cmd Backend
+     */
+    public function parseBackendPage($template) {
+        global $_ARRAYLANG;
+
+        // load backend.css
+        \JS::registerCSS($this->cx->getCoreFolderName() . '/Html/View/Style/Backend.css');
+
+        // parse active language dropdown
+        if (!$template->blockExists('backend_languages')) {
+            return;
+        }
+        $em = $this->cx->getDb()->getEntityManager();
+        // get all backend languages from repository
+        $backendLangRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Backend');
+        $languages = $backendLangRepo->findAll();
+        // build options array for select
+        $selectOptions = array();
+        foreach ($languages as $language) {
+            $selectOptions[$language->getId()] = $language->getIso1();
+        }
+        // create multiple select with all languages as options
+        $attributes = 'multiple data-placeholder="' . $_ARRAYLANG['TXT_CORE_LOCALE_BACKEND_SELECT_ACTIVE_LANGUAGES'] . '"';
+        $activeLangSelect = \Html::getSelect(
+            'activeLanguages',
+            $selectOptions,
+            '', // TODO: preselect active languages
+            'activeLanguages',
+            '',
+            $attributes);
+        $template->setVariable('BACKEND_LANGUAGES', $activeLangSelect);
+    }
+
+    /**
      * This function returns the ViewGeneration options for a given entityClass
      *
      * @access protected
