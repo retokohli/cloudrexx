@@ -80,8 +80,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
         $operation = new \PHPUnit_Extensions_Database_Operation_Composite(array(
-           \PHPUnit_Extensions_Database_Operation_Factory::TRUNCATE(),
-           \PHPUnit_Extensions_Database_Operation_Factory::INSERT(),
+            new \Cx\Core\Test\Model\Entity\TruncateOperation(),
+            \PHPUnit_Extensions_Database_Operation_Factory::INSERT(),
         ));
         $pdo  = $this->cx->getDb()->getPdoConnection();
         $pdo->beginTransaction();
@@ -90,7 +90,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $pdo,
             $_DBCONFIG['database']
         );
-        $ymlDataSet = new \PHPUnit_Extensions_Database_DataSet_YamlDataSet($dataSetFile);
+        $ymlDataSet = new \PHPUnit_Extensions_Database_DataSet_YamlDataSet(
+            $dataSetFile,
+            new \Cx\Core\Test\Model\Entity\SymfonyYamlParser()
+        );
         $operation->execute($conn, $ymlDataSet);
     }
 
