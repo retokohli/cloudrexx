@@ -848,6 +848,9 @@ class GalleryManager extends GalleryLibrary
                                             value="'.$arrInner['desc'].'"
                                 ');
         }
+        \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getEvents()
+            ->triggerEvent('clearEsiCache');
         $this->strOkMessage = $_ARRAYLANG['TXT_GALLERY_MESSAGE_CATEGORY_INSERTED'];
     }
 
@@ -926,6 +929,9 @@ class GalleryManager extends GalleryLibrary
         $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_categories
                                 SET     status="'.$intNewStatus.'"
                                 WHERE     id='.$intCategoryId);
+        \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getEvents()
+            ->triggerEvent('clearEsiCache');
     }
 
 
@@ -994,6 +1000,9 @@ class GalleryManager extends GalleryLibrary
                                     WHERE    gallery_id='.$strValue.'
                                 ');
         }
+        \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getEvents()
+            ->triggerEvent('clearEsiCache');
         $this->strOkMessage = $_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_CATEGORY_DELETED'];
     }
 
@@ -1338,6 +1347,9 @@ class GalleryManager extends GalleryLibrary
                                     LIMIT     1
                                 ');
         }
+        \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getEvents()
+            ->triggerEvent('clearEsiCache');
         $this->strOkMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_CATEGORY_UPDATED'];
     }
 

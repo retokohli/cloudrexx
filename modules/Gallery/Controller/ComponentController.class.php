@@ -94,28 +94,41 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 break;
         }
     }
+
     /**
      * Do something before content is loaded from DB
      *
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page The resolved page
      */
-    public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+    public function preContentLoad(
+        \Cx\Core\ContentManager\Model\Entity\Page $page
+    ) {
         global $page_template, $themesPages, $_LANGID;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $cache = $this->cx->getComponent('Cache');
+
                 //Parse gallery random image
                 $objGalleryHome  = new GalleryHomeContent();
-                $imageIds        = $objGalleryHome->getImageIds();
+                if (!$objGalleryHome->checkRandom()) {
+                    goto ParseLatestImg;
+                }
+                $imageIds        = $objGalleryHome->getImageIdsByLang($_LANGID);
                 $esiContentInfos = array();
-                if ($imageIds) {
-                    foreach ($imageIds as $imgId) {
-                        $esiContentInfos[] = array(
-                            'Gallery',
-                            'getImageById',
-                            array('imgId' => $imgId, 'langId' => $_LANGID)
-                        );
-                    }
+                if (empty($imageIds)) {
+                    goto ParseLatestImg;
+                }
+
+                foreach ($imageIds as $position => $imgId) {
+                    $esiContentInfos[] = array(
+                        'Gallery',
+                        'getImage',
+                        array(
+                            'imgId'  => $imgId,
+                            'langId' => $_LANGID,
+                            'pos'    => $position
+                        )
+                    );
                 }
 
                 $galleryRandomImg = $cache->getRandomizedEsiContent(
@@ -146,10 +159,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     '{GALLERY_RANDOM}'
                 );
 
+                ParseLatestImg:
                 //Parse gallery latest image
+                if (!$objGalleryHome->checkLatest()) {
+                    break;
+                }
                 $galleryLatestImg = $cache->getEsiContent(
                     'Gallery',
-                    'getLastImage'
+                    'getLastImage',
+                    array('langId' => $_LANGID)
                 );
                 $pageContent = $this->cx->getPage()->getContent();
                 if (preg_match('/{GALLERY_LATEST}/', $pageContent)) {

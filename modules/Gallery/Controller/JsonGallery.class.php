@@ -69,7 +69,7 @@ class JsonGallery implements JsonAdapter {
      */
     public function getAccessableMethods()
     {
-        return array('getLastImage', 'getImageById');
+        return array('getLastImage', 'getImage');
     }
 
     /**
@@ -99,33 +99,44 @@ class JsonGallery implements JsonAdapter {
      */
     public function getLastImage($params)
     {
-        $objGalleryHome = new GalleryHomeContent();
-        if (!$objGalleryHome->checkLatest()) {
+        if (empty($params) || empty($params['get']['langId'])) {
             return array('content' => '');
         }
-        return array('content' => $objGalleryHome->getLastImage());
+
+        $langId = isset($params['get']['langId'])
+            ? contrexx_input2int($params['get']['langId']) : 0;
+
+        $objGalleryHome = new GalleryHomeContent();
+        return array('content' => $objGalleryHome->getLastImage($langId));
     }
 
     /**
-     * Get the image by id
+     * Get the image by id and lang id
      *
      * @param array $params User input array
      *
      * @return array
      */
-    public function getImageById($params)
+    public function getImage($params)
     {
         if (empty($params) || empty($params['get']['imgId'])) {
             return array('content' => '');
         }
 
-        $imgId = isset($params['get']['imgId'])
+        $imgId    = isset($params['get']['imgId'])
             ? contrexx_input2int($params['get']['imgId']) : 0;
-        $objGalleryHome = new GalleryHomeContent();
-        if (!$objGalleryHome->checkRandom()) {
-            return array('content' => '');
-        }
+        $langId   = isset($params['get']['langId'])
+            ? contrexx_input2int($params['get']['langId']) : 0;
+        $position = isset($params['get']['pos'])
+            ? contrexx_input2int($params['get']['pos']) : 0;
 
-        return array('content' => $objGalleryHome->getImageById($imgId));
+        $objGalleryHome = new GalleryHomeContent();
+        return array(
+            'content' => $objGalleryHome->getImage(
+                $imgId,
+                $langId,
+                $position
+            )
+        );
     }
 }

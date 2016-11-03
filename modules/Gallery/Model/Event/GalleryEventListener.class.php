@@ -104,10 +104,40 @@ class GalleryEventListener extends DefaultEventListener {
             return;
         }
 
-        // clear ssi cache
+        //clear ssi cache for gallery latest image
         $cache = $this->cx->getComponent('Cache');
+        $galleryHome = new \Cx\Modules\Gallery\Controller\GalleryHomeContent();
+        if ($galleryHome->checkLatest()) {
+            foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+                $cache->clearSsiCachePage(
+                    'Gallery',
+                    'getLastImage',
+                    array('langId' => $lang['id'])
+                );
+            }
+        }
+
+        //clear ssi cache for gallery random images
+        if (!$galleryHome->checkRandom()) {
+            return;
+        }
+
         foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
-            $cache->clearSsiCachePage('Gallery', 'getLastImage', array('langId' => $lang['id']));
+            $imgIds = $galleryHome->getImageIdsByLang($lang['id']);
+            if (!$imgIds) {
+                continue;
+            }
+            foreach ($imgIds as $position => $id) {
+                $cache->clearSsiCachePage(
+                    'Gallery',
+                    'getImage',
+                    array(
+                        'imgId'  => $id,
+                        'langId' => $lang['id'],
+                        'pos'    => $position
+                    )
+                );
+            }
         }
     }
 
