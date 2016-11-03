@@ -1,6 +1,6 @@
 Cx\Core\Country\Model\Entity\Country:
   type: entity
-  table: core_country
+  table: core_country_country
   repositoryClass: Cx\Core\Country\Model\Repository\CountryRepository
   id:
     alpha2:
