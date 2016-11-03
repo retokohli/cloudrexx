@@ -1313,9 +1313,9 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTPS Port (Backend)");
             }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('defaultLanguage')
-                && !\Cx\Core\Setting\Controller\Setting::add('defaultLanguage',  isset($existingConfig['defaultLanguage']) ? $existingConfig['defaultLanguage'] : 'de', 9,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getLanguages()}', 'administrationArea') ) {
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('defaultLanguageId')
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultLanguageId',  isset($existingConfig['defaultLanguageId']) ? $existingConfig['defaultLanguageId'] : 1, 9,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getBackendLanguages()}', 'administrationArea') ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default language (Backend)");
             }
 
@@ -1750,19 +1750,19 @@ class Config
     }
 
     /**
-     * Shows all languages
+     * Shows all backend languages
      *
      * @access  public
      * @return  string
      */
-    public static function getLanguages() {
+    public static function getBackendLanguages() {
         $cx = Cx::instanciate();
         $em = $cx->getDB()->getEntityManager();
-        $languageRepository = $em->getRepository('Cx\Core\Locale\Model\Entity\Language');
-        $languages = $languageRepository->findAll();
+        $backendLangRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Backend');
+        $languages = $backendLangRepo->findAll();
         $display = array();
         foreach ($languages As $language) {
-            $display[] = $language->getIso1();
+            $display[] = $language->getId() . ':' . $language->getIso1();
         }
         return implode(',', $display);
     }
