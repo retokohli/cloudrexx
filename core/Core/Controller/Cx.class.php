@@ -1941,6 +1941,8 @@ namespace Cx\Core\Core\Controller {
             $boolShop = \Cx\Modules\Shop\Controller\Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
             $objNavbar->setLanguagePlaceholders($this->resolvedPage, $this->request->getUrl(), $this->template);
+            $boolFavoriteList = \Cx\Core\ComponentManager\Controller\ComponentManager::getModuleStatus(121);
+            $objFavoriteList = new \Cx\Modules\FavoriteList\Controller\FrontendController(new \Cx\Modules\FavoriteList\Controller\ComponentController(), $this);
             $metarobots = $this->resolvedPage->getMetarobots();
             $this->template->setVariable(array(
                 'CHARSET'                        => \Env::get('init')->getFrontendLangCharset(),
@@ -1976,6 +1978,7 @@ namespace Cx\Core\Core\Controller {
                 'NAVBAR_FILE'                    => $objNavbar->getNavigation($themesPages['navbar'], $this->license, $boolShop),
                 'NAVBAR2_FILE'                   => $objNavbar->getNavigation($themesPages['navbar2'], $this->license, $boolShop),
                 'NAVBAR3_FILE'                   => $objNavbar->getNavigation($themesPages['navbar3'], $this->license, $boolShop),
+                'FAVORITELIST_SIDEBAR'           => $boolFavoriteList ? $objFavoriteList->getSidebar() : '',
                 'ONLINE_USERS'                   => $objCounter ? $objCounter->getOnlineUsers() : '',
                 'VISITOR_NUMBER'                 => $objCounter ? $objCounter->getVisitorNumber() : '',
                 'COUNTER'                        => $objCounter ? $objCounter->getCounterTag() : '',

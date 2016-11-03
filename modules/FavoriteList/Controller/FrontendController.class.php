@@ -160,31 +160,22 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                     $template->setVariable(array(
                         strtoupper($this->getName()) . '_FAVORITE_LIST' => $favoritesView,
                     ));
+
                     $template->parse('favoritelist_favorite_list_actions');
                     \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function');
-                    if (\Cx\Core\Setting\Controller\Setting::getValue('functionMail', 'function')) {
-                        $template->setVariable(array(
-                            strtoupper($this->getName()) . '_ACT_MAIL_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), 'mail'),
-                        ));
-                        $template->parse('favoritelist_favorite_list_actions_mail');
-                    }
-                    if (\Cx\Core\Setting\Controller\Setting::getValue('functionPrint', 'function')) {
-                        $template->setVariable(array(
-                            strtoupper($this->getName()) . '_ACT_PRINT_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), 'print'),
-                        ));
-                        $template->parse('favoritelist_favorite_list_actions_print');
-                    }
-                    if (\Cx\Core\Setting\Controller\Setting::getValue('functionRecommendation', 'function')) {
-                        $template->setVariable(array(
-                            strtoupper($this->getName()) . '_ACT_RECOMMENDATION_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), 'recommendation'),
-                        ));
-                        $template->parse('favoritelist_favorite_list_actions_recommendation');
-                    }
-                    if (\Cx\Core\Setting\Controller\Setting::getValue('functionInquiry', 'function')) {
-                        $template->setVariable(array(
-                            strtoupper($this->getName()) . '_ACT_INQUIRY_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), 'inquiry'),
-                        ));
-                        $template->parse('favoritelist_favorite_list_actions_inquiry');
+                    $cmds = array(
+                        'mail',
+                        'print',
+                        'recommendation',
+                        'inquiry',
+                    );
+                    foreach ($cmds as $cmd) {
+                        if (\Cx\Core\Setting\Controller\Setting::getValue('function' . ucfirst($cmd), 'function')) {
+                            $template->setVariable(array(
+                                strtoupper($this->getName()) . '_ACT_' . strtoupper($cmd) . '_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), $cmd),
+                            ));
+                            $template->parse('favoritelist_favorite_list_actions_' . $cmd);
+                        }
                     }
                 }
         }
@@ -301,6 +292,58 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                         'filtering' => false,
                     ),
                 );
+        }
+    }
+
+    /**
+     * This function sets the sidebar
+     *
+     * @access public
+     * @global $_ARRAYLANG
+     * @global $themesPages
+     */
+    public function getSidebar()
+    {
+        global $themesPages;
+
+        $template = new \Cx\Core\Html\Sigma('.');
+        $template->setTemplate($themesPages['favoritelist_sidebar']);
+
+        $em = $this->cx->getDb()->getEntityManager();
+        $catalogRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Catalog');
+        $catalog = $catalogRepo->findOneBy(array('sessionId' => $this->getComponent('Session')->getSession()->sessionid));
+
+        if (!$catalog) {
+            $template->parse('favoritelist_sidebar_favorite_no_list');
+        } else {
+            $template->parse('favoritelist_sidebar_favorite_list');
+
+            $favorites = $catalog->getFavorites()->toArray();
+            foreach ($favorites as $favorite) {
+                var_dump($favorite);
+                $template->setVariable(array(
+                    strtoupper($this->getName()) . '_SIDEBAR_FAVORITE_LIST_NAME' => $favorite['name'],
+                    strtoupper($this->getName()) . '_SIDEBAR_FAVORITE_LIST_DELETE_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()) . '',
+                ));
+                $template->parse('favoritelist_sidebar_favorite_list_row');
+            }
+
+            $template->parse('favoritelist_sidebar_actions');
+            \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function');
+            $cmds = array(
+                'mail',
+                'print',
+                'recommendation',
+                'inquiry',
+            );
+            foreach ($cmds as $cmd) {
+                if (\Cx\Core\Setting\Controller\Setting::getValue('function' . ucfirst($cmd), 'function')) {
+                    $template->setVariable(array(
+                        strtoupper($this->getName()) . '_SIDEBAR_ACT_' . strtoupper($cmd) . '_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), $cmd),
+                    ));
+                    $template->parse('favoritelist_sidebar_actions_' . $cmd);
+                }
+            }
         }
     }
 }
