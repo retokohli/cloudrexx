@@ -119,15 +119,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     goto ParseLatestImg;
                 }
 
-                foreach ($imageIds as $position => $imgId) {
+                foreach ($imageIds as $imgId) {
                     $esiContentInfos[] = array(
                         'Gallery',
                         'getImage',
-                        array(
-                            'imgId'  => $imgId,
-                            'langId' => $_LANGID,
-                            'pos'    => $position
-                        )
+                        array('imgId' => $imgId, 'langId' => $_LANGID)
                     );
                 }
 

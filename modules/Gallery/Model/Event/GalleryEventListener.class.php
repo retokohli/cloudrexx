@@ -98,7 +98,7 @@ class GalleryEventListener extends DefaultEventListener {
      *
      * @param array $eventArgs Event args
      */
-    public function clearEsiCache(array $eventArgs)
+    public function clearEsiCache($eventArgs)
     {
         if (empty($eventArgs) || $eventArgs != 'Gallery') {
             return;
@@ -127,15 +127,11 @@ class GalleryEventListener extends DefaultEventListener {
             if (!$imgIds) {
                 continue;
             }
-            foreach ($imgIds as $position => $id) {
+            foreach ($imgIds as $id) {
                 $cache->clearSsiCachePage(
                     'Gallery',
                     'getImage',
-                    array(
-                        'imgId'  => $id,
-                        'langId' => $lang['id'],
-                        'pos'    => $position
-                    )
+                    array('imgId' => $id, 'langId' => $lang['id'])
                 );
             }
         }

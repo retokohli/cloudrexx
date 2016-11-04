@@ -127,16 +127,8 @@ class JsonGallery implements JsonAdapter {
             ? contrexx_input2int($params['get']['imgId']) : 0;
         $langId   = isset($params['get']['langId'])
             ? contrexx_input2int($params['get']['langId']) : 0;
-        $position = isset($params['get']['pos'])
-            ? contrexx_input2int($params['get']['pos']) : 0;
 
         $objGalleryHome = new GalleryHomeContent();
-        return array(
-            'content' => $objGalleryHome->getImage(
-                $imgId,
-                $langId,
-                $position
-            )
-        );
+        return array('content' => $objGalleryHome->getImage($imgId, $langId));
     }
 }

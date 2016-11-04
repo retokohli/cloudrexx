@@ -154,7 +154,7 @@ class GalleryHomeContent extends GalleryLibrary
      *
      * @return string
      */
-    public function getImage($id, $langId, $position)
+    public function getImage($id, $langId)
     {
         if (empty($id)) {
             return;
@@ -180,32 +180,54 @@ class GalleryHomeContent extends GalleryLibrary
                     AND `pics`.`id`      = ' . contrexx_input2db($id) . '
                     AND `lang`.`lang_id` = ' . contrexx_input2db($langId);
         $objResult = $objDatabase->Execute($query);
-        $content   = '';
-        if ($objResult && $objResult->RecordCount()) {
-            $paging = $objDatabase->getOne(
-                'SELECT `value`
-                    FROM `' . DBPREFIX . 'module_gallery_settings`
-                    WHERE `name` = "paging"'
-            );
-            $pos = 0;
-            if ($position > $paging) {
-                $pos = floor($position / $paging) * $paging;
-            }
-            $url = \Cx\Core\Routing\Url::fromModuleAndCmd(
-                'Gallery',
-                '',
-                '',
-                array('cid' => $objResult->fields['catId'], 'pos' => $pos)
-            )->toString();
-            $imgName = contrexx_raw2xhtml($objResult->fields['name']);
-            $image   = \Html::getImageByPath(
-                $this->_strWebPath . $objResult->fields['path'],
-                'alt="' . $imgName . '" title="' . $imgName . '"'
-            );
-            $content = \Html::getLink($url, $image, '_self');
+        if (!$objResult || $objResult->RecordCount() == 0) {
+            return '';
         }
 
-        return $content;
+        $pictures = $objDatabase->Execute(
+            'SELECT `id`
+                FROM `' . DBPREFIX . 'module_gallery_pictures`
+                WHERE   `status`    = "1"
+                    AND `validated` = "1"
+                    AND `catid`     = ' . $objResult->fields['catId'] . '
+                ORDER BY `sorting`'
+        );
+        $position = 0;
+        if ($pictures && $pictures->RecordCount()) {
+            while (!$pictures->EOF) {
+                if ($pictures->fields['id'] == $id) {
+                    break;
+                }
+                $position++;
+                $pictures->MoveNext();
+            }
+        }
+        $paging = $objDatabase->getOne(
+            'SELECT `value`
+                FROM `' . DBPREFIX . 'module_gallery_settings`
+                WHERE `name` = "paging"'
+        );
+        $pos = 0;
+        if ($position > $paging) {
+            $pageNum = ceil($position / $paging);
+            $pos     = (($pageNum - 1) * $paging);
+        }
+        if ($position == $paging) {
+            $pos = $position;
+        }
+        $url = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'Gallery',
+            '',
+            '',
+            array('cid' => $objResult->fields['catId'], 'pos' => $pos)
+        )->toString();
+        $imgName = contrexx_raw2xhtml($objResult->fields['name']);
+        $image   = \Html::getImageByPath(
+            '/' . $this->_strWebPath . $objResult->fields['path'],
+            'alt="' . $imgName . '" title="' . $imgName . '"'
+        );
+
+        return \Html::getLink($url, $image, '_self');
     }
 
 
@@ -263,6 +285,7 @@ class GalleryHomeContent extends GalleryLibrary
                 WHERE   `categories`.`status` = "1"
                     AND `pics`.`validated` = "1"
                     AND `pics`.`status` = "1"
+                    AND `categories`.`id` = ' . $objResult->fields['CATID'] . '
                     AND `lang`.`lang_id` = ' . $langId . '
                 ORDER BY `pics`.`sorting`'
         );
@@ -279,7 +302,11 @@ class GalleryHomeContent extends GalleryLibrary
 
         $pos = 0;
         if ($picNr > $paging) {
-            $pos = floor($picNr / $paging) * $paging;
+            $pageNum = ceil($picNr / $paging);
+            $pos     = (($pageNum - 1) * $paging);
+        }
+        if ($picNr == $paging) {
+            $pos = $picNr;
         }
         $url = \Cx\Core\Routing\Url::fromModuleAndCmd(
             'Gallery',
@@ -289,7 +316,7 @@ class GalleryHomeContent extends GalleryLibrary
         )->toString();
         $imgName = contrexx_raw2xhtml($objResult->fields['NAME']);
         $image   = \Html::getImageByPath(
-            $this->_strWebPath . $objResult->fields['PATH'],
+            '/' . $this->_strWebPath . $objResult->fields['PATH'],
             'alt="' . $imgName . '" title="' . $imgName . '"'
         );
 
