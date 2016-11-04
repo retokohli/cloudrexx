@@ -87,12 +87,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 return;
                 break;
             default:
-                // Parse entity view generation pages
-                $entityClassName = $this->getNamespace() . '\\Model\\Entity\\' . current($cmd);
-                if (in_array($entityClassName, $this->getEntityClasses())) {
-                    $this->parseEntityClassPage($template, $entityClassName, current($cmd));
-                    return;
-                }
+                parent::parsePage($template, $cmd);
                 break;
         }
     }
