@@ -283,11 +283,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 ),
                                 'parse' => function ($value, $rowData) {
                                     $selectedVal = is_object($value) ? $value->getId() : 0;
-                                    // TODO: build select
                                     $em = $this->cx->getDb()->getEntityManager();
                                     $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
                                     $locales = $localeRepo->findAll();
-                                    $select = new \Cx\Core\Html\Model\Entity\DataElement('fallback' . $rowData['id'], '', 'select');
+                                    // build select for fallbacks
+                                    $select = new \Cx\Core\Html\Model\Entity\DataElement('fallback[' . $rowData['id'] . ']', '', 'select');
                                     foreach($locales as $locale) {
                                         $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
                                         $option->setAttribute('value', $locale->getId());
