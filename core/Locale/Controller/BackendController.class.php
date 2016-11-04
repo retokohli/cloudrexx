@@ -37,6 +37,7 @@
  */
 
 namespace Cx\Core\Locale\Controller;
+use Cx\Core\Html\Model\Entity\TextElement;
 
 /**
  * Backend controller to create the locale backend view.
@@ -87,15 +88,22 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 return;
                 break;
             case 'Locale':
-                // parse form around entity view
-                if ($template->blockExists('form_tag_open') && $template->blockExists('form_tag_close')) {
-                    $template->touchBlock('form_tag_open');
-                    $template->touchBlock('form_tag_close');
+                $isEdit = false;
+                parent::parsePage($template, $cmd, $isEdit);
+                // register locale js
+                \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Locale.js', 1));
+                if (!$isEdit) { //do not parse blocks in edit view
+                    // parse form around entity view
+                    if ($template->blockExists('form_tag_open') && $template->blockExists('form_tag_close')) {
+                        $template->touchBlock('form_tag_open');
+                        $template->touchBlock('form_tag_close');
+                    }
+                    // parse form actions
+                    if ($template->blockExists('form_actions')) {
+                        $template->touchBlock('form_actions');
+                    }
                 }
-                // parse form actions
-                if ($template->blockExists('form_actions')) {
-                    $template->touchBlock('form_actions');
-                }
+                break;
             default:
                 parent::parsePage($template, $cmd);
                 break;
@@ -224,6 +232,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'id' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID'],
                             'tooltip' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID'],
+                            'table' => array(
+                                'attributes' => array(
+                                    'class' => 'localeId',
+                                ),
+                            ),
                         ),
                         'iso1' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO1'],
@@ -247,13 +260,17 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_DEFAULT'],
                             'type' => 'radio',
                             'table' => array(
+                                'attributes' => array(
+                                    'class' => 'localeDefault',
+                                ),
                                 'parse' => function ($value, $rowData) {
                                     global $_CONFIG;
                                     return \Html::getRadio(
                                         'langDefaultStatus',
                                         $rowData['id'],
                                         false,
-                                        $rowData['id'] == $_CONFIG['defaultLocaleId']
+                                        $rowData['id'] == $_CONFIG['defaultLocaleId'],
+                                        'updateCurrent()'
                                         );
                                 },
                             ),
@@ -261,11 +278,26 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'fallback' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_FALLBACK'],
                             'table' => array(
+                                'attributes' => array(
+                                    'class' => 'localeFallback',
+                                ),
                                 'parse' => function ($value, $rowData) {
-                                    if (!is_object($value)) {
-                                        return '';
+                                    $selectedVal = is_object($value) ? $value->getId() : 0;
+                                    // TODO: build select
+                                    $em = $this->cx->getDb()->getEntityManager();
+                                    $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
+                                    $locales = $localeRepo->findAll();
+                                    $select = new \Cx\Core\Html\Model\Entity\DataElement('fallback' . $rowData['id'], '', 'select');
+                                    foreach($locales as $locale) {
+                                        $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
+                                        $option->setAttribute('value', $locale->getId());
+                                        $option->addChild(new \Cx\Core\Html\Model\Entity\TextElement($locale->getLabel()));
+                                        if ($locale->getId() == $selectedVal) {
+                                            $option->setAttribute('selected');
+                                        }
+                                    $select->addChild($option);
                                     }
-                                    return $value->getLabel();
+                                    return $select;
                                 },
                             ),
                         ),
