@@ -265,13 +265,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 ),
                                 'parse' => function ($value, $rowData) {
                                     global $_CONFIG;
-                                    return \Html::getRadio(
-                                        'langDefaultStatus',
-                                        $rowData['id'],
-                                        false,
-                                        $rowData['id'] == $_CONFIG['defaultLocaleId'],
-                                        'updateCurrent()'
-                                        );
+                                    $radioButton = new \Cx\Core\Html\Model\Entity\DataElement('langDefaultStatus', $rowData['id'], 'input');
+                                    $radioButton->setAttribute('type', 'radio');
+                                    $radioButton->setAttribute('onchange', 'updateCurrent()');
+                                    if ($rowData['id'] == $_CONFIG['defaultLocaleId']) {
+                                        $radioButton->setAttribute('checked', 'checked');
+                                    }
+                                    return $radioButton;
                                 },
                             ),
                         ),
