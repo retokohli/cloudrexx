@@ -86,6 +86,16 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 $this->parseBackendPage($template);
                 return;
                 break;
+            case 'Locale':
+                // parse form around entity view
+                if ($template->blockExists('form_tag_open') && $template->blockExists('form_tag_close')) {
+                    $template->touchBlock('form_tag_open');
+                    $template->touchBlock('form_tag_close');
+                }
+                // parse form actions
+                if ($template->blockExists('form_actions')) {
+                    $template->touchBlock('form_actions');
+                }
             default:
                 parent::parsePage($template, $cmd);
                 break;
