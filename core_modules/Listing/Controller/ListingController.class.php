@@ -183,7 +183,7 @@ class ListingController {
             $this->entityClass = $entities;
         }
         $this->criteria = $crit;
-        $this->filter = $filter
+        $this->filter = $filter;
 
         // todo: allow multiple listing controllers per page request
         $this->args = contrexx_input2raw($_GET);
@@ -229,7 +229,7 @@ class ListingController {
             $data = $this->entityClass;
 
             // filter data
-            if (count($this->criteria)) {
+            if (is_array($this->criteria) && count($this->criteria)) {
                 $data->filter(function($entry) {
                     foreach ($entry as $field=>$data) {
                         if (
@@ -241,7 +241,6 @@ class ListingController {
                     }
                     return true;
                 });
-                $this->count = count($data);
             }
 
             if (!empty($this->filter)) {
