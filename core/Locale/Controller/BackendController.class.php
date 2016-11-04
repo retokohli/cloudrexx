@@ -218,6 +218,14 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'iso1' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO1'],
                             'tooltip' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO1'],
+                            'table' => array(
+                                'parse' => function ($iso1, $rowData) {
+                                    if (!isset($iso1)) {
+                                        return '';
+                                    }
+                                    return \Locale::getDisplayLanguage($iso1);
+                                }
+                            ),
                         ),
                         'label' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_LABEL'],
