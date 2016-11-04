@@ -70,6 +70,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Register events
+     */
+    public function registerEvents()
+    {
+        $this->cx->getEvents()->addEvent('clearEsiCache');
+    }
+
+    /**
      * Start caching with op cache, user cache and cloudrexx caching (cloudrexx caching in frontend only)
      * @param \Cx\Core\Core\Controller\Cx $cx The instance of \Cx\Core\Core\Controller\Cx
      */
@@ -211,5 +219,93 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getCacheDriver()
     {
         return $this->cacheDriver;
+    }
+
+    /**
+     * Get parameter array for esi/ssi request
+     *
+     * @param string                                    $block name of the block
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page  page object
+     *
+     * @return array Parameter's list
+     */
+    public function getParamsByFindBlockExistsInTpl($block, $page = null)
+    {
+        global $objInit, $plainSection;
+
+        //Check $block exists in page content, If so return page id as parameter's list
+        if (
+            $page != null &&
+            ($page instanceof \Cx\Core\ContentManager\Model\Entity\Page) &&
+            $page->getId() &&
+            $page->getContent()
+        ) {
+            if (preg_match(
+                    '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                    $page->getContent()
+                )
+            ) {
+                return array('page' => $page->getId());
+            }
+            return array();
+        }
+
+        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $theme           = $themeRepository->findById($objInit->getCurrentThemeId());
+
+        //Check $block exists in index.html,
+        //If so return theme id and filename as parameter's list
+        if ($theme->isBlockExistsInfile('index.html', $block)) {
+            return array(
+                'template' => $theme->getId(),
+                'file'     => 'index.html'
+            );
+        }
+
+        //Check $block exists in home.html
+        //If so return theme id and filename as parameter's list
+        if (
+            $plainSection == 'Home' &&
+            !$objInit->hasCustomContent() &&
+            $theme->isBlockExistsInfile('home.html', $block)
+        ) {
+            return array(
+                'template' => $theme->getId(),
+                'file'     => 'home.html'
+            );
+        }
+
+        if (
+            $objInit->hasCustomContent() &&
+            !empty($objInit->customContentTemplate)
+        ) {
+            //Check $block exists in custom content template using channelTheme,
+            //If so return channelTheme id and filename as parameter's list
+            $channelTheme  = $themeRepository->findById($objInit->channelThemeId);
+            if ($channelTheme->isBlockExistsInfile($objInit->customContentTemplate, $block)) {
+                return array(
+                    'template' => $channelTheme->getId(),
+                    'file'     => $objInit->customContentTemplate
+                );
+            }
+            //Check $block exists in custom content template using defaultTheme,
+            //If so return defaultTheme id and filename as parameter's list
+            if ($theme->isBlockExistsInfile($objInit->customContentTemplate, $block)) {
+                return array(
+                    'template' => $theme->getId(),
+                    'file'     => $objInit->customContentTemplate
+                );
+            }
+        }
+
+        //Check $block exists in content.html,
+        //If so return theme id and filename as parameter's list
+        if ($theme->isBlockExistsInfile('content.html', $block)) {
+            return array(
+                'template' => $theme->getId(),
+                'file'     => 'content.html'
+            );
+        }
+        return array();
     }
 }
