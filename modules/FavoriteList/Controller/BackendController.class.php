@@ -357,7 +357,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_NAME'],
                             'table' => array(
                                 'parse' => function ($value, $rowData) {
-                                    return '<a href="' . $this->getName() . '/Favorite?catalog=' . $rowData['id'] . '">' . $value . '</a>';
+                                    return '<a href="' . \Cx\Core\Html\Controller\ViewGenerator::getVgExtendedSearchUrl(0, array('catalog' => $rowData['id'])) . '">' . $value . '</a>';
                                 },
                             ),
                         ),
