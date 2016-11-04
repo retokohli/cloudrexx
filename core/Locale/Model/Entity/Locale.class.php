@@ -175,4 +175,9 @@ class Locale extends \Cx\Model\Base\EntityBase {
     {
         return $this->sourceLanguage;
     }
+
+    public function __toString()
+    {
+        return $this->getLabel();
+    }
 }
