@@ -437,6 +437,10 @@ class CacheLib
      */
     public function getEsiContent($adapterName, $adapterMethod, $params = array()) {
         $url = $this->getUrlFromApi($adapterName, $adapterMethod, $params);
+        $settings = $this->getSettings();
+        if (!isset($settings['internalSsiCache']) || $settings['internalSsiCache'] != 'on') {
+            return $this->getApiResponseForUrl($url);
+        }
         return $this->getSsiProxy()->getSsiProcessor()->getIncludeCode($url->toString());
     }
 
@@ -453,7 +457,56 @@ class CacheLib
         foreach ($esiContentInfos as $i=>$esiContentInfo) {
             $urls[] = $this->getUrlFromApi($esiContentInfo[0], $esiContentInfo[1], $esiContentInfo[2])->toString();
         }
+        $settings = $this->getSettings();
+        if ($settings['internalSsiCache'] != 'on') {
+            return $this->getApiResponseForUrl($urls[rand(0, (count($urls) - 1))]);
+        }
         return $this->getSsiProxy()->getSsiProcessor()->getRandomizedIncludeCode($urls);
+    }
+
+    /**
+     * Returns the content of the API response for an API URL
+     * This gets data internally and does not do a HTTP request!
+     * @param string $url API URL
+     * @return string API content or empty string
+     */
+    protected function getApiResponseForUrl($url) {
+        // Initialize only when needed, we need DB for this!
+        if (empty($this->apiUrlString)) {
+            $this->apiUrlString = substr(\Cx\Core\Routing\Url::fromApi('', array(), array()), 0, -1);
+        }
+        
+        $query = parse_url($url, PHP_URL_QUERY);
+        $path = parse_url($url, PHP_URL_PATH);
+        $params = array();
+        parse_str($query, $params);
+        
+        $pathParts = explode('/', str_replace($this->apiUrlString, '', $path));
+        if (
+            count($pathParts) != 4 ||
+            $pathParts[0] != 'Data' ||
+            $pathParts[1] != 'Plain'
+        ) {
+            return '';
+        }
+        $adapter = contrexx_input2raw($pathParts[2]);
+        $method = contrexx_input2raw($pathParts[3]);
+        unset($params['cmd']);
+        unset($params['object']);
+        unset($params['act']);
+        $arguments = array('get' => contrexx_input2raw($params));
+        
+        $json = new \Cx\Core\Json\JsonData();
+        $response = $json->data($adapter, $method, $arguments);
+        if (
+            !isset($response['status']) ||
+            $response['status'] != 'success' ||
+            !isset($response['data']) ||
+            !isset($response['data']['content'])
+        ) {
+            return '';
+        }
+        return $response['data']['content'];
     }
 
     /**
