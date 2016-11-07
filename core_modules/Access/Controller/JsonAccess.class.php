@@ -112,16 +112,18 @@ class JsonAccess implements \Cx\Core\Json\JsonAdapter
                 $params,
                 'access_currently_online_member_list'
             );
-            return array(
+            return new \Cx\Lib\Net\Model\Entity\Response(array(
                 'content' => $this->parseAccessContentBlock(
                     $content,
                     'currently_online',
                     'setCurrentlyOnlineUsers'
-                )
+                ))
             );
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());
-            return array('content' => '');
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array('content' => '')
+            );
         }
     }
 
@@ -139,16 +141,18 @@ class JsonAccess implements \Cx\Core\Json\JsonAdapter
                 $params,
                 'access_last_active_member_list'
             );
-            return array(
+            return new \Cx\Lib\Net\Model\Entity\Response(array(
                 'content' => $this->parseAccessContentBlock(
                     $content,
                     'last_active',
                     'setLastActiveUsers'
-                )
+                ))
             );
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());
-            return array('content' => '');
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array('content' => '')
+            );
         }
     }
 
@@ -166,16 +170,18 @@ class JsonAccess implements \Cx\Core\Json\JsonAdapter
                 $params,
                 'access_latest_registered_member_list'
             );
-            return array(
+            return new \Cx\Lib\Net\Model\Entity\Response(array(
                 'content' => $this->parseAccessContentBlock(
                     $content,
                     'latest_registered',
                     'setLatestRegisteredUsers'
-                )
+                ))
             );
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());
-            return array('content' => '');
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array('content' => '')
+            );
         }
     }
 
@@ -188,21 +194,34 @@ class JsonAccess implements \Cx\Core\Json\JsonAdapter
      */
     public function showBirthdayUsers($params)
     {
+        $expirationDate = new \DateTime();
+        $expirationDate->modify('tomorrow');
+
         try {
             $content = $this->getAccessContentBlock(
                 $params,
                 'access_birthday_member_list'
             );
-            return array(
-                'content' => $this->parseAccessContentBlock(
-                    $content,
-                    'birthday',
-                    'setBirthdayUsers'
-                )
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    'content' => $this->parseAccessContentBlock(
+                        $content,
+                        'birthday',
+                        'setBirthdayUsers'
+                    )
+                ),
+                200,
+                null,
+                $expirationDate
             );
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());
-            return array('content' => '');
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array('content' => ''),
+                200,
+                null,
+                $expirationDate
+            );
         }
     }
 
@@ -259,12 +278,14 @@ class JsonAccess implements \Cx\Core\Json\JsonAdapter
             if ($accessType == 'logged_out' && !$isLoggedIn) {
                 $responseContent = $content;
             }
-            return array(
-                'content' => $responseContent
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array('content' => $responseContent)
             );
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());
-            return array('content' => '');
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array('content' => '')
+            );
         }
     }
 
