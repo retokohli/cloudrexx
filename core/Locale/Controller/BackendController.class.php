@@ -151,7 +151,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             $sourceLanguages = $languageRepo->findBy($criteria);
 
                             // build select for active languages
-                            $select = new \Cx\Core\Html\Model\Entity\DataElement('activeLanguages', '', 'select');
+                            $select = new \Cx\Core\Html\Model\Entity\DataElement(
+                                'activeLanguages',
+                                '',
+                                \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+                            );
                             $select->setAttribute('multiple');
                             $select->setAttribute('data-placeholder', $_ARRAYLANG['TXT_CORE_LOCALE_BACKEND_SELECT_ACTIVE_LANGUAGES']);
                             // build options for select with source languages
@@ -180,7 +184,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             $backendLanguages = $backendRepo->findAll();
 
                             // build select for default language
-                            $select = new \Cx\Core\Html\Model\Entity\DataElement('defaultLanguage', '', 'select');
+                            $select = new \Cx\Core\Html\Model\Entity\DataElement(
+                                'defaultLanguage',
+                                '',
+                                \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+                            );
                             foreach($backendLanguages as $backendLanguage) {
                                 $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
                                 $option->setAttribute('value', $backendLanguage->getId());
@@ -300,7 +308,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                     $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
                                     $locales = $localeRepo->findAll();
                                     // build select for fallbacks
-                                    $select = new \Cx\Core\Html\Model\Entity\DataElement('fallback[' . $rowData['id'] . ']', '', 'select');
+                                    $select = new \Cx\Core\Html\Model\Entity\DataElement(
+                                        'fallback[' . $rowData['id'] . ']',
+                                        '',
+                                        \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+                                    );
                                     foreach($locales as $locale) {
                                         $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
                                         $option->setAttribute('value', $locale->getId());
