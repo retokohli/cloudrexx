@@ -184,9 +184,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         if (session_id() != '' && \FWUser::getFWUserObject()->objUser->login()) {
             return $this->internalEsiParsing($endcode);
         }
-        if (!$page->getCaching()) {
-            return $this->internalEsiParsing($endcode);
-        }
         $handleFile = $this->strCachePath . $this->strCacheFilename . "_" . $page->getId();
         $File = new \Cx\Lib\FileSystem\File($handleFile);
         $File->write($endcode);
