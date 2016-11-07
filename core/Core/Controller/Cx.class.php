@@ -1159,7 +1159,7 @@ namespace Cx\Core\Core\Controller {
                     $componentController = $this->getComponentControllerByNameAndType($componentDefinition['name'], $componentDefinition['type']);
                     $componentController->preInit($this);
                     // store componentController in preLoadedCompnents, using the name as key
-                    $this->preLoadedComponents[$componentController->getName()] = $componentController;
+                    $this->preLoadedComponents[$componentDefinition['name']] = $componentController;
                 }
             } catch (\Cx\Core_Modules\Listing\Model\Entity\DataSetException $e) {
                 throw new \Exception('Error in processing preInit-hooks: '.$e->getMessage());
@@ -1182,7 +1182,7 @@ namespace Cx\Core\Core\Controller {
                         $componentController = $this->preLoadedComponents[$componentDefinition['name']];
                     } else {
                         $componentController = $this->getComponentControllerByNameAndType($componentDefinition['name'], $componentDefinition['type']);
-                        $this->preLoadedComponents[$componentController->getName()] = $componentController;
+                        $this->preLoadedComponents[$componentDefinition['name']] = $componentController;
                     }
                     $componentController->preComponentLoad();
                 }
