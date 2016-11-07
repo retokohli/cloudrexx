@@ -1,3 +1,16 @@
+cx.jQuery(document).ready(function() {
+    // set unique with to all fallback dropdowns
+    var maxFallbackSelectWidth = 0;
+    // get width of widest fallback dropdown
+    cx.jQuery('.localeFallback select').each(function() {
+        var fallbackSelectWidth = cx.jQuery(this).width();
+        if (fallbackSelectWidth > maxFallbackSelectWidth) {
+            maxFallbackSelectWidth = fallbackSelectWidth;
+        }
+    });
+    cx.jQuery('.localeFallback select').width(maxFallbackSelectWidth);
+});
+
 cx.jQuery(function() {
     updateCurrent(true);
 });
