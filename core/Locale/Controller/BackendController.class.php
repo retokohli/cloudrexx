@@ -242,7 +242,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'fields' => array(
                         'id' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID'],
-                            'tooltip' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID'],
                             'table' => array(
                                 'attributes' => array(
                                     'class' => 'localeId',
@@ -251,7 +250,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'iso1' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO1'],
-                            'tooltip' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO1'],
                         ),
                         'label' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_LABEL'],
