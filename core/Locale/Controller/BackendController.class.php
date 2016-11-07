@@ -121,6 +121,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         // register backend settings js file
         \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/BackendSettings.js', 1));
 
+        // register backend settings css file
+        \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/BackendSettings.css', 1));
+
         // simulate entity for view generator
         $simulatedEntity = array(
             1 => array(

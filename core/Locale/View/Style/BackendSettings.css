@@ -1,0 +1,4 @@
+#content form.cx-ui,
+#content form.cx-ui > fieldset {
+    overflow: visible;
+}
