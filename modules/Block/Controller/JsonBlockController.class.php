@@ -147,7 +147,7 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
                 'countries' => $countries
             );
         }
-        $arrCountries = \Cx\Core\Country\Controller\Country::searchByName($term);
+        $arrCountries = \Cx\Core\Country\Controller\Country::searchByName($term,null,false);
         foreach ($arrCountries as $country) {
             $countries[] = array(
                 'id'    => $country['id'],
@@ -199,7 +199,12 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
         global $_CORELANG, $objDatabase;
 
         // check for necessary arguments
-        if (empty($params['get']['block']) || empty($params['get']['lang'])) {
+        if (
+            empty($params['get']) ||
+            empty($params['get']['block']) ||
+            empty($params['get']['lang']) ||
+            empty($params['get']['page'])
+        ) {
             throw new NotEnoughArgumentsException('not enough arguments');
         }
 
@@ -231,11 +236,20 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
             throw new NoBlockFoundException('no block content found with id: ' . $id);
         }
 
+        $content = $result->fields['content'];
+
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->parseGlobalPlaceholders($content);
+        $em = $cx->getDb()->getEntityManager();
+        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $page = $pageRepo->find($params['get']['page']);
+        
+        \Cx\Modules\Block\Controller\Block::setBlocks($content, $page);
+        \LinkGenerator::parseTemplate($content);
         $ls = new \LinkSanitizer(
             $cx,
             $cx->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
-            $result->fields['content']
+            $content
         );
         return array('content' => $ls->replace());
     }
