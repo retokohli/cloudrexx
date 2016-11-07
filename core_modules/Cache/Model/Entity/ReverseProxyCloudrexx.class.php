@@ -75,11 +75,8 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
         }
         
         if (!$glob) {
-            global $objCache;
-            $searchParts = $objCache->getCacheFileNameSearchPartsFromUrl($urlPattern);
-            if (count($searchParts)) {
-                $glob = $strCachePath . '*' . implode('*', $searchParts) . '*';
-            }
+            $searchParts = $cx->getComponent('Cache')->getCacheFileNameSearchPartsFromUrl($urlPattern);
+            $glob = $strCachePath . $cx->getComponent('Cache')->getCacheFileNameFromUrl($urlPattern, false) . '*' . implode('', $searchParts) . '*';
         }
         
         if ($glob !== null) {
@@ -88,15 +85,19 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
                 if (!preg_match('#/[0-9a-f]{32}((_[plutgc][a-z0-9]+)+)?$#', $fileName)) {
                     continue;
                 }
-                $file = new \Cx\Lib\FileSystem\File($fileName);
-                $file->delete();
+                try {
+                    $file = new \Cx\Lib\FileSystem\File($fileName);
+                    $file->delete();
+                } catch (\Cx\Lib\FileSystem\FileSystemException $e) {}
             }
             return;
         }
-        
-        $cacheFile = \Env::get('cache')->getCacheFileNameFromUrl($urlPattern);
-        $file = new \Cx\Lib\FileSystem\File($strCachePath . $cacheFile);
-        $file->delete();
+
+        $cacheFile = $cx->getComponent('Cache')->getCacheFileNameFromUrl($urlPattern);
+        try {
+            $file = new \Cx\Lib\FileSystem\File($strCachePath . $cacheFile);
+            $file->delete();
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {}
         
         // make sure HTTP and HTTPS files are dropped
         if (substr($urlPattern, 0, 5) == 'https') {
@@ -105,8 +106,10 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
             $urlPattern = 'https' . substr($urlPattern, 4);
         }
         $cacheFile = md5($urlPattern);
-        $file = new \Cx\Lib\FileSystem\File($strCachePath . $cacheFile);
-        $file->delete();
+        try {
+            $file = new \Cx\Lib\FileSystem\File($strCachePath . $cacheFile);
+            $file->delete();
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {}
     }
 }
 
