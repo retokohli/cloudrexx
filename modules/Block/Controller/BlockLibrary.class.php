@@ -96,6 +96,12 @@ class BlockLibrary
      */
     function __construct()
     {
+        if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() != \Cx\Core\Core\Controller\Cx::MODE_COMMAND) {
+            return;
+        }
+        if (!defined('FRONTEND_LANG_ID')) {
+            define('FRONTEND_LANG_ID', 1);
+        }
     }
 
 
