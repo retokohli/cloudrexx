@@ -355,15 +355,14 @@ class BlockLibrary
                                                    content='".contrexx_raw2db($content)."',
                                                    active='".intval((isset($arrLangActive[$langId]) ? $arrLangActive[$langId] : 0))."'",
                                                   $blockId));
+        }
             \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->clearSsiCachePage(
                 'Block',
                 'getBlockContent',
                 array(
                     'block' => $blockId,
-                    'lang' => \FWLanguage::getLanguageCodeById($langId),
                 )
             );
-        }
 
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$blockId." AND lang_id NOT IN (".join(',', array_map('intval', array_keys($arrLangActive))).")");
     }
