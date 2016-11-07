@@ -251,7 +251,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                     if (!isset($iso1)) {
                                         return '';
                                     }
-                                    return \Locale::getDisplayLanguage($iso1);
+                                    return \Locale::getDisplayLanguage($iso1) . ' (' . $iso1 . ')';
                                 }
                             ),
                         ),
@@ -260,6 +260,14 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'country' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_COUNTRY'],
+                            'table' => array(
+                                'parse' => function ($alpha2, $rowData) {
+                                    if (!isset($alpha2)) {
+                                        return '';
+                                    }
+                                    return \Locale::getDisplayRegion('und_'.$alpha2) . ' (' . $alpha2 . ')';
+                                }
+                            ),
                         ),
                         'default' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_DEFAULT'],
@@ -308,6 +316,14 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'sourceLanguage' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_SOURCE_LANGUAGE'],
+                            'table' => array(
+                                'parse' => function ($iso1, $rowData) {
+                                    if (!isset($iso1)) {
+                                        return '';
+                                    }
+                                    return \Locale::getDisplayLanguage($iso1) . ' (' . $iso1 . ')';
+                                }
+                            ),
                         ),
                         'locales' => array(
                             'showOverview' => false,
