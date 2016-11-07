@@ -98,12 +98,17 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             return;
         }
 
+        if (isset($_GET['templateEditor']) && $_GET['templateEditor'] == 1) {
+            $this->boolIsEnabled = false;
+            return;
+        }
+
 // TODO: Reimplement - see #1205
         /*if ($this->isException()) {
             $this->boolIsEnabled = false;
             return;
         }*/
-        
+
         if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_MINIMAL) {
             $this->boolIsEnabled = false;
             return;
