@@ -110,4 +110,15 @@ class Country extends \Cx\Model\Base\EntityBase {
     {
         return $this->locales;
     }
+
+    /**
+     * Returns the region and the alpha 2 code
+     * using the php \Locale class
+     *
+     * @return string for example "Germany (DE)"
+     */
+    public function __toString()
+    {
+        return \Locale::getDisplayRegion('und_' . $this->alpha2) . ' (' . $this->alpha2 . ')';
+    }
 }

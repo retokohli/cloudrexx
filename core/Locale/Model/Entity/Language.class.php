@@ -209,4 +209,15 @@ class Language extends \Cx\Model\Base\EntityBase {
     {
         return $this->localeRelatedByIso1s;
     }
+    /**
+     * Returns the language and the iso1 code
+     * using the php \Locale class
+     *
+     * @return string for example "German (de)"
+     */
+
+    public function __toString()
+    {
+        return \Locale::getDisplayLanguage($this->iso1) . ' (' . $this->iso1 . ')';
+    }
 }
