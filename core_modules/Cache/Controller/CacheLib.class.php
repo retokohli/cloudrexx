@@ -393,8 +393,8 @@ class CacheLib
      * @return string ESI/SSI directives to put into HTML code
      */
     public function getEsiContent($adapterName, $adapterMethod, $params = array()) {
-        $url = \Cx\Core\Routing\Url::fromApi('Data', array('Plain', $adapterName, $adapterMethod), $params);
-        return $this->getSsiProxy()->getSsiProcessor()->getIncludeCode($url);
+        $url = $this->getUrlFromApi($adapterName, $adapterMethod, $params);
+        return $this->getSsiProxy()->getSsiProcessor()->getIncludeCode($url->toString());
     }
 
     /**
@@ -408,7 +408,7 @@ class CacheLib
     public function getRandomizedEsiContent($esiContentInfos) {
         $urls = array();
         foreach ($esiContentInfos as $i=>$esiContentInfo) {
-            $urls[] = \Cx\Core\Routing\Url::fromApi('Data', array('Plain', $esiContentInfo[0], $esiContentInfo[1]), $esiContentInfo[2]);
+            $urls[] = $this->getUrlFromApi($esiContentInfo[0], $esiContentInfo[1], $esiContentInfo[2])->toString();
         }
         return $this->getSsiProxy()->getSsiProcessor()->getRandomizedIncludeCode($urls);
     }
@@ -421,8 +421,27 @@ class CacheLib
      * @todo Only drop this specific content instead of complete cache
      */
     public function clearSsiCachePage($adapterName, $adapterMethod, $params = array()) {
+        $url = $this->getUrlFromApi($adapterName, $adapterMethod, $params);
+        $this->getSsiProxy()->clearCachePage($url->toString(), $this->getDomainsAndPorts());
+    }
+    
+    /**
+     * Wrapper for \Cx\Core\Routing\Url::fromApi()
+     * This ensures correct param order
+     * @param string $adapterName (Json)Data adapter name
+     * @param string $adapterMethod (Json)Data method name
+     * @param array $params (optional) params for (Json)Data method call
+     * @return \Cx\Core\Routing\Url URL for (Json)Data call
+     */
+    protected function getUrlFromApi($adapterName, $adapterMethod, $params) {
         $url = \Cx\Core\Routing\Url::fromApi('Data', array('Plain', $adapterName, $adapterMethod), $params);
-        $this->getSsiProxy()->clearCachePage($url, $this->getDomainsAndPorts());
+        // make sure params are in correct order:
+        $correctIndexOrder = array('page', 'lang', 'user', 'theme', 'country', 'currency');
+        $params = $url->getParamArray();
+        $params = array_replace(array_flip($correctIndexOrder), $params);
+        $url->setParams($params);
+        $url->setParam('EOU', '');
+        return $url;
     }
 
     /**
@@ -785,5 +804,63 @@ class CacheLib
     {
         global $_DBCONFIG;
         return $_DBCONFIG['database'].'.'.DBPREFIX;
+    }
+
+    /**
+     * Creates an array containing all important cache-settings
+     *
+     * @global     object    $objDatabase
+     * @return    array    $arrSettings
+     */
+    function getSettings() {
+        $arrSettings = array();
+        \Cx\Core\Setting\Controller\Setting::init('Config', NULL,'Yaml');
+        $ymlArray = \Cx\Core\Setting\Controller\Setting::getArray('Config', null);
+
+        foreach ($ymlArray as $key => $ymlValue){
+            $arrSettings[$key] = $ymlValue['value'];
+        }
+
+        return $arrSettings;
+    }
+    
+    /**
+     * Returns the validated file search parts of the URL
+     * @param string $url URL to parse
+     * @return array <fileNamePrefix>=><parsedValue> type array
+     */
+    public function getCacheFileNameSearchPartsFromUrl($url) {
+        $url = new \Cx\Lib\Net\Model\Entity\Url($url);
+        $params = $url->getParsedQuery();
+        $searchParams = array(
+            'p' => 'page',
+            'l' => 'lang',
+            'u' => 'user',
+            't' => 'theme',
+            'g' => 'country',
+            'c' => 'currency',
+        );
+        $fileNameSearchParts = array();
+        foreach ($searchParams as $short=>$long) {
+            if (!isset($params[$long])) {
+                continue;
+            }
+            // security: abort if any mystirius characters are found
+            if (!preg_match('/^[a-zA-Z0-9-]+$/', $params[$long])) {
+                return array();
+            }
+            $fileNameSearchParts[$short] = '_' . $short . $params[$long];
+        }
+        return $fileNameSearchParts;
+    }
+    
+    /**
+     * Gets the local cache file name for an URL
+     * @param string $url URL to get file name for
+     * @return string File name
+     */
+    public function getCacheFileNameFromUrl($url) {
+        $fileName = md5($url);
+        return $fileName . implode('', $this->getCacheFileNameSearchPartsFromUrl($url));
     }
 }

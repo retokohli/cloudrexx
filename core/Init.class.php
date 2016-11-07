@@ -243,15 +243,15 @@ class InitCMS
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['pdf_themes_id'];
             $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PDF;
         }
-        // Load mobile template
-        elseif ($this->isMobileDevice and $this->arrLang[$this->frontendLangId]['mobile_themes_id']) {
-            $this->currentThemesId = $this->arrLang[$this->frontendLangId]['mobile_themes_id'];
-            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE;
-        }
         // Load app template
         elseif (isset($_GET['appview']) && $_GET['appview'] == 1) {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['app_themes_id'];
             $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_APP;
+        }
+        // Load mobile template
+        elseif ($this->isMobileDevice and $this->arrLang[$this->frontendLangId]['mobile_themes_id']) {
+            $this->currentThemesId = $this->arrLang[$this->frontendLangId]['mobile_themes_id'];
+            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE;
         }
         // Load regular content template
         else {

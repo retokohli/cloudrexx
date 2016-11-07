@@ -68,11 +68,21 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
     protected function clearCachePageForDomainAndPort($urlPattern, $domain, $port) {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $strCachePath = $cx->getWebsiteCachePath() . '/';
-        
+
+        $glob = null;
         if ($urlPattern == '*') {
-            $fileNames = glob($strCachePath . '*');
+            $glob = $strCachePath . '*';
+        }
+        
+        $searchParts = \Env::get('cache')->getCacheFileNameSearchPartsFromUrl($urlPattern);
+        if (count($searchParts)) {
+            $glob = $strCachePath . '*' . implode('*', $searchParts) . '*';
+        }
+        
+        if ($glob !== null) {
+            $fileNames = glob($glob);
             foreach ($fileNames as $fileName) {
-                if (!preg_match('#/[0-9a-f]{32}$#', $fileName)) {
+                if (!preg_match('#/[0-9a-f]{32}((_[plutgc][a-z0-9]+)+)?$#', $fileName)) {
                     continue;
                 }
                 $file = new \Cx\Lib\FileSystem\File($fileName);
@@ -81,7 +91,7 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
             return;
         }
         
-        $cacheFile = md5($urlPattern);
+        $cacheFile = \Env::get('cache')->getCacheFileNameFromUrl($urlPattern);
         $file = new \Cx\Lib\FileSystem\File($strCachePath . $cacheFile);
         $file->delete();
     }
