@@ -84,7 +84,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         switch (current($cmd)) {
             case 'Backend':
                 // We don't want to parse the entity view
-                $this->parseBackendPage($template);
+                $this->parseBackendSettings($template);
                 return;
                 break;
             case 'Locale':
@@ -115,62 +115,89 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      *
      * @param \Cx\Core\Html\Sigma $template Template for cmd Backend
      */
-    public function parseBackendPage($template) {
-        global $_CONFIG;
+    public function parseBackendSettings($template) {
+        global $_ARRAYLANG;
 
-        // load backend.css
-        \JS::registerCSS($this->cx->getCoreFolderName() . '/Html/View/Style/Backend.css');
+        // register backend settings js file
+        \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/BackendSettings.js', 1));
 
-        // parse active language dropdown
-        if (!$template->blockExists('source_languages')) {
-            return;
-        }
-        $em = $this->cx->getDb()->getEntityManager();
-        // get source languages from repository
-        $languageRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Language');
-        $criteria = array('source' => true);
-        $languages = $languageRepo->findBy($criteria);
-
-        // build options array for select with source languages
-        $selectOptions = array();
-        foreach ($languages as $language) {
-            $selectOptions[$language->getIso1()] = $language->getIso1();
-        }
-
-        // get already active backend languages
-        $backendRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Backend');
-        $backendLanguages = $backendRepo->findAll();
-
-        // create array of already active backend languages
-        $activeLanguages = array();
-        $selectedLanguages = array();
-        foreach($backendLanguages as $backendLanguage) {
-            // use the effective iso1 code as key for the array, to make the preselecting of getOptions() work
-            $selectedLanguages[$backendLanguage->getIso1()->getIso1()] = true;
-            // store id => iso1 of backend language in active languages to use for default language dropdown
-            $activeLanguages[$backendLanguage->getId()] = $backendLanguage->getIso1();
-        }
-
-        // create multiple select with all languages as options
-        $activeLangOptions = \Html::getOptions(
-            $selectOptions,
-            $selectedLanguages
+        // simulate entity for view generator
+        $simulatedEntity = array(
+            1 => array(
+                'active' => '',
+                'default' => '',
+            )
         );
-        $template->setVariable('SOURCE_LANGUAGES', $activeLangOptions);
+        // set to edit mode
+        $_GET['editid'] = '{0,1}';
+        // get dataset of the simulated entity
+        $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($simulatedEntity);
+        // set view generator options
+        $options = array(
+            'array' => array(
+                'fields' => array(
+                    'active' => array(
+                        'header' => $_ARRAYLANG['TXT_CORE_LOCALE_ACTIVE_LANGUAGES'],
+                        'formfield' => function($fieldname, $fieldtype, $fieldlength, $fieldvalue, $fieldoptions) {
+                            global $_ARRAYLANG;
 
-        // parse default language dropdown
-        if (!$template->blockExists('default_language')) {
-            return;
-        }
+                            $em = $this->cx->getDb()->getEntityManager();
+                            // get source languages from repository
+                            $languageRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Language');
+                            $criteria = array('source' => true);
+                            $sourceLanguages = $languageRepo->findBy($criteria);
 
-        // create single select with active languages as options
-        $defaultLanguageSelect = \Html::getSelect(
-            'defaultLanguage',
-            $activeLanguages,
-            $_CONFIG['defaultLanguageId'], // preselect default language from settings
-            'defaultLanguage'
+                            // build select for active languages
+                            $select = new \Cx\Core\Html\Model\Entity\DataElement('activeLanguages', '', 'select');
+                            $select->setAttribute('multiple');
+                            $select->setAttribute('data-placeholder', $_ARRAYLANG['TXT_CORE_LOCALE_BACKEND_SELECT_ACTIVE_LANGUAGES']);
+                            // build options for select with source languages
+                            foreach ($sourceLanguages as $language) {
+                                $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
+                                $iso1 = $language->getIso1();
+                                $option->setAttribute('value', $iso1);
+                                $option->addChild(new \Cx\Core\Html\Model\Entity\TextElement($iso1));
+                                // check if language is already active
+                                if ($language->getBackend()) {
+                                    $option->setAttribute('selected');
+                                }
+                                $select->addChild($option);
+                            }
+                            return $select;
+                        }
+                    ),
+                    'default' => array(
+                        'header' => $_ARRAYLANG['TXT_CORE_LOCALE_DEFAULT_LANGUAGE'],
+                        'formfield' => function($fieldname, $fieldtype, $fieldlength, $fieldvalue, $fieldoptions) {
+                            global $_CONFIG;
+
+                            $em = $this->cx->getDb()->getEntityManager();
+                            // get already active backend languages
+                            $backendRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Backend');
+                            $backendLanguages = $backendRepo->findAll();
+
+                            // build select for default language
+                            $select = new \Cx\Core\Html\Model\Entity\DataElement('defaultLanguage', '', 'select');
+                            foreach($backendLanguages as $backendLanguage) {
+                                $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
+                                $option->setAttribute('value', $backendLanguage->getId());
+                                $option->addChild(new \Cx\Core\Html\Model\Entity\TextElement($backendLanguage->getIso1()));
+                                if ($backendLanguage->getId() == $_CONFIG['defaultLanguageId']) {
+                                    $option->setAttribute('selected');
+                                }
+                                $select->addChild($option);
+                            }
+                            return $select;
+                        }
+                    ),
+                ),
+            ),
         );
-        $template->setVariable('BACKEND_DEFAULT_LANGUAGE', $defaultLanguageSelect);
+        $view = new \Cx\Core\Html\Controller\ViewGenerator(
+            $dataSet,
+            $options
+        );
+        $template->setVariable('ENTITY_VIEW', $view->render());
     }
 
     /**
@@ -197,31 +224,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         }
 
         switch ($entityClassName) {
-            case 'Cx\Core\Locale\Model\Entity\Backend':
-                return array(
-                    'header' => $_ARRAYLANG['TXT_CORE_LOCALE_ACT_BACKEND'],
-                    'fields' => array(
-                        'id' => array(
-                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID'],
-                        ),
-                        'iso1' => array(
-                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO1'],
-                        ),
-                        'language' => array(
-                            'showOverview' => false,
-                            'showDetail' => false,
-                        ),
-                    ),
-                    'functions' => array(
-                        'add' => true,
-                        'edit' => true,
-                        'delete' => true,
-                        'sorting' => true,
-                        'paging' => true,
-                        'filtering' => false,
-                    ),
-                );
-                break;
             case 'Cx\Core\Locale\Model\Entity\Locale':
                 if (!isset($_GET['order'])) {
                     $_GET['order'] = 'id';
