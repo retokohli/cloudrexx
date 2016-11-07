@@ -93,7 +93,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
      *
      * @param $params
      *
-     * @return array
+     * @return \Cx\Lib\Net\Model\Entity\Response
      * @throws UploaderException
      */
     public function upload($params)
@@ -115,10 +115,12 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
 
             $tmpPath = $_SESSION->getTempPath();
         } else {
-            return array(
-                'OK' => 0,
-                'error' => array(
-                    'message' => 'No id specified'
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    'OK' => 0,
+                    'error' => array(
+                        'message' => 'No id specified'
+                    )
                 )
             );
         }
@@ -153,7 +155,12 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             if (   isset($_SESSION['uploader']['handlers'][$id]['config']['upload-limit'])
                 && $_SESSION['uploader']['handlers'][$id]['config']['upload-limit'] <= $uploadedFileCount
                 ) {
-                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_UPLOADER_MAX_LIMIT_REACHED']);
+                return new \Cx\Lib\Net\Model\Entity\Response(
+                    array(
+                        'status'  => 'error',
+                        'message' => $_ARRAYLANG['TXT_CORE_MODULE_UPLOADER_MAX_LIMIT_REACHED']
+                    )
+                );
             }
 
             if (!is_string($callback)) {
@@ -224,18 +231,22 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
 
         if ($response->getWorstStatus()) {
                 $result = $response->getResponse();
-                return array(
-                    'OK' => 0,
-                    'file' => $fileLocation[1],
-                    'response' => $result['messages']
+                return new \Cx\Lib\Net\Model\Entity\Response(
+                    array(
+                        'OK' => 0,
+                        'file' => $fileLocation[1],
+                        'response' => $result['messages']
+                    )
                 );
         }
         if (isset($uploader['error'])) {
             throw new UploaderException(UploaderController::getErrorCode());
         } else {
-            return array(
-                'OK' => 1,
-                'file' => $fileLocation[1]
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    'OK' => 1,
+                    'file' => $fileLocation[1]
+                )
             );
         }
     }

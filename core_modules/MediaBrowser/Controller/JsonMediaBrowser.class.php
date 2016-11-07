@@ -106,7 +106,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
     /**
      * Get all media sources
      *
-     * @return array
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function getSources() {
         $mediaSourceManager = $this->cx->getMediaSourceManager();
@@ -130,7 +130,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
                 )
             );
         }
-        return $sources;
+        return new \Cx\Lib\Net\Model\Entity\Response($sources);
     }
 
     /**
@@ -138,7 +138,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      *
      * @param $params
      *
-     * @return array
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function getFiles($params) {
         $filePath  = (strlen($params['get']['path']) > 0)
@@ -147,13 +147,15 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
             ? $params['get']['mediatype'] : 'files';
 
         $mediaTypes = $this->cx->getMediaSourceManager()->getMediaTypes();
-        return $mediaTypes[$mediaType]->getFileSystem()->getFileList($filePath);
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            $mediaTypes[$mediaType]->getFileSystem()->getFileList($filePath)
+        );
     }
 
     /**
      * Get all content pages.
      *
-     * @return array
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function getSites() {
         $pageTree = new MediaBrowserPageTree(
@@ -161,7 +163,9 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
             , null, false, false, false
         );
         $pageTree->render();
-        return $pageTree->getFlatTree();
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            $pageTree->getFlatTree()
+        );
     }
 
 
@@ -170,20 +174,21 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      *
      * @param $params array
      *
-     * @return bool
+     * @return \Cx\Lib\Net\Model\Entity\Response bool
      */
     public function createThumbnails($params) {
         if (isset($params['get']['file'])) {
             $this->cx->getMediaSourceManager()
                 ->getThumbnailGenerator()
                 ->createThumbnailFromPath($params['get']['file']);
-            return true;
+            return new \Cx\Lib\Net\Model\Entity\Response(true);
         }
-        return false;
+        return new \Cx\Lib\Net\Model\Entity\Response(true);
     }
 
     /**
-     * @param $params
+     * @param array $params
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function createDir($params) {
         $pathArray                 = explode('/', $params['get']['path']);
@@ -196,10 +201,12 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
                 $strPath, $dir
             )
         );
+        return new \Cx\Lib\Net\Model\Entity\Response(true);
     }
 
     /**
-     * @param $params
+     * @param array $params
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function renameFile($params) {
         \Env::get('init')->loadLanguageData('MediaBrowser');
@@ -221,10 +228,12 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
                 )
             );
         }
+        return new \Cx\Lib\Net\Model\Entity\Response(true);
     }
 
     /**
-     * @param $params
+     * @param array $params
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function removeFile($params) {
         \Env::get('init')->loadLanguageData('MediaBrowser');
@@ -244,6 +253,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
                 )
             );
         }
+        return new \Cx\Lib\Net\Model\Entity\Response(true);
     }
 
 
@@ -262,7 +272,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      *
      * @param array $params
      *
-     * @return boolean|array
+     * @return \Cx\Lib\Net\Model\Entity\Response boolean|array
      */
     public function folderWidget($params) {
         $this->getComponent('Session')->getSession();
@@ -271,14 +281,14 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
         if (   empty($folderWidgetId)
             || empty($_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId])
         ) {
-            return false;
+            return new \Cx\Lib\Net\Model\Entity\Response(false);
         }
 
         $folder = $_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId]['folder'];
 
         $arrFileNames = array();
         if (!file_exists($folder)) {
-            return false;
+            return new \Cx\Lib\Net\Model\Entity\Response(false);
         }
         $h = opendir($folder);
         while (false !== ($f = readdir($h))) {
@@ -296,14 +306,14 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
             }
         }
         closedir($h);
-
-        return $arrFileNames;
+        return new \Cx\Lib\Net\Model\Entity\Response($arrFileNames);
     }
 
     /**
      * Remove the file from folder widget
      *
      * @param array $params array from json request
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function removeFileFromFolderWidget($params)
     {
@@ -314,12 +324,12 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
             || empty($_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId])
             || $_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId]['mode'] == \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget::MODE_VIEW_ONLY
         ) {
-            return false;
+            return new \Cx\Lib\Net\Model\Entity\Response(false);
         }
 
         $path = !empty($params['get']['file']) ? contrexx_input2raw($params['get']['file']) : null;
         if (empty($path)) {
-            return false;
+            return new \Cx\Lib\Net\Model\Entity\Response(false);
         }
         $folder          = $_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId]['folder'];
         $localFileSystem = new \Cx\Core\MediaSource\Model\Entity\LocalFileSystem($folder);
@@ -329,7 +339,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
 
         $this->setMessage($localFileSystem->removeFile($objFile));
 
-        return array();
+        return new \Cx\Lib\Net\Model\Entity\Response(array());
     }
 
     /**

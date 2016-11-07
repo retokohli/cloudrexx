@@ -99,6 +99,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
      *
      * @param array $params List of get and post parameters which were sent to
      *                      the json adapter.
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function saveOptions($params)
     {
@@ -127,6 +128,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
         $presetRepository = $themeOptions->getPresetRepository();
         $preset           = $themeOptions->getChangedPreset();
         $presetRepository->save($preset);
+        return new \Cx\Lib\Net\Model\Entity\Response(true);
     }
 
     /**
@@ -135,7 +137,8 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
      * @param array $params List of get and post parameters which were sent to
      *                      the json adapter.
      *
-     * @return array Modified Data
+     * @return \Cx\Lib\Net\Model\Entity\Response Modified Data
+     * @throws \LogicException
      */
     public function updateOption($params)
     {
@@ -183,7 +186,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
         );
         $_SESSION['TemplateEditor'][$themeID][$params['post']['optionName']]
               = $data;
-        return $data;
+        return new \Cx\Lib\Net\Model\Entity\Response($data);
     }
 
     /**
@@ -191,6 +194,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
      *
      * @param array $params List of get and post parameters which were sent to
      *                      the json adapter.
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function activatePreset($params)
     {
@@ -215,6 +219,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
         );
         $themeOptions->setActivePreset($preset);
         $themeOptionRepository->save($themeOptions);
+        return new \Cx\Lib\Net\Model\Entity\Response(true);
     }
 
     /**
@@ -223,7 +228,8 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
      * @param array $params List of get and post parameters which were sent to
      *                      the json adapter.
      *
-     * @return array Preset name
+     * @return \Cx\Lib\Net\Model\Entity\Response Preset name
+     * @throws \LogicException
      */
     public function addPreset($params)
     {
@@ -258,7 +264,11 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
         $preset->setName($presetName);
         $_SESSION['TemplateEditor'][$themeID]['activePreset'] = $presetName;
         $optionSet->getPresetRepository()->save($preset);
-        return array('preset' => $presetName);
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            array(
+                'preset' => $presetName
+            )
+        );
     }
 
     /**
@@ -266,6 +276,8 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
      *
      * @param array $params List of get and post parameters which were sent to
      *                      the json adapter.
+     * @return \Cx\Lib\Net\Model\Entity\Response
+     * @throws \LogicException
      */
     public function removePreset($params)
     {
@@ -305,6 +317,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
             $themeOptionRepository->save($themeOptions);
         }
         $themeOptions->getPresetRepository()->remove($preset);
+        return new \Cx\Lib\Net\Model\Entity\Response(true);
     }
 
     /**
@@ -312,6 +325,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
      *
      * @param array $params List of get and post parameters which were sent to
      *                      the json adapter.
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function resetPreset($params) {
         $themeID               = isset($params['post']['tid']) ?
@@ -319,5 +333,6 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
         $activePreset = $_SESSION['TemplateEditor'][$themeID]['activePreset'];
         $_SESSION['TemplateEditor'][$themeID] = array();
         $_SESSION['TemplateEditor'][$themeID]['activePreset'] = $activePreset;
+        return new \Cx\Lib\Net\Model\Entity\Response(true);
     }
 }

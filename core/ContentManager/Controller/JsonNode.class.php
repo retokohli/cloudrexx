@@ -145,7 +145,8 @@ class JsonNode implements JsonAdapter {
 
     /**
      * Returns the Node tree rendered for JS
-     * @return String JSON data
+     * @return \Cx\Lib\Net\Model\Entity\Response JSON data
+     * @throws ContentManagerException
      */
     public function getTree($parameters) {
         global $_CORELANG;
@@ -190,7 +191,9 @@ class JsonNode implements JsonAdapter {
                 $parameters['get']['recursive'] == 'true') {
             $recursive = true;
         }
-        return $this->renderTree($nodeId, $recursive);
+        return new \Cx\Lib\Net\Model\Entity\Response(
+           $this->renderTree($nodeId, $recursive)
+        );
     }
 
     /**
@@ -203,6 +206,9 @@ class JsonNode implements JsonAdapter {
      *
      * Data source is in /lib/javascript/jquery/jstree/contrexx.js
      * @param array $arguments Arguments passed from JsonData
+     * @return \Cx\Lib\Net\Model\Entity\Response
+     * @throws ContentManagerException
+     * @throws \Exception
      */
     public function move($arguments) {
         global $_CORELANG;
@@ -259,11 +265,20 @@ class JsonNode implements JsonAdapter {
             }
         }
 
-        return array(
-            'nodeLevels' => $nodeLevels,
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            array(
+                'nodeLevels' => $nodeLevels,
+            )
         );
     }
 
+    /**
+     * Copy node
+     *
+     * @param array $arguments
+     * @return \Cx\Lib\Net\Model\Entity\Response
+     * @throws ContentManagerException
+     */
     public function copy($arguments) {
         global $_CORELANG;
 
@@ -320,6 +335,7 @@ class JsonNode implements JsonAdapter {
         $this->em->persist($newNode);
 
         $this->em->flush();
+        return new \Cx\Lib\Net\Model\Entity\Response(true);
     }
 
     protected function titleExists($parentNode, $lang, $title) {
@@ -334,6 +350,8 @@ class JsonNode implements JsonAdapter {
     /**
      * Deletes a node
      * @param array $arguments Arguments passed from JsonData
+     * @return \Cx\Lib\Net\Model\Entity\Response
+     * @throws ContentManagerException
      */
     public function delete($arguments, $flush = true) {
         global $_CORELANG;
@@ -387,9 +405,11 @@ class JsonNode implements JsonAdapter {
             $this->em->flush();
             $this->em->clear();
         }
-        return array(
-            'action'                => 'delete',
-            'deletedCurrentPage'    => (isset($arguments['post']['currentNodeId']) && $arguments['post']['currentNodeId'] == $arguments['post']['id']),
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            array(
+                'action'                => 'delete',
+                'deletedCurrentPage'    => (isset($arguments['post']['currentNodeId']) && $arguments['post']['currentNodeId'] == $arguments['post']['id']),
+            )
         );
     }
 
@@ -397,6 +417,8 @@ class JsonNode implements JsonAdapter {
      * Deletes multiple nodes.
      *
      * @param  array  $param  Client parameters.
+     *
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function multipleDelete($params) {
         $post   = $params['post'];
@@ -412,7 +434,7 @@ class JsonNode implements JsonAdapter {
         $this->em->flush();
         $this->em->clear();
 
-        return $return;
+        return new \Cx\Lib\Net\Model\Entity\Response($return);
     }
 
     /**
@@ -624,14 +646,14 @@ class JsonNode implements JsonAdapter {
     /**
      * Gets the page titles of all languages.
      *
-     * @return  array  $tree
+     * @return  \Cx\Lib\Net\Model\Entity\Response  $tree
      */
     public function getPageTitlesTree()
     {
         $root = $this->nodeRepo->getRoot();
         $tree = $this->buildPageTitlesTree($root);
 
-        return $tree;
+        return new \Cx\Lib\Net\Model\Entity\Response($tree);
     }
 
     /**

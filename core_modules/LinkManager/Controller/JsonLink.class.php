@@ -112,7 +112,7 @@ class JsonLink implements JsonAdapter {
     /**
      * Edit the link status(link resolved or not)
      *
-     * @return array
+     * @return \Cx\Lib\Net\Model\Entity\Response
      */
     public function modifyLinkStatus()
     {
@@ -140,7 +140,7 @@ class JsonLink implements JsonAdapter {
             $result['linkStatus'] = $linkStatus;
             $result['userName']   = $user['name'];
         }
-        return $result;
+        return new \Cx\Lib\Net\Model\Entity\Response($result);
     }
 
 }

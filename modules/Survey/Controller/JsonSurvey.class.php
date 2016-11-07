@@ -82,6 +82,9 @@ class JsonSurvey implements JsonAdapter {
         return null;
     }
 
+    /**
+     * @return \Cx\Lib\Net\Model\Entity\Response
+     */
     public function modifyQuestions() {
 
         $objQuestion = new SurveyQuestion();
@@ -96,15 +99,23 @@ class JsonSurvey implements JsonAdapter {
         $objQuestion->isCommentable   = isset($_POST['Iscomment']) ? (int) $_POST['Iscomment'] : 0;
 
         $objQuestion->save();
-
+        return new \Cx\Lib\Net\Model\Entity\Response(true);
     }
 
+    /**
+     * @return \Cx\Lib\Net\Model\Entity\Response
+     */
     public function getSurveyQuestions()
     {
         $objQuestionManager = new SurveyQuestionManager((int) $_GET['surveyId']);
-        return $objQuestionManager->showQuestions();
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            $objQuestionManager->showQuestions()
+        );
     }
 
+    /**
+     * @return \Cx\Lib\Net\Model\Entity\Response
+     */
     public function getSurveyQuestion()
     {
         $objQuestion = new SurveyQuestion();
@@ -113,19 +124,24 @@ class JsonSurvey implements JsonAdapter {
 
         $objQuestion->get();
 
-        return array(
-            'id'              => (int) $objQuestion->id,
-            'surveyId'        => (int) $objQuestion->surveyId,
-            'questionType'    => (int) $objQuestion->questionType,
-            'question'        => $objQuestion->question,
-            'questionRow'     => $objQuestion->questionRow,
-            'questionChoice'  => $objQuestion->questionChoice,
-            'questionAnswers' => $objQuestion->questionAnswers,
-            'isCommentable'   => (int) $objQuestion->isCommentable
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            array(
+                'id'              => (int) $objQuestion->id,
+                'surveyId'        => (int) $objQuestion->surveyId,
+                'questionType'    => (int) $objQuestion->questionType,
+                'question'        => $objQuestion->question,
+                'questionRow'     => $objQuestion->questionRow,
+                'questionChoice'  => $objQuestion->questionChoice,
+                'questionAnswers' => $objQuestion->questionAnswers,
+                'isCommentable'   => (int) $objQuestion->isCommentable
+            )
         );
 
     }
 
+    /**
+     * @return \Cx\Lib\Net\Model\Entity\Response
+     */
     public function deleteQuestion()
     {
         $objQuestion = new SurveyQuestion();
@@ -133,8 +149,12 @@ class JsonSurvey implements JsonAdapter {
         $objQuestion->id = isset($_REQUEST['id']) ? (int) $_REQUEST['id'] : 0;
 
         $objQuestion->delete();
+        return new \Cx\Lib\Net\Model\Entity\Response(true);
     }
 
+    /**
+     * @return \Cx\Lib\Net\Model\Entity\Response
+     */
     public function saveSorting()
     {
         $objQuestion = new SurveyQuestion();
@@ -147,6 +167,6 @@ class JsonSurvey implements JsonAdapter {
                 $objQuestion->updatePosition();
             }
         }
-
+        return new \Cx\Lib\Net\Model\Entity\Response(true);
     }
 }

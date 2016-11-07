@@ -87,7 +87,7 @@ class JsonCrm implements JsonAdapter {
      *
      * @global array $_ARRAYLANG
      * @global object $objDatabase
-     * @return json result
+     * @return \Cx\Lib\Net\Model\Entity\Response json result
      */
     public function searchContacts()
     {
@@ -131,7 +131,6 @@ class JsonCrm implements JsonAdapter {
                 $objResult->MoveNext();
             }
         }
-
-        return $result;
+        return new \Cx\Lib\Net\Model\Entity\Response($result);
     }
 }

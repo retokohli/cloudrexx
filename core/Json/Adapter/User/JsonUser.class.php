@@ -88,7 +88,8 @@ class JsonUser implements JsonAdapter {
      * Returns the user with the given user id.
      * If the user does not exist then return the currently logged in user.
      *
-     * @return array User id and title
+     * @return \Cx\Lib\Net\Model\Entity\Response User id and title
+     * @throws \Exception
      */
     public function getUserById() {
         global $objInit, $_CORELANG;
@@ -105,16 +106,19 @@ class JsonUser implements JsonAdapter {
             $objUser = $objFWUser->objUser;
         }
 
-        return array(
-            'id' => $objUser->getId(),
-            'title' => $objFWUser::getParsedUserTitle($objUser),
+        return new \Cx\Lib\Net\Model\Entity\Response(
+            array(
+                'id' => $objUser->getId(),
+                'title' => $objFWUser::getParsedUserTitle($objUser),
+            )
         );
     }
 
     /**
      * Returns all users according to the given term.
      *
-     * @return array List of users
+     * @return \Cx\Lib\Net\Model\Entity\Response List of users
+     * @throws \Exception
      */
     public function getUsers() {
         global $objInit, $_CORELANG;
@@ -148,7 +152,7 @@ class JsonUser implements JsonAdapter {
             }
         }
 
-        return $arrUsers;
+        return new \Cx\Lib\Net\Model\Entity\Response($arrUsers);
     }
 
     /**
@@ -156,47 +160,50 @@ class JsonUser implements JsonAdapter {
      *
      * @param string $_POST['USERNAME']
      * @param string $_POST['PASSWORD']
-     * @return false on failure and array with userdata on success
+     * @return \Cx\Lib\Net\Model\Entity\Response False on failure and array with userdata on success
      */
     public function loginUser() {
         $objFWUser = \FWUser::getFWUserObject();
         if ($objFWUser->checkLogin()) {
             $objFWUser->loginUser($objFWUser->objUser);
-            return array($objFWUser->objUser->getUsername(),
-                $objFWUser->objUser->getAssociatedGroupIds(),
-                $objFWUser->objUser->getAdminStatus(),
-                $objFWUser->objUser->getBackendLanguage()
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                array(
+                    $objFWUser->objUser->getUsername(),
+                    $objFWUser->objUser->getAssociatedGroupIds(),
+                    $objFWUser->objUser->getAdminStatus(),
+                    $objFWUser->objUser->getBackendLanguage()
+                )
             );
         }
-        return false;
+        return new \Cx\Lib\Net\Model\Entity\Response(false);
     }
 
     /**
      * Logs the current User out.
      *
-     * @return boolean
+     * @return \Cx\Lib\Net\Model\Entity\Response boolean
      */
     public function logoutUser() {
         \FWUser::getFWUserObject()->logoutAndDestroySession();
-        return true;
+        return new \Cx\Lib\Net\Model\Entity\Response(true);
     }
 
     /**
      * Sends a Email with a new tomporary Password to the user with given email
      *
      * @param string $arguments['get']['email'] || $arguments['post']['email']
-     * @return boolean
+     * @return \Cx\Lib\Net\Model\Entity\Response boolean
      */
     public function lostPassword($arguments) {
         if (empty($arguments['get']['email']) && empty($arguments['post']['email'])) {
-            return false;
+            return new \Cx\Lib\Net\Model\Entity\Response(false);
         }
         $email = contrexx_stripslashes(!empty($arguments['get']['email']) ? $arguments['get']['email'] : $arguments['post']['email']);
         $objFWUser = \FWUser::getFWUserObject();
         if ($objFWUser->restorePassword($email)) {
-            return true;
+            return new \Cx\Lib\Net\Model\Entity\Response(true);
         }
-        return false;
+        return new \Cx\Lib\Net\Model\Entity\Response(false);
     }
 
     /**
@@ -205,27 +212,29 @@ class JsonUser implements JsonAdapter {
      * @param string $arguments['get']['userId'] || $arguments['post']['userId']
      * @param string $arguments['get']['password'] || $arguments['post']['password']
      * @param string $arguments['get']['repeatPassword'] || $arguments['post']['repeatPassword']
-     * @return boolean
+     * @return \Cx\Lib\Net\Model\Entity\Response boolean
      */
     public function setPassword($arguments) {
         if ((empty($arguments['get']['userId']) && empty($arguments['post']['userId'])) ||
                 (empty($arguments['get']['password']) && empty($arguments['post']['password'])) ||
                 (empty($arguments['get']['repeatPassword']) && empty($arguments['post']['repeatPassword']))) {
-            return false;
+            return new \Cx\Lib\Net\Model\Entity\Response(false);
         }
         $objFWUser = \FWUser::getFWUserObject();
         $arrPermissionIds = $objFWUser->objGroup->getGroups()->getStaticPermissionIds();
         if (!$objFWUser->objUser->login()) {
-            return false;
+            return new \Cx\Lib\Net\Model\Entity\Response(false);
         }
         if ($objFWUser->objUser->getAdminStatus() || (in_array('18', $arrPermissionIds) && in_array('36', $arrPermissionIds))) {
             $password = contrexx_stripslashes(!empty($arguments['get']['password']) ? $arguments['get']['password'] : $arguments['post']['password']);
             $password2 = contrexx_stripslashes(!empty($arguments['get']['repeatPassword']) ? $arguments['get']['repeatPassword'] : $arguments['post']['repeatPassword']);
             $userId = !empty($arguments['get']['userId']) ? $arguments['get']['userId'] : $arguments['post']['userId'];
             $user = $objFWUser->objUser->getUser($userId);
-            return $user->setPassword($password, $password2) && $user->store();
+            return new \Cx\Lib\Net\Model\Entity\Response(
+                $user->setPassword($password, $password2) && $user->store()
+            );
         }
-        return false;
+        return new \Cx\Lib\Net\Model\Entity\Response(false);
     }
 
 }
