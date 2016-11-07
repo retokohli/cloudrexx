@@ -37,7 +37,6 @@
  */
 
 namespace Cx\Core\Locale\Controller;
-use Cx\Core\Html\Model\Entity\TextElement;
 
 /**
  * Backend controller to create the locale backend view.
@@ -286,7 +285,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                     'class' => 'localeFallback',
                                 ),
                                 'parse' => function ($value, $rowData) {
-                                    $selectedVal = is_object($value) ? $value->getId() : 0;
+                                    global $_ARRAYLANG;
+                                    $selectedVal = is_object($value) ? $value->getId() : 'NULL';
                                     $em = $this->cx->getDb()->getEntityManager();
                                     $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
                                     $locales = $localeRepo->findAll();
@@ -296,14 +296,20 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                         '',
                                         \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
                                     );
+                                    $fallbackOptions = array(
+                                        'NULL' => $_ARRAYLANG['TXT_CORE_NONE'],
+                                    );
                                     foreach($locales as $locale) {
+                                        $fallbackOptions[$locale->getId()] = $locale->getLabel();
+                                    }
+                                    foreach($fallbackOptions as $optValue => $optText) {
                                         $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
-                                        $option->setAttribute('value', $locale->getId());
-                                        $option->addChild(new \Cx\Core\Html\Model\Entity\TextElement($locale->getLabel()));
-                                        if ($locale->getId() == $selectedVal) {
+                                        $option->setAttribute('value', $optValue);
+                                        $option->addChild(new \Cx\Core\Html\Model\Entity\TextElement($optText));
+                                        if ($optValue == $selectedVal) {
                                             $option->setAttribute('selected');
                                         }
-                                    $select->addChild($option);
+                                        $select->addChild($option);
                                     }
                                     return $select;
                                 },
