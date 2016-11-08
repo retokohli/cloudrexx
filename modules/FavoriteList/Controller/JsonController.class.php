@@ -26,7 +26,8 @@
  */
 
 /**
- * This is the FavoriteList component controller
+ * Json
+ * Json controller for FavoriteList
  *
  * @copyright   Cloudrexx AG
  * @author      Manuel Schenk <manuel.schenk@comvation.com>
@@ -38,7 +39,8 @@
 namespace Cx\Modules\FavoriteList\Controller;
 
 /**
- * This is the FavoriteList component controller
+ * Json
+ * Json controller for FavoriteList
  *
  * @copyright   Cloudrexx AG
  * @author      Manuel Schenk <manuel.schenk@comvation.com>
@@ -46,47 +48,65 @@ namespace Cx\Modules\FavoriteList\Controller;
  * @subpackage  module_favoritelist
  * @version     5.0.0
  */
-class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController
+class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \Cx\Core\Json\JsonAdapter
 {
 
     /**
-     * Returns all Controller class names for this component (except this)
-     *
-     * Be sure to return all your controller classes if you add your own
-     * @return array List of Controller class names (without namespace)
+     * Returns the internal name used as identifier for this adapter
+     * @return String Name of this adapter
      */
-    public function getControllerClasses()
+    public function getName()
     {
-        return array('Backend', 'Frontend', 'Json');
+        return 'FavoriteList';
     }
 
     /**
-     * {@inheritdoc}
+     * Returns an array of method names accessable from a JSON request
+     * @return array List of method names
      */
-    public function getControllersAccessableByJson()
+    public function getAccessableMethods()
     {
-        return array('JsonController');
+        return array(
+            'getCatalog' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false),
+            'addFavorite',
+        );
     }
 
     /**
-     * Do something before main template gets parsed
-     *
-     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
-     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
-     * @param \Cx\Core\Html\Sigma $template The main template
+     * Returns all messages as string
+     * @return String HTML encoded error messages
      */
-    public function preFinalize(\Cx\Core\Html\Sigma $template)
+    public function getMessagesAsString()
     {
-        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
-            return;
-        }
-        $this->getController('Frontend')->getSidebar($template);
+        return implode('<br />', $this->messages);
     }
 
-    public function registerEventListeners()
+    /**
+     * Returns default permission as object
+     * @return Object
+     */
+    public function getDefaultPermissions()
     {
-        $evm = $this->cx->getEvents();
-        $catalogSaveListener = new \Cx\Modules\FavoriteList\Model\Event\CatalogSaveEventListener($this->cx);
-        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Modules\\FavoriteList\\Model\\Entity\\Catalog', $catalogSaveListener);
+        return null;
+    }
+
+    /**
+     * get catalog by session
+     *
+     * @return json result
+     */
+    public function getCatalog()
+    {
+        return;
+    }
+
+    /**
+     * add Favorite to Catalog
+     *
+     * @return json result
+     */
+    public function addFavorite()
+    {
+        var_dump('here: addFavorite');
     }
 }

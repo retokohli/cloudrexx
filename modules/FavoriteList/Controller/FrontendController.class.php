@@ -93,10 +93,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                     $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($formFields);
                     $dataSet->sortColumns(array('order' => 'ASC'));
                     foreach ($dataSet as $formField) {
-                        $template->parse('favoritelist_form_field');
+                        $template->parse(strtolower($this->getName()) . '_form_field');
                         $required = $formField['required'];
                         if ($required) {
-                            $template->touchBlock('favoritelist_form_field_required');
+                            $template->touchBlock(strtolower($this->getName()) . '_form_field_required');
                         }
                         switch ($formField['type']) {
                             case 'text':
@@ -107,7 +107,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                                     'REQUIRED' => $required ? 'required' : '',
                                     'LABEL' => contrexx_raw2xhtml($formField['name']),
                                 ));
-                                $template->parse('favoritelist_form_field_' . $formField['type']);
+                                $template->parse(strtolower($this->getName()) . '_form_field_' . $formField['type']);
                                 break;
                             case 'select':
                                 $values = $formField['values'];
@@ -120,9 +120,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                                         'REQUIRED' => $required ? 'required' : '',
                                         'LABEL' => contrexx_raw2xhtml($formField['name']),
                                     ));
-                                    $template->parse('favoritelist_form_field_' . $formField['type'] . '_value');
+                                    $template->parse(strtolower($this->getName()) . '_form_field_' . $formField['type'] . '_value');
                                 }
-                                $template->parse('favoritelist_form_field_' . $formField['type']);
+                                $template->parse(strtolower($this->getName()) . '_form_field_' . $formField['type']);
                                 break;
                             case 'radio':
                             case 'checkbox':
@@ -136,7 +136,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                                         'REQUIRED' => $required ? 'required' : '',
                                         'LABEL' => contrexx_raw2xhtml($formField['name']),
                                     ));
-                                    $template->parse('favoritelist_form_field_' . $formField['type']);
+                                    $template->parse(strtolower($this->getName()) . '_form_field_' . $formField['type']);
                                 }
                         }
                     }
@@ -145,7 +145,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             default:
                 if (!$catalog) {
                     $template->setVariable(array(
-                        strtoupper($this->getName()) . '_FAVORITE_LIST' => $_ARRAYLANG['TXT_MODULE_FAVORITELIST_MESSAGE_NO_LIST'],
+                        strtoupper($this->getName()) . '_FAVORITE_LIST' => $_ARRAYLANG['TXT_MODULE' . strtoupper($this->getName()) . 'MESSAGE_NO_LIST'],
                     ));
                 } else {
                     $favorites = $catalog->getFavorites()->toArray();
@@ -161,7 +161,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                         strtoupper($this->getName()) . '_FAVORITE_LIST' => $favoritesView,
                     ));
 
-                    $template->parse('favoritelist_favorite_list_actions');
+                    $template->parse(strtolower($this->getName()) . '_favorite_list_actions');
                     \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function');
                     $cmds = array(
                         'mail',
@@ -174,7 +174,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                             $template->setVariable(array(
                                 strtoupper($this->getName()) . '_ACT_' . strtoupper($cmd) . '_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), $cmd),
                             ));
-                            $template->parse('favoritelist_favorite_list_actions_' . $cmd);
+                            $template->parse(strtolower($this->getName()) . '_favorite_list_actions_' . $cmd);
                         }
                     }
                 }
@@ -190,8 +190,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @param $entityClassName contains the FQCN from entity
      * @return array with options
      */
-    protected
-    function getViewGeneratorOptions($entityClassName, $dataSetIdentifier = '')
+    protected function getViewGeneratorOptions($entityClassName)
     {
         global $_ARRAYLANG;
 
@@ -297,53 +296,83 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
 
     /**
      * This function sets the sidebar
-     *
+     * @param \Cx\Core\Html\Sigma $template
      * @access public
-     * @global $_ARRAYLANG
-     * @global $themesPages
      */
-    public function getSidebar()
+    public function getSidebar($template)
     {
-        global $themesPages;
-
-        $template = new \Cx\Core\Html\Sigma('.');
-        $template->setTemplate($themesPages['favoritelist_sidebar']);
+        global $_ARRAYLANG;
 
         $em = $this->cx->getDb()->getEntityManager();
         $catalogRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Catalog');
         $catalog = $catalogRepo->findOneBy(array('sessionId' => $this->getComponent('Session')->getSession()->sessionid));
 
+        if (!$template->placeholderExists(strtoupper($this->getName()) . '_SIDEBAR')) {
+            return;
+        }
+        $theme = $this->getTheme();
+        $template->addBlockfile(strtoupper($this->getName()) . '_SIDEBAR', 'sidebar', $theme->getFilePath(strtolower($this->getName()) . '_sidebar.html'));
         if (!$catalog) {
-            $template->parse('favoritelist_sidebar_favorite_no_list');
+            $template->setVariable(array(
+                strtoupper($this->getName()) . '_MESSAGE_NO_LIST' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_LIST'],
+            ));
+            $template->parse(strtolower($this->getName()) . '_sidebar_favorite_no_list');
         } else {
-            $template->parse('favoritelist_sidebar_favorite_list');
-
-            $favorites = $catalog->getFavorites()->toArray();
-            foreach ($favorites as $favorite) {
-                var_dump($favorite);
+            $template->parse(strtolower($this->getName()) . '_sidebar_favorite_list');
+            $favorites = $catalog->getFavorites();
+            if (!$favorites) {
                 $template->setVariable(array(
-                    strtoupper($this->getName()) . '_SIDEBAR_FAVORITE_LIST_NAME' => $favorite['name'],
-                    strtoupper($this->getName()) . '_SIDEBAR_FAVORITE_LIST_DELETE_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()) . '',
+                    strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES'],
                 ));
-                $template->parse('favoritelist_sidebar_favorite_list_row');
-            }
-
-            $template->parse('favoritelist_sidebar_actions');
-            \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function');
-            $cmds = array(
-                'mail',
-                'print',
-                'recommendation',
-                'inquiry',
-            );
-            foreach ($cmds as $cmd) {
-                if (\Cx\Core\Setting\Controller\Setting::getValue('function' . ucfirst($cmd), 'function')) {
+                $template->parse(strtolower($this->getName()) . '_sidebar_favorite_no_entries');
+            } else {
+                foreach ($favorites as $favorite) {
                     $template->setVariable(array(
-                        strtoupper($this->getName()) . '_SIDEBAR_ACT_' . strtoupper($cmd) . '_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), $cmd),
+                        strtoupper($this->getName()) . '_SIDEBAR_FAVORITE_LIST_NAME' => $favorite->getTitle(),
+                        strtoupper($this->getName()) . '_SIDEBAR_FAVORITE_LIST_DELETE_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()) . '',
                     ));
-                    $template->parse('favoritelist_sidebar_actions_' . $cmd);
+                    $template->parse(strtolower($this->getName()) . '_sidebar_favorite_list_row');
                 }
             }
         }
+
+//        \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Frontend.js', 1));
+
+        $template->parse(strtolower($this->getName()) . '_sidebar_actions');
+        \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function');
+        $cmds = array(
+            'mail',
+            'print',
+            'recommendation',
+            'inquiry',
+        );
+        foreach ($cmds as $cmd) {
+            if (\Cx\Core\Setting\Controller\Setting::getValue('function' . ucfirst($cmd), 'function')) {
+                $template->setVariable(array(
+                    strtoupper($this->getName()) . '_SIDEBAR_ACT_' . strtoupper($cmd) . '_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), $cmd),
+                ));
+                $template->parse(strtolower($this->getName()) . '_sidebar_actions_' . $cmd);
+            }
+        }
+    }
+
+    /**
+     * Get theme by theme id
+     *
+     * @param array $params User input array
+     * @return \Cx\Core\View\Model\Entity\Theme Theme instance
+     * @throws JsonListException When theme id empty or theme does not exits in the system
+     */
+    protected function getTheme($id = null)
+    {
+        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        if (empty($id)) {
+            return $themeRepository->getDefaultTheme();
+        }
+        $theme = $themeRepository->findById($id);
+        if (!$theme) {
+            throw new JsonListException('The theme id ' . $id . ' does not exists.');
+        }
+        return $theme;
     }
 }
