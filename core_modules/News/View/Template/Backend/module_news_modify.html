@@ -97,7 +97,7 @@
                 options = {cxMbViews: 'filebrowser,sitestructure', cxMbStartview: 'MediaBrowserList'};
                 break;
         }
-        cx.variables.get('jquery','mediabrowser')('#newsMediaBrowser').trigger('click', options);
+        cx.libs.jquery['mediabrowser']('#newsMediaBrowser').trigger('click', options);
     }
 
     function newsInsertLink(elInsertBox, sLink) {

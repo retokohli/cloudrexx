@@ -4,7 +4,7 @@ function getMediaBrowser(e) { // e => jQuery element
     var inputId = e.data('inputId'),
         isImageField = e.data('isImage'),
         mediaBrowseInputBox = $J('#' + inputId);
-    cx.variables.get('jquery','mediabrowser')('#mediabrowser_button').trigger('click', {
+    cx.libs.jquery['mediabrowser']('#mediabrowser_button').trigger('click', {
         callback: function(data) {
             if (data.type == "file") {
                 var path = data.data[0].datainfo.filepath;

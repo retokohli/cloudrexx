@@ -27,7 +27,7 @@
 
     var updateImage = function () {
         var id = jQuery(this).data('id');
-        cx.variables.get('jquery', 'mediabrowser')('#{MEDIABROWSER_ID}').trigger("click", {
+        cx.libs.jquery['mediabrowser']('#{MEDIABROWSER_ID}').trigger("click", {
             callback: function (callback) {
                 if (callback.type == 'file') {
                     jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + id).val(callback.data[0].datainfo.filepath);

@@ -67,7 +67,7 @@ if(!cx.variables.get('css', 'wysiwyg')) {
     cx.variables.set('bodyId', <?php echo '\'' . $ymlOption['bodyId'] . '\'' ?>, 'wysiwyg');
 }
 
-CKEDITOR.scriptLoader.load( '<?php echo $cx->getCodeBaseCoreModuleWebPath().'/MediaBrowser/View/Script/MediaBrowserCkeditorPlugin.js'   ?>' );
+CKEDITOR.scriptLoader.load( '<?php echo $cx->getCodeBaseCoreModuleWebPath().'/MediaBrowser/View/Script/MediaBrowserCkeditorPlugin.js?v=4'   ?>' );
 CKEDITOR.editorConfig = function( config )
 {
     config.skin = 'moono';

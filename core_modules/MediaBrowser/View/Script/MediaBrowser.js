@@ -802,7 +802,8 @@
                         });
                     }
                     else {
-                        $http.get('index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=' + attrs.previewImage).
+                        cxCadminPath = cx.variables.get('cadminPath');
+                        $http.get(cxCadminPath + 'index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=' + attrs.previewImage).
                             success(function (data, status, headers, config) {
                                 jQuery(el).popover({
                                     trigger: 'hover',
@@ -1080,4 +1081,4 @@
             jQuery(this).removeAttr('disabled');
         });
     });
-}(cx.variables.get('jquery', 'mediabrowser'));
+}(cx.libs.jquery['mediabrowser']);

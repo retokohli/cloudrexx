@@ -178,6 +178,18 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
             'LINK_PROFILE' => ASCMS_PATH_OFFSET . '/cadmin/index.php?cmd=Access&amp;act=user&amp;tpl=modify&amp;id=' . $objUser->getId(),
             'LINK_CM' => ASCMS_PATH_OFFSET . '/cadmin/index.php?cmd=ContentManager&amp;page=' . $page->getId() . '&amp;tab=content',
         ));
+
+        $mediaBrowserCkeditor = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
+        $mediaBrowserCkeditor->setCallback('ckeditor_image_callback');
+        $mediaBrowserCkeditor->setOptions(array(
+            'id' => 'ckeditor_image_button',
+            'type' => 'button',
+            'style' => 'display:none'
+        ));
+        $componentTemplate->setVariable(array(
+            'MEDIABROWSER_BUTTON_CKEDITOR' => $mediaBrowserCkeditor->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE'])
+        ));
+
         $objTemplate->_blocks['__global__'] = preg_replace('/<body[^>]*>/', '\\0' . $componentTemplate->get(), $objTemplate->_blocks['__global__']);
     }
 

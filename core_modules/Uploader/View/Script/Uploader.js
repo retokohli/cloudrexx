@@ -384,4 +384,4 @@
     });
 
 
-}(cx.variables.get('jquery', 'mediabrowser'));
+}(cx.libs.jquery['mediabrowser']);

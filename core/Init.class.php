@@ -515,16 +515,7 @@ class InitCMS
                 if (!isset($libraries[$libraryName])) continue;
                 $version = $libraryVersions[0];
                 $libraryData = isset($libraries[$libraryName]['versions'][$version]) ? $libraries[$libraryName]['versions'][$version] : array();
-                if (isset($libraryData['jsfiles'])) {
-                    foreach ($libraryData['jsfiles'] as $file) {
-                        \JS::registerJS($file, true);
-                    }
-                }
-                if (isset($libraryData['cssfiles'])) {
-                    foreach ($libraryData['cssfiles'] as $file) {
-                        \JS::registerCSS($file);
-                    }
-                }
+                \JS::activateByVersion($libraryName, $version);
             }
         }
 

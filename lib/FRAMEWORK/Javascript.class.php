@@ -69,6 +69,25 @@ class JS
     private static $active = array();
 
     /**
+     * Defined options for the loaded JavaScript libaries
+     * as defined in \JS::$active.
+     * The array index is identical to the one of \JS::$active.
+     *
+     * @static
+     * @var array
+     */
+    protected static $activateOptions = array();
+
+    /**
+     * List of loaded jQuery versions that have particularly
+     * been loaded for a specific purpose.
+     *
+     * @static
+     * @var array
+     */
+    protected static $customjQueryUsages = array();
+
+    /**
      * Holding the last error
      * @access private
      * @static
@@ -170,7 +189,7 @@ cx.jQuery(document).ready(function(){
                      ),
                 ),
                 '1.6.1' => array(
-                    'jsfiles'       => array(
+            		'jsfiles'       => array(
                         'lib/javascript/jquery/1.6.1/js/jquery.min.js',
                      ),
                 ),
@@ -433,31 +452,91 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 ),
             ),
         ),
-        'mediabrowser' => array(
+        'plupload' => array(
             'jsfiles' => array(
-                'lib/javascript/jquery/2.0.3/js/jquery.min.js',
-                'lib/plupload/js/moxie.min.js?v=2',
-                'lib/plupload/js/plupload.full.min.js?v=2',
-                'lib/javascript/angularjs/angular.js?v=2',
-                'lib/javascript/angularjs/angular-route.js?v=2',
-                'lib/javascript/angularjs/angular-animate.js?v=2',
-                'lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js',
-                'lib/javascript/angularjs/ui-bootstrap-tpls-0.11.2.min.js',
-                'lib/javascript/bootbox.min.js'
+                'lib/plupload/js/moxie.min.js?v=3',
+                'lib/plupload/js/plupload.full.min.js?v=3',
             ),
-            'cssfiles' => array(
-                'core_modules/MediaBrowser/View/Style/MediaBrowser.css?v=2',
-                'core_modules/MediaBrowser/View/Style/Frontend.css?v=2'
+        ),
+        'angularjs' => array(
+            'jsfiles' => array(
+                'lib/javascript/angularjs/angular.js?v=2',
+            ),
+        ),
+        'angular-route' => array(
+            'jsfiles' => array(
+                'lib/javascript/angularjs/angular-route.js?v=2',
             ),
             'dependencies' => array(
-                'cx',
+                'angularjs',
+            ),
+        ),
+        'angular-animate' => array(
+            'jsfiles' => array(
+                'lib/javascript/angularjs/angular-animate.js?v=2',
+            ),
+            'dependencies' => array(
+                'angularjs',
+            ),
+        ),
+        'angular-ui-bootstrap' => array(
+            'jsfiles' => array(
+                'lib/javascript/angularjs/ui-bootstrap-tpls-0.11.2.min.js',
+            ),
+            'dependencies' => array(
+                'angularjs',
+                'angular-animate',
+                'twitter-bootstrap' => array(
+                    'version' => '^3\.[0-3]', // 3.0 - 3.3
+                    'nocss'=> true,
+                ),
+            ),
+        ),
+        'bootbox' => array(
+            'jsfiles' => array(
+                'lib/javascript/bootbox.min.js',
+            ),
+            /*'dependencies' => array(
+                //'jquery',
+                'twitter-bootstrap' => array(
+                    'version'=> '^3\.[0-1]', // 3.0 - 3.3
+                    'nocss'=> true,
+                ),
+            ),*/
+        ),
+        'upload-toolset' => array(
+            'dependencies' => array(
                 // Note: loading jQuery as a dependency does not work as it would
                 //       interfere with jQuery plugins
                 //'jquery'    => '^([^1]\..*|1\.[^0-8]*\..*)$', // jquery needs to be version 1.9.0 or higher
+                //'jquery', // version 2.0.3
+                'bootbox',
+                'plupload',
+                'angularjs',
+                'angular-route',
+                'angular-animate',
+                'angular-ui-bootstrap',
             ),
-            'specialcode' => 'if (typeof cx.variables.get(\'jquery\', \'mediabrowser\') == \'undefined\'){
-    cx.variables.set({"jquery": jQuery.noConflict(true)},\'mediabrowser\');
-}'
+        ),
+        'mediabrowser' => array(
+            'jsfiles' => array(
+                'core_modules/MediaBrowser/View/Script/MediaBrowser.js?v=4',
+            ),
+            'cssfiles' => array(
+                'core_modules/MediaBrowser/View/Style/MediaBrowser.css?v=3',
+                'core_modules/MediaBrowser/View/Style/Frontend.css?v=3'
+            ),
+            'dependencies' => array(
+                'jquery' => '^([^1]\..*|1\.[^0-8]*\..*)$',
+                'cx',
+                'upload-toolset',
+            ),
+            // TODO: this is a workaround to fix the issue that the jQuery libraries that
+            //       are being loaded after the mediabrowser do still work.
+            //       The proper solution would be to refactor this class (JS), so that
+            //       it does load all libraries that depend on cx.jquery right after
+            //       contrexxJs.js has been loaded
+            'specialcode' => 'jQuery.noConflict(true);'
         ),
         'intro.js' => array(
             'jsfiles' => array(
@@ -573,17 +652,17 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
     /**
      * Activate an available js file
      *
-     * The options parameter is specific for the chosen
+     * The callbackOptions parameter is specific for the chosen
      * library. The library must define callback methods for
      * the options to be used.
      * @access public
      * @static
      * @param  string  $name
-     * @param  array   $options
+     * @param  array   $callbackOptions
      * @param  bool    $dependencies
      * @return bool
      */
-    public static function activate($name, $options = null, $dependencies = true)
+    public static function activate($name, $callbackOptions = null, $dependencies = true, $options = array())
     {
         $name = strtolower($name);
         $index = array_search($name, self::$active);
@@ -593,7 +672,13 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             // Note that the entire array is reversed for code generation,
             // so dependencies are loaded first!
             // See {@see getCode()} below.
+            if (isset(self::$activateOptions[$index])) {
+                if (!in_array('nocss', self::$activateOptions[$index]) && in_array('nocss', $options)) {
+                    unset($options[array_search('nocss', $options)]);
+                }
+            }
             unset(self::$active[$index]);
+            unset(self::$activateOptions[$index]);
         }
         if (array_key_exists($name, self::$available) === false) {
             self::$error = $name.' is not a valid name for
@@ -611,9 +696,21 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             }
         }
         self::$active[] = $name;
+        self::$activateOptions[] = $options;
         if (!empty($data['dependencies']) && $dependencies) {
             foreach ($data['dependencies'] as $dep => $depVersion) {
-                if (is_string($dep)) {
+                if (is_array($depVersion)) {
+                    // parse activation options
+                    $depOptions = array();
+                    if (isset($depVersion['nocss']) && $depVersion['nocss']) {
+                        $depOptions[] = 'nocss';
+                    }
+                    if (isset($depVersion['version'])) {
+                        self::activateByVersion($dep, $depVersion['version'], $name, $depOptions);
+                    } else {
+                        self::activate($dep, null, true, $depOptions);
+                    }
+                } elseif (is_string($dep)) {
                     self::activateByVersion($dep, $depVersion, $name);
                 } else {
                     // dependency does not specify a particular version of the library to load
@@ -622,8 +719,8 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 }
             }
         }
-        if (isset($data['loadcallback']) && isset($options)) {
-            self::{$data['loadcallback']}($options);
+        if (isset($data['loadcallback']) && isset($callbackOptions)) {
+            self::{$data['loadcallback']}($callbackOptions);
         }
         return true;
     }
@@ -639,7 +736,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      *                 that triggered the loaded of the specific library version.
      * @return bool     TRUE if specific version of the library has been loaded. FALSE on failure
      */
-    public static function activateByVersion($name, $version, $dependencyOf = null) {
+    public static function activateByVersion($name, $version, $dependencyOf = null, $options = array()) {
         // abort in case the library is unknown
         if (!isset(self::$available[$name])) {
             return false;
@@ -657,16 +754,21 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 continue;
             }
 
+            if ($name != 'jquery' && $dependencyOf) {
+                self::activate($activatedLibrary, null, true, $options);
+            }
             if ($name != 'jquery' || !$dependencyOf) {
                 return true;
             }
 
-            $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$dependencyOf': jQuery.noConflict()}};";
             $customAvailableLibrary = $name.'-version-'.$activatedLibraryVersion;
-            self::$available[$customAvailableLibrary]['specialcode'] .= $libraryVersionData;
+            if (!isset(self::$customjQueryUsages[$customAvailableLibrary])) {
+                self::$customjQueryUsages[$customAvailableLibrary] = array();
+            }
+            self::$customjQueryUsages[$customAvailableLibrary][] = $dependencyOf;
 
             // trigger the activate again to push the library up in the dependency chain
-            self::activate($customAvailableLibrary);
+            self::activate($customAvailableLibrary, null, true, $options);
             return true;
         }
 
@@ -684,18 +786,23 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             // register specific version of the library
             $customAvailableLibrary = $name.'-version-'.$libraryVersion;
             if ($name == 'jquery') {
+                if (!isset(self::$customjQueryUsages[$customAvailableLibrary])) {
+                    self::$customjQueryUsages[$customAvailableLibrary] = array();
+                }
                 if ($dependencyOf) {
-                    $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$dependencyOf': jQuery.noConflict()}};";
+                    self::$customjQueryUsages[$customAvailableLibrary][] = $dependencyOf;
                 } else {
-                    $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$libraryVersion': jQuery.noConflict()}};";
+                    self::$customjQueryUsages[$customAvailableLibrary][] = $libraryVersion;
                 }
                 // we have to load cx again as we are using cx.libs in the specialcode
                 $libraryVersionData['dependencies'] = array('cx');
             }
+            // remember original name of the library
+            $libraryVersionData['name'] = $name;
             self::$available[$customAvailableLibrary] = $libraryVersionData;
 
             // activate the specific version of the library
-            self::activate($customAvailableLibrary);
+            self::activate($customAvailableLibrary, null, true, $options);
             return true;
         }
 
@@ -721,6 +828,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             return false;
         }
         unset(self::$active[$searchResult]);
+        unset(self::$activateOptions[$searchResult]);
         return true;
     }
 
@@ -839,7 +947,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             // check for lazy dependencies, if there are lazy dependencies, activate cx
             // cx provides the lazy loading mechanism
             // this should be here because the cx variable have to be set before cx is initialized
-            foreach (self::$active as $name) {
+            foreach (self::$active as $idx => $name) {
                 $data = self::$available[$name];
                 if (!empty($data['lazyDependencies'])) {
                     foreach ($data['lazyDependencies'] as $dependency) {
@@ -847,7 +955,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                             // if the lazy dependency is not activated so far
                             $lazyLoadingFiles = array_merge($lazyLoadingFiles, self::$available[$dependency]['jsfiles']);
                         }
-                        if (!empty(self::$available[$dependency]['cssfiles'])) {
+                        if (!empty(self::$available[$dependency]['cssfiles']) && !in_array('nocss', self::$activateOptions[$idx])) {
                             $cssfiles = array_merge($cssfiles, self::$available[$dependency]['cssfiles']);
                         }
                     }
@@ -862,11 +970,11 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
 
             // Note the "reverse" here.  Dependencies are at the end of the
             // array, and must be loaded first!
-            foreach (array_reverse(self::$active) as $name) {
+            foreach (array_reverse(self::$active, true) as $idx => $name) {
                 $data = self::$available[$name];
                 if (!isset($data['jsfiles']) && !isset($data['versions'])) {
                     self::$error = "A JS entry should at least contain one js file...";
-                    return false;
+                    continue;
                 }
                 // get js files which are specified or the js files from first version
                 if (!isset($data['jsfiles'])) {
@@ -875,14 +983,34 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                     $data = array_merge($data, $versionData);
                 }
                 $jsScripts[] = self::makeJSFiles($data['jsfiles']);
-                if (!empty($data['cssfiles'])) {
+                if (!empty($data['cssfiles']) && !in_array('nocss', self::$activateOptions[$idx])) {
                     $cssfiles = array_merge($cssfiles, $data['cssfiles']);
                 }
+
+                if (isset(self::$customjQueryUsages[$name])) {
+                    $originaljQueryName = self::$available[$name]['name'];
+                    $jQueryAlternativeLoad = <<<JSCODE
+if (typeof(cx.libs) == 'undefined') {
+    cx.libs={};
+}
+if (typeof(cx.libs.{$originaljQueryName}) == 'undefined') {
+    cx.libs.{$originaljQueryName}=[];
+}
+cx.libs.{$originaljQueryName}['{$name}']=jQuery.noConflict();
+
+JSCODE;
+
+                    foreach (array_unique(self::$customjQueryUsages[$name]) as $jQueryAlternative) {
+                        $jQueryAlternativeLoad .= "cx.libs.{$originaljQueryName}['{$jQueryAlternative}']=cx.libs.{$originaljQueryName}['{$name}'];\n";
+                    }
+                    $data['specialcode'] = $jQueryAlternativeLoad;
+                }
+
                 if (isset($data['specialcode']) && strlen($data['specialcode']) > 0) {
                     $jsScripts[] = self::makeSpecialCode(array($data['specialcode']));
                 }
                 if (isset($data['makecallback'])) {
-                    self::{$data['makecallback']}();
+                    self::$data['makecallback']();
                 }
                 // Special case cloudrexx-API: fetch specialcode if activated
                 if ($name == 'cx') {

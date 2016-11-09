@@ -1548,7 +1548,7 @@ JSaccessValidatePrimaryGroupAssociation
     var lastAccessImageUploaderContainer = null;
     function getImageUploader(sourceElm) {
         lastAccessImageUploaderContainer = sourceElm;
-        cx.variables.get('jquery','mediabrowser')('#accessImageUploader').trigger('click');
+        cx.libs.jquery['mediabrowser']('#accessImageUploader').trigger('click');
     }
     function accessImageUploaderCallback(callback) {
         if (typeof callback[0] !== 'undefined') {

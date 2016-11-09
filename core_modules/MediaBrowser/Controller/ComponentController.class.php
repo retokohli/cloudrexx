@@ -137,7 +137,7 @@ class ComponentController extends
             }
         }
 
-        $thumbnailsTemplate = new Sigma();
+        $thumbnailsTemplate = new \Cx\Core\Html\Sigma();
         $thumbnailsTemplate->loadTemplateFile(
             $this->cx->getCoreModuleFolderName()
             . '/MediaBrowser/View/Template/Thumbnails.html'
@@ -185,8 +185,6 @@ class ComponentController extends
         );
 
         \JS::activate('mediabrowser');
-        \JS::registerJS('core_modules/MediaBrowser/View/Script/MediaBrowser.js');
-
     }
 
 
