@@ -108,18 +108,20 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
         $themeId   = isset($_POST['themeId']) ? $_POST['themeId'] : '';
         $themeType = isset($_POST['themeType']) && array_key_exists($_POST['themeType'], $themeTypes) ? intval($_POST['themeType']) : 0;
 
-        if (!empty($themeId)) {
-            if (count(\FWLanguage::getActiveFrontendLanguages()) > 1) {
-                if (isset($_POST['themesLangId'])) {
-                    foreach ($_POST['themesLangId'] as $langId) {
-                        $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET `". $themeTypes[$themeType] ."` = '".intval($themeId)."' WHERE id=".intval($langId));
-                    }
-                }
-            } else {
-               $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET `". $themeTypes[$themeType] ."` ='".intval($themeId)."' WHERE `frontend` = 1");
-            }
+        if (empty($themeId)) {
+            return;
         }
-
+        if (count(\FWLanguage::getActiveFrontendLanguages()) > 1) {
+            if (isset($_POST['themesLangId'])) {
+                foreach ($_POST['themesLangId'] as $langId) {
+                    $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET `". $themeTypes[$themeType] ."` = '".intval($themeId)."' WHERE id=".intval($langId));
+                }
+            }
+        } else {
+           $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET `". $themeTypes[$themeType] ."` ='".intval($themeId)."' WHERE `frontend` = 1");
+        }
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getComponent('Cache')->clearCache();
     }
 
     /**
