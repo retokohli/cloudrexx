@@ -36,6 +36,8 @@
 
 namespace Cx\Modules\Voting\Controller;
 
+class JsonVotingException extends \Exception {}
+
 /**
  * Main controller for Voting
  *
@@ -44,7 +46,7 @@ namespace Cx\Modules\Voting\Controller;
  * @package     cloudrexx
  * @subpackage  module_voting
  */
-class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
+class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController implements \Cx\Core\Json\JsonAdapter {
     /**
      * getControllerClasses
      *
@@ -52,6 +54,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function getControllerClasses() {
         return array();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getControllersAccessableByJson()
+    {
+        return array('ComponentController');
     }
 
     /**
@@ -88,27 +98,233 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $cl, $_ARRAYLANG, $objInit, $themesPages, $arrMatches, $page_template;
-        // get voting
-        /** @ignore */
-        if ($cl->loadFile(ASCMS_MODULE_PATH.'/Voting/Controller/Voting.class.php')) {
-            $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('Voting'));
-            //  if ($objTemplate->blockExists('voting_result')) {
-            //      $objTemplate->_blocks['voting_result'] = setVotingResult($objTemplate->_blocks['voting_result']);
-            //  }
-            if (preg_match('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@m', $themesPages['sidebar'], $arrMatches)) {
-                $themesPages['sidebar'] = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@m', setVotingResult($arrMatches[2]), $themesPages['sidebar']);
-            }
-            if (preg_match('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@m', $themesPages['index'], $arrMatches)) {
-                $themesPages['index'] = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@m', setVotingResult($arrMatches[2]), $themesPages['index']);
-            }
-            if (preg_match('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@m', \Env::get('cx')->getPage()->getContent(), $arrMatches)) {
-                \Env::get('cx')->getPage()->setContent(preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@m', setVotingResult($arrMatches[2]), \Env::get('cx')->getPage()->getContent()));
-            }
-            if (preg_match('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@m', $page_template, $arrMatches)) {
-                $page_template = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@m', setVotingResult($arrMatches[2]), $page_template);
-            }
-        }
+        global $themesPages, $page_template, $section;
+
+        $themesPages['sidebar'] = $this->replaceEsiContent(
+            $themesPages['sidebar'],
+            'sidebar.html'
+        );
+        $themesPages['index'] = $this->replaceEsiContent(
+            $themesPages['index'],
+            'index.html'
+        );
+        $page_template = $this->replaceEsiContent(
+            $page_template,
+            $section == 'Home' ? 'home.html' : 'content.html'
+        );
+        $page->setContent($this->replaceEsiContent(
+            $page->getContent(),
+            '',
+            $page
+        ));
     }
 
+    /**
+     * Get current theme instance
+     *
+     * @return \Cx\Core\View\Model\Entity\Theme
+     */
+    protected function getCurrentTheme()
+    {
+        global $objInit;
+
+        static $theme = null;
+
+        if (!isset($theme)) {
+            $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
+            $theme           = $themeRepository->findById($objInit->getCurrentThemeId());
+        }
+
+        return $theme;
+    }
+
+    /**
+     * Replace esi content in given content
+     *
+     * @param string                                        $content    Content
+     * @param string                                        $file       Theme file name
+     * @param \Cx\Core\ContentManager\Model\Entity\Page     $page       Page instance
+     * @param string                                        $block      Template Block name
+     *
+     * @return string Replaced content
+     */
+    protected function replaceEsiContent(
+        $content,
+        $file  = 'index.html',
+        $page = null,
+        $block = 'voting_result',
+        $apiMethod = 'showVotingResult'
+    ) {
+        $arrMatches = null;
+        if (!preg_match(
+           '@<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->@m',
+            $content,
+            $arrMatches
+        )) {
+            return $content;
+        }
+        $params = array();
+        if (   $page != null
+            && ($page instanceof \Cx\Core\ContentManager\Model\Entity\Page)
+        ) {
+            $params = array('page' => $page->getId());
+        } else {
+            $theme   = $this->getCurrentTheme();
+            if (!$theme) {
+                return $content;
+            }
+            $params = array(
+                'template' => $theme->getId(),
+                'file'     => $file
+            );
+        }
+        $esiContent = $this->getComponent('Cache')->getEsiContent(
+            'Voting',
+            $apiMethod,
+            $params
+        );
+        $replacedContent = preg_replace(
+            '@(<!--\s+BEGIN\s+('. $block .')\s+-->.*<!--\s+END\s+\2\s+-->)@m',
+            $esiContent,
+            $content
+        );
+
+        return $replacedContent;
+    }
+
+    /**
+     * Json data for getting voting result
+     *
+     * @param array $params Request parameters
+     *
+     * @return array
+     */
+    public function showVotingResult($params)
+    {
+        $pageId =  !empty($params['get']['page'])
+                 ? contrexx_input2int($params['get']['page']) : 0;
+        if (!empty($pageId)) {
+            $pageRepo = $this->cx
+                             ->getDb()
+                             ->getEntityManager()
+                             ->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            $result = $pageRepo->findOneById($pageId);
+            if (!$result) {
+                return array('content' => '');
+            }
+            $page    = $result[0];
+            $matches = null;
+            if (preg_match(
+                '/<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                $page->getContent(),
+                $matches
+            )) {
+                $content = $matches[2];
+            }
+        } else {
+            $content = $this->getVotingContentBlock(
+                $params,
+                'voting_result'
+            );
+        }
+        if ($this->cx->getClassLoader()->loadFile($this->cx->getCodeBaseModulePath().'/Voting/Controller/Voting.class.php')) {
+            return array('content' => setVotingResult($content));;
+        }
+        return array('content' => '');
+    }
+
+    /**
+     * Get the template block to parse the access placeholders
+     *
+     * @param array     $params     Input params
+     * @param string    $block      Template block
+     *
+     * @return string
+     * @throws JsonVotingException
+     */
+    protected function getVotingContentBlock(
+        $params = array(),
+        $block = ''
+    ) {
+        try {
+            $theme = $this->getThemeFromInput($params);
+            $file  =  !empty($params['get']['file'])
+                    ? contrexx_input2raw($params['get']['file']) : '';
+            if (empty($file)) {
+                throw new JsonVotingException(__METHOD__ .': the input file cannot be empty');
+            }
+            $content = $theme->getContentFromFile($file);
+            $matches = null;
+            if (   $content
+                && preg_match(
+                    '/<!--\s+BEGIN\s+('. $block .')\s+-->(.*)<!--\s+END\s+\1\s+-->/s',
+                    $content,
+                    $matches
+                )
+            ) {
+                return $matches[2];
+            }
+        } catch (\Exception $ex) {
+            \DBG::log($ex->getMessage());
+        }
+        throw new JsonVotingException('The block '. $block .' not exists');
+    }
+
+    /**
+     * Returns an array of method names accessable from a JSON request
+     * @return array List of method names
+     */
+    public function getAccessableMethods()
+    {
+        return array('showVotingResult');
+    }
+
+    /**
+     * Returns default permission as object
+     * @return Object
+     */
+    public function getDefaultPermissions() {
+        return new \Cx\Core_Modules\Access\Model\Entity\Permission(
+            null,
+            null,
+            false
+        );
+    }
+
+    /**
+     * Returns all messages as string
+     * @return String HTML encoded error messages
+     */
+    public function getMessagesAsString() {
+        return '';
+    }
+
+    /**
+     * Wrapper to __call()
+     * @return string ComponentName
+     */
+    public function getName() {
+        return parent::getName();
+    }
+
+    /**
+     * Get theme from the user input
+     *
+     * @param array $params User input array
+     * @return \Cx\Core\View\Model\Entity\Theme Theme instance
+     * @throws JsonNewsException When theme id empty or theme does not exits in the system
+     */
+    protected function getThemeFromInput($params)
+    {
+        $themeId  = !empty($params['get']['template']) ? contrexx_input2int($params['get']['template']) : 0;
+        if (empty($themeId)) {
+            throw new JsonAccessException('The theme id is empty in the request');
+        }
+        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $theme           = $themeRepository->findById($themeId);
+        if (!$theme) {
+            throw new JsonAccessException('The theme id '. $themeId .' does not exists.');
+        }
+        return $theme;
+    }
 }
