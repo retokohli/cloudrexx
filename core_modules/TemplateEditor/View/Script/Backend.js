@@ -379,3 +379,27 @@ jQuery(document).ready(function(){
         }
     });
 });
+/*
+ * Toggle the multi language input box
+ *
+ * @param {string}
+ */
+function ExpandMinimize(fieldName){
+        var elm1, elm2;
+        elm1 = document.getElementById('Inputfield_Minimized_' + fieldName);
+        elm2 = document.getElementById('Inputfield_Expanded_' + fieldName);
+        elm1.style.display = (elm1.style.display == 'none') ? 'block' : 'none';
+        elm2.style.display = (elm2.style.display == 'none') ? 'block' : 'none';
+        if (elm1.style.display == 'none') {
+            jQuery(".maximize_" + fieldName).hide();
+            jQuery(".minimize_" + fieldName).show();
+            jQuery(elm1).next(".error-box").hide();
+        } else {
+            jQuery(".minimize_" + fieldName).hide();
+            jQuery(".maximize_" + fieldName).show();
+            jQuery(elm1).next(".error-box").hide();
+            if(jQuery(elm1).next('.error-box').html() !== '') {
+                jQuery(elm1).next(".error-box").show();
+            }
+        }
+    }

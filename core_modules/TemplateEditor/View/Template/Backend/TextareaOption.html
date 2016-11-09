@@ -1,43 +1,78 @@
 <label for="{TEMPLATEEDITOR_OPTION_NAME}">
     {TEMPLATEEDITOR_OPTION_HUMAN_NAME}
 </label>
-<textarea rows="3" id="{TEMPLATEEDITOR_OPTION_NAME}"/>{TEMPLATEEDITOR_OPTION_VALUE}</textarea>
+<textarea id="Inputfield_Minimized_{TEMPLATEEDITOR_OPTION_NAME}" rows="3" class="{TEMPLATEEDITOR_OPTION_NAME} {TEMPLATEEDITOR_OPTION_NAME}_default" data-default-value="" data-lang-id="{TEMPLATEEDITOR_FRONTEND_ID}" name="{TEMPLATEEDITOR_OPTION_NAME}_0" style="display: block;"/>{TEMPLATEEDITOR_OPTION_VALUE}</textarea>
 <div class="error-box"></div>
+<a href="javascript:ExpandMinimize('{TEMPLATEEDITOR_OPTION_NAME}');" class="maximize_{TEMPLATEEDITOR_OPTION_NAME}">{TXT_TEMPLATEEDITOR_EXTENDED}&nbsp;»</a>
+<div id="Inputfield_Expanded_{TEMPLATEEDITOR_OPTION_NAME}" style="display: none;">
+    <!-- BEGIN language -->
+    <textarea rows="3" class="{TEMPLATEEDITOR_OPTION_NAME} {TEMPLATEEDITOR_OPTION_NAME}_lang_input lang_{TEXTFIELDS_LANGUAGE_ID}" name="{TEMPLATEEDITOR_OPTION_NAME}_{TEXTFIELDS_LANGUAGE_ID}" data-id="{TEXTFIELDS_LANGUAGE_ID}">{TEXTFIELDS_LANGUAGE_VALUE}</textarea>
+    <div class="error-box"></div>
+    <label for="text_option_{TEXTFIELDS_LANGUAGE_ID}">{TEXTFIELDS_LANGUAGE_NAME}</label> <br />
+    <!-- END language -->
+</div>
+<a href="javascript:ExpandMinimize('{TEMPLATEEDITOR_OPTION_NAME}');" style="display: none;" class="minimize_{TEMPLATEEDITOR_OPTION_NAME}">«&nbsp;{TXT_TEMPLATEEDITOR_MINIMIZED}</a>
+
 <script type="text/javascript">
-    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').focusout(function () {
-        jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saving');
+    jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').focusout(function () {
+        var data = {};
+        data[0] = jQuery('.{TEMPLATEEDITOR_OPTION_NAME}_default').val();
+        jQuery('.{TEMPLATEEDITOR_OPTION_NAME}:not(.{TEMPLATEEDITOR_OPTION_NAME}_default)').each(function () {
+            data[jQuery(this).data('id')] = jQuery(this).val();
+        });
+        jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').closest('.option').addClass('saving');
+
         updateOption(
             '{TEMPLATEEDITOR_OPTION_NAME}',
-            jQuery(this).val(),
+            data,
             function(response){
-                var parent = jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent();
-                if (response.status == 'error'){
-                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
-                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').nextAll('.error-box:first')
-                            .text(response.message).slideDown();
+                if (response.status === 'error') {
+                    jQuery('#Inputfield_Minimized_{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
+                    jQuery('#Inputfield_Minimized_{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').text(response.message);
+                    jQuery('#Inputfield_Minimized_{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').slideDown();
                     return false;
                 }
-                var splitedId =
-                        '#{TEMPLATEEDITOR_OPTION_NAME}'.split('_seriesId');
-                if (splitedId.length > 1) { // case: series
-                    var textvalue = getSeriesElementValueById(
-                            'textvalue',
-                            splitedId[1],
-                            response.data['elements']
-                    );
-                } else { // case: single textarea
-                    var textvalue = response.data.textvalue;
+                if (response.data.status === 'error') {
+                    jQuery('textarea[name={TEMPLATEEDITOR_OPTION_NAME}_'+ response.data.message.id +']').closest('.option').addClass('error');
+                    jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').closest('.option').removeClass('saving');
+                    if ((!response.data.message.id && jQuery('#Inputfield_Expanded_{TEMPLATEEDITOR_OPTION_NAME}').is(':visible'))
+                            || (jQuery('#Inputfield_Expanded_{TEMPLATEEDITOR_OPTION_NAME} .error-box').text() !== ''
+                            && response.data.message.id)) {
+                        ExpandMinimize('{TEMPLATEEDITOR_OPTION_NAME}');
+                    }
+                    jQuery('textarea[name={TEMPLATEEDITOR_OPTION_NAME}_'+ response.data.message.id +']').next('.error-box').text(response.data.message.errorContent);
+                    jQuery('textarea[name={TEMPLATEEDITOR_OPTION_NAME}_'+ response.data.message.id +']').next('.error-box').slideDown();
+                    return false;
                 }
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').nextAll('.error-box:first').slideUp();
-                parent.removeClass('error');
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(textvalue);
-                parent.removeClass('saving');
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').addClass('saved');
+                jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').text('');
+                jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').slideUp();
+                jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').closest('.option').removeClass('error');
+                jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').closest('.option').removeClass('saving');
+                jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').closest('.option').addClass('saved');
                 setTimeout(function(){
-                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').removeClass('saved');
+                    jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').closest('.option').removeClass('saved');
                 }, 2000);
                 return true;
             }
         )
+    });
+
+    jQuery('.{TEMPLATEEDITOR_OPTION_NAME}_default').each(function(){
+        var defaultLang = jQuery(this).data('langId');
+        jQuery(this).data('lastDefaultValue', jQuery(this).val());
+        jQuery(this).keyup(function(){
+            var that = jQuery(this);
+            jQuery('.{TEMPLATEEDITOR_OPTION_NAME}_lang_input').each(function() {
+                if (jQuery(this).val() == that.data('lastDefaultValue')) {
+                    jQuery(this).val(that.val());
+                }
+            });
+            jQuery(this).data('lastDefaultValue', jQuery(this).val());
+        });
+
+        jQuery('.{TEMPLATEEDITOR_OPTION_NAME}_lang_input.lang_'+ defaultLang).keyup(function(){
+            jQuery('.{TEMPLATEEDITOR_OPTION_NAME}_default').val(jQuery(this).val());
+            jQuery('.{TEMPLATEEDITOR_OPTION_NAME}_default').data('lastDefaultValue', jQuery(this).val());
+        });
     });
 </script>

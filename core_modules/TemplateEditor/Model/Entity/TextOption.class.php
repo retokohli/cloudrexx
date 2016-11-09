@@ -40,11 +40,11 @@ namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 class TextOption extends Option
 {
     /**
-     * The text value of the option.
+     * The text values of the option.
      *
-     * @var string
+     * @var array
      */
-    protected $string = '';
+    protected $values = array();
 
     /**
      * Regex which the string has to match
@@ -52,6 +52,18 @@ class TextOption extends Option
      * @var String
      */
     protected $regex = null;
+
+    /**
+     * The text values of the option.
+     *
+     * @var String
+     */
+    protected $defaultValue = '';
+
+    /**
+     * @var integer
+     */
+    protected $frontendLangId;
 
     /**
      * Error message which is shown if the regex doesn't match.
@@ -71,7 +83,7 @@ class TextOption extends Option
      * @param array  $data         the specific data for this option
      * @param String $type         the type of the option
      * @param Group  $group        the group of the option
-     * @param bool   $series       handle the elements as series if true
+     * @param bool   $series       handle the values as series if true
      */
     public function __construct(
         $name,
@@ -81,12 +93,37 @@ class TextOption extends Option
         $group,
         $series = false
     ) {
-        parent::__construct($name, $translations, $type, $data, $group, $series);
-        $this->string     = isset($data['textvalue']) ? $data['textvalue'] : '';
+        parent::__construct($name, $translations, $data, $type, $group, $series);
+        $this->values     = isset($data['values']) ? $data['values'] : '';
         $this->regex      = isset($data['regex']) ? $data['regex'] : null;
         $this->html       = isset($data['html']) ? $data['html'] : false;
         $this->regexError = isset($data['regexError']) ? $data['regexError']
             : '';
+
+        $objFWUser = \FWUser::getFWUserObject();
+        $this->frontendLangId = $objFWUser->objUser->getFrontendLanguage();
+        $this->defaultValue   =  isset($this->values[$this->frontendLangId])
+                        ? $this->values[$this->frontendLangId]
+                        : current($this->values);
+    }
+
+    /**
+     * Get the activated langugage
+     */
+    public function getMultiLanguageOptions()
+    {
+        $languages = array();
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+            $languageValue =  isset($this->values[$lang['id']])
+                        ? $this->values[$lang['id']]
+                        : $this->defaultValue;
+            $languages[] = array(
+                'TEXTFIELDS_LANGUAGE_ID'    => $lang['id'],
+                'TEXTFIELDS_LANGUAGE_NAME'  => $lang['name'],
+                'TEXTFIELDS_LANGUAGE_VALUE' => $this->parseValue($languageValue),
+            );
+        }
+        return array('language' => $languages);
     }
 
     /**
@@ -96,8 +133,16 @@ class TextOption extends Option
      */
     public function renderOptionField()
     {
+        global $_ARRAYLANG;
         return parent::renderOptionField(
-            array('TEMPLATEEDITOR_OPTION_VALUE' => $this->string)
+            array(
+                'TEMPLATEEDITOR_OPTION_VALUE'  => $this->defaultValue,
+                'TEMPLATEEDITOR_FRONTEND_ID'   => $this->frontendLangId,
+                'TXT_TEMPLATEEDITOR_MINIMIZED' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_MINIMIZED'],
+                'TXT_TEMPLATEEDITOR_EXTENDED'  => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_EXTENDED']
+            ),
+            array(),
+            $this->getMultiLanguageOptions()
         );
     }
 
@@ -110,8 +155,19 @@ class TextOption extends Option
     {
         $template->setVariable(
             'TEMPLATE_EDITOR_' . strtoupper($this->name),
-            $this->html ? $this->string : contrexx_raw2xhtml($this->string)
+            $this->parseValue($this->defaultValue)
         );
+    }
+
+    /**
+     * Parse the value string
+     *
+     * @param string $value String value
+     *
+     * @return string
+     */
+    public function parseValue($value) {
+        return $this->html ? $value : contrexx_raw2xhtml($value);
     }
 
     /**
@@ -131,31 +187,39 @@ class TextOption extends Option
     public function handleChange($data)
     {
         global $_ARRAYLANG, $_LANGID;
-        if ($this->regex && !preg_match($this->regex, $data)) {
-            if (!empty($this->regexError[$_LANGID])) {
-                throw new OptionValueNotValidException(
-                    sprintf(
-                        $this->regexError[$_LANGID],
-                        $data
-                    )
-                );
-            } elseif (!empty($this->regexError[2])) {
-                throw new OptionValueNotValidException(
-                    sprintf(
-                        $this->regexError[2],
-                        $data
+        foreach ($data as $key => $value) {
+            if ($this->regex && !preg_match($this->regex, $value)) {
+                if (!empty($this->regexError[$_LANGID])) {
+                    return array(
+                        'status'  => 'error',
+                        'message' => array(
+                            'errorContent' => $this->regexError[$_LANGID],
+                            'inputValue'   => $value,
+                            'id'           => $key,
+                        )
+                    );
+                } elseif (!empty($this->regexError[2])) {
+                    return array(
+                        'status'  => 'error',
+                        'message' => array(
+                            'errorContent' => $this->regexError[2],
+                            'inputValue'   => $value,
+                            'id'           => $key,
+                        )
+                    );
+                }
+                return array(
+                    'status'  => 'error',
+                    'message' => array(
+                        'errorContent' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_TEXT_WRONG_FORMAT'],
+                        'inputValue' => $value,
+                        'id' => $key,
                     )
                 );
             }
-            throw new OptionValueNotValidException(
-                sprintf(
-                    $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_TEXT_WRONG_FORMAT'],
-                    $data
-                ) . $this->regex
-            );
         }
-        $this->string = $data;
-        return array('textvalue' => $this->string);
+        $this->values = $data;
+        return array('status' => 'success', 'values' => $this->values, 'message' => array());
     }
 
     /**
@@ -175,23 +239,23 @@ class TextOption extends Option
     }
 
     /**
-     * Get the string
+     * Get array with values
      *
-     * @return string
+     * @return Option[]
      */
-    public function getString()
+    public function getValues()
     {
-        return $this->string;
+        return $this->values;
     }
 
     /**
-     * Set the string
+     * Set the array values
      *
-     * @param string $string
+     * @param Option[] $values
      */
-    public function setString($string)
+    public function setValues($values)
     {
-        $this->string = $string;
+        $this->values = $values;
     }
 
     /**
@@ -261,6 +325,6 @@ class TextOption extends Option
      */
     public function getValue()
     {
-        return array('textvalue' => $this->string);
+        return array('values' => $this->values);
     }
 }

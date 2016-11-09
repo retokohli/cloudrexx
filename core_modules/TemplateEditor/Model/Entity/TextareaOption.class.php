@@ -39,15 +39,13 @@ namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 class TextareaOption extends TextOption
 {
     /**
-     * Render the option in the frontend.
+     * Parse the value string
      *
-     * @param Sigma $template
+     * @param string $value String value
+     *
+     * @return string
      */
-    public function renderTheme($template)
-    {
-        $template->setVariable(
-            'TEMPLATE_EDITOR_' . strtoupper($this->name),
-            $this->html ? nl2br($this->string) : nl2br(contrexx_raw2xhtml($this->string))
-        );
+    public function parseValue($value) {
+        return $this->html ? nl2br($value) : nl2br(contrexx_raw2xhtml($value));
     }
 }

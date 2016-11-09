@@ -1,23 +1,74 @@
 <label for="{TEMPLATEEDITOR_OPTION_NAME}">{TEMPLATEEDITOR_OPTION_HUMAN_NAME}</label>
-<input type="text" id="{TEMPLATEEDITOR_OPTION_NAME}" value="{TEMPLATEEDITOR_OPTION_VALUE}"/>
+<input type="text" id="Inputfield_Minimized_{TEMPLATEEDITOR_OPTION_NAME}" class="{TEMPLATEEDITOR_OPTION_NAME} {TEMPLATEEDITOR_OPTION_NAME}_default" data-lang-id="{TEMPLATEEDITOR_FRONTEND_ID}" name="{TEMPLATEEDITOR_OPTION_NAME}_0" value="{TEMPLATEEDITOR_OPTION_VALUE}" />
 <div class="error-box"></div>
+<a href="javascript:ExpandMinimize('{TEMPLATEEDITOR_OPTION_NAME}');" class="maximize_{TEMPLATEEDITOR_OPTION_NAME}">{TXT_TEMPLATEEDITOR_EXTENDED}&nbsp;»</a>
+<div id="Inputfield_Expanded_{TEMPLATEEDITOR_OPTION_NAME}" style="display: none;">
+    <!-- BEGIN language -->
+    <input type="text" class="{TEMPLATEEDITOR_OPTION_NAME} {TEMPLATEEDITOR_OPTION_NAME}_lang_input lang_{TEXTFIELDS_LANGUAGE_ID}"  name="{TEMPLATEEDITOR_OPTION_NAME}_{TEXTFIELDS_LANGUAGE_ID}" data-id="{TEXTFIELDS_LANGUAGE_ID}" value="{TEXTFIELDS_LANGUAGE_VALUE}" />
+    <div class="error-box"></div>
+    <label for="text_option_{TEXTFIELDS_LANGUAGE_ID}">{TEXTFIELDS_LANGUAGE_NAME}</label>
+    <!-- END language -->
+</div>
+<a href="javascript:ExpandMinimize('{TEMPLATEEDITOR_OPTION_NAME}');" style="display: none;" class="minimize_{TEMPLATEEDITOR_OPTION_NAME}">«&nbsp;{TXT_TEMPLATEEDITOR_MINIMIZED}</a>
+
 <script type="text/javascript">
-    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').focusout(function () {
-        jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saving');
-        updateOption('{TEMPLATEEDITOR_OPTION_NAME}',jQuery(this).val(), function(response){
-            if (response.status == 'error'){
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').text(response.message).slideDown();
+    jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').focusout(function () {
+        var data = {};
+        data[0] = jQuery('.{TEMPLATEEDITOR_OPTION_NAME}_default').val();
+        jQuery('.{TEMPLATEEDITOR_OPTION_NAME}:not(.{TEMPLATEEDITOR_OPTION_NAME}_default)').each(function () {
+            data[jQuery(this).data('id')] = jQuery(this).val();
+        });
+
+        jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').closest('.option').addClass('saving');
+        updateOption('{TEMPLATEEDITOR_OPTION_NAME}', data, function (response) {
+            if (response.status == 'error') {
+                jQuery('#Inputfield_Minimized_{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
+                jQuery('#Inputfield_Minimized_{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').text(response.message);
+                jQuery('#Inputfield_Minimized_{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').slideDown();
                 return false;
             }
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').slideUp();
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('error');
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saving');
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').addClass('saved');
-            setTimeout(function(){
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').removeClass('saved');
+            if (response.data.status === 'error') {
+                jQuery('input[name={TEMPLATEEDITOR_OPTION_NAME}_'+ response.data.message.id +']').addClass('error');
+                jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').closest('.option').removeClass('saving');
+                if (   (!response.data.message.id && jQuery('#Inputfield_Expanded_{TEMPLATEEDITOR_OPTION_NAME}').is(':visible'))
+                    || (jQuery('#Inputfield_Expanded_{TEMPLATEEDITOR_OPTION_NAME} .error-box').text() !== ''&& response.data.message.id)
+                ) {
+                    ExpandMinimize('{TEMPLATEEDITOR_OPTION_NAME}');
+                }
+                jQuery('input[name={TEMPLATEEDITOR_OPTION_NAME}_'+ response.data.message.id +']').next('.error-box').text(response.data.message.errorContent);
+                jQuery('input[name={TEMPLATEEDITOR_OPTION_NAME}_'+ response.data.message.id +']').next('.error-box').slideDown();
+                return false;
+            }
+            jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').text('');
+            jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').slideUp();
+            jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').removeClass('error');
+            jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').closest('.option').removeClass('error');
+            jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').closest('.option').removeClass('saving');
+            jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').closest('.option').addClass('saved');
+            setTimeout(function () {
+                jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').closest('.option').removeClass('saved');
             }, 2000);
             return true;
         })
+    });
+
+    jQuery('.{TEMPLATEEDITOR_OPTION_NAME}_default').each(function(){
+        var defaultLang = jQuery(this).data('langId')
+        jQuery(this).data('lastDefaultValue', jQuery(this).val());
+
+        jQuery(this).keyup(function(){
+            var that = jQuery(this);
+            jQuery('.{TEMPLATEEDITOR_OPTION_NAME}_lang_input').each(function() {
+                if (jQuery(this).val() == that.data('lastDefaultValue')) {
+                    jQuery(this).val(that.val());
+                }
+            });
+            jQuery(this).data('lastDefaultValue', jQuery(this).val());
+        });
+
+        jQuery('.{TEMPLATEEDITOR_OPTION_NAME}_lang_input.lang_'+ defaultLang).keyup(function(){
+            jQuery('.{TEMPLATEEDITOR_OPTION_NAME}_default').val(jQuery(this).val());
+            jQuery('.{TEMPLATEEDITOR_OPTION_NAME}_default').data('lastDefaultValue', jQuery(this).val());
+        });
     });
 </script>
