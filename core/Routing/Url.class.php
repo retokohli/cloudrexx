@@ -823,6 +823,7 @@ class Url {
         $url = \Cx\Core\Routing\Url::fromDocumentRoot();
         $url->setMode('backend');
         $url->setPath('api/' . $command . '/' . implode('/', $arguments));
+        $url->removeAllParams();
         $url->setParams($parameters);
         return $url;
     }
