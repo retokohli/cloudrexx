@@ -96,6 +96,12 @@ class BlockLibrary
      */
     function __construct()
     {
+        if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() != \Cx\Core\Core\Controller\Cx::MODE_COMMAND) {
+            return;
+        }
+        if (!defined('FRONTEND_LANG_ID')) {
+            define('FRONTEND_LANG_ID', 1);
+        }
     }
 
 
@@ -349,16 +355,14 @@ class BlockLibrary
                                                    content='".contrexx_raw2db($content)."',
                                                    active='".intval((isset($arrLangActive[$langId]) ? $arrLangActive[$langId] : 0))."'",
                                                   $blockId));
-            global $objCache;
-            $objCache->clearSsiCachePage(
+        }
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->clearSsiCachePage(
                 'Block',
                 'getBlockContent',
                 array(
                     'block' => $blockId,
-                    'lang' => \FWLanguage::getLanguageCodeById($langId),
                 )
             );
-        }
 
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$blockId." AND lang_id NOT IN (".join(',', array_map('intval', array_keys($arrLangActive))).")");
     }
@@ -718,6 +722,7 @@ class BlockLibrary
                     AND
                         tblBlock.active = 1
             ',
+            $pageId,
             $code
         );
     }
@@ -773,6 +778,7 @@ class BlockLibrary
                 ORDER BY
                     tblBlock.`order`
             ',
+            $pageId,
             $code,
             $separator
         );
@@ -872,6 +878,7 @@ class BlockLibrary
                 ORDER BY
                     `order`
             ',
+            $pageId,
             $code,
             $separator
         );
@@ -888,7 +895,7 @@ class BlockLibrary
     * @global ADONewConnection
     * @global integer
     */
-    function _setBlockRandom(&$code, $id)
+    function _setBlockRandom(&$code, $id, $pageId)
     {
         global $objDatabase;
 
@@ -910,19 +917,19 @@ class BlockLibrary
         //Get Block Name and Status
         switch ($id) {
             case '1':
-                $objBlockName   = $objDatabase->Execute($query."AND tblBlock.random=1");
+                $query .= "AND tblBlock.random=1";
                 $blockNr        = "";
                 break;
             case '2':
-                $objBlockName   = $objDatabase->Execute($query."AND tblBlock.random_2=1");
+                $query .= "AND tblBlock.random_2=1";
                 $blockNr        = "_2";
                 break;
             case '3':
-                $objBlockName = $objDatabase->Execute($query."AND tblBlock.random_3=1");
+                $query .= "AND tblBlock.random_3=1";
                 $blockNr        = "_3";
                 break;
             case '4':
-                $objBlockName = $objDatabase->Execute($query."AND tblBlock.random_4=1");
+                $query .= "AND tblBlock.random_4=1";
                 $blockNr        = "_4";
                 break;
         }
@@ -939,7 +946,8 @@ class BlockLibrary
 
         $this->replaceBlocks(
             $this->blockNamePrefix . 'RANDOMIZER' . $blockNr,
-            'SELECT ' . implode(' AS id UNION SELECT ', $arrActiveBlocks),
+            $query,
+            $pageId,
             $code,
             '',
             true
@@ -948,14 +956,14 @@ class BlockLibrary
 
     /**
      * Replaces a placeholder with block content
-     * @param string $placeholerName Name of placeholder to replace
+     * @param string $placeholderName Name of placeholder to replace
      * @param string $query SQL query used to fetch blocks
      * @param string $code (by reference) Code to replace placeholder in
      * @param string $separator (optional) Separator used to separate the blocks
      * @param boolean $randomize (optional) Wheter to randomize the blocks or not, default false
      */
-    protected function replaceBlocks($placeholderName, $query, &$code, $separator = '', $randomize = false) {
-        global $objDatabase, $objCache;
+    protected function replaceBlocks($placeholderName, $query, $pageId, &$code, $separator = '', $randomize = false) {
+        global $objDatabase;
 
         // find all block IDs to parse
         $objResult = $objDatabase->Execute($query);
@@ -964,12 +972,17 @@ class BlockLibrary
             return;
         }
         while(!$objResult->EOF) {
+            if (!$this->checkTargetingOptions($objResult->fields['id'])) {
+                $objResult->MoveNext();
+                continue;
+            }
             $blockIds[] = $objResult->fields['id'];
             $objResult->MoveNext();
         }
 
         // parse
-        $em = \Env::get('cx')->getDb()->getEntityManager();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
         $systemComponentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
         $frontendEditingComponent = $systemComponentRepo->findOneBy(array('name' => 'FrontendEditing'));
 
@@ -982,10 +995,11 @@ class BlockLibrary
                     array(
                         'block' => $blockId,
                         'lang' => \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
+                        'page' => $pageId,
                     )
                 );
             }
-            $blockContent = $objCache->getRandomizedEsiContent(
+            $blockContent = $cx->getComponent('Cache')->getRandomizedEsiContent(
                 $esiBlockInfos
             );
             $frontendEditingComponent->prepareBlock(
@@ -996,12 +1010,13 @@ class BlockLibrary
         } else {
             $contentList = array();
             foreach ($blockIds as $blockId) {
-                $blockContent = $objCache->getEsiContent(
+                $blockContent = $cx->getComponent('Cache')->getEsiContent(
                     'Block',
                     'getBlockContent',
                     array(
                         'block' => $blockId,
                         'lang' => \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
+                        'page' => $pageId,
                     )
                 );
                 $frontendEditingComponent->prepareBlock(
