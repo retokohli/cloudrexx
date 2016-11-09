@@ -192,7 +192,7 @@ namespace Cx\Core\Model {
             $sqlModes = array_filter(
                 $sqlModes,
                 function($e) {
-                    if (in_array(trim($e), array('ONLY_FULL_GROUP_BY', 'STRICT_TRANS_TABLES'))) {
+                    if (in_array(trim($e), array('ONLY_FULL_GROUP_BY', 'STRICT_TRANS_TABLES', 'NO_ZERO_DATE', 'NO_ZERO_IN_DATE'))) {
                         return false;
                     }
                     return true;
