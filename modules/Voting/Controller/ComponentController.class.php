@@ -312,18 +312,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *
      * @param array $params User input array
      * @return \Cx\Core\View\Model\Entity\Theme Theme instance
-     * @throws JsonNewsException When theme id empty or theme does not exits in the system
+     * @throws JsonVotingException When theme id empty or theme does not exits in the system
      */
     protected function getThemeFromInput($params)
     {
         $themeId  = !empty($params['get']['template']) ? contrexx_input2int($params['get']['template']) : 0;
         if (empty($themeId)) {
-            throw new JsonAccessException('The theme id is empty in the request');
+            throw new JsonVotingException('The theme id is empty in the request');
         }
         $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
         $theme           = $themeRepository->findById($themeId);
         if (!$theme) {
-            throw new JsonAccessException('The theme id '. $themeId .' does not exists.');
+            throw new JsonVotingException('The theme id '. $themeId .' does not exists.');
         }
         return $theme;
     }
