@@ -159,6 +159,7 @@ class googleMap
     private function getMapMarkers()
     {
         $markers = '';
+        $jsMarkers = array();
         foreach ($this->mapMarkers as $id => $marker) {
             if($marker['lon'] >= 0 && $marker['lat'] >= 0) {
                 if ($marker['click'] != null) {
@@ -200,6 +201,7 @@ class googleMap
                 $divLonPlus = $marker['lon']+$dist;
                 $divLonMinus = $marker['lon']-$dist;
                 
+
                 $markers .= "                
                 var point$id = new google.maps.LatLng(".$marker['lat'].", ".$marker['lon'].");
                 var marker$id = new google.maps.Marker({
@@ -214,8 +216,12 @@ class googleMap
                 ".$showInfo."
 
                 ";
+
+                $jsMarkers[$id] = $marker;
             }
         }
+
+        \ContrexxJavascript::getInstance()->setVariable("map1", $jsMarkers, 'GoogleMap');
 
         return $markers;
     }
