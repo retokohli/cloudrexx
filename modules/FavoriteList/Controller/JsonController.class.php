@@ -69,6 +69,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
         return array(
             'getCatalog' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false),
             'addFavorite',
+            'removeFavorite',
         );
     }
 
@@ -97,16 +98,51 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
      */
     public function getCatalog()
     {
-        return;
+        global $_ARRAYLANG;
+
+        $em = $this->cx->getDb()->getEntityManager();
+        $catalogRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Catalog');
+        $catalog = $catalogRepo->findOneBy(array('sessionId' => $this->getComponent('Session')->getSession()->sessionid));
+
+        if (empty($catalog)) {
+            $content = '<span>' . $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_LIST'] . '</span>';
+        } else {
+            $favorites = $catalog->getFavorites();
+            if (empty($favorites)) {
+                $content = '<span>' . $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES'] . '</span>';
+            } else {
+                $content = '<ul>';
+                foreach ($favorites as $favorite) {
+                    $content .= '<li>';
+                    $content .= '<span>' . contrexx_raw2xhtml($favorite->getTitle()) . '</span>';
+                    $content .= '<a class="pull-right" href="javascript:void(0);" onclick="favoriteListRemoveFavorite(' . $favorite->getId() . ');">
+                        <span class="glyphicon glyphicon-remove"></span></a>';
+                    $content .= '</li>';
+                }
+                $content .= '</ul>';
+            }
+        }
+
+        return $content;
     }
 
     /**
-     * add Favorite to Catalog
+     * adds Favorite to a Catalog
      *
      * @return json result
      */
-    public function addFavorite()
+    public function addFavorite($data = array())
     {
         var_dump('here: addFavorite');
+    }
+
+    /**
+     * removes a Favorite from Catalog by id
+     *
+     * @return json result
+     */
+    public function removeFavorite($data = array())
+    {
+        var_dump('here: removeFavorite');
     }
 }

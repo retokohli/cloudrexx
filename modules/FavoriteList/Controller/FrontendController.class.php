@@ -301,42 +301,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      */
     public function getSidebar($template)
     {
-        global $_ARRAYLANG;
-
-        $em = $this->cx->getDb()->getEntityManager();
-        $catalogRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Catalog');
-        $catalog = $catalogRepo->findOneBy(array('sessionId' => $this->getComponent('Session')->getSession()->sessionid));
-
         if (!$template->placeholderExists(strtoupper($this->getName()) . '_SIDEBAR')) {
             return;
         }
         $theme = $this->getTheme();
         $template->addBlockfile(strtoupper($this->getName()) . '_SIDEBAR', 'sidebar', $theme->getFilePath(strtolower($this->getName()) . '_sidebar.html'));
-        if (!$catalog) {
-            $template->setVariable(array(
-                strtoupper($this->getName()) . '_MESSAGE_NO_LIST' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_LIST'],
-            ));
-            $template->parse(strtolower($this->getName()) . '_sidebar_favorite_no_list');
-        } else {
-            $template->parse(strtolower($this->getName()) . '_sidebar_favorite_list');
-            $favorites = $catalog->getFavorites();
-            if (!$favorites) {
-                $template->setVariable(array(
-                    strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES'],
-                ));
-                $template->parse(strtolower($this->getName()) . '_sidebar_favorite_no_entries');
-            } else {
-                foreach ($favorites as $favorite) {
-                    $template->setVariable(array(
-                        strtoupper($this->getName()) . '_SIDEBAR_FAVORITE_LIST_NAME' => $favorite->getTitle(),
-                        strtoupper($this->getName()) . '_SIDEBAR_FAVORITE_LIST_DELETE_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()) . '',
-                    ));
-                    $template->parse(strtolower($this->getName()) . '_sidebar_favorite_list_row');
-                }
-            }
-        }
 
-//        \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Frontend.js', 1));
+        \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Frontend.js', 1));
 
         $template->parse(strtolower($this->getName()) . '_sidebar_actions');
         \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function');
