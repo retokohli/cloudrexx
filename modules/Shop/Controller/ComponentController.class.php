@@ -51,7 +51,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array();
     }
 
-     /**
+    /**
+     * Returns a list of JsonAdapter class names
+     *
+     * @return array List of ComponentController classes
+     */
+    public function getControllersAccessableByJson() {
+        return array('JsonShop');
+    }
+
+    /**
      * Load your component.
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
@@ -121,13 +130,50 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
     }
 
+    /**
+     * Do something before main template gets parsed
+     *
+     * @param \Cx\Core\Html\Sigma $template
+     *
+     * @return null
+     */
     public function preFinalize(\Cx\Core\Html\Sigma $template)
     {
-        if (    $this->cx->getMode()
-            !== \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+        global $_LANGID;
+
+        if (
+            $this->cx->getMode() !== \Cx\Core\Core\Controller\Cx::MODE_FRONTEND
+        ) {
             return;
         }
-        Shop::parse_products_blocks($template);
+
+        if (!\Cx\Core\Setting\Controller\Setting::init('Shop', 'config')) {
+            return;
+        }
+
+        $match = null;
+        $cache = $this->cx->getComponent('Cache');
+        foreach (array_keys($template->_blocks) as $block) {
+            if (
+                preg_match(
+                    '/^' . Shop::block_shop_products . '(?:_category_(\d+))?$/',
+                    $block,
+                    $match
+                )
+            ) {
+                $params = $cache->getParamsByFindBlockExistsInTpl($block);
+                $params['catId']  = isset($match[1]) ? $match[1] : 0;
+                $params['langId'] = $_LANGID;
+                $params['block']  = $block;
+                $content = $cache->getEsiContent(
+                    'Shop',
+                    'parseProductsBlock',
+                    $params
+                );
+                $template->replaceBlock($block, $content);
+                break;
+            }
+        }
     }
 
 }

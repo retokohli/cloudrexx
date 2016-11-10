@@ -89,4 +89,77 @@ class ShopEventListener extends DefaultEventListener {
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 
+    /**
+     * Clear all Ssi cache
+     *
+     * @param array $eventArgs
+     *
+     * @return null
+     */
+    public function clearEsiCache($eventArgs)
+    {
+        if (empty($eventArgs) || $eventArgs != 'Shop') {
+            return;
+        }
+        global $objInit;
+
+        //clear shop navbar cache
+        $cache     = $this->cx->getComponent('Cache');
+        $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $navFiles  = array('shopnavbar', 'shopnavbar2', 'shopnavbar3');
+        foreach ($themeRepo->findAll() as $theme) {
+            foreach ($navFiles as $navFile) {
+                foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+                    $cache->clearSsiCachePage(
+                        'Shop',
+                        'getNavbar',
+                        array(
+                            'langId'   => $lang['id'],
+                            'template' => $theme->getId(),
+                            'file'     => $navFile . '.html'
+                        )
+                    );
+                }
+            }
+        }
+
+        //clear products block cache
+        $pattern = '/' . \Cx\Modules\Shop\Controller\Shop::block_shop_products .
+            '(?:_category_(\d+))?/';
+        foreach ($themeRepo->findAll() as $theme) {
+            $themesBlock = array();
+            $searchTemplateFiles = array_merge(
+                array('index.html', 'home.html', 'content.html'),
+                $objInit->getCustomContentTemplatesForTheme($theme)
+            );
+            foreach ($searchTemplateFiles as $tplFile) {
+                $match   = null;
+                $content = $theme->getContentFromFile($tplFile);
+                if (!preg_match($pattern, $content, $match)) {
+                    continue;
+                }
+                $themesBlock[] = array(
+                    'file' => $tplFile,
+                    'catId' => $match[1],
+                    'block' => $match[0]
+                );
+            }
+
+            if (!$themesBlock) {
+                continue;
+            }
+
+            foreach ($themesBlock as $params) {
+                $params['template'] = $theme->getId();
+                foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+                    $params['langId'] = $lang['id'];
+                    $cache->clearSsiCachePage(
+                        'Shop',
+                        'parseProductsBlock',
+                        $params
+                    );
+                }
+            }
+        }
+    }
 }

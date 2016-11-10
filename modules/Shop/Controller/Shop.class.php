@@ -404,18 +404,20 @@ die("Failed to get Customer for ID $customer_id");
      */
     static function getNavbar($template=NULL, $use_cache=true)
     {
-        global $_ARRAYLANG, $themesPages;
+        global $_ARRAYLANG;
         static $content = array();
         $templateHash = md5($template);
 
+        if (empty($template)) {
+            return;
+        }
         if (!$use_cache) $content[$templateHash] = NULL;
         // Note: This is valid only as long as the content is the same every
         // time this method is called!
         if (isset($content[$templateHash])) return $content[$templateHash];
         $objTpl = new \Cx\Core\Html\Sigma('.');
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
-        $objTpl->setTemplate(empty($template)
-            ? $themesPages['shopnavbar'] : $template);
+        $objTpl->setTemplate($template);
         $objTpl->setGlobalVariable($_ARRAYLANG);
         $loginInfo = $loginStatus = $redirect = '';
 //\DBG::log("Shop::getNavbar(): Customer: ".(self::$objCustomer ? "Logged in" : "nada"));
@@ -613,11 +615,27 @@ die("Failed to get Customer for ID $customer_id");
      */
     static function setNavbar()
     {
-        global $objTemplate, $themesPages;
+        global $objTemplate, $_LANGID;
 
-        $objTemplate->setVariable('SHOPNAVBAR_FILE', self::getNavbar($themesPages['shopnavbar']));
-        $objTemplate->setVariable('SHOPNAVBAR2_FILE', self::getNavbar($themesPages['shopnavbar2']));
-        $objTemplate->setVariable('SHOPNAVBAR3_FILE', self::getNavbar($themesPages['shopnavbar3']));
+        $cache = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getComponent('Cache');
+        $shopNavFiles = array('shopnavbar', 'shopnavbar2', 'shopnavbar3');
+        foreach ($shopNavFiles as $shopNavFile) {
+            $shopNavContent = $cache->getEsiContent(
+                'Shop',
+                'getNavbar',
+                array(
+                    'langId'   => $_LANGID,
+                    'template' => \Env::get('init')->getCurrentThemeId(),
+                    'file'     => $shopNavFile
+                )
+            );
+
+            $objTemplate->setVariable(
+                strtoupper($shopNavFile) . '_FILE',
+                $shopNavContent
+            );
+        }
     }
 
 
@@ -1720,34 +1738,38 @@ die("Failed to update the Cart!");
      * This would cause duplicate block names.
      * Changes the $_REQUEST array temporarily and calls
      * {@see view_product_overview()}, then restores the original request.
-     * @param   \Cx\Core\Html\Sigma $template       The template
-     * @param   integer             $category_id    The optional Category ID
-     * @return  \Cx\Core\Html\Sigma                 The parsed template
+     *
+     * @param \Cx\Core\Html\Sigma $template template object
+     * @param integer             $catId    category id
+     *
+     * @return string template content
      */
-    static function parse_products_blocks(\Cx\Core\Html\Sigma $template)
-    {
+    static function parse_products_blocks(
+        \Cx\Core\Html\Sigma $template,
+        $catId = null
+    ) {
         global $objInit, $_ARRAYLANG;
 
-        if (!\Cx\Core\Setting\Controller\Setting::init('Shop', 'config')) return false;
-        $_ARRAYLANG += $objInit->loadLanguageData('Shop');
-        $original_REQUEST = &$_REQUEST;
-        self::$objTemplate = $template;
-        $match = null;
-        foreach (array_keys($template->_blocks) as $block) {
-            // Match "block_shop_products" or "block_shop_products_category_X"
-            if (preg_match(
-                    '/^'.self::block_shop_products.'(?:_category_(\d+))?$/',
-                    $block, $match)) {
-                if (!self::$initialized) self::init();
-                $_REQUEST = array();
-                // You might add more parameters here!
-                if (isset($match[1])) $_REQUEST['catId'] = $match[1];
-                self::view_product_overview();
-                break;
-            }
+        if (!\Cx\Core\Setting\Controller\Setting::init('Shop', 'config')) {
+            return false;
         }
+
+        $langData   = $objInit->loadLanguageData('Shop');
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        $original_REQUEST  = &$_REQUEST;
+        self::$objTemplate = $template;
+        if (!self::$initialized) {
+            self::init();
+        }
+        $_REQUEST = array();
+        // You might add more parameters here!
+        if ($catId) {
+            $_REQUEST['catId'] = $catId;
+        }
+        self::view_product_overview();
         $_REQUEST = &$original_REQUEST;
-        return $template;
+
+        return self::$objTemplate->get();
     }
 
     /**
