@@ -115,8 +115,11 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
                 foreach ($favorites as $favorite) {
                     $content .= '<li>';
                     $content .= '<span>' . contrexx_raw2xhtml($favorite->getTitle()) . '</span>';
-                    $content .= '<a class="pull-right" href="javascript:void(0);" onclick="favoriteListRemoveFavorite(' . $favorite->getId() . ');">
-                        <span class="glyphicon glyphicon-remove"></span></a>';
+                    $content .= '<span class="functions">';
+                    $removeLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()) . '/?editid=' . urlencode('{0,' . $favorite->getId() . '}');
+                    $content .= '<a class="edit" href="' . $removeLink . '"></a>';
+                    $content .= '<a class="delete" href="javascript:void(0);" onclick="favoriteListRemoveFavorite(' . $favorite->getId() . ');"></a>';
+                    $content .= '</span>';
                     $content .= '</li>';
                 }
                 $content .= '</ul>';
