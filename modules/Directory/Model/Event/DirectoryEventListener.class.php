@@ -78,21 +78,26 @@ class DirectoryEventListener implements \Cx\Core\Event\Model\Entity\DefaultEvent
 
     /**
      * Clear all Ssi cache
+     *
+     * @param string $eventArgs
+     *
+     * @return null
      */
-    protected function clearEsiCache($eventArgs)
+    public function clearEsiCache($eventArgs)
     {
         if (empty($eventArgs) || $eventArgs != 'Directory') {
             return;
         }
         global $objInit;
 
+        $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
         // clear home page cache
         $cache = $this->cx->getComponent('Cache');
-        foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+        foreach ($themeRepo->findAll() as $theme) {
             $cache->clearSsiCachePage(
                 'Directory',
                 'getContent',
-                array('template' => $lang['themesid'])
+                array('template' => $theme->getId())
             );
         }
 
@@ -103,7 +108,6 @@ class DirectoryEventListener implements \Cx\Core\Event\Model\Entity\DefaultEvent
             return;
         }
 
-        $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
         $blockName = 'directoryLatest_row_';
         foreach ($themeRepo->findAll() as $theme) {
             $themesBlock = array();
@@ -126,6 +130,9 @@ class DirectoryEventListener implements \Cx\Core\Event\Model\Entity\DefaultEvent
                 $i++;
             }
 
+            if (!$themesBlock) {
+                continue;
+            }
             foreach ($themesBlock as $arrDetails) {
                 foreach ($entryIds as $entryId) {
                     $cache->clearSsiCachePage(
