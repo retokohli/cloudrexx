@@ -173,7 +173,7 @@ class googleMap
             }
         }
 
-        \ContrexxJavascript::getInstance()->setVariable('map_'.$this->mapIndex, $markers, $this->mapId);
+        \ContrexxJavascript::getInstance()->setVariable('map_'.$this->mapIndex.'_markers', $markers, $this->mapId);
     }
 
 
@@ -207,6 +207,7 @@ var $map;
 
 cx.ready(function() {
     $map = new google.maps.Map(document.getElementById("$this->mapId"));
+    cx.variables.set('map_{$this->mapIndex}', $map, '$this->mapId');
     $this->mapCenter
 
     $map.setCenter(center);
@@ -216,7 +217,7 @@ cx.ready(function() {
     infoWindow = new google.maps.InfoWindow();
     cx.variables.set('map_{$this->mapIndex}_infoWindow', infoWindow, '$this->mapId');
 
-    var mapMarkers = cx.variables.get('map_$this->mapIndex', '$this->mapId');
+    var mapMarkers = cx.variables.get('map_{$this->mapIndex}_markers', '$this->mapId');
     for (var key in mapMarkers) {
         if (!mapMarkers.hasOwnProperty(key)) {
             continue;

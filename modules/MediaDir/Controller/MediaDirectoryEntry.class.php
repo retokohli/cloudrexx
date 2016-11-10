@@ -796,7 +796,7 @@ infoWindow = cx.variables.get('map_{$mapIndex}_infoWindow', '{$objGoogleMap->get
 if (infoWindow) {
     infoWindow.close();
 }
-mapMarker = cx.variables.get('map_$mapIndex', '{$objGoogleMap->getMapId()}')[$intEntryId];
+mapMarker = cx.variables.get('map_{$mapIndex}_markers', '{$objGoogleMap->getMapId()}')[$intEntryId];
 infoWindow.setContent(mapMarker.info);
 infoWindow.open(map_$mapIndex, mapMarker.marker);
 JSCODE;
