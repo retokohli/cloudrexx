@@ -48,7 +48,7 @@ class DataSetException extends \Exception {}
 
 /**
  * Data Set
- *
+ * On import and export from and to files the contents will be cached.
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      CLOUDREXX Development Team <info@cloudrexx.com>
  * @package     cloudrexx
