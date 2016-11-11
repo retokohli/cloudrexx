@@ -438,7 +438,13 @@ class CacheLib
     public function getEsiContent($adapterName, $adapterMethod, $params = array()) {
         $url = $this->getUrlFromApi($adapterName, $adapterMethod, $params);
         $settings = $this->getSettings();
-        if (!isset($settings['internalSsiCache']) || $settings['internalSsiCache'] != 'on') {
+        if (
+            is_a($this->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx') &&
+            (
+                !isset($settings['internalSsiCache']) ||
+                $settings['internalSsiCache'] != 'on'
+            )
+        ) {
             return $this->getApiResponseForUrl($url);
         }
         return $this->getSsiProxy()->getSsiProcessor()->getIncludeCode($url->toString());
@@ -458,7 +464,13 @@ class CacheLib
             $urls[] = $this->getUrlFromApi($esiContentInfo[0], $esiContentInfo[1], $esiContentInfo[2])->toString();
         }
         $settings = $this->getSettings();
-        if ($settings['internalSsiCache'] != 'on') {
+        if (
+            is_a($this->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx') &&
+            (
+                !isset($settings['internalSsiCache']) ||
+                $settings['internalSsiCache'] != 'on'
+            )
+        ) {
             return $this->getApiResponseForUrl($urls[rand(0, (count($urls) - 1))]);
         }
         return $this->getSsiProxy()->getSsiProcessor()->getRandomizedIncludeCode($urls);
