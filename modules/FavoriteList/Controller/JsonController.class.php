@@ -104,9 +104,9 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
 
         $themeId = contrexx_input2raw($data['get']['themeId']);
         $theme = $this->getTheme($themeId);
-        $templateFile = $theme->getFilePath(strtolower($this->getName()) . '_sidebar_list.html');
+        $templateFile = $theme->getFilePath(strtolower($this->getName()) . '_block_list.html');
         $template = new \Cx\Core\Html\Sigma(dirname($templateFile));
-        $template->loadTemplateFile(strtolower($this->getName()) . '_sidebar_list.html');
+        $template->loadTemplateFile(strtolower($this->getName()) . '_block_list.html');
 
         $em = $this->cx->getDb()->getEntityManager();
         $catalogRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Catalog');
@@ -114,25 +114,25 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
 
         if (empty($catalog)) {
             $template->setVariable(array(
-                strtoupper($this->getName()) . '_MESSAGE_NO_LIST' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_LIST'],
+                strtoupper($this->getName()) . '_BLOCK_LIST_MESSAGE_NO_LIST' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_LIST'],
             ));
-            $template->parse(strtolower($this->getName()) . '_sidebar_no_list');
+            $template->parse(strtolower($this->getName()) . '_block_no_list');
         } else {
             $favorites = $catalog->getFavorites();
-            $template->parse(strtolower($this->getName()) . '_sidebar_list');
+            $template->parse(strtolower($this->getName()) . '_block_list');
             if (!$favorites->count()) {
                 $template->setVariable(array(
-                    strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES'],
+                    strtoupper($this->getName()) . '_BLOCK_LIST_MESSAGE_NO_ENTRIES' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES'],
                 ));
-                $template->parse(strtolower($this->getName()) . '_sidebar_list_no_entries');
+                $template->parse(strtolower($this->getName()) . '_block_list_no_entries');
             } else {
                 foreach ($favorites as $favorite) {
                     $template->setVariable(array(
-                        strtoupper($this->getName()) . '_SIDEBAR_LIST_NAME' => contrexx_raw2xhtml($favorite->getTitle()),
-                        strtoupper($this->getName()) . '_SIDEBAR_LIST_EDIT_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()) . '/?editid=' . urlencode('{0,' . $favorite->getId() . '}'),
-                        strtoupper($this->getName()) . '_SIDEBAR_LIST_DELETE_ACTION' => 'cx.favoriteListRemoveFavorite(' . $favorite->getId() . ');',
+                        strtoupper($this->getName()) . '_BLOCK_LIST_NAME' => contrexx_raw2xhtml($favorite->getTitle()),
+                        strtoupper($this->getName()) . '_BLOCK_LIST_EDIT_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()) . '/?editid=' . urlencode('{0,' . $favorite->getId() . '}'),
+                        strtoupper($this->getName()) . '_BLOCK_LIST_DELETE_ACTION' => 'cx.favoriteListRemoveFavorite(' . $favorite->getId() . ');',
                     ));
-                    $template->parse(strtolower($this->getName()) . '_sidebar_list_row');
+                    $template->parse(strtolower($this->getName()) . '_block_list_row');
                 }
             }
         }

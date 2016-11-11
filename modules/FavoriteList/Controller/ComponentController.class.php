@@ -80,7 +80,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             return;
         }
-        $this->getController('Frontend')->getSidebar($template);
+        $this->getController('Frontend')->getBlock($template);
     }
 
     public function registerEventListeners()

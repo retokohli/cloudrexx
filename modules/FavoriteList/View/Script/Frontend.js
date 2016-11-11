@@ -1,5 +1,5 @@
 cx.ready(function () {
-    cx.favoriteListLoadSidebar = function () {
+    cx.favoriteListLoadBlock = function () {
         cx.ajax(
             'FavoriteList',
             'getCatalog',
@@ -9,8 +9,8 @@ cx.ready(function () {
                     lang: cx.variables.get('language')
                 },
                 success: function (data) {
-                    cx.jQuery('#favoriteListSidebar').empty();
-                    cx.jQuery(data.data).appendTo('#favoriteListSidebar');
+                    cx.jQuery('#favoriteListBlock').empty();
+                    cx.jQuery(data.data).appendTo('#favoriteListBlock');
                 }
             }
         );
@@ -33,8 +33,8 @@ cx.ready(function () {
                     image_3: cx.jQuery(element).data('image3')
                 },
                 success: function (data) {
-                    cx.jQuery('#favoriteListSidebar').empty();
-                    cx.jQuery(data.data).appendTo('#favoriteListSidebar');
+                    cx.jQuery('#favoriteListBlock').empty();
+                    cx.jQuery(data.data).appendTo('#favoriteListBlock');
                 }
             }
         );
@@ -51,12 +51,12 @@ cx.ready(function () {
                     lang: cx.variables.get('language')
                 },
                 success: function (data) {
-                    cx.jQuery('#favoriteListSidebar').empty();
-                    cx.jQuery(data.data).appendTo('#favoriteListSidebar');
+                    cx.jQuery('#favoriteListBlock').empty();
+                    cx.jQuery(data.data).appendTo('#favoriteListBlock');
                 }
             }
         );
     };
 
-    cx.favoriteListLoadSidebar();
+    cx.favoriteListLoadBlock();
 });

@@ -295,22 +295,28 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     }
 
     /**
-     * This function sets the sidebar
+     * This function sets the block
      * @param \Cx\Core\Html\Sigma $template
      * @access public
      */
-    public function getSidebar($template)
+    public function getBlock($template)
     {
-        if (!$template->placeholderExists(strtoupper($this->getName()) . '_SIDEBAR')) {
+        global $_ARRAYLANG;
+
+        if (!$template->placeholderExists(strtoupper($this->getName()) . '_BLOCK')) {
             return;
         }
         $theme = $this->getTheme();
-        $template->addBlockfile(strtoupper($this->getName()) . '_SIDEBAR', 'sidebar', $theme->getFilePath(strtolower($this->getName()) . '_sidebar.html'));
+        $template->addBlockfile(strtoupper($this->getName() . '_BLOCK'), strtoupper($this->getName()) . '_BLOCK', $theme->getFilePath(strtolower($this->getName()) . '_block.html'));
+
+        $template->setVariable(array(
+            strtoupper($this->getName()) . '_BLOCK_TITLE' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName())],
+        ));
 
         \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Frontend.js', 1));
         \JS::registerCSS('/core/Html/View/Style/Backend.css', 1);
 
-        $template->parse(strtolower($this->getName()) . '_sidebar_actions');
+        $template->parse(strtolower($this->getName()) . '_block_actions');
         \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function');
         $cmds = array(
             'mail',
@@ -321,9 +327,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         foreach ($cmds as $cmd) {
             if (\Cx\Core\Setting\Controller\Setting::getValue('function' . ucfirst($cmd), 'function')) {
                 $template->setVariable(array(
-                    strtoupper($this->getName()) . '_SIDEBAR_ACT_' . strtoupper($cmd) . '_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), $cmd),
+                    strtoupper($this->getName()) . '_BLOCK_ACT_' . strtoupper($cmd) . '_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), $cmd),
+                    strtoupper($this->getName()) . '_BLOCK_ACT_' . strtoupper($cmd) . '_NAME' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_ACT_' . strtoupper($cmd)],
                 ));
-                $template->parse(strtolower($this->getName()) . '_sidebar_actions_' . $cmd);
+                $template->parse(strtolower($this->getName()) . '_block_actions_' . $cmd);
             }
         }
     }
