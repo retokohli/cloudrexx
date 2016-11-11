@@ -13,11 +13,6 @@ class Favorite extends \Cx\Model\Base\EntityBase
     protected $id;
 
     /**
-     * @var integer $listId
-     */
-    protected $listId;
-
-    /**
      * @var string $title
      */
     protected $title;
@@ -66,26 +61,6 @@ class Favorite extends \Cx\Model\Base\EntityBase
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Get listId
-     *
-     * @return integer $listId
-     */
-    public function getListId()
-    {
-        return $this->listId;
-    }
-
-    /**
-     * Set listId
-     *
-     * @param integer $listId
-     */
-    public function setListId($listId)
-    {
-        $this->listId = $listId;
     }
 
     /**
