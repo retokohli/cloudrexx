@@ -418,13 +418,20 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      * @param array $preLoadedComponents An array containing the preloaded components
      */
     public function setPreLoadedComponents($preLoadedComponents) {
-        foreach($preLoadedComponents as $preLoadedComponent) {
+        foreach($preLoadedComponents as $componentName=>$preLoadedComponent) {
             // get systemComponent by name
-            $systemComponent = parent::findOneBy(array('name' => $preLoadedComponent->getName()));
+            $systemComponent = parent::findOneBy(array('name' => $componentName));
             // set systemComponent on existing systemComponentController
             $preLoadedComponent->setSystemComponent($systemComponent);
+            // add yaml directory
+            $yamlDir = $this->cx->getClassLoader()->getFilePath($preLoadedComponent->getDirectory(false).'/Model/Yaml');
+            if (file_exists($yamlDir)) {
+                $this->cx->getDb()->addSchemaFileDirectories(array($yamlDir));
+            }
             // store the systemComponent with its now loaded id as key to the array of loaded components
             $this->loadedComponents[$preLoadedComponent->getId()] = $preLoadedComponent;
+            // Add JSON adapter
+            \Cx\Core\Json\JsonData::addAdapter($preLoadedComponent->getControllersAccessableByJson(), $preLoadedComponent->getNamespace() . '\\Controller');
         }
     }
 }
