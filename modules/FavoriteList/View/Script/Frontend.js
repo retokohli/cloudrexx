@@ -5,7 +5,8 @@ cx.ready(function () {
             'getCatalog',
             {
                 data: {
-                    lang: cx.jQuery('#favoriteListSidebar').data('lang')
+                    themeId: cx.variables.get('themeId'),
+                    lang: cx.variables.get('language')
                 },
                 success: function (data) {
                     cx.jQuery('#favoriteListSidebar').empty();
@@ -21,14 +22,15 @@ cx.ready(function () {
             'addFavorite',
             {
                 data: {
+                    themeId: cx.variables.get('themeId'),
+                    lang: cx.variables.get('language'),
                     title: cx.jQuery(element).data('title'),
                     link: cx.jQuery(element).data('link'),
                     description: cx.jQuery(element).data('description'),
                     info: cx.jQuery(element).data('info'),
                     image_1: cx.jQuery(element).data('image1'),
                     image_2: cx.jQuery(element).data('image2'),
-                    image_3: cx.jQuery(element).data('image3'),
-                    lang: cx.jQuery('#favoriteListSidebar').data('lang')
+                    image_3: cx.jQuery(element).data('image3')
                 },
                 success: function (data) {
                     cx.jQuery('#favoriteListSidebar').empty();
@@ -45,7 +47,8 @@ cx.ready(function () {
             {
                 data: {
                     id: id,
-                    lang: cx.jQuery('#favoriteListSidebar').data('lang')
+                    themeId: cx.variables.get('themeId'),
+                    lang: cx.variables.get('language')
                 },
                 success: function (data) {
                     cx.jQuery('#favoriteListSidebar').empty();

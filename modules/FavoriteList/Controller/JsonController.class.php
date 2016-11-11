@@ -102,33 +102,42 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
         $langId = \FWLanguage::getLangIdByIso639_1($lang);
         $_ARRAYLANG = \Env::get('init')->getComponentSpecificLanguageData($this->getName(), true, $langId);
 
+        $themeId = contrexx_input2raw($data['get']['themeId']);
+        $theme = $this->getTheme($themeId);
+        $templateFile = $theme->getFilePath(strtolower($this->getName()) . '_sidebar_list.html');
+        $template = new \Cx\Core\Html\Sigma(dirname($templateFile));
+        $template->loadTemplateFile(strtolower($this->getName()) . '_sidebar_list.html');
+
         $em = $this->cx->getDb()->getEntityManager();
         $catalogRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Catalog');
         $catalog = $catalogRepo->findOneBy(array('sessionId' => $this->getComponent('Session')->getSession()->sessionid));
 
         if (empty($catalog)) {
-            $content = '<span>' . $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_LIST'] . '</span>';
+            $template->setVariable(array(
+                strtoupper($this->getName()) . '_MESSAGE_NO_LIST' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_LIST'],
+            ));
+            $template->parse(strtolower($this->getName()) . '_sidebar_no_list');
         } else {
             $favorites = $catalog->getFavorites();
+            $template->parse(strtolower($this->getName()) . '_sidebar_list');
             if (!$favorites->count()) {
-                $content = '<span>' . $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES'] . '</span>';
+                $template->setVariable(array(
+                    strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES'],
+                ));
+                $template->parse(strtolower($this->getName()) . '_sidebar_list_no_entries');
             } else {
-                $content = '<ul>';
                 foreach ($favorites as $favorite) {
-                    $content .= '<li>';
-                    $content .= '<span>' . contrexx_raw2xhtml($favorite->getTitle()) . '</span>';
-                    $content .= '<span class="functions">';
-                    $removeLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()) . '/?editid=' . urlencode('{0,' . $favorite->getId() . '}');
-                    $content .= '<a class="edit" href="' . $removeLink . '"></a>';
-                    $content .= '<a class="delete" href="javascript:void(0);" onclick="cx.favoriteListRemoveFavorite(' . $favorite->getId() . ');"></a>';
-                    $content .= '</span>';
-                    $content .= '</li>';
+                    $template->setVariable(array(
+                        strtoupper($this->getName()) . '_SIDEBAR_LIST_NAME' => contrexx_raw2xhtml($favorite->getTitle()),
+                        strtoupper($this->getName()) . '_SIDEBAR_LIST_EDIT_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()) . '/?editid=' . urlencode('{0,' . $favorite->getId() . '}'),
+                        strtoupper($this->getName()) . '_SIDEBAR_LIST_DELETE_ACTION' => 'cx.favoriteListRemoveFavorite(' . $favorite->getId() . ');',
+                    ));
+                    $template->parse(strtolower($this->getName()) . '_sidebar_list_row');
                 }
-                $content .= '</ul>';
             }
         }
 
-        return $content;
+        return $template->get();
     }
 
     /**
@@ -211,5 +220,25 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
                 }
             }
         }
+    }
+
+    /**
+     * Get theme by theme id
+     *
+     * @param array $params User input array
+     * @return \Cx\Core\View\Model\Entity\Theme Theme instance
+     * @throws JsonListException When theme id empty or theme does not exits in the system
+     */
+    protected function getTheme($id = null)
+    {
+        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        if (empty($id)) {
+            return $themeRepository->getDefaultTheme();
+        }
+        $theme = $themeRepository->findById($id);
+        if (!$theme) {
+            throw new JsonListException('The theme id ' . $id . ' does not exists.');
+        }
+        return $theme;
     }
 }
