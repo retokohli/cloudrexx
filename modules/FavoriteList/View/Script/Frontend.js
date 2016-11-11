@@ -15,19 +15,19 @@ cx.ready(function () {
         );
     };
 
-    cx.favoriteListAddFavorite = function () {
+    cx.favoriteListAddFavorite = function (element) {
         cx.ajax(
             'FavoriteList',
             'addFavorite',
             {
                 data: {
-                    title: title,
-                    link: link,
-                    description: description,
-                    info: info,
-                    image_1: image_1,
-                    image_2: image_2,
-                    image_3: image_3,
+                    title: cx.jQuery(element).data('title'),
+                    link: cx.jQuery(element).data('link'),
+                    description: cx.jQuery(element).data('description'),
+                    info: cx.jQuery(element).data('info'),
+                    image_1: cx.jQuery(element).data('image1'),
+                    image_2: cx.jQuery(element).data('image2'),
+                    image_3: cx.jQuery(element).data('image3'),
                     lang: cx.jQuery('#favoriteListSidebar').data('lang')
                 },
                 success: function (data) {

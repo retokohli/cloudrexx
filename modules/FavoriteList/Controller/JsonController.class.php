@@ -138,8 +138,49 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
      */
     public function addFavorite($data = array())
     {
-        if (isset($data['get']['lang'])) {
-            return $this->getCatalog($data);
+        $lang = contrexx_input2raw($data['get']['lang']);
+        $langId = \FWLanguage::getLangIdByIso639_1($lang);
+        $_ARRAYLANG = \Env::get('init')->getComponentSpecificLanguageData($this->getName(), true, $langId);
+
+        $title = contrexx_input2db($data['get']['title']);
+        if (isset($title)) {
+            $link = contrexx_input2db($data['get']['link']);
+            $description = contrexx_input2db($data['get']['description']);
+            $info = contrexx_input2db($data['get']['info']);
+            $image1 = contrexx_input2db($data['get']['image_1']);
+            $image2 = contrexx_input2db($data['get']['image_2']);
+            $image3 = contrexx_input2db($data['get']['image_3']);
+
+            $em = $this->cx->getDb()->getEntityManager();
+
+            $catalogRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Catalog');
+            $catalog = $catalogRepo->findOneBy(array('sessionId' => $this->getComponent('Session')->getSession()->sessionid));
+
+            if (!$catalog) {
+                $catalog = new \Cx\Modules\FavoriteList\Model\Entity\Catalog;
+                $dateTimeNow = new \DateTime('now');
+                $dateTimeNowFormat = $dateTimeNow->format('d.m.Y H:i:s');
+                $catalog->setName($_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName())] . ' ' . $dateTimeNowFormat);
+                $em->persist($catalog);
+            }
+
+            $favorite = new \Cx\Modules\FavoriteList\Model\Entity\Favorite;
+            $favorite->setCatalog($catalog);
+            $favorite->setTitle($title);
+            $favorite->setLink($link);
+            $favorite->setDescription($description);
+            $favorite->setInfo($info);
+            $favorite->setImage1($image1);
+            $favorite->setImage2($image2);
+            $favorite->setImage3($image3);
+
+            $em->persist($favorite);
+            $em->flush();
+            $em->clear();
+
+            if (isset($data['get']['lang'])) {
+                return $this->getCatalog($data);
+            }
         }
     }
 
