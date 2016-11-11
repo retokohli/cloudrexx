@@ -868,10 +868,13 @@ class Url {
         return false;
     }
 
-    public function getLangDir() {
+    public function getLangDir($fromUrl = false) {
         $lang_dir = '';
 
         if (!$this->isVirtualLanguageDirsActive()) {
+            if ($fromUrl) {
+                return '';
+            }
             return \FWLanguage::getLanguageCodeById(\FWLanguage::getDefaultLangId());
         }
         if ($this->langDir == '' && defined('FRONTEND_LANG_ID')) {

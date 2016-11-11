@@ -1931,8 +1931,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      *
      */
     public function getURL($protocolAndDomainWithPathOffset, $params) {
-        $path = $this->getPath($this);
-        return $protocolAndDomainWithPathOffset . '/' . \FWLanguage::getLanguageCodeById($this->lang) .$path . $params;
+        return \Cx\Core\Routing\Url::fromPage($this);
     }
 
     /**

@@ -657,7 +657,10 @@ class Resolver {
                     }
                     $langDir = '';
                     if (!file_exists(ASCMS_INSTANCE_PATH . ASCMS_INSTANCE_OFFSET . '/' . $target)) {
-                        $langCode = \FWLanguage::getLanguageCodeById($this->lang);
+                        $langCode = '';
+                        if (false) {
+                            $langCode = \FWLanguage::getLanguageCodeById($this->lang);
+                        }
                         if (!empty($langCode)) {
                             $langDir = '/' . $langCode;
                         }
