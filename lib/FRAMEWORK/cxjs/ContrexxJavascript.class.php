@@ -97,6 +97,7 @@ class ContrexxJavascript {
                 'language'  => $langCode,
                 'csrf'      => \Cx\Core\Csrf\Controller\Csrf::code(),
                 'charReplaceList' => \Cx\Core\LanguageManager\Controller\ComponentController::$REPLACEMENT_CHARLIST,
+                'themeId'   => \Env::get('init')->getCurrentThemeId(),
             ),
             'contrexx'
         );
