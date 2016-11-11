@@ -1163,6 +1163,7 @@ class ViewGenerator {
         }
         static::appendVgParam(
             $url,
+            $vgId,
             'editid',
             static::getEditId($entryOrId)
         );
