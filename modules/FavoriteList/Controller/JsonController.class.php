@@ -96,9 +96,11 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
      *
      * @return json result
      */
-    public function getCatalog()
+    public function getCatalog($data = array())
     {
-        global $_ARRAYLANG;
+        $lang = contrexx_input2raw($data['get']['lang']);
+        $langId = \FWLanguage::getLangIdByIso639_1($lang);
+        $_ARRAYLANG = \Env::get('init')->getComponentSpecificLanguageData($this->getName(), true, $langId);
 
         $em = $this->cx->getDb()->getEntityManager();
         $catalogRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Catalog');
@@ -108,7 +110,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
             $content = '<span>' . $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_LIST'] . '</span>';
         } else {
             $favorites = $catalog->getFavorites();
-            if (empty($favorites)) {
+            if (!$favorites->count()) {
                 $content = '<span>' . $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES'] . '</span>';
             } else {
                 $content = '<ul>';
@@ -118,7 +120,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
                     $content .= '<span class="functions">';
                     $removeLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()) . '/?editid=' . urlencode('{0,' . $favorite->getId() . '}');
                     $content .= '<a class="edit" href="' . $removeLink . '"></a>';
-                    $content .= '<a class="delete" href="javascript:void(0);" onclick="favoriteListRemoveFavorite(' . $favorite->getId() . ');"></a>';
+                    $content .= '<a class="delete" href="javascript:void(0);" onclick="cx.favoriteListRemoveFavorite(' . $favorite->getId() . ');"></a>';
                     $content .= '</span>';
                     $content .= '</li>';
                 }
@@ -136,7 +138,9 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
      */
     public function addFavorite($data = array())
     {
-        var_dump('here: addFavorite');
+        if (isset($data['get']['lang'])) {
+            return $this->getCatalog($data);
+        }
     }
 
     /**
@@ -146,6 +150,25 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
      */
     public function removeFavorite($data = array())
     {
-        var_dump('here: removeFavorite');
+        $id = contrexx_input2raw($data['get']['id']);
+        if ($id) {
+            $em = $this->cx->getDb()->getEntityManager();
+            $catalogRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Catalog');
+            $catalog = $catalogRepo->findOneBy(array('sessionId' => $this->getComponent('Session')->getSession()->sessionid));
+            $favorite = $catalog->getFavorites()->filter(
+                function ($favorite) use ($id) {
+                    return $favorite->getId() == $id;
+                }
+            )->first();
+            if ($favorite) {
+                $em->remove($favorite);
+                $em->flush();
+                $em->clear();
+
+                if (isset($data['get']['lang'])) {
+                    return $this->getCatalog($data);
+                }
+            }
+        }
     }
 }

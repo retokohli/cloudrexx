@@ -1,19 +1,21 @@
 cx.ready(function () {
-    function favoriteListLoadSidebar() {
+    cx.favoriteListLoadSidebar = function () {
         cx.ajax(
             'FavoriteList',
             'getCatalog',
             {
-                data: {},
+                data: {
+                    lang: cx.jQuery('#favoriteListSidebar').data('lang')
+                },
                 success: function (data) {
                     cx.jQuery('#favoriteListSidebar').empty();
                     cx.jQuery(data.data).appendTo('#favoriteListSidebar');
                 }
             }
         );
-    }
+    };
 
-    function favoriteListAddFavorite() {
+    cx.favoriteListAddFavorite = function () {
         cx.ajax(
             'FavoriteList',
             'addFavorite',
@@ -25,29 +27,33 @@ cx.ready(function () {
                     info: info,
                     image_1: image_1,
                     image_2: image_2,
-                    image_3: image_3
+                    image_3: image_3,
+                    lang: cx.jQuery('#favoriteListSidebar').data('lang')
                 },
-                success: function () {
-                    favoriteListLoadSidebar();
+                success: function (data) {
+                    cx.jQuery('#favoriteListSidebar').empty();
+                    cx.jQuery(data.data).appendTo('#favoriteListSidebar');
                 }
             }
         );
-    }
+    };
 
-    function favoriteListRemoveFavorite(id) {
+    cx.favoriteListRemoveFavorite = function (id) {
         cx.ajax(
             'FavoriteList',
             'removeFavorite',
             {
                 data: {
-                    id: id
+                    id: id,
+                    lang: cx.jQuery('#favoriteListSidebar').data('lang')
                 },
-                success: function () {
-                    favoriteListLoadSidebar();
+                success: function (data) {
+                    cx.jQuery('#favoriteListSidebar').empty();
+                    cx.jQuery(data.data).appendTo('#favoriteListSidebar');
                 }
             }
         );
-    }
+    };
 
-    favoriteListLoadSidebar();
+    cx.favoriteListLoadSidebar();
 });

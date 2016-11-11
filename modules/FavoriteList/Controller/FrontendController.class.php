@@ -308,6 +308,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $template->addBlockfile(strtoupper($this->getName()) . '_SIDEBAR', 'sidebar', $theme->getFilePath(strtolower($this->getName()) . '_sidebar.html'));
 
         \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Frontend.js', 1));
+        \JS::registerCSS('/core/Html/View/Style/Backend.css', 1);
 
         $template->parse(strtolower($this->getName()) . '_sidebar_actions');
         \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function');
