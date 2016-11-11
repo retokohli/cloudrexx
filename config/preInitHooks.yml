@@ -1,6 +1,7 @@
 -
-  name: Net
-  type: core
--
   name: Cache
   type: core_module
+# Net depends on Cache (DataSet)
+-
+  name: Net
+  type: core
