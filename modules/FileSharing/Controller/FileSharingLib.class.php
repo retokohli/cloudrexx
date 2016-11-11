@@ -99,8 +99,8 @@ CODE;
      */
     public static function getTemporaryFilePaths($uploadId)
     {
-        global $sessionObj;
-        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
+        $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        $sessionObj = $cx->getComponent('Session')->getSession();
 
         return array(
             $_SESSION->getTempPath() . '/',
@@ -319,9 +319,7 @@ CODE;
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $_CONFIG['coreAdminEmail'];
-            $objMail->FromName = $_CONFIG['coreGlobalPageTitle'];
-
+            $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
             $objMail->Subject = $subject;
             $objMail->Body = $objTemplate->get();
             foreach($emails as $email){

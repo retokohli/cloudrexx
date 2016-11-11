@@ -265,22 +265,30 @@ class PaymentProcessing
         switch (self::getPaymentProcessorName()) {
             case 'internal':
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'success').
-                    '?result=1&handler=internal');
+                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
+                        array('result' => 1, 'handler' => 'internal')
+                    )
+                );
             case 'internal_lsv':
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'success').
-                    '?result=1&handler=internal');
+                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
+                        array('result' => 1, 'handler' => 'internal')
+                    )
+                );
             case 'internal_creditcard':
                 // Not implemented
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'success').
-                    '?result=1&handler=internal');
+                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
+                        array('result' => 1, 'handler' => 'internal')
+                    )
+                );
             case 'internal_debit':
                 // Not implemented
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
-                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'success').
-                    '?result=1&handler=internal');
+                    \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
+                        array('result' => 1, 'handler' => 'internal')
+                    )
+                );
             case 'saferpay':
             case 'saferpay_all_cards':
             case 'saferpay_mastercard_multipay_car': // Obsolete
@@ -323,11 +331,11 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
                 $return = \PayPal::getForm($account_email, $order_id,
                     $currency_code, $amount, $item_name);
                 break;
-            case 'paymill_cc':    
+            case 'paymill_cc':
             case 'paymill_elv':
             case 'paymill_iban':
                 $return =  self::_PaymillProcessor(self::getPaymentProcessorName());
-                break;                
+                break;
             case 'dummy':
                 $return = \Dummy::getForm();
                 break;
@@ -359,7 +367,7 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
             '<br /><br /><img src="'.
             // Is there a language dependent version?
             (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath() . '/Shop/View/Media/payments/' .$imageName_lang)
-              ? \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModuleWebPath() . '/Shop/View/Media/payments/' . $imageName_lang 
+              ? \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModuleWebPath() . '/Shop/View/Media/payments/' . $imageName_lang
               : \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModuleWebPath() . '/Shop/View/Media/payments/' . $imageName) .
             '" alt="" title="" /><br /><br />';
     }
@@ -375,30 +383,24 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
     {
         global $_ARRAYLANG;
 
-        $serverBase = $_SERVER['SERVER_NAME'] . \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath() . '/';
         $arrShopOrder = array(
-            'AMOUNT' => str_replace('.', '', $_SESSION['shop']['grand_total_price']),
-            'CURRENCY' => Currency::getActiveCurrencyCode(),
-            'ORDERID' => $_SESSION['shop']['order_id'],
-            'ACCOUNTID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id','Shop'),
-            'SUCCESSLINK' =>
-                'http://'.$serverBase.'index.php?section=Shop'.MODULE_INDEX.
-                '&cmd=success&result=1&handler=saferpay',
-            'FAILLINK' =>
-                'http://'.$serverBase.'index.php?section=Shop'.MODULE_INDEX.
-                '&cmd=success&result=0&handler=saferpay',
-            'BACKLINK' =>
-                'http://'.$serverBase.'index.php?section=Shop'.MODULE_INDEX.
-                '&cmd=success&result=2&handler=saferpay',
-            'DESCRIPTION' =>
-                '"'.$_ARRAYLANG['TXT_ORDER_NR'].
-                ' '.$_SESSION['shop']['order_id'].'"',
-            'LANGID' => \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
-            'NOTIFYURL' =>
-                'http://'.$serverBase.'index.php?section=Shop'.MODULE_INDEX.
-                '&cmd=success&result=-1&handler=saferpay',
-            'ALLOWCOLLECT' => 'no',
-            'DELIVERY' => 'no',
+            'AMOUNT'        => str_replace('.', '', $_SESSION['shop']['grand_total_price']),
+            'CURRENCY'      => Currency::getActiveCurrencyCode(),
+            'ORDERID'       => $_SESSION['shop']['order_id'],
+            'ACCOUNTID'     => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id','Shop'),
+            'SUCCESSLINK'   => \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
+                                   array('result' => 1, 'handler' => 'saferpay'))->toString(),
+            'FAILLINK'      => \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
+                                   array('result' => 0, 'handler' => 'saferpay'))->toString(),
+            'BACKLINK'      => \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
+                                   array('result' => 2, 'handler' => 'saferpay'))->toString(),
+            'DESCRIPTION'   => '"'.$_ARRAYLANG['TXT_ORDER_NR'].
+                                ' '.$_SESSION['shop']['order_id'].'"',
+            'LANGID'        => \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
+            'NOTIFYURL'     => \Cx\Core\Routing\Url::fromModuleAndCmd('Shop'.MODULE_INDEX, 'success', '',
+                                   array('result' => '-1', 'handler' => 'saferpay'))->toString(),
+            'ALLOWCOLLECT'  => 'no',
+            'DELIVERY'      => 'no',
         );
         $payInitUrl = \Saferpay::payInit($arrShopOrder,
             \Cx\Core\Setting\Controller\Setting::getValue('saferpay_use_test_account','Shop'));
@@ -453,15 +455,15 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
 
     /**
      * Returns the HTML code for the Paymill payment method.
-     * 
+     *
      * @return  string  HTML code
      */
     static function _PaymillProcessor($processMethod)
     {
         global $_ARRAYLANG;
-        
+
         $landingPage = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findOneByModuleCmdLang('Shop'.MODULE_INDEX, 'success', FRONTEND_LANG_ID);
-        
+
         $arrShopOrder = array(
             'order_id'  => $_SESSION['shop']['order_id'],
             'amount'    => intval($_SESSION['shop']['grand_total_price']*100),
@@ -479,7 +481,7 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
                 $return = \PaymillIBANHandler::getForm($arrShopOrder, $landingPage);
                 break;
         }
-        
+
         if (_PAYMENT_DEBUG && \PaymillHandler::$arrError) {
             $strError =
                 '<font color="red"><b>'.
@@ -495,10 +497,10 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
                 \DBG::log("Paymill Error: $error");
             }
         }
-        
+
         return $return;
     }
-    
+
     /**
      * Returns the HTML code for the Yellowpay payment method.
      * @return  string  HTML code
@@ -644,7 +646,7 @@ if (empty ($return)) {
                     \DBG::log("PaymentProcessing::checkIn(): WARNING: paymill: Payment verification failed; errors: ".var_export($response, true));
                     return false;
                 }
-                
+
             case 'saferpay':
                 $arrShopOrder = array(
                     'ACCOUNTID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id','Shop'));

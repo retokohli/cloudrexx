@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Mail
  *
@@ -179,8 +179,9 @@ class OBOLETE_Mail
                 }
             }
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = preg_replace('/\015\012/', '', $mailFrom);
-            $objMail->FromName = preg_replace('/\015\012/', '', $mailSender);
+            $from = preg_replace('/\015\012/', '', $mailFrom);
+            $fromName = preg_replace('/\015\012/', '', $mailSender);
+            $objMail->SetFrom($from, $fromName);
             $objMail->Subject = $mailSubject;
             $objMail->IsHTML(false);
             $objMail->Body = preg_replace('/\015\012/', "\012", $mailBody);

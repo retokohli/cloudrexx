@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * ContentManager
  *
@@ -124,7 +124,7 @@ class ContentManager extends \Module
             var_dump($this->nodeRepository->recover());
         }
         $objCx    = \ContrexxJavascript::getInstance();
-        
+
         $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
         $defaultTheme = $themeRepo->getDefaultTheme();
         $objCx->setVariable('themeId', $defaultTheme->getId(), 'contentmanager/theme');
@@ -145,17 +145,27 @@ class ContentManager extends \Module
         $this->template->addBlockfile('CONTENT_MANAGER_MEAT', 'content_manager_meat', 'Page.html');
         $this->template->touchBlock('content_manager_meat');
 
-        if (\Permission::checkAccess(78, 'static', true) &&
+        if (\Permission::checkAccess(78, 'static', true)) {
+            \JS::registerCode("var publishAllowed = true;");
+        } else {
+            \JS::registerCode("var publishAllowed = false;");
+        }
+        if (
+            \Permission::checkAccess(78, 'static', true) &&
             \Permission::checkAccess(115, 'static', true)
         ) {
-            \JS::registerCode("var publishAllowed = true;");
+            \JS::registerCode("var aliasManagementAllowed = true;");
             $alias_permission = "block";
             $alias_denial     = "none !important";
         } else {
-            \JS::registerCode("var publishAllowed = false;");
+            \JS::registerCode("var aliasManagementAllowed = false;");
             $alias_permission = "none !important";
             $alias_denial     = "block";
         }
+
+        $this->template->setVariable(array(
+            'CORE_CM_METAIMAGE_BUTTON' => self::showMediaBrowserButton('Metaimage')
+        ));
 
         $mediaBrowser = new MediaBrowser();
         $mediaBrowser->setCallback('target_page_callback');
@@ -185,28 +195,8 @@ class ContentManager extends \Module
             'CONTREXX_LANG'     => \FWLanguage::getLanguageCodeById(BACKEND_LANG_ID),
         ));
 
-        $this->setLanguageVars(array(
-            //navi
-            'TXT_NEW_PAGE', 'TXT_CONTENT_HISTORY', 'TXT_IMAGE_ADMINISTRATION',
-            //site tree
-            'TXT_CORE_CM_STATUS_PAGE', 'TXT_EXPAND_LINK', 'TXT_COLLAPS_LINK', 'TXT_CORE_CM_TRANSLATIONS', 'TXT_CORE_CM_APPLICATION', 'TXT_CORE_CM_VIEW', 'TXT_CORE_CM_ACTIONS', 'TXT_CORE_CM_LOG',
-            //multiple actions
-            'TXT_SELECT_ALL', 'TXT_DESELECT_ALL', 'TXT_MULTISELECT_SELECT', 'TXT_MULTISELECT_ACTIVATE', 'TXT_MULTISELECT_DEACTIVATE', 'TXT_MULTISELECT_SHOW', 'TXT_MULTISELECT_HIDE', 'TXT_MULTISELECT_UNPROTECT', 'TXT_MULTISELECT_DELETE',
-            //type tab
-            'TXT_CORE_CM_PAGE', 'TXT_CORE_CM_META', 'TXT_CORE_CM_PERMISSIONS', 'TXT_CORE_CM_MORE', 'TXT_CORE_CM_HISTORY', 'TXT_CORE_CM_PAGE_NAME', 'TXT_CORE_CM_PAGE_NAME_INFO', 'TXT_CORE_CM_PAGE_TITLE', 'TXT_CORE_CM_PAGE_TITLE_INFO', 'TXT_CORE_CM_TYPE', 'TXT_CORE_CM_TYPE_CONTENT', 'TXT_CORE_CM_TYPE_REDIRECT', 'TXT_CORE_CM_TYPE_APPLICATION', 'TXT_CORE_CM_TYPE_FALLBACK', 'TXT_CORE_CM_TYPE_CONTENT_INFO', 'TXT_CORE_CM_TYPE_REDIRECT_TARGET', 'TXT_CORE_CM_BROWSE', 'TXT_CORE_CM_TYPE_REDIRECT_INFO', 'TXT_CORE_CM_TYPE_APPLICATION', 'TXT_CORE_CM_TYPE_APPLICATION', 'TXT_CORE_CM_TYPE_APPLICATION_AREA', 'TXT_CORE_CM_TYPE_APPLICATION_INFO', 'TXT_CORE_CM_TYPE_FALLBACK_INFO', 'TXT_CORE_CM_TYPE_REDIRECT_INFO_ACTION', 'TXT_CORE_CM_SCHEDULED_PUBLISHING', 'TXT_CORE_CM_SCHEDULED_PUBLISHING_FROM', 'TXT_CORE_CM_SCHEDULED_PUBLISHING_TO', 'TXT_CORE_CM_SCHEDULED_PUBLISHING_INFO', 'TXT_INTERNAL',
-            //meta tab
-            'TXT_CORE_CM_SE_INDEX', 'TXT_CORE_CM_METATITLE', 'TXT_CORE_CM_METATITLE_INFO', 'TXT_CORE_CM_METADESC', 'TXT_CORE_CM_METADESC_INFO', 'TXT_CORE_CM_METAKEYS', 'TXT_CORE_CM_METAKEYS_INFO', 'TXT_CORE_CM_APPLICATION_TEMPLATE_INFO', 'TXT_CORE_CM_USE_APPLICATION_TEMPLATE_ALL_CHANNELS_INFO',
-            //access tab
-            'TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND', 'TXT_CORE_CM_ACCESS_PROTECTION_BACKEND', 'TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS', 'TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS',
-            //advanced tab
-            'TXT_CORE_CM_THEMES', 'TXT_CORE_CM_THEMES_INFO', 'TXT_CORE_CM_CUSTOM_CONTENT', 'TXT_CORE_CM_CUSTOM_CONTENT_INFO', 'TXT_CORE_CM_CSS_CLASS', 'TXT_CORE_CM_CSS_CLASS_INFO', 'TXT_CORE_CM_CACHE', 'TXT_CORE_CM_NAVIGATION', 'TXT_CORE_CM_LINK_TARGET', 'TXT_CORE_CM_LINK_TARGET_INO', 'TXT_CORE_CM_SLUG', 'TXT_CORE_CM_SLUG_INFO', 'TXT_CORE_CM_ALIAS', 'TXT_CORE_CM_ALIAS_INFO', 'TXT_CORE_CM_CSS_NAV_CLASS', 'TXT_CORE_CM_CSS_NAV_CLASS_INFO', 'TXT_CORE_CM_SOURCE_MODE', 'TXT_RECURSIVE_CHANGE', 'TXT_CORE_CM_USE_ALL_CHANNELS', 'TXT_CORE_CM_USE_SKIN_ALL_CHANNELS_INFO', 'TXT_CORE_CM_USE_CUSTOM_CONTENT_ALL_CHANNELS_INFO',
-            //blocks tab
-            'TXT_CORE_CM_BLOCKS', 'TXT_CORE_CM_BLOCKS_AVAILABLE', 'TXT_CORE_CM_BLOCKS_ASSIGNED',
-            //settings tab
-            'TXT_CORE_APPLICATION_AREA', 'TXT_CORE_APPLICATION', 'TXT_CORE_AREA', 'TXT_CORE_SKIN', 'TXT_CORE_CUSTOMCONTENT', 'TXT_CORE_REDIRECTION', 'TXT_CORE_CACHING', 'TXT_CORE_SLUG', 'TXT_CORE_CSSNAME', 'TXT_THEME_PREVIEW', 'TXT_EDIT', 'TXT_CORE_CM_APPLICATION_TEMPLATE',
-            //bottom buttons
-            'TXT_CANCEL', 'TXT_CORE_PREVIEW', 'TXT_CORE_SAVE_PUBLISH', 'TXT_CORE_SAVE', 'TXT_CORE_SUBMIT_FOR_RELEASE', 'TXT_CORE_REFUSE_RELEASE'
-        ));
+        global $_CORELANG;
+        $this->template->setVariable($_CORELANG);
 
         $objCx->setVariable('TXT_CORE_CM_VIEW', $_CORELANG['TXT_CORE_CM_VIEW'], 'contentmanager/lang');
         $objCx->setVariable('TXT_CORE_CM_ACTIONS', $_CORELANG['TXT_CORE_CM_ACTIONS'], 'contentmanager/lang');
@@ -247,6 +237,7 @@ class ContentManager extends \Module
                 'TXT_CORE_CM_PAGE_TYPE_CONTENT_SITE'            => 'TXT_CORE_CM_PAGE_TYPE_CONTENT_SITE',
                 'TXT_CORE_CM_PAGE_TYPE_APPLICATION'             => 'TXT_CORE_CM_PAGE_TYPE_APPLICATION',
                 'TXT_CORE_CM_PAGE_TYPE_REDIRECTION'             => 'TXT_CORE_CM_PAGE_TYPE_REDIRECTION',
+                'TXT_CORE_CM_PAGE_TYPE_SYMLINK'                 => 'TXT_CORE_CM_PAGE_TYPE_SYMLINK',
                 'TXT_CORE_CM_PAGE_TYPE_FALLBACK'                => 'TXT_CORE_CM_PAGE_TYPE_FALLBACK',
                 'TXT_CORE_CM_PAGE_MOVE_INFO'                    => 'TXT_CORE_CM_PAGE_MOVE_INFO',
                 'TXT_CORE_CM_TRANSLATION_INFO'                  => 'TXT_CORE_CM_TRANSLATION_INFO',
@@ -258,7 +249,7 @@ class ContentManager extends \Module
                 $objCx->setVariable($name, $_CORELANG[$value], 'contentmanager/lang/' . $subscope);
             }
         }
-        
+
         // Mediabrowser
         $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions(array('type' => 'button'));
@@ -349,7 +340,7 @@ class ContentManager extends \Module
         } else {
             $this->template->hideBlock('show_caching_option');
         }
-        
+
         if (\Permission::checkAccess(78, 'static', true)) {
             $this->template->hideBlock('release_button');
         } else {
@@ -396,7 +387,7 @@ class ContentManager extends \Module
         $this->template->setVariable('FALLBACK_ARRAY', json_encode($this->getFallbackArray()));
         $this->template->setVariable('LANGUAGE_LABELS', json_encode($this->getLangLabels()));
         $this->template->setVariable('EDIT_VIEW_CSS_CLASS', $editViewCssClass);
-        
+
         $this->template->touchBlock('content_manager_language_selection');
 
         $editmodeTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH . '/ContentManager/View/Template/Backend');
@@ -494,14 +485,6 @@ class ContentManager extends \Module
         return $output;
     }
 
-    protected function setLanguageVars($ids)
-    {
-        global $_CORELANG;
-        foreach ($ids as $id) {
-            $this->template->setVariable($id, $_CORELANG[$id]);
-        }
-    }
-
     protected function getCustomContentTemplates()
     {
         $templates = array();
@@ -539,5 +522,33 @@ class ContentManager extends \Module
         }
 
         return $folderNames;
+    }
+
+    /**
+     * Display the MediaBrowser button
+     *
+     * @global array $_ARRAYLANG
+     *
+     * @param string $name callback function name
+     * @param string $type mediabrowser type
+     *
+     * @return string
+     */
+    protected function showMediaBrowserButton($name, $type = 'filebrowser')
+    {
+        if (empty($name)) {
+            return;
+        }
+
+        global $_ARRAYLANG;
+
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
+        $mediaBrowser->setOptions(array(
+            'type' => 'button',
+            'data-cx-mb-views' => $type
+        ));
+        $mediaBrowser->setCallback('cx.cm.setSelected' . ucfirst($name));
+
+        return $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE']);
     }
 }

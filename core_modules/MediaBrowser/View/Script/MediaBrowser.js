@@ -253,10 +253,14 @@
                 }
 
                 var newTabs = [];
+                var tabStartViewName;
+                var tabName;
                 newTabNames.forEach(function (newTabName) {
+                    tabName = (newTabName === 'filebrowser') ? 'MediaBrowserList' : newTabName;
+                    tabStartViewName = tabName.charAt(0).toUpperCase() + tabName.slice(1) + 'Ctrl';
                     $scope.dataTabs.forEach(function (tab) {
                         if (tab.name === newTabName) {
-                            if (newTabName === mediabrowserConfig.get('startView')){
+                            if (tabStartViewName === mediabrowserConfig.get('startView')) {
                                 isStartviewInViews = true;
                             }
                             newTabs.push(tab);
@@ -878,6 +882,9 @@
             if (!angular.isObject(input)) return input;
             var array = [];
             for (var objectKey in input) {
+                if (!input[objectKey].datainfo) {
+                    continue;
+                }
                 array.push(input[objectKey]);
             }
             array.sort(function (a, b) {

@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Manages settings stored in the database or file system
  *
@@ -81,6 +81,7 @@ class Setting{
      * See {@see show()} for examples on how to extend these.
      */
     const TYPE_DROPDOWN = 'dropdown';
+    const TYPE_DROPDOWN_MULTISELECT = 'dropdown_multiselect';
     const TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE = 'dropdown_user_custom_attribute';
     const TYPE_DROPDOWN_USERGROUP = 'dropdown_usergroup';
     const TYPE_WYSIWYG = 'wysiwyg';
@@ -96,6 +97,7 @@ class Setting{
     const TYPE_RADIO = 'radio';
     const TYPE_DATE  = 'date';
     const TYPE_DATETIME  = 'datetime';
+    const TYPE_IMAGE  = 'image';
     // Not implemented
     //const TYPE_SUBMIT = 'submit';
     /**
@@ -119,9 +121,9 @@ class Setting{
 
     public static $arrSettings = array();
     protected static $engines = array(
-	'Database' => '\Cx\Core\Setting\Model\Entity\DbEngine',
-	'FileSystem' => '\Cx\Core\Setting\Model\Entity\FileSystem',
-	'Yaml'	=> '\Cx\Core\Setting\Model\Entity\YamlEngine',
+    'Database' => '\Cx\Core\Setting\Model\Entity\DbEngine',
+    'FileSystem' => '\Cx\Core\Setting\Model\Entity\FileSystem',
+    'Yaml'    => '\Cx\Core\Setting\Model\Entity\YamlEngine',
     );
 
     protected static $engine = 'Database';
@@ -593,25 +595,33 @@ class Setting{
             }
 
 //DBG::log("Value: $value -> align $value_align");
+            $isMultiSelect = false;
             switch ($type) {
-              // Dropdown menu
+              //Multiselect dropdown/Dropdown menu
+              case self::TYPE_DROPDOWN_MULTISELECT:
+                  $isMultiSelect = true;
               case self::TYPE_DROPDOWN:
-                $matches = null;
+                $matches   = null;
+                $arrValues = $arrSetting['values'];
                 if (preg_match('/^\{src:([a-z0-9_\\\:]+)\(\)\}$/i', $arrSetting['values'], $matches)) {
-                    $arrValues = self::splitValues(call_user_func($matches[1]));
-                } else {
-                    $arrValues = self::splitValues($arrSetting['values']);
+                    $arrValues = call_user_func($matches[1]);
                 }
-//DBG::log("Values: ".var_export($arrValues, true));
-                $element = \Html::getSelect(
-                    $name, $arrValues, $value,
-                    '', '',
-                    'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;'.
-                    (   isset ($arrValues[$value])
-                     && is_numeric($arrValues[$value])
-                        ? 'text-align: right;' : '').
-                    '"'.
-                    ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
+                if (is_string($arrValues)) {
+                    $arrValues = self::splitValues($arrValues);
+                }
+                $elementName   = $isMultiSelect ? $name.'[]' : $name;
+                $value         = $isMultiSelect ? self::splitValues($value) : $value;
+                $elementValue  = is_array($value) ? array_flip($value) : $value;
+                $elementAttr   = $isMultiSelect ? ' multiple class="chzn-select"' : '';
+                $element       = \Html::getSelect(
+                                    $elementName, $arrValues, $elementValue,
+                                    '', '',
+                                    'style="width: ' . self::DEFAULT_INPUT_WIDTH . 'px;' .
+                                    (   !$isMultiSelect
+                                     && isset ($arrValues[$value])
+                                     && is_numeric($arrValues[$value])
+                                        ? 'text-align: right;' : '') . '"' .
+                                    ($readOnly ? \Html::ATTRIBUTE_DISABLED : '') . $elementAttr);
                 break;
               case self::TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE:
                 $element = \Html::getSelect(
@@ -734,7 +744,35 @@ class Setting{
                 case self::TYPE_DATETIME:
                     $element = \Html::getDatetimepicker($name, array('defaultDate' => $value), 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"');
                     break;
-
+                case self::TYPE_IMAGE:
+                    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                    if (    !empty($arrSetting['value'])
+                        &&  \Cx\Lib\FileSystem\FileSystem::exists($cx->getWebsitePath() . '/' . $arrSetting['value'])
+                    ) {
+                        $element .= \Html::getImageByPath(
+                            $cx->getWebsitePath() . '/' . $arrSetting['value'],
+                            'id="' . $name . 'Image" '
+                        ) . '&nbsp;&nbsp;';
+                    }
+                    $element .= \Html::getHidden($name, $arrSetting['value'], $name);
+                    $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
+                    $mediaBrowser->setCallback($name.'Callback');
+                    $mediaBrowser->setOptions(array('type' => 'button','data-cx-mb-views' => 'filebrowser'));
+                    $element .= $mediaBrowser->getXHtml($_ARRAYLANG['TXT_BROWSE']);
+                    \JS::registerCode('
+                        function ' . $name . 'Callback(data) {
+                            if (data.type === "file" && data.data[0]) {
+                                var filePath = data.data[0].datainfo.filepath;
+                                jQuery("#' . $name . '").val(filePath);
+                                jQuery("#' . $name . 'Image").attr("src", filePath);
+                            }
+                        }
+                        jQuery(document).ready(function(){
+                            var imgSrc = jQuery("#' . $name . 'Image").attr("src");
+                            jQuery("#' . $name . 'Image").attr("src", imgSrc + "?t=" + new Date().getTime());
+                        });
+                    ');
+                    break;
                 // Default to text input fields
               case self::TYPE_TEXT:
               case self::TYPE_EMAIL:
@@ -928,12 +966,26 @@ class Setting{
                     break;
                   case self::TYPE_CHECKBOX:
                       break;
+                  case self::TYPE_DROPDOWN_MULTISELECT:
+                      $value = array_flip($value);
                   case self::TYPE_CHECKBOXGROUP:
                     $value = (is_array($value)
                         ? join(',', array_keys($value))
                         : $value);
                         // 20120508
                   case self::TYPE_RADIO:
+                      break;
+                  case self::TYPE_IMAGE:
+                      $cx      = \Cx\Core\Core\Controller\Cx::instanciate();
+                      $options = json_decode($arrSettings[$name]['values'], true);
+                      if ($options['type'] && $options['type'] == 'copy') {
+                          \Cx\Lib\FileSystem\FileSystem::copy_file(
+                              $cx->getWebsitePath() . $value,
+                              $cx->getWebsitePath() . '/' . $arrSettings[$name]['value'],
+                              true
+                          );
+                          $value = $arrSettings[$name]['value'];
+                      }
                       break;
                   default:
                         // Regular value of any other type
@@ -1169,8 +1221,8 @@ class Setting{
                 self::$arrSettings[self::getInstanceId()][$section]['default_engine'] = $engine;
             }
             return true;
-	}
-	return false;
+    }
+    return false;
     }
 
     /**

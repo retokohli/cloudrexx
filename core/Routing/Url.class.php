@@ -129,6 +129,12 @@ class Url {
     protected $port = 0;
 
     /**
+     * The fragment (after #) part of the URL
+     * @var string
+     */
+    protected $fragment = '';
+
+    /**
      * Initializes $domain, $protocol, $port and $path.
      * @param string $url http://example.com/Test
      * @param bool $replacePorts - indicates if we need to replace ports with default ones
@@ -139,7 +145,13 @@ class Url {
         if (isset($data['host'])) {
             $this->domain   = $data['host'];
         }
+        if (empty($this->domain)) {
+            $this->domain = \Env::get('config')['domainUrl'];
+        }
         $this->protocol = $data['scheme'];
+        if (empty($this->protocol)) {
+            $this->protocol = 'http';
+        }
         if ($this->protocol == 'file') {
             // we don't want virtual language dir in file URLs
             $this->setMode('backend');
@@ -158,6 +170,19 @@ class Url {
             $path = $data['path'];
         }
         $path = ltrim($path, '/');
+
+        // do not add virtual language dir for files
+        $fileName = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . '/' . $path;
+        if (file_exists($fileName)) {
+            $this->setMode('backend');
+        }
+        $this->realPath = '/' . $path;
+
+        // do not add virtual language dir in backend
+        if (strpos($this->realPath, \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName()) === 0) {
+            $this->setMode('backend');
+        }
+
         if(!empty($data['query'])) {
             $path .= '?' . $data['query'];
         }
@@ -165,6 +190,10 @@ class Url {
             $this->setPath($path);
         } else {
             $this->suggest();
+        }
+
+        if (!empty($data['fragment'])) {
+            $this->fragment = $data['fragment'];
         }
 
         $this->addPassedParams();
@@ -176,6 +205,34 @@ class Url {
         } else {
             \DBG::msg('URL: Invalid url mode "'.$mode.'"');
         }
+    }
+
+    /**
+     * Checks wheter this Url points to a location within this installation
+     * @todo This does not work correctly if setPath() is called from outside
+     * @return boolean True for internal URL, false otherwise
+     */
+    public function isInternal() {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+
+        // check domain
+        $domainRepo = $cx->getDb()->getEntityManager()->getRepository(
+            'Cx\Core\Net\Model\Entity\Domain'
+        );
+        if (!$domainRepo->findOneBy(array('name' => $this->getDomain()))) {
+            return false;
+        }
+
+        // check offset
+        $installationOffset = \Env::get('cx')->getWebsiteOffsetPath();
+        $providedOffset = $this->realPath;
+        if (
+            $installationOffset !=
+            substr($providedOffset, 0, strlen($installationOffset))
+        ) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -217,9 +274,9 @@ class Url {
      */
     function getDefaultPort() {
         $mode = $this->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND ? 'Backend' : 'Frontend';
-        \Cx\Core\Setting\Controller\Setting::init('Config', null, 'Yaml', null, \Cx\Core\Setting\Controller\Setting::POPULATE);
+        \Cx\Core\Setting\Controller\Setting::init('Config', null, 'Yaml', null, \Cx\Core\Setting\Controller\Setting::NOT_POPULATE);
         $protocol = strtoupper($this->getProtocol());
-        $port  =  \Cx\Core\Setting\Controller\Setting::getValue('port' . $mode . $protocol);
+        $port  =  \Cx\Core\Setting\Controller\Setting::getValue('port' . $mode . $protocol, 'Config');
         return $port;
     }    
 
@@ -663,15 +720,13 @@ class Url {
      */
     public static function fromDocumentRoot($arrParameters = array(), $lang = '', $protocol = '')
     {
-        global $_CONFIG;
-
         if ($lang == '') {
             $lang = FRONTEND_LANG_ID;
         }
         if ($protocol == '') {
             $protocol = ASCMS_PROTOCOL;
         }
-        $host = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_CONFIG['domainUrl'];
+        $host = \Env::get('config')['domainUrl'];
         $offset = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath();
         $langDir = \FWLanguage::getLanguageCodeById($lang);
         $parameters = '';
@@ -739,19 +794,16 @@ class Url {
 
     /**
      * Returns the URL object for a page
-     * @global type $_CONFIG
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page to get the URL to
      * @param array $parameters (optional) HTTP GET parameters to append
      * @param string $protocol (optional) The protocol to use
      * @return \Cx\Core\Routing\Url Url object for the supplied page
      */
     public static function fromPage($page, $parameters = array(), $protocol = '') {
-        global $_CONFIG;
-        
         if ($protocol == '') {
             $protocol = ASCMS_PROTOCOL;
         }
-        $host = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_CONFIG['domainUrl'];
+        $host = \Env::get('config')['domainUrl'];
         $offset = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath();
         $path = $page->getPath();
         $langDir = \FWLanguage::getLanguageCodeById($page->getLang());
@@ -764,6 +816,22 @@ class Url {
             $getParams = '?' . implode('&', $paramArray);
         }
         return new Url($protocol.'://'.$host.$offset.'/'.$langDir.$path.$getParams, true);
+    }
+    
+    /**
+     * Returns the URL object for a command mode command accessed via HTTP(s)
+     * @param string $command Command mode command name
+     * @param array $arguments List of non-named arguments
+     * @param array $parameters List of named parameters (key=>value style array)
+     * @return \Cx\Core\Routing\Url Url object for the supplied command name
+     */
+    public static function fromApi($command, $arguments, $parameters = array()) {
+        $url = \Cx\Core\Routing\Url::fromDocumentRoot();
+        $url->setMode('backend');
+        $url->setPath('api/' . $command . '/' . implode('/', $arguments));
+        $url->removeAllParams();
+        $url->setParams($parameters);
+        return $url;
     }
 
     /**
@@ -781,7 +849,7 @@ class Url {
             ) {
                 $relativeUrl .= $this->getLangDir() . '/';
             }
-            $relativeUrl .= $this->path;
+            $relativeUrl .= $this->path . (empty($this->fragment) ? '' : '#' . $this->fragment);
             return $relativeUrl;
         }
         $defaultPort = getservbyname($this->protocol, 'tcp');

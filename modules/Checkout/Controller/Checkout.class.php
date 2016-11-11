@@ -277,7 +277,7 @@ class Checkout extends CheckoutLibrary {
                 if ($id) {
                     $objSettingsYellowpay = new SettingsYellowpay($objDatabase);
                     $arrYellowpay = $objSettingsYellowpay->get();
-                    
+
                     $arrOrder = array(
                         'ORDERID'   => $id,
                         'AMOUNT'    => intval($arrFieldValues['invoice_amount'] * 100),
@@ -289,7 +289,7 @@ class Checkout extends CheckoutLibrary {
                     $arrSettings['postfinance_hash_signature_in']['value'] = $arrYellowpay['sha_in'];
                     $arrSettings['postfinance_authorization_type']['value'] = $arrYellowpay['operation'];
                     $arrSettings['postfinance_use_testserver']['value'] = $arrYellowpay['testserver'];
-                    
+
                     $landingPage = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findOneByModuleCmdLang('Checkout', '', FRONTEND_LANG_ID);
 
                     $this->objTemplate->setVariable('CHECKOUT_YELLOWPAY_FORM', \Yellowpay::getForm($arrOrder, $_ARRAYLANG['TXT_CHECKOUT_START_PAYMENT'], false, $arrSettings, $landingPage));
@@ -485,7 +485,7 @@ class Checkout extends CheckoutLibrary {
                 $arrFieldsToHighlight[$key] = '';
                 continue;
             }
-        }    
+        }
 
         foreach ($arrUserData['selection'] as $key => $field) {
             if (!empty($field['mandatory'])) {
@@ -736,8 +736,7 @@ class Checkout extends CheckoutLibrary {
         $objPHPMailer->CharSet = CONTREXX_CHARSET;
         $objPHPMailer->IsHTML(true);
         $objPHPMailer->Subject = $arrMail['title'];
-        $objPHPMailer->From = $_CONFIG['contactFormEmail'];
-        $objPHPMailer->FromName = $_CONFIG['domainUrl'];
+        $objPHPMailer->SetFrom($_CONFIG['contactFormEmail'], $_CONFIG['domainUrl']);
         $objPHPMailer->AddAddress($recipient);
         $objPHPMailer->Body = $arrMail['content'];
         $objPHPMailer->Send();

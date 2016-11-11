@@ -105,9 +105,10 @@ die("ShopLibrary::shopSendmail(): Obsolete method called");
                 }
             }
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = preg_replace('/\015\012/', "\012", $shopMailFrom);
-            $objMail->FromName = preg_replace('/\015\012/', "\012", $shopMailFromText);
+            $from = preg_replace('/\015\012/', "\012", $shopMailFrom);
+            $fromName = preg_replace('/\015\012/', "\012", $shopMailFromText);
             $objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+            $objMail->SetFrom($from, $fromName);
             $objMail->Subject = $shopMailSubject;
             $objMail->IsHTML(false);
             $objMail->Body = $shopMailBody;
@@ -274,7 +275,7 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
         // If the image is situated in or below the shop image folder,
         // don't bother to copy it.
         if (!preg_match($shopImageFolderRe, $imageFileSource)) {
-            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $imageFileTarget) 
+            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $imageFileTarget)
              && preg_match('/(\.\w+)$/', $imageFileSource, $arrMatch)) {
                 $imageFileTarget = preg_replace('/\.\w+$/', uniqid().$arrMatch[1], $imageFileTarget);
                 \Message::information(sprintf(

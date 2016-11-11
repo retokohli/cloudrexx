@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,15 +24,15 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
-/** 
+
+/**
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Cloudrexx Development Team <info@cloudrexx.com>
- * @access      public 
+ * @access      public
  * @package     cloudrexx
  * @subpackage  core_config
- */ 
-global $_ARRAYLANG; 
+ */
+global $_ARRAYLANG;
 $_ARRAYLANG['TXT_SETTINGS_MENU_SYSTEM'] = 'System';
 $_ARRAYLANG['TXT_SETTINGS_MENU_CACHE'] = 'Caching';
 $_ARRAYLANG['TXT_EMAIL_SERVER'] = 'E-Mail Server';
@@ -103,8 +103,8 @@ $_ARRAYLANG['TXT_CORE_CONFIG_CONTACTFAX'] = 'Fax';
 $_ARRAYLANG['TXT_CORE_CONFIG_SEARCHVISIBLECONTENTONLY'] = 'Nur in sichtbaren Inhaltsseiten suchen';
 $_ARRAYLANG['TXT_CORE_CONFIG_LANGUAGEDETECTION'] = 'Sprache automatisch erkennen';
 $_ARRAYLANG['TXT_CORE_CONFIG_LANGUAGEDETECTION_TOOLTIP_HELP'] = 'Diese Einstellung bewirkt, dass automatisch die Standardsprache des Browsers ausgelesen und als Contentsprache verwendet wird.';
-$_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEMAPSAPIKEY_TOOLTIP_HELP'] = 'Globaler Google-Map API Schlüssel für die Hauptdomain. <br />Neue Schlüssel können erstellt werden unter: http://code.google.com/apis/maps/signup.html';
-$_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEMAPSAPIKEY'] = 'Google-Map API Schlüssel';
+$_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEMAPSAPIKEY_TOOLTIP_HELP'] = 'Globaler Google Maps API-Schlüssel.<br />Im Webdesign Template verfügbar über den Platzhalter [[GOOGLE_MAPS_API_KEY]].<br /><br /><i>Tipp: Ein API-Schlüssel kann unter <a href="https://developers.google.com/maps/documentation/embed/guide#api-schlussel">https://developers.google.com/maps/documentation/embed/guide#api-schlussel</a> beantragt werden</i>';
+$_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEMAPSAPIKEY'] = 'Google Maps API-Schlüssel';
 $_ARRAYLANG['TXT_CORE_CONFIG_FRONTENDEDITINGSTATUS'] = 'Frontend Editing';
 $_ARRAYLANG['TXT_CORE_CONFIG_FRONTENDEDITINGSTATUS_TOOLTIP_HELP'] = 'Mit Hilfe des Frontend Editing können Sie Ihre Seite auch ohne ein vorheriges Einloggen im Backend anpassen - Status (on | off).';
 $_ARRAYLANG['TXT_CORE_CONFIG_USECUSTOMIZINGS'] = 'Individuelle Kundenanpassungen';
@@ -116,6 +116,7 @@ $_ARRAYLANG['TXT_CORE_CONFIG_DASHBOARDNEWS'] = 'Dashboard News';
 $_ARRAYLANG['TXT_CORE_CONFIG_DASHBOARDSTATISTICS'] = 'Dashboard Statistiken';
 $_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEANALYTICSTRACKINGID'] = 'Google Analytics Tracking-ID';
 $_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEANALYTICSTRACKINGID_TOOLTIP_HELP'] = 'Geben Sie hier Ihre Google Analytics Tracking-ID ein. Diese finden Sie in Ihrem Google Analytics Konto unter Verwaltung => Tracking-Code.';
+$_ARRAYLANG['TXT_CORE_CONFIG_DEFAULTMETAIMAGE'] = 'Standard Metabild';
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY'] = 'Kennwort muss der Komplexitätsvoraussetzung entsprechen';
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY_TOOLTIP_HELP'] = 'Kennwort muss folgende Zeichen enthalten: Gross-, Kleinbuchstabe und Zahl';
 $_ARRAYLANG['TXT_CORE_CONFIG_ADVANCEDUPLOADBACKEND'] = 'Erweiterte Dateiuploadmöglickeiten';
