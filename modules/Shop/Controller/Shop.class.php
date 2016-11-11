@@ -1988,7 +1988,7 @@ die("Failed to update the Cart!");
                           case Attribute::TYPE_TEXT_MANDATORY:
 //                            $option_price = '&nbsp;';
                             $selectValues .=
-                                '<input type="text" name="productOption['.$attribute_id.
+                                '<input type="text" maxlength="65535" name="productOption['.$attribute_id.
                                 ']" id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
                                 '" value="'.$arrOption['value'].'" style="width:180px;" />'.
                                 '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
@@ -2070,7 +2070,7 @@ die("Failed to update the Cart!");
                           case Attribute::TYPE_TEXTAREA_MANDATORY:
 //                            $valuePrice = '&nbsp;';
                             $selectValues .=
-                                '<textarea name="productOption['.$attribute_id.
+                                '<textarea maxlength="65535" name="productOption['.$attribute_id.
                                 ']" id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
                                 '" style="width:300px;">'.
                                 contrexx_input2xhtml($arrOption['value']).

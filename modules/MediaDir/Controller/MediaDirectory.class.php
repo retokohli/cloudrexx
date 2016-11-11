@@ -510,7 +510,6 @@ class MediaDirectory extends MediaDirectoryLibrary
 
             $titleChanged = false;
             $contentChanged = false;
-            $imageChanged = false;
 
             foreach ($inputFields as $arrInputfield) {
                 $contextType = isset($arrInputfield['context_type']) ? $arrInputfield['context_type'] : '';
@@ -528,27 +527,24 @@ class MediaDirectory extends MediaDirectoryLibrary
                     switch ($contextType) {
                         case 'title':
                             $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE'];
-                            if ($inputfieldValue !== '') {
-                                $this->metaTitle = $inputfieldValue;
-                            }
-                            if ($inputfieldValue !== '') {
+                            if ($inputfieldValue) {
+                                $this->metaTitle .= ' - ' . $inputfieldValue;
                                 $this->pageTitle = $inputfieldValue;
                             }
                             $titleChanged = true;
                             break;
                         case 'content':
                             $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE'];
-                            if ($inputfieldValue !== '') {
+                            if ($inputfieldValue) {
                                 $this->metaDescription = $inputfieldValue;
                             }
                             $contentChanged = true;
                             break;
                         case 'image':
                             $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE_SRC'];
-                            if ($inputfieldValue !== '') {
+                            if ($inputfieldValue) {
                                 $this->metaImage = $inputfieldValue;
                             }
-                            $imageChanged = true;
                             break;
                         default:
                             break;
@@ -560,15 +556,12 @@ class MediaDirectory extends MediaDirectoryLibrary
             }
 
             $firstInputfieldValue = $entries->arrEntries[$intEntryId]['entryFields'][0];
-            if (!$titleChanged && $firstInputfieldValue !== '') {
+            if (!$titleChanged && $firstInputfieldValue) {
                 $this->pageTitle = $firstInputfieldValue;
                 $this->metaTitle = $firstInputfieldValue;
             }
-            if (!$contentChanged && $firstInputfieldValue !== '') {
+            if (!$contentChanged && $firstInputfieldValue) {
                 $this->metaDescription = $firstInputfieldValue;
-            }
-            if (!$imageChanged) {
-                $this->metaImage = \Cx\Core\Setting\Controller\Setting::getValue('defaultMetaimage', 'Config');
             }
 
             if(empty($objEntry->arrEntries)) {
@@ -1125,19 +1118,19 @@ class MediaDirectory extends MediaDirectoryLibrary
     }
 
 
-    function getPageTitle() {
+    public function getPageTitle() {
         return $this->pageTitle;
     }
 
-    function getMetaTitle() {
+    public function getMetaTitle() {
         return $this->metaTitle;
     }
 
-    function getMetaDescription() {
+    public function getMetaDescription() {
         return $this->metaDescription;
     }
 
-    function getMetaImage() {
+    public function getMetaImage() {
         return $this->metaImage;
     }
 }
