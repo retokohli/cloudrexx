@@ -845,7 +845,7 @@ class Url {
                 '/';
             if (
                 $this->getMode() != 'backend' &&
-                $this->isVirtualLanguageDirsActive()
+                 static::isVirtualLanguageDirsActive()
             ) {
                 $relativeUrl .= $this->getLangDir() . '/';
             }
@@ -863,7 +863,7 @@ class Url {
             $this->toString(false);
     }
 
-    protected function isVirtualLanguageDirsActive() {
+    public static function isVirtualLanguageDirsActive() {
         // if only 1 lang active and virtual lang dirs deactivated, return false
         return false;
     }
@@ -871,9 +871,9 @@ class Url {
     public function getLangDir($fromUrl = false) {
         $lang_dir = '';
 
-        if (!$this->isVirtualLanguageDirsActive()) {
+        if (!static::isVirtualLanguageDirsActive()) {
             if ($fromUrl) {
-                return '';
+                return $this->langDir;
             }
             return \FWLanguage::getLanguageCodeById(\FWLanguage::getDefaultLangId());
         }

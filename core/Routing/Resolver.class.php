@@ -182,7 +182,13 @@ class Resolver {
             //try to find the language in the url
             $extractedLanguage = \FWLanguage::getLanguageIdByCode($this->url->getLangDir());
             $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
-            if (!$extractedLanguage) {
+            if (
+                (
+                    !\Cx\Core\Routing\Url::isVirtualLanguageDirsActive() &&
+                    !empty($this->url->getLangDir(true))
+                ) ||
+                !$extractedLanguage
+            ) {
                 $this->redirectToCorrectLanguageDir();
             }
             if (!in_array($extractedLanguage, array_keys($activeLanguages))) {
@@ -658,7 +664,7 @@ class Resolver {
                     $langDir = '';
                     if (!file_exists(ASCMS_INSTANCE_PATH . ASCMS_INSTANCE_OFFSET . '/' . $target)) {
                         $langCode = '';
-                        if (false) {
+                        if (\Cx\Core\Routing\Url::isVirtualLanguageDirsActive()) {
                             $langCode = \FWLanguage::getLanguageCodeById($this->lang);
                         }
                         if (!empty($langCode)) {
