@@ -239,9 +239,9 @@ function _egovUpdate()
     // set order_reservation_date
     try {
         $dateLabel = '';
-        $objResult = \Cx\Lib\UpdateUtil::sql('SELECT set_calendar_date_label FROM '.DBPREFIX.'module_egov_settings LIMIT 1');
+        $objResult = \Cx\Lib\UpdateUtil::sql('SELECT value FROM '.DBPREFIX.'module_egov_configuration WHERE name = "set_calendar_date_label" LIMIT 1');
         if ($objResult->RecordCount()) {
-            $dateLabel = $objResult->fields['set_calendar_date_label'];
+            $dateLabel = $objResult->fields['value'];
         }
         if (!empty($dateLabel)) {
             $objResult = \Cx\Lib\UpdateUtil::sql('SELECT order_id, order_values FROM '.DBPREFIX.'module_egov_orders WHERE (order_reservation_date IS NULL OR order_reservation_date = "0000-00-00") AND order_values REGEXP "'.$dateLabel.'::[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+;;"');
