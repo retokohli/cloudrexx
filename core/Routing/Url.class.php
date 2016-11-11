@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * An URL container
  *
@@ -121,7 +121,7 @@ class Url {
     const ROUTED = 2;
 
     protected $state = 0;
-    
+
     /**
      * The port of the URL
      * @var int
@@ -140,7 +140,7 @@ class Url {
      * @param bool $replacePorts - indicates if we need to replace ports with default ones
      */
     public function __construct($url, $replacePorts = false) {
-        
+
         $data = parse_url($url);
         if (isset($data['host'])) {
             $this->domain   = $data['host'];
@@ -237,13 +237,13 @@ class Url {
 
     /**
      * Get the protocol
-     * 
+     *
      * @return String
      */
     public function getProtocol() {
         return $this->protocol;
     }
-    
+
     public function getMode() {
         return $this->mode;
     }
@@ -254,7 +254,7 @@ class Url {
     public function isRouted() {
         return $this->state >= self::ROUTED;
     }
-    
+
     /**
      * gets port of URL;
      */
@@ -268,8 +268,8 @@ class Url {
     function setPort($port) {
         $this->port = $port;
     }
-    
-    /** 
+
+    /**
      * gets default port from settings
      */
     function getDefaultPort() {
@@ -278,7 +278,7 @@ class Url {
         $protocol = strtoupper($this->getProtocol());
         $port  =  \Cx\Core\Setting\Controller\Setting::getValue('port' . $mode . $protocol, 'Config');
         return $port;
-    }    
+    }
 
     /**
      * sets $this->suggestedParams and $this->suggestedTargetPath
@@ -303,7 +303,7 @@ class Url {
                 $this->suggestedParams = $matches[2];
             }
         }
-        
+
 
         $this->state = self::SUGGESTED;
     }
@@ -574,8 +574,8 @@ class Url {
     public function getSuggestedParams() {
         return $this->suggestedParams;
     }
-    
-    
+
+
     public static function fromRequest() {
         if (php_sapi_name() === 'cli') {
             return new Url('file://' . getcwd());
@@ -667,7 +667,7 @@ class Url {
 
         return static::fromPage($page, $parameters, $protocol, true);
     }
-    
+
     /**
      * This returns an Url object for an absolute or relative url or an Url object
      * @author Michael Ritter <michael.ritter@comvation.com>
@@ -680,16 +680,16 @@ class Url {
         if (is_object($url) && $url instanceof self) {
             return $url;
         }
-        
+
         $matches = array();
         preg_match('#(http(s)?|file)://#', $url, $matches);
-        
+
         // relative URL
         if (!count($matches)) {
-            
+
             $absoluteUrl = self::fromRequest();
             preg_match('#((?:http(?:s)?|file)://)((?:[^/]*))([/$](?:.*)/)?#', $absoluteUrl->toString(true), $matches);
-            
+
             // starting with a /?
             if (substr($url, 0, 1) == '/') {
                 $url = $matches[1] . $matches[2] . $url;
@@ -697,12 +697,12 @@ class Url {
                 $url = $matches[1] . $matches[2] . $matches[3] . $url;
             }
             $url = new static($url);
-            
+
         // absolute URL
         } else {
             $url = new static($url);
         }
-        
+
         // disable virtual language dir if not in Backend
         if(preg_match('/.*(cadmin).*/', $url->getPath()) < 1 && $url->getProtocol() != 'file'){
             $url->setMode('frontend');
@@ -837,7 +837,7 @@ class Url {
     /**
      * Returns an absolute or relative link
      * @param boolean $absolute (optional) set to false to return a relative URL
-     * @return type 
+     * @return type
      */
     public function toString($absolute = true, $forcePort = false) {
         if(!$absolute) {
