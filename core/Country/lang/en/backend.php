@@ -34,29 +34,11 @@
  * @author      Manuel Schenk <manuel.schenk@comvation.com>
  * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
  * @package     cloudrexx
- * @subpackage  core_locale
+ * @subpackage  core_country
  */
 
 global $_ARRAYLANG;
 
 // General module info:
-$_ARRAYLANG['TXT_CORE_LOCALE'] = 'Localization';
-$_ARRAYLANG['TXT_CORE_LOCALE_DESCRIPTION'] = 'Handles language versions by their country and/or the effective language.';
-
-// Module ACTs:
-$_ARRAYLANG['TXT_CORE_LOCALE_ACT_DEFAULT'] = 'Frontend';
-$_ARRAYLANG['TXT_CORE_LOCALE_ACT_LOCALE'] = 'Frontend';
-$_ARRAYLANG['TXT_CORE_LOCALE_ACT_BACKEND'] = 'Backend';
-
-// Module fields
-$_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID'] = 'ID';
-$_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO1'] = 'Language';
-$_ARRAYLANG['TXT_CORE_LOCALE_FIELD_LABEL'] = 'Label';
-$_ARRAYLANG['TXT_CORE_LOCALE_FIELD_FALLBACK'] = 'Fallback';
-$_ARRAYLANG['TXT_CORE_LOCALE_FIELD_COUNTRY'] = 'Country';
-$_ARRAYLANG['TXT_CORE_LOCALE_FIELD_DEFAULT'] = 'Default';
-$_ARRAYLANG['TXT_CORE_LOCALE_FIELD_SOURCE_LANGUAGE'] = 'Source language';
-$_ARRAYLANG['TXT_CORE_LOCALE_ACTIVE_LANGUAGES'] = 'Active languages';
-$_ARRAYLANG['TXT_CORE_LOCALE_DEFAULT_LANGUAGE'] = 'Default language';
-
-$_ARRAYLANG['TXT_CORE_LOCALE_BACKEND_SELECT_ACTIVE_LANGUAGES'] = 'Select active languages...';
+$_ARRAYLANG['TXT_CORE_COUNTRY'] = 'Country';
+$_ARRAYLANG['TXT_CORE_COUNTRY_DESCRIPTION'] = 'Handles the countries.';

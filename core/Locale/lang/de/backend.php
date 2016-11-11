@@ -26,7 +26,7 @@
  */
 
 /**
- * This is the english language file for backend mode.
+ * This is the german language file for backend mode.
  * This file is included by Cloudrexx and all entries are set as placeholder
  * values for backend ACT template by SystemComponentBackendController
  *
@@ -40,8 +40,8 @@
 global $_ARRAYLANG;
 
 // General module info:
-$_ARRAYLANG['TXT_CORE_LOCALE'] = 'Localization';
-$_ARRAYLANG['TXT_CORE_LOCALE_DESCRIPTION'] = 'Handles language versions by their country and/or the effective language.';
+$_ARRAYLANG['TXT_CORE_LOCALE'] = 'Lokalisierung';
+$_ARRAYLANG['TXT_CORE_LOCALE_DESCRIPTION'] = 'Steuert die Sprachversionen anhand des Landes und/oder der effektiven Sprache.';
 
 // Module ACTs:
 $_ARRAYLANG['TXT_CORE_LOCALE_ACT_DEFAULT'] = 'Frontend';
@@ -50,13 +50,13 @@ $_ARRAYLANG['TXT_CORE_LOCALE_ACT_BACKEND'] = 'Backend';
 
 // Module fields
 $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID'] = 'ID';
-$_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO1'] = 'Language';
+$_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO1'] = 'Sprache';
 $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_LABEL'] = 'Label';
 $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_FALLBACK'] = 'Fallback';
-$_ARRAYLANG['TXT_CORE_LOCALE_FIELD_COUNTRY'] = 'Country';
-$_ARRAYLANG['TXT_CORE_LOCALE_FIELD_DEFAULT'] = 'Default';
-$_ARRAYLANG['TXT_CORE_LOCALE_FIELD_SOURCE_LANGUAGE'] = 'Source language';
-$_ARRAYLANG['TXT_CORE_LOCALE_ACTIVE_LANGUAGES'] = 'Active languages';
-$_ARRAYLANG['TXT_CORE_LOCALE_DEFAULT_LANGUAGE'] = 'Default language';
+$_ARRAYLANG['TXT_CORE_LOCALE_FIELD_COUNTRY'] = 'Land';
+$_ARRAYLANG['TXT_CORE_LOCALE_FIELD_DEFAULT'] = 'Standard';
+$_ARRAYLANG['TXT_CORE_LOCALE_FIELD_SOURCE_LANGUAGE'] = 'Quellsprache';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACTIVE_LANGUAGES'] = 'Aktive Sprachen';
+$_ARRAYLANG['TXT_CORE_LOCALE_DEFAULT_LANGUAGE'] = 'Standard Sprache';
 
-$_ARRAYLANG['TXT_CORE_LOCALE_BACKEND_SELECT_ACTIVE_LANGUAGES'] = 'Select active languages...';
+$_ARRAYLANG['TXT_CORE_LOCALE_BACKEND_SELECT_ACTIVE_LANGUAGES'] = 'Aktive Sprachen auswählen...';
