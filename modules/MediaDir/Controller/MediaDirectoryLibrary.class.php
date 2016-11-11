@@ -912,15 +912,12 @@ EOF;
     */
     public function getUploadedFilePath($uploaderId, $fileName)
     {
-        global $sessionObj;
-
         if (empty($uploaderId) || empty($fileName)) {
             return false;
         }
 
-        if (empty($sessionObj)) {
-            $sessionObj = \cmsSession::getInstance();
-        }
+        $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        $sessionObj = $cx->getComponent('Session')->getSession();
 
         $uploaderFolder = $sessionObj->getTempPath() . '/' . $uploaderId;
         if (!\Cx\Lib\FileSystem\FileSystem::exists($uploaderFolder)) {

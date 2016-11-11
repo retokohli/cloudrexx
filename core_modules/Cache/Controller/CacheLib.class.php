@@ -106,6 +106,12 @@ class CacheLib
     protected $opCacheEngine = null;
     protected $userCacheEngine = null;
     protected $memcache = null;
+    protected $memcached = null;
+
+    /**
+     * @var \Doctrine\Common\Cache\AbstractCache doctrine cache engine for the active user cache engine
+     */
+    protected $doctrineCacheEngine = null;
 
     /**
      * @var \Cx\Lib\ReverseProxy\Model\Entity\ReverseProxyProxy SSI proxy
@@ -113,12 +119,23 @@ class CacheLib
     protected $ssiProxy;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->setCachePath();
+        $this->initOPCaching();
+        $this->initUserCaching();
+        $this->getActivatedCacheEngines();
+    }
+
+    /**
      * Delete all cached file's of the cache system
      */
     function _deleteAllFiles($cacheEngine = null)
     {
         if (!in_array($cacheEngine, array('cxPages', 'cxEntries'))) {
-        \Env::get('cache')->deleteAll();
+            $this->getDoctrineCacheDriver()->deleteAll();
             return;
         }
         $handleDir = opendir($this->strCachePath);
@@ -132,7 +149,7 @@ class CacheLib
                             }
                             break;
                         case 'cxEntries':
-                            \Env::get('cache')->deleteAll();
+                            $this->getDoctrineCacheDriver()->deleteAll();
                             break;
                         default:
                             unlink($this->strCachePath . $strFile);
@@ -143,6 +160,29 @@ class CacheLib
             closedir($handleDir);
     }
         }
+
+    /**
+     * Sets the cache path
+     */
+    protected function setCachePath() {
+        // check the cache directory
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $this->checkCacheDir($cx);
+        $this->strCachePath = $cx->getWebsiteCachePath() . '/';
+    }
+
+    /**
+     * Makes sure that the cache directory exists and is writable
+     * @param \Cx\Core\Core\Controller\Cx $cx The contrexx instance
+     */
+    protected function checkCacheDir($cx) {
+        if (!is_dir($cx->getWebsiteCachePath())) {
+            \Cx\Lib\FileSystem\FileSystem::make_folder($cx->getWebsiteCachePath());
+        }
+        if (!is_writable($cx->getWebsiteCachePath())) {
+            \Cx\Lib\FileSystem\FileSystem::makeWritable($cx->getWebsiteCachePath());
+        }
+    }
 
     protected function initOPCaching()
     {
@@ -213,11 +253,6 @@ class CacheLib
             unset($this->memcache); // needed for reinitialization
             if (class_exists('\Memcache')) {
                 $memcache = new \Memcache();
-                if (@$memcache->connect($memcacheConfiguration['ip'], $memcacheConfiguration['port'])) {
-                    $this->memcache = $memcache;
-                }
-            } elseif (class_exists('\Memcached')) {
-                $memcache = new \Memcached();
                 if (@$memcache->addServer($memcacheConfiguration['ip'], $memcacheConfiguration['port'])) {
                     $this->memcache = $memcache;
                 }
@@ -233,11 +268,11 @@ class CacheLib
             || $_CONFIG['cacheUserCache'] == self::CACHE_ENGINE_MEMCACHED)
         ) {
             $memcachedConfiguration = $this->getMemcachedConfiguration();
-            unset($this->memcache); // needed for reinitialization
+            unset($this->memcached); // needed for reinitialization
             if (class_exists('\Memcached')) {
-                $memcache = new \Memcached();
-                if (@$memcache->addServer($memcachedConfiguration['ip'], $memcachedConfiguration['port'])) {
-                    $this->memcache = $memcache;
+                $memcached = new \Memcached();
+                if (@$memcached->addServer($memcachedConfiguration['ip'], $memcachedConfiguration['port'])) {
+                    $this->memcached = $memcached;
                 }
             }
             if ($this->isConfigured(self::CACHE_ENGINE_MEMCACHED)) {
@@ -369,6 +404,13 @@ class CacheLib
         return $this->memcache;
     }
 
+    /**
+     * @return \Memcache The memcached object
+     */
+    public function getMemcached() {
+        return $this->memcached;
+    }
+
     public function getAllUserCacheEngines() {
         return array(self::CACHE_ENGINE_APC, self::CACHE_ENGINE_MEMCACHE, self::CACHE_ENGINE_MEMCACHED, self::CACHE_ENGINE_XCACHE);
     }
@@ -393,8 +435,8 @@ class CacheLib
      * @return string ESI/SSI directives to put into HTML code
      */
     public function getEsiContent($adapterName, $adapterMethod, $params = array()) {
-        $url = \Cx\Core\Routing\Url::fromApi('Data', array('Plain', $adapterName, $adapterMethod), $params);
-        return $this->getSsiProxy()->getSsiProcessor()->getIncludeCode($url);
+        $url = $this->getUrlFromApi($adapterName, $adapterMethod, $params);
+        return $this->getSsiProxy()->getSsiProcessor()->getIncludeCode($url->toString());
     }
 
     /**
@@ -408,7 +450,7 @@ class CacheLib
     public function getRandomizedEsiContent($esiContentInfos) {
         $urls = array();
         foreach ($esiContentInfos as $i=>$esiContentInfo) {
-            $urls[] = \Cx\Core\Routing\Url::fromApi('Data', array('Plain', $esiContentInfo[0], $esiContentInfo[1]), $esiContentInfo[2]);
+            $urls[] = $this->getUrlFromApi($esiContentInfo[0], $esiContentInfo[1], $esiContentInfo[2])->toString();
         }
         return $this->getSsiProxy()->getSsiProcessor()->getRandomizedIncludeCode($urls);
     }
@@ -421,8 +463,27 @@ class CacheLib
      * @todo Only drop this specific content instead of complete cache
      */
     public function clearSsiCachePage($adapterName, $adapterMethod, $params = array()) {
+        $url = $this->getUrlFromApi($adapterName, $adapterMethod, $params);
+        $this->getSsiProxy()->clearCachePage($url->toString(), $this->getDomainsAndPorts());
+    }
+    
+    /**
+     * Wrapper for \Cx\Core\Routing\Url::fromApi()
+     * This ensures correct param order
+     * @param string $adapterName (Json)Data adapter name
+     * @param string $adapterMethod (Json)Data method name
+     * @param array $params (optional) params for (Json)Data method call
+     * @return \Cx\Core\Routing\Url URL for (Json)Data call
+     */
+    protected function getUrlFromApi($adapterName, $adapterMethod, $params) {
         $url = \Cx\Core\Routing\Url::fromApi('Data', array('Plain', $adapterName, $adapterMethod), $params);
-        $this->getSsiProxy()->clearCachePage($url, $this->getDomainsAndPorts());
+        // make sure params are in correct order:
+        $correctIndexOrder = array('page', 'lang', 'user', 'theme', 'country', 'currency');
+        $params = $url->getParamArray();
+        $params = array_replace(array_flip($correctIndexOrder), $params);
+        $url->setParams($params);
+        $url->setParam('EOU', '');
+        return $url;
     }
 
     /**
@@ -465,7 +526,7 @@ class CacheLib
             case self::CACHE_ENGINE_MEMCACHE:
                 return $this->memcache ? true : false;
             case self::CACHE_ENGINE_MEMCACHED:
-                return $this->memcache ? true : false;
+                return $this->memcached ? true : false;
             case self::CACHE_ENGINE_XCACHE:
                 $setting = 'xcache.cacher';
                 break;
@@ -494,7 +555,7 @@ class CacheLib
             case self::CACHE_ENGINE_MEMCACHE:
                 return $this->memcache ? true : false;
             case self::CACHE_ENGINE_MEMCACHED:
-                return $this->memcache ? true : false;
+                return $this->memcached ? true : false;
             case self::CACHE_ENGINE_XCACHE:
                 if ($user) {
                     return (
@@ -732,26 +793,10 @@ class CacheLib
             return;
         }
         //$this->memcache->flush(); //<- not like this!!!
-        $keys = array();
-        $allSlabs = $this->memcache->getExtendedStats('slabs');
-
-        foreach ($allSlabs as $server => $slabs) {
-            if (is_array($slabs)) {
-                foreach (array_keys($slabs) as $slabId) {
-                    $dump = $this->memcache->getExtendedStats('cachedump', (int) $slabId);
-                    if ($dump) {
-                        foreach ($dump as $entries) {
-                            if ($entries) {
-                                $keys = array_merge($keys, array_keys($entries));
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        $keys = $this->memcached->getAllKeys();
         foreach($keys as $key){
             if(strpos($key, $this->getCachePrefix()) !== false){
-                $this->memcache->delete($key);
+                $this->memcached->delete($key);
             }
         }
     }
@@ -784,6 +829,110 @@ class CacheLib
     protected function getCachePrefix()
     {
         global $_DBCONFIG;
-        return $_DBCONFIG['database'].'.'.DBPREFIX;
+        return $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'];
+    }
+
+    /**
+     * Detects the correct doctrine cache driver for the user caching engine in use
+     * @return \Doctrine\Common\Cache\AbstractCache The doctrine cache driver object
+     */
+    public function getDoctrineCacheDriver() {
+        if($this->doctrineCacheEngine) { // return cache engine if already set
+            return $this->doctrineCacheEngine;
+        }
+        $userCacheEngine = $this->getUserCacheEngine();
+        // check if user caching is active
+        if (!$this->getUserCacheActive()) {
+            $userCacheEngine = \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_OFF;
+        }
+        switch ($userCacheEngine) {
+            case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_APC:
+                $cache = new \Doctrine\Common\Cache\ApcCache();
+                $cache->setNamespace($this->getCachePrefix());
+                break;
+            case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_MEMCACHE:
+                $memcache = $this->getMemcache();
+                $cache = new \Doctrine\Common\Cache\MemcacheCache();
+                $cache->setMemcache($memcache);
+                $cache->setNamespace($this->getCachePrefix());
+                break;
+            case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_MEMCACHED:
+                $memcached = $this->getMemcached();
+                $cache = new \Doctrine\Common\Cache\MemcachedCache();
+                $cache->setMemcached($memcached);
+                $cache->setNamespace($this->getCachePrefix());
+                break;
+            case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_XCACHE:
+                $cache = new \Doctrine\Common\Cache\XcacheCache();
+                $cache->setNamespace($this->getCachePrefix());
+                break;
+            case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_FILESYSTEM:
+                $cache = new \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver\FileSystemCache($this->strCachePath);
+                break;
+            default:
+                $cache = new \Doctrine\Common\Cache\ArrayCache();
+                break;
+        }
+        // set the doctrine cache engine to avoid getting it a second time
+        $this->doctrineCacheEngine = $cache;
+        return $cache;
+    }
+
+    /**
+     * Creates an array containing all important cache-settings
+     *
+     * @global     object    $objDatabase
+     * @return    array    $arrSettings
+     */
+    function getSettings() {
+        $arrSettings = array();
+        \Cx\Core\Setting\Controller\Setting::init('Config', NULL,'Yaml');
+        $ymlArray = \Cx\Core\Setting\Controller\Setting::getArray('Config', null);
+
+        foreach ($ymlArray as $key => $ymlValue){
+            $arrSettings[$key] = $ymlValue['value'];
+        }
+
+        return $arrSettings;
+    }
+    
+    /**
+     * Returns the validated file search parts of the URL
+     * @param string $url URL to parse
+     * @return array <fileNamePrefix>=><parsedValue> type array
+     */
+    public function getCacheFileNameSearchPartsFromUrl($url) {
+        $url = new \Cx\Lib\Net\Model\Entity\Url($url);
+        $params = $url->getParsedQuery();
+        $searchParams = array(
+            'p' => 'page',
+            'l' => 'lang',
+            'u' => 'user',
+            't' => 'theme',
+            'g' => 'country',
+            'c' => 'currency',
+        );
+        $fileNameSearchParts = array();
+        foreach ($searchParams as $short=>$long) {
+            if (!isset($params[$long])) {
+                continue;
+            }
+            // security: abort if any mystirius characters are found
+            if (!preg_match('/^[a-zA-Z0-9-]+$/', $params[$long])) {
+                return array();
+            }
+            $fileNameSearchParts[$short] = '_' . $short . $params[$long];
+        }
+        return $fileNameSearchParts;
+    }
+    
+    /**
+     * Gets the local cache file name for an URL
+     * @param string $url URL to get file name for
+     * @return string File name
+     */
+    public function getCacheFileNameFromUrl($url) {
+        $fileName = md5($url);
+        return $fileName . implode('', $this->getCacheFileNameSearchPartsFromUrl($url));
     }
 }

@@ -119,8 +119,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
                     // Set the meta page description to the teaser text if displaying news details
                     $teaser = $newsObj->getTeaser();
-                    if ($teaser !== null) {
+                    if ($teaser) {
                         $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET))));
+                    } else {
+                        $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($newsObj->newsText, ENT_QUOTES, CONTREXX_CHARSET))));
+                    }
+
+                    // Set the meta page image to the thumbnail if displaying news details
+                    $image = $newsObj->newsThumbnail;
+                    if ($image) {
+                        $page->setMetaimage($image);
                     }
                 }
                 break;
@@ -152,7 +160,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // Get Headlines
                 $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsHeadlines.class.php';
                 if (file_exists($modulespath)) {
-                    for ($i = 0; $i < 10; $i++) {
+                    for ($i = 0; $i <= 10; $i++) {
                         $visibleI = '';
                         if ($i > 0) {
                             $visibleI = (string) $i;

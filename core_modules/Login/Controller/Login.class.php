@@ -257,12 +257,12 @@ class Login
     *
     * @access private
     * @global array
-    * @see cmsSession::cmsSessionStatusUpdate(), contrexx_strip_tags, \Cx\Core\Html\Sigma::get()
+    * @see \Cx\Core\Session\Model\Entity\Session::cmsSessionStatusUpdate(), contrexx_strip_tags, \Cx\Core\Html\Sigma::get()
     * @return string \Cx\Core\Html\Sigma::get()
     */
     function _login()
     {
-        global $_CORELANG, $sessionObj;
+        global $_CORELANG;
 
         $objFWUser = \FWUser::getFWUserObject();
 
@@ -289,7 +289,8 @@ class Login
             ) {
                 $objFWUser->objUser->reset();
                 $objFWUser->logoutAndDestroySession();
-                $sessionObj = \cmsSession::getInstance();
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                $sessionObj = $cx->getComponent('Session')->getSession();
             } elseif (isset($_POST['login'])) {
                 $_GET['relogin'] = 'true';
             }

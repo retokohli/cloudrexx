@@ -61,25 +61,13 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      */
     public function __construct()
     {
+        parent::__construct();
         $this->initContrexxCaching();
-        $this->initOPCaching();
-        $this->initUserCaching();
-        $this->getActivatedCacheEngines();
     }
 
     protected function initContrexxCaching()
     {
         global $_CONFIG;
-
-        // check the cache directory
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        if (!is_dir($cx->getWebsiteCachePath())) {
-            \Cx\Lib\FileSystem\FileSystem::make_folder($cx->getWebsiteCachePath());
-        }
-        if (!is_writable($cx->getWebsiteCachePath())) {
-            \Cx\Lib\FileSystem\FileSystem::makeWritable($cx->getWebsiteCachePath());
-        }
-        $this->strCachePath = $cx->getWebsiteCachePath() . '/';
 
         // in case the request's origin is from a mobile devie
         // and this is the first request (the InitCMS object wasn't yet
@@ -184,9 +172,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      * @return string Parsed HTML code
      */
     public function internalEsiParsing($htmlCode, $cxNotYetInitialized = false) {
-        global $objCache;
         
-        if (!is_a($objCache->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx')) {
+        if (!is_a($this->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx')) {
             return $htmlCode;
         }
         
@@ -209,12 +196,13 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         );
         
         // Replace include tags
+        $settings = $this->getSettings();
         $htmlCode = preg_replace_callback(
             '#<esi:include src="([^"]+)" onerror="continue"/>#',
-            function($matches) use (&$apiUrlString, &$cxNotYetInitialized) {
+            function($matches) use (&$apiUrlString, &$cxNotYetInitialized, $settings) {
                 // return cached content if available
-                $cacheFile = md5($matches[1]);
-                if (file_exists($this->strCachePath . $cacheFile)) {
+                $cacheFile = $this->getCacheFileNameFromUrl($matches[1]);
+                if ($settings['internalSsiCache'] == 'on' && file_exists($this->strCachePath . $cacheFile)) {
                     if (filemtime($this->strCachePath . $cacheFile) > (time() - $this->intCachingTime)) {
                         return file_get_contents($this->strCachePath . $cacheFile);
                     } else {
@@ -270,8 +258,10 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 }
                 $content = $response['data']['content'];
                 
-                $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
-                $file->write($content);
+                if ($settings['internalSsiCache'] == 'on') {
+                    $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
+                    $file->write($content);
+                }
 
                 return $content;
             },

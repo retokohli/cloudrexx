@@ -44,19 +44,16 @@ namespace Cx\Core_Modules\LinkManager\Controller;
  * @package     cloudrexx
  * @subpackage  coremodule_linkmanager
  */
-
-class Url extends \Cx\Core\Routing\Url {
+class UrlController extends \Cx\Core\Core\Model\Entity\Controller {
 
     /**
      * Check if the link is internal or external link.
-     *
-     * @global array $_CONFIG
      *
      * @param string $externalUrl
      *
      * @return boolean
      */
-    public static function isInternalUrl($externalUrl)
+    public function isInternalUrl($externalUrl)
     {
         global $_CONFIG;
 
@@ -64,23 +61,18 @@ class Url extends \Cx\Core\Routing\Url {
         $baseInternalUrl  = ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'];
         $baseInternalHost = parse_url($baseInternalUrl, PHP_URL_HOST);
         $externalHost     = parse_url($externalUrl, PHP_URL_HOST);
-        $internalFlag     = false;
-        if ($baseInternalHost == $externalHost || empty($externalHost)) {
-            $internalFlag = true;
-        }
-        return $internalFlag;
+
+        return (empty($externalHost) || $baseInternalHost == $externalHost);
     }
 
     /**
      * Check the image and url path
      *
-     * @global array $_CONFIG
-     *
      * @param string $path
      *
      * @return boolean|string
      */
-    public static function checkPath($path, $refererPath)
+    public function checkPath($path, $refererPath)
     {
         global $_CONFIG;
 
