@@ -430,6 +430,18 @@ class DataSet implements \Iterator {
     }
 
     /**
+     * Filters entries of this DataSet
+     * @param callable $filterFunction
+     */
+    public function filter(callable $filterFunction) {
+        foreach ($this->data as $key=>$entry) {
+            if (!$filterFunction($entry)) {
+                unset($this->data[$key]);
+            }
+        } 
+    }
+
+    /**
      * This function returns the identifier of the DataSet
      *
      * @access public
