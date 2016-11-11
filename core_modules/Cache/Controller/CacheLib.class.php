@@ -437,6 +437,16 @@ class CacheLib
      */
     public function getEsiContent($adapterName, $adapterMethod, $params = array()) {
         $url = $this->getUrlFromApi($adapterName, $adapterMethod, $params);
+        $settings = $this->getSettings();
+        if (
+            is_a($this->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx') &&
+            (
+                !isset($settings['internalSsiCache']) ||
+                $settings['internalSsiCache'] != 'on'
+            )
+        ) {
+            return $this->getApiResponseForUrl($url);
+        }
         return $this->getSsiProxy()->getSsiProcessor()->getIncludeCode($url->toString());
     }
 
@@ -453,7 +463,62 @@ class CacheLib
         foreach ($esiContentInfos as $i=>$esiContentInfo) {
             $urls[] = $this->getUrlFromApi($esiContentInfo[0], $esiContentInfo[1], $esiContentInfo[2])->toString();
         }
+        $settings = $this->getSettings();
+        if (
+            is_a($this->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx') &&
+            (
+                !isset($settings['internalSsiCache']) ||
+                $settings['internalSsiCache'] != 'on'
+            )
+        ) {
+            return $this->getApiResponseForUrl($urls[rand(0, (count($urls) - 1))]);
+        }
         return $this->getSsiProxy()->getSsiProcessor()->getRandomizedIncludeCode($urls);
+    }
+
+    /**
+     * Returns the content of the API response for an API URL
+     * This gets data internally and does not do a HTTP request!
+     * @param string $url API URL
+     * @return string API content or empty string
+     */
+    protected function getApiResponseForUrl($url) {
+        // Initialize only when needed, we need DB for this!
+        if (empty($this->apiUrlString)) {
+            $this->apiUrlString = substr(\Cx\Core\Routing\Url::fromApi('', array(), array()), 0, -1);
+        }
+        
+        $query = parse_url($url, PHP_URL_QUERY);
+        $path = parse_url($url, PHP_URL_PATH);
+        $params = array();
+        parse_str($query, $params);
+        
+        $pathParts = explode('/', str_replace($this->apiUrlString, '', $path));
+        if (
+            count($pathParts) != 4 ||
+            $pathParts[0] != 'Data' ||
+            $pathParts[1] != 'Plain'
+        ) {
+            return '';
+        }
+        $adapter = contrexx_input2raw($pathParts[2]);
+        $method = contrexx_input2raw($pathParts[3]);
+        unset($params['cmd']);
+        unset($params['object']);
+        unset($params['act']);
+        $arguments = array('get' => contrexx_input2raw($params));
+        
+        $json = new \Cx\Core\Json\JsonData();
+        $response = $json->data($adapter, $method, $arguments);
+        if (
+            !isset($response['status']) ||
+            $response['status'] != 'success' ||
+            !isset($response['data']) ||
+            !isset($response['data']['content'])
+        ) {
+            return '';
+        }
+        return $response['data']['content'];
     }
 
     /**
@@ -481,7 +546,9 @@ class CacheLib
         // make sure params are in correct order:
         $correctIndexOrder = array('page', 'lang', 'user', 'theme', 'country', 'currency');
         $params = $url->getParamArray();
-        $params = array_replace(array_flip($correctIndexOrder), $params);
+        uksort($params, function($a, $b) use ($correctIndexOrder) {
+            return array_search($a, $correctIndexOrder) - array_search($b, $correctIndexOrder);
+        });
         $url->setParams($params);
         $url->setParam('EOU', '');
         return $url;
@@ -935,9 +1002,21 @@ class CacheLib
      * @param string $url URL to get file name for
      * @return string File name
      */
-    public function getCacheFileNameFromUrl($url) {
+    public function getCacheFileNameFromUrl($url, $withCacheInfoPart = true) {
+        $cacheInfoParts = $this->getCacheFileNameSearchPartsFromUrl($url);
+        $url = new \Cx\Lib\Net\Model\Entity\Url($url);
+        $params = $url->getParsedQuery();
+        $correctIndexOrder = array('page', 'lang', 'user', 'theme', 'country', 'currency');
+        foreach ($correctIndexOrder as $paramName) {
+            unset($params[$paramName]);
+        }
+        $url->setParsedQuery($params);
+        $url = $url->toString();
         $fileName = md5($url);
-        return $fileName . implode('', $this->getCacheFileNameSearchPartsFromUrl($url));
+        if ($withCacheInfoPart) {
+            $fileName .= implode('', $cacheInfoParts);
+        }
+        return $fileName;
     }
 
     /**
@@ -979,6 +1058,7 @@ class CacheLib
         foreach ($pages as $pageId=>$page) {
             $this->deleteSingleFile($pageId);
         }
+        return array_keys($pages);
     }
     
     /**
@@ -1010,41 +1090,52 @@ class CacheLib
                 Cx\Core\ContentManager\Model\Entity\Page p
             WHERE
                 (
-                    p.type = "symlink" AND
+                    p.type = ?1 AND
                     (
-                        p.target LIKE "%NODE_' . $page->getNode()->getId() . '%"';
+                        p.target LIKE ?2';
         if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION) {
             $query .= ' OR
-                        p.target LIKE "%NODE_' . strtoupper($page->getModule()) . '%"';
+                        p.target LIKE ?3';
         }
         $query .= '
                     )
                 ) OR
                 (
-                    p.type = "fallback" AND
-                    p.node_id = ' . $page->getNode()->getId() . '
+                    p.type = ?4 AND
+                    p.node = ' . $page->getNode()->getId() . '
                 )
         ';
+        $q = $em->createQuery($query);
+        $q->setParameter(1, 'symlink');
+        $q->setParameter('2', '%NODE_' . $page->getNode()->getId() . '%');
+        if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION) {
+            $q->setParameter('3', '%NODE_' . strtoupper($page->getModule()) . '%');
+        }
+        $q->setParameter(4, 'fallback');
 
-        foreach ($em->createQuery($query)->getResult() as $subPage) {
+        $result = $q->getResult(); 
+
+        if (!$result) {
+            return $subPages;
+        }
+
+        foreach ($result as $subPage) {
             if ($subPage->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_SYMLINK) {
                 $subPages[$subPage->getId()] = $subPage;
             } else if ($subPage->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK) {
                 // check if $subPage is a fallback to $page
-                $targetLang = $page->getLang();
-                $currentLang = $subPage->getLang();
+                $targetLang = \FWLanguage::getLanguageCodeById($page->getLang());
+                $currentLang = \FWLanguage::getLanguageCodeById($subPage->getLang());
                 while ($currentLang && $currentLang != $targetLang) {
                     $currentLang = $fallbacks[$currentLang];
                 }
-                if ($currentLang) {
+                if ($currentLang && !isset($subPages[$subPage->getId()])) {
                     $subPages[$subPage->getId()] = $subPage;
+
+                    // recurse!
+                    $this->getPagesPointingTo($subPage, $subPages);
                 }
             }
-        }
-
-        // recurse!
-        foreach ($subPages as $subPage) {
-            $this->getPagesPointingTo($subPage, $subPages);
         }
         return $subPages;
     }
