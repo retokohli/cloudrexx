@@ -37,11 +37,6 @@
 */
 
 /**
- * @ignore
- */
-require_once ASCMS_LIBRARY_PATH.'/html2fpdf/html2fpdf.php';
-
-/**
 * PDF class
 *
 * Generate PDF for pdfview
@@ -51,69 +46,91 @@ require_once ASCMS_LIBRARY_PATH.'/html2fpdf/html2fpdf.php';
 * @subpackage   core
 * @version      1.1.0
 */
-class PDF extends HTML2FPDF
+class PDF
 {
     /**
     * string $content
     * Content for insert
     */
-    var $content;
+    public $content;
 
     /**
     * string $title
     * File name
     */
-    var $title;
+    public $title;
 
     /**
     * string $orientation
     * pageorientation
     */
-    var $pdf_orientation;
+    public $pdf_orientation;
 
     /**
     * string $unit
     * Unit-format
     */
-    var $pdf_unit;
+    public $pdf_unit;
 
     /**
     * string $format
     * Page-format
     */
-    var $pdf_format;
+    public $pdf_format;
+
+    /**
+     * @var string
+     */
+    public $pdf_destination;
 
     /**
     * string $pdf_creator
     * PDF author
     */
-    var $pdf_autor;
+    public $pdf_author;
 
+    /**
+     * Constructor
+     */
     function __construct()
     {
         global $_CONFIG;
 
-        $this->pdf_orientation     = 'P';
-        $this->pdf_unit         = 'mm';
-        $this->pdf_format         = 'A4';
-        $this->pdf_autor        = $_CONFIG['coreCmsName'];
+        $this->pdf_orientation  = 'P';
+        $this->pdf_format       = 'A4';
+        $this->pdf_author       = $_CONFIG['coreCmsName'];
+        $this->pdf_destination  = \Mpdf\Output\Destination::INLINE;
     }
 
+    /**
+     * Create PDF
+     */
     function Create()
     {
-
         $this->content = utf8_decode($this->_ParseHTML($this->content));
-
-        $pdf = new HTML2FPDF();
-        $pdf->ShowNOIMG_GIF();
-        $pdf->DisplayPreferences('HideWindowUI');
+        $config = array(
+            'orientation' => $this->pdf_orientation,
+            'format'      => $this->pdf_format
+        );
+        $pdf = new Mpdf\Mpdf($config);
+        $pdf->SetAuthor($this->pdf_author);
+        $pdf->SetDisplayPreferences('HideWindowUI');
         $pdf->AddPage();
         $pdf->WriteHTML($this->content);
-        $pdf->Output(\Cx\Lib\FileSystem\FileSystem::replaceCharacters($this->title));
-
+        $pdf->Output(
+            \Cx\Lib\FileSystem\FileSystem::replaceCharacters($this->title),
+            $this->pdf_destination
+        );
     }
 
-    function _ParseHTML($source){
+    /**
+     * Parse the HTML
+     *
+     * @param string $source
+     *
+     * @return string
+     */
+    function _ParseHTML($source) {
 
         // H1
         // ----------------
@@ -150,5 +167,3 @@ class PDF extends HTML2FPDF
         return $source;
     }
 }
-
-?>
