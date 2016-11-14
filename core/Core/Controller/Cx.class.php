@@ -208,7 +208,6 @@ namespace Cx\Core\Core\Controller {
                 return current(self::$instances);
             }
             $instance = new static($mode);
-            self::$instances[] = $instance;
             return $instance;
         }
         
@@ -220,6 +219,7 @@ namespace Cx\Core\Core\Controller {
          * @param string $mode (optional) Use constants, one of self::MODE_[FRONTEND|BACKEND|CLI|MINIMAL]
          */
         protected function __construct($mode = null) {
+            self::$instances[] = $this;
             try {
                 /**
                  * This starts time measurement

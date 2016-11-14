@@ -51,14 +51,21 @@ namespace Cx\Core\Core\Model\Entity;
  * @subpackage  core_core
  * @version     3.1.0
  */
-abstract class SystemComponentBackendController extends Controller {
+class SystemComponentBackendController extends Controller {
     
     /**
      * Returns a list of available commands (?act=XY)
      * @return array List of acts
      */
-    public abstract function getCommands();
-    
+    public function getCommands() {
+        $cmds = array();
+        foreach ($this->getEntityClasses() as $class) {
+            $cmds[] = preg_replace('#' . preg_quote($this->getNamespace() . '\\Model\\Entity\\') . '#', '', $class);
+        }
+        $cmds['Settings'] = array('Help');
+        return $cmds;
+    }
+
     /**
      * This is called by the default ComponentController and does all the repeating work
      * 
@@ -75,8 +82,8 @@ abstract class SystemComponentBackendController extends Controller {
         if (isset($_GET['act'])) {
             $cmd = explode('/', contrexx_input2raw($_GET['act']));
         }
-        
-        $actTemplate = new \Cx\Core\Html\Sigma($this->getDirectory() . '/View/Template');
+
+        $actTemplate = new \Cx\Core\Html\Sigma($this->getDirectory(false) . '/View/Template/Backend');
         $filename = $cmd[0] . '.html';
         $testFilename = $cmd[0];
         if (!\Env::get('ClassLoader')->getFilePath($actTemplate->getRoot() . '/' . $filename)) {
@@ -98,78 +105,18 @@ abstract class SystemComponentBackendController extends Controller {
         $actTemplate->loadTemplateFile($filename);
         
         // todo: Messages
+        $navigation = $this->parseNavigation($cmd);
         $this->parsePage($actTemplate, $cmd);
-        
-        // set tabs
-        $navigation = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH . '/Core/View/Template');
-        $navigation->loadTemplateFile('Navigation.html');
-        $commands = array_merge(array(''), $this->getCommands());
-        foreach ($commands as $key=>$command) {
-            $subnav = array();
-            if (is_array($command)) {
-                $subnav = array_merge(array(''), $command);
-                $command = $key;
-            }
-            
-            if ($key !== '') {
-                if ($cmd[0] == $command) {
-                    $navigation->touchBlock('tab_active');
-                } else {
-                    $navigation->hideBlock('tab_active');
-                }
-                $act = '&amp;act=' . $command;
-                $txt = $command;
-                if (empty($command)) {
-                    $act = '';
-                    $txt = 'DEFAULT';
-                }
-                $actTxtKey = 'TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt);
-                $actTitle = isset($_ARRAYLANG[$actTxtKey]) ? $_ARRAYLANG[$actTxtKey] : $actTxtKey;
-                $navigation->setVariable(array(
-                    'HREF' => 'index.php?cmd=' . $this->getName() . $act,
-                    'TITLE' => $actTitle,
-                ));
-                $navigation->parse('tab_entry');
-            }
-            
-            // subnav
-            if ($cmd[0] == $command && count($subnav)) {
-                $first = true;
-                foreach ($subnav as $subcommand) {
-                    if ((!isset($cmd[1]) && $first) || ((isset($cmd[1]) ? $cmd[1] : '') == $subcommand)) {
-                        $navigation->touchBlock('subnav_active');
-                    } else {
-                        $navigation->hideBlock('subnav_active');
-                    }
-                    $act = '&amp;act=' . $cmd[0] . '/' . $subcommand;
-                    $txt = (empty($cmd[0]) ? 'DEFAULT' : $cmd[0]) . '_';
-                    if (empty($subcommand)) {
-                        $act = '&amp;act=' . $cmd[0] . '/';
-                        $txt .= 'DEFAULT';
-                    } else {
-                        $txt .= strtoupper($subcommand);
-                    }
-                    $actTxtKey = 'TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt);
-                    $actTitle = isset($_ARRAYLANG[$actTxtKey]) ? $_ARRAYLANG[$actTxtKey] : $actTxtKey;
-                    $navigation->setVariable(array(
-                        'HREF' => 'index.php?cmd=' . $this->getName() . $act,
-                        'TITLE' => $actTitle,
-                    ));
-                    $navigation->parse('subnav_entry');
-                    $first = false;
-                }
-            }
-        }
         $txt = $cmd[0];
         if (empty($txt)) {
             $txt = 'DEFAULT';
         }
         
         // default css and js
-        if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory() . '/View/Style/Backend.css'))) {
+        if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory(false) . '/View/Style/Backend.css'))) {
             \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/Backend.css', 1));
         }
-        if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory() . '/View/Script/Backend.js'))) {
+        if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory(false) . '/View/Script/Backend.js'))) {
             \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Backend.js', 1));
         }
         
@@ -187,7 +134,167 @@ abstract class SystemComponentBackendController extends Controller {
             'CONTENT_TITLE' => $_ARRAYLANG['TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt)],
         ));
     }
-    
+
+    /**
+     * Parse the navigation
+     *
+     * @param array $cmd
+     *
+     * @return \Cx\Core\Html\Sigma
+     */
+    public function parseNavigation(&$cmd = array()) {
+        // set tabs
+        $navigation = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH . '/Core/View/Template/Backend');
+        $navigation->loadTemplateFile('Navigation.html');
+
+        $commands = $this->getCommands();
+        if ($this->showOverviewPage()) {
+            $commands = array_merge(
+                array(''),
+                $commands
+            );
+        }
+        // make sure first tab is shown if $cmd[0] is empty
+        if (empty($cmd[0])) {
+            $cmd[0] = reset($commands);
+            if (is_array($cmd[0])) {
+                $cmd[0] = key($commands);
+            }
+        }
+        $this->checkAndModifyCmdByPermission($cmd, $commands);
+        foreach ($commands as $key => $command) {
+            $subNav         = array();
+            $currentCommand = is_array($command) ? $key : $command;
+
+            if (is_array($command) && isset($command['children'])) {
+                $subNav = array_merge(array(''), $command['children']);
+            } else {
+                if (is_array($command) && array_key_exists('permission', $command)) {
+                    unset($command['permission']); // navigation might contain only the permission key, unset it
+                }
+                $subNav = is_array($command) && !empty($command)  ? array_merge(array(''), $command) : array();
+            }
+            //check the main navigation permission
+            if (!$this->hasAccessToCommand(array($currentCommand))) {
+                continue;
+            }
+            //parse the main navigation
+            $this->parseCurrentNavItem($navigation, 'tab', $currentCommand, '', $cmd[0] == $currentCommand, 0);
+
+            // subnav
+            if ($cmd[0] == $currentCommand && count($subNav)) {
+                $first = true;
+                foreach ($subNav as $subkey => $subValue) {
+                    $subcommand = is_array($subValue) ? $subkey : $subValue;
+                    if (!$this->hasAccessToCommand(array($currentCommand, $subcommand))) {
+                        continue;
+                    }
+                    $isActiveSubNav = (!isset($cmd[1]) && $first) || ((isset($cmd[1]) ? $cmd[1] : '') == $subcommand);
+                    //parse the subnavigation
+                    $this->parseCurrentNavItem($navigation, 'subnav', $subcommand, $currentCommand, $isActiveSubNav, 1);
+                    $first = false;
+                }
+            }
+        }
+        return $navigation;
+    }
+
+    /**
+     * Check and modify the cmd based on the permission
+     *
+     * @param array $cmd
+     * @param array $currentCommands
+     */
+    protected function checkAndModifyCmdByPermission(&$cmd, $currentCommands) {
+        $command  = array();
+        $keys     = array_keys($currentCommands);
+        $cmd[1]   = !isset($cmd[1]) ? '' : $cmd[1];
+        foreach ($cmd as $cmdKey => $cmdValue) {
+            $command[$cmdKey] = $cmdValue;
+            while (!$this->hasAccessToCommand($command)) {
+                $pos = array_search($cmdValue, $keys);
+                if (!isset($keys[$pos + 1])) {
+                    \Permission::noAccess();
+                    exit();
+                }
+                $cmdValue = $command[$cmdKey] = $keys[$pos + 1];
+            }
+            $keys = isset($currentCommands[$cmdValue]['children']) ? array_keys($currentCommands[$cmdValue]['children']) : '';
+        }
+        $cmd = $command;
+    }
+
+    /**
+     * Parse the current navigation item
+     *
+     * @global array $_ARRAYLANG
+     *
+     * @param \Cx\Core\Html\Sigma $navigation
+     * @param string              $blockName
+     * @param string              $currentCmd
+     * @param string              $mainCmd
+     * @param boolean             $isActiveNav
+     * @param boolean             $isSubNav
+     */
+    protected function parseCurrentNavItem(\Cx\Core\Html\Sigma $navigation, $blockName, $currentCmd, $mainCmd, $isActiveNav, $isSubNav) {
+        global $_ARRAYLANG;
+
+        if (empty($blockName)) {
+            return;
+        }
+
+        $isActiveNav ? $navigation->touchBlock($blockName . '_active') : $navigation->hideBlock($blockName . '_active');
+
+        if (empty($isSubNav)) {
+            $act = empty($currentCmd) ? '' : '&amp;act=' . $currentCmd;
+            $txt = empty($currentCmd) ? 'DEFAULT' : $currentCmd;
+        } else {
+            $act = '&amp;act=' . $mainCmd . '/' . $currentCmd;
+            $txt = (empty($mainCmd) ? 'DEFAULT' : $mainCmd) . '_';
+            $txt .= empty($currentCmd) ? 'DEFAULT' : strtoupper($currentCmd);
+        }
+
+        $actTxtKey = 'TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt);
+        $actTitle  = isset($_ARRAYLANG[$actTxtKey]) ? $_ARRAYLANG[$actTxtKey] : $actTxtKey;
+        $navigation->setVariable(array(
+            'HREF' => 'index.php?cmd=' . $this->getName() . $act,
+            'TITLE' => $actTitle,
+        ));
+        $navigation->parse($blockName . '_entry');
+    }
+
+    /**
+     * Check the access permission based on the command
+     *
+     * @param array $commands
+     *
+     * @return boolean
+     */
+    protected function hasAccessToCommand($commands = array()) {
+        $currentCommands = array_merge(array(''), $this->getCommands());
+
+        foreach ($commands as $command) {
+            $cmd = isset($currentCommands[$command]) ? $currentCommands[$command] : array();
+            if (!$this->hasAccess($cmd)) {
+                return false;
+            }
+            unset($cmd['permission']);
+            $currentCommands = isset($cmd['children']) ? $cmd['children'] : $cmd;
+        }
+        return true;
+    }
+
+    /**
+     * Check the access permission
+     *
+     * @param array $command
+     *
+     * @return boolean
+     */
+    protected function hasAccess($command) {
+        return true;
+    }
+
     /**
      * Use this to parse your backend page
      * 
@@ -197,5 +304,141 @@ abstract class SystemComponentBackendController extends Controller {
      * @param \Cx\Core\Html\Sigma $template Template for current CMD
      * @param array $cmd CMD separated by slashes
      */
-    public abstract function parsePage(\Cx\Core\Html\Sigma $template, array $cmd);
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
+        global $_ARRAYLANG;
+
+        // Parse entity view generation pages
+        $entityClassName = $this->getNamespace() . '\\Model\\Entity\\' . current($cmd);
+        if (in_array($entityClassName, $this->getEntityClasses())) {
+            $this->parseEntityClassPage($template, $entityClassName, current($cmd));
+            return;
+        }
+
+        // Not an entity, parse overview or settings
+        switch (current($cmd)) {
+            case 'Settings':
+                if (!isset($cmd[1])) {
+                    $cmd[1] = '';
+                }
+                switch ($cmd[1]) {
+                    case '':
+                    default:
+                        if (!$template->blockExists('mailing')) {
+                            return;
+                        }
+                        $template->setVariable(
+                            'MAILING',
+                            \MailTemplate::adminView(
+                                $this->getName(),
+                                'nonempty',
+                                $config['corePagingLimit'],
+                                'settings/email'
+                            )->get()
+                        );
+                        break;
+                }
+                break;
+            case '':
+            default:
+                if ($template->blockExists('overview')) {
+                    $template->touchBlock('overview');
+                }
+                break;
+        }
+    }
+
+    protected function parseEntityClassPage($template, $entityClassName, $classIdentifier, $filter = array(), &$isSingle = false) {
+        if (!$template->blockExists('entity_view')) {
+            return;
+        }
+        // this should be moved to view generator
+        if (count($filter)) {
+            $em = $this->cx->getDb()->getEntityManager();
+            $repo = $em->getRepository($entityClassName);
+            $entityClassName = $repo->findBy($filter);
+        }
+        $view = new \Cx\Core\Html\Controller\ViewGenerator(
+            $this->getViewGeneratorParseObjectForEntityClass($entityClassName),
+            $this->getAllViewGeneratorOptions($entityClassName)
+        );
+        $renderedContent = $view->render($isSingle);
+        $template->setVariable('ENTITY_VIEW', $renderedContent);
+    }
+
+    /**
+     * Returns the object to parse a wiew with
+     *
+     * If you overwrite this and return anything else than string, filter will not work
+     * @return string|array|object An entity class name, entity, array of entities or DataSet
+     */
+    protected function getViewGeneratorParseObjectForEntityClass($entityClassName) {
+        return $entityClassName;
+    }
+
+    /**
+     * Returns all entities of this component which can have an auto-generated view
+     *
+     * @access protected
+     * @return array
+     */
+    protected function getEntityClassesWithView() {
+        return $this->getEntityClasses();
+    }
+
+    /**
+     * This function returns an array which contains the vgOptions array for all entities
+     *
+     * @access public
+     * @param $dataSetIdentifier
+     * @return array
+     */
+    public function getAllViewGeneratorOptions($dataSetIdentifier = '') {
+        $vgOptions = array();
+        foreach ($this->getEntityClassesWithView() as $entityClassName) {
+            $vgOptions[$entityClassName] = $this->getViewGeneratorOptions($entityClassName, $dataSetIdentifier);
+        }
+        $vgOptions[''] = $this->getViewGeneratorOptions('', '');
+        return $vgOptions;
+    }
+
+    /**
+     * This function returns the ViewGeneration options for a given entityClass
+     *
+     * @access protected
+     * @global $_ARRAYLANG
+     * @param $entityClassName contains the FQCN from entity
+     * @param $dataSetIdentifier if $entityClassName is DataSet, this is used for better partition
+     * @return array with options
+     */
+    protected function getViewGeneratorOptions($entityClassName, $dataSetIdentifier = '') {
+        global $_ARRAYLANG;
+
+        $classNameParts = explode('\\', $entityClassName);
+        $classIdentifier = end($classNameParts);
+
+        $langVarName = 'TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier);
+        $header = '';
+        if (isset($_ARRAYLANG[$langVarName])) {
+            $header = $_ARRAYLANG[$langVarName];
+        }
+        return array(
+            'header' => $header,
+            'functions' => array(
+                'add'       => true,
+                'edit'      => true,
+                'delete'    => true,
+                'sorting'   => true,
+                'paging'    => true,
+                'filtering' => false,
+            ),
+        );
+    }
+
+    /**
+     * Return true here if you want the first tab to be an entity view
+     * @return boolean True if overview should be shown, false otherwise
+     */
+    protected function showOverviewPage() {
+        return true;
+    }
 }

@@ -91,7 +91,15 @@ class SystemComponentController extends Controller {
     public function getSystemComponent() {
         return $this->systemComponent;
     }
-    
+
+    /**
+     * Sets the SystemComponent this Controller decorates
+     * @return \Cx\Core\Core\Model\Entity\SystemComponent
+     */
+    public function setSystemComponent($systemComponent) {
+        $this->systemComponent = $systemComponent;
+    }
+
     /**
      * Registers a controller instance
      * @param Controller $controller Controller to register
@@ -117,21 +125,86 @@ class SystemComponentController extends Controller {
             if (isset($this->controllers[$class])) {
                 continue;
             }
-            $class = $this->getNamespace() . '\\Controller\\' . $class . 'Controller';
+            // if this is a partial relative class name
+            $class = '\\'.$this->getControllerClassName($class);
             new $class($this, $this->cx);
         }
         return $this->getControllers();
     }
-    
+
+    /**
+     * This finds the correct FQCN for a controller name
+     * @param string $controllerClassShort Short name for controller
+     * @return string Fully qualified controller class name
+     */
+    protected function getControllerClassName($controllerClassShort) {
+        $class = $controllerClassShort;
+        if (strpos('\\', $class) != 1) {
+            if (!$this->cx->getClassLoader()->getFilePath($this->getDirectory(false).'/Controller/'.$class.'Controller.class.php')) {
+                $class = '\\Cx\\Core\\Core\\Model\\Entity\\SystemComponent' . $class . 'Controller';
+            } else {
+                $class = $this->getNamespace() . '\\Controller\\' . $class . 'Controller';
+            }
+        }
+        return $this->adjustFullyQualifiedClassName($class);
+    }
+
+    /**
+     * Returns a controller instance if one already exists
+     * @param $controllerClass Short or FQCN controller name
+     * @return \Cx\Core\Core\Model\Entity\Controller Controller instance
+     * @throws \Exception if controller exists but cannot be loaded
+     */
     public function getController($controllerClass) {
-        $this->getControllers(false);
-        $controllerClass = $this->getNamespace() . '\\Controller\\' . $controllerClass . 'Controller';
-        if (!isset($this->controllers[$controllerClass])) {
+        if (isset($this->controllers[$controllerClass])) {
+            return $this->controllers[$controllerClass];
+        }
+
+        $classes = $this->getControllerClasses();
+        if (!in_array($controllerClass, $classes)) {
             return null;
         }
-        return $this->controllers[$controllerClass];
+        $class = '\\' . $this->getControllerClassName($controllerClass);
+        new $class($this, $this->cx);
+
+        if (!isset($this->controllers[preg_replace('/^\\\\/', '', $class)])) {
+            throw new \Exception('Controller "' . $controllerClass . '" could not be loaded(' . preg_replace('/^\\\\/', '', $class) . ')');
+        }
+
+        return $this->controllers[preg_replace('/^\\\\/', '', $class)];
     }
-    
+
+    /**
+     * Get component controller object
+     *
+     * @param string $name  component name
+     *
+     * @return \Cx\Core\Core\Model\Entity\SystemComponentController
+     * The requested component controller or null if no such component exists
+     *
+     */
+    public function getComponent($name)
+    {
+        if (empty($name)) {
+            return null;
+        }
+        $componentRepo = $this->cx->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $component     = $componentRepo->findOneBy(array('name' => $name));
+        if (!$component) {
+            return null;
+        }
+        return $component->getSystemComponentController();
+    }
+
+    /**
+     * This makes sure a FQCN does not contain double backslashes
+     * @param string $className FQCN of a controller
+     * @return string Clean FQCN of a controller
+     */
+    protected function adjustFullyQualifiedClassName($className) {
+        return preg_replace('/^\\\\/', '', $className);
+    }
+
     /**
      * Returns all Controller class names for this component (except this)
      * 
@@ -228,20 +301,36 @@ class SystemComponentController extends Controller {
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        $controllerClass = null;
-        $baseNs = $this->getNamespace();
-        $baseNs .= '\\Controller\\';
-        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
-            $controllerClass = $baseNs . 'FrontendController';
-        } else if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
-            $controllerClass = $baseNs . 'BackendController';
-        } else if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_CLI) {
-            $controllerClass = $baseNs . 'CliController';
-        }
-        if (!$controllerClass && !class_exists($controllerClass)) {
+        // These are the modes I know that components can use for content
+        $knownModes = array(
+            \Cx\Core\Core\Controller\Cx::MODE_FRONTEND => 'Frontend',
+            \Cx\Core\Core\Controller\Cx::MODE_BACKEND => 'Backend',
+        );
+
+        // Find controller short name for Cx mode
+        if (!isset($knownModes[$this->cx->getMode()])) {
+            // Unknown mode, something weird just happened:
+            // - Is there a new mode defined in Cx-Class?
+            // - Did you try to load a component in minimal mode?
             return;
         }
-        $controller = new $controllerClass($this, $this->cx);
+
+        // Find long controller name for short controller name
+        $controllerShort = $knownModes[$this->cx->getMode()];
+        if (!in_array($controllerShort, $this->getControllerClasses())) {
+            // No such controller for this component
+            return;
+        }
+
+        // Find controller instance
+        $controller = $this->getController($controllerShort);
+        if (!$controller) {
+            // Controller is listed in controller classes but could not be
+            // instanciated. There's something wrong there...
+            return;
+        }
+
+        // Get content
         $controller->getPage($page);
     }
     

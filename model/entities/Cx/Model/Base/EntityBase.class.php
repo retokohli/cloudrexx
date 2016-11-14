@@ -90,6 +90,38 @@ class EntityBase {
     protected $validators = null;
 
     /**
+     * This is an ugly solution to allow $this->cx to be available in all entity classes
+     * Since the entity's constructor is not called when an entity is loaded from DB this
+     * cannot be assigned there.
+     */
+    public function __get($name) {
+        if ($name == 'cx') {
+            return \Cx\Core\Core\Controller\Cx::instanciate();
+        }
+    }
+
+    /**
+     * Returns the component controller for this component
+     * @return \Cx\Core\Core\Model\Entity\SystemComponent
+     */
+    public function getComponentController() {
+        $matches = array();
+        preg_match('/Cx\\\\(?:Core|Core_Modules|Modules)\\\\([^\\\\]*)\\\\/', get_class($this), $matches);
+        if (empty($matches[1])) {
+            throw new \Exception('Could not find component name');
+        }
+        $em = $this->cx->getDb()->getEntityManager();
+        $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $myComponent = $componentRepo->findOneBy(array(
+            'name' => $matches[1],
+        ));
+        if (!$myComponent) {
+            throw new \Cx\Core\Core\Model\Entity\SystemComponentException('Component not found: "' . $matches[1] . '"');
+        }
+        return $myComponent;
+    }
+
+    /**
      * @throws ValidationException
      * @prePersist
      */
@@ -109,5 +141,22 @@ class EntityBase {
         }
         if(count($errors) > 0)
             throw new ValidationException($errors);
+    }
+
+    /**
+     * Route methods like getName(), getType(), getDirectory(), etc.
+     * @param string $methodName Name of method to call
+     * @param array $arguments List of arguments for the method to call
+     * @return mixed Return value of the method to call
+     */
+    public function __call($methodName, $arguments) {
+        return call_user_func_array(array($this->getComponentController(), $methodName), $arguments);
+    }
+
+    public function __toString() {
+        $em = $this->cx->getDb()->getEntityManager();
+        $cmf = $em->getMetadataFactory();
+        $meta = $cmf->getMetadataFor(get_class($this));
+        return (string) implode('/', $meta->getIdentifierValues($this));
     }
 }
