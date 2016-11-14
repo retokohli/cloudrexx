@@ -126,6 +126,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
                 ));
                 $template->parse(strtolower($this->getName()) . '_block_list_no_entries');
             } else {
+                $totalPrice = 0;
                 foreach ($favorites as $favorite) {
                     $template->setVariable(array(
                         strtoupper($this->getName()) . '_BLOCK_LIST_NAME' => contrexx_raw2xhtml($favorite->getTitle()),
@@ -133,7 +134,12 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
                         strtoupper($this->getName()) . '_BLOCK_LIST_DELETE_ACTION' => 'cx.favoriteListRemoveFavorite(' . $favorite->getId() . ');',
                     ));
                     $template->parse(strtolower($this->getName()) . '_block_list_row');
+                    $totalPrice += contrexx_raw2xhtml($favorite->getPrice());
                 }
+                $template->setVariable(array(
+                    strtoupper($this->getName()) . '_BLOCK_TOTAL_PRICE' => $totalPrice,
+                    strtoupper($this->getName()) . '_BLOCK_TOTAL_PRICE_LABEL' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_TOTAL_PRICE_LABEL'],
+                ));
             }
         }
 
