@@ -410,6 +410,14 @@ class Resolver {
             'Cx\Core\Net\Model\Entity\Domain'
         );
 
+        // set canonical page only in case it hasn't been set already
+        $linkHeader = preg_grep('/^Link:.*canonical["\']$/', headers_list());
+        if ($linkHeader) {
+            $linkHeaderParts = explode(': ', $linkHeader, 2);
+            $link = $linkHeaderParts[1];
+            $this->headers['Link'] = $link;
+        }
+
         if (
             $canonicalPage->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION &&
             $this->url->getDomain() == $domainRepo->getMainDomain()->getName()
@@ -417,11 +425,10 @@ class Resolver {
             return $this->page;
         }
 
-        // set canonical page only in case it hasen't been set already
-        if (!preg_grep('/^Link:.*canonical["\']$/', headers_list())) {
+        if (!$linkHeader) {
             $link = '<' . \Cx\Core\Routing\Url::fromPage($canonicalPage)->toString() . '>; rel="canonical"';
-            $this->headers['Link'] = $link;
             header('Link: ' . $link);
+            $this->headers['Link'] = $link;
         }
 
         return $this->page;
