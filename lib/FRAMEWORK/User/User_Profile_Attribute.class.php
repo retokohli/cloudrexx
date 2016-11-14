@@ -607,8 +607,8 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
                     'modifiable' => array('names'),
                 );
 
-                // add names for all languages
-                foreach (\FWLanguage::getLanguageArray() as $langId => $langData) {
+                // add names for all backend languages
+                foreach (\FWLanguage::getBackendLanguageArray() as $langId => $langData) {
                     $this->arrAttributes['title_'.$objResult->fields['id']]['names'][$langId] = $objResult->fields['title'];
                 }
                 $objResult->MoveNext();
@@ -1443,8 +1443,8 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
         }
 
         // add text for inactive languages too
-        $defaultLangId = \FWLanguage::getDefaultLangId();
-        foreach (\FWLanguage::getLanguageArray() as $langId => $langInfo) {
+        $defaultLangId = \FWLanguage::getDefaultBackendLangId();
+        foreach (\FWLanguage::getBackendLanguageArray() as $langId => $langInfo) {
             if (!isset($arrNames[$langId])) {
                 $this->arrName[$langId] = $this->arrName[$defaultLangId];
             }
