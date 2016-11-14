@@ -143,8 +143,24 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         }
         $files = glob($this->strCachePath . $this->strCacheFilename . "*");
 
+        $matches = array();
         foreach ($files as $file) {
+            // sort out false-positives (header and ESI cache files)
+            if (!preg_match('/([0-9a-f]{32})_([0-9]+)$/', $file, $matches)) {
+                continue;
+            }
             if (filemtime($file) > (time() - $this->intCachingTime)) {
+                // load headers
+                $headerFile = $this->strCachePath . $matches[1] . '_h' . $matches[2];
+                if (file_exists($headerFile)) {
+                    $headers = unserialize(file_get_contents($headerFile));
+                    if (is_array($headers)) {
+                        foreach ($headers as $name=>$value) {
+                            header($name . ': ' . $value);
+                        }
+                    }
+                }
+
                 //file was cached before, load it
                 $endcode = file_get_contents($file);
 
@@ -184,7 +200,16 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         if (session_id() != '' && \FWUser::getFWUserObject()->objUser->login()) {
             return $this->internalEsiParsing($endcode);
         }
-        $handleFile = $this->strCachePath . $this->strCacheFilename . "_" . $page->getId();
+        // write header cache file
+        $resolver = \Env::get('Resolver');
+        $headers = $resolver->getHeaders();
+        if (count($headers)) {
+            $handleFile = $this->strCachePath . $this->strCacheFilename . '_h' . $page->getId();
+            $File = new \Cx\Lib\FileSystem\File($handleFile);
+            $File->write(serialize($headers));
+        }
+        // write page cache file
+        $handleFile = $this->strCachePath . $this->strCacheFilename . '_' . $page->getId();
         $File = new \Cx\Lib\FileSystem\File($handleFile);
         $File->write($endcode);
         return $this->internalEsiParsing($endcode);
