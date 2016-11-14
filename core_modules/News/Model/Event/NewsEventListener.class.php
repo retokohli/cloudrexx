@@ -190,6 +190,40 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                         :   'DELETE FROM `' . DBPREFIX . 'module_news_categories_locale`
                                 WHERE lang_id = ' . $langId;
             $objDatabase->Execute($catQuery);
+
+            // Update the news type locale
+            $typeQuery = $langStatus ?
+                            'INSERT IGNORE INTO
+                                `' . DBPREFIX . 'module_news_types_locale`
+                                (   `type_id`,
+                                    `lang_id`,
+                                    `name`
+                                )
+                                SELECT `type_id`,
+                                        ' . $langId . ',
+                                        `name`
+                                    FROM `' . DBPREFIX . 'module_news_types_locale`
+                                    WHERE lang_id = ' . $defaultLangId
+                            :   'DELETE FROM `' . DBPREFIX . 'module_news_types_locale`
+                                            WHERE lang_id = ' . $langId;
+            $objDatabase->Execute($typeQuery);
+
+            // Update the news settings locale
+            $settingsQuery = $langStatus ?
+                            'INSERT IGNORE INTO
+                                `' . DBPREFIX . 'module_news_settings_locale`
+                                (   `name`,
+                                    `lang_id`,
+                                    `value`
+                                )
+                                SELECT `name`,
+                                        ' . $langId . ',
+                                        `value`
+                                    FROM `' . DBPREFIX . 'module_news_settings_locale`
+                                    WHERE lang_id = ' . $defaultLangId
+                            :   'DELETE FROM `' . DBPREFIX . 'module_news_settings_locale`
+                                            WHERE lang_id = ' . $langId;
+            $objDatabase->Execute($settingsQuery);
         }
     }
 }
