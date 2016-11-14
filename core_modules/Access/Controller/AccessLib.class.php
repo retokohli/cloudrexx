@@ -613,7 +613,6 @@ class AccessLib
     {
         global $_CORELANG;
 
-//        $arrScope = array('frontend', 'backend');
         $this->arrAccountAttributes['frontend_language']['children'][0] = $this->arrAccountAttributes['backend_language']['children'][0] = $_CORELANG['TXT_ACCESS_DEFAULT'];
         foreach (\FWLanguage::getLanguageArray() as $langId => $arrLanguage) {
             if ($arrLanguage['frontend']) {
