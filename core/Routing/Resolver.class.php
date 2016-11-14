@@ -129,6 +129,12 @@ class Resolver {
     protected $path;
 
     /**
+     * List of headers set by resolver
+     * @var array
+     */
+    protected $headers = array();
+
+    /**
      * @param Url $url the url to resolve
      * @param integer $lang the language Id
      * @param $entityManager
@@ -413,7 +419,9 @@ class Resolver {
 
         // set canonical page only in case it hasen't been set already
         if (!preg_grep('/^Link:.*canonical["\']$/', headers_list())) {
-            header('Link: <' . \Cx\Core\Routing\Url::fromPage($canonicalPage)->toString() . '>; rel="canonical"');
+            $link = '<' . \Cx\Core\Routing\Url::fromPage($canonicalPage)->toString() . '>; rel="canonical"';
+            $this->headers['Link'] = $link;
+            header('Link: ' . $link);
         }
 
         return $this->page;
@@ -949,5 +957,13 @@ class Resolver {
     public function setSection($section, $command = '') {
         $this->section = $section;
         $this->command = $command;
+    }
+
+    /**
+     * Returns the headers set by this class
+     * @return array key=>value style array
+     */
+    public function getHeaders() {
+        return $this->headers;
     }
 }
