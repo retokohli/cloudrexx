@@ -60,12 +60,20 @@ class FWLanguage
     private static $arrBackendLanguages = null;
 
     /**
-     * ID of the default language
+     * ID of the default frontend language
      *
      * @var integer
      * @access private
      */
-    private static $defaultLangId;
+    private static $defaultFrontendLangId;
+
+    /**
+     * ID of the default backend language
+     *
+     * @var integer
+     * @access private
+     */
+    private static $defaultBackendLangId;
 
 
     /**
@@ -111,7 +119,8 @@ class FWLanguage
                     self::$arrBackendLanguages[$objResult->fields['id']]['backend'] = 0;
                 }
                 if ($objResult->fields['is_default'] == 'true') {
-                    self::$defaultLangId = $objResult->fields['id'];
+                    self::$defaultFrontendLangId = $objResult->fields['id'];
+                    self::$defaultBackendLangId = $objResult->fields['id'];
                 }
                 $objResult->MoveNext();
             }
@@ -183,16 +192,27 @@ class FWLanguage
 
 
     /**
-     * Returns the ID of the default language
+     * Returns the ID of the default frontend language
      * @return integer Language ID
-     * @todo Split up in frontend and backend method
      */
     static function getDefaultLangId()
     {
-        if (empty(self::$defaultLangId)) {
+        if (empty(self::$defaultFrontendLangId)) {
             self::init();
         }
-        return self::$defaultLangId;
+        return self::$defaultFrontendLangId;
+    }
+
+    /**
+     * Returns the ID of the default backend language
+     * @return integer Language ID
+     */
+    static function getDefaultBackendLangId()
+    {
+        if (empty(self::$defaultBackendLangId)) {
+            self::init();
+        }
+        return self::$defaultBackendLangId;
     }
 
 
