@@ -82,14 +82,24 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
     }
 
     /**
+     * Override the parent, returns null database operation class
+     *
+     * @return \PHPUnit_Extensions_Database_Operation_Null
+     */
+    public function getSetUpOperation()
+    {
+        return new \PHPUnit_Extensions_Database_Operation_Null();
+    }
+
+    /**
      * Sends the request to given urlSlug and
      * return the response header
      *
      * @param string $urlSlug Url string
      *
-     * @return array Response header array
+     * @return \HTTP_Request2_Response
      */
-    protected function getResponseHeaders($urlSlug)
+    protected function getResponse($urlSlug)
     {
         $request = new \HTTP_Request2(
             $this->domainUrl . $urlSlug . '&runTest=1&component=Routing&dataSet=DataSet',
@@ -102,8 +112,7 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
             'strict_redirects' => true,
         ));
         $response = $request->send();
-
-        return $response->getHeader();
+        return $response;
     }
 
     /**
@@ -131,24 +140,15 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
             $urlString .= '/' . $langCode;
         }
         $urlString .= '/'. $inputSlug;
-        try {
-            \DBG::log('http://example.com' . $urlString);
-            $url      = new \Cx\Core\Routing\Url('http://example.com' . $urlString);
-            $resolver = new \Cx\Core\Routing\Resolver($url, $language, self::$em, '', $this->mockFallbackLanguages, false);
-            $resolver->resolve();
-        } catch (\Exception $ex) {
-            // Nothing to do
-        }
-        $p = $resolver->getPage();
-        $this->assertInstanceOf('\Cx\Core\ContentManager\Model\Entity\Page', $p);
-        $this->assertEquals($expectedSlug, $p->getSlug());
 
+        $response = $this->getResponse($urlString);
+
+        $this->assertTrue($response->getStatus() == 200);
         if (!empty($expectedCanonicalUrl)) {
-            $responseHeaders = $this->getResponseHeaders($urlString);
-            $this->assertTrue(isset($responseHeaders['link']));
+            $this->assertNotNull($response->getHeader('link'));
             $canonicalUrl = '';
             $matches      = null;
-            if (preg_match('/^<(.*)>;\srel=\"canonical\"$/', $responseHeaders['link'], $matches)) {
+            if (preg_match('/^<(.*)>;\srel=\"canonical\"$/', $response->getHeader('link'), $matches)) {
                 $canonicalUrl = $matches[1];
             }
             $this->assertEquals($canonicalUrl, $this->domainUrl . $expectedCanonicalUrl);
@@ -216,7 +216,7 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
             // Alias -> Symlink -> Application
             array(null, 'alias-symlink-to-application-page', 'Simple-symlink-to-application-page'),
             // Symlink -> Fallback -> Redirect -> Content
-            array(1, 'symlink-fallback-to-redirect-to-content', 'Simple-content-page', array(), '/de/Fallback-to-content-page'),
+            array(1, 'symlink-fallback-to-redirect-to-content', 'Simple-content-page', array(), '/de/Fallback-redirect-to-content-page'),
             // Symlink -> Fallback -> Redirect -> Application
             array(1, 'symlink-fallback-to-redirect-to-application', 'Simple-application-page'),
             // Symlink -> Redirect -> Fallback -> Content
@@ -224,11 +224,11 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
             // Symlink -> Redirect -> Fallback -> Application
             array(1, 'symlink-redirect-to-fallback-to-application'),
             // Fallback -> Symlink -> Redirect -> Content
-            array(1, 'Fallback-symlink-to-redirect-to-content', 'Simple-content-page', array(), '/de/Fallback-to-content-page'),
+            array(1, 'Fallback-symlink-to-redirect-to-content', 'Simple-content-page', array(), '/de/Fallback-symlink-to-redirect-to-content'),
             // Fallback -> Symlink -> Redirect -> Application
             array(1, 'Fallback-symlink-to-redirect-to-application', 'Simple-application-page'),
             // Fallback -> Redirect -> Symlink -> Content
-            array(1, 'Fallback-redirect-to-symlink-content-page', 'Simple-symlink-to-content-page', array(), '/de/Fallback-symlink-to-content-page'),
+            array(1, 'Fallback-redirect-to-symlink-content-page', 'Simple-symlink-to-content-page', array(), '/de/Fallback-redirect-to-symlink-content-page'),
             // Fallback -> Redirect -> Symlink -> Application
             array(1, 'Fallback-redirect-to-symlink-application-page', 'Simple-symlink-to-application-page'),
             // Redirect -> Symlink -> Fallback -> Content
@@ -260,11 +260,11 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
             // Alias -> Redirect -> Fallback -> Application
             array(null, 'alias-redirect-to-fallback-application-page'),
             // Alias -> Symlink -> Redirect -> Fallback -> Content
-            array(null, 'alias-symlink-redirect-to-fallback-to-content', null, array(), '/de/symlink-redirect-to-fallback-to-content'),
+            array(null, 'alias-symlink-redirect-to-fallback-to-content', null, array(), '/de/Fallback-to-content-page'),
             // Alias -> Symlink -> Redirect -> Fallback -> Application
             array(null, 'alias-symlink-redirect-to-fallback-to-application'),
             // Alias -> Symlink -> Fallback -> Redirect -> Content
-            array(null, 'alias-symlink-fallback-to-redirect-to-content', null, array(), '/de/symlink-fallback-to-redirect-to-content'),
+            array(null, 'alias-symlink-fallback-to-redirect-to-content', null, array(), '/de/Fallback-redirect-to-content-page'),
             // Alias -> Symlink -> Fallback -> Redirect -> Application
             array(null, 'alias-symlink-fallback-to-redirect-to-application'),
             // Alias -> Fallback -> Redirect -> Symlink -> Content
@@ -280,7 +280,7 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
             // Alias -> Redirect -> Fallback -> Symlink -> Application
             array(null, 'alias-redirect-to-fallback-to-symlink-to-application'),
             // Alias -> Redirect -> Symlink -> Fallback -> Content
-            array(null, 'alias-redirect-to-symlink-to-fallback-to-content', null, array(), '/de/Symlink-to-fallback-to-content'),
+            array(null, 'alias-redirect-to-symlink-to-fallback-to-content', null, array(), '/de/Fallback-to-content-page'),
             // Alias -> Redirect -> Symlink -> Fallback -> Application
             array(null, 'alias-redirect-to-symlink-to-fallback-to-application'),
             
