@@ -9,12 +9,12 @@ cx.ready(function () {
                     lang: cx.variables.get('language')
                 },
                 success: function (data) {
-                    cx.jQuery('#favoriteListBlock').empty();
-                    cx.jQuery(data.data).appendTo('#favoriteListBlock');
+                    cx.favoriteListUpdateBlock(data.data);
                 }
             }
         );
     };
+    cx.favoriteListLoadBlock();
 
     cx.favoriteListAddFavorite = function (element) {
         cx.ajax(
@@ -34,8 +34,7 @@ cx.ready(function () {
                     image_3: cx.jQuery(element).data('image3')
                 },
                 success: function (data) {
-                    cx.jQuery('#favoriteListBlock').empty();
-                    cx.jQuery(data.data).appendTo('#favoriteListBlock');
+                    cx.favoriteListUpdateBlock(data.data);
                 }
             }
         );
@@ -52,12 +51,32 @@ cx.ready(function () {
                     lang: cx.variables.get('language')
                 },
                 success: function (data) {
-                    cx.jQuery('#favoriteListBlock').empty();
-                    cx.jQuery(data.data).appendTo('#favoriteListBlock');
+                    cx.favoriteListUpdateBlock(data.data);
                 }
             }
         );
     };
 
-    cx.favoriteListLoadBlock();
+    cx.favoriteListEditFavoriteMessage = function (id, element) {
+        cx.ajax(
+            'FavoriteList',
+            'editFavoriteMessage',
+            {
+                data: {
+                    id: id,
+                    message: cx.jQuery(element).closest('.favoriteListBlockListEntity').find('[name="favoriteListBlockListEntityMessage"]').val(),
+                    themeId: cx.variables.get('themeId'),
+                    lang: cx.variables.get('language')
+                },
+                success: function (data) {
+                    cx.favoriteListUpdateBlock(data.data);
+                }
+            }
+        );
+    };
+
+    cx.favoriteListUpdateBlock = function (data) {
+        cx.jQuery('#favoriteListBlock').empty();
+        cx.jQuery(data).appendTo('#favoriteListBlock');
+    }
 });

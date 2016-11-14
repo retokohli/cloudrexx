@@ -70,6 +70,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
             'getCatalog' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false),
             'addFavorite',
             'removeFavorite',
+            'editFavoriteMessage',
         );
     }
 
@@ -99,7 +100,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
     public function getCatalog($data = array())
     {
         $lang = contrexx_input2raw($data['get']['lang']);
-        $langId = \FWLanguage::getLangIdByIso639_1($lang);
+        $langId = \FWLanguage::getLanguageIdByCode($lang);
         $_ARRAYLANG = \Env::get('init')->getComponentSpecificLanguageData($this->getName(), true, $langId);
 
         $themeId = contrexx_input2raw($data['get']['themeId']);
@@ -129,10 +130,18 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
                 $totalPrice = 0;
                 foreach ($favorites as $favorite) {
                     $template->setVariable(array(
+                        strtoupper($this->getName()) . '_BLOCK_LIST_ENTITY' => 'favoriteListBlockListEntity',
                         strtoupper($this->getName()) . '_BLOCK_LIST_NAME' => contrexx_raw2xhtml($favorite->getTitle()),
                         strtoupper($this->getName()) . '_BLOCK_LIST_EDIT_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()) . '/?editid=' . urlencode('{0,' . $favorite->getId() . '}'),
                         strtoupper($this->getName()) . '_BLOCK_LIST_DELETE_ACTION' => 'cx.favoriteListRemoveFavorite(' . $favorite->getId() . ');',
                     ));
+                    $template->setVariable(array(
+                        strtoupper($this->getName()) . '_BLOCK_LIST_MESSAGE' => contrexx_raw2xhtml($favorite->getMessage()),
+                        strtoupper($this->getName()) . '_BLOCK_LIST_MESSAGE_NAME' => 'favoriteListBlockListEntityMessage',
+                        strtoupper($this->getName()) . '_BLOCK_LIST_MESSAGE_ACTION' => 'cx.favoriteListEditFavoriteMessage(' . $favorite->getId() . ', this);',
+                        strtoupper($this->getName()) . '_BLOCK_LIST_MESSAGE_SAVE' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_BLOCK_SAVE'],
+                    ));
+                    $template->parse(strtolower($this->getName()) . '_block_list_row_message');
                     $template->parse(strtolower($this->getName()) . '_block_list_row');
                     $totalPrice += contrexx_raw2xhtml($favorite->getPrice());
                 }
@@ -154,7 +163,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
     public function addFavorite($data = array())
     {
         $lang = contrexx_input2raw($data['get']['lang']);
-        $langId = \FWLanguage::getLangIdByIso639_1($lang);
+        $langId = \FWLanguage::getLanguageIdByCode($lang);
         $_ARRAYLANG = \Env::get('init')->getComponentSpecificLanguageData($this->getName(), true, $langId);
 
         $title = contrexx_input2db($data['get']['title']);
@@ -226,6 +235,33 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
                 if (isset($data['get']['lang'])) {
                     return $this->getCatalog($data);
                 }
+            }
+        }
+    }
+
+    /**
+     * edits the message of a favorite
+     *
+     * @return json result
+     */
+    public function editFavoriteMessage($data = array())
+    {
+        $id = contrexx_input2db($data['get']['id']);
+        if (isset($id)) {
+            $message = contrexx_input2db($data['get']['message']);
+
+            $em = $this->cx->getDb()->getEntityManager();
+            $favoriteRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Favorite');
+            $favorite = $favoriteRepo->findOneBy(array('id' => $id));
+
+            $favorite->setMessage($message);
+
+            $em->persist($favorite);
+            $em->flush();
+            $em->clear();
+
+            if (isset($data['get']['lang'])) {
+                return $this->getCatalog($data);
             }
         }
     }
