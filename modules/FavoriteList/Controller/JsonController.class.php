@@ -137,7 +137,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
                     $totalPrice += contrexx_raw2xhtml($favorite->getPrice());
                 }
                 $template->setVariable(array(
-                    strtoupper($this->getName()) . '_BLOCK_TOTAL_PRICE' => $totalPrice,
+                    strtoupper($this->getName()) . '_BLOCK_TOTAL_PRICE' => number_format($totalPrice, 2, '.', '\''),
                     strtoupper($this->getName()) . '_BLOCK_TOTAL_PRICE_LABEL' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_BLOCK_TOTAL_PRICE_LABEL'],
                 ));
             }
