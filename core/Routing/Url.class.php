@@ -863,11 +863,25 @@ class Url {
             $this->toString(false);
     }
 
+    /**
+     * Tells wheter virtual language directories are in use or not
+     * This only returns true if there's but one frontend language active
+     * @return boolean True if virtual language directories are in use, false otherwise
+     */
     public static function isVirtualLanguageDirsActive() {
         // if only 1 lang active and virtual lang dirs deactivated, return false
         return false;
     }
 
+    /**
+     * Returns the virtual language directory for this URL
+     * This returns an empty string if virtual language directories are not in use.
+     * If $fromUrl is set to true and the URL contained a virtual language
+     * directory on initialization, this returns the supplied directory even
+     * if virtual language directories are not in use.
+     * @param boolean $fromUrl (optional) Return supplied instead of calculated directory if set to true, default false
+     * @return string Virtual language directory
+     */
     public function getLangDir($fromUrl = false) {
         $lang_dir = '';
 
