@@ -83,10 +83,9 @@ class ContrexxJavascript {
 //        global $objFWUser;
 //        $langId;
         if($backOrFrontend == "frontend")
-            $langId = $objInit->getFrontendLangId();
+            $langCode = FWLanguage::getLanguageCodeById($objInit->getFrontendLangId());
         else //backend
-            $langId = $objInit->getBackendLangId();
-        $langCode = FWLanguage::getLanguageCodeById($langId);
+            $langCode = FWLanguage::getBackendLanguageCodeById($objInit->getBackendLangId());
 
         $this->setVariable(
             array(
