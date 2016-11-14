@@ -870,7 +870,13 @@ class Url {
      */
     public static function isVirtualLanguageDirsActive() {
         // if only 1 lang active and virtual lang dirs deactivated, return false
-        return false;
+        if (count(\FWLanguage::getActiveFrontendLanguages()) > 1) {
+            return true;
+        }
+        return \Cx\Core\Setting\Controller\Setting::getValue(
+            'useVirtualLanguageDirectories',
+            'Config'
+        ) != 'off';
     }
 
     /**
