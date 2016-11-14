@@ -413,8 +413,9 @@ class Resolver {
         // set canonical page only in case it hasn't been set already
         $linkHeader = preg_grep('/^Link:.*canonical["\']$/', headers_list());
         if ($linkHeader) {
-            $linkHeaderParts = explode(': ', $linkHeader, 2);
-            $link = $linkHeaderParts[1];
+            $linkHeader = current($linkHeader);
+            $linkHeaderParts = explode(':', $linkHeader, 2);
+            $link = trim($linkHeaderParts[1]);
             $this->headers['Link'] = $link;
         }
 
