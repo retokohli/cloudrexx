@@ -145,7 +145,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             default:
                 if (!$catalog) {
                     $template->setVariable(array(
-                        strtoupper($this->getName()) . '_FAVORITE_LIST' => $_ARRAYLANG['TXT_MODULE' . strtoupper($this->getName()) . 'MESSAGE_NO_LIST'],
+                        strtoupper($this->getName()) . '_CATALOG' => $_ARRAYLANG['TXT_MODULE' . strtoupper($this->getName()) . 'MESSAGE_NO_CATALOG'],
                     ));
                 } else {
                     $favorites = $catalog->getFavorites()->toArray();
@@ -158,10 +158,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                         )
                     );
                     $template->setVariable(array(
-                        strtoupper($this->getName()) . '_FAVORITE_LIST' => $favoritesView,
+                        strtoupper($this->getName()) . '_CATALOG' => $favoritesView,
                     ));
 
-                    $template->parse(strtolower($this->getName()) . '_favorite_list_actions');
+                    $template->parse(strtolower($this->getName()) . '_catalog_actions');
                     \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function');
                     $cmds = array(
                         'mail',
@@ -174,7 +174,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                             $template->setVariable(array(
                                 strtoupper($this->getName()) . '_ACT_' . strtoupper($cmd) . '_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), $cmd),
                             ));
-                            $template->parse(strtolower($this->getName()) . '_favorite_list_actions_' . $cmd);
+                            $template->parse(strtolower($this->getName()) . '_catalog_actions_' . $cmd);
                         }
                     }
                 }

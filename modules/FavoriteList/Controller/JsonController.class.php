@@ -114,9 +114,9 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
 
         if (empty($catalog)) {
             $template->setVariable(array(
-                strtoupper($this->getName()) . '_BLOCK_LIST_MESSAGE_NO_LIST' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_LIST'],
+                strtoupper($this->getName()) . '_BLOCK_LIST_MESSAGE_NO_CATALOG' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_CATALOG'],
             ));
-            $template->parse(strtolower($this->getName()) . '_block_no_list');
+            $template->parse(strtolower($this->getName()) . '_block_list_no_catalog');
         } else {
             $favorites = $catalog->getFavorites();
             $template->parse(strtolower($this->getName()) . '_block_list');
@@ -138,7 +138,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
                 }
                 $template->setVariable(array(
                     strtoupper($this->getName()) . '_BLOCK_TOTAL_PRICE' => $totalPrice,
-                    strtoupper($this->getName()) . '_BLOCK_TOTAL_PRICE_LABEL' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_TOTAL_PRICE_LABEL'],
+                    strtoupper($this->getName()) . '_BLOCK_TOTAL_PRICE_LABEL' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_BLOCK_TOTAL_PRICE_LABEL'],
                 ));
             }
         }
