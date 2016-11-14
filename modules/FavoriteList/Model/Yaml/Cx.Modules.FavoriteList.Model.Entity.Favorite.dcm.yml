@@ -18,8 +18,11 @@ Cx\Modules\FavoriteList\Model\Entity\Favorite:
     description:
       type: text
       nullable: true
-    info:
+    message:
       type: text
+      nullable: true
+    price:
+      type: float
       nullable: true
     image1:
       column: image_1

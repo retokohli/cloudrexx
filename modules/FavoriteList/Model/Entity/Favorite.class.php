@@ -28,9 +28,14 @@ class Favorite extends \Cx\Model\Base\EntityBase
     protected $description;
 
     /**
-     * @var text $info
+     * @var text $message
      */
-    protected $info;
+    protected $message;
+
+    /**
+     * @var float $price
+     */
+    protected $price;
 
     /**
      * @var string $image1
@@ -124,23 +129,43 @@ class Favorite extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Get info
+     * Get message
      *
-     * @return text $info
+     * @return text $message
      */
-    public function getInfo()
+    public function getMessage()
     {
-        return $this->info;
+        return $this->message;
     }
 
     /**
-     * Set info
+     * Set message
      *
-     * @param text $info
+     * @param text $message
      */
-    public function setInfo($info)
+    public function setMessage($message)
     {
-        $this->info = $info;
+        $this->message = $message;
+    }
+
+    /**
+     * Get price
+     *
+     * @return float $price
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }
+
+    /**
+     * Set price
+     *
+     * @return float $price
+     */
+    public function setPrice($price)
+    {
+        $this->price = $price;
     }
 
     /**

@@ -155,7 +155,8 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
         if (isset($title)) {
             $link = contrexx_input2db($data['get']['link']);
             $description = contrexx_input2db($data['get']['description']);
-            $info = contrexx_input2db($data['get']['info']);
+            $message = contrexx_input2db($data['get']['message']);
+            $price = contrexx_input2db($data['get']['price']);
             $image1 = contrexx_input2db($data['get']['image_1']);
             $image2 = contrexx_input2db($data['get']['image_2']);
             $image3 = contrexx_input2db($data['get']['image_3']);
@@ -178,7 +179,8 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
             $favorite->setTitle($title);
             $favorite->setLink($link);
             $favorite->setDescription($description);
-            $favorite->setInfo($info);
+            $favorite->setMessage($message);
+            $favorite->setPrice($price);
             $favorite->setImage1($image1);
             $favorite->setImage2($image2);
             $favorite->setImage3($image3);

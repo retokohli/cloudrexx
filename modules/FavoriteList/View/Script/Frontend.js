@@ -27,7 +27,8 @@ cx.ready(function () {
                     title: cx.jQuery(element).data('title'),
                     link: cx.jQuery(element).data('link'),
                     description: cx.jQuery(element).data('description'),
-                    info: cx.jQuery(element).data('info'),
+                    message: cx.jQuery(element).data('message'),
+                    price: cx.jQuery(element).data('price'),
                     image_1: cx.jQuery(element).data('image1'),
                     image_2: cx.jQuery(element).data('image2'),
                     image_3: cx.jQuery(element).data('image3')

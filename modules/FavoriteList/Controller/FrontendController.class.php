@@ -225,8 +225,11 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                         'description' => array(
                             'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_DESCRIPTION'],
                         ),
-                        'info' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_INFO'],
+                        'message' => array(
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_MESSAGE'],
+                        ),
+                        'price' => array(
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_PRICE'],
                         ),
                         'image1' => array(
                             'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_IMAGE_1'],
@@ -260,7 +263,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                             'title',
                             'link',
                             'description',
-                            'info',
+                            'message',
+                            'price',
                             'image1',
                             'image2',
                             'image3',
@@ -271,7 +275,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                             'title',
                             'link',
                             'description',
-                            'info',
+                            'message',
+                            'price',
                             'image1',
                             'image2',
                             'image3',
