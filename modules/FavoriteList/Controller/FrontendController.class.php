@@ -68,9 +68,15 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 if (!$catalog) {
                     header('Location: ' . \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()));
                 }
-                if (isset($_POST['send'])) {
-
-                }
+                \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'pdf');
+                $pdfTemplateId = \Cx\Core\Setting\Controller\Setting::getValue('pdfTemplate', 'pdf');
+                $substitution = array(
+                    'FAVORITELIST_PRINT_PDF_LOGO' => \Cx\Core\Setting\Controller\Setting::getValue('pdfLogo', 'pdf'),
+                    'FAVORITELIST_PRINT_PDF_ADDRESS' => \Cx\Core\Setting\Controller\Setting::getValue('pdfAddress', 'pdf'),
+                    'FAVORITELIST_PRINT_PDF_FOOTER' => \Cx\Core\Setting\Controller\Setting::getValue('pdfFooter', 'pdf'),
+                );
+                $pdf = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Pdf');
+                $pdfFile = $pdf->generatePDF($pdfTemplateId, $substitution, $this->getName());
                 break;
             case 'recommendation':
                 if (!$catalog) {
