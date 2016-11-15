@@ -458,13 +458,11 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     }
 
     protected function slugify($string) {
+        // replace international characters
+        $string = $this->getComponent('LanguageManager')->replaceInternationalCharacters($string);
+        // replace spaces
         $string = preg_replace('/\s+/', '-', $string);
-        $string = preg_replace('/ä/', 'ae', $string);
-        $string = preg_replace('/ö/', 'oe', $string);
-        $string = preg_replace('/ü/', 'ue', $string);
-        $string = preg_replace('/Ä/', 'Ae', $string);
-        $string = preg_replace('/Ö/', 'Oe', $string);
-        $string = preg_replace('/Ü/', 'Ue', $string);
+        // replace all non-url characters
         $string = preg_replace('/[^a-zA-Z0-9-_]/', '', $string);
         return $string;
     }

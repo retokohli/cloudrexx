@@ -129,6 +129,44 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 break;
         }
 
+        if (
+            in_array($this->act, array(
+                'delete_entry',
+                'restore_voting',
+                'restore_comments',
+                'confirm_entry',
+                'switchState',
+                'delete_comment',
+                'delete_level',
+                'order_level',
+                'delete_category',
+                'order_category',
+            )) ||
+            (
+                $this->act == 'modify_entry' &&
+                isset($_POST['submitEntryModfyForm']) &&
+                !empty($_POST['formId'])
+            ) ||
+            (
+                $this->act == 'modify_category' &&
+                isset($_POST['submitCategoryModfyForm'])
+            ) ||
+            (
+                $this->act == 'modify_level' &&
+                isset($_POST['submitLevelModfyForm'])
+            ) ||
+            (
+                $this->act == 'interfaces' &&
+                isset($_POST['submitInterfacesForm'])
+            ) ||
+            (
+                $this->act == 'settings' &&
+                isset($_POST['submitSettingsForm'])
+            )
+        ) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('MediaDir');
+        }
+
         $objTemplate->setVariable(array(
             'CONTENT_OK_MESSAGE'     => $this->strOkMessage,
             'CONTENT_STATUS_MESSAGE' => $this->strErrMessage,
