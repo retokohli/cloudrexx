@@ -89,6 +89,16 @@ class PDF extends HTML2FPDF
     */
     var $pdf_autor;
 
+    /**
+     * @var string $destination
+     */
+    public $destination = '';
+
+    /**
+     * @var string $filePath
+     */
+    public $filePath = '';
+
     function __construct()
     {
         global $_CONFIG;
@@ -99,6 +109,9 @@ class PDF extends HTML2FPDF
         $this->pdf_autor        = $_CONFIG['coreCmsName'];
     }
 
+    /**
+     * Create PDF Document
+     */
     function Create()
     {
 
@@ -109,8 +122,12 @@ class PDF extends HTML2FPDF
         $pdf->DisplayPreferences('HideWindowUI');
         $pdf->AddPage();
         $pdf->WriteHTML($this->content);
-        $pdf->Output(\Cx\Lib\FileSystem\FileSystem::replaceCharacters($this->title));
-
+        if (empty($this->filePath)) {
+            $this->filePath = \Cx\Lib\FileSystem\FileSystem::replaceCharacters(
+                $this->title
+            );
+        }
+        $pdf->Output($this->filePath, $this->destination);
     }
 
     function _ParseHTML($source){
@@ -150,5 +167,3 @@ class PDF extends HTML2FPDF
         return $source;
     }
 }
-
-?>
