@@ -85,105 +85,100 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         global $_CONFIG;
 
         try {
-            $configPath = $this->cx->getWebsiteConfigPath();
-            // fetch $_CONFIG data from settings.php file
-            // will be used for migration of basic configuration from contrexx_settings to \Cx\Core\Setting
-            $existingConfig = self::fetchConfigFromSettingsFile($this->cx->getWebsiteConfigPath() . '/settings.php');
-
             // function group
-            \Cx\Core\Setting\Controller\Setting::init('FavoriteList', 'function', 'Yaml', $configPath);
+            \Cx\Core\Setting\Controller\Setting::init('FavoriteList', 'function', 'Yaml');
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('functionMail')
-                && !\Cx\Core\Setting\Controller\Setting::add('functionMail', isset($existingConfig['functionMail']) ? $existingConfig['functionMail'] : 0, 1,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '', 'function')
+                && !\Cx\Core\Setting\Controller\Setting::add('functionMail', 0, 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'function')
             ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Function Mail");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('functionPrint')
-                && !\Cx\Core\Setting\Controller\Setting::add('functionPrint', isset($existingConfig['functionPrint']) ? $existingConfig['functionPrint'] : 0, 2,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '', 'function')
+                && !\Cx\Core\Setting\Controller\Setting::add('functionPrint', 0, 2,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'function')
             ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Function Print");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('functionRecommendation')
-                && !\Cx\Core\Setting\Controller\Setting::add('functionRecommendation', isset($existingConfig['functionRecommendation']) ? $existingConfig['functionRecommendation'] : 0, 3,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '', 'function')
+                && !\Cx\Core\Setting\Controller\Setting::add('functionRecommendation', 0, 3,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'function')
             ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Function Recommendation");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('functionInquiry')
-                && !\Cx\Core\Setting\Controller\Setting::add('functionInquiry', isset($existingConfig['functionInquiry']) ? $existingConfig['functionInquiry'] : 0, 4,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '', 'function')
+                && !\Cx\Core\Setting\Controller\Setting::add('functionInquiry', 0, 4,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'function')
             ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Function Inquiry");
             }
 
             // notification group
-            \Cx\Core\Setting\Controller\Setting::init('FavoriteList', 'notification', 'Yaml', $configPath);
+            \Cx\Core\Setting\Controller\Setting::init('FavoriteList', 'notification', 'Yaml');
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationMail')
-                && !\Cx\Core\Setting\Controller\Setting::add('notificationMail', isset($existingConfig['notificationMail']) ? $existingConfig['notificationMail'] : 0, 1,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '', 'notification')
+                && !\Cx\Core\Setting\Controller\Setting::add('notificationMail', 0, 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'notification')
             ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Mail");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationMailMail')
-                && !\Cx\Core\Setting\Controller\Setting::add('notificationMailMail', isset($existingConfig['notificationMailMail']) ? $existingConfig['notificationMailMail'] : '', 2,
+                && !\Cx\Core\Setting\Controller\Setting::add('notificationMailMail', '', 2,
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'notification')
             ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Mail Mail");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationPrint')
-                && !\Cx\Core\Setting\Controller\Setting::add('notificationPrint', isset($existingConfig['notificationPrint']) ? $existingConfig['notificationPrint'] : 0, 3,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '', 'notification')
+                && !\Cx\Core\Setting\Controller\Setting::add('notificationPrint', 0, 3,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'notification')
             ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Print");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationPrintMail')
-                && !\Cx\Core\Setting\Controller\Setting::add('notificationPrintMail', isset($existingConfig['notificationPrintMail']) ? $existingConfig['notificationPrintMail'] : '', 4,
+                && !\Cx\Core\Setting\Controller\Setting::add('notificationPrintMail', '', 4,
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'notification')
             ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Print Mail");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationRecommendation')
-                && !\Cx\Core\Setting\Controller\Setting::add('notificationRecommendation', isset($existingConfig['notificationRecommendation']) ? $existingConfig['notificationRecommendation'] : 0, 5,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '', 'notification')
+                && !\Cx\Core\Setting\Controller\Setting::add('notificationRecommendation', 0, 5,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'notification')
             ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Recommendation");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationRecommendationMail')
-                && !\Cx\Core\Setting\Controller\Setting::add('notificationRecommendationMail', isset($existingConfig['notificationRecommendationMail']) ? $existingConfig['notificationRecommendationMail'] : '', 6,
+                && !\Cx\Core\Setting\Controller\Setting::add('notificationRecommendationMail', '', 6,
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'notification')
             ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Mail Recommendation");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationInquiry')
-                && !\Cx\Core\Setting\Controller\Setting::add('notificationInquiry', isset($existingConfig['notificationInquiry']) ? $existingConfig['notificationInquiry'] : 0, 7,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '', 'notification')
+                && !\Cx\Core\Setting\Controller\Setting::add('notificationInquiry', 0, 7,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'notification')
             ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Inquiry");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationInquiryMail')
-                && !\Cx\Core\Setting\Controller\Setting::add('notificationInquiryMail', isset($existingConfig['notificationInquiryMail']) ? $existingConfig['notificationInquiryMail'] : '', 8,
+                && !\Cx\Core\Setting\Controller\Setting::add('notificationInquiryMail', '', 8,
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'notification')
             ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Inquiry Mail");
             }
 
             // pdf group
-            \Cx\Core\Setting\Controller\Setting::init('FavoriteList', 'pdf', 'Yaml', $configPath);
+            \Cx\Core\Setting\Controller\Setting::init('FavoriteList', 'pdf', 'Yaml');
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('pdfLogo')
-                && !\Cx\Core\Setting\Controller\Setting::add('pdfLogo', isset($existingConfig['pdfLogo']) ? $existingConfig['pdfLogo'] : '', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('pdfLogo', '', 1,
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'pdf')
             ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList PDF Logo");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('pdfAddress')
-                && !\Cx\Core\Setting\Controller\Setting::add('pdfAddress', isset($existingConfig['pdfAddress']) ? $existingConfig['pdfAddress'] : '', 2,
+                && !\Cx\Core\Setting\Controller\Setting::add('pdfAddress', '', 2,
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXTAREA, '', 'pdf')
             ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList PDF Address");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('pdfFooter')
-                && !\Cx\Core\Setting\Controller\Setting::add('pdfFooter', isset($existingConfig['pdfFooter']) ? $existingConfig['pdfFooter'] : '', 3,
+                && !\Cx\Core\Setting\Controller\Setting::add('pdfFooter', '', 3,
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXTAREA, '', 'pdf')
             ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList PDF Footer");
@@ -229,7 +224,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         break;
                     default:
                         //save the setting values
-                        \Cx\Core\Setting\Controller\Setting::init($this->getName(), null, 'Yaml');
+                        \Cx\Core\Setting\Controller\Setting::init($this->getName(), null, 'Yaml', null, \Cx\Core\Setting\Controller\Setting::REPOPULATE);
                         if (!empty($_POST['bsubmit'])) {
                             \Cx\Core\Setting\Controller\Setting::storeFromPost();
                         }
