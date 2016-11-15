@@ -2075,7 +2075,6 @@ class GalleryManager extends GalleryLibrary
                 case 'enable_popups':
                     if ($objResult->fields['value'] != 'on') {
                         $this->_objTpl->SetVariable(array(
-                            'IMAGE_WIDTH_CONTAINER_VISIBILITY'  => 'display: none',
                             'SLIDE_SHOW_BLOCK'                  => 'display: none',
                         ));
                     } else {
