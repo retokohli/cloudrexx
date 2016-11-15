@@ -180,8 +180,10 @@ class Setting{
      * @param   string    $fileSystemConfigRepository     An optional path
      *                                to the storage location of config files (/config) which shall be used for the engine 'File System'.
      *                                Default to set Database
-     * @param   int       $populate   Defines behavior of what to do when section already exists; NOT_POPULATE(0) - return,
-     *                                POPULATE(1) - add elements to existing array; REPOPULATE(2) - replace, set by default;
+     * @param   int       $populate   Defines behavior of what to do when section already exists (defaults to NOT_POPULATE):
+     *                                - NOT_POPULATE(0): do nothing
+     *                                - POPULATE(1): add elements to existing array
+     *                                - REPOPULATE(2): replace existing elements
      * @return  boolean               True on success, false otherwise
      * @global  ADOConnection   $objDatabase
      */
