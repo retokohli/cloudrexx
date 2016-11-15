@@ -515,14 +515,17 @@ class Setting{
         }
         self::show_section($objTemplateLocal, $section, $prefix, $readOnly);
         // The tabindex must be set in the form name in any case
-        $objTemplateLocal->setGlobalVariable(
-            'CORE_SETTING_TAB_INDEX', self::$tab_index);
+        $objTemplateLocal->setGlobalVariable(array(
+            'CORE_SETTING_TAB_INDEX' => self::$tab_index,
+            'CORE_SETTING_GROUP' => self::$group,
+        ));
         // Set up tab, if any
         if (!empty($tab_name)) {
             $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
             $objTemplateLocal->setGlobalVariable(array(
                 'CORE_SETTING_TAB_NAME' => $tab_name,
                 'CORE_SETTING_TAB_INDEX' => self::$tab_index,
+                'CORE_SETTING_GROUP' => self::$group,
                 'CORE_SETTING_TAB_CLASS' => (self::$tab_index == $active_tab ? 'active' : ''),
                 'CORE_SETTING_TAB_DISPLAY' => (self::$tab_index++ == $active_tab ? 'block' : 'none'),
                 'CORE_SETTING_CURRENT_TAB'=>'tab-'.$active_tab
@@ -913,6 +916,7 @@ class Setting{
             return false;
         }
         $arrSettings = $engine->getArraySetting();
+        $submittedGroup = !empty($_POST['settingGroup']) ? $_POST['settingGroup'] : null;
         unset($_POST['bsubmit']);
         $result = true;
         // Compare POST with current settings and only store what was changed.
@@ -993,6 +997,8 @@ class Setting{
                 }
                 //\DBG::log('setting value ' . $name . ' = ' . $value);
                 self::set($name, $value);
+            } elseif ($arrSettings[$name]['type'] == self::TYPE_CHECKBOX && $arrSettings[$name]['group'] == $submittedGroup) {
+                self::set($name, null);
             }
         }
         //echo("self::storeFromPost(): So far, the result is ".($result ? 'okay' : 'no good')."<br />");
