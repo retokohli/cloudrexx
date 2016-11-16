@@ -183,6 +183,17 @@ class Resolver {
             $aliaspage = clone $aliaspage;
             $aliaspage->setVirtual(true);
         } else {
+            // if the current URL points to a file:
+            if (
+                empty($this->url->getLangDir()) &&
+                preg_match('/^[^?]*\.[a-z0-9]{2,4}$/', $this->url->toString())
+            ) {
+                global $url;
+                $_GET['id'] = 404;
+                $this->url = \Cx\Core\Routing\Url::fromModuleAndCmd('Error', '', \FWLanguage::getDefaultLangId());
+                $url = $this->url;
+            }
+
             $this->lang = \Env::get('init')->getFallbackFrontendLangId();
 
             //try to find the language in the url
