@@ -789,11 +789,18 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                             . '&amp;eid=' . $arrEntry['entryId'] . '">'
                             . $_ARRAYLANG['TXT_MEDIADIR_DETAIL'] .'</a>';
                         $strEntryTitle = '<b>'.contrexx_raw2xhtml($arrEntry['entryFields']['0']).'</b>';
-                            $mapIndex      = $objGoogleMap->getMapIndex();
-                        $clickFunction =
-                            "if (infowindow_$mapIndex) { infowindow_$mapIndex.close(); }
-                                infowindow_$mapIndex.setContent(info$intEntryId);
-                                infowindow_$mapIndex.open(map_$mapIndex, marker$intEntryId)";
+                        $mapIndex      = $objGoogleMap->getMapIndex();
+
+                        $clickFunction = <<<JSCODE
+infoWindow = cx.variables.get('map_{$mapIndex}_infoWindow', '{$objGoogleMap->getMapId()}');
+if (infoWindow) {
+    infoWindow.close();
+}
+mapMarker = cx.variables.get('map_{$mapIndex}_markers', '{$objGoogleMap->getMapId()}')[$intEntryId];
+infoWindow.setContent(mapMarker.info);
+infoWindow.open(map_$mapIndex, mapMarker.marker);
+JSCODE;
+
                         $objGoogleMap->addMapMarker(
                             $intEntryId,
                             $strValueLon,
