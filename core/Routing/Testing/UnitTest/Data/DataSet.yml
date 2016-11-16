@@ -2327,3 +2327,31 @@ contrexx_content_page:
     target: ""
     module: "Home"
     cmd: ""
+contrexx_languages:
+  -
+    id: 1
+    lang: "de"
+    name: "Deutsch"
+    charset: "UTF-8"
+    themesid: 1
+    print_themes_id: 4
+    pdf_themes_id: 5
+    frontend: 1
+    backend: 1
+    is_default: "false"
+    mobile_themes_id: 2
+    fallback: 0
+    app_themes_id: 6
+  -
+    id: 2
+    lang: "en"
+    name: "English"
+    charset: "UTF-8"
+    themesid: 1
+    print_themes_id: 4
+    pdf_themes_id: 5
+    frontend: 1
+    backend: 1
+    is_default: "true"
+    mobile_themes_id: 2
+    app_themes_id: 6
