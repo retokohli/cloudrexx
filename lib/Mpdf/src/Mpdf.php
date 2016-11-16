@@ -836,9 +836,6 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 	 */
 	public function __construct(array $config = [])
 	{
-                //Load the library file functions.php
-                require __DIR__ . '/functions.php';
-
 		$this->_dochecks();
 
 		list(

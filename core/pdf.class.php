@@ -36,6 +36,9 @@
 * @version      1.1.0
 */
 
+//Load the library file functions.php
+require ASCMS_LIBRARY_PATH . '/Mpdf/src/functions.php';
+
 /**
 * PDF class
 *
@@ -46,80 +49,70 @@
 * @subpackage   core
 * @version      1.1.0
 */
-class PDF
+class PDF extends \Mpdf\Mpdf
 {
     /**
     * string $content
     * Content for insert
     */
-    public $content;
-
-    /**
-    * string $title
-    * File name
-    */
-    public $title;
-
-    /**
-    * string $orientation
-    * pageorientation
-    */
-    public $pdf_orientation;
-
-    /**
-    * string $unit
-    * Unit-format
-    */
-    public $pdf_unit;
-
-    /**
-    * string $format
-    * Page-format
-    */
-    public $pdf_format;
+    private $content;
 
     /**
      * @var string
      */
-    public $pdf_destination;
-
-    /**
-    * string $pdf_creator
-    * PDF author
-    */
-    public $pdf_author;
+    private $destination = \Mpdf\Output\Destination::INLINE;
 
     /**
      * Constructor
      */
-    function __construct()
+    public function __construct($orientation = 'P', $format = 'A4')
     {
-        global $_CONFIG;
+        parent::__construct(array(
+            'orientation' => $orientation,
+            'format'      => $format
+        ));
+    }
 
-        $this->pdf_orientation  = 'P';
-        $this->pdf_format       = 'A4';
-        $this->pdf_author       = $_CONFIG['coreCmsName'];
-        $this->pdf_destination  = \Mpdf\Output\Destination::INLINE;
+    /**
+     * Set the content
+     *
+     * @param string $content
+     */
+    public function setContent($content)
+    {
+        $this->content = $content;
+    }
+
+    /**
+     * Set the output destination
+     *
+     * @param type $destination
+     */
+    public function setDestination($destination)
+    {
+        $this->destination = $destination;
     }
 
     /**
      * Create PDF
      */
-    function Create()
+    public function Create()
     {
+        global $_CONFIG;
+
+        $libPath = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getCodeBaseLibraryPath();
+        $this->noImageFile = $libPath . '/Mpdf/data/no_image.gif';
         $this->content = utf8_decode($this->_ParseHTML($this->content));
-        $config = array(
-            'orientation' => $this->pdf_orientation,
-            'format'      => $this->pdf_format
-        );
-        $pdf = new Mpdf\Mpdf($config);
-        $pdf->SetAuthor($this->pdf_author);
-        $pdf->SetDisplayPreferences('HideWindowUI');
-        $pdf->AddPage();
-        $pdf->WriteHTML($this->content);
-        $pdf->Output(
+        if (empty($this->author)) {
+            $this->SetAuthor($_CONFIG['coreCmsName']);
+        }
+        $this->SetDisplayPreferences('HideWindowUI');
+        $this->AddPage();
+        $this->WriteHTML($this->content);
+        $this->Output(
             \Cx\Lib\FileSystem\FileSystem::replaceCharacters($this->title),
-            $this->pdf_destination
+            $this->destination
         );
     }
 
@@ -130,8 +123,8 @@ class PDF
      *
      * @return string
      */
-    function _ParseHTML($source) {
-
+    function _ParseHTML($source)
+    {
         // H1
         // ----------------
         $source = str_replace('<h1>', '<div class="h1">', $source);
