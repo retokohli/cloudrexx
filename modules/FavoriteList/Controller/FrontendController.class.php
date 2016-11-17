@@ -53,7 +53,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
 
         $em = $this->cx->getDb()->getEntityManager();
         $catalogRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Catalog');
-        $catalog = $catalogRepo->findOneBy(array('sessionId' => $this->getComponent('Session')->getSession()->sessionid));
+        $sessionId = $this->getComponent('Session')->getSession()->sessionid;
+        $catalog = $catalogRepo->findOneBy(array('sessionId' => $sessionId));
 
         switch ($cmd) {
             case 'mail':
@@ -98,9 +99,11 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                     }
                 }
 
+                $template->parse(strtolower($this->getName()) . '_print');
                 \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'pdf');
 //                $pdfTemplateId = \Cx\Core\Setting\Controller\Setting::getValue('pdfTemplate', 'pdf');
                 $pdfTemplateId = 1;
+
                 $catalogHtml = $this->getController('Json')->getCatalog();
                 $substitution = array(
                     strtoupper($this->getName()) . '_PRINT_PDF_LOGO' => \Cx\Core\Setting\Controller\Setting::getValue('pdfLogo', 'pdf'),
@@ -108,10 +111,18 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                     strtoupper($this->getName()) . '_PRINT_PDF_CATALOG' => $catalogHtml,
                     strtoupper($this->getName()) . '_PRINT_PDF_FOOTER' => \Cx\Core\Setting\Controller\Setting::getValue('pdfFooter', 'pdf'),
                 );
+
                 $pdf = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Pdf');
-                $pdfFile = $pdf->generatePDF($pdfTemplateId, $substitution, $this->getName());
-                var_dump($pdfFile);
-//                header('Location: ' . $pdfFile['filePath']);
+                $pdfFile = $pdf->generatePDF($pdfTemplateId, $substitution, $this->getName() . '_Catalog');
+                $newPdfFilePath = 'images/' . $this->getName() . '/Catalog_' . $sessionId . '.pdf';
+                copy(substr($pdfFile['filePath'], 1), $newPdfFilePath);
+
+                $template->setVariable(array(
+                    strtoupper($this->getName()) . '_PRINT_PDF_PATH' => $newPdfFilePath,
+                    strtoupper($this->getName()) . '_PRINT_ACTION' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_PRINT_ACTION'],
+                ));
+
+                \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Print.js', 1));
                 break;
             case 'recommendation':
                 if (empty($catalog)) {

@@ -78,5 +78,5 @@ cx.ready(function () {
     cx.favoriteListUpdateBlock = function (data) {
         cx.jQuery('#favoriteListBlock').empty();
         cx.jQuery(data).appendTo('#favoriteListBlock');
-    }
+    };
 });
