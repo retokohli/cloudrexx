@@ -57,45 +57,113 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
 
         switch ($cmd) {
             case 'mail':
-                if (!$catalog) {
-                    header('Location: ' . \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()));
+                if (empty($catalog)) {
+                    $template->setVariable(array(
+                        strtoupper($this->getName()) . '_MAIL_MESSAGE_NO_CATALOG' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_CATALOG'],
+                    ));
+                    $template->parse(strtolower($this->getName()) . '_mail_no_catalog');
+                    break;
+                } else {
+                    $favorites = $catalog->getFavorites();
+                    if (!$favorites->count()) {
+                        $template->setVariable(array(
+                            strtoupper($this->getName()) . '_MAIL_MESSAGE_NO_ENTRIES' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES'],
+                        ));
+                        $template->parse(strtolower($this->getName()) . '_mail_no_entries');
+                        break;
+                    }
                 }
+
                 if (isset($_POST['send'])) {
 
+                } else {
+                    $template->parse(strtolower($this->getName()) . '_mail');
                 }
                 break;
             case 'print':
-                if (!$catalog) {
-                    header('Location: ' . \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()));
+                if (empty($catalog)) {
+                    $template->setVariable(array(
+                        strtoupper($this->getName()) . '_PRINT_MESSAGE_NO_CATALOG' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_CATALOG'],
+                    ));
+                    $template->parse(strtolower($this->getName()) . '_print_no_catalog');
+                    break;
+                } else {
+                    $favorites = $catalog->getFavorites();
+                    if (!$favorites->count()) {
+                        $template->setVariable(array(
+                            strtoupper($this->getName()) . '_PRINT_MESSAGE_NO_ENTRIES' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES'],
+                        ));
+                        $template->parse(strtolower($this->getName()) . '_print_no_entries');
+                        break;
+                    }
                 }
+
                 \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'pdf');
-                $pdfTemplateId = \Cx\Core\Setting\Controller\Setting::getValue('pdfTemplate', 'pdf');
+//                $pdfTemplateId = \Cx\Core\Setting\Controller\Setting::getValue('pdfTemplate', 'pdf');
+                $pdfTemplateId = 1;
+                $catalogHtml = $this->getController('Json')->getCatalog();
                 $substitution = array(
-                    'FAVORITELIST_PRINT_PDF_LOGO' => \Cx\Core\Setting\Controller\Setting::getValue('pdfLogo', 'pdf'),
-                    'FAVORITELIST_PRINT_PDF_ADDRESS' => \Cx\Core\Setting\Controller\Setting::getValue('pdfAddress', 'pdf'),
-                    'FAVORITELIST_PRINT_PDF_FOOTER' => \Cx\Core\Setting\Controller\Setting::getValue('pdfFooter', 'pdf'),
+                    strtoupper($this->getName()) . '_PRINT_PDF_LOGO' => \Cx\Core\Setting\Controller\Setting::getValue('pdfLogo', 'pdf'),
+                    strtoupper($this->getName()) . '_PRINT_PDF_ADDRESS' => \Cx\Core\Setting\Controller\Setting::getValue('pdfAddress', 'pdf'),
+                    strtoupper($this->getName()) . '_PRINT_PDF_CATALOG' => $catalogHtml,
+                    strtoupper($this->getName()) . '_PRINT_PDF_FOOTER' => \Cx\Core\Setting\Controller\Setting::getValue('pdfFooter', 'pdf'),
                 );
                 $pdf = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Pdf');
                 $pdfFile = $pdf->generatePDF($pdfTemplateId, $substitution, $this->getName());
+                var_dump($pdfFile);
+//                header('Location: ' . $pdfFile['filePath']);
                 break;
             case 'recommendation':
-                if (!$catalog) {
-                    header('Location: ' . \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()));
+                if (empty($catalog)) {
+                    $template->setVariable(array(
+                        strtoupper($this->getName()) . '_RECOMMENDATION_MESSAGE_NO_CATALOG' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_CATALOG'],
+                    ));
+                    $template->parse(strtolower($this->getName()) . '_recommendation_no_catalog');
+                    break;
+                } else {
+                    $favorites = $catalog->getFavorites();
+                    if (!$favorites->count()) {
+                        $template->setVariable(array(
+                            strtoupper($this->getName()) . '_RECOMMENDATION_MESSAGE_NO_ENTRIES' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES'],
+                        ));
+                        $template->parse(strtolower($this->getName()) . '_recommendation_no_entries');
+                        break;
+                    }
                 }
+
                 if (isset($_POST['send'])) {
 
+                } else {
+                    $template->parse(strtolower($this->getName()) . '_recommendation');
                 }
                 break;
             case 'inquiry':
-                if (!$catalog) {
-                    header('Location: ' . \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName()));
+                if (empty($catalog)) {
+                    $template->setVariable(array(
+                        strtoupper($this->getName()) . '_INQUIRY_MESSAGE_NO_CATALOG' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_CATALOG'],
+                    ));
+                    $template->parse(strtolower($this->getName()) . '_inquiry_no_catalog');
+                    break;
+                } else {
+                    $favorites = $catalog->getFavorites();
+                    if (!$favorites->count()) {
+                        $template->setVariable(array(
+                            strtoupper($this->getName()) . '_INQUIRY_MESSAGE_NO_ENTRIES' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES'],
+                        ));
+                        $template->parse(strtolower($this->getName()) . '_inquiry_no_entries');
+                        break;
+                    }
                 }
+
                 if (isset($_POST['send'])) {
 
                 } else {
                     $em = $this->cx->getDb()->getEntityManager();
                     $formFieldRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\FormField');
                     $formFields = $formFieldRepo->findAll();
+
+                    $template->parse(strtolower($this->getName()) . '_inquiry');
+
                     $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($formFields);
                     $dataSet->sortColumns(array('order' => 'ASC'));
                     foreach ($dataSet as $formField) {
@@ -149,39 +217,51 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 }
                 break;
             default:
-                if (!$catalog) {
+                if (empty($catalog)) {
                     $template->setVariable(array(
-                        strtoupper($this->getName()) . '_CATALOG' => $_ARRAYLANG['TXT_MODULE' . strtoupper($this->getName()) . 'MESSAGE_NO_CATALOG'],
+                        strtoupper($this->getName()) . '_MESSAGE_NO_CATALOG' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_CATALOG'],
                     ));
+                    $template->parse(strtolower($this->getName()) . '_no_catalog');
+                    break;
                 } else {
-                    $favorites = $catalog->getFavorites()->toArray();
-                    $favoritesView = new \Cx\Core\Html\Controller\ViewGenerator(
-                        $favorites,
-                        array(
-                            $this->getNamespace() . '\Model\Entity\Favorite' => $this->getViewGeneratorOptions(
-                                $this->getNamespace() . '\Model\Entity\Favorite'
-                            ),
-                        )
-                    );
-                    $template->setVariable(array(
-                        strtoupper($this->getName()) . '_CATALOG' => $favoritesView,
-                    ));
+                    $favorites = $catalog->getFavorites();
+                    if (!$favorites->count()) {
+                        $template->setVariable(array(
+                            strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES'],
+                        ));
+                        $template->parse(strtolower($this->getName()) . '_no_entries');
+                        break;
+                    }
+                }
 
-                    $template->parse(strtolower($this->getName()) . '_catalog_actions');
-                    \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function');
-                    $cmds = array(
-                        'mail',
-                        'print',
-                        'recommendation',
-                        'inquiry',
-                    );
-                    foreach ($cmds as $cmd) {
-                        if (\Cx\Core\Setting\Controller\Setting::getValue('function' . ucfirst($cmd), 'function')) {
-                            $template->setVariable(array(
-                                strtoupper($this->getName()) . '_ACT_' . strtoupper($cmd) . '_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), $cmd),
-                            ));
-                            $template->parse(strtolower($this->getName()) . '_catalog_actions_' . $cmd);
-                        }
+                $favorites = $catalog->getFavorites()->toArray();
+                $favoritesView = new \Cx\Core\Html\Controller\ViewGenerator(
+                    $favorites,
+                    array(
+                        $this->getNamespace() . '\Model\Entity\Favorite' => $this->getViewGeneratorOptions(
+                            $this->getNamespace() . '\Model\Entity\Favorite'
+                        ),
+                    )
+                );
+                $template->parse(strtolower($this->getName()) . '_catalog');
+                $template->setVariable(array(
+                    strtoupper($this->getName()) . '_CATALOG' => $favoritesView,
+                ));
+
+                $template->parse(strtolower($this->getName()) . '_catalog_actions');
+                \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function');
+                $cmds = array(
+                    'mail',
+                    'print',
+                    'recommendation',
+                    'inquiry',
+                );
+                foreach ($cmds as $cmd) {
+                    if (\Cx\Core\Setting\Controller\Setting::getValue('function' . ucfirst($cmd), 'function')) {
+                        $template->setVariable(array(
+                            strtoupper($this->getName()) . '_ACT_' . strtoupper($cmd) . '_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), $cmd),
+                        ));
+                        $template->parse(strtolower($this->getName()) . '_catalog_actions_' . $cmd);
                     }
                 }
         }
