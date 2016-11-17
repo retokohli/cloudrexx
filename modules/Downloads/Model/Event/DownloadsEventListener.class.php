@@ -90,8 +90,35 @@ class DownloadsEventListener extends DefaultEventListener
                 continue;
             }
 
-            // Update the access user attributes
-            $updateQuery = $langStatus ?
+            // Update the download locales
+            $downloadQuery = $langStatus ?
+                'INSERT IGNORE INTO
+                                    `' . DBPREFIX . 'module_downloads_download_locale`
+                                    (   `lang_id`,
+                                        `download_id`,
+                                        `name`,
+                                        `source`,
+                                        `source_name`,
+                                        `file_type`,
+                                        `description`,
+                                        `metakeys`
+                                    )
+                                    SELECT ' . $langId . ',
+                                            `download_id`,
+                                            `name`,
+                                            `source`,
+                                            `source_name`,
+                                            `file_type`,
+                                            `description`,
+                                            `metakeys`
+                                    FROM `' . DBPREFIX . 'module_downloads_download_locale`
+                                    WHERE lang_id = ' . $defaultLangId
+                :   'DELETE FROM `' . DBPREFIX . 'module_downloads_download_locale`
+                                            WHERE lang_id = ' . $langId;
+            $objDatabase->Execute($downloadQuery);
+
+            // Update the category locales
+            $categoryQuery = $langStatus ?
                 'INSERT IGNORE INTO
                                     `' . DBPREFIX . 'module_downloads_category_locale`
                                     (   `lang_id`,
@@ -107,7 +134,7 @@ class DownloadsEventListener extends DefaultEventListener
                                     WHERE lang_id = ' . $defaultLangId
                 :   'DELETE FROM `' . DBPREFIX . 'module_downloads_category_locale`
                                             WHERE lang_id = ' . $langId;
-            $objDatabase->Execute($updateQuery);
+            $objDatabase->Execute($categoryQuery);
         }
     }
 
