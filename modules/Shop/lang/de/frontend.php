@@ -32,7 +32,6 @@
  * @package     cloudrexx
  * @subpackage  module_shop
  */
-global $_ARRAYLANG;
 $_ARRAYLANG['TXT_SHOP_BUTTON_REGISTRATION'] = "Jetzt registrieren";
 $_ARRAYLANG['TXT_SHOP_BUTTON_NO_REGISTRATION'] = "Bestellen ohne Registrierung";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_ADDED_TO_CART'] = "Der Artikel wurde in Ihren Warenkorb gelegt.";
