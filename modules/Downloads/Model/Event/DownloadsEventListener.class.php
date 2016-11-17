@@ -135,6 +135,23 @@ class DownloadsEventListener extends DefaultEventListener
                 :   'DELETE FROM `' . DBPREFIX . 'module_downloads_category_locale`
                                             WHERE lang_id = ' . $langId;
             $objDatabase->Execute($categoryQuery);
+
+            // Update the group locales
+            $groupQuery = $langStatus ?
+                'INSERT IGNORE INTO
+                                    `' . DBPREFIX . 'module_downloads_group_locale`
+                                    (   `lang_id`,
+                                        `group_id`,
+                                        `name`
+                                    )
+                                    SELECT ' . $langId . ',
+                                            `group_id`,
+                                            `name`
+                                    FROM `' . DBPREFIX . 'module_downloads_group_locale`
+                                    WHERE lang_id = ' . $defaultLangId
+                :   'DELETE FROM `' . DBPREFIX . 'module_downloads_group_locale`
+                                            WHERE lang_id = ' . $langId;
+            $objDatabase->Execute($groupQuery);
         }
     }
 
