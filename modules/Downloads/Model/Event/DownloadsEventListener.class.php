@@ -60,5 +60,56 @@ class DownloadsEventListener extends DefaultEventListener
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 
+    /**
+     * Update the category locales
+     * while activate/deactivate a language in the Administrative -> Language
+     *
+     * @param array $eventArgs Arguments for the event
+     *
+     * @return boolean
+     */
+    protected function languageStatusUpdate(array $eventArgs) {
+        global $objDatabase;
+
+        if (empty($eventArgs)) {
+            return;
+        }
+
+        $defaultLangId = \FWLanguage::getDefaultLangId();
+        foreach ($eventArgs['langData'] as $args) {
+
+            $langId = isset($args['langId']) ? $args['langId'] : 0;
+            $langStatus = isset($args['status']) ? $args['status'] : 0;
+
+            if (empty($langId)
+                || !isset($args['status'])
+                || (!$langStatus
+                    && !$eventArgs['langRemovalStatus']
+                )
+            ) {
+                continue;
+            }
+
+            // Update the access user attributes
+            $updateQuery = $langStatus ?
+                'INSERT IGNORE INTO
+                                    `' . DBPREFIX . 'module_downloads_category_locale`
+                                    (   `lang_id`,
+                                        `category_id`,
+                                        `name`,
+                                        `description`
+                                    )
+                                    SELECT ' . $langId . ',
+                                            `category_id`,
+                                            `name`,
+                                            `description`
+                                    FROM `' . DBPREFIX . 'module_downloads_category_locale`
+                                    WHERE lang_id = ' . $defaultLangId
+                :   'DELETE FROM `' . DBPREFIX . 'module_downloads_category_locale`
+                                            WHERE lang_id = ' . $langId;
+            $objDatabase->Execute($updateQuery);
+        }
+    }
+
 
 }

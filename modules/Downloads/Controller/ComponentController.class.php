@@ -155,6 +155,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function registerEventListeners() {
         $eventListener = new DownloadsEventListener($this->cx);
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
+        $this->cx->getEvents()->addEventListener('languageStatusUpdate', $eventListener);
     }
 
 }
