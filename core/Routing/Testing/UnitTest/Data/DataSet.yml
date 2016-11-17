@@ -2,7 +2,7 @@ contrexx_content_node:
   -
     id: 1
     lft: 1
-    rgt: 114
+    rgt: 116
     lvl: 0
   -
     id: 532
@@ -339,6 +339,12 @@ contrexx_content_node:
     parent_id: 1
     lft: 112
     rgt: 113
+    lvl: 1
+  -
+    id: 588
+    parent_id: 1
+    lft: 114
+    rgt: 115
     lvl: 1
 contrexx_content_page:
   -
@@ -2326,6 +2332,80 @@ contrexx_content_page:
     active: 1
     target: ""
     module: "Home"
+    cmd: ""
+  -
+    id: 738
+    node_id: 588
+    nodeIdShadowed: 588
+    lang: 2
+    type: "application"
+    caching: 0
+    updatedAt: "2016-11-17 17:49:00"
+    updatedBy: "noreply@contrexx.com"
+    title: "Error"
+    linkTarget: ""
+    contentTitle: "Error"
+    slug: "Error"
+    content: "{APPLICATION_DATA}"
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "Error"
+    metadesc: "Error"
+    metakeys: "Error"
+    metarobots: 1
+    metaimage: "Error"
+    editingStatus: ""
+    protection: 0
+    frontendAccessId: 0
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: ""
+    module: "Error"
+    cmd: ""
+  -
+    id: 739
+    node_id: 588
+    nodeIdShadowed: 588
+    lang: 1
+    type: "fallback"
+    caching: 0
+    updatedAt: "2016-11-17 17:49:35"
+    updatedBy: "noreply@contrexx.com"
+    title: "Error"
+    linkTarget: ""
+    contentTitle: "Error"
+    slug: "Error"
+    content: ""
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "Error"
+    metadesc: "Error"
+    metakeys: "Error"
+    metarobots: 1
+    metaimage: "Error"
+    editingStatus: ""
+    protection: 0
+    frontendAccessId: 0
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: ""
+    module: "Access"
     cmd: ""
 contrexx_languages:
   -
