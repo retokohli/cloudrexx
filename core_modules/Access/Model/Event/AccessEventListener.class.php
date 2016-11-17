@@ -96,7 +96,7 @@ class AccessEventListener extends DefaultEventListener
             if (empty($langId)
                 || !isset($args['status'])
                 || (!$langStatus
-                    && !$eventArgs[0]['langRemovalStatus']
+                    && !$eventArgs['langRemovalStatus']
                 )
             ) {
                 continue;
