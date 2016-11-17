@@ -3558,7 +3558,7 @@ CREATE TABLE `contrexx_skins` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `theme_unique` (`themesname`),
   UNIQUE KEY `folder_unique` (`foldername`)
-) ENGINE=MyISAM ;
+) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_stats_browser` (
   `id` int(6) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) binary NOT NULL DEFAULT '',
