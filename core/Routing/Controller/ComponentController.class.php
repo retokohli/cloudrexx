@@ -78,7 +78,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 \Cx\Core\Csrf\Controller\Csrf::header(
                     'Location: ' . $url->toString(),
                     true,
-                   $rewriteRule->getRewriteStatusCode()
+                    $rewriteRule->getRewriteStatusCode()
                 );
                 die();
             }
@@ -101,7 +101,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 }
                 $continue = false;
                 die($content);
-            } catch (HTTP_Request2_Exception $e) {
+            } catch (\HTTP_Request2_Exception $e) {
                 \DBG::dump($e);
             }
         }
