@@ -1227,6 +1227,8 @@ $_ARRAYLANG['TXT_CORE_CM_METADESC'] = 'Description';
 $_ARRAYLANG['TXT_CORE_CM_METADESC_INFO'] = 'Search engines may use this as a description. Example: Example, Ltd. is the leading pizza delivery service in Western Europe.';
 $_ARRAYLANG['TXT_CORE_CM_METAKEYS'] = 'Keywords';
 $_ARRAYLANG['TXT_CORE_CM_METAKEYS_INFO'] = 'Search engines may use keywords as an additional search criteria. Example: Example, Pizza, Europe, Cheese.';
+$_ARRAYLANG['TXT_CORE_CM_METAIMAGE'] = 'Image';
+$_ARRAYLANG['TXT_CORE_CM_METAIMAGE_INFO'] = 'This image is shown on social networks as a preview image.';
 $_ARRAYLANG['TXT_CORE_CM_THEMES'] = 'Theme';
 $_ARRAYLANG['TXT_CORE_CM_THEMES_INFO'] = 'The page is rendered within the selected theme.';
 $_ARRAYLANG['TXT_CORE_CM_CUSTOM_CONTENT'] = 'Content Template';
@@ -1386,3 +1388,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SYSTEM_MANAGEMENT']        = "System Mana
 
 $_ARRAYLANG['TXT_CORE_EDIT_USER_CRM_ACCOUNT'] = 'This user is a crm contact, click to open the crm contact.';
 $_ARRAYLANG['TXT_CORE_NONE'] = 'None';
+
+$_ARRAYLANG['TXT_CORE_ACTIVE'] = "Active";
+$_ARRAYLANG['TXT_CORE_INACTIVE'] = 'Inactive';
+$_ARRAYLANG['TXT_CORE_SCHEDULED_ACTIVE'] = 'Activated by scheduled publishing';
+$_ARRAYLANG['TXT_CORE_SCHEDULED_INACTIVE'] = 'Deactivated due to scheduled publishing';

@@ -88,7 +88,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
     public function getAccessableMethods() {
         return array(
             'getFiles', 'getSites', 'getSources', 'createThumbnails',
-            'createDir', 'renameFile', 'removeFile', 
+            'createDir', 'renameFile', 'removeFile',
             'removeFileFromFolderWidget'=> new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false),
             'folderWidget' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false)
         );
@@ -265,7 +265,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      * @return boolean|array
      */
     public function folderWidget($params) {
-        \cmsSession::getInstance();
+        $this->getComponent('Session')->getSession();
 
         $folderWidgetId = isset($params['get']['id']) ? contrexx_input2int($params['get']['id']) : 0;
         if (   empty($folderWidgetId)
@@ -307,7 +307,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      */
     public function removeFileFromFolderWidget($params)
     {
-        \cmsSession::getInstance();
+        $this->getComponent('Session')->getSession();
 
         $folderWidgetId = isset($params['get']['widget']) ? contrexx_input2int($params['get']['widget']) : 0;
         if (   empty($folderWidgetId)

@@ -44,7 +44,7 @@ namespace Cx\Core_Modules\Stats\Controller;
  * @subpackage  coremodule_stats
  * @todo        Edit PHP DocBlocks!
  */
- 
+
 class MakeGraph
 {
     public $stats = '';
@@ -374,9 +374,9 @@ class MakeGraph
     function _generateGraph()
     {
         global $_ARRAYLANG;
-        
+
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        
+
         $graph = new \ykcee;
         $graph->SetImageSize($this->graphWidth, $this->graphHeight);
         $graph->SetTitleFont($cx->getCodeBaseLibraryPath().'/ykcee/VERDANA.TTF');
@@ -431,8 +431,8 @@ $objDatabase = $cx->getDb()->getAdoDb();
 $adminPage = true;
 $objInit = new \InitCMS($mode="backend");
 
-$sessionObj = \cmsSession::getInstance();
-$_SESSION->cmsSessionStatusUpdate("backend");
+$sessionObj = $cx->getComponent('Session')->getSession();
+$sessionObj->cmsSessionStatusUpdate("backend");
 \Permission::checkAccess(19, 'static');
 
 $objInit->_initBackendLanguage();
