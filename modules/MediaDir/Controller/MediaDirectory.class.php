@@ -425,12 +425,12 @@ class MediaDirectory extends MediaDirectoryLibrary
                         $this->moduleLangVar.'_PAGING' =>  $strPaging
                     ));
                 }
+            }
 
-                //no entries found
-                if (!$objEntries || empty($objEntries->arrEntries)) {
-                    $this->_objTpl->hideBlock($this->moduleNameLC.'EntryList');
-                    $this->_objTpl->clearVariables();
-                }
+            //no entries found
+            if (!$objEntries || empty($objEntries->arrEntries)) {
+                $this->_objTpl->hideBlock($this->moduleNameLC.'EntryList');
+                $this->_objTpl->clearVariables();
             }
         }
 
