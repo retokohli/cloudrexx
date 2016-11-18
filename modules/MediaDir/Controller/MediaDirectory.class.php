@@ -360,8 +360,8 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         //latest title
-        if($this->_objTpl->blockExists($this->moduleNameLC.'LatestTitle') && $intCategoryId == 0 && $intLevelId == 0){  
-            $this->_objTpl->touchBlock($this->moduleNameLC.'LatestTitle');      
+        if($this->_objTpl->blockExists($this->moduleNameLC.'LatestTitle') && $intCategoryId == 0 && $intLevelId == 0){
+            $this->_objTpl->touchBlock($this->moduleNameLC.'LatestTitle');
         }
 
         //list entries
@@ -391,9 +391,9 @@ class MediaDirectory extends MediaDirectoryLibrary
             $this->_objTpl->clearVariables();
         }
     }
-    
-    
-    
+
+
+
     function showAlphabetical()
     {
         global $_ARRAYLANG, $_CORELANG;
@@ -412,8 +412,8 @@ class MediaDirectory extends MediaDirectoryLibrary
             $objSearch->getSearchform($this->_objTpl, 1);
             $searchTerm = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : null;
         }
-        
-        $objEntries = new MediaDirectoryEntry($this->moduleName);         
+
+        $objEntries = new MediaDirectoryEntry($this->moduleName);
         $objEntries->getEntries(null,null,null,$searchTerm,false,null,true);
         $objEntries->listEntries($this->_objTpl,3);
     }
@@ -677,7 +677,7 @@ class MediaDirectory extends MediaDirectoryLibrary
     function getLatestEntries($formId = null, $blockName = null)
     {
         global $objTemplate;
-        
+
         $objEntry = new MediaDirectoryEntry($this->moduleName);
         $objEntry->getEntries(null, null, null, null, true, null, true, null, $this->arrSettings['settingsLatestNumHeadlines'], null, null, $formId);
         if($blockName==null){
@@ -784,9 +784,9 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         //check id and form
         if(!empty($_REQUEST['eid']) || !empty($_REQUEST['entryId'])) {
-        	if(!empty($_REQUEST['eid'])) {
-        		$intEntryId = intval($_REQUEST['eid']);
-        	}
+            if(!empty($_REQUEST['eid'])) {
+                $intEntryId = intval($_REQUEST['eid']);
+            }
             if(!empty($_REQUEST['entryId'])) {
                 $intEntryId = intval($_REQUEST['entryId']);
             }
@@ -812,9 +812,9 @@ class MediaDirectory extends MediaDirectoryLibrary
             } else {
                 //save entry data
                 if(isset($_POST['submitEntryModfyForm'])) {
-                    $objEntry = new MediaDirectoryEntry($this->moduleName);     
-                    $strStatus = $objEntry->saveEntry($_POST, intval($_POST['entryId']));  
-                	
+                    $objEntry = new MediaDirectoryEntry($this->moduleName);
+                    $strStatus = $objEntry->saveEntry($_POST, intval($_POST['entryId']));
+
                     if(!empty($_POST['entryId'])) {
                         $objEntry->getEntries(intval($_POST['entryId']));
                         if($strStatus == true) {

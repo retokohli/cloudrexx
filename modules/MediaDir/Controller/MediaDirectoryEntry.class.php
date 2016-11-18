@@ -572,10 +572,10 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
                         if(!in_array($strAlphaIndex, $arrAlphaIndexes)){
                             if(is_numeric($strAlphaIndex)) {
-                                $strAlphaIndex = '0-9';  
+                                $strAlphaIndex = '0-9';
                             } else {
-                                $strAlphaIndex = '#';      
-                            }   
+                                $strAlphaIndex = '#';
+                            }
                         }
 
                         $arrAlphaGroups[$strAlphaIndex][] = $arrEntry;
@@ -1187,8 +1187,8 @@ JSCODE;
                             $strDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId])
                                             ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId]
                                             : '';
-                        }                            
-                        $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault, $intLangId);        
+                        }
+                        $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault, $intLangId);
                     } else {
                         // regular attribute get parsed
                         $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId], $intLangId);
@@ -1201,8 +1201,8 @@ JSCODE;
                                `form_id`='".intval($intFormId)."',
                                `field_id`='".intval($arrInputfield['id'])."',
                                `value`='".contrexx_raw2db($strInputfieldValue)."'
-                            ON DUPLICATE KEY
-                                UPDATE `value`='".contrexx_raw2db($strInputfieldValue)."'");
+                        ON DUPLICATE KEY
+                            UPDATE `value`='".contrexx_raw2db($strInputfieldValue)."'");
                     if (!$objResult) {
                         throw new \Exception($objDatabase->ErrorMsg());
                     }
@@ -1478,8 +1478,8 @@ JSCODE;
 
         return $list;
     }
-    
-    
+
+
     function saveOrder($arrData) {
         global $objDatabase;
 
