@@ -44,7 +44,7 @@ namespace Cx\Core_Modules\SysLog\Controller;
 * @version      5.0.0
 */
 class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
-    
+
     /**
      * This component's backend has only the default CMD
      * @return array List of commands
@@ -52,7 +52,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function getCommands() {
         return array();
     }
-    
+
     /**
      * Parses a rudimentary system log backend page
      * @param \Cx\Core\Html\Sigma $template Backend template for this page
@@ -64,17 +64,14 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
         // @todo: parse message if no entries (template block exists already)
         $parseObject = $this->getNamespace().'\Model\Entity\Log';
-        
+
         // set default sorting
         if (!isset($_GET['order'])) {
             $_GET['order'] = 'timestamp/DESC';
         }
-        $parseObject = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(array());
-        // setDataType is used to make the ViewGenerator load the proper options if $parseObject is empty
-        $parseObject->setDataType('Cx\Core_Modules\SysLog\Model\Entity\Log');
         // configure view
-        $viewGenerator = new \Cx\Core\Html\Controller\ViewGenerator($parseObject, $this->getAllViewGeneratorOptions());
-        $template->setVariable('ENTITY_VIEW', $viewGenerator); 
+        $viewGenerator = new \Cx\Core\Html\Controller\ViewGenerator('Cx\Core_Modules\SysLog\Model\Entity\Log', $this->getAllViewGeneratorOptions());
+        $template->setVariable('ENTITY_VIEW', $viewGenerator);
     }
 
     /**
@@ -157,4 +154,3 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         }
     }
 }
-

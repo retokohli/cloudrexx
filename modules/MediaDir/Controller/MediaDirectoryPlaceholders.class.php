@@ -79,14 +79,14 @@ class MediaDirectoryPlaceholders extends MediaDirectoryLibrary
     function getLatestPlacholder()
     {
         $this->strPlaceholder = null;
-
+        
         //If the settings option 'List latest entries in webdesign template' is deactivated
         //then do not parse the latest entries
         if (!$this->arrSettings['showLatestEntriesInWebdesignTmpl']) {
             return;
         }
         $intLimitEnd = intval($this->arrSettings['settingsLatestNumHeadlines']);
-
+        
         $objEntries = new MediaDirectoryEntry($this->moduleName); 
         $objEntries->getEntries(null,null,null,null,true,null,1,null,$intLimitEnd);  
         
