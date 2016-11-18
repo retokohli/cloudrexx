@@ -99,30 +99,25 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                     }
                 }
 
-                $template->parse(strtolower($this->getName()) . '_print');
-                \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'pdf');
-//                $pdfTemplateId = \Cx\Core\Setting\Controller\Setting::getValue('pdfTemplate', 'pdf');
-                $pdfTemplateId = 1;
+                \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'pdf', 'Yaml');
+                $pdfTemplateId = \Cx\Core\Setting\Controller\Setting::getValue('pdfTemplate');
 
                 $catalogHtml = $this->getController('Json')->getCatalog();
                 $substitution = array(
-                    strtoupper($this->getName()) . '_PRINT_PDF_LOGO' => \Cx\Core\Setting\Controller\Setting::getValue('pdfLogo', 'pdf'),
-                    strtoupper($this->getName()) . '_PRINT_PDF_ADDRESS' => \Cx\Core\Setting\Controller\Setting::getValue('pdfAddress', 'pdf'),
+                    strtoupper($this->getName()) . '_PRINT_PDF_LOGO' => \Cx\Core\Setting\Controller\Setting::getValue('pdfLogo'),
+                    strtoupper($this->getName()) . '_PRINT_PDF_ADDRESS' => \Cx\Core\Setting\Controller\Setting::getValue('pdfAddress'),
                     strtoupper($this->getName()) . '_PRINT_PDF_CATALOG' => $catalogHtml,
-                    strtoupper($this->getName()) . '_PRINT_PDF_FOOTER' => \Cx\Core\Setting\Controller\Setting::getValue('pdfFooter', 'pdf'),
+                    strtoupper($this->getName()) . '_PRINT_PDF_FOOTER' => \Cx\Core\Setting\Controller\Setting::getValue('pdfFooter'),
                 );
 
-                $pdf = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Pdf');
+                $pdf = $this->getComponent('Pdf');
                 $pdfFile = $pdf->generatePDF($pdfTemplateId, $substitution, $this->getName() . '_Catalog');
-                $newPdfFilePath = 'images/' . $this->getName() . '/Catalog_' . $sessionId . '.pdf';
-                copy(substr($pdfFile['filePath'], 1), $newPdfFilePath);
-
-                $template->setVariable(array(
-                    strtoupper($this->getName()) . '_PRINT_PDF_PATH' => $newPdfFilePath,
-                    strtoupper($this->getName()) . '_PRINT_ACTION' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_PRINT_ACTION'],
+                $dl = new \HTTP_Download(array(
+                    'file' => $this->cx->getWebsiteDocumentRootPath() . $pdfFile['filePath'],
+                    'contenttype' => 'application/pdf'
                 ));
-
-                \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Print.js', 1));
+                $dl->setContentDisposition(null);
+                $dl->send();
                 break;
             case 'recommendation':
                 if (empty($catalog)) {
@@ -260,7 +255,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 ));
 
                 $template->parse(strtolower($this->getName()) . '_catalog_actions');
-                \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function');
+                \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function', 'Yaml');
                 $cmds = array(
                     'mail',
                     'print',
@@ -268,10 +263,12 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                     'inquiry',
                 );
                 foreach ($cmds as $cmd) {
-                    if (\Cx\Core\Setting\Controller\Setting::getValue('function' . ucfirst($cmd), 'function')) {
+                    if (\Cx\Core\Setting\Controller\Setting::getValue('function' . ucfirst($cmd))) {
                         $template->setVariable(array(
                             strtoupper($this->getName()) . '_ACT_' . strtoupper($cmd) . '_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), $cmd),
                         ));
+                        // overwrite init from fromModuleAndCmd
+                        \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function', 'Yaml');
                         $template->parse(strtolower($this->getName()) . '_catalog_actions_' . $cmd);
                     }
                 }
@@ -419,7 +416,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         \JS::registerCSS('/core/Html/View/Style/Backend.css', 1);
 
         $template->parse(strtolower($this->getName()) . '_block_actions');
-        \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function');
+        \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function', 'Yaml');
         $cmds = array(
             'mail',
             'print',
@@ -427,11 +424,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             'inquiry',
         );
         foreach ($cmds as $cmd) {
-            if (\Cx\Core\Setting\Controller\Setting::getValue('function' . ucfirst($cmd), 'function')) {
+            if (\Cx\Core\Setting\Controller\Setting::getValue('function' . ucfirst($cmd))) {
                 $template->setVariable(array(
                     strtoupper($this->getName()) . '_BLOCK_ACT_' . strtoupper($cmd) . '_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), $cmd),
                     strtoupper($this->getName()) . '_BLOCK_ACT_' . strtoupper($cmd) . '_NAME' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_ACT_' . strtoupper($cmd)],
                 ));
+                // overwrite init from fromModuleAndCmd
+                \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function', 'Yaml');
                 $template->parse(strtolower($this->getName()) . '_block_actions_' . $cmd);
             }
         }
