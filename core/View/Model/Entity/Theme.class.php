@@ -202,36 +202,28 @@ class Theme extends \Cx\Model\Base\EntityBase
     public function getLanguagesByType($type) {
         switch ($type) {
             case self::THEME_TYPE_PRINT:
-                $dbField = 'print_themes_id';
-                break;
             case self::THEME_TYPE_MOBILE:
-                $dbField = 'mobile_themes_id';
-                break;
             case self::THEME_TYPE_APP:
-                $dbField = 'app_themes_id';
-                break;
             case self::THEME_TYPE_PDF:
-                $dbField = 'pdf_themes_id';
+                $channel = $type;
                 break;
-            default:
-                $dbField = 'themesid';
+            default: // web
+                $channel = 'default';
                 break;
         }
 
         $languagesWithThisTheme = array();
-        $query = 'SELECT `id`
-                    FROM `'.DBPREFIX.'languages`
-                  WHERE
-                    `frontend` = 1
-                    AND
-                    `'. $dbField .'` = "'. $this->id .'"';
-
-        $result = $this->db->Execute($query);
-        if ($result !== false) {
-            while(!$result->EOF){
-                $languagesWithThisTheme[] = $result->fields['id'];
-                $result->MoveNext();
-            }
+        $frontendRepo = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getDb()
+            ->getEntityManager()
+            ->getRepository('Cx\Core\View\Model\Entity\Frontend');
+        $criteria = array(
+            'theme' => $this->id,
+            'channel' => $channel
+        );
+        $frontends = $frontendRepo->findBy($criteria);
+        foreach ($frontends as $frontend) {
+            $languagesWithThisTheme[] = \FWLanguage::getLanguageIdByCode($frontend->getLanguage());
         }
 
         return $languagesWithThisTheme;
@@ -241,25 +233,19 @@ class Theme extends \Cx\Model\Base\EntityBase
      * @return string the language abbreviations of activated languages
      * with this template, separated by comma
      */
-    public function getLanguages() {
+    public function getLanguages()
+    {
         $languagesWithThisTheme = array();
-        $query = 'SELECT `name`
-                    FROM `'.DBPREFIX.'languages`
-                  WHERE
-                    `frontend` = 1
-                    AND (
-                        `themesid` = '.$this->id.'
-                        OR `mobile_themes_id` = '.$this->id.'
-                        OR `print_themes_id` = '.$this->id.'
-                        OR `pdf_themes_id` = '.$this->id.'
-                        OR `app_themes_id` = '.$this->id.'
-                    )';
-        $result = $this->db->Execute($query);
-        if ($result !== false) {
-            while(!$result->EOF){
-                $languagesWithThisTheme[] = $result->fields['name'];
-                $result->MoveNext();
-            }
+        $frontendRepo = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getDb()
+            ->getEntityManager()
+            ->getRepository('Cx\Core\View\Model\Entity\Frontend');
+        $criteria = array(
+            'theme' => $this->id
+        );
+        $frontends = $frontendRepo->findBy($criteria);
+        foreach($frontends as $frontend) {
+            $languagesWithThisTheme[] = $frontend->getLanguage();
         }
         return implode(', ', $languagesWithThisTheme);
     }
