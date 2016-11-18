@@ -559,17 +559,17 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                     $objTpl->parse($this->moduleNameLC.'NoEntriesFound');
                     $objTpl->clearVariables();
                 }
-                break;  
+                break;
             case 3:
-                //Alphabetical View    
+                //Alphabetical View
                 if(!empty($this->arrEntries)) {
-                    $arrAlphaIndexes = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0-9','#');  
+                    $arrAlphaIndexes = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0-9','#');
                     $arrAlphaGroups = array();
-                    
+
                     foreach ($this->arrEntries as $key => $arrEntry) {
                         $strTitle = $arrEntry['entryFields'][0];
                         $strAlphaIndex = strtoupper(substr($strTitle, 0, 1));
-                        
+
                         if(!in_array($strAlphaIndex, $arrAlphaIndexes)){
                             if(is_numeric($strAlphaIndex)) {
                                 $strAlphaIndex = '0-9';  
@@ -577,46 +577,46 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                 $strAlphaIndex = '#';      
                             }   
                         }
-                        
+
                         $arrAlphaGroups[$strAlphaIndex][] = $arrEntry;
-                    }              
-                                                                                                        
-                    if(intval($objTpl->blockExists($this->moduleNameLC.'AlphaIndex')) != 0) {        
-                        $objTpl->touchBlock($this->moduleNameLC.'AlphaIndex');     
-                                                                                                   
-                        foreach ($arrAlphaIndexes as $key => $strIndex) {        
-                            if(array_key_exists($strIndex, $arrAlphaGroups)) {    
-                                $strAlphaIndex = '<a href="#'.$strIndex.'">'.$strIndex.'</a>';   
-                            } else {                             
-                                $strAlphaIndex = ''.$strIndex.'';  
-                            }       
-                               
-                            $objTpl->setVariable(array(                                        
+                    }
+
+                    if(intval($objTpl->blockExists($this->moduleNameLC.'AlphaIndex')) != 0) {
+                        $objTpl->touchBlock($this->moduleNameLC.'AlphaIndex');
+
+                        foreach ($arrAlphaIndexes as $key => $strIndex) {
+                            if(array_key_exists($strIndex, $arrAlphaGroups)) {
+                                $strAlphaIndex = '<a href="#'.$strIndex.'">'.$strIndex.'</a>';
+                            } else {
+                                $strAlphaIndex = ''.$strIndex.'';
+                            }
+
+                            $objTpl->setVariable(array(
                                 $this->moduleLangVar.'_ALPHA_INDEX_LINK' => $strAlphaIndex
                             ));
-                            
-                            $objTpl->parse($this->moduleNameLC.'AlphaIndexElement');   
-                        }           
+
+                            $objTpl->parse($this->moduleNameLC.'AlphaIndexElement');
+                        }
                     }
-                    
-                    
-                    
-                    foreach ($arrAlphaGroups as $strAlphaIndex => $arrEntries) {        
+
+
+
+                    foreach ($arrAlphaGroups as $strAlphaIndex => $arrEntries) {
                         if(intval($objTpl->blockExists($this->moduleNameLC.'AlphabeticalTitle')) != 0) {
                             $objTpl->setVariable(array(
                                 $this->moduleLangVar.'_ALPHABETICAL_ANCHOR' => $strAlphaIndex,
                                 'TXT_'.$this->moduleLangVar.'_ALPHABETICAL_TITLE' => $strAlphaIndex
                             ));
-                            
+
                             $objTpl->parse($this->moduleNameLC.'AlphabeticalTitle');
                         }
-                        
+
                         foreach ($arrEntries as $key => $arrEntry) {
                             if(($arrEntry['entryDurationStart'] < $intToday && $arrEntry['entryDurationEnd'] > $intToday) || $arrEntry['entryDurationType'] == 1) {
                                 $objInputfields = new MediaDirectoryInputfield(intval($arrEntry['entryFormId']),false,$arrEntry['entryTranslationStatus'], $this->moduleName);
                                 $objInputfields->listInputfields($objTpl, 3, intval($arrEntry['entryId']));
                                 $strStatus = ($arrEntry['entryActive'] == 1) ? 'active' : 'inactive';
-                                
+
                                 if(intval($arrEntry['entryAddedBy']) != 0) {
                                     if ($objUser = $objFWUser->objUser->getUser(intval($arrEntry['entryAddedBy']))) {
                                         $strAddedBy = $objUser->getUsername();
@@ -667,7 +667,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
                                 $this->parseCategoryLevels(1, $arrEntry['entryId'], $objTpl);
                                 $this->parseCategoryLevels(2, $arrEntry['entryId'], $objTpl);
-                                   
+
                                 foreach ($arrEntry['entryFields'] as $key => $strFieldValue) {
                                     $intPos = $key+1;
 
@@ -712,7 +712,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                 $objTpl->clearVariables();
                             }
                         }
-                    }       
+                    }
                 } else {
                     $objTpl->setVariable(array(
                         'TXT_'.$this->moduleLangVar.'_SEARCH_MESSAGE' => $_ARRAYLANG['TXT_MEDIADIR_NO_ENTRIES_FOUND'],
@@ -894,7 +894,7 @@ JSCODE;
 
         $objFWUser = \FWUser::getFWUserObject();
         $translationStatus = isset($arrData['translationStatus']) ? $arrData['translationStatus'] : array();
-        
+
         //get data
         $intId = intval($intEntryId);
         $intFormId = intval($arrData['formId']);
@@ -994,7 +994,7 @@ JSCODE;
                 $intDurationEnd = $this->dateFromInput($arrData['durationEnd']);
 
                 $arrAdditionalQuery[] = "`duration_type`='". intval($arrData['durationType'])."', `duration_start`='". intval($intDurationStart)."',  `duration_end`='". intval($intDurationEnd)."'";
-                
+
                 $arrAdditionalQuery[] = "`active`='". (intval($arrData['status']) ? 1 : 0)."'";
             } else {
                 $intConfirmed = $this->arrSettings['settingsConfirmUpdatedEntries'] == 1 ? 0 : 1;
@@ -1076,11 +1076,11 @@ JSCODE;
 
             // skip meta attributes or ones that are out of scope (frontend/backend)
             if (   // type = 'add_step'
-                   $arrInputfield['type'] == 16 
+                   $arrInputfield['type'] == 16
                    // type = 'label'
-                || $arrInputfield['type'] == 18 
+                || $arrInputfield['type'] == 18
                    // type = 'title'
-                || $arrInputfield['type'] == 30 
+                || $arrInputfield['type'] == 30
                    // show_in is neither FRONTEND or BACKEND ($intShowIn = 2|3) nor FRONTEND AND BACKEND (show_in=1)
                 || ($arrInputfield['show_in'] != $intShowIn && $arrInputfield['show_in'] != 1)
             ) {
@@ -1099,7 +1099,7 @@ JSCODE;
 
                 continue;
             }
-            
+
             // initialize attribute
             $strType = $arrInputfield['type_name'];
             $strInputfieldClass = "\Cx\Modules\MediaDir\Model\Entity\MediaDirectoryInputfield".ucfirst($strType);
@@ -1174,21 +1174,21 @@ JSCODE;
                         // or the process is parsing the user's current interface language
                         || $intLangId == $_LANGID
                     ) {
-                            $strMaster =
-                                (isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0])
-                                  ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0]
-                                  : null);
-                            $strNewDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID])
-                                                ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID]
-                                                : '';
-                            if ($strNewDefault != $strMaster) {
-                                $strDefault = $strMaster;
-                            } else {
-                                $strDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId])
-                                                ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId]
-                                                : '';
-                            }                            
-                            $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault, $intLangId);        
+                        $strMaster =
+                            (isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0])
+                              ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0]
+                              : null);
+                        $strNewDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID])
+                                            ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID]
+                                            : '';
+                        if ($strNewDefault != $strMaster) {
+                            $strDefault = $strMaster;
+                        } else {
+                            $strDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId])
+                                            ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId]
+                                            : '';
+                        }                            
+                        $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault, $intLangId);        
                     } else {
                         // regular attribute get parsed
                         $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId], $intLangId);
@@ -1201,8 +1201,8 @@ JSCODE;
                                `form_id`='".intval($intFormId)."',
                                `field_id`='".intval($arrInputfield['id'])."',
                                `value`='".contrexx_raw2db($strInputfieldValue)."'
-              ON DUPLICATE KEY
-                        UPDATE `value`='".contrexx_raw2db($strInputfieldValue)."'");
+                            ON DUPLICATE KEY
+                                UPDATE `value`='".contrexx_raw2db($strInputfieldValue)."'");
                     if (!$objResult) {
                         throw new \Exception($objDatabase->ErrorMsg());
                     }
@@ -1447,8 +1447,8 @@ JSCODE;
 
         return $objDatabase->Execute($query, array($intEntryId, $_LANGID));
     }
-    
-    
+
+
     function getCategoriesLevels($intType, $intEntryId=null, $cmdName=null)
     {
         if ($intType == 1) {//categories
@@ -1490,7 +1490,7 @@ JSCODE;
                 return false;
             }
         }
-                                 
+
         return true;
     }
 
@@ -1518,15 +1518,15 @@ JSCODE;
             return time();
         }
     }
-    
+
     /**
      * Searches the content and returns an array that is built as needed by the search module.
-     * 
+     *
      * @param string $searchTerm
-     * 
+     *
      * @return array
      */
-    public function searchResultsForSearchModule($searchTerm) 
+    public function searchResultsForSearchModule($searchTerm)
     {
         $em = \Env::get('cx')->getDb()->getEntityManager();
         $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
@@ -1535,7 +1535,7 @@ JSCODE;
         $page = $pageRepo->findOneBy(array(
             'module' => 'MediaDir',
             'lang'   => FRONTEND_LANG_ID,
-            'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,            
+            'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
         ));
 
         //If page is not exists or page is inactive then return empty result
@@ -1580,15 +1580,15 @@ JSCODE;
             $pageUrlResult = null;
             $entryForm     = $objForm->arrForms[$entry['entryFormId']];
             //Get the entry's link url
-            //check the entry's form detail view exists if not, 
+            //check the entry's form detail view exists if not,
             //check the entry's form overview exists if not,
             //check the default overview exists if not, dont show the corresponding entry in entry
             switch (true) {
                 case $entries->checkPageCmd('detail' . $entry['entryFormId']):
                     $pageUrlResult = \Cx\Core\Routing\Url::fromModuleAndCmd(
-                                        $entries->moduleName, 
-                                        'detail' . $entry['entryFormId'], 
-                                        FRONTEND_LANG_ID, 
+                                        $entries->moduleName,
+                                        'detail' . $entry['entryFormId'],
+                                        FRONTEND_LANG_ID,
                                         array('eid' => $entry['entryId']));
                     break;
                 case $pageCmdExists = $entries->checkPageCmd($entryForm['formCmd']):
@@ -1611,8 +1611,8 @@ JSCODE;
                     $entryPos  = array_search($entry['entryId'], $entryKeys);
                     $position  = floor($entryPos / $entriesPerPage);
                     $pageUrlResult = \Cx\Core\Routing\Url::fromModuleAndCmd(
-                                        $entries->moduleName, 
-                                        $pageCmd, 
+                                        $entries->moduleName,
+                                        $pageCmd,
                                         FRONTEND_LANG_ID,
                                         array('pos' => $position * $entriesPerPage));
                     break;
@@ -1639,7 +1639,7 @@ JSCODE;
                 try {
                     $objInputfield        = safeNew($strInputfieldClass, $this->moduleName);
                     $arrTranslationStatus = (contrexx_input2int($arrInputfield['type_multi_lang']) == 1)
-                                            ? $entry['entryTranslationStatus'] 
+                                            ? $entry['entryTranslationStatus']
                                             : null;
                     $arrInputfieldContent = $objInputfield->getContent($entry['entryId'], $arrInputfield, $arrTranslationStatus);
                     if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND && \Cx\Core\Setting\Controller\Setting::getValue('blockStatus', 'Config')) {
