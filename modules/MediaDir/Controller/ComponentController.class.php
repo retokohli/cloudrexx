@@ -216,11 +216,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
 
+        $levelId = null;
+        $categoryId = null;
+
         $detailPage = $page;
         $slugCount = count($parts);
         $cmd = $page->getCmd();
         $slug = array_pop($parts);
 
+        // detect entry
         $entryId = $objMediaDirectoryEntry->findOneBySlug($slug);
         if ($entryId) {
             if (substr($cmd,0,6) != 'detail') {
@@ -254,14 +258,31 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $slug = array_pop($parts);
         }
 
+        // detect level and/or category
+        while ($slug && (!$levelId || !$categoryId)) {
+            // let's check if a category exists by the supplied slug
+            if (!$levelId && $objMediaDirectoryEntry->arrSettings['settingsShowLevels']) {
+                $objMediaDirectoryLevel = new MediaDirectoryLevel(null, null, 0, $this->getName());
+                $levelId = $objMediaDirectoryLevel->findOneBySlug($slug);
+                if ($levelId) {
+                    $this->cx->getRequest()->getUrl()->setParam('lid', $levelId);
+                }
+            }
 
-        // let's check if a category exists by the supplied slug
-        $objMediaDirectoryCategory = new MediaDirectoryCategory(null, null, 0, $this->getName());
-        $categoryId = $objMediaDirectoryCategory->findOneBySlug($slug);
-        if ($categoryId) {
-            $this->cx->getRequest()->getUrl()->setParam('cid', $categoryId);
+            // let's check if a category exists by the supplied slug
+            if (!$categoryId) {
+                $objMediaDirectoryCategory = new MediaDirectoryCategory(null, null, 0, $this->getName());
+                $categoryId = $objMediaDirectoryCategory->findOneBySlug($slug);
+                if ($categoryId) {
+                    $this->cx->getRequest()->getUrl()->setParam('cid', $categoryId);
+                }
+            }
+
+            $slug = array_pop($parts);
+        }
+
+        if ($levelId || $categoryId) {
             $this->setCanonicalPage($detailPage);
-            return;
         }
 
         /*if (empty($parts)) {

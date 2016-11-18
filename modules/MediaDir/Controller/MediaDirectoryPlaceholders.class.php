@@ -61,14 +61,24 @@ class MediaDirectoryPlaceholders extends MediaDirectoryLibrary
     {
         $this->strPlaceholder = null;
         
+        $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+
         if($this->arrSettings['settingsShowLevels'] == 1) {
         	$objLevels = new MediaDirectoryLevel(null, null, 0, $this->moduleName);
-	        $intLevelId = isset($_GET['lid']) ? intval($_GET['lid']) : null;
+
+	        $intLevelId = null;
+            if (isset($requestParams['lid'])) {
+                $intLevelId = intval($requestParams['lid']);
+            }
 	        
 	        $this->strPlaceholder = $objLevels->listLevels($this->_objTpl, 6, $intLevelId);
         } else {
         	$objCategories = new MediaDirectoryCategory(null, null, 0, $this->moduleName);
-            $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : null;
+
+            $intCategoryId = null;
+            if (isset($requestParams['cid'])) {
+                $intCategoryId = intval($requestParams['cid']);
+            }
         
             $this->strPlaceholder = $objCategories->listCategories($this->_objTpl, 6, $intCategoryId, null, null, null, 1);
         }

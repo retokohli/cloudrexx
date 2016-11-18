@@ -219,6 +219,8 @@ class MediaDirectory extends MediaDirectoryLibrary
             $arrIds = explode("-", $_GET['cmd']);
         }
 
+        $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+
         if($this->arrSettings['settingsShowLevels'] == 1) {
             if(intval($arrIds[0]) != 0) {
                 $intLevelId = intval($arrIds[0]);
@@ -226,7 +228,9 @@ class MediaDirectory extends MediaDirectoryLibrary
                 $intLevelId = 0;
             }
 
-            $intLevelId = isset($_GET['lid']) ? intval($_GET['lid']) : $intLevelId;
+            if (isset($requestParams['lid'])) {
+                $intLevelId = intval($requestParams['lid']);
+            }
 
             if(!empty($arrIds[1])) {
                 $intCategoryCmd = $arrIds[1];
@@ -249,7 +253,6 @@ class MediaDirectory extends MediaDirectoryLibrary
             $intCategoryId = 0;
         }
 
-        $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
         if (isset($requestParams['cid'])) {
             $intCategoryId = intval($requestParams['cid']);
         }
@@ -495,11 +498,18 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         //get ids
         $intCategoryId = 0;
+        $intLevelId = 0;
+
         $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+
         if (isset($requestParams['cid'])) {
             $intCategoryId = intval($requestParams['cid']);
         }
-        $intLevelId = isset($_GET['lid']) ? intval($_GET['lid']) : 0;
+
+        if (isset($requestParams['lid'])) {
+            $intLevelId = intval($requestParams['lid']);
+        }
+
         $intEntryId = intval($this->cx->getRequest()->getUrl()->getParamArray()['eid']);
         
         // load source code if cmd value is integer
@@ -1021,8 +1031,13 @@ class MediaDirectory extends MediaDirectoryLibrary
             $strOverviewCmd = null;
         }
 
+        $arrEntry = null;
+        $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+        if (isset($requestParams['eid'])) {
+            $arrEntry = $this->getCurrentFetchedEntryDataObject();
+        }
 
-        $this->arrNavtree[] = '<a href="?section='.$this->moduleName.$strOverviewCmd.'">'.$_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'].'</a>';
+        $this->arrNavtree[] = '<a href="'.$this->getAutoSlugPath($arrEntry).'">'.$_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'].'</a>';
         krsort($this->arrNavtree);
 
         if(!empty($this->arrNavtree)) {
@@ -1052,15 +1067,14 @@ class MediaDirectory extends MediaDirectoryLibrary
     function getNavtreeCategories($intCategoryId)
     {
         $objCategory = new MediaDirectoryCategory($intCategoryId, null, 0, $this->moduleName);
-        $objCategory->arrCategories[$intCategoryId];
 
-        $strLevelId = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
-        if(isset($_GET['cmd'])) {
-            $strCategoryCmd = '&amp;cmd='.$_GET['cmd'];
-        } else {
-            $strCategoryCmd = null;
+        $levelId = null;
+        $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+        if (isset($requestParams['lid'])) {
+            $levelId = intval($requestParams['lid']);
         }
-        $this->arrNavtree[] = '<a href="?section='.$this->moduleName.$strCategoryCmd.$strLevelId.'&amp;cid='.$objCategory->arrCategories[$intCategoryId]['catId'].'">'.contrexx_raw2xhtml($objCategory->arrCategories[$intCategoryId]['catName'][0]).'</a>';
+
+        $this->arrNavtree[] = '<a href="'.$this->getAutoSlugPath(null, $intCategoryId, $levelId).'">'.contrexx_raw2xhtml($objCategory->arrCategories[$intCategoryId]['catName'][0]).'</a>';
 
         if($objCategory->arrCategories[$intCategoryId]['catParentId'] != 0) {
             $this->getNavtreeCategories($objCategory->arrCategories[$intCategoryId]['catParentId']);
@@ -1072,14 +1086,8 @@ class MediaDirectory extends MediaDirectoryLibrary
     function getNavtreeLevels($intLevelId)
     {
         $objLevel = new MediaDirectoryLevel($intLevelId, null, 0, $this->moduleName);
-        $objLevel->arrLevels[$intLevelId];
 
-        if(isset($_GET['cmd'])) {
-            $strLevelCmd = '&amp;cmd='.$_GET['cmd'];
-        } else {
-            $strLevelCmd = null;
-        }
-        $this->arrNavtree[] = '<a href="?section='.$this->moduleName.$strLevelCmd.'&amp;lid='.$objLevel->arrLevels[$intLevelId]['levelId'].'">'.contrexx_raw2xhtml($objLevel->arrLevels[$intLevelId]['levelName'][0]).'</a>';
+        $this->arrNavtree[] = '<a href="'.$this->getAutoSlugPath(null, null, $intLevelId).'">'.contrexx_raw2xhtml($objLevel->arrLevels[$intLevelId]['levelName'][0]).'</a>';
 
         if($objLevel->arrLevels[$intLevelId]['levelParentId'] != 0) {
             $this->getNavtreeLevels($objLevel->arrLevels[$intLevelId]['levelParentId']);
@@ -1095,4 +1103,4 @@ class MediaDirectory extends MediaDirectoryLibrary
         return $this->metaTitle;
     }
 }
-?>
+
