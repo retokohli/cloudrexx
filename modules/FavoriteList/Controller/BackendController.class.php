@@ -86,102 +86,108 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
         try {
             // function group
-            \Cx\Core\Setting\Controller\Setting::init('FavoriteList', 'function', 'Yaml');
+            \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function', 'Yaml');
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('functionMail')
                 && !\Cx\Core\Setting\Controller\Setting::add('functionMail', 0, 1,
                     \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'function')
             ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Function Mail");
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Function Mail");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('functionPrint')
                 && !\Cx\Core\Setting\Controller\Setting::add('functionPrint', 0, 2,
                     \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'function')
             ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Function Print");
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Function Print");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('functionRecommendation')
                 && !\Cx\Core\Setting\Controller\Setting::add('functionRecommendation', 0, 3,
                     \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'function')
             ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Function Recommendation");
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Function Recommendation");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('functionInquiry')
                 && !\Cx\Core\Setting\Controller\Setting::add('functionInquiry', 0, 4,
                     \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'function')
             ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Function Inquiry");
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Function Inquiry");
             }
 
             // notification group
-            \Cx\Core\Setting\Controller\Setting::init('FavoriteList', 'notification', 'Yaml');
+            \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'notification', 'Yaml');
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationMail')
                 && !\Cx\Core\Setting\Controller\Setting::add('notificationMail', 0, 1,
                     \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'notification')
             ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Mail");
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Notification Mail");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationMailMail')
                 && !\Cx\Core\Setting\Controller\Setting::add('notificationMailMail', '', 2,
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'notification')
             ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Mail Mail");
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Notification Mail Mail");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationPrint')
                 && !\Cx\Core\Setting\Controller\Setting::add('notificationPrint', 0, 3,
                     \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'notification')
             ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Print");
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Notification Print");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationPrintMail')
                 && !\Cx\Core\Setting\Controller\Setting::add('notificationPrintMail', '', 4,
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'notification')
             ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Print Mail");
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Notification Print Mail");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationRecommendation')
                 && !\Cx\Core\Setting\Controller\Setting::add('notificationRecommendation', 0, 5,
                     \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'notification')
             ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Recommendation");
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Notification Recommendation");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationRecommendationMail')
                 && !\Cx\Core\Setting\Controller\Setting::add('notificationRecommendationMail', '', 6,
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'notification')
             ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Mail Recommendation");
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Notification Mail Recommendation");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationInquiry')
                 && !\Cx\Core\Setting\Controller\Setting::add('notificationInquiry', 0, 7,
                     \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'notification')
             ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Inquiry");
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Notification Inquiry");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationInquiryMail')
                 && !\Cx\Core\Setting\Controller\Setting::add('notificationInquiryMail', '', 8,
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'notification')
             ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList Notification Inquiry Mail");
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Notification Inquiry Mail");
             }
 
             // pdf group
-            \Cx\Core\Setting\Controller\Setting::init('FavoriteList', 'pdf', 'Yaml');
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('pdfLogo')
-                && !\Cx\Core\Setting\Controller\Setting::add('pdfLogo', '', 1,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'pdf')
+            \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'pdf', 'Yaml');
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('pdfTemplate')
+                && !\Cx\Core\Setting\Controller\Setting::add('pdfTemplate', null, 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\' . __CLASS__ . '::getPdfTemplates()}', 'pdf')
             ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList PDF Logo");
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " PDF Template");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('pdfLogo')
+                && !\Cx\Core\Setting\Controller\Setting::add('pdfLogo', '', 2,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_IMAGE, '', 'pdf')
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " PDF Logo");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('pdfAddress')
-                && !\Cx\Core\Setting\Controller\Setting::add('pdfAddress', '', 2,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXTAREA, '', 'pdf')
+                && !\Cx\Core\Setting\Controller\Setting::add('pdfAddress', '', 3,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_WYSIWYG, '', 'pdf')
             ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList PDF Address");
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " PDF Address");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('pdfFooter')
-                && !\Cx\Core\Setting\Controller\Setting::add('pdfFooter', '', 3,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXTAREA, '', 'pdf')
+                && !\Cx\Core\Setting\Controller\Setting::add('pdfFooter', '', 4,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_WYSIWYG, '', 'pdf')
             ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for FavoriteList PDF Footer");
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " PDF Footer");
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
@@ -394,8 +400,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'description' => array(
                             'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_DESCRIPTION'],
                         ),
-                        'info' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_INFO'],
+                        'message' => array(
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_MESSAGE'],
+                        ),
+                        'price' => array(
+                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_PRICE'],
                         ),
                         'image1' => array(
                             'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_IMAGE_1'],
@@ -428,7 +437,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'title',
                             'link',
                             'description',
-                            'info',
+                            'message',
+                            'price',
                             'image1',
                             'image2',
                             'image3',
@@ -439,7 +449,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'title',
                             'link',
                             'description',
-                            'info',
+                            'message',
+                            'price',
                             'image1',
                             'image2',
                             'image3',
@@ -448,14 +459,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 );
                 break;
             case 'Cx\Modules\FavoriteList\Model\Entity\FormField':
-                if (!isset($_GET['order'])) {
-                    $_GET['order'] = 'id';
-                }
                 return array(
                     'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_ACT_FORMFIELD'],
                     'fields' => array(
                         'id' => array(
-                            'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_ID'],
+                            'showOverview' => false,
                         ),
                         'name' => array(
                             'header' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_NAME'],
@@ -470,9 +478,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 'radio' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_RADIO'],
                                 'checkbox' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_CHECKBOX'],
                                 'mail' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_MAIL'],
-                                'salutation' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_SALUTATION'],
-                                'firstname' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_FIRSTNAME'],
-                                'lastname' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_FIELD_LASTNAME'],
                             ),
                         ),
                         'required' => array(
@@ -492,22 +497,23 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'sorting' => true,
                         'paging' => true,
                         'filtering' => false,
+                        'sortBy' => [
+                            'field' => ['order' => SORT_ASC]
+                        ],
                     ),
                     'order' => array(
                         'overview' => array(
-                            'id',
+                            'order',
                             'name',
                             'type',
                             'required',
-                            'order',
                             'values',
                         ),
                         'form' => array(
-                            'id',
+                            'order',
                             'name',
                             'type',
                             'required',
-                            'order',
                             'values',
                         ),
                     ),
@@ -526,5 +532,18 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     ),
                 );
         }
+    }
+
+    /**
+     * Returns all PDF Templates
+     *
+     * @access  public
+     * @return  string
+     */
+    public static function getPdfTemplates()
+    {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $arrOptions = $cx->getComponent('Pdf')->getPdfTemplates();
+        return implode(',', $arrOptions);
     }
 }

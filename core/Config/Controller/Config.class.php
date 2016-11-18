@@ -100,6 +100,7 @@ class Config
             '<a href="?cmd=Config&amp;act=smtp" class="'.($this->act == 'smtp' ? 'active' : '').'">'.$_ARRAYLANG['TXT_EMAIL_SERVER'].'</a>
             <a href="index.php?cmd=Config&amp;act=image" class="'.($this->act == 'image' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_IMAGE'].'</a>'
             .(in_array('Wysiwyg', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=Config&amp;act=Wysiwyg" class="'.($this->act == 'Wysiwyg' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CORE_WYSIWYG'].'</a>' : '')
+            .(in_array('Pdf', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=Config&amp;act=Pdf" class="'.($this->act == 'Pdf' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CORE_CONFIG_PDF'].'</a>' : '')
             .(in_array('LicenseManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=License">'.$_ARRAYLANG['TXT_LICENSE'].'</a>' : '')
             . $multisiteNavigation
         );
@@ -186,6 +187,13 @@ class Config
                     \Permission::noAccess();
                 }
 
+                break;
+            case 'Pdf':
+                if (!in_array('Pdf', \Env::get('cx')->getLicense()->getLegalComponentsList())) {
+                    \Permission::noAccess();
+                }
+                $boolShowStatus = false;
+                $this->showPdf();
                 break;
 
             case 'cache_update':
@@ -280,6 +288,45 @@ class Config
         ));
     }
 
+
+    /**
+     * Show PDF
+     */
+    protected function showPdf()
+    {
+        global $_ARRAYLANG, $objTemplate, $objInit;
+
+        $pdf                  = Cx::instanciate()->getComponent('Pdf');
+        $pdfBackendController = $pdf->getController('Backend');
+        $objTpl               = new \Cx\Core\Html\Sigma(
+            $pdf->getDirectory(true) . '/View/Template/Backend'
+        );
+
+        //merge language
+        $langData   = $objInit->loadLanguageData('Pdf');
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        $objTpl->setGlobalVariable($_ARRAYLANG);
+        $objTpl->loadTemplatefile('Default.html');
+
+        $tpl = isset($_GET['tpl']) ? contrexx_input2raw($_GET['tpl']) : '';
+        switch ($tpl) {
+            case '':
+            default:
+                $pdfBackendController->parsePage($objTpl, array('PdfTemplate'));
+                break;
+        }
+
+        \JS::registerCSS(
+            substr(
+                $pdf->getDirectory(false, true) . '/View/Style/Backend.css',
+                1
+            )
+        );
+        $objTemplate->setVariable(array(
+            'CONTENT_TITLE' => $_ARRAYLANG['TXT_CORE_MODULE_PDF'],
+            'ADMIN_CONTENT' => $objTpl->get(),
+        ));
+    }
 
     /**
      * Set the cms system settings

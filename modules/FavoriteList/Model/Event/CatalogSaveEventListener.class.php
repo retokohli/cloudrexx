@@ -39,36 +39,32 @@
 namespace Cx\Modules\FavoriteList\Model\Event;
 
 /**
- * DateEventListenerException
+ * CatalogSaveEventListenerException
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Manuel Schenk <manuel.scenk@comvation.com>
  * @package     cloudrexx
  * @subpackage  module_favoritelist
  */
-class DateEventListenerException extends \Exception
+class CatalogSaveEventListenerException extends \Exception
 {
 }
 
 /**
- * DateEventListener
+ * CatalogSaveEventListener
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Manuel Schenk <manuel.scenk@comvation.com>
  * @package     cloudrexx
  * @subpackage  module_favoritelist
  */
-class DateEventListener implements \Cx\Core\Event\Model\Entity\EventListener
+class CatalogSaveEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventListener
 {
-
-    public function onEvent($eventName, array $eventArgs)
-    {
-        $this->$eventName(current($eventArgs));
-    }
 
     public function prePersist($eventArgs)
     {
         $entity = $eventArgs->getEntity();
         $entity->setDate(new \DateTime());
+        $entity->setSessionId($this->getComponent('Session')->getSession()->sessionid);
     }
 }
