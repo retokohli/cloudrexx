@@ -59,7 +59,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
     private $strNotSelectedOptions = '';
     private $strSelectedOptions = '';
-    
+
     /**
      * Constructor
      */
@@ -99,10 +99,9 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
             $whereActive = "AND (level.active='1') ";
             $langId = FRONTEND_LANG_ID;
         } else {
-			$whereActive = '';
+            $whereActive = '';
             $langId = LANG_ID;
         }
-
 
         switch($this->arrSettings['settingsLevelOrder']) {
             case 0;
@@ -139,38 +138,38 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
             ORDER BY
                 ".$sortOrder."
         ");
-        
+
         //fetch entry counts if needed
         $weAreCountingEntries = ($this->arrSettings['settingsCountEntries'] == 1 || $this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND);
         $arrEntryCounts = array();
         if($weAreCountingEntries) {
             $query = "
-                SELECT 
+                SELECT
                     `rel_levels`.`level_id`, count(*) AS `c`
-                FROM 
+                FROM
                     `" . DBPREFIX . "module_".$this->moduleTablePrefix."_entries` AS `entry`
-                INNER JOIN 
+                INNER JOIN
                     `" . DBPREFIX . "module_".$this->moduleTablePrefix."_rel_entry_levels` AS `rel_levels`
-                ON 
+                ON
                     `rel_levels`.`entry_id` = `entry`.`id`
-                LEFT JOIN 
+                LEFT JOIN
                     `".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields` AS rel_inputfield
-                ON  
+                ON
                     rel_inputfield.`entry_id` = `entry`.`id`
-                WHERE 
+                WHERE
                     `entry`.`active` = 1
-                AND 
+                AND
                     rel_inputfield.`form_id` = `entry`.`form_id`
-                AND 
+                AND
                     rel_inputfield.`field_id` = (".$this->getQueryToFindPrimaryInputFieldId().")
                 AND
                     (rel_inputfield.`lang_id` = '".$langId."')
-                AND 
+                AND
                     ((`entry`.`duration_type`=2 AND `entry`.`duration_start` <= ".time()." AND `entry`.`duration_end` >= ".time().") OR (`entry`.`duration_type`=1))
 
-                GROUP BY 
+                GROUP BY
                     `rel_levels`.`level_id`";
-            
+
             $rs = $objDatabase->Execute($query);
             while(!$rs->EOF) {
                 $arrEntryCounts[$rs->fields['level_id']] = $rs->fields['c'];
@@ -231,7 +230,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $objLevels->MoveNext();
             }
         }
-        
+
         return $arrLevels;
     }
 
@@ -328,7 +327,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $intNumBlocks = count($arrExistingBlocks);
                 $i = $intNumBlocks-1;
                 $strIndexHeader = '';
-                
+
                 //set first index header
                 if($this->arrSettings['settingsLevelOrder'] == 2) {
                     $strFirstIndexHeader = null;
@@ -390,7 +389,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 break;
             case 3:
                 //Dropdown Menu
-				$strDropdownOptions = '';
+                $strDropdownOptions = '';
                 foreach ($arrLevels as $key => $arrLevel) {
                     $spacer = null;
                     $intSpacerSize = null;
@@ -408,7 +407,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     }
 
                     if($spacer != null) {
-                    	$spacer .= "&nbsp;";
+                        $spacer .= "&nbsp;";
                     }
 
                     $strDropdownOptions .= '<option value="'.$arrLevel['levelId'].'" '.$strSelected.' >'.$spacer.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</option>';
@@ -443,9 +442,9 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                         }
                     }
                 }
-                
+
                 foreach ($arrLevels as $key => $arrLevel) {
-                	
+
                     $spacer = null;
                     $intSpacerSize = null;
 
@@ -471,7 +470,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                         @array_pop($arrParentIds);
                     }
                 }
-                
+
                 $arrSelectorOptions['selected'] = $this->strSelectedOptions;
                 $arrSelectorOptions['not_selected'] = $this->strNotSelectedOptions;
 
@@ -525,36 +524,36 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     $bolExpandLevel = $this->getExpandedLevels($intLevelId, array($arrLevel));
                     $strLinkClass = $bolExpandLevel ? 'active' : 'inactive';
                     $strListClass = 'level_'.intval(count($arrParentIds)+1);
-                    
+
                     $this->strNavigationPlaceholder .= '<li class="'.$strListClass.'"><a href="'.$this->getAutoSlugPath(null, $categoryId, $arrLevel['levelId']).'" class="'.$strLinkClass.'">'.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</a></li>';
-            
+
                     $arrParentIds[] = $arrLevel['levelId'];
 
                     //get children
                     if(!empty($arrLevel['levelChildren']) && $arrLevel['levelShowSublevels'] == 1){
                         if($bolExpandLevel) {
                             self::listLevels($objTpl, 6, $intLevelId, $arrParentIds);
-                        }                    
+                        }
                     }
-                    
-                    if ($arrLevel['levelShowCategories'] == 1){
-                        if ($bolExpandLevel) {
-	                    	$objCategories = new MediaDirectoryCategory(null, null, 0, $this->moduleName);
+
+                    if($arrLevel['levelShowCategories'] == 1){
+                        if($bolExpandLevel) {
+                            $objCategories = new MediaDirectoryCategory(null, null, 0, $this->moduleName);
 	                        $intCategoryId = null;
                             if (isset($requestParams['cid'])) {
                                 $intCategoryId = intval($requestParams['clid']);
                             }
 	                        if ($levelId == $arrLevel['levelId']) {
-	                           $this->strNavigationPlaceholder .= $objCategories->listCategories($this->_objTpl, 6, $intCategoryId, null, null, null, intval(count($arrParentIds)+1));
-	                        }
+                               $this->strNavigationPlaceholder .= $objCategories->listCategories($this->_objTpl, 6, $intCategoryId, null, null, null, intval(count($arrParentIds)+1));
+                            }
                         }
                     }
 
                     @array_pop($arrParentIds);
                 }
-                
+
                 return $this->strNavigationPlaceholder;
-                
+
                 break;
         }
     }
@@ -673,7 +672,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
             ");
 
             if($objUpdateAttributes !== false) {
-                
+
                 $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names WHERE level_id='".$intId."'");
 
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {

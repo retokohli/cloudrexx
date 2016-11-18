@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,15 +24,15 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
-/** 
+
+/**
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Cloudrexx Development Team <info@cloudrexx.com>
- * @access      public 
+ * @access      public
  * @package     cloudrexx
  * @subpackage  core_config
- */ 
-global $_ARRAYLANG; 
+ */
+global $_ARRAYLANG;
 $_ARRAYLANG['TXT_SETTINGS_MENU_SYSTEM'] = 'System';
 $_ARRAYLANG['TXT_SETTINGS_MENU_CACHE'] = 'Caching';
 $_ARRAYLANG['TXT_EMAIL_SERVER'] = 'E-mail server';
@@ -116,6 +116,7 @@ $_ARRAYLANG['TXT_CORE_CONFIG_DASHBOARDNEWS'] = 'Dashboard news';
 $_ARRAYLANG['TXT_CORE_CONFIG_DASHBOARDSTATISTICS'] = 'Dashboard statistics';
 $_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEANALYTICSTRACKINGID'] = 'Google Analytics Tracking ID';
 $_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEANALYTICSTRACKINGID_TOOLTIP_HELP'] = 'Enter your Google Analytics tracking ID here. These can be found in your Google Analytics account under Admin => Tracking Code.';
+$_ARRAYLANG['TXT_CORE_CONFIG_DEFAULTMETAIMAGE'] = 'Default meta image';
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY'] = 'Passwords must meet the complexity requirements';
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY_TOOLTIP_HELP'] = 'Password must contain the following characters: upper and lower case character and number';
 $_ARRAYLANG['TXT_CORE_CONFIG_ADVANCEDUPLOADBACKEND'] = 'Advanced uploading tools (administrator interface)';

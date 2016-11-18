@@ -77,9 +77,9 @@ class Login
     *
     * Get the login pages
     *
-    * @access	public
+    * @access    public
     * @see _lostPassword(), _resetPassword(), _noaccess(), _login()
-    * @return	mixed	Template content
+    * @return    mixed    Template content
     */
     function getContent()
     {
@@ -121,7 +121,7 @@ class Login
         // set language variables
         $this->_objTpl->setVariable(array(
             'TXT_LOST_PASSWORD_TEXT'    => $_CORELANG['TXT_LOST_PASSWORD_TEXT'],
-            'TXT_EMAIL'					=> $_CORELANG['TXT_EMAIL'],
+            'TXT_EMAIL'                    => $_CORELANG['TXT_EMAIL'],
             'TXT_RESET_PASSWORD'        => $_CORELANG['TXT_RESET_PASSWORD']
         ));
 
@@ -191,12 +191,12 @@ class Login
                 $statusMessage = $objFWUser->getErrorMsg();
 
                 $this->_objTpl->setVariable(array(
-                    'TXT_EMAIL'						    => $_CORELANG['TXT_EMAIL'],
-                    'TXT_PASSWORD'						=> $_CORELANG['TXT_PASSWORD'],
-                    'TXT_VERIFY_PASSWORD'				=> $_CORELANG['TXT_VERIFY_PASSWORD'],
-                    'TXT_PASSWORD_MINIMAL_CHARACTERS'	=> $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
-                    'TXT_SET_PASSWORD_TEXT'				=> $_CORELANG['TXT_SET_PASSWORD_TEXT'],
-                    'TXT_SET_NEW_PASSWORD'				=> $_CORELANG['TXT_SET_NEW_PASSWORD'],
+                    'TXT_EMAIL'                            => $_CORELANG['TXT_EMAIL'],
+                    'TXT_PASSWORD'                        => $_CORELANG['TXT_PASSWORD'],
+                    'TXT_VERIFY_PASSWORD'                => $_CORELANG['TXT_VERIFY_PASSWORD'],
+                    'TXT_PASSWORD_MINIMAL_CHARACTERS'    => $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
+                    'TXT_SET_PASSWORD_TEXT'                => $_CORELANG['TXT_SET_PASSWORD_TEXT'],
+                    'TXT_SET_NEW_PASSWORD'                => $_CORELANG['TXT_SET_NEW_PASSWORD'],
                 ));
 
                 $this->_objTpl->parse('login_reset_password');
@@ -208,21 +208,21 @@ class Login
             }
         } else {
             $this->_objTpl->setVariable(array(
-                'TXT_EMAIL'						    => $_CORELANG['TXT_EMAIL'],
-                'TXT_PASSWORD'						=> $_CORELANG['TXT_PASSWORD'],
-                'TXT_VERIFY_PASSWORD'				=> $_CORELANG['TXT_VERIFY_PASSWORD'],
-                'TXT_PASSWORD_MINIMAL_CHARACTERS'	=> $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
-                'TXT_SET_PASSWORD_TEXT'				=> $_CORELANG['TXT_SET_PASSWORD_TEXT'],
-                'TXT_SET_NEW_PASSWORD'				=> $_CORELANG['TXT_SET_NEW_PASSWORD'],
+                'TXT_EMAIL'                            => $_CORELANG['TXT_EMAIL'],
+                'TXT_PASSWORD'                        => $_CORELANG['TXT_PASSWORD'],
+                'TXT_VERIFY_PASSWORD'                => $_CORELANG['TXT_VERIFY_PASSWORD'],
+                'TXT_PASSWORD_MINIMAL_CHARACTERS'    => $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
+                'TXT_SET_PASSWORD_TEXT'                => $_CORELANG['TXT_SET_PASSWORD_TEXT'],
+                'TXT_SET_NEW_PASSWORD'                => $_CORELANG['TXT_SET_NEW_PASSWORD'],
             ));
 
             $this->_objTpl->parse('login_reset_password');
         }
 
         $this->_objTpl->setVariable(array(
-            'LOGIN_STATUS_MESSAGE'	=> $statusMessage,
-            'LOGIN_EMAIL'		    => contrexx_raw2xhtml($email),
-            'LOGIN_RESTORE_KEY'		=> contrexx_raw2xhtml($restoreKey)
+            'LOGIN_STATUS_MESSAGE'    => $statusMessage,
+            'LOGIN_EMAIL'            => contrexx_raw2xhtml($email),
+            'LOGIN_RESTORE_KEY'        => contrexx_raw2xhtml($restoreKey)
         ));
 
         return $this->_objTpl->get();
@@ -257,15 +257,15 @@ class Login
     *
     * @access private
     * @global array
-    * @see cmsSession::cmsSessionStatusUpdate(), contrexx_strip_tags, \Cx\Core\Html\Sigma::get()
+    * @see \Cx\Core\Session\Model\Entity\Session::cmsSessionStatusUpdate(), contrexx_strip_tags, \Cx\Core\Html\Sigma::get()
     * @return string \Cx\Core\Html\Sigma::get()
     */
     function _login()
     {
-        global $_CORELANG, $sessionObj;
+        global $_CORELANG;
 
         $objFWUser = \FWUser::getFWUserObject();
-        
+
         if (isset($_REQUEST['redirect'])) {
             $redirect = contrexx_strip_tags($_REQUEST['redirect']);
         } elseif (isset($_SESSION['redirect'])) {
@@ -289,7 +289,8 @@ class Login
             ) {
                 $objFWUser->objUser->reset();
                 $objFWUser->logoutAndDestroySession();
-                $sessionObj = \cmsSession::getInstance();
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                $sessionObj = $cx->getComponent('Session')->getSession();
             } elseif (isset($_POST['login'])) {
                 $_GET['relogin'] = 'true';
             }

@@ -522,7 +522,6 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 if (isset($requestParams['lid'])) {
                     $levelId = intval($requestParams['lid']);
                 }
-
                 foreach ($arrCategories as $key => $arrCategory) {
                 	$this->arrExpandedCategoryIds = array();
                     $bolExpandCategory = $this->getExpandedCategories($intCategoryId, array($arrCategory));
