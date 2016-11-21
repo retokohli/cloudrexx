@@ -1343,10 +1343,9 @@ namespace Cx\Core\Core\Controller {
          * @global array $_CONFIG
          * @global type $_FTPCONFIG
          * @global type $objDatabase
-         * @global type $objInit
          */
         protected function init() {
-            global $objDatabase, $objInit, $_DBCONFIG, $_CONFIG;
+            global $objDatabase, $_DBCONFIG, $_CONFIG;
 
             $this->tryToSetMemoryLimit();
 
@@ -1390,10 +1389,6 @@ namespace Cx\Core\Core\Controller {
             $this->eventManager->addEvent('preComponent');
             $this->eventManager->addEvent('postComponent');
 
-            // Initialize base system
-            // TODO: Get rid of InitCMS class, merge it with this class instead
-            $objInit = new \InitCMS($this->mode == self::MODE_FRONTEND ? 'frontend' : 'backend', \Env::get('em'));
-            \Env::set('init', $objInit);
             //$bla = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             //$bla->findAll();
         }
