@@ -108,7 +108,7 @@ class FWUser extends User_Setting
      */
     function checkAuth()
     {
-        global $sessionObj, $_CORELANG;
+        global $_CORELANG;
 
         $username = isset($_POST['USERNAME']) && $_POST['USERNAME'] != '' ? contrexx_stripslashes($_POST['USERNAME']) : null;
         $password = isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '' ? md5(contrexx_stripslashes($_POST['PASSWORD'])) : null;
@@ -121,7 +121,8 @@ class FWUser extends User_Setting
             return false;
         }
 
-        if (empty($sessionObj)) $sessionObj = cmsSession::getInstance();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $sessionObj = $cx->getComponent('Session')->getSession();
 
         if (!isset($_SESSION['auth'])) {
             $_SESSION['auth'] = array();
@@ -304,7 +305,8 @@ class FWUser extends User_Setting
         if (isset($_SESSION['auth'])) {
             unset($_SESSION['auth']);
         }
-        \cmsSession::getInstance()->destroy();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getComponent('Session')->getSession()->destroy();
     }
 
     /**
