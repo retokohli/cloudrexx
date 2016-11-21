@@ -219,6 +219,7 @@ CREATE TABLE `contrexx_content_page` (
   `metadesc` text NOT NULL,
   `metakeys` text NOT NULL,
   `metarobots` varchar(7) DEFAULT NULL,
+  `metaimage` varchar(255) DEFAULT NULL,
   `start` timestamp NULL DEFAULT NULL,
   `end` timestamp NULL DEFAULT NULL,
   `editingStatus` varchar(16) NOT NULL,
@@ -420,7 +421,7 @@ CREATE TABLE `contrexx_core_rewrite_rule` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `regular_expression` varchar(255) NOT NULL,
   `continue_on_match` tinyint(1) NOT NULL,
-  `rewrite_status_code` int(11) NOT NULL,
+  `rewrite_status_code` enum('301','302','intern') NOT NULL,
   `order_no` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
@@ -1499,14 +1500,6 @@ CREATE TABLE `contrexx_module_directory_settings` (
   PRIMARY KEY (`setid`),
   KEY `setname` (`setname`)
 ) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_directory_settings_google` (
-  `setid` int(6) unsigned NOT NULL AUTO_INCREMENT,
-  `setname` varchar(250) NOT NULL DEFAULT '',
-  `setvalue` text NOT NULL,
-  `settyp` int(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`setid`),
-  KEY `setname` (`setname`)
-) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_directory_vote` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
   `feed_id` int(7) NOT NULL DEFAULT '0',
@@ -2441,7 +2434,7 @@ CREATE TABLE `contrexx_module_mediadir_inputfields` (
   `required` int(10) NOT NULL,
   `order` int(10) NOT NULL,
   `show_in` int(10) NOT NULL,
-  `context_type` enum('none','title','content','address','zip','city','country') NOT NULL,
+  `context_type` enum('none','title','content','address','zip','city','country','image') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_mediadir_level_names` (
@@ -3161,7 +3154,7 @@ CREATE TABLE `contrexx_module_shop_order_attributes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `item_id` int(10) unsigned NOT NULL DEFAULT '0',
   `attribute_name` varchar(255) NOT NULL DEFAULT '',
-  `option_name` varchar(255) NOT NULL DEFAULT '',
+  `option_name` TEXT NOT NULL DEFAULT '',
   `price` decimal(9,2) NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`id`),
   KEY `item_id` (`item_id`)

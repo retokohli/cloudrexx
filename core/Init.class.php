@@ -64,6 +64,10 @@ class InitCMS
 
     public $currentThemesId;
     public $channelThemeId;
+    /**
+     * ID of the theme that has been used for generating the response
+     */
+    public $pageThemeId;
     public $customContentTemplate = null;
     public $arrLang = array();
     public $arrLangNames = array();
@@ -243,15 +247,15 @@ class InitCMS
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['pdf_themes_id'];
             $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PDF;
         }
-        // Load mobile template
-        elseif ($this->isMobileDevice and $this->arrLang[$this->frontendLangId]['mobile_themes_id']) {
-            $this->currentThemesId = $this->arrLang[$this->frontendLangId]['mobile_themes_id'];
-            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE;
-        }
         // Load app template
         elseif (isset($_GET['appview']) && $_GET['appview'] == 1) {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['app_themes_id'];
             $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_APP;
+        }
+        // Load mobile template
+        elseif ($this->isMobileDevice and $this->arrLang[$this->frontendLangId]['mobile_themes_id']) {
+            $this->currentThemesId = $this->arrLang[$this->frontendLangId]['mobile_themes_id'];
+            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE;
         }
         // Load regular content template
         else {
@@ -508,6 +512,7 @@ class InitCMS
 
         // get theme object so we get the configured libraries
         $theme = $this->getFrontendTemplate();
+        $this->pageThemeId = $this->currentThemesId;
         $themesPath = $theme->getFoldername();
         if ($theme && $theme->isComponent()) {
             $libraries = JS::getConfigurableLibraries();
@@ -541,17 +546,32 @@ class InitCMS
         $this->templates['sidebar']                 = $this->getThemeFileContent($themesPath, 'sidebar.html');
         $this->templates['top_news']                = $this->getThemeFileContent($themesPath, 'top_news.html');
         $this->templates['shopnavbar']              = $this->getThemeFileContent($themesPath, 'shopnavbar.html');
-        $this->templates['shopnavbar2']              = $this->getThemeFileContent($themesPath, 'shopnavbar2.html');
-        $this->templates['shopnavbar3']              = $this->getThemeFileContent($themesPath, 'shopnavbar3.html');
+        $this->templates['shopnavbar2']             = $this->getThemeFileContent($themesPath, 'shopnavbar2.html');
+        $this->templates['shopnavbar3']             = $this->getThemeFileContent($themesPath, 'shopnavbar3.html');
         $this->templates['headlines']               = $this->getThemeFileContent($themesPath, 'headlines.html');
         $this->templates['headlines2']              = $this->getThemeFileContent($themesPath, 'headlines2.html');
         $this->templates['headlines3']              = $this->getThemeFileContent($themesPath, 'headlines3.html');
         $this->templates['headlines4']              = $this->getThemeFileContent($themesPath, 'headlines4.html');
+        $this->templates['headlines5']              = $this->getThemeFileContent($themesPath, 'headlines5.html');
+        $this->templates['headlines6']              = $this->getThemeFileContent($themesPath, 'headlines6.html');
+        $this->templates['headlines7']              = $this->getThemeFileContent($themesPath, 'headlines7.html');
+        $this->templates['headlines8']              = $this->getThemeFileContent($themesPath, 'headlines8.html');
+        $this->templates['headlines9']              = $this->getThemeFileContent($themesPath, 'headlines9.html');
+        $this->templates['headlines10']             = $this->getThemeFileContent($themesPath, 'headlines10.html');
         $this->templates['news_recent_comments']    = $this->getThemeFileContent($themesPath, 'news_recent_comments.html');
         $this->templates['javascript']              = $this->getThemeFileContent($themesPath, 'javascript.js');
         //$this->templates['style']                 = $this->getThemeFileContent($themesPath, 'style.css');
         $this->templates['buildin_style']           = $this->getThemeFileContent($themesPath, 'buildin_style.css');
         $this->templates['calendar_headlines']      = $this->getThemeFileContent($themesPath, 'events.html');
+        $this->templates['calendar_headlines2']     = $this->getThemeFileContent($themesPath, 'events2.html');
+        $this->templates['calendar_headlines3']     = $this->getThemeFileContent($themesPath, 'events3.html');
+        $this->templates['calendar_headlines4']     = $this->getThemeFileContent($themesPath, 'events4.html');
+        $this->templates['calendar_headlines5']     = $this->getThemeFileContent($themesPath, 'events5.html');
+        $this->templates['calendar_headlines6']     = $this->getThemeFileContent($themesPath, 'events6.html');
+        $this->templates['calendar_headlines7']     = $this->getThemeFileContent($themesPath, 'events7.html');
+        $this->templates['calendar_headlines8']     = $this->getThemeFileContent($themesPath, 'events8.html');
+        $this->templates['calendar_headlines9']     = $this->getThemeFileContent($themesPath, 'events9.html');
+        $this->templates['calendar_headlines10']    = $this->getThemeFileContent($themesPath, 'events10.html');
         $this->templates['directory_content']       = $this->getThemeFileContent($themesPath, 'directory.html');
         $this->templates['forum_content']           = $this->getThemeFileContent($themesPath, 'forum.html');
         $this->templates['podcast_content']         = $this->getThemeFileContent($themesPath, 'podcast.html');
@@ -1188,5 +1208,16 @@ class InitCMS
     public function hasCustomContent()
     {
         return !empty($this->customContentTemplate) && strlen($this->customContentTemplate) > 0 ? true : false;
+    }
+
+    /**
+     * Return the current theme id
+     * Note: This vaule is available only in frontend mode
+     *
+     * @return integer
+     */
+    public function getCurrentThemeId()
+    {
+        return $this->pageThemeId;
     }
 }

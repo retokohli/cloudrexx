@@ -417,7 +417,11 @@ class Media extends MediaLibrary
                 'id'    => 'custom_'.$uploadId,
             ));
 
-            $folderWidget   = new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget(\cmsSession::getInstance()->getTempPath() . '/' . $uploadId, true);
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $folderWidget   = new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget(
+                $cx->getComponent('Session')->getSession()->getTempPath() . '/' . $uploadId,
+                true
+            );
             $folderWidgetId = $folderWidget->getId();
             $extendedFileInputCode = <<<CODE
     <script type="text/javascript">
@@ -588,7 +592,8 @@ CODE;
     {
         global $_ARRAYLANG;
 
-        $objSession = \cmsSession::getInstance();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objSession = $cx->getComponent('Session')->getSession();
         $uploaderId = isset($_POST['media_upload_file']) ? contrexx_input2raw($_POST['media_upload_file']) : 0;
         if (empty($uploaderId)) {
             return false;

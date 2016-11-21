@@ -116,10 +116,6 @@ class Immo extends ImmoLib
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);
 
-        if (function_exists('mysql_set_charset')) {
-            mysql_set_charset("utf8"); //this is important for umlauts
-        }
-
         // initialise the session array
         if (!isset($_SESSION['immo'])) {
             $_SESSION['immo'] = array();

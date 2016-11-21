@@ -84,6 +84,13 @@ class MediaDirectoryLibrary
     public $moduleConstVar = "MEDIADIR";
 
     /**
+     * Holds the MediaDirectoryEntry object with the most recently
+     * loaded entries (using MediaDirectoryEntry::getEntries())
+     * @var MediaDirectoryEntry
+     */
+    protected static $currentFetchedEntryDataObject = null;
+
+    /**
      * Constructor
      */
     function __construct($tplPath, $name)
@@ -912,15 +919,12 @@ EOF;
     */
     public function getUploadedFilePath($uploaderId, $fileName)
     {
-        global $sessionObj;
-
         if (empty($uploaderId) || empty($fileName)) {
             return false;
         }
 
-        if (empty($sessionObj)) {
-            $sessionObj = \cmsSession::getInstance();
-        }
+        $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        $sessionObj = $cx->getComponent('Session')->getSession();
 
         $uploaderFolder = $sessionObj->getTempPath() . '/' . $uploaderId;
         if (!\Cx\Lib\FileSystem\FileSystem::exists($uploaderFolder)) {
@@ -933,5 +937,25 @@ EOF;
         }
 
         return $filePath;
+    }
+
+    protected function setCurrentFetchedEntryDataObject($objEntry) {
+        self::$currentFetchedEntryDataObject = $objEntry;
+    }
+
+    protected function getCurrentFetchedEntryDataObject() {
+        return self::$currentFetchedEntryDataObject;
+    }
+
+    protected function parseGoogleMapPlaceholder($template, $placeholder) {
+        if (!$template->placeholderExists($placeholder)) {
+            return false;
+        }
+
+        if (!isset(self::$currentFetchedEntryDataObject)) {
+            return false;
+        }
+
+        self::$currentFetchedEntryDataObject->listEntries($template, 4, $placeholder);
     }
 }

@@ -60,20 +60,21 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         global $sessionObj;
 
         if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
-            if (empty($sessionObj)) $sessionObj = \cmsSession::getInstance();
-            $_SESSION->cmsSessionStatusUpdate('backend');
+            $sessionObj = $this->getSession();
+            $sessionObj->cmsSessionStatusUpdate('backend');
         }
     }
 
     /**
+     * Returns the current session or opens a new one if none exists yet
+     * @return \Cx\Core\Session\Model\Entity\Session Session instance
+     */
+    public function getSession() {
+        return \Cx\Core\Session\Model\Entity\Session::getInstance();
+    }
+
+    /**
      * Registers the event
-     *
-     * New logs can be added using:
-     * $this->cx->getEvents()->triggerEvent('SysLog/Add', array(
-     *     'severity' => 'INFO',
-     *     'message' => 'my log message',
-     *     'data' => 'additional debugging data',
-     * ));
      */
     public function registerEvents() {
         $this->cx->getEvents()->addEvent('sessionDestroy');

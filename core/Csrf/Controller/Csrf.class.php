@@ -354,7 +354,7 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
 
         $data = ($_SERVER['REQUEST_METHOD'] == 'GET' ? $_GET : $_POST);
         self::add_code();
-        $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $tpl = new \Cx\Core\Html\Sigma($cx->getCodeBaseCorePath() . '/Csrf/View/Template/Generic/');
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
         $tpl->loadTemplateFile('Warning.html');
@@ -536,10 +536,11 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
     {
         if (self::$csrfRepo) {
             return;
-        }        
-        \cmsSession::getInstance();
+        }
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getComponent('Session')->getSession();
 
-        self::$csrfRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\Csrf\Model\Entity\Csrf');        
+        self::$csrfRepo = $cx->getDb()->getEntityManager()->getRepository('Cx\Core\Csrf\Model\Entity\Csrf');        
     }
 
     private static function __is_logged_in()

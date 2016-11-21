@@ -472,7 +472,8 @@ class MarketLibrary
             return false;
         }
         //get file info
-        $objSession = \cmsSession::getInstance();
+        $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objSession = $cx->getComponent('Session')->getSession();
         $tmpFile    = $objSession->getTempPath() . '/' . $uploaderId . '/' . $fileName;
 
         if (!\Cx\Lib\FileSystem\FileSystem::exists($tmpFile)) {

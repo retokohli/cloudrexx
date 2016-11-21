@@ -861,7 +861,10 @@ class Market extends MarketLibrary
                     }
 
                     $objMail->CharSet = CONTREXX_CHARSET;
-                    $objMail->SetFrom($fromMail, $fromName);
+                    // use email of admin as sender address
+                    // this shall ensure compatibility with SPF 
+                    $objMail->SetFrom($_CONFIG['coreAdminEmail'], $fromName);
+                    $objMail->AddReplyTo($fromMail);
                     $objMail->Subject = $subject;
                     $objMail->IsHTML(false);
                     $objMail->Body = $message;

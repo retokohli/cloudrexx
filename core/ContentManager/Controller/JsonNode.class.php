@@ -247,6 +247,7 @@ class JsonNode implements JsonAdapter {
             $this->em->getConnection()->rollback();
             throw $e;
         }
+        $this->clearCache();
 
         $nodeLevels = array();
         $nodeStack = array();
@@ -320,6 +321,7 @@ class JsonNode implements JsonAdapter {
         $this->em->persist($newNode);
 
         $this->em->flush();
+        $this->clearCache();
     }
 
     protected function titleExists($parentNode, $lang, $title) {
@@ -386,6 +388,7 @@ class JsonNode implements JsonAdapter {
         if ($flush) {
             $this->em->flush();
             $this->em->clear();
+            $this->clearCache();
         }
         return array(
             'action'                => 'delete',
@@ -411,6 +414,7 @@ class JsonNode implements JsonAdapter {
         }
         $this->em->flush();
         $this->em->clear();
+        $this->clearCache();
 
         return $return;
     }
@@ -681,5 +685,13 @@ class JsonNode implements JsonAdapter {
         }
 
         return $tree;
+    }
+
+    /**
+     * Drops the complete output cache
+     */
+    protected function clearCache() {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getComponent('Cache')->clearCache();
     }
 }

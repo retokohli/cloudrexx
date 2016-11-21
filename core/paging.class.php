@@ -277,8 +277,8 @@ class Paging
         // it must not exceed the allowed session-variable-key-length.
         // Therefore, if required, the parameter name is hashed and cut to the
         // maximum allowed session-variable-key-length.
-        if (strlen($parameterName) > \cmsSession::getVariableKeyMaxLength()) {
-            $parameterName = substr(md5($parameterName), 0, \cmsSession::getVariableKeyMaxLength());
+        if (strlen($parameterName) > \Cx\Core\Session\Model\Entity\Session::getVariableKeyMaxLength()) {
+            $parameterName = substr(md5($parameterName), 0, \Cx\Core\Session\Model\Entity\Session::getVariableKeyMaxLength());
         }
 
         return $parameterName;
