@@ -544,6 +544,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $arrOptions = $cx->getComponent('Pdf')->getPdfTemplates();
-        return implode(',', $arrOptions);
+        $display = array();
+        foreach ($arrOptions as $key => $arrOption) {
+            array_push($display, $key . ':' . $arrOption);
+        }
+        return implode(',', $display);
     }
 }
