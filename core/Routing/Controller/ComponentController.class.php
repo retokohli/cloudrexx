@@ -71,8 +71,39 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
         }
         if ($originalUrl->toString() != $url->toString()) {
-            \Cx\Core\Csrf\Controller\Csrf::header('Location: ' . $url->toString(), true, $rewriteRule->getRewriteStatusCode());
-            die();
+            if (
+                $rewriteRule->getRewriteStatusCode() !=
+                \Cx\Core\Routing\Model\Entity\RewriteRule::REDIRECTION_TYPE_INTERN
+            ) {
+                \Cx\Core\Csrf\Controller\Csrf::header(
+                    'Location: ' . $url->toString(),
+                    true,
+                    $rewriteRule->getRewriteStatusCode()
+                );
+                die();
+            }
+            try {
+                \DBG::log('Fetching content from ' . $url->toString());
+                $request = new \HTTP_Request2($url->toString(), \HTTP_Request2::METHOD_GET);
+                $request->setConfig(array(
+                    'follow_redirects' => true,
+                ));
+                $response = $request->send();
+                $content = $response->getBody();
+                foreach ($response->getHeader() as $key=>$value) {
+                    if (in_array($key, array(
+                        'content-encoding',
+                        'transfer-encoding',
+                    ))) {
+                        continue;
+                    }
+                    \Cx\Core\Csrf\Controller\Csrf::header($key . ':' . $value);
+                }
+                $continue = false;
+                die($content);
+            } catch (\HTTP_Request2_Exception $e) {
+                \DBG::dump($e);
+            }
         }
     }
 }

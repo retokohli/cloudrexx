@@ -446,7 +446,7 @@ CREATE TABLE `contrexx_core_rewrite_rule` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `regular_expression` varchar(255) NOT NULL,
   `continue_on_match` tinyint(1) NOT NULL,
-  `rewrite_status_code` int(11) NOT NULL,
+  `rewrite_status_code` enum('301','302','intern') NOT NULL,
   `order_no` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;

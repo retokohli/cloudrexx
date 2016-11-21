@@ -1711,6 +1711,10 @@ CODE;
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
         }
+        
+        // drop cache:
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getComponent('Cache')->clearCache();
     }
 
     /**

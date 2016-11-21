@@ -64,6 +64,10 @@ class InitCMS
 
     public $currentThemesId;
     public $channelThemeId;
+    /**
+     * ID of the theme that has been used for generating the response
+     */
+    public $pageThemeId;
     public $customContentTemplate = null;
     public $arrLang = array();
     public $arrLangNames = array();
@@ -508,6 +512,7 @@ class InitCMS
 
         // get theme object so we get the configured libraries
         $theme = $this->getFrontendTemplate();
+        $this->pageThemeId = $this->currentThemesId;
         $themesPath = $theme->getFoldername();
         if ($theme && $theme->isComponent()) {
             $libraries = JS::getConfigurableLibraries();
@@ -1204,5 +1209,16 @@ class InitCMS
     public function hasCustomContent()
     {
         return !empty($this->customContentTemplate) && strlen($this->customContentTemplate) > 0 ? true : false;
+    }
+
+    /**
+     * Return the current theme id
+     * Note: This vaule is available only in frontend mode
+     *
+     * @return integer
+     */
+    public function getCurrentThemeId()
+    {
+        return $this->pageThemeId;
     }
 }
