@@ -61,6 +61,13 @@ class PageEventListenerException extends \Exception {}
  */
 class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
+    /**
+     * lastPreUpdateChangeset
+     *
+     * @var array Entity changeset
+     */
+    protected $lastPreUpdateChangeset;
+
     public function prePersist($eventArgs) {
         $this->setUpdatedByCurrentlyLoggedInUser($eventArgs);
         $this->fixAutoIncrement();
@@ -72,6 +79,7 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
      */
     public function preUpdate($eventArgs) {
         $this->setUpdatedByCurrentlyLoggedInUser($eventArgs);
+        $this->lastPreUpdateChangeset = $eventArgs->getEntityChangeSet();
     }
 
     protected function setUpdatedByCurrentlyLoggedInUser($eventArgs) {
@@ -119,10 +127,28 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
     public function postPersist($eventArgs) {
         $this->writeXmlSitemap($eventArgs);
+        // drop complete cache on page creation:
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getComponent('Cache')->clearCache();
     }
 
     public function postUpdate($eventArgs) {
         $this->writeXmlSitemap($eventArgs);
+        // drop complete cache if active or visible flag changed
+        // or if navigation title, navigation CSS name or slug changed:
+        if (
+            $this->lastPreUpdateChangeset &&
+            (
+                isset($this->lastPreUpdateChangeset['active']) ||
+                isset($this->lastPreUpdateChangeset['display']) ||
+                isset($this->lastPreUpdateChangeset['slug']) ||
+                isset($this->lastPreUpdateChangeset['cssNavName']) ||
+                isset($this->lastPreUpdateChangeset['title'])
+            )
+        ) {
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getComponent('Cache')->clearCache();
+        }
     }
 
     public function postRemove($eventArgs) {
