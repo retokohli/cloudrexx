@@ -194,10 +194,17 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             }
         }
 
-        if (!$this->boolIsEnabled) {
-            return $this->internalEsiParsing($endcode);
-        }
-        if (session_id() != '' && \FWUser::getFWUserObject()->objUser->login()) {
+        if (
+            // do not cache error page
+            ($page && $page->getModule() == 'Error') ||
+            // do not create cache files if caching is disabled
+            !$this->boolIsEnabled ||
+            // do not cache if a user is logged in
+            (
+                session_id() != '' &&
+                \FWUser::getFWUserObject()->objUser->login()
+            )
+        ) {
             return $this->internalEsiParsing($endcode);
         }
         // write header cache file

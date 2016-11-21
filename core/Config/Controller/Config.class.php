@@ -1763,6 +1763,12 @@ class Config
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'cache')){
                         throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheUserCacheMemcacheConfig");
                 }
+                // The following is temporary until the LanguageManager replacement (component 'Locale') is here:
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('useVirtualLanguageDirectories')
+                    && !\Cx\Core\Setting\Controller\Setting::add('useVirtualLanguageDirectories', isset($existingConfig['useVirtualLanguageDirectories']) ? $existingConfig['useVirtualLanguageDirectories'] : 'on', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'lang')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for useVirtualLanguageDirectories");
+                }
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
