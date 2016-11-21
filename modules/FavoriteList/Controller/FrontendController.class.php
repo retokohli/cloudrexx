@@ -101,10 +101,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
 
                 $pdfFile = $this->getPdfCatalog($favorites);
 
-                $dl = new \HTTP_Download(array(
-                    'file' => $this->cx->getWebsiteDocumentRootPath() . $pdfFile['filePath'],
-                    'contenttype' => 'application/pdf'
-                ));
+                $dl = new \HTTP_Download();
+                $dl->setFile($this->cx->getWebsiteDocumentRootPath() . $pdfFile['filePath']);
+                $dl->setContentType('application/pdf');
                 $dl->setContentDisposition(null);
                 $dl->send();
                 break;
