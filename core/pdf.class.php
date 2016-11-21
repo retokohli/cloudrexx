@@ -36,9 +36,6 @@
 * @version      1.1.0
 */
 
-//Load the library file functions.php
-require ASCMS_LIBRARY_PATH . '/Mpdf/src/functions.php';
-
 /**
 * PDF class
 *
@@ -49,7 +46,7 @@ require ASCMS_LIBRARY_PATH . '/Mpdf/src/functions.php';
 * @subpackage   core
 * @version      1.1.0
 */
-class PDF extends \Mpdf\Mpdf
+class PDF extends mPDF
 {
     /**
     * string $content
@@ -60,17 +57,14 @@ class PDF extends \Mpdf\Mpdf
     /**
      * @var string
      */
-    private $destination = \Mpdf\Output\Destination::INLINE;
+    private $destination = 'I';
 
     /**
      * Constructor
      */
     public function __construct($orientation = 'P', $format = 'A4')
     {
-        parent::__construct(array(
-            'orientation' => $orientation,
-            'format'      => $format
-        ));
+        parent::__construct('', $format, 0, '', 15, 15, 16, 16, 9, 9, $orientation);
     }
 
     /**
@@ -102,8 +96,8 @@ class PDF extends \Mpdf\Mpdf
 
         $libPath = \Cx\Core\Core\Controller\Cx::instanciate()
             ->getCodeBaseLibraryPath();
-        $this->noImageFile = $libPath . '/Mpdf/data/no_image.gif';
-        $this->content = utf8_decode($this->_ParseHTML($this->content));
+        $this->noImageFile = $libPath . '/Mpdf/includes/no_img.gif';
+        $this->content = utf8_decode($this->content);
         if (empty($this->author)) {
             $this->SetAuthor($_CONFIG['coreCmsName']);
         }
@@ -117,46 +111,45 @@ class PDF extends \Mpdf\Mpdf
     }
 
     /**
-     * Parse the HTML
+     * Get file full path
      *
-     * @param string $source
-     *
-     * @return string
+     * @param string $path     file path
+     * @param string $basepath file base path
      */
-    function _ParseHTML($source)
+    public function GetFullPath(&$path, $basepath = '')
     {
-        // H1
-        // ----------------
-        $source = str_replace('<h1>', '<div class="h1">', $source);
-        $source = str_replace('</h1>', '</div>', $source);
-        // H2
-        // ----------------
-        $source = str_replace('<h2>', '<div class="h2">', $source);
-        $source = str_replace('</h2>', '</div>', $source);
-        // H3
-        // ----------------
-        $source = str_replace('<h3>', '<div class="h3">', $source);
-        $source = str_replace('</h3>', '</div>', $source);
-        // H4
-        // ----------------
-        $source = str_replace('<h3>', '<div class="h3">', $source);
-        $source = str_replace('</h3>', '</div>', $source);
+        // When parsing CSS need to pass temporary basepath -
+        // so links are relative to current stylesheet
+        if (!$basepath) {
+            $basepath = $this->basepath;
+        }
+        //Fix path value
+        $path = str_replace("\\", "/", $path); //If on Windows
+        // mPDF 5.7.2
+        if (substr($path, 0, 2) == "//") {
+            $tr = parse_url($basepath);
+            $path = $tr['scheme'] . ':' . $path; // mPDF 6
+        }
 
-        // body
-        // ----------------
-        $source = str_replace('<body>', '<body><div class="body">', $source);
-        $source = str_replace('</body>', '</div></body>', $source);
+        $regexp = '|^./|'; // Inadvertently corrects "./path/etc"
+        //and "//www.domain.com/etc"
+        $path = preg_replace($regexp, '', $path);
 
-        // p
-        // ----------------
-        $source = str_replace('<p>', '<div class="p">', $source);
-        $source = str_replace('</p>', '</div>', $source);
+        if (substr($path, 0, 1) == '#') {
+            return;
+        }
+        if (preg_match('@^(mailto|tel|fax):.*@i', $path)) {
+            return;
+        }
 
-        // image to relative path
-        // ----------------
-        $source = str_replace('src="/images', 'src="images', $source);
-        $source = str_replace("src='/images", "src='images", $source);
-
-        return $source;
+        if (
+            substr($path, 0, 3) == "../" ||
+            strpos($path, ":/") === false ||
+            strpos($path, ":/") > 10
+        ) {
+            $objFile = new Cx\Lib\FileSystem\FileSystemFile($path);
+            $path    = $objFile->getAbsoluteFilePath();
+        }
     }
+
 }
