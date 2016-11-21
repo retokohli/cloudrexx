@@ -579,10 +579,10 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
 
     /**
      * Clear expired session
-     * 
+     * @param int $maxlifetime
      * @return boolean
      */
-    function gc() {
+    function gc($maxlifetime) {
         $db = \Env::get('db');
         $sessoinIds = array();
         $objResult  = $db->Execute('
