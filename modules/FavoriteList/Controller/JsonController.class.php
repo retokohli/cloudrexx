@@ -172,9 +172,9 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
             $description = contrexx_input2db($data['get']['description']);
             $message = contrexx_input2db($data['get']['message']);
             $price = contrexx_input2db($data['get']['price']);
-            $image1 = contrexx_input2db($data['get']['image_1']);
-            $image2 = contrexx_input2db($data['get']['image_2']);
-            $image3 = contrexx_input2db($data['get']['image_3']);
+            $image1 = contrexx_input2db($data['get']['image1']);
+            $image2 = contrexx_input2db($data['get']['image2']);
+            $image3 = contrexx_input2db($data['get']['image3']);
 
             $em = $this->cx->getDb()->getEntityManager();
 

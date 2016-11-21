@@ -29,9 +29,9 @@ cx.ready(function () {
                     description: cx.jQuery(element).data('description'),
                     message: cx.jQuery(element).data('message'),
                     price: cx.jQuery(element).data('price'),
-                    image_1: cx.jQuery(element).data('image1'),
-                    image_2: cx.jQuery(element).data('image2'),
-                    image_3: cx.jQuery(element).data('image3')
+                    image1: cx.jQuery(element).data('image1'),
+                    image2: cx.jQuery(element).data('image2'),
+                    image3: cx.jQuery(element).data('image3')
                 },
                 success: function (data) {
                     cx.favoriteListUpdateBlock(data.data);
