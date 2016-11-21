@@ -88,41 +88,80 @@ class FWLanguage
     {
         global $_CONFIG, $objDatabase;
 
-        $objResult = $objDatabase->Execute("
-            SELECT id, lang, name, charset, themesid,
-                   frontend, backend, is_default, fallback
-              FROM ".DBPREFIX."languages
-             ORDER BY id ASC");
-        if ($objResult) {
-            $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
-            $license->check();
-            $full = $license->isInLegalComponents('fulllanguage');
-            while (!$objResult->EOF) {
-                // frontend languages
-                self::$arrFrontendLanguages[$objResult->fields['id']] = array(
-                    'id'         => $objResult->fields['id'],
-                    'lang'       => $objResult->fields['lang'],
-                    'name'       => $objResult->fields['name'],
-                    'charset'    => $objResult->fields['charset'],
-                    'themesid'   => $objResult->fields['themesid'],
-                    'frontend'   => $objResult->fields['frontend'],
-                    'backend'    => $objResult->fields['backend'],
-                    'is_default' => $objResult->fields['is_default'],
-                    'fallback'   => $objResult->fields['fallback'],
-                );
-                // backend languages
-                self::$arrBackendLanguages = self::$arrFrontendLanguages;
-                if (!$full && $objResult->fields['is_default'] != 'true') {
-                    self::$arrFrontendLanguages[$objResult->fields['id']]['frontend'] = 0;
-                    self::$arrFrontendLanguages[$objResult->fields['id']]['backend'] = 0;
-                    self::$arrBackendLanguages[$objResult->fields['id']]['frontend'] = 0;
-                    self::$arrBackendLanguages[$objResult->fields['id']]['backend'] = 0;
+        $em = \Env::get('em');
+        $localeRepo = $em->getRepository('\Cx\Core\Locale\Model\Entity\Locale');
+        $backendRepo = $em->getRepository('\Cx\Core\Locale\Model\Entity\Backend');
+
+        $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
+        $license->check();
+        $full = $license->isInLegalComponents('fulllanguage');
+
+        // frontend locales
+        foreach($localeRepo->findAll() as $locale) {
+            // get the theme for each channel of the locale's language
+            $frontends = $locale->getIso1()->getFrontends();
+            $themeId = $mobileThemeId = $printThemeId = $pdfThemeId = $appThemeId = 0;
+            foreach ($frontends as $frontend) {
+                switch ($frontend->getChannel()) {
+                    case \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE:
+                        $mobileThemeId = $frontend->getTheme();
+                        break;
+                    case \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PRINT:
+                        $printThemeId = $frontend->getTheme();
+                        break;
+                    case \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PDF:
+                        $pdfThemeId = $frontend->getTheme();
+                        break;
+                    case \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_APP:
+                        $appThemeId = $frontend->getTheme();
+                        break;
+                    default: // web
+                        $themeId = $frontend->getTheme();
+                        break;
                 }
-                if ($objResult->fields['is_default'] == 'true') {
-                    self::$defaultFrontendLangId = $objResult->fields['id'];
-                    self::$defaultBackendLangId = $objResult->fields['id'];
-                }
-                $objResult->MoveNext();
+            }
+            // check if locale is default
+            $isFrontendDefault = $locale->getId() == $_CONFIG['defaultLocaleId'];
+            self::$arrFrontendLanguages[$locale->getId()] = array(
+                'id'  => $locale->getId(),
+                'lang' => $locale->getShortForm(),
+                'name' => $locale->__toString(),
+                'source_lang' => $locale->getSourceLanguage()->getIso1(),
+                'themesid'   => $themeId,
+                'print_themes_id' => $printThemeId,
+                'pdf_themes_id' => $pdfThemeId,
+                'mobile_themes_id' => $mobileThemeId,
+                'app_themes_id' => $appThemeId,
+                'frontend'   => true, // every existing locale is active
+                'is_default' => $isFrontendDefault,
+                'fallback'   => $locale->getFallback() ? $locale->getFallback()->getId() : 0,
+            );
+            // activate only default locale, if system not in full lang mode
+            if (!$full && !$isFrontendDefault) {
+                self::$arrFrontendLanguages[$locale->getId()]['frontend'] = 0;
+            }
+            if ($isFrontendDefault) {
+                self::$defaultFrontendLangId = $locale->getId();
+            }
+        }
+
+        // backend languages
+        foreach($backendRepo->findAll() as $backendLanguage) {
+            // check if language is default
+            $isBackendDefault = $backendLanguage->getId() == $_CONFIG['defaultLanguageId'];
+            self::$arrBackendLanguages[$backendLanguage->getId()] = array(
+                'id' => $backendLanguage->getId(),
+                'lang' => $backendLanguage->getIso1()->getIso1(),
+                'name' => $backendLanguage->__toString(),
+                'backend' => true,
+                'is_default' => $isBackendDefault
+            );
+            // activate only default language, if system not in full lang mode
+            if (!$full && !$isBackendDefault) {
+                self::$arrBackendLanguages[$backendLanguage->getId()]['backend'] = 0;
+            }
+            if ($isBackendDefault) {
+                self::$defaultBackendLangId = $backendLanguage->getId();
             }
         }
     }

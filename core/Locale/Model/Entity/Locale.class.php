@@ -180,4 +180,14 @@ class Locale extends \Cx\Model\Base\EntityBase {
     {
         return $this->getLabel();
     }
+
+    /**
+     * Builds short form of locale containing iso1 and alpha2 code (if exists)
+     *
+     * @return string the short form (example: de-CH for swiss german)
+     */
+    public function getShortForm() {
+        $iso1 = $this->iso1->getIso1();
+        return $this->country ?  $iso1 . '-' . $this->country->getAlpha2() : $iso1;
+    }
 }
