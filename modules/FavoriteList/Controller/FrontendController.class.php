@@ -244,7 +244,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 ));
 
                 $template->parse(strtolower($this->getName()) . '_catalog_actions');
-                \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function', 'Yaml');
+                \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function', 'FileSystem');
                 $cmds = array(
                     'mail',
                     'print',
@@ -257,7 +257,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                             strtoupper($this->getName()) . '_ACT_' . strtoupper($cmd) . '_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd($this->getName(), $cmd),
                         ));
                         // overwrite init from fromModuleAndCmd
-                        \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function', 'Yaml');
+                        \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function', 'FileSystem');
                         $template->parse(strtolower($this->getName()) . '_catalog_actions_' . $cmd);
                     }
                 }
@@ -405,7 +405,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         \JS::registerCSS('/core/Html/View/Style/Backend.css', 1);
 
         $template->parse(strtolower($this->getName()) . '_block_actions');
-        \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function', 'Yaml');
+        \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function', 'FileSystem');
         $cmds = array(
             'mail',
             'print',
@@ -419,7 +419,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                     strtoupper($this->getName()) . '_BLOCK_ACT_' . strtoupper($cmd) . '_NAME' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_ACT_' . strtoupper($cmd)],
                 ));
                 // overwrite init from fromModuleAndCmd
-                \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function', 'Yaml');
+                \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'function', 'FileSystem');
                 $template->parse(strtolower($this->getName()) . '_block_actions_' . $cmd);
             }
         }
@@ -451,7 +451,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      */
     protected function getPdfCatalog($favorites)
     {
-        \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'pdf', 'Yaml');
+        \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'pdf', 'FileSystem');
         $pdfTemplateId = \Cx\Core\Setting\Controller\Setting::getValue('pdfTemplate');
 
         $attributes = array(
