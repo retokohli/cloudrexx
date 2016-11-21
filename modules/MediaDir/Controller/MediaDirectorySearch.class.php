@@ -140,17 +140,11 @@ EOF;
         $bolShowCategorySelector = false;
         $formDefinition = null;
 
-        //get ids
+        // determine if we shall display the level and/or category selection dropdown
         if (!empty($_GET['cmd'])) {
             $arrIds = explode('-', $_GET['cmd']);
 
-            if ($arrIds[0] == 'detail' || substr($arrIds[0],0,6) == 'detail') {
-                $entryId = intval($_GET['eid']);
-                $objEntry = new MediaDirectoryEntry($this->moduleName);
-                $objEntry->getEntries($entryId);
-                $formDefinition = $objEntry->getFormDefinition();
-                $formId = $formDefinition['formId'];
-            } elseif ($arrIds[0] != 'search' && $arrIds[0] != 'alphabetical'){
+            if ($arrIds[0] != 'search' && $arrIds[0] != 'alphabetical'){
                 $objForms = new MediaDirectoryForm(null, $this->moduleName);
                 foreach ($objForms->arrForms as $id => $arrForm) {
                     if (!empty($arrForm['formCmd']) && ($arrForm['formCmd'] == $_GET['cmd'])) {
@@ -161,7 +155,16 @@ EOF;
                 }
             }
 
-            if ($this->arrSettings['legacyBehavior'] || $formId) {
+            // in case the section of a specific form has been requested, do determine
+            // the usage of the level and/or category selection dropdown based on that
+            // form's configuration
+            //
+            // note: in a previous version of Cloudrexx the following was
+            //       always true. which resulted in a bug, that if a specific
+            //       category was request through the page's CMD, then the
+            //       level and category selection dropdowns were never used.
+            //       The legacyBehavior mode does simulate this fixed bug.
+            if ($formId || $this->arrSettings['legacyBehavior']) {
                 if (($formDefinition['formUseLevel'] == 1) && ($this->arrSettings['levelSelectorExpSearch'][$formId] == 1)) {
                     $bolShowLevelSelector = true;
                 }
@@ -169,11 +172,15 @@ EOF;
                     $bolShowCategorySelector = true;
                 }
             } else {
+                // on search (section=mediadir&cmd=search) and alphabetical section (section=mediadir&cmd=alphabetical)
+                //
                 // activate level and category selection in case they are active in any forms
                 $bolShowLevelSelector = in_array(1, $this->arrSettings['levelSelectorExpSearch']);
                 $bolShowCategorySelector = in_array(1, $this->arrSettings['categorySelectorExpSearch']);
             }
         } else {
+            // on main application page (section=mediadir):
+            //
             // activate level and category selection in case they are active in any forms
             $bolShowLevelSelector = in_array(1, $this->arrSettings['levelSelectorExpSearch']);
             $bolShowCategorySelector = in_array(1, $this->arrSettings['categorySelectorExpSearch']);
