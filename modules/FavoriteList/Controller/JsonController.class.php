@@ -105,7 +105,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements \C
 
         $themeId = contrexx_input2raw($data['get']['themeId']);
         $theme = $this->getTheme($themeId);
-        $templateFile = $theme->getFilePath(strtolower($this->getName()) . '_block_list.html');
+        $templateFile = '/themes/' . $theme->getFoldername() . '/' . strtolower($this->getName()) . '_block_list.html';
         $template = new \Cx\Core\Html\Sigma(dirname($templateFile));
         $template->loadTemplateFile(strtolower($this->getName()) . '_block_list.html');
 

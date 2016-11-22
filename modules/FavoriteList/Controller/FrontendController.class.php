@@ -394,7 +394,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             return;
         }
         $theme = $this->getTheme();
-        $template->addBlockfile(strtoupper($this->getName() . '_BLOCK'), strtoupper($this->getName()) . '_BLOCK', $theme->getFilePath(strtolower($this->getName()) . '_block.html'));
+        $template->addBlockfile(strtoupper($this->getName()) . '_BLOCK', strtoupper($this->getName()) . '_BLOCK', 'themes/' . $theme->getFoldername() . '/' . strtolower($this->getName()) . '_block.html');
 
         $template->setVariable(array(
             strtoupper($this->getName()) . '_BLOCK_TITLE' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName())],
