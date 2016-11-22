@@ -2,7 +2,7 @@ contrexx_content_node:
   -
     id: 1
     lft: 1
-    rgt: 12
+    rgt: 16
     lvl: 0
   -
     id: 532
@@ -33,6 +33,18 @@ contrexx_content_node:
     parent_id: 1
     lft: 10
     rgt: 11
+    lvl: 1
+  -
+    id: 590
+    parent_id: 1
+    lft: 12
+    rgt: 13
+    lvl: 1
+  -
+    id: 591
+    parent_id: 1
+    lft: 14
+    rgt: 15
     lvl: 1
 contrexx_content_page:
   -
@@ -346,6 +358,162 @@ contrexx_content_page:
     target: "[[NODE_532]]"
     module: "Access"
     cmd: ""
+  -
+    id: 742
+    node_id: 590
+    nodeIdShadowed: 590
+    lang: 2
+    type: "application"
+    caching: 0
+    updatedAt: "2016-11-21 16:21:48"
+    updatedBy: "noreply@contrexx.com"
+    title: "Login"
+    linkTarget: ""
+    contentTitle: "Login"
+    slug: "Login"
+    content: "{APPLICATION_DATA}"
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "Login"
+    metadesc: "Login"
+    metakeys: "Login"
+    metarobots: 1
+    metaimage: "Login"
+    editingStatus: ""
+    protection: 0
+    frontendAccessId: 0
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: ""
+    module: "Login"
+    cmd: ""
+  -
+    id: 743
+    node_id: 590
+    nodeIdShadowed: 590
+    lang: 1
+    type: "fallback"
+    caching: 0
+    updatedAt: "2016-11-21 16:21:58"
+    updatedBy: "noreply@contrexx.com"
+    title: "Login"
+    linkTarget: ""
+    contentTitle: "Login"
+    slug: "Login"
+    content: ""
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "Login"
+    metadesc: "Login"
+    metakeys: "Login"
+    metarobots: 1
+    metaimage: "Login"
+    editingStatus: ""
+    protection: 0
+    frontendAccessId: 0
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: ""
+    module: "Access"
+    cmd: ""
+  -
+    id: 744
+    node_id: 591
+    nodeIdShadowed: 591
+    lang: 2
+    type: "application"
+    caching: 0
+    updatedAt: "2016-11-21 16:23:27"
+    updatedBy: "noreply@contrexx.com"
+    title: "Home"
+    linkTarget: ""
+    contentTitle: "Home"
+    slug: "Home"
+    content: "{APPLICATION_DATA}"
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "Home"
+    metadesc: "Home"
+    metakeys: "Home"
+    metarobots: 1
+    metaimage: "Home"
+    editingStatus: ""
+    protection: 0
+    frontendAccessId: 0
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: ""
+    module: "Home"
+    cmd: ""
+  -
+    id: 745
+    node_id: 591
+    nodeIdShadowed: 591
+    lang: 1
+    type: "fallback"
+    caching: 0
+    updatedAt: "2016-11-21 16:23:37"
+    updatedBy: "noreply@contrexx.com"
+    title: "Home"
+    linkTarget: ""
+    contentTitle: "Home"
+    slug: "Home"
+    content: ""
+    sourceMode: 0
+    customContent: ""
+    useCustomContentForAllChannels: 0
+    applicationTemplate: ""
+    useCustomApplicationTemplateForAllChannels: 0
+    cssName: ""
+    cssNavName: ""
+    skin: 0
+    useSkinForAllChannels: 0
+    metatitle: "Home"
+    metadesc: "Home"
+    metakeys: "Home"
+    metarobots: 1
+    metaimage: "Home"
+    editingStatus: ""
+    protection: 0
+    frontendAccessId: 0
+    backendAccessId: 0
+    display: 1
+    active: 1
+    target: ""
+    module: "Access"
+    cmd: ""
+contrexx_access_user_groups:
+  -
+    group_id: 10
+    group_name: "Test Frontend"
+    group_description: ""
+    is_active: 1
+    type: "frontend"
+    homepage: "[[NODE_HOME]]"
 contrexx_access_group_dynamic_ids:
   -
     access_id: 383
@@ -404,7 +572,7 @@ contrexx_access_users:
     id: 2
     is_admin: 0
     username: ""
-    password: "f91e15dbec69fc40f81f0876e7009648"
+    password: "e10adc3949ba59abbe56e057f20f883e"
     auth_token: ""
     auth_token_timeout: 0
     regdate: 1474977457
@@ -467,3 +635,11 @@ contrexx_access_user_profile:
     interests: ""
     signature: ""
     picture: ""
+contrexx_sessions:
+  -
+    sessionid: "34hqpg9a94rpbj8r89hlhs6443"
+    remember_me: 1
+    startdate: 1479809108
+    lastupdated: "{src:\Cx\Core\Test\Controller\ComponentController::getUpdatedSessionTime()}"
+    status: "frontend"
+    user_id: 2

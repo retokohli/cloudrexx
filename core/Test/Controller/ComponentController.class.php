@@ -81,7 +81,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         $operation = new \PHPUnit_Extensions_Database_Operation_Composite(array(
             new \Cx\Core\Test\Model\Entity\TruncateOperation(),
-            \PHPUnit_Extensions_Database_Operation_Factory::INSERT(),
+            new \Cx\Core\Test\Model\Entity\InsertOperation(),
         ));
         $pdo  = $this->cx->getDb()->getPdoConnection();
         $pdo->beginTransaction();
@@ -131,5 +131,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return $dataSetFilePath;
         }
         return null;
+    }
+
+    /**
+     * Callback function from dataset to get the current time
+     *
+     * @return integer Current time + 1 hr
+     */
+    public static function getUpdatedSessionTime()
+    {
+        return time() + 3600;
     }
 }

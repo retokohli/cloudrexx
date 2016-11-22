@@ -50,9 +50,24 @@ namespace Cx\Core\Routing\Testing\UnitTest;
  */
 class ProtectedPagesResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTestCase
 {
-    protected $mockFallbackLanguages = array(
-        1 => 2,
-        2 => 3
+
+    /**
+     * Domain url of the installation
+     *
+     * @var string
+     */
+    protected $domainUrl;
+
+    /**
+     * Mock user array test data
+     *
+     * @var array
+     */
+    protected $mockUsers = array(
+        2 => array(
+            'email'   => 'test@contrexx.com',
+            'session' => '34hqpg9a94rpbj8r89hlhs6443',
+        ),
     );
 
     /**
@@ -64,9 +79,61 @@ class ProtectedPagesResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTest
      */
     public function __construct($name = null, array $data = array(), $dataName = '')
     {
+        global $_CONFIG;
+
         parent::__construct($name, $data, $dataName);
         $this->dataSetFolder = $this->cx->getCodeBaseCorePath() . '/Routing/Testing/UnitTest/Data';
-        $this->dataSetFile   = '/ProtectedPagesDataSet.yml';
+
+        // $_CONFIG is not defined in cli mode
+        $this->domainUrl = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . $this->cx->getCodeBaseOffsetPath();
+        $this->domainUrl = 'http://www.clx.local';
+    }
+
+    /**
+     * Override the parent, returns null database operation class
+     *
+     * @return \PHPUnit_Extensions_Database_Operation_Null
+     */
+    public function getSetUpOperation()
+    {
+        return new \PHPUnit_Extensions_Database_Operation_Null();
+    }
+
+    /**
+     * Sends the request to given urlSlug and
+     * return the response header
+     *
+     * @param string $urlSlug Url string
+     *
+     * @return \HTTP_Request2_Response
+     */
+    protected function getResponse($urlSlug, $userId = 0)
+    {
+        $url = new \Cx\Core\Routing\Url($this->domainUrl . $urlSlug);
+        $url->setParams(array(
+            'runTest'   => 1,
+            'component' => 'Routing',
+            'dataSet'   => 'ProtectedPagesDataSet',
+        ));
+        $request = new \HTTP_Request2(
+             $url->toString(),
+            \HTTP_Request2::METHOD_POST
+        );
+        if ($userId) {
+            $request->addCookie(
+                'PHPSESSID',
+                $this->mockUsers[$userId]['session']
+            );
+        }
+        $request->setConfig(array(
+            'ssl_verify_host' => false,
+            'ssl_verify_peer' => false,
+            'follow_redirects' => true,
+            'strict_redirects' => true,
+        ));
+        $response = $request->send();
+
+        return $response;
     }
 
     /**
@@ -78,34 +145,25 @@ class ProtectedPagesResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTest
         $inputSlug = '',
         $expectedSlug = null
     ) {
-        global $url, $sessionObj;
-
-        if (null === $expectedSlug) {
+        if ($expectedSlug === null) {
             $expectedSlug = $inputSlug;
         }
-        $urlString = '';
-        if (null !== $language) {
-            $langCode   = \FWLanguage::getLanguageCodeById($language);
-            $urlString .= '/' . $langCode;
+        $expectedUrlString = $langCode = $urlString = '';
+        if ($language !== null) {
+            $langCode           = \FWLanguage::getLanguageCodeById($language);
+            $urlString         .= '/' . $langCode;
+            $expectedUrlString .= '/' . $langCode;
         }
-        $urlString .= '/'. $inputSlug;
+        $urlString         .= '/'. $inputSlug;
+        $expectedUrlString .= '/'. $expectedSlug;
 
-        if (null !== $userId) {
-            $fwUser = \FWUser::getFWUserObject();
-            if ($fwUser->objUser->login()) {
-                $fwUser->objUser->reset();
-                $fwUser->logoutAndDestroySession();
-                $sessionObj = \cmsSession::getInstance();
-            }
-            \cmsSession::getInstance()->userId = $userId;
-            $fwUser->objUser->login();
-        }
-        
-        $url      = new \Cx\Core\Routing\Url('http://example.com' . $urlString);
-        $resolver = new \Cx\Core\Routing\Resolver($url, $language, self::$em, '', $this->mockFallbackLanguages, false);
-        $resolver->resolve();
-        $p = $resolver->getPage();
-        $this->assertEquals($expectedSlug, $p->getSlug());
+        $response = $this->getResponse($urlString, $userId);
+
+        $this->assertTrue($response->getStatus() == 200);
+        $effectiveUrl       = new \Cx\Core\Routing\Url($response->getEffectiveUrl());
+        $effectiveUrlString = (!empty($langCode) ? '/'. $effectiveUrl->getLangDir() : '')
+                              . '/' . $effectiveUrl->getSuggestedTargetPath();
+        $this->assertEquals($expectedUrlString, $effectiveUrlString);
     }
 
     /**
@@ -117,12 +175,6 @@ class ProtectedPagesResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTest
     {
         return array(
             array(1, 2, 'Simple-content-page'),
-//            array(2, 'Simple-content-page'),
-//            array(null, 'Alias-for-content-page', 'Simple-content-page'),
-//            array(1, 'SymLink-page'),
-//            array(2, 'SymLink-page'),
-//            array(1, 'Application-page'),
-//            array(2, 'Application-page'),
         );
     }
 }
