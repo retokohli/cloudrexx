@@ -76,9 +76,14 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 }
 
                 if (isset($_POST['send'])) {
-
+                    $mailTemplate = array(
+                        'key' => 'mail',
+                        'section' => $this->getName(),
+                        'substitution' => array(),
+                    );
+                    \Cx\Core\MailTemplate\Controller\MailTemplate::send($mailTemplate);
                 } else {
-                    $template->parse(strtolower($this->getName()) . '_mail');
+                    $template->touchBlock(strtolower($this->getName()) . '_mail');
                 }
                 break;
             case 'print':
@@ -120,13 +125,18 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                         $template->setVariable(array(
                             strtoupper($this->getName()) . '_RECOMMENDATION_MESSAGE_NO_ENTRIES' => $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_MESSAGE_NO_ENTRIES'],
                         ));
-                        $template->parse(strtolower($this->getName()) . '_recommendation_no_entries');
+                        $template->touchBlock(strtolower($this->getName()) . '_recommendation_no_entries');
                         break;
                     }
                 }
 
                 if (isset($_POST['send'])) {
-
+                    $mailTemplate = array(
+                        'key' => 'recommendation',
+                        'section' => $this->getName(),
+                        'substitution' => array(),
+                    );
+                    \Cx\Core\MailTemplate\Controller\MailTemplate::send($mailTemplate);
                 } else {
                     $template->parse(strtolower($this->getName()) . '_recommendation');
                 }
@@ -150,7 +160,12 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 }
 
                 if (isset($_POST['send'])) {
-
+                    $mailTemplate = array(
+                        'key' => 'inquiry',
+                        'section' => $this->getName(),
+                        'substitution' => array(),
+                    );
+                    \Cx\Core\MailTemplate\Controller\MailTemplate::send($mailTemplate);
                 } else {
                     $em = $this->cx->getDb()->getEntityManager();
                     $formFieldRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\FormField');
