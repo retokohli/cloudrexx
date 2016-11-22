@@ -112,57 +112,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Function Inquiry");
             }
 
-            // notification group
-            \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'notification', 'FileSystem');
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationMail')
-                && !\Cx\Core\Setting\Controller\Setting::add('notificationMail', 0, 1,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'notification')
-            ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Notification Mail");
-            }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationMailMail')
-                && !\Cx\Core\Setting\Controller\Setting::add('notificationMailMail', '', 2,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'notification')
-            ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Notification Mail Mail");
-            }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationPrint')
-                && !\Cx\Core\Setting\Controller\Setting::add('notificationPrint', 0, 3,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'notification')
-            ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Notification Print");
-            }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationPrintMail')
-                && !\Cx\Core\Setting\Controller\Setting::add('notificationPrintMail', '', 4,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'notification')
-            ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Notification Print Mail");
-            }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationRecommendation')
-                && !\Cx\Core\Setting\Controller\Setting::add('notificationRecommendation', 0, 5,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'notification')
-            ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Notification Recommendation");
-            }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationRecommendationMail')
-                && !\Cx\Core\Setting\Controller\Setting::add('notificationRecommendationMail', '', 6,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'notification')
-            ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Notification Mail Recommendation");
-            }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationInquiry')
-                && !\Cx\Core\Setting\Controller\Setting::add('notificationInquiry', 0, 7,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'notification')
-            ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Notification Inquiry");
-            }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('notificationInquiryMail')
-                && !\Cx\Core\Setting\Controller\Setting::add('notificationInquiryMail', '', 8,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'notification')
-            ) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for " . $this->getName() . " Notification Inquiry Mail");
-            }
-
             // pdf group
             \Cx\Core\Setting\Controller\Setting::init($this->getName(), 'pdf', 'FileSystem');
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('pdfTemplate')
@@ -241,15 +190,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'index.php?cmd=' . $this->getName() . '&act=' . current($cmd),
                             $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_SETTINGS_FUNCTION_DESCRIPTION'],
                             $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_SETTINGS_FUNCTION'],
-                            'TXT_MODULE_' . strtoupper($this->getName()) . '_SETTINGS_'
-                        );
-
-                        \Cx\Core\Setting\Controller\Setting::setEngineType($this->getName(), 'FileSystem', 'notification');
-                        \Cx\Core\Setting\Controller\Setting::show(
-                            $this->template,
-                            'index.php?cmd=' . $this->getName() . '&act=' . current($cmd),
-                            $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_SETTINGS_NOTIFICATION_DESCRIPTION'],
-                            $_ARRAYLANG['TXT_MODULE_' . strtoupper($this->getName()) . '_SETTINGS_NOTIFICATION'],
                             'TXT_MODULE_' . strtoupper($this->getName()) . '_SETTINGS_'
                         );
 
