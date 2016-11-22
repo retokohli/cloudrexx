@@ -185,7 +185,6 @@ class MediaDirectory extends MediaDirectoryLibrary
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         $intCmdFormId = 0;
-        $listCategoriesAndLevels = false;
         $showEntriesOfLevel = false;
         $showEntriesOfCategory = false;
         $showLevelDetails = false;
@@ -270,12 +269,12 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         // detect if the use of categories and/or levels has been activated
+        //
         // note: in a previous version of Cloudrexx, this has only been done
         //       in case the template block mediadirCategoriesLevelsList
         //       was present. Therefore, we have introduced the setting
-        //       option 'Legacy mode' to emulate the previous behavior.
-        if (!$this->arrSettings['legacyMode'] || $this->_objTpl->blockExists($this->moduleNameLC.'CategoriesLevelsList')) {
-            $listCategoriesAndLevels = true;
+        //       option 'Legacy behavior' to emulate that previous behavior.
+        if (!$this->arrSettings['legacyBehavior'] || $this->_objTpl->blockExists($this->moduleNameLC.'CategoriesLevelsList')) {
             if ($intCmdFormId != 0) {   
                 $bolFormUseCategory = $objForms->arrForms[intval($intCmdFormId)]['formUseCategory'];
                 $bolFormUseLevel = $objForms->arrForms[intval($intCmdFormId)]['formUseLevel'];
@@ -315,9 +314,11 @@ class MediaDirectory extends MediaDirectoryLibrary
         // note: the initialization of the objects $objLevel and $objCategory
         //       has in a previous version of Cloudrexx only been done, if the
         //       template block mediadirCategoryLevelDetail was present.
-        //       Using the setting option 'Legacy mode' we do emulate that
+        //       This caused the parsing of mediadirCategoriesLevelsList only
+        //       to be done when the block mediadirCategoryLevelDetail was present.
+        //       Using the setting option 'legacy behavior' we do emulate that
         //       previous behavior.
-        if (!$this->arrSettings['legacyMode'] || $this->_objTpl->blockExists($this->moduleNameLC.'CategoryLevelDetail')) {
+        if (!$this->arrSettings['legacyBehavior'] || $this->_objTpl->blockExists($this->moduleNameLC.'CategoryLevelDetail')) {
             if ($intCategoryId == 0 && $intLevelId != 0 && $this->arrSettings['settingsShowLevels']) {
                 $objLevel = new MediaDirectoryLevel($intLevelId, null, 0, $this->moduleName);
                 $showLevelDetails = true;
@@ -352,7 +353,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         //list levels / categories
-        if ($listCategoriesAndLevels && $this->_objTpl->blockExists($this->moduleNameLC.'CategoriesLevelsList')) {
+        if ($this->_objTpl->blockExists($this->moduleNameLC.'CategoriesLevelsList')) {
             // list levels if:
             // - option 'Use levels' is active
             // - and no category has been selected
@@ -392,9 +393,9 @@ class MediaDirectory extends MediaDirectoryLibrary
         /**
          * The parsing behavior of the mediadirLatestList template block used to
          * be strange in the former Cloudrexx versions. Setting this variable to TRUE
-         * will simulate that dropped strange behavior.
+         * will emulate that dropped strange behavior.
          * The setting of this variable is managed by the backend setting option
-         * 'Legacy parsing mode' and if the conditions for the legacy parsing match.
+         * 'Legacy behavior'.
          * @var boolean
          */
         $legacyLatestMode = false;
@@ -405,8 +406,10 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         // parse entries (mediadirEntryList)
         if ($this->_objTpl->blockExists($this->moduleNameLC.'EntryList')) {
-            // activate legacy behavior if option has been activated
-            $legacyLatestMode = $this->arrSettings['legacyMode'];
+            // Activate legacy behavior if option 'Legacy behavior' has been activated.
+            // The parsing of the latest entries was previously only done
+            // if the template block mediadirEntryList was present
+            $legacyLatestMode = $this->arrSettings['legacyBehavior'];
 
             if (!$bolLatest ) {
                 $objEntries->listEntries($this->_objTpl, 2);
