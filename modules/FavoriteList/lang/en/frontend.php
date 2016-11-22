@@ -30,7 +30,7 @@
  * This file is included by Cloudrexx and all entries are set as placeholder
  * values for frontent page template by SystemComponentFrontendController
  *
- * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
+ * @copyright   Comvation AG
  * @author      Manuel Schenk <manuel.schenk@comvation.com>
  * @package     cloudrexx
  * @subpackage  module_favoritelist

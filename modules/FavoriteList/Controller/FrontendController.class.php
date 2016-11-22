@@ -26,9 +26,9 @@
  */
 
 /**
- * Specific FrontendController for this Component. Use this to easily create a frontent view
+ * Specific FrontendController for this Component. Use this to easily create a frontend view
  *
- * @copyright   Cloudrexx AG
+ * @copyright   Comvation AG
  * @author      Manuel Schenk <manuel.schenk@comvation.com>
  * @package     cloudrexx
  * @subpackage  module_favoritelist
@@ -39,7 +39,7 @@ namespace Cx\Modules\FavoriteList\Controller;
 /**
  * Specific FrontendController for this Component. Use this to easily create a frontent view
  *
- * @copyright   Cloudrexx AG
+ * @copyright   Comvation AG
  * @author      Manuel Schenk <manuel.schenk@comvation.com>
  * @package     cloudrexx
  * @subpackage  module_favoritelist
