@@ -1,0 +1,49 @@
+Cx\Modules\FavoriteList\Model\Entity\Favorite:
+  type: entity
+  table: module_favoritelist_favorite
+  repositoryClass: Cx\Modules\FavoriteList\Model\Repository\FavoriteRepository
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    title:
+      type: string
+      length: 255
+    link:
+      type: string
+      length: 255
+      nullable: true
+    description:
+      type: text
+      nullable: true
+    message:
+      type: text
+      nullable: true
+    price:
+      type: float
+      nullable: true
+    image1:
+      column: image_1
+      type: string
+      length: 255
+      nullable: true
+    image2:
+      column: image_2
+      type: string
+      length: 255
+      nullable: true
+    image3:
+      column: image_3
+      type: string
+      length: 255
+      nullable: true
+  manyToOne:
+    catalog:
+      targetEntity: Catalog
+      inversedBy: favorites
+      joinColumn:
+        name: list_id
+        nullable: false
+        referencedColumnName: id

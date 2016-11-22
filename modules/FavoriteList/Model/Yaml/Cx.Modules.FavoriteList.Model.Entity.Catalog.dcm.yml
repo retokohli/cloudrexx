@@ -1,0 +1,27 @@
+Cx\Modules\FavoriteList\Model\Entity\Catalog:
+  type: entity
+  table: module_favoritelist_catalog
+  repositoryClass: Cx\Modules\FavoriteList\Model\Repository\CatalogRepository
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    sessionId:
+      column: session_id
+      type: string
+      length: 255
+      nullable: true
+    name:
+      type: string
+      length: 255
+    date:
+      type: datetime
+  oneToMany:
+    favorites:
+      targetEntity: Favorite
+      mappedBy: catalog
+      joinColumn:
+        name: id
+        referencedColumnName: listId

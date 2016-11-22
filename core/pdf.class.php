@@ -37,11 +37,6 @@
 */
 
 /**
- * @ignore
- */
-require_once ASCMS_LIBRARY_PATH.'/html2fpdf/html2fpdf.php';
-
-/**
 * PDF class
 *
 * Generate PDF for pdfview
@@ -51,104 +46,109 @@ require_once ASCMS_LIBRARY_PATH.'/html2fpdf/html2fpdf.php';
 * @subpackage   core
 * @version      1.1.0
 */
-class PDF extends HTML2FPDF
+class PDF extends mPDF
 {
     /**
     * string $content
     * Content for insert
     */
-    var $content;
+    private $content;
 
     /**
-    * string $title
-    * File name
-    */
-    var $title;
+     * @var string
+     */
+    private $destination = 'I';
 
     /**
-    * string $orientation
-    * pageorientation
-    */
-    var $pdf_orientation;
+     * Constructor
+     */
+    public function __construct($orientation = 'P', $format = 'A4')
+    {
+        parent::__construct('', $format, 0, '', 15, 15, 16, 16, 9, 9, $orientation);
+    }
 
     /**
-    * string $unit
-    * Unit-format
-    */
-    var $pdf_unit;
+     * Set the content
+     *
+     * @param string $content
+     */
+    public function setContent($content)
+    {
+        $this->content = $content;
+    }
 
     /**
-    * string $format
-    * Page-format
-    */
-    var $pdf_format;
+     * Set the output destination
+     *
+     * @param type $destination
+     */
+    public function setDestination($destination)
+    {
+        $this->destination = $destination;
+    }
 
     /**
-    * string $pdf_creator
-    * PDF author
-    */
-    var $pdf_autor;
-
-    function __construct()
+     * Create PDF
+     */
+    public function Create()
     {
         global $_CONFIG;
 
-        $this->pdf_orientation     = 'P';
-        $this->pdf_unit         = 'mm';
-        $this->pdf_format         = 'A4';
-        $this->pdf_autor        = $_CONFIG['coreCmsName'];
+        $libPath = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getCodeBaseLibraryPath();
+        $this->noImageFile = $libPath . '/mpdf/includes/no_img.gif';
+        if (empty($this->author)) {
+            $this->SetAuthor($_CONFIG['coreCmsName']);
+        }
+        $this->SetDisplayPreferences('HideWindowUI');
+        $this->AddPage();
+        $this->WriteHTML($this->content);
+        $this->Output(
+            \Cx\Lib\FileSystem\FileSystem::replaceCharacters($this->title),
+            $this->destination
+        );
     }
 
-    function Create()
+    /**
+     * Get file full path
+     *
+     * @param string $path     file path
+     * @param string $basepath file base path
+     */
+    public function GetFullPath(&$path, $basepath = '')
     {
+        // When parsing CSS need to pass temporary basepath -
+        // so links are relative to current stylesheet
+        if (!$basepath) {
+            $basepath = $this->basepath;
+        }
+        //Fix path value
+        $path = str_replace('\\', '/', $path); //If on Windows
+        // mPDF 5.7.2
+        if (substr($path, 0, 2) == '//') {
+            $tr = parse_url($basepath);
+            $path = $tr['scheme'] . ':' . $path; // mPDF 6
+        }
 
-        $this->content = utf8_decode($this->_ParseHTML($this->content));
+        $regexp = '|^./|'; // Inadvertently corrects "./path/etc"
+        //and "//www.domain.com/etc"
+        $path = preg_replace($regexp, '', $path);
 
-        $pdf = new HTML2FPDF();
-        $pdf->ShowNOIMG_GIF();
-        $pdf->DisplayPreferences('HideWindowUI');
-        $pdf->AddPage();
-        $pdf->WriteHTML($this->content);
-        $pdf->Output(\Cx\Lib\FileSystem\FileSystem::replaceCharacters($this->title));
+        if (substr($path, 0, 1) == '#') {
+            return;
+        }
+        if (preg_match('@^(mailto|tel|fax):.*@i', $path)) {
+            return;
+        }
 
+        if (substr($path, 0, 3) == '../') {
+            $filepath = str_replace('../', '', $path);
+            $objFile  = new Cx\Lib\FileSystem\FileSystemFile($filepath);
+            $path     = $objFile->getAbsoluteFilePath();
+        } elseif (strpos($path, ':/') === false || strpos($path, ':/') > 10) {
+            $objFile = new Cx\Lib\FileSystem\FileSystemFile($path);
+            $path    = $objFile->getAbsoluteFilePath();
+        }
     }
 
-    function _ParseHTML($source){
-
-        // H1
-        // ----------------
-        $source = str_replace('<h1>', '<div class="h1">', $source);
-        $source = str_replace('</h1>', '</div>', $source);
-        // H2
-        // ----------------
-        $source = str_replace('<h2>', '<div class="h2">', $source);
-        $source = str_replace('</h2>', '</div>', $source);
-        // H3
-        // ----------------
-        $source = str_replace('<h3>', '<div class="h3">', $source);
-        $source = str_replace('</h3>', '</div>', $source);
-        // H4
-        // ----------------
-        $source = str_replace('<h3>', '<div class="h3">', $source);
-        $source = str_replace('</h3>', '</div>', $source);
-
-        // body
-        // ----------------
-        $source = str_replace('<body>', '<body><div class="body">', $source);
-        $source = str_replace('</body>', '</div></body>', $source);
-
-        // p
-        // ----------------
-        $source = str_replace('<p>', '<div class="p">', $source);
-        $source = str_replace('</p>', '</div>', $source);
-
-        // image to relative path
-        // ----------------
-        $source = str_replace('src="/images', 'src="images', $source);
-        $source = str_replace("src='/images", "src='images", $source);
-
-        return $source;
-    }
 }
-
-?>

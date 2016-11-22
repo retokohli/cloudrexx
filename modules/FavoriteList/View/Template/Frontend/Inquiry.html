@@ -1,0 +1,51 @@
+<!-- BEGIN favoritelist_inquiry_no_catalog -->
+<p>{FAVORITELIST_INQUIRY_MESSAGE_NO_CATALOG}</p>
+<!-- END favoritelist_inquiry_no_catalog -->
+<!-- BEGIN favoritelist_inquiry_no_entries -->
+<p>{FAVORITELIST_INQUIRY_MESSAGE_NO_ENTRIES}</p>
+<!-- END favoritelist_inquiry_no_entries -->
+<!-- BEGIN favoritelist_inquiry -->
+<form method="post">
+    <fieldset class="fields">
+        <!-- BEGIN favoritelist_form_field -->
+        <div class="form-group">
+            <label for="field_{ID}">{LABEL}<!-- BEGIN favoritelist_form_field_required --> *<!-- END favoritelist_form_field_required --></label>
+            <!-- BEGIN favoritelist_form_field_text -->
+            <input type="text" id="field_{ID}" name="field_{ID}" {REQUIRED}>
+            <!-- END favoritelist_form_field_text -->
+            <!-- BEGIN favoritelist_form_field_textarea -->
+            <textarea id="field_{ID}" name="field_{ID}" {REQUIRED}></textarea>
+            <!-- END favoritelist_form_field_textarea -->
+            <!-- BEGIN favoritelist_form_field_select -->
+            <select id="field_{ID}" name="field_{ID}" {REQUIRED}>
+                <!-- BEGIN favoritelist_form_field_select_value -->
+                <option value="option_{INDEX}">{VALUE}
+                <!-- END favoritelist_form_field_select_value -->
+            </select>
+            <!-- END favoritelist_form_field_select -->
+            <!-- BEGIN favoritelist_form_field_radio -->
+            <div class="radio">
+                <label>
+                    <input type="radio" name="field_{ID}" value="option_{INDEX}" {REQUIRED}>{VALUE}
+                </label>
+            </div>
+            <!-- END favoritelist_form_field_radio -->
+            <!-- BEGIN favoritelist_form_field_checkbox -->
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="field_{ID}_option_{INDEX}" value="1" {REQUIRED}>{VALUE}
+                </label>
+            </div>
+            <!-- END favoritelist_form_field_checkbox -->
+            <!-- BEGIN favoritelist_form_field_mail -->
+            <input type="email" id="field_{ID}" name="field_{ID}" {REQUIRED}>
+            <!-- END favoritelist_form_field_mail -->
+        </div>
+        <!-- END favoritelist_form_field -->
+    </fieldset>
+    <fieldset class="actions">
+        <input type="submit" id="send" name="send" class="btn btn-default" class="form-control"
+               value="{TXT_MODULE_FAVORITELIST_FORM_SUBMIT}">
+    </fieldset>
+</form>
+<!-- END favoritelist_inquiry -->

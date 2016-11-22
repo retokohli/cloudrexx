@@ -1,0 +1,57 @@
+<html>
+<head>
+    <title>FavoriteList PDF Catalog</title>
+    <!-- for more infos visit: https://mpdf.github.io/ -->
+</head>
+
+<body>
+
+<htmlpageheader name="header">
+    <table>
+        <tr>
+            <td><img src="[FAVORITELIST_PDF_LOGO]" alt="logo"/></td>
+            <td style="text-align: right;">[FAVORITELIST_PDF_ADDRESS]</td>
+        </tr>
+    </table>
+</htmlpageheader>
+
+[[FAVORITELIST_PDF_CATALOG]
+<table>
+    <tr>
+        <th>[FAVORITELIST_PDF_HEADER_TITLE]</th>
+        <th>[FAVORITELIST_PDF_HEADER_LINK]</th>
+        <th>[FAVORITELIST_PDF_HEADER_DESCRIPTION]</th>
+        <th>[FAVORITELIST_PDF_HEADER_MESSAGE]</th>
+        <th>[FAVORITELIST_PDF_HEADER_PRICE]</th>
+        <th>[FAVORITELIST_PDF_HEADER_IMAGE1]</th>
+        <th>[FAVORITELIST_PDF_HEADER_IMAGE2]</th>
+        <th>[FAVORITELIST_PDF_HEADER_IMAGE3]</th>
+    </tr>
+    [[FAVORITELIST_PDF_CATALOG_ROW]
+    <tr>
+        <td>[FAVORITELIST_PDF_TITLE]</td>
+        <td>[FAVORITELIST_PDF_LINK]</td>
+        <td>[FAVORITELIST_PDF_DESCRIPTION]</td>
+        <td>[FAVORITELIST_PDF_MESSAGE]</td>
+        <td>[FAVORITELIST_PDF_PRICE]</td>
+        <th><img src="[FAVORITELIST_PDF_IMAGE1]" alt="image1"></th>
+        <th><img src="[FAVORITELIST_PDF_IMAGE2]" alt="image2"></th>
+        <th><img src="[FAVORITELIST_PDF_IMAGE3]" alt="image3"></th>
+    </tr>
+    [FAVORITELIST_PDF_CATALOG_ROW]]
+</table>
+[FAVORITELIST_PDF_CATALOG]]
+
+<htmlpagefooter name="footer">
+    <table>
+        <tr>
+            <td>[FAVORITELIST_PDF_FOOTER]</td>
+        </tr>
+    </table>
+</htmlpagefooter>
+
+<sethtmlpageheader name="haeder" value="on"/>
+<sethtmlpagefooter name="footer" value="on"/>
+
+</body>
+</html>
