@@ -96,8 +96,7 @@ class PDF extends mPDF
 
         $libPath = \Cx\Core\Core\Controller\Cx::instanciate()
             ->getCodeBaseLibraryPath();
-        $this->noImageFile = $libPath . '/Mpdf/includes/no_img.gif';
-        $this->content = utf8_decode($this->content);
+        $this->noImageFile = $libPath . '/mpdf/includes/no_img.gif';
         if (empty($this->author)) {
             $this->SetAuthor($_CONFIG['coreCmsName']);
         }
@@ -124,9 +123,9 @@ class PDF extends mPDF
             $basepath = $this->basepath;
         }
         //Fix path value
-        $path = str_replace("\\", "/", $path); //If on Windows
+        $path = str_replace('\\', '/', $path); //If on Windows
         // mPDF 5.7.2
-        if (substr($path, 0, 2) == "//") {
+        if (substr($path, 0, 2) == '//') {
             $tr = parse_url($basepath);
             $path = $tr['scheme'] . ':' . $path; // mPDF 6
         }
@@ -142,11 +141,11 @@ class PDF extends mPDF
             return;
         }
 
-        if (
-            substr($path, 0, 3) == "../" ||
-            strpos($path, ":/") === false ||
-            strpos($path, ":/") > 10
-        ) {
+        if (substr($path, 0, 3) == '../') {
+            $filepath = str_replace('../', '', $path);
+            $objFile  = new Cx\Lib\FileSystem\FileSystemFile($filepath);
+            $path     = $objFile->getAbsoluteFilePath();
+        } elseif (strpos($path, ':/') === false || strpos($path, ':/') > 10) {
             $objFile = new Cx\Lib\FileSystem\FileSystemFile($path);
             $path    = $objFile->getAbsoluteFilePath();
         }
