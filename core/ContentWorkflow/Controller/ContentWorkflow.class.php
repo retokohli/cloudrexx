@@ -462,9 +462,11 @@ class ContentWorkflow extends \Module {
      * @param  integer  The page with this id will be shown in content manager.
      */
     protected function redirectPage($intPageId) {
+        // This is not really a nice way to generate this URL!
+        $baseUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
+        $baseUrl->setMode(\Cx\Core\Core\Controller\Cx::MODE_BACKEND);
         \Cx\Core\Csrf\Controller\Csrf::redirect(
-            // This is not really a nice way to generate this URL!
-            \Cx\Core\Routing\Url::fromDocumentRoot() . 'cadmin/ContentManager?page=' . $intPageId . '&tab=content'
+            $baseUrl . 'cadmin/ContentManager?page=' . $intPageId . '&tab=content'
         );
     }
 
