@@ -182,7 +182,7 @@ class LinkSanitizer {
         ) {
             // this is an existing file, do not add virtual language dir
             return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
-            $localFile .
+            $localFile . (isset($testPath[1]) ? '?' . $testPath[1] : '') .
             $matches[\LinkSanitizer::CLOSE_QUOTE];
         } else {
             // this is a link to a page, add virtual language dir
