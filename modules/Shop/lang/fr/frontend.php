@@ -32,8 +32,8 @@
  * @package     cloudrexx
  * @subpackage  module_shop
  */
-$_ARRAYLANG['TXT_SHOP_BUTTON_REGISTRATION'] = "Register now";
-$_ARRAYLANG['TXT_SHOP_BUTTON_NO_REGISTRATION'] = "Order without registration";
+$_ARRAYLANG['TXT_SHOP_BUTTON_REGISTRATION'] = "Inscrivez-vous maintenant";
+$_ARRAYLANG['TXT_SHOP_BUTTON_NO_REGISTRATION'] = "Continuer sans enregistrement";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_ADDED_TO_CART'] = "L'objet a été ajouté à votre panier.";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_DETAILS'] = "Détails";
 $_ARRAYLANG['TXT_STOCK'] = "Stock";
@@ -289,7 +289,7 @@ $_ARRAYLANG['TXT_SHOP_SHIPMENT_PLEASE_SELECT'] = "-- Bitte wählen --";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_PLEASE_SELECT'] = "-- Bitte wählen --";
 
 $_ARRAYLANG['TXT_DISTRIBUTION_COUPON'] = "Gutschein";
-$_ARRAYLANG['TXT_SHOP_ACCOUNT_PASSWORD_HINT'] = "Hinweis: Wählen Sie ein eigenes Passwort mit mindestens sechs Zeichen.";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_PASSWORD_HINT'] = "Le mot de passe doit être au moins 6 caractères.";
 $_ARRAYLANG['TXT_SHOP_AMOUNT_NONE'] = "-.--";
 $_ARRAYLANG['TXT_SHOP_BACK_TO_PRODUCTS'] = "Zurück zum Shop";
 $_ARRAYLANG['TXT_SHOP_CART'] = "Panier";
@@ -421,8 +421,8 @@ $_ARRAYLANG['TXT_SHOP_CUSTOMER_REGISTERED_EMAIL'] = "Ein Kunde mit dieser E-Mail
 $_ARRAYLANG['TXT_SHOP_FORM_RESET_CONFIRM'] = "Bestätigen Sie bitte, dass Sie Ihre Eingaben zurückgesetzt werden sollen.";
 $_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_ACCEPTED'] = "Die <a href=\"index.php?section=Shop&amp;cmd=terms\" target=\"_blank\">Widerrufsbelehrung</a> habe ich zur Kenntnis genommen.";
 $_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_PLEASE_ACCEPT'] = "Bitte bestätigen Sie die Kenntnisnahme der Widerrufsbelehrung.";
-$_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER'] = "Order without registration";
-$_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER_NOTE'] = "Check this box if you want to order without registration.";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER'] = "Continuer sans enregistrement";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER_NOTE'] = "Cochez cette case si vous voulez commander sans inscription.";
 $_ARRAYLANG['TXT_FREE_OF_CHARGE'] = "Gebührenfrei ab";
 // Headers for Product ordering in list view
 $_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_ORD'] = "Vorgabe";
@@ -433,3 +433,4 @@ $_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_DATE'] = "Erstelldatum";
 $_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_BESTSELLER'] = "Beliebtheit";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_DISCOUNTPRICE_TEXTBLOCK_1'] = "au lieu";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_DISCOUNTPRICE_TEXTBLOCK_2'] = "seulement";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_LOST_PASSWORD'] = "Avez-vouz oublié le mot de passe?";
