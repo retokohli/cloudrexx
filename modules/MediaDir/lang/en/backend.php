@@ -345,3 +345,4 @@ $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_SEARCH_ALL_FORMS'] = 'All forms (inclu
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_CATEGORY_LIST'] = 'Subcategories are only being listed (using template block mediadirCategoriesLevelsList) in case the template block mediadirCategoryLevelDetail is present';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_NOT_LATEST'] = 'In case the template block mediadirCategoriesLevelsList is missing, then all entries are being listed on the entry page instead of just the latest ones';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_LATEST_PARSING'] = 'The latest entries (using template block mediadirLatestList) will only be listed in case the template block mediadirEntryList is present';
+$_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_LATEST_HIDING'] = 'The template block being used to display the latest entries (mediadirLatestList) will not be hidden in case all entries (using template block mediadirEntryList) are being listed';

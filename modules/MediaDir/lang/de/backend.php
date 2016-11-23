@@ -360,3 +360,4 @@ $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_SEARCH_ALL_FORMS'] = 'Für die Prüfun
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_CATEGORY_LIST'] = 'Die Auflistung der Unterkategorien (Template-Block mediadirCategoriesLevelsList) erfolgt nur, sofern der Template-Block mediadirCategoryLevelDetail vorhanden ist';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_NOT_LATEST'] = 'Sofern der Template-Block mediadirCategoriesLevelsList fehlt, werden auf der Einstiegsseite anstelle der neusten Einträge alle Einträge aufgeführt';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_LATEST_PARSING'] = 'Die Anzeige der neusten Einträge (Template-Block mediadirLatestList) erfolgt nur, sofern der Template-Block mediadirEntryList vorhanden ist';
+$_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_LATEST_HIDING'] = 'Der Template-Block für die Anzeige der neusten Einträge (mediadirLatestList) wird nicht ausgeblendet, wenn alle Einträge (Template-Block mediadirEntryList) angezeigt werden';

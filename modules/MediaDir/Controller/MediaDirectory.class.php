@@ -414,8 +414,14 @@ class MediaDirectory extends MediaDirectoryLibrary
             if (!$bolLatest ) {
                 $objEntries->listEntries($this->_objTpl, 2);
 
-                // disable parsing of latest entries
-                if ($this->_objTpl->blockExists($this->moduleNameLC.'LatestList')){
+                // hide block used to display latest entries
+                //
+                // note: in a previous version of cloudrexx, the template block
+                //       mediadirLatestList was wrapped around the template block
+                //       mediadirEntryList in the default template. Therefore,
+                //       if 'Legacy behavior' option is active, we can not hide
+                //       the template block mediadirLatestList
+                if (!$this->arrSettings['legacyBehavior'] && $this->_objTpl->blockExists($this->moduleNameLC.'LatestList')){
                     $this->_objTpl->hideBlock($this->moduleNameLC.'LatestList');
                 }
 
