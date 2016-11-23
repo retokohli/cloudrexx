@@ -103,11 +103,13 @@ class ProtectedPagesResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTest
      * Sends the request to given urlSlug and
      * return the response header
      *
-     * @param string $urlSlug Url string
+     * @param string    $urlSlug    Url string
+     * @param integer   $userId     User id, incase request needs user login
+     * @param boolean   $redirect   Boolean to follow redirects
      *
      * @return \HTTP_Request2_Response
      */
-    protected function getResponse($urlSlug, $userId = 0)
+    protected function getResponse($urlSlug, $userId = 0, $redirect= true)
     {
         $url = new \Cx\Core\Routing\Url($this->domainUrl . $urlSlug);
         $url->setParams(array(
@@ -128,8 +130,8 @@ class ProtectedPagesResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTest
         $request->setConfig(array(
             'ssl_verify_host' => false,
             'ssl_verify_peer' => false,
-            'follow_redirects' => true,
-            'strict_redirects' => true,
+            'follow_redirects' => $redirect ? true : false,
+            'strict_redirects' => $redirect ? true : false,
         ));
         $response = $request->send();
 
@@ -143,7 +145,8 @@ class ProtectedPagesResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTest
         $language = null,
         $userId = null,
         $inputSlug = '',
-        $expectedSlug = null
+        $expectedSlug = null,
+        $requiresLogin = false
     ) {
         if ($expectedSlug === null) {
             $expectedSlug = $inputSlug;
@@ -156,13 +159,23 @@ class ProtectedPagesResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTest
         }
         $urlString         .= '/'. $inputSlug;
         $expectedUrlString .= '/'. $expectedSlug;
+        $expectedStatus     = !$requiresLogin ? 200 : 302;
 
-        $response = $this->getResponse($urlString, $userId);
-
-        $this->assertTrue($response->getStatus() == 200);
+        $langUrlString      = (!empty($langCode) ? '/'. $langCode : '');
+        $response = $this->getResponse($urlString, $userId, !$requiresLogin);
+        $this->assertTrue($response->getStatus() == $expectedStatus);
+        if ($requiresLogin) {
+            $this->assertTrue($response->isRedirect());
+            $redirectionUrl = new \Cx\Core\Routing\Url($response->getHeader('location'));
+            $redirectionUrlString = $langUrlString . '/' . $redirectionUrl->getSuggestedTargetPath();
+            $this->assertEquals(
+                $langUrlString . '/Login',
+                $redirectionUrlString
+            );
+        }
         $effectiveUrl       = new \Cx\Core\Routing\Url($response->getEffectiveUrl());
-        $effectiveUrlString = (!empty($langCode) ? '/'. $effectiveUrl->getLangDir() : '')
-                              . '/' . $effectiveUrl->getSuggestedTargetPath();
+        $effectiveUrlString = $langUrlString . '/' . $effectiveUrl->getSuggestedTargetPath();
+
         $this->assertEquals($expectedUrlString, $effectiveUrlString);
     }
 
@@ -175,6 +188,16 @@ class ProtectedPagesResolverTest extends \Cx\Core\Test\Model\Entity\DatabaseTest
     {
         return array(
             array(1, 2, 'Simple-content-page'),
+            array(1, null, 'Simple-content-page', null, true),
+            array(1, 2, 'SymLink-page'),
+            array(1, null, 'SymLink-page', null, true),
+            array(1, 2, 'Application-page'),
+            array(1, null, 'Application-page', null, true),
+            array(1, 2, 'Redirect-page', 'Simple-content-page'),
+            array(1, null, 'Redirect-page', null, true),
+
+            // test home page
+            array(2, ''),
         );
     }
 }
