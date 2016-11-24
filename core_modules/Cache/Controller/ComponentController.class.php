@@ -214,6 +214,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Delete all cached files for a component from cache-folder
+     */
+    function deleteComponentFiles($componentName) {
+        $this->cache->deleteComponentFiles($componentName);
+    }
+
+    /**
      * @return \Doctrine\Common\Cache\AbstractCache The doctrine cache driver object
      */
     public function getCacheDriver()
@@ -307,5 +314,32 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             );
         }
         return array();
+    }
+
+    /**
+     * Returns the validated file search parts of the URL
+     * @param string $url URL to parse
+     * @return array <fileNamePrefix>=><parsedValue> type array
+     */
+    public function getCacheFileNameSearchPartsFromUrl($urlPattern) {
+        return $this->cache->getCacheFileNameSearchPartsFromUrl($urlPattern);
+    }
+
+    /**
+     * Gets the local cache file name for an URL
+     * @param string $url URL to get file name for
+     * @return string File name
+     */
+    public function getCacheFileNameFromUrl($urlPattern, $withCacheInfoPart = true) {
+        return $this->cache->getCacheFileNameFromUrl($urlPattern, $withCacheInfoPart);
+    }
+
+    /**
+     * Parses ESI directives internally if configured to do so
+     * @param string $htmlCode HTML code to replace ESI directives in
+     * @return string Parsed HTML code
+     */
+    public function internalEsiParsing($htmlCode) {
+        return $this->cache->internalEsiParsing($htmlCode);
     }
 }

@@ -48,7 +48,7 @@ class DataSetException extends \Exception {}
 
 /**
  * Data Set
- *
+ * On import and export from and to files the contents will be cached.
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      CLOUDREXX Development Team <info@cloudrexx.com>
  * @package     cloudrexx
@@ -458,6 +458,18 @@ class DataSet implements \Iterator {
             }
             $this->data[$key] = array_merge($sortedData, $val);
         }
+    }
+
+    /**
+     * Filters entries of this DataSet
+     * @param callable $filterFunction
+     */
+    public function filter(callable $filterFunction) {
+        foreach ($this->data as $key=>$entry) {
+            if (!$filterFunction($entry)) {
+                unset($this->data[$key]);
+            }
+        } 
     }
 
     /**

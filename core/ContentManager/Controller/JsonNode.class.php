@@ -253,6 +253,7 @@ class JsonNode implements JsonAdapter {
             $this->em->getConnection()->rollback();
             throw $e;
         }
+        $this->clearCache();
 
         $nodeLevels = array();
         $nodeStack = array();
@@ -335,6 +336,8 @@ class JsonNode implements JsonAdapter {
         $this->em->persist($newNode);
 
         $this->em->flush();
+        $this->clearCache();
+
         return new \Cx\Lib\Net\Model\Entity\Response(true);
     }
 
@@ -404,6 +407,7 @@ class JsonNode implements JsonAdapter {
         if ($flush) {
             $this->em->flush();
             $this->em->clear();
+            $this->clearCache();
         }
         return new \Cx\Lib\Net\Model\Entity\Response(
             array(
@@ -433,6 +437,7 @@ class JsonNode implements JsonAdapter {
         }
         $this->em->flush();
         $this->em->clear();
+        $this->clearCache();
 
         return new \Cx\Lib\Net\Model\Entity\Response($return);
     }
@@ -703,5 +708,13 @@ class JsonNode implements JsonAdapter {
         }
 
         return $tree;
+    }
+
+    /**
+     * Drops the complete output cache
+     */
+    protected function clearCache() {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getComponent('Cache')->clearCache();
     }
 }

@@ -128,6 +128,8 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
         $presetRepository = $themeOptions->getPresetRepository();
         $preset           = $themeOptions->getChangedPreset();
         $presetRepository->save($preset);
+        $this->clearCache();
+
         return new \Cx\Lib\Net\Model\Entity\Response(true);
     }
 
@@ -334,5 +336,9 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
         $_SESSION['TemplateEditor'][$themeID] = array();
         $_SESSION['TemplateEditor'][$themeID]['activePreset'] = $activePreset;
         return new \Cx\Lib\Net\Model\Entity\Response(true);
+    }
+    
+    protected function clearCache() {
+        $this->getComponent('Cache')->clearCache();
     }
 }

@@ -523,6 +523,9 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $this->_objTpl->hideBlock('access_signup_confirm_success');
             }
 
+            $this->_objTpl->hideBlock('access_signup_form');
+            \Cx\Lib\SocialLogin::hideLogin($this->_objTpl, 'access_');
+
             return;
         } else {
             $this->_objTpl->hideBlock('access_signup_confirm_success');
@@ -611,6 +614,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 }
 
                 $this->_objTpl->hideBlock('access_signup_form');
+                \Cx\Lib\SocialLogin::hideLogin($this->_objTpl, 'access_');
                 return;
             } else {
                 if (is_array($uploadImageError)) {

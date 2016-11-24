@@ -1159,7 +1159,7 @@ namespace Cx\Core\Core\Controller {
                     $componentController = $this->getComponentControllerByNameAndType($componentDefinition['name'], $componentDefinition['type']);
                     $componentController->preInit($this);
                     // store componentController in preLoadedCompnents, using the name as key
-                    $this->preLoadedComponents[$componentController->getName()] = $componentController;
+                    $this->preLoadedComponents[$componentDefinition['name']] = $componentController;
                 }
             } catch (\Cx\Core_Modules\Listing\Model\Entity\DataSetException $e) {
                 throw new \Exception('Error in processing preInit-hooks: '.$e->getMessage());
@@ -1182,7 +1182,7 @@ namespace Cx\Core\Core\Controller {
                         $componentController = $this->preLoadedComponents[$componentDefinition['name']];
                     } else {
                         $componentController = $this->getComponentControllerByNameAndType($componentDefinition['name'], $componentDefinition['type']);
-                        $this->preLoadedComponents[$componentController->getName()] = $componentController;
+                        $this->preLoadedComponents[$componentDefinition['name']] = $componentController;
                     }
                     $componentController->preComponentLoad();
                 }
@@ -1628,7 +1628,10 @@ namespace Cx\Core\Core\Controller {
                     // Resolver code
                     // @todo: move to resolver
                     //expose the virtual language directory to the rest of the cms
-                    $virtualLanguageDirectory = '/'.$url->getLangDir();
+                    $virtualLanguageDirectory = $url->getLangDir(true);
+                    if (!empty($virtualLanguageDirectory)) {
+                        $virtualLanguageDirectory = '/' . $virtualLanguageDirectory;
+                    }
                     \Env::set('virtualLanguageDirectory', $virtualLanguageDirectory);
                     // TODO: this constanst used to be located in config/set_constants.php, but needed to be relocated to this very place,
                     // because it depends on Env::get('virtualLanguageDirectory').
@@ -1748,11 +1751,6 @@ namespace Cx\Core\Core\Controller {
                 //replace the {NODE_<ID>_<LANG>}- placeholders
                 \LinkGenerator::parseTemplate($pageContent);
                 $this->resolvedPage->setContent($pageContent);
-
-                // Set meta image to default if it's not defined
-                if ($this->resolvedPage->getMetaimage() === '') {
-                    $this->resolvedPage->setMetaimage(\Cx\Core\Setting\Controller\Setting::getValue('defaultMetaimage', 'Config'));
-                }
 
                 $moduleStyleFile = null;
             } else if ($this->mode == self::MODE_BACKEND) {
