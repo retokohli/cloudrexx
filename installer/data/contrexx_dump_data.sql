@@ -4603,6 +4603,7 @@ INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (
 INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (47,'settingsActiveLanguages','2,1,3');
 INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (48,'settingsFrontendUseMultilang','0');
 INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (49,'settingsIndividualEntryOrder','0');
+INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (52,'legacyBehavior','0');
 INSERT INTO `contrexx_module_mediadir_settings_num_categories` (`group_id`, `num_categories`) VALUES (3,'n');
 INSERT INTO `contrexx_module_mediadir_settings_num_categories` (`group_id`, `num_categories`) VALUES (4,'n');
 INSERT INTO `contrexx_module_mediadir_settings_num_categories` (`group_id`, `num_categories`) VALUES (5,'n');
