@@ -104,7 +104,16 @@ class ViewGenerator {
             }
             // If the options for this object are not set, we use the standard values from the component
             if (empty($this->options)) {
-                $this->options = $options[''];
+                $this->options = array(
+                    'functions' => array(
+                        'add' => true,
+                        'edit' => true,
+                        'delete' => true,
+                        'sorting' => true,
+                        'paging' => true,
+                        'filtering' => false,
+                    ),
+                );
             }
 
             //initialize the row sorting functionality
@@ -974,7 +983,7 @@ class ViewGenerator {
             if (!empty($entityObj)) {
                 if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
                     $ymlRepo = $em->getRepository($entityWithNS);
-                    $ymlRepo->remove($entityObj);;
+                    $ymlRepo->remove($entityObj);
                     $ymlRepo->flush();
                 } else {
                     $em->remove($entityObj);
