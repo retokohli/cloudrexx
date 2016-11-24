@@ -406,7 +406,6 @@ class FWLanguage
      */
     static function getLanguageCodeById($langId)
     {
-        if (empty(self::$arrLanguages)) self::init();
         return self::getLanguageParameter($langId, 'lang');
     }
 
@@ -439,7 +438,6 @@ class FWLanguage
      */
     static function getFallbackLanguageIdById($langId)
     {
-        if (empty(self::$arrLanguages)) self::init();
         if ($langId == self::getDefaultLangId()) return false;
         $fallback_lang = self::getLanguageParameter($langId, 'fallback');
         if ($fallback_lang == 0) $fallback_lang = intval(self::getDefaultLangId());;
