@@ -1122,42 +1122,40 @@ class CrmSettings extends CrmLibrary
         if($settings['create_user_account'] == 1){
             $this->createProfilAttributes();
         }
-        $objLanguages = $objDatabase->Execute("SELECT `id`, `name`, `frontend`, `backend` FROM ".DBPREFIX."languages WHERE frontend = 1 OR backend =1");
 
-        if ($objLanguages) {
+        $frontendLangs = \FWLanguage::getActiveFrontendLanguages();
+        if (!empty($frontendLangs)) { // parse frontend languages
             $objTpl->setVariable(array(
-                    'CRM_LANG_NAME'     => $_ARRAYLANG['TXT_CRM_STANDARD'],
-                    'CRM_LANG_VALUE'    => 0,
-                    'CRM_LANG_SELECTED' => $settings['customer_default_language_frontend'] == 0 ? "selected='selected'" : ''
+                'CRM_LANG_NAME'     => $_ARRAYLANG['TXT_CRM_STANDARD'],
+                'CRM_LANG_VALUE'    => 0,
+                'CRM_LANG_SELECTED' => $settings['customer_default_language_frontend'] == 0 ? "selected='selected'" : ''
             ));
             $objTpl->parse("langFrontend");
+            foreach($frontendLangs as $frontendLang) {
+                $objTpl->setVariable(array(
+                    'CRM_LANG_NAME'     => contrexx_raw2xhtml($frontendLang['name']),
+                    'CRM_LANG_VALUE'    => (int) $frontendLang['id'],
+                    'CRM_LANG_SELECTED' => $settings['customer_default_language_frontend'] == $frontendLang['id'] ? "selected='selected'" : ''
+                ));
+                $objTpl->parse("langFrontend");
+            }
+        }
+
+        $backendLangs = \FWLanguage::getActiveBackendLanguages();
+        if (!empty($backendLangs)) {
             $objTpl->setVariable(array(
-                    'CRM_LANG_NAME'  => $_ARRAYLANG['TXT_CRM_STANDARD'],
-                    'CRM_LANG_VALUE' => 0,
-                    'CRM_LANG_SELECTED' => $settings['customer_default_language_backend'] == 0 ? "selected='selected'" : ''
+                'CRM_LANG_NAME'  => $_ARRAYLANG['TXT_CRM_STANDARD'],
+                'CRM_LANG_VALUE' => 0,
+                'CRM_LANG_SELECTED' => $settings['customer_default_language_backend'] == 0 ? "selected='selected'" : ''
             ));
             $objTpl->parse("langBackend");
-            while (!$objLanguages->EOF) {
-
-                if ($objLanguages->fields['frontend']) {
-                    $objTpl->setVariable(array(
-                            'CRM_LANG_NAME'     => contrexx_raw2xhtml($objLanguages->fields['name']),
-                            'CRM_LANG_VALUE'    => (int) $objLanguages->fields['id'],
-                            'CRM_LANG_SELECTED' => $settings['customer_default_language_frontend'] == $objLanguages->fields['id'] ? "selected='selected'" : ''
-                    ));
-                    $objTpl->parse("langFrontend");
-                }
-
-                if ($objLanguages->fields['backend']) {
-                    $objTpl->setVariable(array(
-                            'CRM_LANG_NAME'     => contrexx_raw2xhtml($objLanguages->fields['name']),
-                            'CRM_LANG_VALUE'    => (int) $objLanguages->fields['id'],
-                            'CRM_LANG_SELECTED' => $settings['customer_default_language_backend'] == $objLanguages->fields['id'] ? "selected='selected'" : ''
-                    ));
-                    $objTpl->parse("langBackend");
-                }
-
-                $objLanguages->MoveNext();
+            foreach ($backendLangs as $backendLang) {
+                $objTpl->setVariable(array(
+                    'CRM_LANG_NAME'     => contrexx_raw2xhtml($backendLang['name']),
+                    'CRM_LANG_VALUE'    => (int) $backendLang['id'],
+                    'CRM_LANG_SELECTED' => $settings['customer_default_language_backend'] == $backendLang['id'] ? "selected='selected'" : ''
+                ));
+                $objTpl->parse("langBackend");
             }
         }
 
