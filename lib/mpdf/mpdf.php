@@ -73,8 +73,9 @@ if (!defined('_JPGRAPH_PATH')) {
 	define("_JPGRAPH_PATH", _MPDF_PATH . 'jpgraph/');
 }
 
+$tempPath = Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteTempPath();
 if (!defined('_MPDF_TEMP_PATH')) {
-	define("_MPDF_TEMP_PATH", ASCMS_TEMP_PATH . '/mpdf/tmp/');
+    define("_MPDF_TEMP_PATH", $tempPath . '/mpdf/tmp/');
 }
 
 if (!defined('_MPDF_TTFONTPATH')) {
@@ -82,7 +83,7 @@ if (!defined('_MPDF_TTFONTPATH')) {
 }
 
 if (!defined('_MPDF_TTFONTDATAPATH')) {
-	define('_MPDF_TTFONTDATAPATH', ASCMS_TEMP_PATH . '/mpdf/ttfontdata/');
+    define('_MPDF_TTFONTDATAPATH', $tempPath . '/mpdf/ttfontdata/');
 }
 
 $errorlevel = error_reporting();

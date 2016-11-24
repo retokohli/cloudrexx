@@ -52,12 +52,12 @@ class PDF extends mPDF
     * string $content
     * Content for insert
     */
-    private $content;
+    protected $content;
 
     /**
      * @var string
      */
-    private $destination = 'I';
+    protected $destination = 'I';
 
     /**
      * Constructor
