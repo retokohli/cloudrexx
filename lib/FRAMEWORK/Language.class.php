@@ -135,7 +135,7 @@ class FWLanguage
                 'app_themes_id' => $appThemeId,
                 'frontend'   => true, // every existing locale is active
                 'is_default' => $isFrontendDefault,
-                'fallback'   => $locale->getFallback() ? $locale->getFallback()->getId() : 0,
+                'fallback'   => $locale->getFallback() ? $locale->getFallback()->getId() : false,
             );
             // activate only default locale, if system not in full lang mode
             if (!$full && !$isFrontendDefault) {
@@ -600,7 +600,6 @@ class FWLanguage
         if (empty(self::$arrFrontendLanguages)) self::init();
         if ($langId == self::getDefaultLangId()) return false;
         $fallback_lang = self::getLanguageParameter($langId, 'fallback');
-        if ($fallback_lang == 0) $fallback_lang = intval(self::getDefaultLangId());;
         if ($langId == $fallback_lang) return false;
         return $fallback_lang;
     }
@@ -611,31 +610,21 @@ class FWLanguage
      * @return array ( language id => fallback language id )
      */
     static function getFallbackLanguageArray() {
-        global $objDatabase;
-        $ret = array();
-
-        $defaultLangId = intval(self::getDefaultLangId());
-
-        $query = "SELECT id, fallback FROM ".DBPREFIX."languages where fallback IS NOT NULL";
-        $rs = $objDatabase->Execute($query);
-
-        while(!$rs->EOF) {
-            $langId = intval($rs->fields['id']);
-            $fallbackLangId = intval($rs->fields['fallback']);
-
-            //explicitly overwrite null (default) with the default language id
-            if($fallbackLangId === 0) {
-                $fallbackLangId = $defaultLangId;
-            }
+        if (empty(self::$arrFrontendLanguages)) {
+            self::init();
+        }
+        $arr = array();
+        foreach(self::$arrFrontendLanguages as $frontendLanguage) {
+            $langId = $frontendLanguage['id'];
+            $fallbackLangId = $frontendLanguage['fallback'];
 
             if ($langId == $fallbackLangId || $langId == self::getDefaultLangId()) {
-                $fallbackLangId = false;
+                $fallbackLangId =false;
             }
-            $ret[$langId] = $fallbackLangId;
-            $rs->MoveNext();
-        }
 
-        return $ret;
+            $arr[$langId] = $fallbackLangId;
+        }
+        return $arr;
     }
 
     /**
