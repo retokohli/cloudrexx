@@ -41,7 +41,7 @@
                     dataType: "json",
                     success: function(response) {
                         $J(response.data).each(function(index, val) {
-                            $J( ".active_language_checkbox_container" ).append( '<label><input type="checkbox"  name="themesLangId['+val.lang_id+']" value="'+val.lang_id+'" id ="'+val.lang_name+'">'+ val.lang_name +' </label><br>' );
+                            $J( ".active_language_checkbox_container" ).append( '<label><input type="checkbox"  name="themesLangCode['+val.lang_iso1+']" value="'+val.lang_iso1+'" id ="'+val.lang_name+'">'+ val.lang_name +' </label><br>' );
                         });
                         $J("#multipleFormThemeId").val(themeId);
                         $J('#activateThemeForm input[type=checkbox]').attr('checked', 'checked');

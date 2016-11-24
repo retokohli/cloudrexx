@@ -112,11 +112,11 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
         $frontendRepo = $em->getRepository('Cx\Core\View\Model\Entity\Frontend');
 
         if (!empty($themeId)) {
-            if (count(\FWLanguage::getActiveFrontendLanguages()) > 1) {
-                if (isset($_POST['themesLangId'])) { // set theme for given languages
-                    foreach ($_POST['themesLangId'] as $langId) {
+            if (count(\FWLanguage::getActiveThemeLanguages()) > 1) {
+                if (isset($_POST['themesLangCode'])) { // set theme for given languages
+                    foreach ($_POST['themesLangCode'] as $langCode) {
                         $criteria = array(
-                            'language' => \FWLanguage::getLanguageCodeById($langId),
+                            'language' => $langCode,
                             'channel' => $themeChannel
                         );
                         $frontend = $frontendRepo->findOneBy($criteria);
@@ -163,17 +163,17 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
         if (!empty($themeId)) {
             $theme = $themeRepository->findById($themeId);
 
-            $selectThemeNotInLanguages = array_diff_key(
-                \FWLanguage::getActiveFrontendLanguages(),
-                array_flip($theme->getLanguagesByType($themeTypes[$themeType]))
+            $selectThemeNotInLanguages = array_diff(
+                \FWLanguage::getActiveThemeLanguages(),
+                $theme->getLanguagesByType($themeTypes[$themeType])
             );
         }
 
 
         foreach ($selectThemeNotInLanguages as $selectThemeNotInLanguage){
             $result[] = array(
-                "lang_id"     => $selectThemeNotInLanguage['id'],
-                "lang_name"   => $selectThemeNotInLanguage['name']
+                "lang_iso1"     => $selectThemeNotInLanguage,
+                "lang_name"   => \Locale::getDisplayLanguage($selectThemeNotInLanguage)
             );
         }
 

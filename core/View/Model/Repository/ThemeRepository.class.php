@@ -80,9 +80,9 @@ class ThemeRepository
 
         // select theme of default language if no language id has been provided
         if ($languageId) {
-            $iso1 = \FWLanguage::getLanguageCodeById($languageId);
+            $iso1 = \FWLanguage::getLanguageParameter($languageId, 'iso1');
         } else { // get iso1 of default language
-            $iso1 = \FWLanguage::getLanguageCodeById(\FWLanguage::getDefaultLangId());
+            $iso1 = \FWLanguage::getLanguageParameter(\FWLanguage::getDefaultLangId(), 'iso1');
         }
 
         $criteria = array(
@@ -336,9 +336,9 @@ class ThemeRepository
 
         // select theme of default language if no language id has been provided
         if ($languageId) {
-            $iso1 = \FWLanguage::getLanguageCodeById($languageId);
+            $iso1 = \FWLanguage::getLanguageParameter($languageId, 'iso1');
         } else { // get iso1 of default language
-            $iso1 = \FWLanguage::getLanguageCodeById(\FWLanguage::getDefaultLangId());
+            $iso1 = \FWLanguage::getLanguageParameter(\FWLanguage::getDefaultLangId(), 'iso1');
         }
         // only load frontends with the given language and theme
         $criteria = array(

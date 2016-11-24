@@ -126,6 +126,7 @@ class FWLanguage
                 'id'  => $locale->getId(),
                 'lang' => $locale->getShortForm(),
                 'name' => $locale->__toString(),
+                'iso1' => $locale->getIso1()->getIso1(),
                 'source_lang' => $locale->getSourceLanguage()->getIso1(),
                 'themesid'   => $themeId,
                 'print_themes_id' => $printThemeId,
@@ -635,5 +636,24 @@ class FWLanguage
         }
 
         return $ret;
+    }
+
+    /**
+     * Returns the iso1 codes used in any frontend locale
+     * Since two locales with the same iso1 code us the same theme,
+     * a iso1 code is returned only once
+     *
+     * @return array Contains the iso1 codes of the active frontend locales
+     */
+    public static function getActiveThemeLanguages() {
+        if (empty(self::$arrFrontendLanguages)) {
+            self::init();
+        }
+        $arr = array();
+        foreach (self::$arrFrontendLanguages as $id => $lang) {
+            $arr[] = $lang['iso1'];
+        }
+        $arr = array_unique($arr);
+        return $arr;
     }
 }

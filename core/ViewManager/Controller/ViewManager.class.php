@@ -385,11 +385,10 @@ class ViewManager
     private function parseThemesData($theme, $subType) {
         global $objTemplate,$_ARRAYLANG;
 
-        $frontendLanguages = \FWLanguage::getActiveFrontendLanguages();
+        $frontendLanguages = \FWLanguage::getActiveThemeLanguages();
 
         $activeLanguages   = $theme->getLanguagesByType($subType);
-        foreach ($activeLanguages  as $activeLanguage) {
-            $activatedLanguageCode = \FWLanguage::getLanguageCodeById($activeLanguage);
+        foreach ($activeLanguages  as $activatedLanguageCode) {
             $objTemplate->setVariable(array(
                 'THEME_ACTIVATED_LANG_CODE' => contrexx_raw2xhtml(strtoupper($activatedLanguageCode))
             ));

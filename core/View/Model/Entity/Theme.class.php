@@ -223,7 +223,7 @@ class Theme extends \Cx\Model\Base\EntityBase
         );
         $frontends = $frontendRepo->findBy($criteria);
         foreach ($frontends as $frontend) {
-            $languagesWithThisTheme[] = \FWLanguage::getLanguageIdByCode($frontend->getLanguage());
+            $languagesWithThisTheme[] = $frontend->getLanguage();
         }
 
         return $languagesWithThisTheme;
