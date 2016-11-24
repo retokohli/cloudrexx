@@ -1,17 +1,9 @@
 #workbenchWarning {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 111;
-    width: 100%;
-    text-align:center;
-    marquee-style: scroll;
-    margin-bottom: 52px;
-    border: 1px solid transparent;
-    color: #a94442;
-    background-color: #f2dede;
-    border-color: #ebccd1;
-    height: 52px;
-    padding: 15px;
-    font-size: 12px;
+  /* TLAWW(tm) ("The Less Annoying Workbench Warning(tm)") */
+  color: #a94442;
+  font-size: 12px;
+  position: fixed;
+  right: 1px;
+  top: -6px;
+  z-index: 111;
 }

@@ -17,8 +17,9 @@ cx.ready(function() {
     }
 
     // position the body and the workbench-warning-bar
-    cx.jQuery("body").css("padding-top", (parseInt(cx.jQuery("#workbenchWarning").outerHeight()) + toolbarOffset) + "px");
-    cx.jQuery("#workbenchWarning").css({
-        top: toolbarOffset + "px"
-    });
+// TLAWW(tm) ("The Less Annoying Workbench Warning(tm)")
+//    cx.jQuery("body").css("padding-top", (parseInt(cx.jQuery("#workbenchWarning").outerHeight()) + toolbarOffset) + "px");
+//    cx.jQuery("#workbenchWarning").css({
+//        top: toolbarOffset + "px"
+//    });
 });
