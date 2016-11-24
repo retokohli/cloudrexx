@@ -70,7 +70,9 @@ class InitCMS
     public $pageThemeId;
     public $customContentTemplate = null;
     public $arrLang = array();
+    public $arrBackendLang = array();
     public $arrLangNames = array();
+    public $arrBackendLangNames = array();
     public $templates = array();
     public $arrModulePath = array();
 
@@ -116,40 +118,19 @@ class InitCMS
      */
     function __construct($mode='frontend', $entityManager = null)
     {
-        global $objDatabase;
-
-// TODO: what is this used for?
+        // TODO: what is this used for?
         $this->em = $entityManager;
         $this->mode=$mode;
 
-        $objResult = $objDatabase->Execute("
-            SELECT id, themesid, print_themes_id, pdf_themes_id, mobile_themes_id, app_themes_id,
-                   lang, name, charset, backend, frontend, is_default
-              FROM ".DBPREFIX."languages
-        ");
-        if ($objResult) {
-            while (!$objResult->EOF) {
-                $this->arrLang[$objResult->fields['id']]= array(
-                    'id'               => $objResult->fields['id'],
-                    'themesid'         => $objResult->fields['themesid'],
-                    'print_themes_id'  => $objResult->fields['print_themes_id'],
-                    'pdf_themes_id'    => $objResult->fields['pdf_themes_id'],
-                    'mobile_themes_id' => $objResult->fields['mobile_themes_id'],
-                    'app_themes_id'    => $objResult->fields['app_themes_id'],
-                    'lang'             => $objResult->fields['lang'],
-                    'name'             => $objResult->fields['name'],
-                    'charset'          => $objResult->fields['charset'],
-                    'backend'          => $objResult->fields['backend'],
-                    'frontend'         => $objResult->fields['frontend'],
-                    'is_default'       => $objResult->fields['is_default']);
-                $this->arrLangNames[$objResult->fields['lang']] = $objResult->fields['id'];
-                if ($objResult->fields['is_default']=="true") {
-                    $this->defaultBackendLangId = $objResult->fields['id'];
-                    $this->defaultFrontendLangId = $objResult->fields['id'];
-                }
-                $objResult->MoveNext();
-            }
-        }
+        // frontend
+        $this->arrLang = \FWLanguage::getActiveFrontendLanguages();
+        $this->defaultFrontendLangId = \FWLanguage::getDefaultLangId();
+        $this->arrLangNames = \FWLanguage::getNameArray('frontend');
+        // backend
+        $this->arrBackendLang = \FWLanguage::getActiveBackendLanguages();
+        $this->defaultBackendLangId = \FWLanguage::getDefaultBackendLangId();
+        $this->arrBackendLangNames = \FWLanguage::getNameArray('backend');
+
         if ($mode == 'frontend') {
             //$this->_initBackendLanguage();
             $this->getUserFrontendLangId();
@@ -183,7 +164,7 @@ class InitCMS
         }
 
         // the language is activated for the backend
-        if (empty($this->arrLang[$backendLangId]['backend'])) {
+        if (empty($this->arrBackendLang[$backendLangId]['backend'])) {
             $backendLangId = $this->defaultBackendLangId;
         }
 
@@ -193,9 +174,8 @@ class InitCMS
             $objFWUser->objUser->store();
         }
 
-        $this->backendLangId = $this->arrLang[$backendLangId]['id'];
-        $this->currentThemesId = $this->arrLang[$backendLangId]['themesid'];
-        $this->backendLangCharset = $this->arrLang[$backendLangId]['charset'];
+        $this->backendLangId = $this->arrBackendLang[$backendLangId]['id'];
+        $this->currentThemesId = $this->arrBackendLang[$backendLangId]['themesid'];
     }
 
 
@@ -917,13 +897,21 @@ class InitCMS
         // check whether the language file exists
         $mode = in_array($this->mode, array('backend', 'update')) ? 'backend' : 'frontend';
 
-        $defaultLangId = $mode == 'backend' ? $this->getBackendDefaultLangId() : $this->getFrontendDefaultLangId();
-        if (!isset($this->arrLang[$langId])) {
-            $langId = $defaultLangId;
+        if ($mode == 'backend') {
+            $defaultLangId = $this->getBackendDefaultLangId();
+            if (!isset($this->arrBackendLang[$langId])) {
+                $langId = $defaultLangId;
+            }
+            // file path with requested language ($langId parameter)
+            $path = \Env::get('ClassLoader')->getFilePath($this->arrModulePath[$module].$this->arrBackendLang[$langId]['lang'].'/'.$mode.'.php');
+        } else {
+            $defaultLangId = $this->getFrontendDefaultLangId();
+            if (!isset($this->arrLang[$langId])) {
+                $langId = $defaultLangId;
+            }
+            $path = \Env::get('ClassLoader')->getFilePath($this->arrModulePath[$module].$this->arrLang[$langId]['source_lang'].'/'.$mode.'.php');
         }
 
-        // file path with requested language ($langId parameter)
-        $path = \Env::get('ClassLoader')->getFilePath($this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$mode.'.php');
         if ($path) {
             return $path;
         }
