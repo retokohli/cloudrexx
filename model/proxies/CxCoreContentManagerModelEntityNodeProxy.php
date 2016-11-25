@@ -195,12 +195,6 @@ class CxCoreContentManagerModelEntityNodeProxy extends \Cx\Core\ContentManager\M
         return parent::isVirtual();
     }
 
-    public function __call($methodName, $arguments)
-    {
-        $this->_load();
-        return parent::__call($methodName, $arguments);
-    }
-
     public function __toString()
     {
         $this->_load();
