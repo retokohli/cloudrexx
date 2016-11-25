@@ -2132,9 +2132,8 @@ namespace Cx\Core\Core\Controller {
                     );
 
                 if (!$this->resolvedPage->getUseSkinForAllChannels() && isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
-                    $this->cl->loadFile($this->codeBaseCorePath . '/pdf.class.php');
-                    $pageTitle = $this->resolvedPage->getTitle();
-                    $objPDF          = new \PDF();
+                    $pageTitle       = $this->resolvedPage->getTitle();
+                    $objPDF          = new \Cx\Core_Modules\Pdf\Model\Entity\PdfDocument();
                     $objPDF->title   = $pageTitle.(empty($pageTitle) ? null : '.pdf');
                     $objPDF->content = $this->template->get();
                     $objPDF->Create();
