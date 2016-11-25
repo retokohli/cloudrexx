@@ -100,6 +100,7 @@ class Config
             '<a href="?cmd=Config&amp;act=smtp" class="'.($this->act == 'smtp' ? 'active' : '').'">'.$_ARRAYLANG['TXT_EMAIL_SERVER'].'</a>
             <a href="index.php?cmd=Config&amp;act=image" class="'.($this->act == 'image' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_IMAGE'].'</a>'
             .(in_array('Wysiwyg', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=Config&amp;act=Wysiwyg" class="'.($this->act == 'Wysiwyg' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CORE_WYSIWYG'].'</a>' : '')
+            .(in_array('Pdf', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=Config&amp;act=Pdf" class="'.($this->act == 'Pdf' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CORE_CONFIG_PDF'].'</a>' : '')
             .(in_array('LicenseManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=License">'.$_ARRAYLANG['TXT_LICENSE'].'</a>' : '')
             . $multisiteNavigation
         );
@@ -186,6 +187,13 @@ class Config
                     \Permission::noAccess();
                 }
 
+                break;
+            case 'Pdf':
+                if (!in_array('Pdf', \Env::get('cx')->getLicense()->getLegalComponentsList())) {
+                    \Permission::noAccess();
+                }
+                $boolShowStatus = false;
+                $this->showPdf();
                 break;
 
             case 'cache_update':
@@ -280,6 +288,16 @@ class Config
         ));
     }
 
+
+    /**
+     * Show PDF
+     */
+    protected function showPdf()
+    {
+        $pdf = Cx::instanciate()->getComponent('Pdf');
+        $pdfBackendController = $pdf->getController('Backend');
+        $pdfBackendController->parsePage(Cx::instanciate()->getTemplate(), array('PdfTemplate'));
+    }
 
     /**
      * Set the cms system settings
