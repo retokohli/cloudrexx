@@ -110,9 +110,9 @@ class PdfDocument extends \mPDF
     {
         global $_CONFIG;
 
-        $libPath = \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getCodeBaseLibraryPath();
-        $this->noImageFile = $libPath . '/mpdf/includes/no_img.gif';
+        $coreModulePath = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getCodeBaseCoreModulePath();
+        $this->noImageFile = $coreModulePath . '/Pdf/View/Media/no_picture.gif';
         if (empty($this->author)) {
             $this->SetAuthor($_CONFIG['coreCmsName']);
         }
