@@ -60,7 +60,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Get all the list of PDF templates
      *
-     * @return type
+     * @return array
      */
     public function getPdfTemplates()
     {
@@ -93,7 +93,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function generatePDF($pdfTemplateId, $substitution, $mailTplKey)
     {
-        if (empty($pdfTemplateId) || empty($mailTplKey)) {
+        if (empty($mailTplKey)) {
             return;
         }
 
@@ -114,16 +114,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             true
         );
 
-        $this
-            ->cx
-            ->getClassLoader()
-            ->getFilePath($this->cx->getCodeBaseCorePath() . '/pdf.class.php');
-        $session          = $this->cx->getComponent('Session')->getSession();
+        $session          = $this->getComponent('Session')->getSession();
         $dateTime         = new \DateTime();
         $title            = $mailTplKey . '.pdf';
         $fileName         = $mailTplKey . '_' .
             $dateTime->format('d_m_Y_h_s_i') . '.pdf';
-        $pdf              = new \PDF();
+        $pdf              = new \Cx\Core_Modules\Pdf\Model\Entity\PdfDocument();
         $pdf->title       = $title;
         $pdf->content     = $tplContent;
         $pdf->filePath    = $session->getTempPath() . '/' . $fileName;
