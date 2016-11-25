@@ -114,14 +114,12 @@ class DataLibrary
      * Creates an array containing all frontend-languages.
      *
      * Contents:
-     * $arrValue[$langId]['short']        =>    For Example: en, de, fr, ...
+     * $arrValue[$langId]['short']        =>    For Example: en, de, fr, de-CH, ...
      * $arrValue[$langId]['long']        =>    For Example: 'English', 'Deutsch', 'French', ...
      *
-     * @global     ADONewConnection
      * @return    array        $arrReturn
      */
     function createLanguageArray() {
-        global $objDatabase;
 
         $arrReturn = array();
 
