@@ -88,7 +88,9 @@ class FWLanguage
     {
         global $_CONFIG, $objDatabase;
 
-        $em = \Env::get('em');
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getDb()
+            ->getEntityManager();
         $localeRepo = $em->getRepository('\Cx\Core\Locale\Model\Entity\Locale');
         $backendRepo = $em->getRepository('\Cx\Core\Locale\Model\Entity\Backend');
 
@@ -468,53 +470,52 @@ class FWLanguage
      * @param   string    $langCode         The ISO 639-1 language code
      * @return  mixed                       The language ID on success,
      *                                      null otherwise
-     * @global  ADONewConnection
+     *
      * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @author  Nicola Tommasi <nicola.tommasi@comvation.com>
      */
     static function getLangIdByIso639_1($langCode)
     {
-        global $objDatabase;
+        global $_CONFIG;
 
         // Don't bother if the "code" looks like an ID already
         if (is_numeric($langCode)) return $langCode;
 
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getDb()
+            ->getEntityManager();
+        $qb = $em->createQueryBuilder();
+
         // Something like "fr; q=1.0, en-gb; q=0.5"
         $arrLangCode = preg_split('/,\s*/', $langCode);
-        $strLangCode = "'".join("','",
-            preg_replace('/(?:-\w+)?(?:;\s*q(?:\=\d?\.?\d*)?)?/i',
-                '', $arrLangCode))."'";
-        $objResult = $objDatabase->Execute("
-            SELECT id
-              FROM ".DBPREFIX."languages
-             WHERE lang IN ($strLangCode)
-               AND frontend=1");
-        if ($objResult && $objResult->RecordCount()) {
-            return $objResult->fields['id'];
+        $arrLangCode = preg_replace(
+            '/(?:-\w+)?(?:;\s*q(?:\=\d?\.?\d*)?)?/i',
+            '',
+            $arrLangCode
+        );
+        // search for locale with matching iso1 code
+        $qb->select('l')
+            ->from('\Cx\Core\Locale\Model\Entity\Locale', 'l')
+            ->where($qb->expr()->in('l.iso1', $arrLangCode))
+            ->setMaxResults(1);
+        $query = $qb->getQuery();
+        $locale = $query->getResult();
+        if ($locale) {
+            return $locale[0]->getId();
         }
         // The code was not found.  Pick the default.
-        $objResult = $objDatabase->Execute("
-            SELECT id
-              FROM ".DBPREFIX."languages
-             WHERE is_default='true'
-               AND frontend=1");
-        if ($objResult && $objResult->RecordCount()) {
-            return $objResult->fields['id'];
+        if (isset($_CONFIG['defaultLocaleId'])) {
+            return $_CONFIG['defaultLocaleId'];
         }
         // Still nothing.  Pick the first frontend language available.
-        $objResult = $objDatabase->Execute("
-            SELECT id
-              FROM ".DBPREFIX."languages
-             WHERE frontend=1");
-        if ($objResult && $objResult->RecordCount()) {
-            return $objResult->fields['id'];
-        }
-        // Pick the first language.
-        $objResult = $objDatabase->Execute("
-            SELECT id
-              FROM ".DBPREFIX."languages
-             WHERE frontend=1");
-        if ($objResult && $objResult->RecordCount()) {
-            return $objResult->fields['id'];
+        $qb = $em->createQueryBuilder();
+        $qb->select('l')
+            ->from('\Cx\Core\Locale\Model\Entity\Locale', 'l')
+            ->setMaxResults(1);
+        $query = $qb->getQuery();
+        $locale = $query->getSingleResult();
+        if ($locale) {
+            return $locale->getId();
         }
         // Give up.
         return null;
