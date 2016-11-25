@@ -48,129 +48,125 @@ namespace Cx\Core_Modules\Pdf\Model\Entity;
  * @subpackage  coremodule_pdf
  * @version     1.0.0
  */
-class PdfDocument extends \HTML2FPDF
+class PdfDocument extends \mPDF
 {
     /**
-    * string $content
-    * Content for insert
-    */
-    public $content;
-
-    /**
-    * string $title
-    * File name
-    */
-    public $title;
-
-    /**
-    * string $orientation
-    * pageorientation
-    */
-    public $pdf_orientation;
-
-    /**
-    * string $unit
-    * Unit-format
-    */
-    public $pdf_unit;
-
-    /**
-    * string $format
-    * Page-format
-    */
-    public $pdf_format;
-
-    /**
-    * string $pdf_creator
-    * PDF author
-    */
-    public $pdf_autor;
+     * @var string $content
+     */
+    protected $content;
 
     /**
      * @var string $destination
      */
-    public $destination = '';
+    protected $destination = 'I';
 
     /**
      * @var string $filePath
      */
-    public $filePath = '';
+    protected $filePath = '';
 
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct($orientation = 'P', $format = 'A4')
     {
-        global $_CONFIG;
-
-        $this->pdf_orientation  = 'P';
-        $this->pdf_unit         = 'mm';
-        $this->pdf_format       = 'A4';
-        $this->pdf_autor        = $_CONFIG['coreCmsName'];
+        parent::__construct('', $format, 0, '', 15, 15, 16, 16, 9, 9, $orientation);
     }
 
     /**
-     * Create PDF Document
+     * Set the content
+     *
+     * @param string $content
+     */
+    public function setContent($content)
+    {
+        $this->content = $content;
+    }
+
+    /**
+     * Set the output destination
+     *
+     * @param string $destination
+     */
+    public function setDestination($destination)
+    {
+        $this->destination = $destination;
+    }
+
+    /**
+     * Set the file path to store the PDF document
+     *
+     * @param string $filePath
+     */
+    public function setFilePath($filePath)
+    {
+        $this->filePath = $filePath;
+    }
+
+    /**
+     * Create PDF
      */
     public function Create()
     {
-        $this->content = utf8_decode($this->_ParseHTML($this->content));
+        global $_CONFIG;
 
-        $pdf = new \HTML2FPDF();
-        $pdf->ShowNOIMG_GIF();
-        $pdf->DisplayPreferences('HideWindowUI');
-        $pdf->AddPage();
-        $pdf->WriteHTML($this->content);
+        $coreModulePath = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getCodeBaseCoreModulePath();
+        $this->noImageFile = $coreModulePath . '/Pdf/View/Media/no_picture.gif';
+        if (empty($this->author)) {
+            $this->SetAuthor($_CONFIG['coreCmsName']);
+        }
+        $this->SetDisplayPreferences('HideWindowUI');
+        $this->AddPage();
+        $this->WriteHTML($this->content);
         if (empty($this->filePath)) {
             $this->filePath = \Cx\Lib\FileSystem\FileSystem::replaceCharacters(
                 $this->title
             );
         }
-        $pdf->Output($this->filePath, $this->destination);
+        $this->Output($this->filePath, $this->destination);
     }
 
     /**
-     * Parse the html
+     * Get file full path
      *
-     * @param string $source
-     *
-     * @return string
+     * @param string $path     file path
+     * @param string $basepath file base path
      */
-    public function _ParseHTML($source)
+    public function GetFullPath(&$path, $basepath = '')
     {
+        // When parsing CSS need to pass temporary basepath -
+        // so links are relative to current stylesheet
+        if (!$basepath) {
+            $basepath = $this->basepath;
+        }
+        //Fix path value
+        $path = str_replace('\\', '/', $path); //If on Windows
+        // mPDF 5.7.2
+        if (substr($path, 0, 2) == '//') {
+            $tr = parse_url($basepath);
+            $path = $tr['scheme'] . ':' . $path; // mPDF 6
+        }
 
-        // H1
-        // ----------------
-        $source = str_replace('<h1>', '<div class="h1">', $source);
-        $source = str_replace('</h1>', '</div>', $source);
-        // H2
-        // ----------------
-        $source = str_replace('<h2>', '<div class="h2">', $source);
-        $source = str_replace('</h2>', '</div>', $source);
-        // H3
-        // ----------------
-        $source = str_replace('<h3>', '<div class="h3">', $source);
-        $source = str_replace('</h3>', '</div>', $source);
-        // H4
-        // ----------------
-        $source = str_replace('<h3>', '<div class="h3">', $source);
-        $source = str_replace('</h3>', '</div>', $source);
+        $regexp = '|^./|'; // Inadvertently corrects "./path/etc"
+        //and "//www.domain.com/etc"
+        $path = preg_replace($regexp, '', $path);
 
-        // body
-        // ----------------
-        $source = str_replace('<body>', '<body><div class="body">', $source);
-        $source = str_replace('</body>', '</div></body>', $source);
+        if (substr($path, 0, 1) == '#') {
+            return;
+        }
+        if (preg_match('@^(mailto|tel|fax):.*@i', $path)) {
+            return;
+        }
 
-        // p
-        // ----------------
-        $source = str_replace('<p>', '<div class="p">', $source);
-        $source = str_replace('</p>', '</div>', $source);
-
-        // image to relative path
-        // ----------------
-        $source = str_replace('src="/images', 'src="images', $source);
-        $source = str_replace("src='/images", "src='images", $source);
-
-        return $source;
+        if (substr($path, 0, 3) == '../') {
+            $filepath = str_replace('../', '', $path);
+            $objFile  = new \Cx\Lib\FileSystem\FileSystemFile($filepath);
+            $path     = $objFile->getAbsoluteFilePath();
+        } elseif (strpos($path, ':/') === false || strpos($path, ':/') > 10) {
+            $objFile = new \Cx\Lib\FileSystem\FileSystemFile($path);
+            $path    = $objFile->getAbsoluteFilePath();
+        }
     }
+
 }

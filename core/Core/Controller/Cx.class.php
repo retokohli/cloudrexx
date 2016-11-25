@@ -2132,10 +2132,11 @@ namespace Cx\Core\Core\Controller {
                     );
 
                 if (!$this->resolvedPage->getUseSkinForAllChannels() && isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
-                    $pageTitle       = $this->resolvedPage->getTitle();
-                    $objPDF          = new \Cx\Core_Modules\Pdf\Model\Entity\PdfDocument();
-                    $objPDF->title   = $pageTitle.(empty($pageTitle) ? null : '.pdf');
-                    $objPDF->content = $this->template->get();
+                    $pageTitle  = $this->resolvedPage->getTitle();
+                    $extenstion = empty($pageTitle) ? null : '.pdf';
+                    $objPDF     = new \Cx\Core_Modules\Pdf\Model\Entity\PdfDocument();
+                    $objPDF->SetTitle($pageTitle . $extenstion);
+                    $objPDF->setContent($this->template->get());
                     $objPDF->Create();
                     exit;
                 }

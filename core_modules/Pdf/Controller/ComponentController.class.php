@@ -114,15 +114,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             true
         );
 
-        $session          = $this->getComponent('Session')->getSession();
-        $datetime         = $this->getComponent('DateTime')->createDateTimeForUser('now')->format('d_m_Y_h_s_i');
-        $title            = $mailTplKey . '.pdf';
-        $fileName         = $mailTplKey . '_' . $dateTime . '.pdf';
-        $pdf              = new \Cx\Core_Modules\Pdf\Model\Entity\PdfDocument();
-        $pdf->title       = $title;
-        $pdf->content     = $tplContent;
-        $pdf->filePath    = $session->getTempPath() . '/' . $fileName;
-        $pdf->destination = 'F';
+        $session    = $this->getComponent('Session')->getSession();
+        $datetime   = $this->getComponent('DateTime')->createDateTimeForUser('now')->format('d_m_Y_h_s_i');
+        $title      = $mailTplKey . '.pdf';
+        $fileName   = $mailTplKey . '_' . $datetime . '.pdf';
+        $pdf        = new \Cx\Core_Modules\Pdf\Model\Entity\PdfDocument();
+        $pdf->SetTitle($title);
+        $pdf->setContent($tplContent);
+        $pdf->setDestination('F');
+        $pdf->setFilePath($session->getTempPath() . '/' . $fileName);
         $pdf->Create();
 
         return array(
