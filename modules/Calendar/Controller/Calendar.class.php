@@ -271,7 +271,12 @@ class Calendar extends CalendarLibrary
             $startYear  = isset($_GET['year']) ? $_GET['year'] : $this->startDate->format('Y');
 
             $this->startDate->setDate($startYear, $startMonth, $startDay);
-            $this->startDate->setTime(0, 0, 0);
+            $this->getSettings();
+            if ($this->arrSettings['frontendPastEvents'] == 0) {
+                // if we want to show events of the whole day
+                // we need to set start date to 0:00
+                $this->startDate->setTime(0, 0, 0);
+            }
         }
 
         // get enddate
@@ -898,19 +903,17 @@ UPLOADER;
 
         // Set the meta page description to the teaser text if displaying calendar details
         $teaser = html_entity_decode($this->objEventManager->eventList[0]->teaser, ENT_QUOTES, CONTREXX_CHARSET);
-        if ($teaser !== '') {
-            $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET))));
+        if ($teaser) {
+            $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags($teaser)));
         } else {
             $description = html_entity_decode($this->objEventManager->eventList[0]->description, ENT_QUOTES, CONTREXX_CHARSET);
-            $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($description, ENT_QUOTES, CONTREXX_CHARSET))));
+            $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags($description)));
         }
 
         // Set the meta page image to event picture if displaying calendar details
-        $picture = html_entity_decode($this->objEventManager->eventList[0]->pic, ENT_QUOTES, CONTREXX_CHARSET);
-        if ($picture !== '') {
+        $picture = $this->objEventManager->eventList[0]->pic;
+        if ($picture) {
             $page->setMetaimage($picture);
-        } else {
-            $page->setMetaimage(\Cx\Core\Setting\Controller\Setting::getValue('defaultMetaimage', 'Config'));
         }
 
         $this->_objTpl->setVariable(array(

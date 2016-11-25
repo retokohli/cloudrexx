@@ -421,7 +421,7 @@ CREATE TABLE `contrexx_core_rewrite_rule` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `regular_expression` varchar(255) NOT NULL,
   `continue_on_match` tinyint(1) NOT NULL,
-  `rewrite_status_code` int(11) NOT NULL,
+  `rewrite_status_code` enum('301','302','intern') NOT NULL,
   `order_no` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
@@ -453,6 +453,13 @@ CREATE TABLE `contrexx_core_wysiwyg_template` (
   `active` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_core_module_pdf_template` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `html_content` longtext DEFAULT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY(`id`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_ids` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `timestamp` int(14) DEFAULT NULL,
@@ -3154,7 +3161,7 @@ CREATE TABLE `contrexx_module_shop_order_attributes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `item_id` int(10) unsigned NOT NULL DEFAULT '0',
   `attribute_name` varchar(255) NOT NULL DEFAULT '',
-  `option_name` varchar(255) NOT NULL DEFAULT '',
+  `option_name` TEXT NOT NULL DEFAULT '',
   `price` decimal(9,2) NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`id`),
   KEY `item_id` (`item_id`)

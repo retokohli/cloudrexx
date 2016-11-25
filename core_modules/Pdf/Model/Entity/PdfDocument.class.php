@@ -26,38 +26,44 @@
  */
 
 /**
-* PDF class
-*
-* Generate PDF for pdfview
-* @copyright    CLOUDREXX CMS - CLOUDREXX AG
-* @author       Cloudrexx Development Team <info@cloudrexx.com>
-* @package      cloudrexx
-* @subpackage   core
-* @version      1.1.0
-*/
+ * PDF class
+ * Generate PDF for pdfview
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  coremodule_pdf
+ * @version     1.0.0
+ */
+
+namespace Cx\Core_Modules\Pdf\Model\Entity;
 
 /**
-* PDF class
-*
-* Generate PDF for pdfview
-* @copyright    CLOUDREXX CMS - CLOUDREXX AG
-* @author       Cloudrexx Development Team <info@cloudrexx.com>
-* @package      cloudrexx
-* @subpackage   core
-* @version      1.1.0
-*/
-class PDF extends mPDF
+ * PDF class
+ * Generate PDF for pdfview
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  coremodule_pdf
+ * @version     1.0.0
+ */
+class PdfDocument extends \mPDF
 {
     /**
-    * string $content
-    * Content for insert
-    */
+     * @var string $content
+     */
     protected $content;
 
     /**
-     * @var string
+     * @var string $destination
      */
     protected $destination = 'I';
+
+    /**
+     * @var string $filePath
+     */
+    protected $filePath = '';
 
     /**
      * Constructor
@@ -80,11 +86,21 @@ class PDF extends mPDF
     /**
      * Set the output destination
      *
-     * @param type $destination
+     * @param string $destination
      */
     public function setDestination($destination)
     {
         $this->destination = $destination;
+    }
+
+    /**
+     * Set the file path to store the PDF document
+     *
+     * @param string $filePath
+     */
+    public function setFilePath($filePath)
+    {
+        $this->filePath = $filePath;
     }
 
     /**
@@ -103,10 +119,12 @@ class PDF extends mPDF
         $this->SetDisplayPreferences('HideWindowUI');
         $this->AddPage();
         $this->WriteHTML($this->content);
-        $this->Output(
-            \Cx\Lib\FileSystem\FileSystem::replaceCharacters($this->title),
-            $this->destination
-        );
+        if (empty($this->filePath)) {
+            $this->filePath = \Cx\Lib\FileSystem\FileSystem::replaceCharacters(
+                $this->title
+            );
+        }
+        $this->Output($this->filePath, $this->destination);
     }
 
     /**
@@ -143,10 +161,10 @@ class PDF extends mPDF
 
         if (substr($path, 0, 3) == '../') {
             $filepath = str_replace('../', '', $path);
-            $objFile  = new Cx\Lib\FileSystem\FileSystemFile($filepath);
+            $objFile  = new \Cx\Lib\FileSystem\FileSystemFile($filepath);
             $path     = $objFile->getAbsoluteFilePath();
         } elseif (strpos($path, ':/') === false || strpos($path, ':/') > 10) {
-            $objFile = new Cx\Lib\FileSystem\FileSystemFile($path);
+            $objFile = new \Cx\Lib\FileSystem\FileSystemFile($path);
             $path    = $objFile->getAbsoluteFilePath();
         }
     }
