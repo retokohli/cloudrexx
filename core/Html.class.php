@@ -1973,8 +1973,8 @@ cx.jQuery(document).ready(function($) {
             return '';
         }
 //echo("Html::getLed($status, $action): led is ".$objImage->getPath()."<br />");
-        $objImage->setWidth(11);
-        $objImage->setHeight(11);
+        $objImage->setWidth(13);
+        $objImage->setHeight(13);
         $led_html = self::getImageOriginal(
             $objImage,
             'border="0"'.($alt ? ' alt="'.$alt.'" title="'.$alt.'"' : ''));

@@ -68,24 +68,45 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd)
     {
+        global $_ARRAYLANG, $objInit;
+
+        $objTpl = new \Cx\Core\Html\Sigma(
+            $this->getDirectory(true) . '/View/Template/Backend'
+        );
+
+        //merge language
+        $langData   = $objInit->loadLanguageData('Pdf');
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        $objTpl->setGlobalVariable($_ARRAYLANG);
+        $objTpl->loadTemplatefile('Default.html');
 
         // Not an entity, parse overview or settings
         switch (current($cmd)) {
-            case '':
             default:
                 // Parse entity view generation pages
                 $entityClassName = $this->getNamespace() .
                     '\\Model\\Entity\\PdfTemplate';
                 $this->parseEntityClassPage(
-                    $template,
+                    $objTpl,
                     $entityClassName,
                     'PdfTemplate'
                 );
-                if ($template->blockExists('overview')) {
-                    $template->touchBlock('overview');
+                if ($objTpl->blockExists('overview')) {
+                    $objTpl->touchBlock('overview');
                 }
                 break;
         }
+
+        \JS::registerCSS(
+            substr(
+                $this->getDirectory(false, true) . '/View/Style/Backend.css',
+                1
+            )
+        );
+        $template->setVariable(array(
+            'CONTENT_TITLE' => $_ARRAYLANG['TXT_CORE_MODULE_PDF'],
+            'ADMIN_CONTENT' => $objTpl->get(),
+        ));
     }
 
     /**
@@ -131,16 +152,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'header' => $_ARRAYLANG[$placeholderPrefix . '_TITLE'],
                     'table'  => array(
                         'parse' => function($data, $rows, $options) {
-                            $editUrl = clone $this->cx->getRequest()->getUrl();
-                            $editUrl->setParam(
-                                'editid',
-                                '{' .
-                                $options['functions']['vg_increment_number'] .
-                                ',' . $rows['id'] . '}'
-                            );
-                            $data = '<a href="' . $editUrl . '"'
-                                    . ' title="'.$data.'">'.$data.'</a>';
-                            return $data;
+                            $editUrl = \Cx\Core\Html\Controller\ViewGenerator::getVgEditUrl($options['functions']['vg_increment_number'], $rows['id']);
+                            $link = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
+                            $link ->setAttribute('href', $editUrl);
+                            $link ->setAttribute('title', $data);
+                            $value = new \Cx\Core\Html\Model\Entity\TextElement($data);
+                            $link->addChild($value);
+                            return $link;
                         },
                     ),
                 ),
@@ -150,23 +168,20 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'sorting'  => false,
                     'table'    => array(
                         'parse' => function($data, $rows) {
-                            $img = 'led_red.gif';
                             if ($data) {
-                                $img = 'led_green.gif';
+                                return \Html::getLed('green');
                             }
-                            $data = '<img src="core/Core/View/Media/icons/'.
-                                $img.'" />';
-                            return $data;
+                            return \Html::getLed('red');
                         },
                     ),
                 ),
                 'htmlContent' => array(
                     'header'       => $_ARRAYLANG[
-                        $placeholderPrefix . '_HTML_CONTENT'
-                    ] . '&nbsp;&nbsp;<span class="tooltip-trigger icon-info">'
-                    . '</span><span class="tooltip-message">' .
-                    $_ARRAYLANG[$placeholderPrefix . '_HTML_CONTENT_TOOLTIP'] .
-                    '</span>',
+                            $placeholderPrefix . '_HTML_CONTENT'
+                        ] . '&nbsp;&nbsp;<span class="tooltip-trigger icon-info">'
+                        . '</span><span class="tooltip-message">' .
+                        $_ARRAYLANG[$placeholderPrefix . '_HTML_CONTENT_TOOLTIP'] .
+                        '</span>',
                     'showOverview' => false,
                     'formfield'    => function (
                         $name,
