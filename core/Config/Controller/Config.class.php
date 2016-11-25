@@ -294,38 +294,9 @@ class Config
      */
     protected function showPdf()
     {
-        global $_ARRAYLANG, $objTemplate, $objInit;
-
-        $pdf                  = Cx::instanciate()->getComponent('Pdf');
+        $pdf = Cx::instanciate()->getComponent('Pdf');
         $pdfBackendController = $pdf->getController('Backend');
-        $objTpl               = new \Cx\Core\Html\Sigma(
-            $pdf->getDirectory(true) . '/View/Template/Backend'
-        );
-
-        //merge language
-        $langData   = $objInit->loadLanguageData('Pdf');
-        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
-        $objTpl->setGlobalVariable($_ARRAYLANG);
-        $objTpl->loadTemplatefile('Default.html');
-
-        $tpl = isset($_GET['tpl']) ? contrexx_input2raw($_GET['tpl']) : '';
-        switch ($tpl) {
-            case '':
-            default:
-                $pdfBackendController->parsePage($objTpl, array('PdfTemplate'));
-                break;
-        }
-
-        \JS::registerCSS(
-            substr(
-                $pdf->getDirectory(false, true) . '/View/Style/Backend.css',
-                1
-            )
-        );
-        $objTemplate->setVariable(array(
-            'CONTENT_TITLE' => $_ARRAYLANG['TXT_CORE_MODULE_PDF'],
-            'ADMIN_CONTENT' => $objTpl->get(),
-        ));
+        $pdfBackendController->parsePage(Cx::instanciate()->getTemplate(), array('PdfTemplate'));
     }
 
     /**

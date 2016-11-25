@@ -15,8 +15,9 @@ Cx\Core_Modules\Pdf\Model\Entity\PdfTemplate:
     htmlContent:
       type: text
       column: html_content
-      nullable: true
+      nullable: false
     active:
       type: boolean
+      nullable: false
       options:
         default: true

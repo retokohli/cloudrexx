@@ -106,11 +106,11 @@ class MailTemplate
      */
     const TEXT_INLINE = 'core_mail_template_inline';
     /**
-     * Class constant for Attach dynamic PDF-document
+     * Class constant for Attach dynamic PDF-document Text key
      */
     const TEXT_ATTACH_PDF = 'core_mail_template_attach_pdf';
     /**
-     * Class constant for PDF template id
+     * Class constant for PDF template id Text key
      */
     const TEXT_PDF_TEMPLATE = 'core_mail_template_pdf_template';
 
