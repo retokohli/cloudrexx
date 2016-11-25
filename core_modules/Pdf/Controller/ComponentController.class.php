@@ -89,7 +89,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param array   $substitution  array of substitution values
      * @param string  $mailTplKey    MailTemplate key
      *
-     * @return mixed boolean|string
+     * @return mixed array|null
      */
     public function generatePDF($pdfTemplateId, $substitution, $mailTplKey)
     {
