@@ -26,65 +26,68 @@
  */
 
 /**
- * PDF class
- * Generate PDF for pdfview
- *
- * @copyright   Cloudrexx AG
- * @author      Cloudrexx Development Team <info@cloudrexx.com>
- * @package     cloudrexx
- * @subpackage  coremodule_pdf
- * @version     1.0.0
- */
-
-namespace Cx\Core_Modules\Pdf\Model\Entity;
+* PDF class
+*
+* Generate PDF for pdfview
+* @copyright    CLOUDREXX CMS - CLOUDREXX AG
+* @author       Cloudrexx Development Team <info@cloudrexx.com>
+* @package      cloudrexx
+* @subpackage   core
+* @version      1.1.0
+*/
 
 /**
- * PDF class
- * Generate PDF for pdfview
- *
- * @copyright   Cloudrexx AG
- * @author      Cloudrexx Development Team <info@cloudrexx.com>
- * @package     cloudrexx
- * @subpackage  coremodule_pdf
- * @version     1.0.0
+ * @ignore
  */
-class PdfDocument extends \HTML2FPDF
+require_once ASCMS_LIBRARY_PATH.'/html2fpdf/html2fpdf.php';
+
+/**
+* PDF class
+*
+* Generate PDF for pdfview
+* @copyright    CLOUDREXX CMS - CLOUDREXX AG
+* @author       Cloudrexx Development Team <info@cloudrexx.com>
+* @package      cloudrexx
+* @subpackage   core
+* @version      1.1.0
+*/
+class PDF extends HTML2FPDF
 {
     /**
     * string $content
     * Content for insert
     */
-    public $content;
+    var $content;
 
     /**
     * string $title
     * File name
     */
-    public $title;
+    var $title;
 
     /**
     * string $orientation
     * pageorientation
     */
-    public $pdf_orientation;
+    var $pdf_orientation;
 
     /**
     * string $unit
     * Unit-format
     */
-    public $pdf_unit;
+    var $pdf_unit;
 
     /**
     * string $format
     * Page-format
     */
-    public $pdf_format;
+    var $pdf_format;
 
     /**
     * string $pdf_creator
     * PDF author
     */
-    public $pdf_autor;
+    var $pdf_autor;
 
     /**
      * @var string $destination
@@ -96,27 +99,25 @@ class PdfDocument extends \HTML2FPDF
      */
     public $filePath = '';
 
-    /**
-     * Constructor
-     */
-    public function __construct()
+    function __construct()
     {
         global $_CONFIG;
 
-        $this->pdf_orientation  = 'P';
+        $this->pdf_orientation     = 'P';
         $this->pdf_unit         = 'mm';
-        $this->pdf_format       = 'A4';
+        $this->pdf_format         = 'A4';
         $this->pdf_autor        = $_CONFIG['coreCmsName'];
     }
 
     /**
      * Create PDF Document
      */
-    public function Create()
+    function Create()
     {
+
         $this->content = utf8_decode($this->_ParseHTML($this->content));
 
-        $pdf = new \HTML2FPDF();
+        $pdf = new HTML2FPDF();
         $pdf->ShowNOIMG_GIF();
         $pdf->DisplayPreferences('HideWindowUI');
         $pdf->AddPage();
@@ -129,15 +130,7 @@ class PdfDocument extends \HTML2FPDF
         $pdf->Output($this->filePath, $this->destination);
     }
 
-    /**
-     * Parse the html
-     *
-     * @param string $source
-     *
-     * @return string
-     */
-    public function _ParseHTML($source)
-    {
+    function _ParseHTML($source){
 
         // H1
         // ----------------
