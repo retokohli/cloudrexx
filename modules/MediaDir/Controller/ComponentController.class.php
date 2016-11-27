@@ -27,7 +27,7 @@
 
 /**
  * Main controller for MediaDir
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
@@ -39,7 +39,7 @@ use Cx\Modules\MediaDir\Model\Event\MediaDirEventListener;
 
 /**
  * Main controller for MediaDir
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
@@ -54,31 +54,37 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
      /**
      * Load your component.
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         global $_CORELANG, $subMenuTitle, $objTemplate;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-                    $objMediaDirectory = new MediaDirectory(\Env::get('cx')->getPage()->getContent(), $this->getName());
-                    $objMediaDirectory->pageTitle = \Env::get('cx')->getPage()->getTitle();
-                    $pageMetaTitle = \Env::get('cx')->getPage()->getMetatitle();
-                    $objMediaDirectory->metaTitle = $pageMetaTitle;
-                    \Env::get('cx')->getPage()->setContent($objMediaDirectory->getPage());
-                    if ($objMediaDirectory->getPageTitle() != '' && $objMediaDirectory->getPageTitle() != \Env::get('cx')->getPage()->getTitle()) {
-                        \Env::get('cx')->getPage()->setTitle($objMediaDirectory->getPageTitle());
-                        \Env::get('cx')->getPage()->setContentTitle($objMediaDirectory->getPageTitle());
-                        \Env::get('cx')->getPage()->setMetaTitle($objMediaDirectory->getPageTitle());
-                    }
-                    if ($objMediaDirectory->getMetaTitle() != '') {
-                        \Env::get('cx')->getPage()->setMetatitle($objMediaDirectory->getMetaTitle());
-                    }
-                    
+                $objMediaDirectory = new MediaDirectory(\Env::get('cx')->getPage()->getContent(), $this->getName());
+                $objMediaDirectory->pageTitle = \Env::get('cx')->getPage()->getTitle();
+                $pageMetaTitle = \Env::get('cx')->getPage()->getMetatitle();
+                $objMediaDirectory->metaTitle = $pageMetaTitle;
+                \Env::get('cx')->getPage()->setContent($objMediaDirectory->getPage());
+                if ($objMediaDirectory->getPageTitle() != '' && $objMediaDirectory->getPageTitle() != \Env::get('cx')->getPage()->getTitle()) {
+                    \Env::get('cx')->getPage()->setTitle($objMediaDirectory->getPageTitle());
+                    \Env::get('cx')->getPage()->setContentTitle($objMediaDirectory->getPageTitle());
+                    \Env::get('cx')->getPage()->setMetaTitle($objMediaDirectory->getPageTitle());
+                }
+                if ($objMediaDirectory->getMetaTitle() != '') {
+                    \Env::get('cx')->getPage()->setMetatitle($objMediaDirectory->getMetaTitle());
+                }
+                if ($objMediaDirectory->getMetaDescription() != '') {
+                    \Env::get('cx')->getPage()->setMetadesc($objMediaDirectory->getMetaDescription());
+                }
+                if ($objMediaDirectory->getMetaImage() != '') {
+                    \Env::get('cx')->getPage()->setMetaimage($objMediaDirectory->getMetaImage());
+                }
+
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
-                
+
                 $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'LegacyContentMaster.html');
                 $objTemplate = $this->cx->getTemplate();
                 \Permission::checkAccess(153, 'static');
@@ -93,7 +99,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
     /**
      * Do something before content is loaded from DB
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -127,17 +133,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 if (preg_match('/{MEDIADIR_LATEST}/', $themesPages['sidebar'])) {
                     $themesPages['sidebar'] = str_replace('{MEDIADIR_LATEST}', $objMadiadirPlaceholders->getLatestPlacholder(), $themesPages['sidebar']);
                 }
-                        
+
                 break;
 
             default:
                 break;
         }
     }
-    
+
     /**
      * Do something after content is loaded from DB
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -152,7 +158,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 }
                 if ($mediadirCheck || $objTemplate->blockExists('mediadirLatest')) {
                     $objInit->loadLanguageData('MediaDir');
-                    
+
                     $objMediadir = new MediaDirectory('', $this->getName());
                     $objTemplate->setVariable('TXT_MEDIADIR_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
                 }

@@ -48,6 +48,8 @@ class MediaDirectory extends MediaDirectoryLibrary
 
     var $pageTitle;
     var $metaTitle;
+    var $metaDescription;
+    var $metaImage;
 
 
     var $arrNavtree = array();
@@ -79,7 +81,7 @@ class MediaDirectory extends MediaDirectoryLibrary
     function getPage()
     {
         global $_CONFIG;
-        
+
         \JS::activate('shadowbox');
         \JS::activate('jquery');
 
@@ -138,9 +140,9 @@ class MediaDirectory extends MediaDirectoryLibrary
             case 'confirm_in_progress':
                 $this->_objTpl->setTemplate($this->pageContent);
                 break;
-            case 'alphabetical':                                 
+            case 'alphabetical':
                 $this->showAlphabetical();
-                break; 
+                break;
             default:
                 if(isset($_REQUEST['check'])) {
                     parent::checkDisplayduration();
@@ -153,13 +155,13 @@ class MediaDirectory extends MediaDirectoryLibrary
                     parent::checkAccess('add_entry');
                     $this->modifyEntry();
                 } else if (substr($_REQUEST['cmd'],0,4) == 'edit'){
-	                if((intval($_REQUEST['eid']) != 0) || (intval($_REQUEST['entryId']) != 0)) {
-	                    parent::checkAccess('edit_entry');
-	                    $this->modifyEntry();
-	                } else {
-	                    header("Location: index.php?section=".$this->moduleName);
-	                    exit;
-	                }
+                    if((intval($_REQUEST['eid']) != 0) || (intval($_REQUEST['entryId']) != 0)) {
+                        parent::checkAccess('edit_entry');
+                        $this->modifyEntry();
+                    } else {
+                        header("Location: index.php?section=".$this->moduleName);
+                        exit;
+                    }
                 } else {
                     if(isset($_REQUEST['search'])) {
                         $this->showSearch();
@@ -181,10 +183,23 @@ class MediaDirectory extends MediaDirectoryLibrary
         global $_ARRAYLANG, $_CORELANG;
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
-        
+
         $intCmdFormId = 0;
+        $showEntriesOfLevel = false;
+        $showEntriesOfCategory = false;
+        $showLevelDetails = false;
+        $showCategoryDetails = false;
+        $bolLatest = false;
+        $objLevel = null;
+        $objCategory = null;
+
+        // whether the loaded form (if at all) does use categories or not
         $bolFormUseCategory = false;
+
+        // whether the loaded form (if at all) does use levels or not
         $bolFormUseLevel = false;
+
+        $intLimitStart = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
 
         //search existing category&level blocks
         $arrExistingBlocks = array();
@@ -237,31 +252,6 @@ class MediaDirectory extends MediaDirectoryLibrary
             $this->_objTpl->touchBlock($this->moduleNameLC.'Overview');
         }
 
-        //get navtree
-        if($this->_objTpl->blockExists($this->moduleNameLC.'Navtree') && ($intCategoryId != 0 || $intLevelId != 0)){
-            $this->getNavtree($intCategoryId, $intLevelId);
-        }
-
-        //get searchform
-        if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
-            $objSearch = new MediaDirectorySearch($this->moduleName);
-            $objSearch->getSearchform($this->_objTpl, 1);
-        }
-
-        //get level / category details
-        if($this->_objTpl->blockExists($this->moduleNameLC.'CategoryLevelDetail')){
-            if ($intCategoryId == 0 && $intLevelId != 0 && $this->arrSettings['settingsShowLevels'] == 1) {
-                $objLevel = new MediaDirectoryLevel($intLevelId, null, 0, $this->moduleName);
-                $objLevel->listLevels($this->_objTpl, 5, $intLevelId);
-            }
-
-            if($intCategoryId != 0) {
-                $objCategory = new MediaDirectoryCategory($intCategoryId, null, 0, $this->moduleName);
-                $objCategory->listCategories($this->_objTpl, 5, $intCategoryId);
-
-            }
-        }
-
         //check form cmd
         if(!empty($_GET['cmd']) && $arrIds[0] != 'search') {
             $arrFormCmd = array();
@@ -278,16 +268,96 @@ class MediaDirectory extends MediaDirectoryLibrary
             }
         }
 
-        //list levels / categories
-        if($this->_objTpl->blockExists($this->moduleNameLC.'CategoriesLevelsList')){
-            if($intCmdFormId != 0) {   
+        // detect if the use of categories and/or levels has been activated
+        //
+        // note: in a previous version of Cloudrexx, this has only been done
+        //       in case the template block mediadirCategoriesLevelsList
+        //       was present. Therefore, we have introduced the setting
+        //       option 'Legacy behavior' to emulate that previous behavior.
+        if (!$this->arrSettings['legacyBehavior'] || $this->_objTpl->blockExists($this->moduleNameLC.'CategoriesLevelsList')) {
+            if ($intCmdFormId != 0) {   
                 $bolFormUseCategory = $objForms->arrForms[intval($intCmdFormId)]['formUseCategory'];
                 $bolFormUseLevel = $objForms->arrForms[intval($intCmdFormId)]['formUseLevel'];
             } else {     
                 $bolFormUseCategory = true;
                 $bolFormUseLevel = $this->arrSettings['settingsShowLevels'];
             }
+        }
 
+        // check if we should parse the latest entries
+        // important: in case we will parse the regular list, then the
+        //            latest entries won't be parsed. See code below
+        if (($intCategoryId == 0 && $bolFormUseCategory) || ($intLevelId == 0  && $bolFormUseLevel)) {
+            $bolLatest = true;
+            $intLimitEnd = intval($this->arrSettings['settingsLatestNumOverview']);
+        } else {
+            // fetch paging limit
+            $intLimitEnd = intval($this->arrSettings['settingsPagingNumEntries']);
+            if (    !empty($intCmdFormId)
+                &&  !empty($objForms->arrForms[$intCmdFormId]['formEntriesPerPage'])
+            ) {
+                $intLimitEnd = $objForms->arrForms[$intCmdFormId]['formEntriesPerPage'];
+            }
+        }
+
+        //get navtree
+        if($this->_objTpl->blockExists($this->moduleNameLC.'Navtree') && ($intCategoryId != 0 || $intLevelId != 0)){
+            $this->getNavtree($intCategoryId, $intLevelId);
+        }
+
+        //get searchform
+        if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
+            $objSearch = new MediaDirectorySearch($this->moduleName);
+            $objSearch->getSearchform($this->_objTpl, 1);
+        }
+
+        // note: the initialization of the objects $objLevel and $objCategory
+        //       has in a previous version of Cloudrexx only been done, if the
+        //       template block mediadirCategoryLevelDetail was present.
+        //       This caused the parsing of mediadirCategoriesLevelsList only
+        //       to be done when the block mediadirCategoryLevelDetail was present.
+        //       Using the setting option 'legacy behavior' we do emulate that
+        //       previous behavior.
+        if (!$this->arrSettings['legacyBehavior'] || $this->_objTpl->blockExists($this->moduleNameLC.'CategoryLevelDetail')) {
+            if ($intCategoryId == 0 && $intLevelId != 0 && $this->arrSettings['settingsShowLevels']) {
+                $objLevel = new MediaDirectoryLevel($intLevelId, null, 0, $this->moduleName);
+                $showLevelDetails = true;
+                $showEntriesOfLevel = $objLevel->arrLevels[$intLevelId]['levelShowEntries'];
+            }
+
+            if($intCategoryId != 0) {
+                $objCategory = new MediaDirectoryCategory($intCategoryId, null, 0, $this->moduleName);
+                $showCategoryDetails = true;
+                $showEntriesOfCategory = $objCategory->arrCategories[$intCategoryId]['catShowEntries'];
+            }
+        }
+
+        // parse the level details
+        if ($showLevelDetails && $this->_objTpl->blockExists($this->moduleNameLC.'CategoryLevelDetail')) {
+            $objLevel->listLevels($this->_objTpl, 5, $intLevelId);
+        }
+
+        // parse the category details
+        if ($showCategoryDetails && $this->_objTpl->blockExists($this->moduleNameLC.'CategoryLevelDetail')) {
+            $objCategory->listCategories($this->_objTpl, 5, $intCategoryId);
+        }
+
+        // check show entries
+        $showEntries = $showEntriesOfLevel || $showEntriesOfCategory || $bolLatest || (!$bolFormUseCategory && !$bolFormUseLevel);
+
+        // fetch entries
+        if ($showEntries) {
+            $objEntries = new MediaDirectoryEntry($this->moduleName);
+// TODO: Show all entries regardless of set pagging
+            $objEntries->getEntries(null,$intLevelId,$intCategoryId,null,$bolLatest,null,1,$intLimitStart, $intLimitEnd, null, null, $intCmdFormId);
+        }
+
+        //list levels / categories
+        if ($this->_objTpl->blockExists($this->moduleNameLC.'CategoriesLevelsList')) {
+            // list levels if:
+            // - option 'Use levels' is active
+            // - and no category has been selected
+            // - and optional: in case a FORM has been defined by CMD, if FORM's option 'Use levels' is active
             if($this->arrSettings['settingsShowLevels'] == 1 && $intCategoryId == 0 && $bolFormUseLevel) {
                 $objLevels = new MediaDirectoryLevel(null, $intLevelId, 1, $this->moduleName);
                 $objCategories = new MediaDirectoryCategory(null, $intCategoryId, 1, $this->moduleName);
@@ -296,6 +366,11 @@ class MediaDirectory extends MediaDirectoryLibrary
                 $this->_objTpl->parse($this->moduleNameLC.'CategoriesLevelsList');
             }
 
+            // selected level has 'Show Categories' set
+            // or no level is selected
+            // or listing of levels in general is deactivated
+            // or a category is selected
+            // or selected form hat option 'Use categories' activ and option 'Use levels' inactive
             if((((isset($objLevel) && $objLevel->arrLevels[$intLevelId]['levelShowCategories'] == 1) || $intLevelId === 0) || $this->arrSettings['settingsShowLevels'] == 0 || $intCategoryId != 0) || ($bolFormUseCategory && !$bolFormUseLevel)) {
                 $objCategories = new MediaDirectoryCategory(null, $intCategoryId, 1, $this->moduleName);
                 $objCategories->listCategories($this->_objTpl, 2, null, null, null, $arrExistingBlocks);
@@ -303,73 +378,114 @@ class MediaDirectory extends MediaDirectoryLibrary
                 $this->_objTpl->parse($this->moduleNameLC.'CategoriesLevelsList');
             }
 
+            // hide block mediadirCategoriesLevelsList in case no levels nor any categories have benn loaded
             if(empty($objLevel->arrLevels) && empty($objCategories->arrCategories)) {
                 $this->_objTpl->hideBlock($this->moduleNameLC.'CategoriesLevelsList');
                 $this->_objTpl->clearVariables();
             }
         }
-        
+
         //latest title
-        if($this->_objTpl->blockExists($this->moduleNameLC.'LatestTitle') && $intCategoryId == 0 && $intLevelId == 0){  
-            $this->_objTpl->touchBlock($this->moduleNameLC.'LatestTitle');      
+        if($this->_objTpl->blockExists($this->moduleNameLC.'LatestTitle') && $intCategoryId == 0 && $intLevelId == 0){
+            $this->_objTpl->touchBlock($this->moduleNameLC.'LatestTitle');
         }
 
-        //list entries
-        if($this->_objTpl->blockExists($this->moduleNameLC.'EntryList')){
-            $intLimitStart = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+        /**
+         * The parsing behavior of the mediadirLatestList template block used to
+         * be strange in the former Cloudrexx versions. Setting this variable to TRUE
+         * will emulate that dropped strange behavior.
+         * The setting of this variable is managed by the backend setting option
+         * 'Legacy behavior'.
+         * @var boolean
+         */
+        $legacyLatestMode = false;
 
-            //check category / level                   
-            if(($intCategoryId == 0 && $bolFormUseCategory) || ($intLevelId == 0  && $bolFormUseLevel)) {
-                $bolLatest = true;
-                $intLimitEnd = ($this->arrSettings['showLatestEntriesInOverview'] == 1)
-                                ? intval($this->arrSettings['settingsLatestNumOverview'])
-                                : null;
-            } else {
-                $bolLatest   = false;
-                $intLimitEnd = intval($this->arrSettings['settingsPagingNumEntries']);
-                if (    !empty($intCmdFormId)
-                    &&  !empty($objForms->arrForms[$intCmdFormId]['formEntriesPerPage'])
-                ) {
-                    $intLimitEnd = $objForms->arrForms[$intCmdFormId]['formEntriesPerPage'];
-                }
+        if (!$showEntries) {
+            if ($this->_objTpl->blockExists($this->moduleNameLC.'EntryList')) {
+                $this->_objTpl->hideBlock($this->moduleNameLC.'EntryList');
             }
+            if ($this->_objTpl->blockExists($this->moduleNameLC.'LatestList')) {
+                $this->_objTpl->hideBlock($this->moduleNameLC.'LatestList');
+            }
+            return;
+        }
 
-            //check show entries
-            if((isset($objLevel) && $objLevel->arrLevels[$intLevelId]['levelShowEntries'] == 1) || (isset($objCategory) && $objCategory->arrCategories[$intCategoryId]['catShowEntries'] == 1) || $bolLatest == true || (!$bolFormUseCategory && !$bolFormUseLevel)) {
-                $objEntries = new MediaDirectoryEntry($this->moduleName);
-                
-                $objEntries->getEntries(null,$intLevelId,$intCategoryId,null,$bolLatest,null,1,$intLimitStart, $intLimitEnd, null, null, $intCmdFormId);
+        // parse entries (mediadirEntryList)
+        if ($this->_objTpl->blockExists($this->moduleNameLC.'EntryList')) {
+            // Activate legacy behavior if option 'Legacy behavior' has been activated.
+            // The parsing of the latest entries was previously only done
+            // if the template block mediadirEntryList was present
+            $legacyLatestMode = $this->arrSettings['legacyBehavior'];
+
+            if (!$bolLatest ) {
                 $objEntries->listEntries($this->_objTpl, 2);
-                
-                if(!$bolLatest) {
-                    $intNumEntries = intval($objEntries->countEntries());
-                    if($intNumEntries > $intLimitEnd) {
-                        $objUrl           = clone \Env::get('Resolver')->getUrl();                        
-                        $currentUrlParams = $objUrl->getSuggestedParams();
-                        $strPaging = getPaging($intNumEntries, $intLimitStart, $currentUrlParams, "<b>".$_ARRAYLANG['TXT_MEDIADIR_ENTRIES']."</b>", true, $intLimitEnd);
-                        $this->_objTpl->setGlobalVariable(array(
-                            $this->moduleLangVar.'_PAGING' =>  $strPaging
-                        ));
-                    }
+
+                // hide block used to display latest entries
+                //
+                // note: in a previous version of cloudrexx, the template block
+                //       mediadirLatestList was wrapped around the template block
+                //       mediadirEntryList in the default template. Therefore,
+                //       if 'Legacy behavior' option is active, we can not hide
+                //       the template block mediadirLatestList
+                if (!$this->arrSettings['legacyBehavior'] && $this->_objTpl->blockExists($this->moduleNameLC.'LatestList')){
+                    $this->_objTpl->hideBlock($this->moduleNameLC.'LatestList');
+                }
+
+                $intNumEntries = intval($objEntries->countEntries());
+                if($intNumEntries > $intLimitEnd) {
+                    $objUrl           = clone \Env::get('Resolver')->getUrl();                        
+                    $currentUrlParams = $objUrl->getSuggestedParams();
+                    $strPaging = getPaging($intNumEntries, $intLimitStart, $currentUrlParams, "<b>".$_ARRAYLANG['TXT_MEDIADIR_ENTRIES']."</b>", true, $intLimitEnd);
+                    $this->_objTpl->setGlobalVariable(array(
+                        $this->moduleLangVar.'_PAGING' =>  $strPaging
+                    ));
                 }
             }
 
             //no entries found
-            if(empty($objEntries->arrEntries)) {
+            if (!$objEntries || empty($objEntries->arrEntries)) {
                 $this->_objTpl->hideBlock($this->moduleNameLC.'EntryList');
                 $this->_objTpl->clearVariables();
             }
         }
+
+        // parse latest entries (mediadirLatestList)
+        if (   $bolLatest
+            && ($this->_objTpl->blockExists($this->moduleNameLC.'LatestList') || $legacyLatestMode)
+            && $this->arrSettings['showLatestEntriesInOverview']
+        ) {
+
+            $objEntries->listEntries($this->_objTpl, 2);
+
+            //no entries found
+            if (    (!$objEntries || empty($objEntries->arrEntries))
+                 && $this->_objTpl->blockExists($this->moduleNameLC.'LatestList')
+            ) {
+                $this->_objTpl->hideBlock($this->moduleNameLC.'LatestList');
+                $this->_objTpl->clearVariables();
+            }
+
+            // hide block used to display all entries
+            //
+            // note: in a previous version of cloudrexx, the template block
+            //       mediadirLatestList was wrapped around the template block
+            //       mediadirEntryList in the default template. Therefore,
+            //       if 'Legacy behavior' option is active, we can not hide
+            //       the template block mediadirEntryList
+            if (!$this->arrSettings['legacyBehavior'] && $this->_objTpl->blockExists($this->moduleNameLC.'EntryList')) {
+                $this->_objTpl->hideBlock($this->moduleNameLC.'EntryList');
+            }
+        }
     }
-    
-    
-    
+
+
+
     function showAlphabetical()
     {
         global $_ARRAYLANG, $_CORELANG;
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
-        
+
         //get navtree
         if($this->_objTpl->blockExists($this->moduleNameLC.'Navtree') && ($intCategoryId != 0 || $intLevelId != 0)){
             $this->getNavtree($intCategoryId, $intLevelId);
@@ -382,8 +498,8 @@ class MediaDirectory extends MediaDirectoryLibrary
             $objSearch->getSearchform($this->_objTpl, 1);
             $searchTerm = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : null;
         }
-        
-        $objEntries = new MediaDirectoryEntry($this->moduleName);         
+
+        $objEntries = new MediaDirectoryEntry($this->moduleName);
         $objEntries->getEntries(null,null,null,$searchTerm,false,null,true);
         $objEntries->listEntries($this->_objTpl,3);
     }
@@ -418,7 +534,7 @@ class MediaDirectory extends MediaDirectoryLibrary
                 }
             }
         }
-        
+
         $intLimitStart = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
 
         if(!empty($_GET['term']) || $_GET['type'] == 'exp') {
@@ -429,7 +545,7 @@ class MediaDirectory extends MediaDirectoryLibrary
 
             if(!empty($objSearch->arrFoundIds)) {
                 $intNumEntries = count($objSearch->arrFoundIds);
-                
+
                 for($i=$intLimitStart; $i < ($intLimitStart+$intLimitEnd); $i++) {
                     $intEntryId = isset($objSearch->arrFoundIds[$i]) ? $objSearch->arrFoundIds[$i] : 0;
                     if(intval($intEntryId) != 0) {
@@ -438,6 +554,9 @@ class MediaDirectory extends MediaDirectoryLibrary
                 }
 
                 $objEntries->listEntries($this->_objTpl, 2);
+
+                // parse GoogleMap
+                $this->parseGoogleMapPlaceholder($this->_objTpl, $this->moduleLangVar.'_SEARCH_GOOGLE_MAP');
                 
                 $urlParams = $_GET;
                 unset($urlParams['pos']);
@@ -475,7 +594,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : 0;
         $intLevelId = isset($_GET['lid']) ? intval($_GET['lid']) : 0;
         $intEntryId = isset($_GET['eid']) ? intval($_GET['eid']) : 0;
-        
+
         // load source code if cmd value is integer
         if ($this->_objTpl->placeholderExists('APPLICATION_DATA')) {
             $page = new \Cx\Core\ContentManager\Model\Entity\Page();
@@ -488,7 +607,7 @@ class MediaDirectory extends MediaDirectoryLibrary
             \LinkGenerator::parseTemplate($applicationTemplate);
             $this->_objTpl->addBlock('APPLICATION_DATA', 'application_data', $applicationTemplate);
         }
-        
+
         //get navtree
         if($this->_objTpl->blockExists($this->moduleNameLC.'Navtree') && ($intCategoryId != 0 || $intLevelId != 0)){
             $this->getNavtree($intCategoryId, $intLevelId);
@@ -500,9 +619,69 @@ class MediaDirectory extends MediaDirectoryLibrary
             $objEntry->listEntries($this->_objTpl, 2);
             $objEntry->updateHits($intEntryId);
 
-            //set meta title
-            $this->metaTitle .= " - ".$objEntry->arrEntries[$intEntryId]['entryFields'][0];
-            $this->pageTitle = $objEntry->arrEntries[$intEntryId]['entryFields'][0];
+            //set meta attributes
+            $entries = new MediaDirectoryEntry($this->moduleName);
+            $entries->getEntries($intEntryId, $intLevelId, $intCategoryId, null, null, null, 1, null, 1);
+            $entry = $entries->arrEntries[$intEntryId];
+
+            $objInputfields = new MediaDirectoryInputfield($entry['entryFormId'], false, $entry['entryTranslationStatus'], $this->moduleName);
+            $inputFields = $objInputfields->getInputfields();
+
+            $titleChanged = false;
+            $contentChanged = false;
+
+            foreach ($inputFields as $arrInputfield) {
+                $contextType = isset($arrInputfield['context_type']) ? $arrInputfield['context_type'] : '';
+                if (!in_array($contextType, array('title', 'content', 'image'))) {
+                    continue;
+                }
+                $strType = isset($arrInputfield['type_name']) ? $arrInputfield['type_name'] : '';
+                $strInputfieldClass = "\Cx\Modules\MediaDir\Model\Entity\MediaDirectoryInputfield" . ucfirst($strType);
+                try {
+                    $objInputfield = safeNew($strInputfieldClass, $this->moduleName);
+                    $arrTranslationStatus = (contrexx_input2int($arrInputfield['type_multi_lang']) == 1)
+                        ? $entry['entryTranslationStatus']
+                        : null;
+                    $arrInputfieldContent = $objInputfield->getContent($entry['entryId'], $arrInputfield, $arrTranslationStatus);
+                    switch ($contextType) {
+                        case 'title':
+                            $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE'];
+                            if ($inputfieldValue) {
+                                $this->metaTitle .= ' - ' . $inputfieldValue;
+                                $this->pageTitle = $inputfieldValue;
+                            }
+                            $titleChanged = true;
+                            break;
+                        case 'content':
+                            $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE'];
+                            if ($inputfieldValue) {
+                                $this->metaDescription = $inputfieldValue;
+                            }
+                            $contentChanged = true;
+                            break;
+                        case 'image':
+                            $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE_SRC'];
+                            if ($inputfieldValue) {
+                                $this->metaImage = $inputfieldValue;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (\Exception $e) {
+                    \DBG::log($e->getMessage());
+                    continue;
+                }
+            }
+
+            $firstInputfieldValue = $entries->arrEntries[$intEntryId]['entryFields'][0];
+            if (!$titleChanged && $firstInputfieldValue) {
+                $this->pageTitle = $firstInputfieldValue;
+                $this->metaTitle = $firstInputfieldValue;
+            }
+            if (!$contentChanged && $firstInputfieldValue) {
+                $this->metaDescription = $firstInputfieldValue;
+            }
 
             if(empty($objEntry->arrEntries)) {
                 $this->_objTpl->hideBlock($this->moduleNameLC.'EntryList');
@@ -584,67 +763,76 @@ class MediaDirectory extends MediaDirectoryLibrary
     function getLatestEntries($formId = null, $blockName = null)
     {
         global $objTemplate;
-        
-        $objEntry     = new MediaDirectoryEntry($this->moduleName);
-        $entriesLimit = ($this->arrSettings['showLatestEntriesInWebdesignTmpl'] == 1)
-                        ? $this->arrSettings['settingsLatestNumHeadlines'] : null;
-        $objEntry->getEntries(null, null, null, null, true, null, true, null, $entriesLimit, null, null, $formId);
-        if($blockName==null){        
-            $objEntry->setStrBlockName($this->moduleNameLC.'Latest');
-        } else {
-            $objEntry->setStrBlockName($blockName);
+
+        $blockName = ($blockName == null) ? $this->moduleNameLC.'Latest' : $blockName;
+        //If the settings option 'List latest entries in webdesign template' is deactivated
+        //then do not parse the latest entries
+        if (!$this->arrSettings['showLatestEntriesInWebdesignTmpl']) {
+            $objTemplate->hideBlock($blockName);
+            return;
         }
 
-        
+        $objEntry = new MediaDirectoryEntry($this->moduleName);
+        $objEntry->getEntries(null, null, null, null, true, null, true, null, $this->arrSettings['settingsLatestNumHeadlines'], null, null, $formId);
+        $objEntry->setStrBlockName($blockName);
+
         $objEntry->listEntries($objTemplate, 2);
     }
-    
+
     function getHeadlines($arrExistingBlocks)
     {
-        global $_ARRAYLANG, $_CORELANG, $objTemplate;
+        global $_CORELANG, $objTemplate;
 
-        $objEntry     = new MediaDirectoryEntry($this->moduleName);
-        $entriesLimit = ($this->arrSettings['showLatestEntriesInWebdesignTmpl'] == 1)
-                        ? $this->arrSettings['settingsLatestNumHeadlines'] : null;
-        $objEntry->getEntries(null, null, null, null, null, null, true, null, $entriesLimit);
+        // only initialize entries in case option 'List latest entries in webdesign template' is active
+        if ($this->arrSettings['showLatestEntriesInWebdesignTmpl']) {
+            $objEntry = new MediaDirectoryEntry($this->moduleName);
+            $objEntry->getEntries(null, null, null, null, null, null, true, null, $this->arrSettings['settingsLatestNumHeadlines']);
+        }
+
+        //If the settings option 'List latest entries in webdesign template' is deactivated or no entries found
+        //then do not parse the latest entries
+        if (!$this->arrSettings['showLatestEntriesInWebdesignTmpl'] || empty($objEntry->arrEntries)) {
+            foreach ($arrExistingBlocks as $blockId) {
+                $objTemplate->hideBlock($this->moduleNameLC.'Latest_row_' . $blockId);
+            }
+            return;
+        }
 
         $i=0;
         $r=0;
         $numBlocks = count($arrExistingBlocks);
 
-        if(!empty($objEntry->arrEntries)){
-            foreach ($objEntry->arrEntries as $key => $arrEntry) {
-                try {
-                    $strDetailUrl = $objEntry->getDetailUrlOfEntry($arrEntry, true);
-                } catch (MediaDirectoryEntryException $e) {
-                    $strDetailUrl = '#';
-                }
+        foreach ($objEntry->arrEntries as $key => $arrEntry) {
+            try {
+                $strDetailUrl = $objEntry->getDetailUrlOfEntry($arrEntry, true);
+            } catch (MediaDirectoryEntryException $e) {
+                $strDetailUrl = '#';
+            }
+
+            $objTemplate->setVariable(array(
+                $this->moduleLangVar.'_LATEST_ROW_CLASS' =>  $r%2==0 ? 'row1' : 'row2',
+                $this->moduleLangVar.'_LATEST_ENTRY_ID' =>  $arrEntry['entryId'],
+                $this->moduleLangVar.'_LATEST_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
+                $this->moduleLangVar.'_LATEST_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
+                $this->moduleLangVar.'_LATEST_ENTRY_HITS' =>  $arrEntry['entryHits'],
+                $this->moduleLangVar.'_ENTRY_DETAIL_URL' =>  $strDetailUrl,
+                'TXT_'.$this->moduleLangVar.'_ENTRY_DETAIL' =>  $_CORELANG['TXT_MEDIADIR_DETAIL'],
+            ));
+
+            foreach ($arrEntry['entryFields'] as $key => $strFieldValue) {
+                $intPos = $key+1;
 
                 $objTemplate->setVariable(array(
-                    $this->moduleLangVar.'_LATEST_ROW_CLASS' =>  $r%2==0 ? 'row1' : 'row2',
-                    $this->moduleLangVar.'_LATEST_ENTRY_ID' =>  $arrEntry['entryId'],
-                    $this->moduleLangVar.'_LATEST_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
-                    $this->moduleLangVar.'_LATEST_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
-                    $this->moduleLangVar.'_LATEST_ENTRY_HITS' =>  $arrEntry['entryHits'],
-                    $this->moduleLangVar.'_ENTRY_DETAIL_URL' =>  $strDetailUrl,
-                    'TXT_'.$this->moduleLangVar.'_ENTRY_DETAIL' =>  $_CORELANG['TXT_MEDIADIR_DETAIL'],
+                    $this->moduleLangVar.'_LATEST_ENTRY_FIELD_'.$intPos.'_POS' => $strFieldValue
                 ));
+            }
 
-                foreach ($arrEntry['entryFields'] as $key => $strFieldValue) {
-                    $intPos = $key+1;
-
-                    $objTemplate->setVariable(array(
-                        $this->moduleLangVar.'_LATEST_ENTRY_FIELD_'.$intPos.'_POS' => $strFieldValue
-                    ));
-                }
-
-                $blockId = $arrExistingBlocks[$i];
-                $objTemplate->parse($this->moduleNameLC.'Latest_row_'.$blockId);
-                if ($i < $numBlocks-1) {
-                    ++$i;
-                } else {
-                    $i = 0;
-                }
+            $blockId = $arrExistingBlocks[$i];
+            $objTemplate->parse($this->moduleNameLC.'Latest_row_'.$blockId);
+            if ($i < $numBlocks-1) {
+                ++$i;
+            } else {
+                $i = 0;
             }
         }
     }
@@ -694,9 +882,9 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         //check id and form
         if(!empty($_REQUEST['eid']) || !empty($_REQUEST['entryId'])) {
-        	if(!empty($_REQUEST['eid'])) {
-        		$intEntryId = intval($_REQUEST['eid']);
-        	}
+            if(!empty($_REQUEST['eid'])) {
+                $intEntryId = intval($_REQUEST['eid']);
+            }
             if(!empty($_REQUEST['entryId'])) {
                 $intEntryId = intval($_REQUEST['entryId']);
             }
@@ -722,9 +910,9 @@ class MediaDirectory extends MediaDirectoryLibrary
             } else {
                 //save entry data
                 if(isset($_POST['submitEntryModfyForm'])) {
-                    $objEntry = new MediaDirectoryEntry($this->moduleName);     
-                    $strStatus = $objEntry->saveEntry($_POST, intval($_POST['entryId']));  
-                	
+                    $objEntry = new MediaDirectoryEntry($this->moduleName);
+                    $strStatus = $objEntry->saveEntry($_POST, intval($_POST['entryId']));
+
                     if(!empty($_POST['entryId'])) {
                         $objEntry->getEntries(intval($_POST['entryId']));
                         if($strStatus == true) {
@@ -757,7 +945,7 @@ class MediaDirectory extends MediaDirectoryLibrary
                         } else {
                             $strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_ADDED'];
                         }
-                    }           
+                    }
 
                     if(!empty($_POST['entryId'])) {
                         if($strStatus == true) {
@@ -850,7 +1038,7 @@ class MediaDirectory extends MediaDirectoryLibrary
                     //parent::setJavascript("\$J().ready(function(){ \$J('.mediadirInputfieldHint').inputHintBox({className:'mediadirInputfieldInfobox',incrementLeft:3,incrementTop:-6}); });");
 
                     //get form onsubmit
-	                $strOnSubmit = parent::getFormOnSubmit($objInputfields->arrJavascriptFormOnSubmit);
+                    $strOnSubmit = parent::getFormOnSubmit($objInputfields->arrJavascriptFormOnSubmit);
 
                     //parse blocks
                     $this->_objTpl->hideBlock($this->moduleNameLC.'Forms');
@@ -861,7 +1049,7 @@ class MediaDirectory extends MediaDirectoryLibrary
                 $strFileMessage = '<div class="'.$this->moduleNameLC.'FileErrorMessage">'.$_ARRAYLANG['TXT_MEDIADIR_IMAGE_ERROR_MESSAGE'].'</div>';
                 unset($_SESSION[$this->moduleNameLC]['bolFileSizesStatus']);
             } else {
-            	$strFileMessage = '';
+                $strFileMessage = '';
             }
 
 
@@ -1061,12 +1249,20 @@ class MediaDirectory extends MediaDirectoryLibrary
     }
 
 
-    function getPageTitle() {
+    public function getPageTitle() {
         return $this->pageTitle;
     }
 
-    function getMetaTitle() {
+    public function getMetaTitle() {
         return $this->metaTitle;
+    }
+
+    public function getMetaDescription() {
+        return $this->metaDescription;
+    }
+
+    public function getMetaImage() {
+        return $this->metaImage;
     }
 }
 ?>

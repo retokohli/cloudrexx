@@ -212,9 +212,9 @@ $J(document).ready(function(){
         <td width="280">{TXT_MEDIADIR_SETTINGS_LIST_LATEST_ENTRIES_IN_OVERVIEW_SECTION}</td>
         <td>
             <input id="listEntriesOverviewOn" name="showLatestEntriesInOverview" type="radio" {MEDIADIR_SETTINGS_LIST_ENTRIES_OVERVIEW_ON} value="1" onclick="toggleLatestEntriesInOverview();" />
-            <label for="listEntriesOverviewOn">Activate</label>
+            <label for="listEntriesOverviewOn">{TXT_MEDIADIR_ACTIVATE}</label>
             <input id="listEntriesOverviewOff" name="showLatestEntriesInOverview" type="radio" {MEDIADIR_SETTINGS_LIST_ENTRIES_OVERVIEW_OFF} value="0" onclick="toggleLatestEntriesInOverview();" />
-            <label for="listEntriesOverviewOff">deactivate</label>
+            <label for="listEntriesOverviewOff">{TXT_MEDIADIR_DEACTIVATE}</label>
         </td>
     </tr>
     <tr class="row1 overviewEntriesCnt">
@@ -227,9 +227,9 @@ $J(document).ready(function(){
         <td width="280">{TXT_MEDIADIR_SETTINGS_LIST_LATEST_ENTRIES_IN_WEBDESIGN_TEMPLATE}</td>
         <td>
             <input id="lstEntriesWebdesignTmplOn" name="showLatestEntriesInWebdesignTmpl" type="radio" {MEDIADIR_SETTINGS_LIST_ENTRIES_WEBDESIGN_TEMPLATE_ON} value="1" onclick="toggleLatestEntriesInWebdesignTpl();" />
-            <label for="lstEntriesWebdesignTmplOn">Activate</label>
+            <label for="lstEntriesWebdesignTmplOn">{TXT_MEDIADIR_ACTIVATE}</label>
             <input id="lstEntriesWebdesignTmplOff" name="showLatestEntriesInWebdesignTmpl" type="radio" {MEDIADIR_SETTINGS_LIST_ENTRIES_WEBDESIGN_TEMPLATE_OFF} value="0" onclick="toggleLatestEntriesInWebdesignTpl();" />
-            <label for="lstEntriesWebdesignTmplOff">deactivate</label>
+            <label for="lstEntriesWebdesignTmplOff">{TXT_MEDIADIR_DEACTIVATE}</label>
         </td>
     </tr>
     <tr class="row1 webdesignEntriesCnt">
@@ -270,6 +270,18 @@ $J(document).ready(function(){
         <td width="280">{TXT_MEDIADIR_SETTINGS_POPULAR_NUM_RESTORE}</td>
         <td>
             <input name="settingsPopularNumRestore" type="text" style="width: 35px" value="{MEDIADIR_SETTINGS_POPULAR_NUM_RESTORE}" />
+        </td>
+    </tr>
+</table>
+<br />
+<table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+    <tr>
+        <th colspan="2">{TXT_MEDIADIR_BEHAVIOR}</th>
+    </tr>
+    <tr class="row1">
+        <td width="280">{TXT_MEDIADIR_LEGACY_BEHAVIOR}</td>
+        <td>
+            <input type="radio" name="legacyBehavior" value="1" {MEDIADIR_SETTINGS_LEGACY_BEHAVIOR_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="legacyBehavior" value="0" {MEDIADIR_SETTINGS_LEGACY_BEHAVIOR_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_LEGACY_BEHAVIOR_INFO}</span>
         </td>
     </tr>
 </table>
