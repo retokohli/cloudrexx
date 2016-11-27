@@ -1628,7 +1628,10 @@ namespace Cx\Core\Core\Controller {
                     // Resolver code
                     // @todo: move to resolver
                     //expose the virtual language directory to the rest of the cms
-                    $virtualLanguageDirectory = '/'.$url->getLangDir();
+                    $virtualLanguageDirectory = $url->getLangDir(true);
+                    if (!empty($virtualLanguageDirectory)) {
+                        $virtualLanguageDirectory = '/' . $virtualLanguageDirectory;
+                    }
                     \Env::set('virtualLanguageDirectory', $virtualLanguageDirectory);
                     // TODO: this constanst used to be located in config/set_constants.php, but needed to be relocated to this very place,
                     // because it depends on Env::get('virtualLanguageDirectory').
@@ -2129,11 +2132,11 @@ namespace Cx\Core\Core\Controller {
                     );
 
                 if (!$this->resolvedPage->getUseSkinForAllChannels() && isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
-                    $this->cl->loadFile($this->codeBaseCorePath . '/pdf.class.php');
-                    $pageTitle = $this->resolvedPage->getTitle();
-                    $objPDF          = new \PDF();
-                    $objPDF->title   = $pageTitle.(empty($pageTitle) ? null : '.pdf');
-                    $objPDF->content = $this->template->get();
+                    $pageTitle  = $this->resolvedPage->getTitle();
+                    $extenstion = empty($pageTitle) ? null : '.pdf';
+                    $objPDF     = new \Cx\Core_Modules\Pdf\Model\Entity\PdfDocument();
+                    $objPDF->SetTitle($pageTitle . $extenstion);
+                    $objPDF->setContent($this->template->get());
                     $objPDF->Create();
                     exit;
                 }

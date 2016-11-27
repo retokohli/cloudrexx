@@ -95,9 +95,6 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         parent::__construct(null, false, null, $name);
         parent::getSettings();
         parent::getFrontendLanguages();
-
-
-
     }
 
     function getEntries($intEntryId=null, $intLevelId=null, $intCatId=null, $strSearchTerm=null, $bolLatest=null, $bolUnconfirmed=null, $bolActive=null, $intLimitStart=null, $intLimitEnd='n', $intUserId=null, $bolPopular=null, $intCmdFormId=null, $bolReadyToConfirm=null, $intLimit=0, $intOffset=0)
@@ -331,6 +328,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             }
             $this->recordCount = $totalRecords->fields['found_rows'];
         }
+
+        $this->setCurrentFetchedEntryDataObject($this);
     }
 
     public function findOneBySlug($slug) {
@@ -413,7 +412,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         return $this->strBlockName;
     }
 
-    function listEntries($objTpl, $intView)
+    function listEntries($objTpl, $intView, $googleMapPlaceholder = null)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
@@ -547,7 +546,6 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                     $strDetailUrl = $this->getDetailUrlOfEntry($arrEntry);
                                 }
                             } catch (MediaDirectoryEntryException $e) {}
-
                             $objTpl->setVariable(array(
                                     $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
                                 $this->moduleLangVar.'_ENTRY_ID' =>  $arrEntry['entryId'],
@@ -778,6 +776,16 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 }
             case 4:
                 //Google Map
+
+                if (!isset($googleMapPlaceholder)) {
+                    $googleMapPlaceholder = $this->moduleLangVar.'_GOOGLE_MAP';
+                }
+
+                // abort in case the relevant placeholder is missing in the template
+                if (!$objTpl->placeholderExists($googleMapPlaceholder)) {
+                    break;
+                }
+
                 $objGoogleMap = new \googleMap();
                 $objGoogleMap->setMapId($this->moduleNameLC.'GoogleMap');
                 $objGoogleMap->setMapStyleClass('mapLarge');
@@ -865,7 +873,7 @@ JSCODE;
                 }
 
                 $objTpl->setVariable(array(
-                    $this->moduleLangVar.'_GOOGLE_MAP' => $objGoogleMap->getMap()
+                    $googleMapPlaceholder => $objGoogleMap->getMap()
                 ));
 
                 break;

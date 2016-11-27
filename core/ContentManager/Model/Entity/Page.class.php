@@ -1220,6 +1220,20 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         // Slug must be unique per language and level of a branch (of the node tree)
         $slugs = array();
         foreach ($this->getNode()->getParent()->getChildren() as $child) {
+            // if virtual lang dirs are deactivated
+            if (!\Cx\Core\Routing\Url::isVirtualLanguageDirsActive()) {
+                if ($this->getLang() == 0) {
+                    // check default language for the same slug
+                    $page = $child->getPage(\FWLanguage::getDefaultLangId());
+                } else {
+                    // check lang '0' for the same slug
+                    $page = $child->getPage(0);
+                }
+                if ($page && $page !== $this) {
+                    $slugs[] = strtolower($page->getSlug());
+                }
+            }
+            // check pages of the same language
             $page = $child->getPage($this->getLang());
             if ($page && $page !== $this) {
                 $slugs[] = strtolower($page->getSlug());
@@ -1931,8 +1945,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      *
      */
     public function getURL($protocolAndDomainWithPathOffset, $params) {
-        $path = $this->getPath($this);
-        return $protocolAndDomainWithPathOffset . '/' . \FWLanguage::getLanguageCodeById($this->lang) .$path . $params;
+        return \Cx\Core\Routing\Url::fromPage($this);
     }
 
     /**
