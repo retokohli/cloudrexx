@@ -401,6 +401,12 @@ class MediaDirectory extends MediaDirectoryLibrary
         $legacyLatestMode = false;
 
         if (!$showEntries) {
+            if ($this->_objTpl->blockExists($this->moduleNameLC.'EntryList')) {
+                $this->_objTpl->hideBlock($this->moduleNameLC.'EntryList');
+            }
+            if ($this->_objTpl->blockExists($this->moduleNameLC.'LatestList')) {
+                $this->_objTpl->hideBlock($this->moduleNameLC.'LatestList');
+            }
             return;
         }
 
@@ -452,11 +458,23 @@ class MediaDirectory extends MediaDirectoryLibrary
             $objEntries->listEntries($this->_objTpl, 2);
 
             //no entries found
-            if (!$objEntries || empty($objEntries->arrEntries)) {
+            if (    (!$objEntries || empty($objEntries->arrEntries))
+                 && $this->_objTpl->blockExists($this->moduleNameLC.'LatestList')
+            ) {
                 $this->_objTpl->hideBlock($this->moduleNameLC.'LatestList');
+                $this->_objTpl->clearVariables();
             }
 
-            $this->_objTpl->hideBlock($this->moduleNameLC.'EntryList');
+            // hide block used to display all entries
+            //
+            // note: in a previous version of cloudrexx, the template block
+            //       mediadirLatestList was wrapped around the template block
+            //       mediadirEntryList in the default template. Therefore,
+            //       if 'Legacy behavior' option is active, we can not hide
+            //       the template block mediadirEntryList
+            if (!$this->arrSettings['legacyBehavior'] && $this->_objTpl->blockExists($this->moduleNameLC.'EntryList')) {
+                $this->_objTpl->hideBlock($this->moduleNameLC.'EntryList');
+            }
         }
     }
 
