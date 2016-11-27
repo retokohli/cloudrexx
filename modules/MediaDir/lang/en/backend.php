@@ -341,3 +341,4 @@ $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR'] = 'Legacy behavior';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_INFO'] = 'This option activates legacy behavior which causes the following behavioral changes: %s';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_SEARCH_ON_CATEGORY_VIEW'] = 'The level and category dropdown selection will not be available on the expanded search functionality when directly accessing a category (through the page\'s area/CMD) or on the detail section of an entry';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_SEARCH_ALL_FORMS'] = 'All forms (including inactive ones) are taken into account when determining if the level and/or category dropdown selection on the expanded search functionality shall be available';
+$_ARRAYLANG['TXT_MEDIADIR_LEGACY_PAGE_TITLE'] = 'The page\'s title (placeholder TITLE & NAVTITLE) will not be set based on the selected category or level';
