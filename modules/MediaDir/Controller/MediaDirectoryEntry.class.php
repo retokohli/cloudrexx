@@ -203,7 +203,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         }
 
         if(empty($this->strSearchTerm)) {
-            $strWhereFirstInputfield = "AND (rel_inputfield.`form_id` = entry.`form_id`) AND (rel_inputfield.`field_id` = (".$this->getQueryToFindFirstInputFieldId().")) AND (rel_inputfield.`lang_id` = '".$_LANGID."')";
+            $strWhereFirstInputfield = "AND (rel_inputfield.`form_id` = entry.`form_id`) AND (rel_inputfield.`field_id` = (".$this->getQueryToFindPrimaryInputFieldId().")) AND (rel_inputfield.`lang_id` = '".$_LANGID."')";
         } else {
             $strWhereTerm = "AND ((rel_inputfield.`value` LIKE '%".$this->strSearchTerm."%') OR (entry.`id` = '".$this->strSearchTerm."')) ";
             $strWhereFirstInputfield = '';
@@ -330,6 +330,66 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         }
 
         $this->setCurrentFetchedEntryDataObject($this);
+    }
+
+    public function findOneBySlug($slug) {
+        return $this->findOneByName($this->getNameFromSlug($slug));
+    }
+
+    public function findOneByName($name, $formId = null, $catId = null, $levelId = null, $autoload = false) {
+		$strWhereLevel = '';
+		$strFromLevel = '';
+		$strWhereLangId = '';
+		$strWhereFormId = '';
+		$strFromCategory = '';
+		$strWhereCategory = '';
+
+        if($formId) {
+            $strWhereFormId = "AND (entry.`form_id` = ".$formId.") ";
+        }
+
+        if($levelId) {
+            $strWhereLevel = "AND ((level.`level_id` = ".$levelId.") AND (level.`entry_id` = entry.`id`)) ";
+            $strFromLevel = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS level";
+        }
+
+        if($catId) {
+        	$strWhereCategory = "AND ((category.`category_id` = ".$catId.") AND (category.`entry_id` = entry.`id`)) ";
+        	$strFromCategory = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS category";
+        }
+
+        if (!$this->arrSettings['settingsShowEntriesInAllLang']) {
+            $strWhereLangId = "AND (entry.`lang_id` = ".FRONTEND_LANG_ID.") ";
+        }
+
+        $query = "
+            SELECT DISTINCT entry.`id` AS `id`
+            FROM
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_entries AS entry
+                INNER JOIN ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield ON rel_inputfield.`entry_id` = entry.`id`
+                INNER JOIN ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS inputfield ON inputfield.`id` = rel_inputfield.`field_id`
+                # rel_inputfield.`lang_id`
+                ".$strFromCategory."
+                ".$strFromLevel."
+            WHERE
+                    entry.`active` = 1
+                AND entry.`confirmed` = 1
+                AND inputfield.`context_type` = 'title'
+                AND (entry.`duration_type` = 1 OR (entry.`duration_type` = 2 AND (entry.`duration_start` < '" . time() . "' AND entry.`duration_end` > '" . time() . "')))
+                AND rel_inputfield.`value` = '".contrexx_raw2db($name)."'
+                ".$strWhereCategory."
+                ".$strWhereLevel."
+                ".$strWhereLangId."
+                ".$strWhereFormId."
+            LIMIT 1
+        ";
+
+        $objResult = $this->cx->getDb()->getAdoDb()->Execute($query);
+        if (!$objResult || $objResult->EOF) {
+            return 0;
+        }
+
+        return $objResult->fields['id'];
     }
 
     /**
@@ -482,28 +542,18 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
                             $strDetailUrl = '#';
                             try {
-                                $detailUrl = $this->getDetailUrlOfEntry($arrEntry);
                                 if ($arrEntry['entryReadyToConfirm'] == 1 || $arrEntry['entryConfirmed'] == 1) {
-                                    $params = array();
-                                    if ($this->intLevelId) {
-                                        $params['lid'] = $this->intLevelId;
-                                    }
-                                    if ($this->intCatId) {
-                                        $params['cid'] = $this->intCatId;
-                                    }
-                                    $detailUrl->setParams($params);
+                                    $strDetailUrl = $this->getDetailUrlOfEntry($arrEntry);
                                 }
-                                $strDetailUrl = $detailUrl;
                             } catch (MediaDirectoryEntryException $e) {}
-
                             $objTpl->setVariable(array(
                                     $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
                                 $this->moduleLangVar.'_ENTRY_ID' =>  $arrEntry['entryId'],
                                 $this->moduleLangVar.'_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
                                 $this->moduleLangVar.'_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
                                 $this->moduleLangVar.'_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
-                                $this->moduleLangVar.'_ENTRY_CATEGORIES' =>  $this->getCategoriesLevels(1, $arrEntry['entryId'], $this->getFormDefinitionOfEntry($arrEntry['entryId'])['formCmd']),
-                                    $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId'], $this->getFormDefinitionOfEntry($arrEntry['entryId'])['formCmd']),
+                                $this->moduleLangVar.'_ENTRY_CATEGORIES' =>  $this->getCategoriesLevels(1, $arrEntry['entryId']),
+                                    $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId']),
                                 $this->moduleLangVar.'_ENTRY_HITS' =>  $arrEntry['entryHits'],
                                 $this->moduleLangVar.'_ENTRY_POPULAR_HITS' =>  $arrEntry['entryPopularHits'],
                                 $this->moduleLangVar.'_ENTRY_DETAIL_URL' => $strDetailUrl,
@@ -642,18 +692,9 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
                                 $strDetailUrl = '#';
                                 try {
-                                    $detailUrl = $this->getDetailUrlOfEntry($arrEntry);
                                     if ($arrEntry['entryReadyToConfirm'] == 1 || $arrEntry['entryConfirmed'] == 1) {
-                                        $params = array();
-                                        if ($this->intLevelId) {
-                                            $params['lid'] = $this->intLevelId;
-                                        }
-                                        if ($this->intCatId) {
-                                            $params['cid'] = $this->intCatId;
-                                        }
-                                        $detailUrl->setParams($params);
+                                        $strDetailUrl = $this->getDetailUrlOfEntry($arrEntry);
                                     }
-                                    $strDetailUrl = $detailUrl;
                                 } catch (MediaDirectoryEntryException $e) {}
 
                                 $objTpl->setVariable(array(
@@ -663,8 +704,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                     $this->moduleLangVar.'_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
                                     $this->moduleLangVar.'_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
                                     $this->moduleLangVar.'_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
-                                    $this->moduleLangVar.'_ENTRY_CATEGORIES' =>  $this->getCategoriesLevels(1, $arrEntry['entryId'], $this->getFormDefinitionOfEntry($arrEntry['entryId'])['formCmd']),
-                                    $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId'], $this->getFormDefinitionOfEntry($arrEntry['entryId'])['formCmd']),
+                                    $this->moduleLangVar.'_ENTRY_CATEGORIES' =>  $this->getCategoriesLevels(1, $arrEntry['entryId']),
+                                    $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId']),
                                     $this->moduleLangVar.'_ENTRY_HITS' =>  $arrEntry['entryHits'],
                                     $this->moduleLangVar.'_ENTRY_POPULAR_HITS' =>  $arrEntry['entryPopularHits'],
                                     $this->moduleLangVar.'_ENTRY_DETAIL_URL' => $strDetailUrl,
@@ -913,6 +954,11 @@ JSCODE;
      */
     public function getDetailUrlOfEntry($arrEntry, $fallbackToOverview = false) {
         static $arrIdsOfFormSpecificEntries = array();
+
+        // create human readable url if option has been enabled to do so
+        if ($this->arrSettings['usePrettyUrls']) {
+            return $this->getAutoSlugPath($arrEntry, $this->intCatId, $this->intLevelId);
+        }
 
         $detailCmd = 'detail';
         $formId = $arrEntry['entryFormId'];
@@ -1591,25 +1637,29 @@ JSCODE;
     }
 
 
-    function getCategoriesLevels($intType, $intEntryId=null, $cmdName='')
+    function getCategoriesLevels($intType, $intEntryId=null)
     {
         if ($intType == 1) {//categories
             $objEntryCategoriesLevels = $this->getCategories($intEntryId);
-            $paramName = 'cid';
         } else {//levels
             $objEntryCategoriesLevels = $this->getLevels($intEntryId);
-            $paramName = 'lid';
         }
-
-        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $cmdName, FRONTEND_LANG_ID);
 
         if ($objEntryCategoriesLevels !== false) {
             $list = '<ul>';
             while (!$objEntryCategoriesLevels->EOF) {
-                $paramValue = intval($objEntryCategoriesLevels->fields['elm_id']);
-                $url = $page ? \Cx\Core\Routing\URL::fromPage($page, array($paramName => $paramValue)) : '';
+                $id = intval($objEntryCategoriesLevels->fields['elm_id']);
                 $name = htmlspecialchars($objEntryCategoriesLevels->fields['elm_name'], ENT_QUOTES, CONTREXX_CHARSET);
+
+                $url = null;
+                if ($intType == 1) {
+                    //categories
+                    $url = $this->getAutoSlugPath(null, $id);
+                } else {
+                    //levels
+                    $url = $this->getAutoSlugPath(null, null, $id);
+                }
+
                 $list .= '<li>';
                 $list .= !empty($url) ? '<a href="'.$url.'">'.$name.'</a>' : $name;
                 $list .= '</li>';
