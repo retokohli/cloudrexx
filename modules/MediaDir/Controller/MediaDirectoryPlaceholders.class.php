@@ -63,7 +63,7 @@ class MediaDirectoryPlaceholders extends MediaDirectoryLibrary
 
         if($this->arrSettings['settingsShowLevels'] == 1) {
             $objLevels = new MediaDirectoryLevel(null, null, 0, $this->moduleName);
-	        $intLevelId = isset($_GET['lid']) ? intval($_GET['lid']) : null;
+            $intLevelId = isset($_GET['lid']) ? intval($_GET['lid']) : null;
 
             $this->strPlaceholder = $objLevels->listLevels($this->_objTpl, 6, $intLevelId);
         } else {
@@ -80,9 +80,12 @@ class MediaDirectoryPlaceholders extends MediaDirectoryLibrary
     {
         $this->strPlaceholder = null;
 
-        $intLimitEnd = ($this->arrSettings['showLatestEntriesInWebdesignTmpl'] == 1)
-                        ? intval($this->arrSettings['settingsLatestNumHeadlines'])
-                        : null;
+        //If the settings option 'List latest entries in webdesign template' is deactivated
+        //then do not parse the latest entries
+        if (!$this->arrSettings['showLatestEntriesInWebdesignTmpl']) {
+            return;
+        }
+        $intLimitEnd = intval($this->arrSettings['settingsLatestNumHeadlines']);
 
         $objEntries = new MediaDirectoryEntry($this->moduleName);
         $objEntries->getEntries(null,null,null,null,true,null,1,null,$intLimitEnd);
@@ -93,6 +96,7 @@ class MediaDirectoryPlaceholders extends MediaDirectoryLibrary
             } catch (MediaDirectoryEntryException $e) {
                 $strDetailUrl = '#';
             }
+
             $this->strPlaceholder .= '<li><a href="'.$strDetailUrl.'">'.$arrEntry['entryFields'][0].'</a></li>';
         }
 
