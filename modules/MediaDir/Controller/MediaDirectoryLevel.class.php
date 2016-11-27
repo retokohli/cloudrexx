@@ -78,7 +78,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
     function getLevels($intLevelId=null, $intParentId=null)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID, $objInit;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $arrLevels = array();
 
@@ -95,10 +95,12 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
             $whereLevelId = null;
         }
 
-        if($objInit->mode == 'frontend') {
+        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             $whereActive = "AND (level.active='1') ";
+            $langId = FRONTEND_LANG_ID;
         } else {
             $whereActive = '';
+            $langId = LANG_ID;
         }
 
         switch($this->arrSettings['settingsLevelOrder']) {
@@ -132,13 +134,13 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 ($whereLevelId level_names.level_id=level.id)
                 $whereParentId
                 $whereActive
-                AND (level_names.lang_id='".$_LANGID."')
+                AND (level_names.lang_id='".$langId."')
             ORDER BY
                 ".$sortOrder."
         ");
 
         //fetch entry counts if needed
-        $weAreCountingEntries = ($this->arrSettings['settingsCountEntries'] == 1 || $objInit->mode == 'backend');
+        $weAreCountingEntries = ($this->arrSettings['settingsCountEntries'] == 1 || $this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND);
         $arrEntryCounts = array();
         if($weAreCountingEntries) {
             $query = "
@@ -159,9 +161,9 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 AND
                     rel_inputfield.`form_id` = `entry`.`form_id`
                 AND
-                    rel_inputfield.`field_id` = (".$this->getQueryToFindFirstInputFieldId().")
+                    rel_inputfield.`field_id` = (".$this->getQueryToFindPrimaryInputFieldId().")
                 AND
-                    (rel_inputfield.`lang_id` = '".$_LANGID."')
+                    (rel_inputfield.`lang_id` = '".$langId."')
                 AND
                     ((`entry`.`duration_type`=2 AND `entry`.`duration_start` <= ".time()." AND `entry`.`duration_end` >= ".time().") OR (`entry`.`duration_type`=1))
 
@@ -232,6 +234,19 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
         return $arrLevels;
     }
 
+    public function findOneBySlug($slug) {
+        return $this->findOneByName($this->getNameFromSlug($slug));
+    }
+
+    public function findOneByName($name) {
+        $arrLevels = $this->getLevelData();
+        foreach ($arrLevels as $arrLevel) {
+            if ($arrLevel['levelName'][0] == $name) {
+                return $arrLevel['levelId'];
+            }
+        }
+    }
+
     function listLevels($objTpl, $intView, $intLevelId=null, $arrParentIds=null, $intEntryId=null, $arrExistingBlocks=null, $strClass=null)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
@@ -246,6 +261,9 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
             }
             $arrLevels = $arrLevelChildren;
         }
+
+        $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+
         switch ($intView) {
             case 1:
                 //Backend View
@@ -315,6 +333,11 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     $strFirstIndexHeader = null;
                 }
 
+                $categoryId = null;
+                if (isset($requestParams['cid'])) {
+                    $categoryId = intval($requestParams['clid']);
+                }
+
                 foreach ($arrLevels as $key => $arrLevel) {
                     if($this->arrSettings['settingsLevelOrder'] == 2) {
                         $strIndexHeader = strtoupper(substr($arrLevel['levelName'][0],0,1));
@@ -349,7 +372,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     $objTpl->setVariable(array(
                         $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrLevel['levelId'],
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrLevel['levelName'][0]),
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => $strIndexHeaderTag.'<a href="index.php?section='.$this->moduleName.$strLevelCmd.'&amp;lid='.$arrLevel['levelId'].'">'.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</a>',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => $strIndexHeaderTag.'<a href="'.$this->getAutoSlugPath(null, $categoryId, $arrLevel['levelId']).'">'.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</a>',
                         $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrLevel['levelDescription'][0],
                         $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrLevel['levelPicture'].'" border="0" alt="'.contrexx_raw2xhtml($arrLevel['levelName'][0]).'" />',
                         $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevel['levelPicture'],
@@ -459,7 +482,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $objTpl->setVariable(array(
                     $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrLevels[$intLevelId]['levelId'],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]),
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => '<a href="index.php?section='.$this->moduleName.'&amp;cid='.$arrLevels[$intCategoryId]['levelId'].'">'.contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]).'</a>',
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => '<a href="'.$this->getAutoSlugPath(null, $arrLevels[$intCategoryId]['levelId']).'">'.contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]).'</a>',
                     $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrLevels[$intLevelId]['levelDescription'][0],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$thumbImage.'" border="0" alt="'.contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]).'" />',
                     $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevels[$intLevelId]['levelPicture'],
@@ -490,13 +513,22 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 break;
             case 6:
                 //Frontend Tree Placeholder
+
+                $categoryId = null;
+                if (isset($requestParams['cid'])) {
+                    $categoryId = intval($requestParams['clid']);
+                }
+                if (isset($requestParams['lid'])) {
+                    $levelId = intval($requestParams['lid']);
+                }
+
                 foreach ($arrLevels as $key => $arrLevel) {
                     $this->arrExpandedLevelIds = array();
                     $bolExpandLevel = $this->getExpandedLevels($intLevelId, array($arrLevel));
                     $strLinkClass = $bolExpandLevel ? 'active' : 'inactive';
                     $strListClass = 'level_'.intval(count($arrParentIds)+1);
 
-                    $this->strNavigationPlaceholder .= '<li class="'.$strListClass.'"><a href="index.php?section='.$this->moduleName.'&amp;lid='.$arrLevel['levelId'].'" class="'.$strLinkClass.'">'.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</a></li>';
+                    $this->strNavigationPlaceholder .= '<li class="'.$strListClass.'"><a href="'.$this->getAutoSlugPath(null, $categoryId, $arrLevel['levelId']).'" class="'.$strLinkClass.'">'.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</a></li>';
 
                     $arrParentIds[] = $arrLevel['levelId'];
 
@@ -510,8 +542,11 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     if($arrLevel['levelShowCategories'] == 1){
                         if($bolExpandLevel) {
                             $objCategories = new MediaDirectoryCategory(null, null, 0, $this->moduleName);
-                            $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : null;
-                            if($_GET['lid'] == $arrLevel['levelId']) {
+	                        $intCategoryId = null;
+                            if (isset($requestParams['cid'])) {
+                                $intCategoryId = intval($requestParams['clid']);
+                            }
+	                        if ($levelId == $arrLevel['levelId']) {
                                $this->strNavigationPlaceholder .= $objCategories->listCategories($this->_objTpl, 6, $intCategoryId, null, null, null, intval(count($arrParentIds)+1));
                             }
                         }

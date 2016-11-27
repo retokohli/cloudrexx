@@ -85,12 +85,18 @@ class MediaDirectory extends MediaDirectoryLibrary
         \JS::activate('shadowbox');
         \JS::activate('jquery');
 
+        $entryId = 0;
+        $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+        if (isset($requestParams['eid'])) {
+            $entryId = intval($requestParams['eid']);
+        }
+
         if($this->arrSettings['settingsAllowVotes']) {
             $objVoting = new MediaDirectoryVoting($this->moduleName);
             $this->setJavascript($objVoting->getVoteJavascript());
 
-            if(isset($_GET['vote']) && intval($_GET['eid']) != 0) {
-                $objVoting->saveVote(intval($_GET['eid']), intval($_GET['vote']));
+            if(isset($_GET['vote']) && $entryId != 0) {
+                $objVoting->saveVote($entryId, intval($_GET['vote']));
             }
         }
 
@@ -98,12 +104,12 @@ class MediaDirectory extends MediaDirectoryLibrary
             $objComment = new MediaDirectoryComment($this->moduleName);
             $this->setJavascript($objComment->getCommentJavascript());
             $comment = isset($_GET['comment']) ? $_GET['comment'] : '';
-            if($comment == 'add' && intval($_GET['eid']) != 0) {
-                $objComment->saveComment(intval($_GET['eid']), $_POST);
+            if($comment == 'add' && $entryId != 0) {
+                $objComment->saveComment($entryId, $_POST);
             }
 
-            if($comment == 'refresh' && intval($_GET['eid']) != 0) {
-                $objComment->refreshComments(intval($_GET['eid']), $_GET['pageSection'], $_GET['pageCmd']);
+            if($comment == 'refresh' && $entryId != 0) {
+                $objComment->refreshComments($entryId, $_GET['pageSection'], $_GET['pageCmd']);
             }
         }
 
@@ -201,6 +207,19 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         $intLimitStart = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
 
+        // load Default.html application template as fallback
+        if ($this->_objTpl->placeholderExists('APPLICATION_DATA')) {
+            $page = new \Cx\Core\ContentManager\Model\Entity\Page();
+            $page->setVirtual(true);
+            $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
+            $page->setModule('MediaDir');
+            //$page->setCmd('detail');
+            // load source code
+            $applicationTemplate = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
+            \LinkGenerator::parseTemplate($applicationTemplate);
+            $this->_objTpl->addBlock('APPLICATION_DATA', 'application_data', $applicationTemplate);
+        }
+
         //search existing category&level blocks
         $arrExistingBlocks = array();
 
@@ -215,6 +234,8 @@ class MediaDirectory extends MediaDirectoryLibrary
             $arrIds = explode("-", $_GET['cmd']);
         }
 
+        $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+
         if($this->arrSettings['settingsShowLevels'] == 1) {
             if(intval($arrIds[0]) != 0) {
                 $intLevelId = intval($arrIds[0]);
@@ -222,7 +243,9 @@ class MediaDirectory extends MediaDirectoryLibrary
                 $intLevelId = 0;
             }
 
-            $intLevelId = isset($_GET['lid']) ? intval($_GET['lid']) : $intLevelId;
+            if (isset($requestParams['lid'])) {
+                $intLevelId = intval($requestParams['lid']);
+            }
 
             if(!empty($arrIds[1])) {
                 $intCategoryCmd = $arrIds[1];
@@ -245,7 +268,9 @@ class MediaDirectory extends MediaDirectoryLibrary
             $intCategoryId = 0;
         }
 
-        $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : $intCategoryId;
+        if (isset($requestParams['cid'])) {
+            $intCategoryId = intval($requestParams['cid']);
+        }
 
         // show block {$this->moduleNameLC}Overview
         if (empty($intCategoryId) && empty($intLevelId) && $this->_objTpl->blockExists($this->moduleNameLC.'Overview')) {
@@ -591,9 +616,20 @@ class MediaDirectory extends MediaDirectoryLibrary
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         //get ids
-        $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : 0;
-        $intLevelId = isset($_GET['lid']) ? intval($_GET['lid']) : 0;
-        $intEntryId = isset($_GET['eid']) ? intval($_GET['eid']) : 0;
+        $intCategoryId = 0;
+        $intLevelId = 0;
+
+        $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+
+        if (isset($requestParams['cid'])) {
+            $intCategoryId = intval($requestParams['cid']);
+        }
+
+        if (isset($requestParams['lid'])) {
+            $intLevelId = intval($requestParams['lid']);
+        }
+
+        $intEntryId = intval($this->cx->getRequest()->getUrl()->getParamArray()['eid']);
 
         // load source code if cmd value is integer
         if ($this->_objTpl->placeholderExists('APPLICATION_DATA')) {
@@ -1183,8 +1219,13 @@ class MediaDirectory extends MediaDirectoryLibrary
             $strOverviewCmd = null;
         }
 
+        $arrEntry = null;
+        $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+        if (isset($requestParams['eid'])) {
+            $arrEntry = $this->getCurrentFetchedEntryDataObject();
+        }
 
-        $this->arrNavtree[] = '<a href="?section='.$this->moduleName.$strOverviewCmd.'">'.$_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'].'</a>';
+        $this->arrNavtree[] = '<a href="'.$this->getAutoSlugPath($arrEntry).'">'.$_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'].'</a>';
         krsort($this->arrNavtree);
 
         if(!empty($this->arrNavtree)) {
@@ -1214,15 +1255,14 @@ class MediaDirectory extends MediaDirectoryLibrary
     function getNavtreeCategories($intCategoryId)
     {
         $objCategory = new MediaDirectoryCategory($intCategoryId, null, 0, $this->moduleName);
-        $objCategory->arrCategories[$intCategoryId];
 
-        $strLevelId = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
-        if(isset($_GET['cmd'])) {
-            $strCategoryCmd = '&amp;cmd='.$_GET['cmd'];
-        } else {
-            $strCategoryCmd = null;
+        $levelId = null;
+        $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+        if (isset($requestParams['lid'])) {
+            $levelId = intval($requestParams['lid']);
         }
-        $this->arrNavtree[] = '<a href="?section='.$this->moduleName.$strCategoryCmd.$strLevelId.'&amp;cid='.$objCategory->arrCategories[$intCategoryId]['catId'].'">'.contrexx_raw2xhtml($objCategory->arrCategories[$intCategoryId]['catName'][0]).'</a>';
+
+        $this->arrNavtree[] = '<a href="'.$this->getAutoSlugPath(null, $intCategoryId, $levelId).'">'.contrexx_raw2xhtml($objCategory->arrCategories[$intCategoryId]['catName'][0]).'</a>';
 
         if($objCategory->arrCategories[$intCategoryId]['catParentId'] != 0) {
             $this->getNavtreeCategories($objCategory->arrCategories[$intCategoryId]['catParentId']);
@@ -1234,14 +1274,8 @@ class MediaDirectory extends MediaDirectoryLibrary
     function getNavtreeLevels($intLevelId)
     {
         $objLevel = new MediaDirectoryLevel($intLevelId, null, 0, $this->moduleName);
-        $objLevel->arrLevels[$intLevelId];
 
-        if(isset($_GET['cmd'])) {
-            $strLevelCmd = '&amp;cmd='.$_GET['cmd'];
-        } else {
-            $strLevelCmd = null;
-        }
-        $this->arrNavtree[] = '<a href="?section='.$this->moduleName.$strLevelCmd.'&amp;lid='.$objLevel->arrLevels[$intLevelId]['levelId'].'">'.contrexx_raw2xhtml($objLevel->arrLevels[$intLevelId]['levelName'][0]).'</a>';
+        $this->arrNavtree[] = '<a href="'.$this->getAutoSlugPath(null, null, $intLevelId).'">'.contrexx_raw2xhtml($objLevel->arrLevels[$intLevelId]['levelName'][0]).'</a>';
 
         if($objLevel->arrLevels[$intLevelId]['levelParentId'] != 0) {
             $this->getNavtreeLevels($objLevel->arrLevels[$intLevelId]['levelParentId']);
@@ -1265,4 +1299,3 @@ class MediaDirectory extends MediaDirectoryLibrary
         return $this->metaImage;
     }
 }
-?>
