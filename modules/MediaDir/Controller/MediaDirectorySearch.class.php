@@ -149,13 +149,6 @@ EOF;
                 $objEntry->getEntries($entryId);
                 $formDefinition = $objEntry->getFormDefinition();
                 $formId = $formDefinition['formId'];
-
-                if (($formDefinition['formUseLevel'] == 1) && ($this->arrSettings['levelSelectorExpSearch'][$formId] == 1)) {
-                    $bolShowLevelSelector = true;
-                }
-                if (($formDefinition['formUseCategory'] == 1) && ($this->arrSettings['categorySelectorExpSearch'][$formId] == 1)) {
-                    $bolShowCategorySelector = true;
-                }
             } elseif ($arrIds[0] != 'search' && $arrIds[0] != 'alphabetical'){
                 $objForms = new MediaDirectoryForm(null, $this->moduleName);
                 foreach ($objForms->arrForms as $id => $arrForm) {
