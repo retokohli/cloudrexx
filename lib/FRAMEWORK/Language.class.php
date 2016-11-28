@@ -455,7 +455,7 @@ class FWLanguage
      * @static
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    public static function getLocaleById($langId)
+    public static function getLocaleByFrontendId($langId)
     {
         if (array_key_exists($langId, self::$locales)) {
             return self::$locales[$langId];
@@ -480,7 +480,7 @@ class FWLanguage
      * @static
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    public static function getIdByLocale($locale)
+    public static function getFrontendIdByLocale($locale)
     {
         // TODO: Inefficient, and pointless FTTB (no locales!)
         $key = array_search($locale, self::$locales);
