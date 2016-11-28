@@ -1,43 +1,20 @@
 <?php
 /**
- * Cloudrexx
- *
- * @link      http://www.cloudrexx.com
- * @copyright Cloudrexx AG 2007-2015
- *
- * According to our dual licensing model, this program can be used either
- * under the terms of the GNU Affero General Public License, version 3,
- * or under a proprietary license.
- *
- * The texts of the GNU Affero General Public License with an additional
- * permission and of our proprietary license can be found at and
- * in the LICENSE file you have received along with this program.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * "Cloudrexx" is a registered trademark of Cloudrexx AG.
- * The licensing of the program under the AGPLv3 does not imply a
- * trademark license. Therefore any rights, title and interest in
- * our trademarks remain entirely with us.
- */
-/**
- * Specific BackendController for this Component. Use this to easily create a backend view
- * @copyright   Cloudrexx AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @package     cloudrexx
+ * @copyright   Comvation AG
+ * @link        http://www.comvation.com/
+ * @package     comvation
  * @subpackage  module_topics
  */
 
 namespace Cx\Modules\Topics\Controller;
 
 /**
- * Specific BackendController for this Component. Use this to easily create a backend view
- * @copyright   Cloudrexx AG
+ * Topics BackendController
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @package     cloudrexx
+ * @copyright   Comvation AG
+ * @link        http://www.comvation.com/
+ * @package     comvation
  * @subpackage  module_topics
  */
 class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController
@@ -81,7 +58,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     call_user_func(array($this, 'show' . $cmd[0]), $template, $id);
                     break;
                 }
-                $locale = \FWLanguage::getLocaleById(LANG_ID);
+                $locale = \FWLanguage::getLocaleByFrontendId(LANG_ID);
                 $this->cx->getDb()->getTranslationListener()
                     ->setTranslatableLocale($locale);
                 $view = new \Cx\Core\Html\Controller\ViewGenerator(
@@ -171,13 +148,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         ));
         $this->cx->getDb()->getTranslationListener()
             ->setTranslatableLocale(
-                \FWLanguage::getLocaleById(BACKEND_LANG_ID));
+                \FWLanguage::getLocaleByFrontendId(BACKEND_LANG_ID));
         $this->parseEntryCategories($template, $entry);
         // Parse localized properties (for each active locale)
         $active = true;
         foreach (\FWLanguage::getActiveFrontendLanguages() as $language) {
             $languageId = $language['id'];
-            $locale = \FWLanguage::getLocaleById($languageId);
+            $locale = \FWLanguage::getLocaleByFrontendId($languageId);
             if ($entry->getId()) {
                 $entry->setTranslatableLocale($locale);
                 $em->refresh($entry);
@@ -328,7 +305,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $frontendLanguages = self::getFrontendLanguagesOrderedForStoring();
         foreach ($frontendLanguages as $language) {
             $language_id = $language['id'];
-            $locale = \FWLanguage::getLocaleById($language_id);
+            $locale = \FWLanguage::getLocaleByFrontendId($language_id);
             // Skip this locale altogether if the name is empty.
             // The name is required in order to form the (non-null) slug!
             $name = $_POST['entry']['name'][$locale];
@@ -407,7 +384,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         // Parse non-localized properties in the current backend language
         $this->cx->getDb()->getTranslationListener()
             ->setTranslatableLocale(
-                \FWLanguage::getLocaleById(BACKEND_LANG_ID));
+                \FWLanguage::getLocaleByFrontendId(BACKEND_LANG_ID));
         $categoryOptions =
             '<option value="' . null . '">'
             . $_ARRAYLANG['TXT_MODULE_TOPICS_CATEGORY_PARENT_ROOT']
@@ -436,7 +413,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $active = true;
         foreach (\FWLanguage::getActiveFrontendLanguages() as $language) {
             $languageId = $language['id'];
-            $locale = \FWLanguage::getLocaleById($language['id']);
+            $locale = \FWLanguage::getLocaleByFrontendId($language['id']);
             if ($category->getId()) {
                 $category->setTranslatableLocale($locale);
                 $em->refresh($category);
@@ -583,7 +560,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $frontendLanguages = self::getFrontendLanguagesOrderedForStoring();
         foreach ($frontendLanguages as $language) {
             $language_id = $language['id'];
-            $locale = \FWLanguage::getLocaleById($language_id);
+            $locale = \FWLanguage::getLocaleByFrontendId($language_id);
             // Skip this locale altogether if the name is empty.
             // The name is required in order to form the (non-null) slug!
             $name = $_POST['category']['name'][$locale];

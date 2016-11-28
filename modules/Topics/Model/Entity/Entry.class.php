@@ -1,6 +1,10 @@
 <?php
 /**
  * @author      Reto Kohli <reto.kohli@comvation.com>
+ * @copyright   Comvation AG
+ * @link        http://www.comvation.com/
+ * @package     comvation
+ * @subpackage  module_topics
  */
 
 namespace Cx\Modules\Topics\Model\Entity;
@@ -8,6 +12,10 @@ namespace Cx\Modules\Topics\Model\Entity;
 /**
  * Cx\Modules\Topics\Model\Entity\Entry
  * @author      Reto Kohli <reto.kohli@comvation.com>
+ * @copyright   Comvation AG
+ * @link        http://www.comvation.com/
+ * @package     comvation
+ * @subpackage  module_topics
  */
 class Entry extends \Cx\Model\Base\EntityBase
 implements \Gedmo\Translatable\Translatable

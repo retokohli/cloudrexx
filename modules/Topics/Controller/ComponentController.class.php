@@ -115,7 +115,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $theme_folder = (isset($_REQUEST['theme_folder']) ?
                         $_REQUEST['theme_folder'] : null);
                 $parameters = new \Cx\Modules\Topics\Entity\FrontendParameter($this->cx);
-                $frontendLangId = \FWLanguage::getIdByLocale($parameters->getLocaleSystem());
+                $frontendLangId = \FWLanguage::getFrontendIdByLocale($parameters->getLocaleSystem());
                 // $_ARRAYLANG has not been initialized in API mode.
                 $init = \Env::get('init');
                 $init->getComponentSpecificLanguageData('Topics', true, $frontendLangId);
