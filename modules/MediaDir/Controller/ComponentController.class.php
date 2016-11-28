@@ -243,6 +243,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     }
                 }
 
+                if (!$formId) {
+                    $objMediaDirectoryEntry->getEntries(intval($entryId),null,null,null,null,null,1,null,1);
+                    $formDefinition = $objMediaDirectoryEntry->getFormDefinitionOfEntry($entryId);
+                    $formId = $formDefinition['formId'];
+                }
+
                 $detailPage = $objMediaDirectoryEntry->getApplicationPageByEntry($formId);
                 if (!$detailPage) {
                     return;
@@ -290,25 +296,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($levelId || $categoryId) {
             $this->setCanonicalPage($detailPage);
         }
-
-        /*if (empty($parts)) {
-            return;
-        }
-
-        $objMediaDirectoryEntry = new MediaDirectoryEntry($this->getName());
-        if (!$objMediaDirectoryEntry->arrSettings['usePrettyUrls']) {
-            return;
-        }
-
-        $cmd = $page->getCmd();
-        if ($cmd == 'detail' || substr($cmd,0,6) == 'detail') {
-            $entrySlug = array_pop($parts);
-        }
-
-        $entryId = $objMediaDirectoryEntry->findOneByName($entrySlug);
-        if ($entryId) {
-            $this->cx->getRequest()->getUrl()->setParam('eid', $entryId);
-        }*/
     }
 
     protected function setCanonicalPage($canonicalPage) {

@@ -99,7 +99,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
     function getEntries($intEntryId=null, $intLevelId=null, $intCatId=null, $strSearchTerm=null, $bolLatest=null, $bolUnconfirmed=null, $bolActive=null, $intLimitStart=null, $intLimitEnd='n', $intUserId=null, $bolPopular=null, $intCmdFormId=null, $bolReadyToConfirm=null, $intLimit=0, $intOffset=0)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID, $objInit;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;
         $this->intEntryId = intval($intEntryId);
         $this->intLevelId = intval($intLevelId);
         $this->intCatId = intval($intCatId);
@@ -126,6 +126,12 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         $strFromCategory = '';
         $strWhereCategory = '';
         $strOrder = "rel_inputfield.`value` ASC";
+
+        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            $langId = FRONTEND_LANG_ID;
+        } else {
+            $langId = LANG_ID;
+        }
 
         if(($strSearchTerm != $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM']) && !empty($strSearchTerm)) {
             $this->strSearchTerm = contrexx_addslashes($strSearchTerm);
@@ -203,7 +209,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         }
 
         if(empty($this->strSearchTerm)) {
-            $strWhereFirstInputfield = "AND (rel_inputfield.`form_id` = entry.`form_id`) AND (rel_inputfield.`field_id` = (".$this->getQueryToFindPrimaryInputFieldId().")) AND (rel_inputfield.`lang_id` = '".$_LANGID."')";
+            $strWhereFirstInputfield = "AND (rel_inputfield.`form_id` = entry.`form_id`) AND (rel_inputfield.`field_id` = (".$this->getQueryToFindPrimaryInputFieldId().")) AND (rel_inputfield.`lang_id` = '".$langId."')";
         } else {
             $strWhereTerm = "AND ((rel_inputfield.`value` LIKE '%".$this->strSearchTerm."%') OR (entry.`id` = '".$this->strSearchTerm."')) ";
             $strWhereFirstInputfield = '';
@@ -216,7 +222,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
         if($objInit->mode == 'frontend') {
             if(intval($this->arrSettings['settingsShowEntriesInAllLang']) == 0) {
-                $strWhereLangId = "AND (entry.`lang_id` = ".$_LANGID.") ";
+                $strWhereLangId = "AND (entry.`lang_id` = ".$langId.") ";
             }
         }
 
