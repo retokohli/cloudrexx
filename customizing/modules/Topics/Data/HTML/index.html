@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--This file created 13:12  30.01.97 by Claris Home Page version 1.0This file created 13:17  30.01.97 by Claris Home Page version 1.0This file created 13:20  30.01.97 by Claris Home Page version 1.0This file created 13:23  30.01.97 by Claris Home Page version 1.0This file created 13:38  30.01.97 by Claris Home Page version 1.0This file created 13:42  30.01.97 by Claris Home Page version 1.0This file created 14:33  30.01.97 by Claris Home Page version 1.0This file created 15:14  30.01.97 by Claris Home Page version 1.0This file created 09:16  03.03.97 by Claris Home Page version 1.0-->
+<!--  left=10, top=10,     -->
+<HTML>
+
+<HEAD>
+  <meta http-equiv="content-type" content="text/html;charset=ISO-8859-1">
+  <TITLE>
+  Lexikon - Startseite
+  </TITLE>
+
+  <script language="JavaScript">
+  //************************************* Globale Variablen *****************
+  var iSprache = 0
+
+  //************************************* Funktionen *****************
+  function StartCBT(Sp)
+  {
+    document.parameter.sprache.value = Sp
+    var newCBT = window.open("top_d.htm",
+                "Lexikon",
+                "toolbar=yes, location=no, directories=no, resizable=yes, " +
+                "menubar=no, status=no, scrollbars=no, " +
+                "left=15, top=12, height=650, width=800")
+  }
+
+
+  function ladeLexikon(nr)
+  {
+    switch (navigator.appName)
+    {
+      case "Microsoft Internet Explorer":
+        if (nr == 1)    location.href = "topi_d.htm";
+        else if (nr == 2)  location.href = "topi_f.htm";
+        else if (nr == 3)  location.href = "topi_i.htm";
+        else if (nr == 4)  location.href = "topi_e.htm";
+        break;
+       default:
+        if (nr == 1)    location.href = "topn_d.htm";
+        else if (nr == 2)  location.href = "topn_f.htm";
+        else if (nr == 3)  location.href = "topn_i.htm";
+        else if (nr == 4)  location.href = "topn_e.htm";
+        break;
+    }
+  }
+
+  </script>
+</HEAD>
+
+
+<BODY BGCOLOR="#c0c0c0">
+
+<form name="parameter">
+  <input type="Hidden" name="sprache" value=0>
+</form>
+<script language="JavaScript">
+window.name = "main"
+</script>
+
+
+  <P ALIGN=center><B><FONT SIZE=6><br>
+  Startseite VBV-Lexikon (HTML-Version)
+  <br><br></FONT></B></P>
+
+  <P ALIGN=center>
+  <FONT SIZE=4> <BR>
+  <A href='javascript:ladeLexikon(1)'>VBV-Versicherungslexikon in deutsch starten</A> <BR><BR>
+  <A href='javascript:ladeLexikon(2)'>Lancement du AVA-Glossaire d'assurance en français</A> <BR><BR>
+  <A href='javascript:ladeLexikon(3)'>Lanciamento del AVA-Glossario d'assicurazione in italiano</A> <BR><BR>
+  <A href='javascript:ladeLexikon(4)'>Start VBV/AVA-Insurance glossary in english</A> <BR>
+  </P>
+
+  <script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+    var pageTracker = _gat._getTracker("UA-5944110-1");
+    pageTracker._trackPageview();
+  </script>
+
+
+</BODY>
+
+</HTML>

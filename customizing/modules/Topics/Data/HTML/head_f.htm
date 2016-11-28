@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<title></title>
+	<meta http-equiv="content-type" content="text/html;charset=ISO-8859-1">
+<head>
+<style>body{ font-family: Arial, sans-serif; } </style>
+</head>
+<body bgcolor="#FFFFFF">
+
+<form name="Sel">
+<TABLE width="100%">
+    <tr>
+	    <td align="center">
+			<font size=5><b>AFA-Glossaire d'assurance</b></font>
+		</td>
+	    <td align="right">
+			<img src="logo_f.gif" align="center">
+		</td>
+	</tr>
+</TABLE>
+
+<TABLE width="100%">
+    <tr>
+		<td>Lexique actuel</td>
+		<td>Notion</td>
+		<td>Interprétation</td>
+		<td>Programme</td>
+     </tr>
+    <tr>
+		<td>
+			<SELECT name="L" onChange="javascript:top.laden(this.name)">
+				<OPTION>Glossaire général</OPTION>
+				<OPTION>Assurances de personnes</OPTION>
+				<OPTION>Assurances choses</OPTION>
+				<OPTION>Assurances Responsabilité Civile</OPTION>
+				<OPTION>Assurances Véhicules à moteur</OPTION>
+				<OPTION>Fonds / Finance</OPTION>
+				<OPTION>Droit des assurances</OPTION>
+    		</SELECT>
+	 	 </td>
+		<td>
+			<SELECT name="B" onChange="javascript:top.laden(this.name)">
+				<OPTION>Allemand</OPTION>
+   				<OPTION selected>Français</OPTION>
+				<OPTION>Italien</OPTION>
+				<OPTION>Anglais</OPTION>
+			</SELECT>
+		 </td>
+		<td>
+			<SELECT name="E" onChange="javascript:top.laden(this.name)">
+				<OPTION>Allemand</OPTION>
+   				<OPTION selected>Français</OPTION>
+				<OPTION>Italien</OPTION>
+				<OPTION>Anglais</OPTION>
+			</SELECT>
+		 </td>
+		<td>
+			<SELECT name="P" onchange="javascript:top.laden(this.name)"
+							  onfocus="javascript:top.bSpPrClick = true">
+				<OPTION>Allemand</OPTION>
+   				<OPTION selected>Français</OPTION>
+				<OPTION>Italien</OPTION>
+				<OPTION>Anglais</OPTION>
+			</SELECT>
+		 </td>
+	</tr>
+</TABLE>
+</form>
+
+
+<SCRIPT language="JavaScript">
+	//--------------------------- Lexikon nachfuehren
+	Sel.L.selectedIndex = top.NrLex -1
+//	top.ladeBE("A")
+</script>
+
+</body>
+
+</html>

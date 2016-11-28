@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+<style>body{ font-family: Arial, sans-serif; } </style>
+</head>
+<body bgcolor="#FFFFFF">
+
+<form name="Sel">
+<TABLE width="100%">
+    <tr>
+	    <td align="center">
+			<font size=5><b>VBV/AVA-Insurance Glossary</b></font>
+		</td>
+	    <td align="right">
+			<img src="logo_e.gif" align="center">
+		</td>
+	</tr>
+</TABLE>
+
+<TABLE width="100%">
+    <tr>
+		<td>Current Dictionary</td>
+		<td>Definition</td>
+		<td>Explanation</td>
+		<td>Program</td>
+     </tr>
+    <tr>
+		<td>
+			<SELECT name="L" onChange="javascript:top.laden(this.name)">
+				<OPTION>Global glossary</OPTION>
+    			<OPTION>Insurances of persons</OPTION>
+    			<OPTION>Insurances of objects</OPTION>
+    			<OPTION>Third-party liability insurances</OPTION>
+    			<OPTION>insurances of motor vehicles</OPTION>
+				<OPTION>Fonds / Finance</OPTION>
+				<OPTION>Insurance law</OPTION>
+    		</SELECT>
+	 	 </td>
+		<td>
+			<SELECT name="B" onChange="javascript:top.laden(this.name)">
+				<OPTION>German</OPTION>
+   				<OPTION>French</OPTION>
+   				<OPTION>Italian</OPTION>
+				<OPTION selected>English</OPTION>
+			</SELECT>
+		 </td>
+		<td>
+			<SELECT name="E" onChange="javascript:top.laden(this.name)">
+				<OPTION>German</OPTION>
+   				<OPTION>French</OPTION>
+   				<OPTION>Italian</OPTION>
+				<OPTION selected>English</OPTION>
+			</SELECT>
+		 </td>
+		<td>
+			<SELECT name="P" onchange="javascript:top.laden(this.name)"
+							  onfocus="javascript:top.bSpPrClick = true">
+				<OPTION>German</OPTION>
+   				<OPTION>French</OPTION>
+   				<OPTION>Italian</OPTION>
+				<OPTION selected>English</OPTION>
+			</SELECT>
+		 </td>
+	</tr>
+</TABLE>
+</form>
+
+
+<SCRIPT language="JavaScript">
+	//--------------------------- Lexikon nachfuehren
+	Sel.L.selectedIndex = top.NrLex -1
+//	top.ladeBE("A")
+</script>
+
+</body>
+
+</html>
