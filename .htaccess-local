@@ -1,0 +1,83 @@
+# <contrexx>
+#  <core_routing>
+    RewriteEngine On
+
+    # Set the path, relative from the document root, to Contrexx.
+    # Technical note: This is ASCMS_PATH_OFFSET
+    # I.e.: /
+    RewriteBase /
+
+    # Denied the access to the files from the downloads (DAM) component
+    # Exceptions are the thumbnail files
+    RewriteCond %{REQUEST_URI} images\/Downloads\/
+    RewriteCond %{REQUEST_URI} !\.thumb$
+    RewriteCond %{REQUEST_URI} !\.thumb_thumbnail\.[^\/]*$
+    RewriteCond %{REQUEST_URI} !\.thumb_medium\.[^\/]*$
+    RewriteCond %{REQUEST_URI} !\.thumb_large\.[^\/]*$
+    RewriteRule . - [F]
+
+    # Strip virtual language directory for MEDIA RESSOURCES, CONTENT DATA and THEME
+    # IMPORTANT: When running Contrexx in a subdirectory (relativ to the webserver's DocumentRoot)
+    #            then you'll have to comment-out the following ruleset
+# Customizing:
+# The original "\w+" matches arbitrary names, in perticular  the
+# "customizing" folder, thus making access to customized files impossible.
+# Limiting this two two letters avoids this problem in known cases.
+    RewriteCond %{REQUEST_URI} ^/\w\w/(core|core_modules|lib|modules|feed|media|images|themes)/
+    RewriteRule ^\w\w\/(.*)$ /$1 [L]
+
+    # Deny direct access to directories containing sensitive data
+    RewriteCond %{ENV:REDIRECT_END} !1
+    RewriteCond %{REQUEST_URI} ^/(config|tmp(?!/public)|websites|core\/.*/Data|core_modules\/.*\/Data|modules\/.*\/Data)/
+    RewriteRule . - [F]
+
+    # Deny access to debug log
+    RewriteCond %{REQUEST_URI} ^/dbg\.log
+    RewriteRule . - [F]
+
+#    # MultiSite: Map requests to MEDIA RESOURCES of the Code Base of a Website
+#    RewriteCond %{ENV:REDIRECT_END} !1
+#    RewriteCond %{REQUEST_URI} ^/(core|core_modules|lib|modules)/
+#    RewriteRule (.*) ${websiteDomainCodeBaseMap:%{HTTP_HOST}|}/$1 [L,QSA,E=END:1]
+#
+#    # MultiSite: Map requests to CONTENT DATA of a Website
+#    RewriteCond %{ENV:REDIRECT_END} !1
+#    RewriteCond %{REQUEST_URI} ^/(feed\/|media\/|images\/|tmp\/public\/|robots\.txt|sitemap_\w+\.xml)
+#    RewriteRule (.*) ${websiteDomainContentMap:%{HTTP_HOST}|}/$1 [L,QSA,E=END:1]
+#
+#    # MultiSite: Try to map the request of a webdesign template file to the
+#    #            website's data repository.
+#    #            Replace '%PATH_DOCUMENT_ROOT%' by the absolute path to the
+#    #            document root of the Contrexx installation. I.e.: /var/www
+#    RewriteCond %{ENV:REDIRECT_END} !1
+#    RewriteCond %{REQUEST_URI} ^/(themes)/
+#    RewriteCond %PATH_DOCUMENT_ROOT%${websiteDomainContentMap:%{HTTP_HOST}}%{REQUEST_URI} -f
+#    RewriteRule (.*) ${websiteDomainContentMap:%{HTTP_HOST}|}/$1 [L,QSA,E=END:1]
+#
+#    # MultiSite: Try to map the request of a the webdesign template file to
+#    #            the website's Code Base.
+#    #            Replace '%PATH_DOCUMENT_ROOT%' by the absolute path to the
+#    #            document root of the Contrexx installation. I.e.: /var/www
+#    RewriteCond %{ENV:REDIRECT_END} !1
+#    RewriteCond %{REQUEST_URI} ^/(themes)/
+#    RewriteCond %PATH_DOCUMENT_ROOT%${websiteDomainCodeBaseMap:%{HTTP_HOST}}%{REQUEST_URI} -f
+#    RewriteRule (.*) ${websiteDomainCodeBaseMap:%{HTTP_HOST}|}/$1 [L,QSA,E=END:1]
+
+    # Resolve language specific sitemap.xml
+    RewriteCond %{ENV:REDIRECT_END} !1
+    RewriteRule ^(\w+)\/sitemap.xml$ ${websiteDomainContentMap:%{HTTP_HOST}|}/sitemap_$1.xml [L,NC,E=END:1]
+
+    # Allow directory index files
+    RewriteCond %{REQUEST_FILENAME}/index.php -f
+    RewriteRule   .  %{REQUEST_URI}/index.php [L,QSA]
+
+    # Redirect all requests to non-existing files to Contrexx,
+    # except for media resources
+    RewriteCond   %{REQUEST_FILENAME}  !-f
+    RewriteCond   %{REQUEST_URI} !.*\.(gif|jpg|png|bmp|js|css|woff|ttf|svg)$
+    RewriteRule   .  index.php?__cap=%{REQUEST_URI} [L,QSA]
+
+    # Add captured request to index files
+    RewriteRule ^index.php index.php?__cap=%{REQUEST_URI} [L,QSA]
+#  </core_routing>
+# </contrexx>
