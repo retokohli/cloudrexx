@@ -214,6 +214,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function resolve($parts, $page) {
         if (empty($parts)) {
+            $this->setCanonicalPage($page);
             return;
         }
 
@@ -299,7 +300,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     protected function setCanonicalPage($canonicalPage) {
-        $canonicalUrl = \Cx\Core\Routing\Url::fromPage($canonicalPage, $this->cx->getRequest()->getUrl()->getParamArray());
+        $canonicalUrlArguments = array('eid', 'cid', 'lid', 'preview', 'pos');
+
+        // filter out all non-relevant URL arguments
+        $params = array_filter(
+            $this->cx->getRequest()->getUrl()->getParamArray(),
+            function($key) {return in_array($key, $canonicalUrlArguments);},
+            \ARRAY_FILTER_USE_KEY
+        );
+
+        $canonicalUrl = \Cx\Core\Routing\Url::fromPage($canonicalPage, $params);
         header('Link: <' . $canonicalUrl->toString() . '>; rel="canonical"');
     }
 }
