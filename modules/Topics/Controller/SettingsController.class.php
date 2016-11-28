@@ -57,7 +57,7 @@ class SettingsController extends \Cx\Core\Core\Model\Entity\Controller
 // and substitute sensible default values when unset.
 // They should assume arguments roughly corresponding to the following:
         \Cx\Core\Setting\Controller\Setting::show(
-            $template, ASCMS_BACKEND_PATH.'/Topics/Settings', '',
+            $template, 'index.php?cmd=Topics&amp;act=Settings', '',
             $_ARRAYLANG['TXT_MODULE_TOPICS_SETTINGS_CONFIG'],
             'TXT_MODULE_TOPICS_SETTINGS_CONFIG_');
         $cmd = null; // Unused

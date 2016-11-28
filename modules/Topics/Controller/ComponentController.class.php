@@ -21,8 +21,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getControllerClasses()
     {
         return array(
-            'Frontend', 'Backend', 'Settings',
-            // Disable/hide custom "Import" for production!
+            'Frontend', 'Backend', 'Json', 'Settings',
+            // Enable custom "Import" when available and required.
             //'Import',
         );
     }
@@ -42,7 +42,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return array List of ComponentController classes
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    public function getControllersAccessableByJson() {
+    public function getControllersAccessableByJson()
+    {
         return array('JsonController');
     }
 
@@ -54,7 +55,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return  string
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    public function getCommandDescription($command, $short = false) {
+    public function getCommandDescription($command, $short = false)
+    {
         $short = null; // Ignored
         switch ($command) {
             case 'TopicsEntries':
@@ -66,7 +68,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Register the mediabrowser.load event listener
      */
-    public function registerEventListeners() {
+    public function registerEventListeners()
+    {
         $this->cx->getEvents()->addEventListener(
             'mediabrowser.load',
             new \Cx\Modules\Topics\Model\Event\TopicsEventListener($this->cx)
@@ -111,7 +114,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     ? $_REQUEST['href'] : '');
                 $theme_folder = (isset($_REQUEST['theme_folder']) ?
                         $_REQUEST['theme_folder'] : null);
-                $parameters = new FrontendParameterController($this->cx);
+                $parameters = new \Cx\Modules\Topics\Entity\FrontendParameter($this->cx);
                 $frontendLangId = \FWLanguage::getIdByLocale($parameters->getLocaleSystem());
                 // $_ARRAYLANG has not been initialized in API mode.
                 $init = \Env::get('init');

@@ -50,7 +50,7 @@ extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController
     public function parsePage(\Cx\Core\Html\Sigma $template, $cmd)
     {
         \JS::activateByVersion('jquery', '2.0.3');
-        $parameters = new \Cx\Modules\Topics\Controller\FrontendParameterController($this->cx);
+        $parameters = new \Cx\Modules\Topics\Entity\FrontendParameter($this->cx);
         if ($parameters->isUrlInconsistent()) {
             $url_page = $parameters->getUrlPage();
             \Cx\Core\Csrf\Controller\Csrf::redirect($url_page);
@@ -74,12 +74,12 @@ extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController
      * cxjs variables.
      * @global  array                   $_ARRAYLANG
      * @param   \Cx\Core\Html\Sigma     $template
-     * @param   \Cx\Modules\Topics\Controller\FrontendParameterController
+     * @param   \Cx\Modules\Topics\Entity\FrontendParameter
      *                                  $parameters
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     public static function parseGlobals(\Cx\Core\Html\Sigma $template,
-        \Cx\Modules\Topics\Controller\FrontendParameterController $parameters)
+        \Cx\Modules\Topics\Entity\FrontendParameter $parameters)
     {
         global $_ARRAYLANG;
         $template->setGlobalVariable($_ARRAYLANG + array(
@@ -107,12 +107,12 @@ extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController
      * Note that this MUST be public, as it is called by the API
      * via the ComponentController.
      * @param   \Cx\Core\Html\Sigma     $template
-     * @param   \Cx\Modules\Topics\Controller\FrontendParameterController
+     * @param   \Cx\Modules\Topics\Entity\FrontendParameter
      *                                  $parameters
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     public function showEntries(\Cx\Core\Html\Sigma $template,
-        \Cx\Modules\Topics\Controller\FrontendParameterController $parameters)
+        \Cx\Modules\Topics\Entity\FrontendParameter $parameters)
     {
         $em = $this->cx->getDb()->getEntityManager();
         // Problems with proper sorting in current locale:
@@ -171,13 +171,13 @@ extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController
      * and respective anchors.
      * @param   \Cx\Core\Html\Sigma     $template
      * @param   array                   $entries    The Entries in list locale
-     * @param   \Cx\Modules\Topics\Controller\FrontendParameterController
+     * @param   \Cx\Modules\Topics\Entity\FrontendParameter
      *                                  $parameters
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected function parseEntries(\Cx\Core\Html\Sigma $template,
         array $entries,
-        \Cx\Modules\Topics\Controller\FrontendParameterController $parameters)
+        \Cx\Modules\Topics\Entity\FrontendParameter $parameters)
     {
         $letters = array();
         $letter_prev = null;
@@ -252,12 +252,12 @@ extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController
      * via the ComponentController.
      * @global  array                   $_ARRAYLANG
      * @param   \Cx\Core\Html\Sigma     $template
-     * @param   \Cx\Modules\Topics\Controller\FrontendParameterController
+     * @param   \Cx\Modules\Topics\Entity\FrontendParameter
      *                                  $parameters
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     public function showEntry(\Cx\Core\Html\Sigma $template,
-        \Cx\Modules\Topics\Controller\FrontendParameterController $parameters)
+        \Cx\Modules\Topics\Entity\FrontendParameter $parameters)
     {
         if (!$parameters->getEntry()) {
             global $_ARRAYLANG;
@@ -315,12 +315,12 @@ extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController
      * this Component, namely "de", "fr", "it", and "en".
      * @global  array   $_ARRAYLANG
      * @param   \Cx\Core\Html\Sigma     $template
-     * @param   \Cx\Modules\Topics\Controller\FrontendParameterController
+     * @param   \Cx\Modules\Topics\Entity\FrontendParameter
      *                                  $parameters
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     protected function showControls(\Cx\Core\Html\Sigma $template,
-        \Cx\Modules\Topics\Controller\FrontendParameterController $parameters)
+        \Cx\Modules\Topics\Entity\FrontendParameter $parameters)
     {
         global $_ARRAYLANG;
         $languages = \FWLanguage::getActiveFrontendLanguages();

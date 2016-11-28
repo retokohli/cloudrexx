@@ -24,13 +24,13 @@
  * our trademarks remain entirely with us.
  */
 
-namespace Cx\Modules\Topics\Controller;
+namespace Cx\Modules\Topics\Entity;
 
 /**
  * Split the URL into parameters for the FrontendController
  * @author  Reto Kohli <reto.kohli@comvation.com>
  */
-class FrontendParameterController
+class FrontendParameter
 {
     /**
      * Flags are optionally added to the API request.
@@ -246,7 +246,7 @@ class FrontendParameterController
             'content' => $this->slug_category,
         ));
         if (!$translation) {
-            \DBG::log("FrontendParameterController::translateEntry(): ERROR: No Translation for Category slug {$this->slug_category}");//, locale $this->locale_system");
+            \DBG::log("FrontendParameter::translateEntry(): ERROR: No Translation for Category slug {$this->slug_category}");//, locale $this->locale_system");
             $this->slug_category = '';
             $this->inconsistent_url = true;
             return;
@@ -292,7 +292,7 @@ class FrontendParameterController
         if (!$translation) {
             // This MUST NOT happen.
             // If it does, the Entry data is inconsistent.
-            \DBG::log("FrontendParameterController::translateEntry(): ERROR: No Translation for Entry slug: {$this->slug_entry}");
+            \DBG::log("FrontendParameter::translateEntry(): ERROR: No Translation for Entry slug: {$this->slug_entry}");
             return;
         }
         $entryRepo = $em->getRepository(

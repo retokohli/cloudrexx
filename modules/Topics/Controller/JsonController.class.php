@@ -43,7 +43,7 @@ namespace Cx\Modules\Topics\Controller;
  * @author      Reto Kohli <reto.kohli@comvation.com>
  */
 class JsonController
-extends \Cx\Core\Core\Model\Entity\SystemComponentController
+extends \Cx\Core\Core\Model\Entity\Controller
 implements \Cx\Core\Json\JsonAdapter
 {
     protected $message;
