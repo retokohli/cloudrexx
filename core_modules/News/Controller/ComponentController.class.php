@@ -35,6 +35,7 @@
  */
 
 namespace Cx\Core_Modules\News\Controller;
+use Cx\Core_Modules\News\Model\Event\LocaleLocaleEventListener;
 
 /**
  * Main controller for News
@@ -306,6 +307,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * Register the Event listeners
      */
     public function registerEventListeners() {
-        $this->cx->getEvents()->addEventListener('languageStatusUpdate', new \Cx\Core_Modules\News\Model\Event\NewsEventListener());
+        $evm = $this->cx->getEvents();
+        // locale event listener
+        $localeLocaleEventListener = new LocaleLocaleEventListener();
+        $evm->addModelListener('postPersist', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
+        $evm->addModelListener('preRemove', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
     }
 }
