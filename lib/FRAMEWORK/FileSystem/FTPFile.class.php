@@ -240,7 +240,7 @@ class FTPFile implements FileInterface
         try {
             $objFile = new \Cx\Lib\FileSystem\FileSystemFile($this->passedFilePath);
             $filePerms = $objFile->getFilePermissions();
-            \DBG::msg('FTPFile: Fetched file permissions of '.$this->passedFilePath.': '.substr(sprintf('%o', $filePerms), -4));
+//            \DBG::msg('FTPFile: Fetched file permissions of '.$this->passedFilePath.': '.substr(sprintf('%o', $filePerms), -4));
         } catch (FileSystemFileException $e) {
             throw new FTPFileException($e->getMessage());
         }
@@ -267,7 +267,7 @@ class FTPFile implements FileInterface
         $filePerms |= \Cx\Lib\FileSystem\FileSystem::CHMOD_USER_WRITE;
 
         // log file permissions into the humand readable chmod() format
-        \DBG::msg('FTPFile: CHMOD: '.substr(sprintf('%o', $filePerms), -4));
+//        \DBG::msg('FTPFile: CHMOD: '.substr(sprintf('%o', $filePerms), -4));
 
         if (!ftp_chmod($this->connection, $filePerms, $this->filePath.'/'.$this->file)) {
             throw new FTPFileException('FTPFile: Unable to set write access to file '.$this->filePath.'/'.$this->file.'!');
