@@ -602,6 +602,7 @@ EOF;
         $legacyBehaviorChanges = array(
             $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_SEARCH_ON_CATEGORY_VIEW'],
             $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_SEARCH_ALL_FORMS'],
+            $_ARRAYLANG['TXT_MEDIADIR_LEGACY_PAGE_TITLE'],
         );
 
         $objTpl->setGlobalVariable(array(
