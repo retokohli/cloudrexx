@@ -456,6 +456,7 @@ CREATE TABLE `contrexx_core_wysiwyg_template` (
 CREATE TABLE `contrexx_core_module_pdf_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
+  `file_name` varchar(255) NOT NULL,
   `html_content` longtext NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY(`id`)

@@ -45,6 +45,18 @@ class CxCore_ModulesPdfModelEntityPdfTemplateProxy extends \Cx\Core_Modules\Pdf\
         return parent::getTitle();
     }
 
+    public function setFileName($fileName)
+    {
+        $this->_load();
+        return parent::setFileName($fileName);
+    }
+
+    public function getFileName()
+    {
+        $this->_load();
+        return parent::getFileName();
+    }
+
     public function setHtmlContent($htmlContent)
     {
         $this->_load();
@@ -114,7 +126,7 @@ class CxCore_ModulesPdfModelEntityPdfTemplateProxy extends \Cx\Core_Modules\Pdf\
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'title', 'htmlContent', 'active');
+        return array('__isInitialized__', 'id', 'title', 'fileName', 'htmlContent', 'active');
     }
 
     public function __clone()
