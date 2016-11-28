@@ -57,7 +57,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function getCommandDescription($command, $short = false)
     {
-        $short = null; // Ignored
+        $short = false; // Ignored
         switch ($command) {
             case 'TopicsEntries':
                 return 'Send Topics Entries parsed into HTML'
@@ -134,7 +134,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     // Use the default template from the module folder
                     $template_path = $this->getDefaultTemplatePath();
                 }
-                $template = new \Cx\Core\Html\Sigma;
+                $template = new \Cx\Core\Html\Sigma();
                 $template->loadTemplateFile($template_path);
                 $controller = $this->getController('Frontend');
                 if ($parameters->getSlugEntry()) {
@@ -176,15 +176,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $text = $_text;
         }
         return $text . $shortener;
-        //// TEST FROM HERE
-        //$test = array(
-        //    '-m wv d8, 9u 4ö.\nu4 ao-w9. yai zöl',
-        //);
-        //foreach ($test as $string) {
-        //    foreach (range(0, 35) as $length) {
-        //        \DBG::log("TEST: length $length: " . shorten($string, $length));
-        //    }
-        //}
     }
 
     /**

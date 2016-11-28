@@ -459,7 +459,7 @@ class ImportController extends \Cx\Core\Core\Model\Entity\Controller
                 $entry = $entryRepo->find($id);
                 if (!$entry) {
                     $entry = new \Cx\Modules\Topics\Model\Entity\Entry;
-                    $entry->__setId($id);
+                    $entry->setIdImport($id);
                     $entry->setActive(true);
                     $entry->setCreated($created_at);
                     $entry->setUpdated(null);

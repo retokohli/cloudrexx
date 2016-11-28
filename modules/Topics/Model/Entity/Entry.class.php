@@ -23,40 +23,39 @@ implements \Gedmo\Translatable\Translatable
     /**
      * @var integer $id
      */
-    private $id;
+    protected $id;
     /**
      * @var boolean $active
      */
-    private $active;
+    protected $active;
     /**
      * @var string $name
      */
-    private $name;
+    protected $name;
     /**
      * @var string $slug
      */
-    private $slug;
+    protected $slug;
     /**
      * @var string $href
      */
-    private $href;
-
+    protected $href;
     /**
      * @var string $description
      */
-    private $description;
+    protected $description;
     /**
      * @var datetime $created
      */
-    private $created;
+    protected $created;
     /**
      * @var datetime $updated
      */
-    private $updated;
+    protected $updated;
     /**
      * @var string $locale
      */
-    private $locale;
+    protected $locale;
 
     /**
      * Set locale
@@ -70,7 +69,7 @@ implements \Gedmo\Translatable\Translatable
     /**
      * @var Cx\Modules\Topics\Model\Entity\Category
      */
-    private $categories;
+    protected $categories;
 
     public function __construct()
     {
@@ -83,7 +82,7 @@ implements \Gedmo\Translatable\Translatable
      * This is only required for the initial import.
      * @param integer $id
      */
-    public function __setId($id)
+    public function setIdImport($id)
     {
         $this->id = $id;
     }
