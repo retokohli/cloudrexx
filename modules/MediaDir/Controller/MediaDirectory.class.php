@@ -550,9 +550,7 @@ class MediaDirectory extends MediaDirectoryLibrary
             $objEntry->updateHits($intEntryId);
 
             //set meta attributes
-            $entries = new MediaDirectoryEntry($this->moduleName);
-            $entries->getEntries($intEntryId, $intLevelId, $intCategoryId, null, null, null, 1, null, 1);
-            $entry = $entries->arrEntries[$intEntryId];
+            $entry = $objEntry->arrEntries[$intEntryId];
 
             $objInputfields = new MediaDirectoryInputfield($entry['entryFormId'], false, $entry['entryTranslationStatus'], $this->moduleName);
             $inputFields = $objInputfields->getInputfields();
@@ -604,7 +602,7 @@ class MediaDirectory extends MediaDirectoryLibrary
                 }
             }
 
-            $firstInputfieldValue = $entries->arrEntries[$intEntryId]['entryFields'][0];
+            $firstInputfieldValue = $objEntry->arrEntries[$intEntryId]['entryFields'][0];
             if (!$titleChanged && $firstInputfieldValue) {
                 $this->pageTitle = $firstInputfieldValue;
                 $this->metaTitle = $firstInputfieldValue;
