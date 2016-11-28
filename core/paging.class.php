@@ -115,8 +115,19 @@ class Paging
 
         $firstUrl = clone $requestUrl;
         $firstUrl->setParam($parameter_name, 0);
+
+        $link = new \Cx\Core\Html\Model\Entity\HtmlElement('link');
+        $link->setAttribute('href', $firstUrl->toString());
+        $link->setAttribute('rel', 'first');
+        $headIncludes[] = $link;
+
         $lastUrl = clone $requestUrl;
         $lastUrl->setParam($parameter_name, ($numof_rows - $corr_value));
+
+        $link = new \Cx\Core\Html\Model\Entity\HtmlElement('link');
+        $link->setAttribute('href', $lastUrl->toString());
+        $link->setAttribute('rel', 'last');
+        $headIncludes[] = $link;
 
         // Set up the base navigation entries
         $array_paging = array(
