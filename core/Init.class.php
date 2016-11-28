@@ -53,11 +53,9 @@
 class InitCMS
 {
     public $defaultBackendLangId;
-    public $backendLangCharset;
     public $backendLangId;
 
     public $defaultFrontendLangId;
-    public $frontendLangCharset;
     public $frontendLangId;
     public $frontendLangName;
     public $userFrontendLangId;
@@ -244,8 +242,6 @@ class InitCMS
         }
 
         $this->channelThemeId = $this->currentThemesId;
-        // Set charset of frontend language
-        $this->frontendLangCharset = $this->arrLang[$this->frontendLangId]['charset'];
     }
 
 
@@ -414,38 +410,6 @@ class InitCMS
     function getLanguageArray()
     {
         return $this->arrLang;
-    }
-
-
-    /**
-     * Returns the current frontend language charset string
-     * for the HTML header
-     * @return  string               The charset string
-     * @access  public
-     */
-    function getFrontendLangCharset()
-    {
-        if (empty($this->frontendLangCharset)){
-            return CONTREXX_CHARSET;
-        } else {
-            return $this->frontendLangCharset;
-        }
-    }
-
-
-    /**
-     * Returns the current backend language charset string
-     * for the html header
-     * @return  string               The charset string
-     * @access  public
-     */
-    function getBackendLangCharset()
-    {
-        if (empty($this->backendLangCharset)){
-            return CONTREXX_CHARSET;
-        } else {
-            return $this->backendLangCharset;
-        }
     }
 
 
