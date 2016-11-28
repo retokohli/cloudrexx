@@ -301,6 +301,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     protected function setCanonicalPage($canonicalPage) {
         $canonicalUrlArguments = array('eid', 'cid', 'lid', 'preview', 'pos');
+        if (in_array('eid', array_keys($this->cx->getRequest()->getUrl()->getParamArray()))) {
+            $canonicalUrlArguments = array_filter($canonicalUrlArguments, function($key) {return !in_array($key, array('cid', 'lid'));});
+        }
 
         // filter out all non-relevant URL arguments
         /*$params = array_filter(
