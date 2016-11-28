@@ -1,0 +1,128 @@
+<!-- Block for the list view -->
+<!-- BEGIN entity_view -->
+{ENTITY_VIEW}
+<!-- END entity_view -->
+
+<!-- Block for the detail view -->
+<!-- BEGIN topics_detail_category -->
+<form id="module-topics-category" method="post" action="">
+  <table class="adminlist" style="width: 100%;">
+    <tr>
+      <td style="width: 250px;">
+        {TXT_MODULE_TOPICS_CATEGORY_ACTIVE}
+      </td>
+      <td>
+        <input type="checkbox" name="category[active]"
+               {MODULE_TOPICS_CATEGORY_ACTIVE_CHECKED} />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        {TXT_MODULE_TOPICS_CATEGORY_PARENT}
+      </td>
+      <td>
+        {MODULE_TOPICS_CATEGORY_PARENT}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        {TXT_MODULE_TOPICS_CATEGORY_ID}
+      </td>
+      <td>
+        <input type="hidden" name="category[id]"
+               value="{MODULE_TOPICS_CATEGORY_ID}" />
+        <input type="text" name="category[idDummy]" disabled="disabled"
+               value="{MODULE_TOPICS_CATEGORY_ID}" />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        {TXT_MODULE_TOPICS_CATEGORY_CREATED}
+      </td>
+      <td>
+        <input type="text" name="category[createdDummy]" disabled="disabled"
+               value="{MODULE_TOPICS_CATEGORY_CREATED}" />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        {TXT_MODULE_TOPICS_CATEGORY_UPDATED}
+      </td>
+      <td>
+        <input type="text" name="category[updatedDummy]" disabled="disabled"
+               value="{MODULE_TOPICS_CATEGORY_UPDATED}" />
+      </td>
+    </tr>
+    <!--
+    DISABLED -- too many available options to be useful.
+    Also disabled in PHP, see BackendController::parseCategory().
+    <tr>
+      <td>
+        {TXT_MODULE_TOPICS_CATEGORY_ENTRIES_ASSOCIATED}
+      </td>
+      <td>
+        {MODULE_TOPICS_CATEGORY_ENTRIES}
+      </td>
+    </tr>-->
+  </table>
+  <br />
+  <!-- BEGIN category_locale -->
+  <ul class="tabmenu">
+    <!-- BEGIN category_locale_tab -->
+    <li>
+      <a id="locale_tab-{MODULE_TOPICS_CATEGORY_LANGUAGE_ID}"
+         class="{MODULE_TOPICS_CATEGORY_LOCALE_ACTIVE}"
+         href="#tab-{MODULE_TOPICS_CATEGORY_LANGUAGE_ID}"
+         onclick="selectTab('tab-{MODULE_TOPICS_CATEGORY_LANGUAGE_ID}');"
+         title="{MODULE_TOPICS_CATEGORY_LANGUAGE}">
+        {MODULE_TOPICS_CATEGORY_LANGUAGE}
+      </a>
+    </li>
+    <!-- END category_locale_tab -->
+  </ul>
+  <!-- BEGIN category_locale_div -->
+  <div class="locale" id="tab-{MODULE_TOPICS_CATEGORY_LANGUAGE_ID}">
+    <table class="adminlist">
+      <!--<tr>
+        <td>{TXT_MODULE_TOPICS_CATEGORY_LOCALE}</td>
+        <td>
+          <input type="text" name="category[localeDummy]" disabled="disabled"
+                 value="{MODULE_TOPICS_CATEGORY_LOCALE}" />
+        </td>
+      </tr>-->
+      <tr>
+        <td style="width: 250px;">
+          {TXT_MODULE_TOPICS_CATEGORY_NAME}
+        </td>
+        <td>
+          <input type="text" name="category[name][{MODULE_TOPICS_CATEGORY_LOCALE}]"
+                 value="{MODULE_TOPICS_CATEGORY_NAME}" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {TXT_MODULE_TOPICS_CATEGORY_SLUG}
+        </td>
+        <td>
+          <input type="text" disabled="disabled"
+                 name="category[slug][{MODULE_TOPICS_CATEGORY_LOCALE}]"
+                 value="{MODULE_TOPICS_CATEGORY_SLUG}" />
+          <span class="tooltip-trigger icon-info"></span>
+          <span class="tooltip-message">{TXT_MODULE_TOPICS_SLUG_NOTE}</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {TXT_MODULE_TOPICS_CATEGORY_DESCRIPTION}
+        </td>
+        <td>
+          {MODULE_TOPICS_CATEGORY_DESCRIPTION_WYSIWYG}
+        </td>
+      </tr>
+    </table>
+  </div>
+  <!-- END category_locale_div -->
+  <!-- END category_locale -->
+  <input type="submit" value="{TXT_MODULE_TOPICS_SUBMIT}" />
+</form>
+<!-- END topics_detail_category -->

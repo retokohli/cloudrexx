@@ -1,0 +1,13 @@
+div.locale {
+  display: none;
+}
+div.locale:first-of-type {
+  display: block;
+}
+input[name^="entry[name]"],
+input[name^="entry[slug]"],
+input[name^="entry[href]"],
+input[name^="category[name]"],
+input[name^="category[slug]"] {
+  width: 400px;
+}

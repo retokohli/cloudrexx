@@ -1,0 +1,61 @@
+<div id="topics" ng-controller="TopicsEntryController">
+  <div class="fileOptions">
+    <input type="search" id="topicsFilter" class="searchterm"
+           placeholder="{{::'TXT_FILEBROWSER_SEARCHTERM_PLACEHOLDER'| translate}}"
+           ng-model="searchterm">
+    <span ng-repeat="language in activeLanguages">
+      <button class="btn"
+              ng-click="setLocale(language.lang)"
+              ng-class="isLocaleActive(language.lang) ? 'btn-primary' : 'btn-default'">
+        {{::language.name}}
+      </button>
+    </span>
+  </div>
+  <div class="tabMediaBrowserContent contentWithOptions">
+    <div class="mediaBrowserListCtrl">
+      <div class="loadingPlatform" ng-hide="entries || error">
+        <i class="icon-loading"></i>
+        <div class="loadingText1">
+          Loading
+        </div>
+      </div>
+      <table class="adminlist topics-list-entries" ng-show="entries">
+        <tbody>
+          <tr>
+            <th>
+              {{::'TXT_MODULE_TOPICS_FILEBROWSER_ENTRY_NAME'| translate }}
+            </th>
+          </tr>
+          <tr ng-repeat="entry in entries| filter: {name:searchterm}"
+              ng-class="{active: true === entry.active}"
+              ng-if="entries"
+              class="data-row files animation">
+            <td>
+              <a ng-dblclick="dblclick(entry)">
+                <div class="fileName">
+                  {{::entry.name}}
+                </div>
+              </a>
+            </td>
+          </tr>
+          <tr ng-show="error">
+            <td>
+              {{::'TXT_MODULE_TOPICS_FILEBROWSER_ENTRIES_NONE'| translate }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="tabMediaBrowserFooter">
+    <button type="submit" class="btn btn-primary"
+            ng-disabled="noFileSelected"
+            ng-click="choosePictures()">
+      {{::'TXT_MODULE_TOPICS_FILEBROWSER_ENTRY_ACCEPT'| translate }}
+    </button>
+    <button type="submit" class="btn btn-primary"
+            ng-click="cancel()">
+      {{::'TXT_FILEBROWSER_CANCEL'| translate }}
+    </button>
+  </div>
+</div>

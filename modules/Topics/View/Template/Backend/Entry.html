@@ -1,0 +1,144 @@
+<!-- Block for the list view -->
+<!-- BEGIN entity_view -->
+{ENTITY_VIEW}
+<!-- END entity_view -->
+
+<!-- Block for the detail view -->
+<!-- BEGIN topics_detail_entry -->
+<form id="module-topics-entry" method="post" action="">
+  <table class="adminlist" style="width: 100%;">
+    <tr>
+      <td style="width: 250px;">
+        {TXT_MODULE_TOPICS_ENTRY_ACTIVE}
+      </td>
+      <td>
+        <input type="checkbox" name="entry[active]"
+               {MODULE_TOPICS_ENTRY_ACTIVE_CHECKED} />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        {TXT_MODULE_TOPICS_ENTRY_ID}
+      </td>
+      <td>
+        <input type="hidden" name="entry[id]"
+               value="{MODULE_TOPICS_ENTRY_ID}" />
+        <input type="text" name="entry[idDummy]" disabled="disabled"
+               value="{MODULE_TOPICS_ENTRY_ID}" />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        {TXT_MODULE_TOPICS_ENTRY_CREATED}
+      </td>
+      <td>
+        <input type="text" name="entry[createdDummy]" disabled="disabled"
+               value="{MODULE_TOPICS_ENTRY_CREATED}" />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        {TXT_MODULE_TOPICS_ENTRY_UPDATED}
+      </td>
+      <td>
+        <input type="text" name="entry[updatedDummy]" disabled="disabled"
+               value="{MODULE_TOPICS_ENTRY_UPDATED}" />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        {TXT_MODULE_TOPICS_ENTRY_CATEGORIES_ASSOCIATED}
+      </td>
+      <td>
+        {MODULE_TOPICS_ENTRY_CATEGORIES}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        {TXT_MODULE_TOPICS_ENTRY_TYPE}
+      </td>
+      <td>
+        <input id="topics-type-entry" type="radio" name="topics_type" />
+        <label for="topics-type-entry">
+          {TXT_MODULE_TOPICS_ENTRY_TYPE_ENTRY}
+        </label>
+        <input id="topics-type-href" type="radio" name="topics_type" />
+        <label for="topics-type-href">
+          {TXT_MODULE_TOPICS_ENTRY_TYPE_HREF}
+        </label>
+      </td>
+    </tr>
+  </table>
+  <br />
+  <!-- BEGIN entry_locale -->
+  <ul class="tabmenu">
+    <!-- BEGIN entry_locale_tab -->
+    <li>
+      <a id="locale_tab-{MODULE_TOPICS_ENTRY_LANGUAGE_ID}"
+         class="{MODULE_TOPICS_ENTRY_LOCALE_ACTIVE}"
+         href="#tab-{MODULE_TOPICS_ENTRY_LANGUAGE_ID}"
+         onclick="selectTab('tab-{MODULE_TOPICS_ENTRY_LANGUAGE_ID}');"
+         title="{MODULE_TOPICS_ENTRY_LANGUAGE}">
+        {MODULE_TOPICS_ENTRY_LANGUAGE}
+      </a>
+    </li>
+    <!-- END entry_locale_tab -->
+  </ul>
+  <!-- BEGIN entry_locale_div -->
+  <div class="locale" id="tab-{MODULE_TOPICS_ENTRY_LANGUAGE_ID}">
+    <table class="adminlist">
+      <!--<tr>
+        <td>{TXT_MODULE_TOPICS_ENTRY_LOCALE}</td>
+        <td>
+          <input type="text" name="entry[localeDummy]" disabled="disabled"
+                 value="{MODULE_TOPICS_ENTRY_LOCALE}" />
+        </td>
+      </tr>-->
+      <tr>
+        <td style="width: 250px;">
+          {TXT_MODULE_TOPICS_ENTRY_NAME}
+        </td>
+        <td>
+          <input type="text" name="entry[name][{MODULE_TOPICS_ENTRY_LOCALE}]"
+                 value="{MODULE_TOPICS_ENTRY_NAME}" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {TXT_MODULE_TOPICS_ENTRY_SLUG}
+        </td>
+        <td>
+          <input type="text" disabled="disabled"
+                 name="entry[slug][{MODULE_TOPICS_ENTRY_LOCALE}]"
+                 value="{MODULE_TOPICS_ENTRY_SLUG}" />
+          <span class="tooltip-trigger icon-info"></span>
+          <span class="tooltip-message">{TXT_MODULE_TOPICS_SLUG_NOTE}</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {TXT_MODULE_TOPICS_ENTRY_HREF}
+        </td>
+        <td>
+          <input type="text"
+                 name="entry[href][{MODULE_TOPICS_ENTRY_LOCALE}]"
+                 value="{MODULE_TOPICS_ENTRY_HREF}" />
+          <span class="tooltip-trigger icon-info"></span>
+          <span class="tooltip-message">{TXT_MODULE_TOPICS_HREF_NOTE}</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {TXT_MODULE_TOPICS_ENTRY_DESCRIPTION}
+        </td>
+        <td>
+          {MODULE_TOPICS_ENTRY_DESCRIPTION_WYSIWYG}
+        </td>
+      </tr>
+    </table>
+  </div>
+  <!-- END entry_locale_div -->
+  <!-- END entry_locale -->
+  <input type="submit" value="{TXT_MODULE_TOPICS_SUBMIT}" />
+</form>
+<!-- END topics_detail_entry -->

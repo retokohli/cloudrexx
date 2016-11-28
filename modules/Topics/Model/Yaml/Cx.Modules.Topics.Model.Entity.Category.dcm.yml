@@ -1,0 +1,107 @@
+Cx\Modules\Topics\Model\Entity\Category:
+  type: entity
+  table: module_topics_categories
+  gedmo:
+    translation:
+      locale: locale
+      entity: Cx\Core\ContentManager\Model\Entity\Translation
+# Not used:
+#    loggable: true
+# using specific personal LogEntryClass class:
+#      logEntryClass: Cx\Core\ContentManager\Model\Entity\LogEntry
+#    soft_deleteable:
+#      field_name: deleted_at
+
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+
+  fields:
+    parent_id:
+      type: integer
+      nullable: true
+    active:
+      type: boolean
+    name:
+      type: string
+      length: 255
+      gedmo:
+        - translatable
+        sluggable:
+          position: 0
+          slugField: 'slug'
+# Not used:
+#        - versioned
+    slug:
+      type: string
+      length: 255
+      gedmo:
+        - translatable
+        slug:
+          separator: -
+# Note: In later versions of Doctrine, multiple slug fields are supported:
+#          fields:
+#            - name
+# Not used:
+#        - versioned
+    description:
+      type: string
+      length: 65535
+      nullable: true
+      gedmo:
+        - translatable
+# Not used:
+#        - versioned
+    created:
+      type: datetime
+      gedmo:
+        timestampable:
+          on: create
+    updated:
+      type: datetime
+      nullable: true
+      gedmo:
+        timestampable:
+          on: update
+
+  indexes:
+    active_idx:
+      columns:
+        - active
+    parent_idx:
+      columns:
+        - parent_id
+    name_idx:
+      columns:
+        - name
+    description_idx:
+      columns:
+        - description
+    created_idx:
+      columns:
+        - created
+    updated_idx:
+      columns:
+        - updated
+  uniqueConstraints:
+    # TODO: Ensure that the slug remains unique in translations as well
+    slug_idx:
+      columns:
+        - slug
+
+  manyToMany: # owning
+    entries:
+      targetEntity: Cx\Modules\Topics\Model\Entity\Entry
+      inversedBy: categories
+      joinTable:
+        name: module_topics_rel_entry_category
+        joinColumns:
+          category_id:
+            referencedColumnName: id
+            nullable: false
+        inverseJoinColumns:
+          entry_id:
+            referencedColumnName: id
+            nullable: false
