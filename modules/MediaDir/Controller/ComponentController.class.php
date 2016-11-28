@@ -303,11 +303,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $canonicalUrlArguments = array('eid', 'cid', 'lid', 'preview', 'pos');
 
         // filter out all non-relevant URL arguments
-        $params = array_filter(
+        /*$params = array_filter(
             $this->cx->getRequest()->getUrl()->getParamArray(),
             function($key) {return in_array($key, $canonicalUrlArguments);},
             \ARRAY_FILTER_USE_KEY
-        );
+        );*/
+
+        foreach ($this->cx->getRequest()->getUrl()->getParamArray() as $key => $value) {
+            if (!in_array($key, $canonicalUrlArguments)) {
+                continue;
+            }
+            $params[$key] = $value;
+        }
 
         $canonicalUrl = \Cx\Core\Routing\Url::fromPage($canonicalPage, $params);
         header('Link: <' . $canonicalUrl->toString() . '>; rel="canonical"');
