@@ -1,0 +1,109 @@
+<!--
+NOTE: DO NOT REMOVE!
+This enclosing div with id "topics" is absolutely mandatory
+in order for the event bindings to work.
+-->
+<div id="topics">
+  <!-- BEGIN topics_controls -->
+  <div id="topics-controls">
+    <label for="topics-category">
+      {TXT_MODULE_TOPICS_OPTIONS_CATEGORY}
+    </label>
+    <select id="topics-category">
+      {MODULE_TOPICS_OPTIONS_CATEGORY}
+    </select>
+    <label for="topics-locale-list">
+      {TXT_MODULE_TOPICS_OPTIONS_LOCALE_LIST}
+    </label>
+    <select id="topics-locale-list">
+      {MODULE_TOPICS_OPTIONS_LOCALE_LIST}
+    </select>
+    <label for="topics-locale-detail">
+      {TXT_MODULE_TOPICS_OPTIONS_LOCALE_DETAIL}
+    </label>
+    <select id="topics-locale-detail">
+      {MODULE_TOPICS_OPTIONS_LOCALE_DETAIL}
+    </select>
+    <label for="topics-term">
+      {TXT_MODULE_TOPICS_SEARCH}
+    </label>
+    <input id="topics-term" type="text"
+           placeholder="{TXT_MODULE_TOPICS_SEARCHTERM}" />
+    <div id="topics-fulltext-hidden">
+      <input id="topics-fulltext" type="checkbox" />
+      <label for="topics-fulltext">
+        {TXT_MODULE_TOPICS_SEARCH_FULLTEXT}
+      </label>
+    </div>
+  </div>
+  <!-- END topics_controls -->
+
+  <!-- NOTE: Replaced upon list locale change -->
+  <!-- BEGIN topics_list_entries -->
+  <div id="topics-list-entries">
+    <div id="topics-letter">
+      <!-- BEGIN topics_letter -->
+      <a href="{MODULE_TOPICS_URL_VIEW}#{MODULE_TOPICS_LETTER}">
+        {MODULE_TOPICS_LETTER}
+      </a>
+      &nbsp;
+      <!-- END topics_letter -->
+    </div>
+    <div id="topics-list">
+      <!-- BEGIN topics_list_row -->
+      <!-- BEGIN topics_list_anchor -->
+      <div class="topics-list-anchor">
+        {MODULE_TOPICS_LETTER}...
+        <a id="{MODULE_TOPICS_LETTER}"></a>
+      </div>
+      <!-- END topics_list_anchor -->
+      <!-- BEGIN topics_list_entry -->
+      <div class="topics-list-entry">
+        <!-- BEGIN topics_list_entry_slug -->
+        <a href="{MODULE_TOPICS_ENTRY_SLUG}"
+           data-id="{MODULE_TOPICS_ENTRY_ID}">
+          <!-- END topics_list_entry_slug -->
+          <!-- BEGIN topics_list_entry_fix -->
+          <!-- Mind that this block is never parsed; it makes this HTML valid. -->
+        </a>
+        <!-- END topics_list_entry_fix -->
+        <!-- BEGIN topics_list_entry_href -->
+        <a class="external"
+           href="{MODULE_TOPICS_ENTRY_HREF}"
+           target="{MODULE_TOPICS_ENTRY_SLUG}">
+          <!-- END topics_list_entry_href -->
+          <span class="topics-list-entry-name">
+            {MODULE_TOPICS_ENTRY_NAME}
+          </span>
+          <!-- BEGIN topics_list_entry_description -->
+          <span class="topics-list-entry-description">
+            {MODULE_TOPICS_ENTRY_DESCRIPTION}
+          </span>
+          <!-- END topics_list_entry_description -->
+        </a>
+      </div>
+      <!-- END topics_list_entry -->
+      <!-- BEGIN topics_list_empty -->
+      <div class="topics-list-entry">
+        {TXT_MODULE_TOPICS_CATEGORY_NO_ENTRIES}
+      </div>
+      <!-- END topics_list_empty -->
+      <!-- END topics_list_row -->
+    </div>
+  </div>
+  <!-- END topics_list_entries -->
+
+  <!-- NOTE: Replaced upon detail or detail locale change -->
+  <!-- BEGIN topics_detail_entry -->
+  <div id="topics-detail-entry">
+    <div id="topics-detail-entry-name">
+      {MODULE_TOPICS_ENTRY_NAME}
+    </div>
+    <div id="topics-detail-entry-description">
+      {MODULE_TOPICS_ENTRY_DESCRIPTION}
+    </div>
+  </div>
+  <!-- END topics_detail_entry -->
+
+  <div id="loading"><!-- --></div>
+</div>
