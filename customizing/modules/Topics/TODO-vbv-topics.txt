@@ -1,0 +1,168 @@
+General
+
+OK    Name for the module: "Lexicon" is not accepted by Cloudrexx.
+        Proposals:
+  OK    "Topics"
+        ("InsuranceTopics", "InsuranceLexicon")
+
+
+Bearbeiten von Einträgen im Backend:
+TODO  Speichern der Entities:
+      Änderungen in den Übersetzungen werden nicht automatisch erkannt, und
+      daher der Eintrag nicht aktualisiert!
+      -> Es muss ein Unterschied im bearbeiteten Haupteintrag vorhanden sein,
+        damit der Eintrag aktualisiert wird.
+        Etwa kann "updated" auf das aktuelle Datum gesetzt werden, was
+        allerdings den Einsatz von Timestampable recht sinnlos macht.
+TODO  Aktualisieren von Slugs: Soll dies möglich sein?
+      Manuell oder automatisch auf Grundlage des Namens?
+
+TEST  Beibehalten relativer Links der Querverweise:
+      Der Editor fügt jeweils in URLs wie "stichwort" zusätzliche Elemente ein:
+      "/cadmin/stichwort?csrf=OTAxMTA4MzE1"
+
+OK    Einfügen von Links für Querverweise im WYSIWYG Editor:
+      Wie kann ich die Einträge als Quelle für eine Auswahl und anschliessendes
+      Einfügen des Slugs in das href Attribut der Links verwenden?
+      -> Mediabrowser erweitern, so dass der Navigationspunkt unterhalb der
+        "Seitenstruktur" und in der entsprechenden Ansicht die Liste für die
+        Auswahl des Eintrags eingebettet wird
+OK    Einfügen von Links für interne/externe Seiten:
+      Korrekte Behandlung bei der Anzeige im Frontend
+OK    Interne und externe Webpages als "Einträge"
+      (nur Titel und Href bearbeitbar)
+
+Frontend:
+OK    Suche in Detailtext (Volltext)
+OK    Suche in Detailtext (Volltext) im Backend per Einstellung aktivieren/deaktivieren
+OK    Möglichkeit schaffen, einzelne Anzeigeteile extern einbinden zu können:
+      OK  - A-Z Index (über API, mit [...]/alphaindex am Ende der URL)
+      OK  - Liste (über API, URL ohne Entry Slug)
+      OK  - Detail (über API, URL mit Entry Slug)
+OK    "Schlaue" Parameter für verschiedene Ansichten (Themes)
+        (Geht es schlauer als mit dem Namen des Themes?)
+OK    Links auf interne und externe Webpages
+      OK  - in der Liste als solche kennzeichnen, und
+      OK  - in neuem Tab öffnen
+
+
+General Cloudrexx:
+TODO  Implement WYSIWYG editor as an element type in FormGenerator
+TODO  core_modules/Listing/Model/Entity/DataSet.class.php, function sort
+      does wild things:
+          public function sort($order) {
+              $data = $this->data;
+              $dateTimeTools = new \DateTimeTools();
+              uasort($data,
+                  function($a, $b) use($order, $dateTimeTools)
+                  {
+      //                $diff = 1;
+                      $orderMultiplier = 1;
+                      foreach ($order as $sortField => $sortOrder) {
+                          $orderMultiplier = $sortOrder == SORT_ASC ? 1 : -1;
+      //\DBG::log("DataSet::sort(): Class ".get_class($a[$sortField]));
+      //\DBG::log("DataSet::sort(): ". serialize($a[$sortField]));
+      // Note: DATETIME values apparently are PersistentCollections:
+      //  O:33:"Doctrine\ORM\PersistentCollection":2:{s:39:"Doctrine\ORM\PersistentCollectioncoll";O:43:"Doctrine\Common\Collections\ArrayCollection":1:{s:54:"Doctrine\Common\Collections\ArrayCollection_elements";a:0:{}}s:46:"Doctrine\ORM\PersistentCollectioninitialized";b:0;}
+      // TODO: No effing way should you sort dates like that:
+                          $termOne = $dateTimeTools->isValidDate($a[$sortField]) ? strtotime($a[$sortField]) : $a[$sortField];
+                          $termTwo = $dateTimeTools->isValidDate($b[$sortField]) ? strtotime($b[$sortField]) : $b[$sortField];
+      // TODO: Why aren't these \DateTime objects?
+      // TODO: At least use standard (DATETIME) format!
+      // Where in the world does a date format like "10.Apr.2016 22:16:01" come from??!
+      //\DBG::log("DataSet::sort(): termOne {$a[$sortField]}, termTwo {$b[$sortField]}");
+      //                    $termOne = $a[$sortField];
+      //                    $termTwo = $b[$sortField];
+      //\DBG::log("DataSet::sort(): termOne $termOne, termTwo $termTwo");
+                          if ($termOne !== $termTwo) {
+                              return ($termOne < $termTwo ? -1 : 1) * $orderMultiplier;
+                          }
+                      }
+      // If the above return didn't catch, $diff = ($termOne < $termTwo)
+      // is ALWAYS false here.
+      // This result seems to be arbitrary, however, and should be 0 (zero) instead:
+      //                return ($diff ? -1 : 1) * $orderMultiplier;
+                      return -$orderMultiplier;
+                  }
+              );
+              return new static($data);
+          }
+TODO  core/LinkSanitizer.class.php does insane things:
+      Replaces any URLs, including those contained in a textarea (=> WYSIWYG!).
+          public function replace() {
+      //// QUICK HACK (part 1):
+      //// Ignore any elements with src|href|action attributes inside a
+      //// textarea element
+      //        $matches = array();
+      //        if (preg_match_all('/<textarea[^>]*>.+?<\\/textarea>/isu', $this->content,
+      //                $matches)) {
+      ////\DBG::log("Matches ".  htmlentities(var_export($matches, true)));
+      //            foreach ($matches[0] as $match) {
+      ////\DBG::log("Matched ".htmlentities($match)." => ".md5($match));
+      //                $this->content =
+      //                    str_replace($match, md5($match), $this->content);
+      //            }
+      //        }
+              $content = preg_replace_callback("/
+                  (
+                      # match all SRC and HREF attributes
+                      \s+(src|href|action)\s*=\s*['\"]
+                      |
+                      # or match all CSS @import statements
+                      @import\s+url\s*\(
+                  )
+                  # but only those who's values don't start with a slash..
+                  (?=[^\/])
+                  # ..and neither start with a protocol (http:, ftp:, javascript:, mailto:, etc)
+                  (?![a-zA-Z]+:)
+                  # ..and neither start with an ampersand followed by a sharp and end with a semicolon (which would indicate that the url contains html codes for ascii characters)
+                  (?!&\#\d+;)
+                  # ..and neither start with a sharp
+                  (?!\#)
+                  # ..and neither start with a backslash which would indicate that the url lies within some javascript code
+                  (?!\\\)
+                  # match file path and closing quote
+                  ([^'\"]*)(['\"])
+              /x", array($this, 'getPath'), $this->content);
+              if (!empty($_GET['preview']) || (isset($_GET['appview']) && ($_GET['appview'] == 1))) {
+                  $content = preg_replace_callback("/
+                      (\<(?:a|form)[^>]*?\s+(?:href|action)\s*=\s*)
+                      (['\"])
+                      (?!\#)
+                      ((?![a-zA-Z]+?:|\\\\).+?)
+                      \\2
+                      ([^>]*\>)
+                  /x", array($this, 'appendParameters'), $content);
+              }
+      //// QUICK HACK (part 2):
+      //        if ($matches) {
+      //            foreach ($matches[0] as $match) {
+      //                $content = str_replace(md5($match), $match, $content);
+      ////\DBG::log("Restored ".htmlentities($match));
+      //            }
+      ////\DBG::log("Content ".htmlentities($content));
+      //        }
+              return $content;
+          }
+
+TODO  core/MediaSource/Model/Entity/MediaSourceManager.class.php
+      Creating thumbnails fails despicably on windows systems.
+      (Why, oh why, do you have to dabble around with filesystem paths,
+      when there are classes dedicated to doing exactly that?!)
+      See getAbsolutePath($virtualPath), isVirtualPath($path) and others.
+      BTW, there is no such thing as a "virtual" path. I guess the difference
+      is made between absolute and relative paths, and it's done WRONG!
+TODO  core/MediaSource/Model/Entity/MediaSourceManager.class.php
+      In getMediaTypePathsbyNameAndOffset($name, $offset):
+      Paths starting with "C:" will cause a PHP warning, and result in
+      an invalid path!
+TODO  core/MediaSource/Model/Entity/MediaSourceManager.class.php
+      In isSubdirectory($path, $subdirectory):
+          return (boolean)preg_match(
+              '#^' . preg_quote($absolutePath, '#') . '#', $absoluteSubdirectory
+          );
+      strpos() would do the trick, and quicker.
+      Note, too, that preg_match() returns FALSE on error!
+
+
+

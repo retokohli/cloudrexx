@@ -1,0 +1,76 @@
+- Create Entities (in model/entities/):
+<strike>
+del /Q model\entities\Cx\Modules\Topics\Model\Entity\* && workbench.bat db doctrine orm:generate-entities model/entities
+</strike>
+- Create Repositories (in model/repository/):
+<strike>
+del /Q model\repository\Cx\Modules\Topics\Model\Repository\* && workbench.bat db doctrine orm:generate-repositories model/repository
+</strike>
+
+Instead, use
+
+<strike>workbench create module Topics</strike>
+
+update-entities.bat
+
+(renames bad folders first and after)
+
+Then,
+
+1
+in order to update entities and repositories.
+
+- Create SQL for updating the database schema:
+workbench.bat db doctrine orm:schema-tool:create --dump-sql > modules/Topics/Model/Data/install.sql
+(also supported: create, drop)
+Maybe also:
+- if you have not created database yet, run php app/console doctrine:database:create
+- create the schema php app/console doctrine:schema:create
+
+
+OneToMany/ManyToOne Howto, sample:
+"OneToMany mapping requires the 'mappedBy' attribute."
+- Article:
+    @OneToMany(targetEntity="ArticleAttribute", mappedBy="article", cascade={"ALL"}, indexBy="attribute")
+    private $attributes;
+XML:
+    <one-to-many field="phonenumbers" target-entity="Phonenumber" mapped-by="user" />
+- ArticleAttribute:
+    @Id
+    @ManyToOne(targetEntity="Article", inversedBy="attributes")
+    private $article;
+XML:
+    <many-to-one field="author" target-entity="User">
+        <join-column name="author_id" referenced-column-name="id" />
+    </many-to-one>
+TODO: As YAML
+
+Derived Entity:
+    <entity name="Application\Model\ArticleAttribute">
+       <id name="article" association-key="true" />
+       <id name="attribute" type="string" />
+       <field name="value" type="string" />
+       <many-to-one field="article" target-entity="Article" inversed-by="attributes" />
+    <entity>
+
+Unique keys:
+  uniqueConstraints:
+    search_idx:
+      columns: [ name, email ]
+
+
+YAML helpful flags:
+[...]
+  indexes:
+    name_of_idx:
+      columns:
+        - field_name1
+        - field_name2
+[...]
+  fields:
+    field_name:
+      column: field_name_in_table
+      unique: false
+      id: true
+      generator:
+        strategy: IDENTITY
