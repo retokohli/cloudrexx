@@ -61,6 +61,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 $locale = \FWLanguage::getLocaleByFrontendId(LANG_ID);
                 $this->cx->getDb()->getTranslationListener()
                     ->setTranslatableLocale($locale);
+                // Note that parent::parsePage($template, $cmd) won't render
+                // the view properly (wrong ViewGeneratorOptions).
                 $view = new \Cx\Core\Html\Controller\ViewGenerator(
                     '\\Cx\\Modules\\Topics\\Model\\Entity\\' . $cmd[0],
                     $this->getViewGeneratorOptions(null));
@@ -76,7 +78,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         if ($controller) {
             $controller->parsePage($template, $this->cx);
         }
-        \Message::show();
     }
 
     /**
@@ -104,7 +105,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $entry = null;
         $em = $this->cx->getDb()->getEntityManager();
         $entryRepo = $em->getRepository(
-            'Cx\\Modules\\Topics\\Model\\Entity\\Entry');
+            $this->getNamespace()
+            . '\\Model\\Entity\\Entry');
         if ($id) {
             $entry = $entryRepo->find($id);
             if (!$entry) {
@@ -212,7 +214,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         \JS::activate('chosen');
         $em = $this->cx->getDb()->getEntityManager();
         $categoryRepo = $em->getRepository(
-            'Cx\\Modules\\Topics\\Model\\Entity\\Category');
+            $this->getNamespace()
+            . '\\Model\\Entity\\Category');
         $categories = $categoryRepo->findAll();
         $categoryIdsAssociated = array();
         foreach ($entry->getCategories() as $category) {
@@ -282,7 +285,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     return $category->getId();
                 }, $entry->getCategories()->toArray()));
             $categoryRepo = $em->getRepository(
-                'Cx\\Modules\\Topics\\Model\\Entity\\Category');
+                $this->getNamespace()
+                . '\\Model\\Entity\\Category');
             $categories = $categoryRepo->findAll();
             foreach ($categories as $category) {
                 if (
@@ -353,7 +357,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $category = null;
         $em = $this->cx->getDb()->getEntityManager();
         $categoryRepo = $em->getRepository(
-            'Cx\\Modules\\Topics\\Model\\Entity\\Category');
+            $this->getNamespace()
+            . '\\Model\\Entity\\Category');
         if ($id) {
             $category = $categoryRepo->find($id);
             if (!$category) {
@@ -457,7 +462,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         \JS::activate('chosen');
         $em = $this->cx->getDb()->getEntityManager();
         $entryRepo = $em->getRepository(
-            'Cx\\Modules\\Topics\\Model\\Entity\\Entry');
+            $this->getNamespace()
+            . '\\Model\\Entity\\Entry');
         $entries = $entryRepo->findAll();
         $entryIdsAssociated = array();
         foreach ($category->getEntries() as $entry) {
@@ -537,7 +543,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     return $entry->getId();
                 }, $category->getEntries()->toArray()));
             $entryRepo = $em->getRepository(
-                'Cx\\Modules\\Topics\\Model\\Entity\\Entry');
+            $this->getNamespace()
+                . '\\Model\\Entity\\Entry');
             $entries = $entryRepo->findAll();
             foreach ($entries as $entry) {
                 if (
@@ -605,7 +612,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         \Cx\Modules\Topics\Model\Entity\Category $category)
     {
         $categoryRepo = $this->cx->getDb()->getEntityManager()
-            ->getRepository('Cx\\Modules\\Topics\\Model\\Entity\\Category');
+            ->getRepository(
+                $this->getNamespace()
+                . '\\Model\\Entity\\Category');
         $categories = $categoryRepo->findAll();
         usort($categories, function($a, $b) {
             return strcmp($a->getSlug(), $b->getSlug());
@@ -707,7 +716,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         global $_ARRAYLANG;
         $entityClassName = $dataSetIdentifier = null; // Unused
         return array(
-            'Cx\\Modules\\Topics\\Model\\Entity\\Entry' => array(
+            $this->getNamespace() . '\\Model\\Entity\\Entry' => array(
                 'header' => $_ARRAYLANG['TXT_MODULE_TOPICS_ACT_ENTRY'],
                 'fields' => array(
                     'id' => array(),
@@ -749,7 +758,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'filtering' => true,
                 ),
             ),
-            'Cx\\Modules\\Topics\\Model\\Entity\\Category' => array(
+            $this->getNamespace() . '\\Model\\Entity\\Category' => array(
                 'header' => $_ARRAYLANG['TXT_MODULE_TOPICS_ACT_CATEGORY'],
                 'functions' => array(
                     'add' => true,

@@ -31,7 +31,7 @@ class SettingsController extends \Cx\Core\Core\Model\Entity\Controller
         \Cx\Core\Setting\Controller\Setting::init('Topics', 'config');
         if (\Cx\Core\Setting\Controller\Setting::getValue(
             'frontend_fulltext_enable') === null) {
-            self::errorHandler();
+            static::errorHandler();
         }
         \Cx\Core\Setting\Controller\Setting::storeFromPost();
 // TODO: Settings::show() should accept the empty string as $tab_name

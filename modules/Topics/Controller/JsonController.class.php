@@ -25,18 +25,6 @@ class JsonController
 extends \Cx\Core\Core\Model\Entity\Controller
 implements \Cx\Core\Json\JsonAdapter
 {
-    protected $message;
-
-    /**
-     * Set the message
-     * @param   string  $message
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    public function setMessage($message)
-    {
-        $this->message = $message;
-    }
-
     /**
      * Returns the Adapter name
      * @return  string
@@ -60,13 +48,13 @@ implements \Cx\Core\Json\JsonAdapter
     }
 
     /**
-     * Returns the message
+     * Returns the empty string
      * @return  string
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     public function getMessagesAsString()
     {
-        return $this->message;
+        return '';
     }
 
     /**
@@ -102,7 +90,8 @@ implements \Cx\Core\Json\JsonAdapter
         $db = $this->cx->getDb();
         $em = $db->getEntityManager();
         $entryRepo = $em->getRepository(
-            'Cx\\Modules\\Topics\\Model\\Entity\\Entry');
+            $this->getNamespace()
+            . '\\Model\\Entity\\Entry');
         $response = array();
         foreach (\FWLanguage::getActiveFrontendLanguages() as $languages) {
             $languageId = $languages['id'];

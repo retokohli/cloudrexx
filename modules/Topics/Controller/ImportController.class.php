@@ -452,7 +452,8 @@ class ImportController extends \Cx\Core\Core\Model\Entity\Controller
         $created_at = new \DateTime();
         $em = $this->cx->getDb()->getEntityManager();
         $entryRepo = $em->getRepository(
-            'Cx\\Modules\\Topics\\Model\\Entity\\Entry');
+            $this->getNamespace()
+            . '\\Model\\Entity\\Entry');
         foreach (self::$locales as $locale) {
             foreach (self::$descriptions as $reference => $descriptionLocales) {
                 $id = self::$ids[$reference];
@@ -537,9 +538,11 @@ class ImportController extends \Cx\Core\Core\Model\Entity\Controller
         $source_folder_path = self::getSourceFolderPath();
         $em = $this->cx->getDb()->getEntityManager();
         $entryRepo = $em->getRepository(
-            'Cx\\Modules\\Topics\\Model\\Entity\\Entry');
+            $this->getNamespace()
+            . '\\Model\\Entity\\Entry');
         $categoryRepo = $em->getRepository(
-            'Cx\\Modules\\Topics\\Model\\Entity\\Category');
+            $this->getNamespace()
+            . '\\Model\\Entity\\Category');
         foreach (self::$locales as $language => $locale) {
 //\DBG::log("ImportController::assignCategories(): DEBUG: $language / $locale");
             foreach (range(2, 7) as $topics) {
@@ -672,7 +675,8 @@ class ImportController extends \Cx\Core\Core\Model\Entity\Controller
     {
         $em = $this->cx->getDb()->getEntityManager();
         $entryRepo = $em->getRepository(
-            'Cx\\Modules\\Topics\\Model\\Entity\\Entry');
+            $this->getNamespace()
+            . '\\Model\\Entity\\Entry');
         foreach (self::$locales as $locale) {
             $em->clear();
             $this->cx->getDb()->getTranslationListener()

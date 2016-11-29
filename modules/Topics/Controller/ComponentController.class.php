@@ -213,10 +213,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     protected function getDefaultTemplatePath()
     {
-        return $this->cx->getClassLoader()->getFilePath(
-            $this->cx->getWebsitePath() // e.g., "C:/contrexx/c_vbv/"
-            . '/modules/Topics/View/Template/Frontend/Default.html'
-        );
+        return
+            // e.g., "X:/httpdocs/cloudrexx/customizing/modules/Topics"
+            //$this->getDirectory()
+            // -> this is wrong, and useless!
+            $this->cx->getClassLoader()->getFilePath(
+                $this->cx->getWebsitePath() // e.g., "C:/contrexx/c_vbv/"
+                . '/modules/Topics/View/Template/Frontend/Default.html'
+            );
     }
 
 }

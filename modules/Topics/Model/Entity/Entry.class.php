@@ -71,6 +71,9 @@ implements \Gedmo\Translatable\Translatable
      */
     protected $categories;
 
+    /**
+     * Set up the Entry with an empty Collection of associated Categories
+     */
     public function __construct()
     {
         $this->categories = new \Doctrine\Common\Collections\ArrayCollection();

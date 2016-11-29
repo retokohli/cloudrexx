@@ -18,7 +18,7 @@ namespace Cx\Modules\Topics\Controller;
  * @subpackage  module_topics
  */
 class FrontendController
-extends \Cx\Core\Core\Model\Entity\Controller
+extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController
 {
     /**
      * Parse the Topics page
@@ -118,12 +118,12 @@ extends \Cx\Core\Core\Model\Entity\Controller
                 $category = $parameters->getCategory();
                 // getEntries() returns an (Array)Collection
                 $entries = $category->getEntries()->toArray();
-            } else {
             }
         } else {
             // Should apply only if no Category is selected
             $entryRepo = $em->getRepository(
-                'Cx\\Modules\\Topics\\Model\\Entity\\Entry');
+                $this->getNamespace()
+                . '\\Model\\Entity\\Entry');
             $entries = $entryRepo->findAll();
         }
         if (!$entries) {
@@ -316,7 +316,9 @@ extends \Cx\Core\Core\Model\Entity\Controller
         }
         $em = $this->cx->getDb()->getEntityManager();
         $categoryRepo = $em->getRepository(
-            'Cx\\Modules\\Topics\\Model\\Entity\\Category');
+            // e.g., "Cx\\Modules\\Topics"
+            $this->getNamespace()
+            . '\\Model\\Entity\\Category');
         $this->cx->getDb()->getTranslationListener()
             ->setTranslatableLocale($parameters->getLocaleSystem());
         $categories = $categoryRepo->findAll();
