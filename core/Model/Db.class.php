@@ -335,8 +335,9 @@ namespace Cx\Core\Model {
             // Session::getInstance()->read('user')->getUsername();
             $evm->addEventSubscriber($this->loggableListener);
 
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             $sluggableDriverImpl = $config->newDefaultAnnotationDriver(
-                ASCMS_LIBRARY_PATH.'/doctrine/Gedmo/Sluggable'
+                $cx->getCodeBaseLibraryPath() . '/doctrine/Gedmo/Sluggable'
             );
             $chainDriverImpl->addDriver($sluggableDriverImpl,
                 'Gedmo\Sluggable');
@@ -347,7 +348,7 @@ namespace Cx\Core\Model {
             $evm->addEventSubscriber($sluggableListener);
 
             $timestampableDriverImpl = $config->newDefaultAnnotationDriver(
-                ASCMS_LIBRARY_PATH . '/doctrine/Gedmo/Timestampable'
+                $cx->getCodeBaseLibraryPath() . '/doctrine/Gedmo/Timestampable'
             );
             $chainDriverImpl->addDriver($timestampableDriverImpl,
                 'Gedmo\Timestampable');
@@ -361,7 +362,7 @@ namespace Cx\Core\Model {
             // \DBG::log("LANG_ID ".LANG_ID.", language code: $langCode");
             // -> LOG: LANG_ID LANG_ID, language code:
             $translatableDriverImpl = $config->newDefaultAnnotationDriver(
-                ASCMS_LIBRARY_PATH . '/doctrine/Gedmo/Translatable/Entity'
+                $cx->getCodeBaseLibraryPath() . '/doctrine/Gedmo/Translatable/Entity'
             );
             $chainDriverImpl->addDriver($translatableDriverImpl,
                 'Gedmo\Translatable');
