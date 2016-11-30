@@ -341,7 +341,7 @@ namespace Cx\Core\Model {
             );
             $chainDriverImpl->addDriver($sluggableDriverImpl,
                 'Gedmo\Sluggable');
-            $sluggableListener = new \Gedmo\Sluggable\SluggableListener;
+            $sluggableListener = new \Gedmo\Sluggable\SluggableListener();
             // you should set the used annotation reader to listener,
             // to avoid creating new one for mapping drivers
             //$sluggableListener->setAnnotationReader($cachedAnnotationReader);
@@ -352,7 +352,7 @@ namespace Cx\Core\Model {
             );
             $chainDriverImpl->addDriver($timestampableDriverImpl,
                 'Gedmo\Timestampable');
-            $timestampableListener = new \Gedmo\Timestampable\TimestampableListener;
+            $timestampableListener = new \Gedmo\Timestampable\TimestampableListener();
             //$timestampableListener->setAnnotationReader($cachedAnnotationReader);
             $evm->addEventSubscriber($timestampableListener);
 
@@ -368,9 +368,9 @@ namespace Cx\Core\Model {
                 'Gedmo\Translatable');
             // RK: Note:
             // This might have been renamed in newer versions:
-            //$translationListener = new \Gedmo\Translatable\TranslatableListener;
+            //$translationListener = new \Gedmo\Translatable\TranslatableListener();
             // In this Doctrine version, it is present as:
-            $this->translationListener = new \Gedmo\Translatable\TranslationListener;
+            $this->translationListener = new \Gedmo\Translatable\TranslationListener();
             // current translation locale should be set from session
             // or hook later into the listener,
             // but *before the entity manager is flushed*
@@ -384,7 +384,7 @@ namespace Cx\Core\Model {
 
             // RK: Note:
             // This is apparently not yet present in this Doctrine version:
-            //$sortableListener = new \Gedmo\Sortable\SortableListener;
+            //$sortableListener = new \Gedmo\Sortable\SortableListener();
             //$sortableListener->setAnnotationReader($cachedAnnotationReader);
             //$evm->addEventSubscriber($sortableListener);
 
