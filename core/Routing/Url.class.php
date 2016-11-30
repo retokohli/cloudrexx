@@ -845,7 +845,8 @@ class Url {
                 '/';
             if (
                 $this->getMode() != 'backend' &&
-                 static::isVirtualLanguageDirsActive()
+                static::isVirtualLanguageDirsActive() &&
+                !empty($this->getLangDir())
             ) {
                 $relativeUrl .= $this->getLangDir() . '/';
             }
