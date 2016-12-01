@@ -335,7 +335,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
                 $categoryId = null;
                 if (isset($requestParams['cid'])) {
-                    $categoryId = intval($requestParams['clid']);
+                    $categoryId = intval($requestParams['cid']);
                 }
 
                 foreach ($arrLevels as $key => $arrLevel) {
@@ -478,15 +478,21 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 break;
             case 5:
                 //Frontend View Detail
+
+                $categoryId = null;
+                if (isset($requestParams['cid'])) {
+                    $categoryId = intval($requestParams['cid']);
+                }
+
                 $thumbImage = $this->getThumbImage($arrLevels[$intLevelId]['levelPicture']);
                 $objTpl->setVariable(array(
                     $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrLevels[$intLevelId]['levelId'],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]),
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => '<a href="'.$this->getAutoSlugPath(null, $arrLevels[$intCategoryId]['levelId']).'">'.contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]).'</a>',
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => '<a href="'.$this->getAutoSlugPath(null, $categoryId, $intLevelId).'">'.contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]).'</a>',
                     $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrLevels[$intLevelId]['levelDescription'][0],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$thumbImage.'" border="0" alt="'.contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]).'" />',
                     $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevels[$intLevelId]['levelPicture'],
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrLevels[$intLevelId]['levelNumEntries'],
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => isset($arrLevels[$intLevelId]['levelNumEntries']) ? $arrLevels[$intLevelId]['levelNumEntries'] : 0,
                 ));
 
                 // parse GoogleMap
@@ -516,7 +522,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
                 $categoryId = null;
                 if (isset($requestParams['cid'])) {
-                    $categoryId = intval($requestParams['clid']);
+                    $categoryId = intval($requestParams['cid']);
                 }
                 if (isset($requestParams['lid'])) {
                     $levelId = intval($requestParams['lid']);
@@ -544,7 +550,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                             $objCategories = new MediaDirectoryCategory(null, null, 0, $this->moduleName);
 	                        $intCategoryId = null;
                             if (isset($requestParams['cid'])) {
-                                $intCategoryId = intval($requestParams['clid']);
+                                $intCategoryId = intval($requestParams['cid']);
                             }
 	                        if ($levelId == $arrLevel['levelId']) {
                                $this->strNavigationPlaceholder .= $objCategories->listCategories($this->_objTpl, 6, $intCategoryId, null, null, null, intval(count($arrParentIds)+1));
