@@ -60,6 +60,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // locale event listener
         $localeLocaleEventListener = new LocaleLocaleEventListener();
         $evm->addModelListener('postPersist', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
+        $evm->addModelListener('preRemove', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
     }
 
 }

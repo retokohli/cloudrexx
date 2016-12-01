@@ -28,7 +28,6 @@
 
 
 namespace Cx\Core\View\Model\Event;
-use Cx\Core\View\Model\Entity\Frontend;
 
 /**
  * LocaleLocaleEventListener
@@ -96,12 +95,35 @@ class LocaleLocaleEventListener implements \Cx\Core\Event\Model\Entity\EventList
      * Deletes the frontend entities of a deleted locale if no other locale uses them
      * Locales with the same iso1 code use the same frontend entities
      *
+     * $em->flush won't be executed in this method, after removing the frontend entities,
+     * because this would show an cascade error to the user,
+     * because the frontends would be removed before the locale entity.
+     * There's no need to call $em->flush here anyway,
+     * since it is done by the removing of the locale entity
+     *
      * @param $eventArgs
      */
     public function preRemove($eventArgs) {
 
+        $em = $eventArgs->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        // get iso1 code of deleted locale
+        $delEntityLanguage = $eventArgs->getEntity()->getIso1()->getIso1();
         // check if other locales with same iso1 code exist
-
-        // delete frontend entity with deleted locale's iso1 code
+        $qb->select('count(l.id)')
+            ->from('Cx\Core\Locale\Model\Entity\Locale', 'l')
+            ->where('l.iso1 = :iso1')
+            ->setParameter('iso1', $delEntityLanguage);
+        $count = $qb->getQuery()->getSingleScalarResult();
+        if ($count > 1) { // more than one entity means other entities with same iso1 exist
+            return;
+        } else { // no other entries with same iso1 code exist
+            $frontendRepo = $em->getRepository('Cx\Core\View\Model\Entity\Frontend');
+            // delete frontend entity with deleted locale's iso1 code
+            $frontendsByLang = $frontendRepo->findBy(array('language' => $delEntityLanguage));
+            foreach ($frontendsByLang as $frontend) {
+                $em->remove($frontend);
+            }
+        }
     }
 }
