@@ -372,7 +372,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     $objTpl->setVariable(array(
                         $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrLevel['levelId'],
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrLevel['levelName'][0]),
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => $strIndexHeaderTag.'<a href="'.$this->getAutoSlugPath(null, $categoryId, $arrLevel['levelId']).'">'.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</a>',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => $strIndexHeaderTag.'<a href="'.$this->getAutoSlugPath(null, $categoryId, $arrLevel['levelId'], true).'">'.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</a>',
                         $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrLevel['levelDescription'][0],
                         $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrLevel['levelPicture'].'" border="0" alt="'.contrexx_raw2xhtml($arrLevel['levelName'][0]).'" />',
                         $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevel['levelPicture'],

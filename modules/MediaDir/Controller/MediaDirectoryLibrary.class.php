@@ -1009,10 +1009,14 @@ EOF;
      * @param   array   $arrEntry   (Optional) Array definition of the entry to locate
      * @param   integer $categoryId (Optional) ID of the category to locate
      * @param   integer $levelId    (Optional) ID of the level to locate
+     * @param   boolean $useRequestedPageAsFallback    (Optional) Whether or not to use
+     *                                                 the requested page as fallback in
+     *                                                 case no matching mediadir application
+     *                                                 could be found
      * @return  \Cx\Core\Routing\Url    Returns an Url object of the mediadir location.
      *                                  If location is invalid, method will return NULL.
      */
-    public function getAutoSlugPath($arrEntry = null, $categoryId = null, $levelId = null) {
+    public function getAutoSlugPath($arrEntry = null, $categoryId = null, $levelId = null, $useRequestedPageAsFallback = false) {
         $entryId = null;
         $entryName = null;
         $formId = null;
@@ -1078,6 +1082,10 @@ EOF;
         // fetch generic application page
         if (!$page) {
             $page = $this->getMainApplicationPage();
+        }
+
+        if (!$page && $useRequestedPageAsFallback) {
+            $page = $this->cx->getPage();
         }
 
         if (!$page) {
