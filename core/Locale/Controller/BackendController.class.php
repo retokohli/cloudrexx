@@ -320,6 +320,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'showOverview' => false,
                             'showDetail' => false,
                         ),
+                        'frontends' => array(
+                            'showOverview' => false,
+                            'showDetail' => false,
+                        ),
                     ),
                     'functions' => array(
                         'add' => true,
