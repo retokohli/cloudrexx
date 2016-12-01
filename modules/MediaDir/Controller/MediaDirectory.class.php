@@ -347,6 +347,7 @@ class MediaDirectory extends MediaDirectoryLibrary
             }
             $this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelDescription'][0];
             $this->metaImage = $objLevel->arrLevels[$intLevelId]['levelPicture'];
+        }
 
         // parse the category details
         if ($showCategoryDetails && $this->_objTpl->blockExists($this->moduleNameLC.'CategoryLevelDetail')) {
