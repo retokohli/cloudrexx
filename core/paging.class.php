@@ -115,7 +115,6 @@ class Paging
 
         $firstUrl = clone $requestUrl;
         $firstUrl->setParam($parameter_name, 0);
-
         $lastUrl = clone $requestUrl;
         $lastUrl->setParam($parameter_name, ($numof_rows - $corr_value));
 
