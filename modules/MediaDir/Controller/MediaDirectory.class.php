@@ -310,7 +310,9 @@ class MediaDirectory extends MediaDirectoryLibrary
         // check if we should parse the latest entries
         // important: in case we will parse the regular list, then the
         //            latest entries won't be parsed. See code below
-        if (($intCategoryId == 0 && $bolFormUseCategory) || ($intLevelId == 0  && $bolFormUseLevel)) {
+        if (   $this->arrSettings['showLatestEntriesInOverview']
+            && (($intCategoryId == 0 && $bolFormUseCategory) || ($intLevelId == 0  && $bolFormUseLevel)
+        )) {
             $bolLatest = true;
             $intLimitEnd = intval($this->arrSettings['settingsLatestNumOverview']);
         } else {
