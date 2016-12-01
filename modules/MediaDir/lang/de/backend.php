@@ -357,6 +357,7 @@ $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR'] = 'Legacy Verhalten';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_INFO'] = 'Diese Option aktiviert das Legacy-Verhalten, welches folgende Verhaltensweisen aktiviert: %s';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_SEARCH_ON_CATEGORY_VIEW'] = 'Beim Direktzugriff auf eine Kategorie (als ID im Bereich/CMD) oder der Detailansicht eines Eintrages wird der Ebenen- und Kategorienfilter der erweiterten Suchfunktion nicht angezeigt';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_SEARCH_ALL_FORMS'] = 'Für die Prüfung, ob der Ebenen- und/oder Kategorienfilter bei der erweiterten Suchfunktion angezeigt werden soll, werden alle Formulare berücksichtigt (auch inaktive)';
+$_ARRAYLANG['TXT_MEDIADIR_LEGACY_PAGE_TITLE'] = 'Der Seitentitel (Platzhalter TITLE & NAVTITLE) wird nicht auf den Namen der ausgewählten Kategorie oder Ebene gesetzt';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_CATEGORY_LIST'] = 'Die Auflistung der Unterkategorien (Template-Block mediadirCategoriesLevelsList) erfolgt nur, sofern der Template-Block mediadirCategoryLevelDetail vorhanden ist';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_NOT_LATEST'] = 'Sofern der Template-Block mediadirCategoriesLevelsList fehlt, werden auf der Einstiegsseite anstelle der neusten Einträge alle Einträge aufgeführt';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_LATEST_PARSING'] = 'Die Anzeige der neusten Einträge (Template-Block mediadirLatestList) erfolgt nur, sofern der Template-Block mediadirEntryList vorhanden ist';
