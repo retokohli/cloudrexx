@@ -22,7 +22,7 @@ class Frontend extends \Cx\Model\Base\EntityBase {
     protected $channel;
 
     /**
-     * @var \Cx\Core\Locale\Model\Entity\Language
+     * @var \Cx\Core\Locale\Model\Entity\Locale
      */
     protected $localeRelatedByIso1s;
 
@@ -89,9 +89,9 @@ class Frontend extends \Cx\Model\Base\EntityBase {
     /**
      * Set localeRelatedByIso1s
      *
-     * @param \Cx\Core\Locale\Model\Entity\Language $localeRelatedByIso1s
+     * @param \Cx\Core\Locale\Model\Entity\Locale $localeRelatedByIso1s
      */
-    public function setLocaleRelatedByIso1s(\Cx\Core\Locale\Model\Entity\Language $localeRelatedByIso1s)
+    public function setLocaleRelatedByIso1s(\Cx\Core\Locale\Model\Entity\Locale $localeRelatedByIso1s)
     {
         $this->localeRelatedByIso1s = $localeRelatedByIso1s;
     }
@@ -99,7 +99,7 @@ class Frontend extends \Cx\Model\Base\EntityBase {
     /**
      * Get localeRelatedByIso1s
      *
-     * @return \Cx\Core\Locale\Model\Entity\Language $localeRelatedByIso1s
+     * @return \Cx\Core\Locale\Model\Entity\Locale $localeRelatedByIso1s
      */
     public function getLocaleRelatedByIso1s()
     {

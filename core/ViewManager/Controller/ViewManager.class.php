@@ -385,12 +385,12 @@ class ViewManager
     private function parseThemesData($theme, $subType) {
         global $objTemplate,$_ARRAYLANG;
 
-        $frontendLanguages = \FWLanguage::getActiveThemeLanguages();
+        $frontendLanguages = \FWLanguage::getActiveFrontendLanguages();
 
         $activeLanguages   = $theme->getLanguagesByType($subType);
-        foreach ($activeLanguages  as $activatedLanguageCode) {
+        foreach ($activeLanguages  as $activeLanguage) {
             $objTemplate->setVariable(array(
-                'THEME_ACTIVATED_LANG_CODE' => contrexx_raw2xhtml(strtoupper($activatedLanguageCode))
+                'THEME_ACTIVATED_LANG_CODE' => contrexx_raw2xhtml(strtoupper($activeLanguage))
             ));
             $objTemplate->parse('activatedLangCode'. ucfirst($subType));
 
@@ -1259,37 +1259,37 @@ CODE;
         );
 
         if (isset($_POST['themesId'])) {
-            foreach ($_POST['themesId'] as $langCode => $themesId) {
+            foreach ($_POST['themesId'] as $langId => $themesId) {
                 $this->activateFrontendTheme(
-                    $langCode,
+                    $langId,
                     $channels[0],
                     $themesId
                 );
             }
             foreach ($_POST['mobileThemesId'] as $langCode => $mobileThemesId) {
                 $this->activateFrontendTheme(
-                    $langCode,
+                    $langId,
                     $channels[1],
                     $mobileThemesId
                 );
             }
             foreach ($_POST['printThemesId'] as $langCode => $printThemesId) {
                 $this->activateFrontendTheme(
-                    $langCode,
+                    $langId,
                     $channels[2],
                     $printThemesId
                 );
             }
             foreach ($_POST['pdfThemesId'] as $langCode => $pdfThemesId) {
                 $this->activateFrontendTheme(
-                    $langCode,
+                    $langId,
                     $channels[3],
                     $pdfThemesId
                 );
             }
             foreach ($_POST['appThemesId'] as $langCode => $appThemesId) {
                 $this->activateFrontendTheme(
-                    $langCode,
+                    $langId,
                     $channels[4],
                     $appThemesId
                 );
@@ -1299,29 +1299,16 @@ CODE;
                 $this->em->persist($frontend);
             }
             $this->em->flush();
+            // reinit fwlanguage to show updated frontends
+            \FWLanguage::init();
             // reset persisted entities
             $this->frontendsToPersist = array();
 
             $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
         }
-        // get frontend locales
-        $locales = $this->em->getRepository('\Cx\Core\Locale\Model\Entity\Locale')->findAll();
-
-        $defaultLanguage = 'de';
-        // get each language used in one/several frontend locale/s
-        $frontendLanguages = array();
-        foreach ($locales as $locale) {
-            $language = $locale->getIso1();
-            // define the default lang over the iso1 code of default locale, since lang is now identified by iso1 code
-            if ($locale->getId() == \FWLanguage::getDefaultLangId()) {
-                $defaultLanguage = $locale->getIso1();
-            }
-            // use iso1 as key to avoid dublicated languages
-            $frontendLanguages[$language->getIso1()] = $language;
-        }
-        // parse row for every language used in one/several frontend locale/s
-        foreach ($frontendLanguages as $frontendLanguage) {
-            if (!$this->isInLanguageFullMode() && $frontendLanguage->getIso1() != $defaultLanguage) {
+        // parse row for every frontend locale
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $frontendLanguage) {
+            if (!$this->isInLanguageFullMode() && !$frontendLanguage['is_default']) {
                 continue;
             }
 
@@ -1331,41 +1318,16 @@ CODE;
                 $class="row2";
             }
 
-            // load themeId for every channel of a language
-            $themeId = 0;
-            $mobileThemeId = 0;
-            $printThemeId = 0;
-            $pdfThemeId = 0;
-            $appThemeId = 0;;
-            foreach($frontendLanguage->getFrontends() as $frontend) {
-                switch ($frontend->getChannel()) {
-                    case $channels[0]:
-                        $themeId = $frontend->getTheme();
-                        break;
-                    case $channels[1]:
-                        $mobileThemeId = $frontend->getTheme();
-                        break;
-                    case $channels[2]:
-                        $printThemeId = $frontend->getTheme();
-                        break;
-                    case $channels[3]:
-                        $pdfThemeId = $frontend->getTheme();
-                        break;
-                    case $channels[4]:
-                        $appThemeId = $frontend->getTheme();
-                        break;
-                }
-            }
-
             $objTemplate->setVariable(array(
                 'THEMES_ROWCLASS'             => $class,
-                'THEMES_LANG_ID'              => $frontendLanguage->getId(),
-                'THEMES_LANG_NAME'            => $frontendLanguage,
-                'THEMES_TEMPLATE_MENU'        => $this->_getDropdownActivated($themeId),
-                'THEMES_MOBILE_TEMPLATE_MENU' => $this->_getDropdownActivated($mobileThemeId),
-                'THEMES_PRINT_TEMPLATE_MENU'  => $this->_getDropdownActivated($printThemeId),
-                'THEMES_PDF_TEMPLATE_MENU'    => $this->_getDropdownActivated($pdfThemeId),
-                'THEMES_APP_TEMPLATE_MENU'    => $this->_getDropdownActivated($appThemeId),
+                'THEMES_LANG_ID'              => $frontendLanguage['id'],
+                'THEMES_LANG_SHORTNAME'       => $frontendLanguage['lang'],
+                'THEMES_LANG_NAME'            => $frontendLanguage['name'],
+                'THEMES_TEMPLATE_MENU'        => $this->_getDropdownActivated($frontendLanguage['themesid']),
+                'THEMES_MOBILE_TEMPLATE_MENU' => $this->_getDropdownActivated($frontendLanguage['mobile_themes_id']),
+                'THEMES_PRINT_TEMPLATE_MENU'  => $this->_getDropdownActivated($frontendLanguage['print_themes_id']),
+                'THEMES_PDF_TEMPLATE_MENU'    => $this->_getDropdownActivated($frontendLanguage['pdf_themes_id']),
+                'THEMES_APP_TEMPLATE_MENU'    => $this->_getDropdownActivated($frontendLanguage['app_themes_id']),
             ));
             $objTemplate->parse('themesLangRow');
             $i++;
@@ -2723,11 +2685,11 @@ CODE;
      * @param string channel used channel of the frontend entity
      * @param int themeId theme id of the frontend entity
      */
-    private function activateFrontendTheme($langCode, $channel, $themeId) {
+    private function activateFrontendTheme($langId, $channel, $themeId) {
         $frontendRepo = $this->em->getRepository('\Cx\Core\View\Model\Entity\Frontend');
         // search for frontend with given language and channel
         $criteria = array(
-            'language' => $langCode,
+            'language' => $langId,
             'channel' => $channel
         );
         $frontend = $frontendRepo->findOneBy($criteria);

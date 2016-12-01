@@ -79,14 +79,12 @@ class ThemeRepository
         }
 
         // select theme of default language if no language id has been provided
-        if ($languageId) {
-            $iso1 = \FWLanguage::getLanguageParameter($languageId, 'iso1');
-        } else { // get iso1 of default language
-            $iso1 = \FWLanguage::getLanguageParameter(\FWLanguage::getDefaultLangId(), 'iso1');
+        if (!isset($languageId)) {
+            $languageId = \FWLanguage::getDefaultLangId();
         }
 
         $criteria = array(
-            'language' => $iso1,
+            'language' => $languageId,
             'channel' => $channel
         );
         $frontendRepo = \Cx\Core\Core\Controller\Cx::instanciate()
@@ -335,14 +333,12 @@ class ThemeRepository
 
 
         // select theme of default language if no language id has been provided
-        if ($languageId) {
-            $iso1 = \FWLanguage::getLanguageParameter($languageId, 'iso1');
-        } else { // get iso1 of default language
-            $iso1 = \FWLanguage::getLanguageParameter(\FWLanguage::getDefaultLangId(), 'iso1');
+        if (!isset($languageId)) {
+            $languageId = \FWLanguage::getDefaultLangId();
         }
         // only load frontends with the given language and theme
         $criteria = array(
-            'language' => $iso1,
+            'language' => $languageId,
             'theme' => $id
         );
 

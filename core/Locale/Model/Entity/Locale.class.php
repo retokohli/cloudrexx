@@ -41,9 +41,15 @@ class Locale extends \Cx\Model\Base\EntityBase {
      */
     protected $sourceLanguage;
 
+    /**
+     * @var \Cx\Core\View\Model\Entity\Frontend
+     */
+    protected $frontends;
+
     public function __construct()
     {
         $this->locales = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->frontends = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -174,6 +180,26 @@ class Locale extends \Cx\Model\Base\EntityBase {
     public function getSourceLanguage()
     {
         return $this->sourceLanguage;
+    }
+
+    /**
+     * Add frontends
+     *
+     * @param \Cx\Core\View\Model\Entity\Frontend $frontends
+     */
+    public function addFrontends(\Cx\Core\View\Model\Entity\Frontend $frontends)
+    {
+        $this->frontends[] = $frontends;
+    }
+
+    /**
+     * Get frontends
+     *
+     * @return \Doctrine\Common\Collections\Collection $frontends
+     */
+    public function getFrontends()
+    {
+        return $this->frontends;
     }
 
     public function __toString()

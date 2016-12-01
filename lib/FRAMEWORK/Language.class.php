@@ -101,9 +101,8 @@ class FWLanguage
         // frontend locales
         foreach($localeRepo->findAll() as $locale) {
             // get the theme for each channel of the locale's language
-            $frontends = $locale->getIso1()->getFrontends();
             $themeId = $mobileThemeId = $printThemeId = $pdfThemeId = $appThemeId = 0;
-            foreach ($frontends as $frontend) {
+            foreach ($locale->getFrontends() as $frontend) {
                 switch ($frontend->getChannel()) {
                     case \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE:
                         $mobileThemeId = $frontend->getTheme();
@@ -626,22 +625,4 @@ class FWLanguage
         return $arr;
     }
 
-    /**
-     * Returns the iso1 codes used in any frontend locale
-     * Since two locales with the same iso1 code us the same theme,
-     * a iso1 code is returned only once
-     *
-     * @return array Contains the iso1 codes of the active frontend locales
-     */
-    public static function getActiveThemeLanguages() {
-        if (empty(self::$arrFrontendLanguages)) {
-            self::init();
-        }
-        $arr = array();
-        foreach (self::$arrFrontendLanguages as $id => $lang) {
-            $arr[] = $lang['iso1'];
-        }
-        $arr = array_unique($arr);
-        return $arr;
-    }
 }

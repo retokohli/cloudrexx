@@ -223,7 +223,8 @@ class Theme extends \Cx\Model\Base\EntityBase
         );
         $frontends = $frontendRepo->findBy($criteria);
         foreach ($frontends as $frontend) {
-            $languagesWithThisTheme[] = $frontend->getLanguage();
+            $locale = $frontend->getLocaleRelatedByIso1s();
+            $languagesWithThisTheme[$locale->getId()] = $locale->getShortForm();
         }
 
         return $languagesWithThisTheme;
@@ -245,7 +246,7 @@ class Theme extends \Cx\Model\Base\EntityBase
         );
         $frontends = $frontendRepo->findBy($criteria);
         foreach($frontends as $frontend) {
-            $languagesWithThisTheme[] = $frontend->getLanguage();
+            $languagesWithThisTheme[] = $frontend->getLocaleRelatedByIso1s()->getShortForm();
         }
         return implode(', ', $languagesWithThisTheme);
     }
