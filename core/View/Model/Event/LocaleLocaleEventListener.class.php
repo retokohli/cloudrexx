@@ -59,7 +59,7 @@ class LocaleLocaleEventListener implements \Cx\Core\Event\Model\Entity\EventList
         $em = $eventArgs->getEntityManager();
         // get persisted locale
         $persistedLocale = $eventArgs->getEntity();
-        $persistedIso1 = $persistedLocale->getSourceLanguage()->getIso1();
+        $persistedIso1 = $persistedLocale->getIso1()->getIso1();
 
         $frontendRepo = $em->getRepository('Cx\Core\View\Model\Entity\Frontend');
         // check if frontend entity with new locale as source language already exists
