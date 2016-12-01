@@ -357,6 +357,16 @@ class MediaDirectory extends MediaDirectoryLibrary
             }
         }
 
+        // check show entries
+        $showEntries = $showEntriesOfLevel || $showEntriesOfCategory || $bolLatest || (!$bolFormUseCategory && !$bolFormUseLevel);
+
+        // fetch entries
+        if ($showEntries) {
+            $objEntries = new MediaDirectoryEntry($this->moduleName);
+// TODO: Show all entries regardless of set pagging
+            $objEntries->getEntries(null,$intLevelId,$intCategoryId,null,$bolLatest,null,1,$intLimitStart, $intLimitEnd, null, null, $intCmdFormId);
+        }
+
         // parse the level details
         if ($showLevelDetails && $this->_objTpl->blockExists($this->moduleNameLC.'CategoryLevelDetail')) {
             $objLevel->listLevels($this->_objTpl, 5, $intLevelId);
@@ -385,16 +395,6 @@ class MediaDirectory extends MediaDirectoryLibrary
             }
             $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catDescription'][0];
             $this->metaImage = $objCategory->arrCategories[$intCategoryId]['catPicture'];
-        }
-
-        // check show entries
-        $showEntries = $showEntriesOfLevel || $showEntriesOfCategory || $bolLatest || (!$bolFormUseCategory && !$bolFormUseLevel);
-
-        // fetch entries
-        if ($showEntries) {
-            $objEntries = new MediaDirectoryEntry($this->moduleName);
-// TODO: Show all entries regardless of set pagging
-            $objEntries->getEntries(null,$intLevelId,$intCategoryId,null,$bolLatest,null,1,$intLimitStart, $intLimitEnd, null, null, $intCmdFormId);
         }
 
         //list levels / categories
