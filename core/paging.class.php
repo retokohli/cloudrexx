@@ -116,25 +116,15 @@ class Paging
         $firstUrl = clone $requestUrl;
         $firstUrl->setParam($parameter_name, 0);
 
-        $link = new \Cx\Core\Html\Model\Entity\HtmlElement('link');
-        $link->setAttribute('href', $firstUrl->toString());
-        $link->setAttribute('rel', 'first');
-        $headIncludes[] = $link;
-
         $lastUrl = clone $requestUrl;
         $lastUrl->setParam($parameter_name, ($numof_rows - $corr_value));
-
-        $link = new \Cx\Core\Html\Model\Entity\HtmlElement('link');
-        $link->setAttribute('href', $lastUrl->toString());
-        $link->setAttribute('rel', 'last');
-        $headIncludes[] = $link;
 
         // Set up the base navigation entries
         $array_paging = array(
             'first' => '<a class="pagingFirst" href="'.
-                Cx\Core\Routing\Url::encode_amp($firstUrl).'">',
+                Cx\Core\Routing\Url::encode_amp($firstUrl).'" rel="nofollow">',
             'last'  => '<a class="pagingLast" href="'.
-                Cx\Core\Routing\Url::encode_amp($lastUrl).'">',
+                Cx\Core\Routing\Url::encode_amp($lastUrl).'" rel="nofollow">',
             'total' => $numof_rows,
             'lower' => ($numof_rows ? $position + 1 : 0),
             'upper' => $numof_rows,
