@@ -339,9 +339,28 @@ class MediaDirectory extends MediaDirectoryLibrary
             $objLevel->listLevels($this->_objTpl, 5, $intLevelId);
         }
 
+        if ($objLevel) {
+            // only set page's title to level's name
+            // if not in legacy mode
+            if (!$this->arrSettings['legacyBehavior']) {
+                $this->pageTitle = $objLevel->arrLevels[$intLevelId]['levelName'][0];
+            }
+            $this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelDescription'][0];
+            $this->metaImage = $objLevel->arrLevels[$intLevelId]['levelPicture'];
+
         // parse the category details
         if ($showCategoryDetails && $this->_objTpl->blockExists($this->moduleNameLC.'CategoryLevelDetail')) {
             $objCategory->listCategories($this->_objTpl, 5, $intCategoryId);
+        }
+
+        if ($objCategory) {
+            // only set page's title to category's name
+            // if not in legacy mode
+            if (!$this->arrSettings['legacyBehavior']) {
+                $this->pageTitle = $objCategory->arrCategories[$intCategoryId]['catName'][0];
+            }
+            $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catDescription'][0];
+            $this->metaImage = $objCategory->arrCategories[$intCategoryId]['catPicture'];
         }
 
         // check show entries
