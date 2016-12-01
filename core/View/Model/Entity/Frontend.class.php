@@ -27,12 +27,6 @@ class Frontend extends \Cx\Model\Base\EntityBase {
     protected $localeRelatedByIso1s;
 
     /**
-     * @var \Cx\Core\View\Model\Entity\Frontend
-     */
-    protected $skin;
-
-
-    /**
      * Set language
      *
      * @param string $language
@@ -110,25 +104,5 @@ class Frontend extends \Cx\Model\Base\EntityBase {
     public function getLocaleRelatedByIso1s()
     {
         return $this->localeRelatedByIso1s;
-    }
-
-    /**
-     * Set skin
-     *
-     * @param \Cx\Core\View\Model\Entity\Frontend $skin
-     */
-    public function setSkin(\Cx\Core\View\Model\Entity\Frontend $skin)
-    {
-        $this->skin = $skin;
-    }
-
-    /**
-     * Get skin
-     *
-     * @return \Cx\Core\View\Model\Entity\Frontend $skin
-     */
-    public function getSkin()
-    {
-        return $this->skin;
     }
 }
