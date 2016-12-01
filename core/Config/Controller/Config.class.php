@@ -537,6 +537,7 @@ class Config
             // otherwise, cloudrexx does not activate 'https' when the server doesn't have an ssl certificate installed
             $request->setConfig(array(
                 'ssl_verify_peer' => false,
+                'ssl_verify_host' => false,
             ));
 
             // send the request
