@@ -214,6 +214,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function resolve($parts, $page) {
         if (empty($parts)) {
+            $this->setCanonicalPage($page);
             return;
         }
 
@@ -241,6 +242,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $formId= $arrForm['formId'];
                         break;
                     }
+                }
+
+                if (!$formId) {
+                    $objMediaDirectoryEntry->getEntries(intval($entryId),null,null,null,null,null,1,null,1);
+                    $formDefinition = $objMediaDirectoryEntry->getFormDefinitionOfEntry($entryId);
+                    $formId = $formDefinition['formId'];
                 }
 
                 $detailPage = $objMediaDirectoryEntry->getApplicationPageByEntry($formId);
@@ -290,29 +297,29 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($levelId || $categoryId) {
             $this->setCanonicalPage($detailPage);
         }
-
-        /*if (empty($parts)) {
-            return;
-        }
-
-        $objMediaDirectoryEntry = new MediaDirectoryEntry($this->getName());
-        if (!$objMediaDirectoryEntry->arrSettings['usePrettyUrls']) {
-            return;
-        }
-
-        $cmd = $page->getCmd();
-        if ($cmd == 'detail' || substr($cmd,0,6) == 'detail') {
-            $entrySlug = array_pop($parts);
-        }
-
-        $entryId = $objMediaDirectoryEntry->findOneByName($entrySlug);
-        if ($entryId) {
-            $this->cx->getRequest()->getUrl()->setParam('eid', $entryId);
-        }*/
     }
 
     protected function setCanonicalPage($canonicalPage) {
-        $canonicalUrl = \Cx\Core\Routing\Url::fromPage($canonicalPage, $this->cx->getRequest()->getUrl()->getParamArray());
+        $canonicalUrlArguments = array('eid', 'cid', 'lid', 'preview', 'pos');
+        if (in_array('eid', array_keys($this->cx->getRequest()->getUrl()->getParamArray()))) {
+            $canonicalUrlArguments = array_filter($canonicalUrlArguments, function($key) {return !in_array($key, array('cid', 'lid'));});
+        }
+
+        // filter out all non-relevant URL arguments
+        /*$params = array_filter(
+            $this->cx->getRequest()->getUrl()->getParamArray(),
+            function($key) {return in_array($key, $canonicalUrlArguments);},
+            \ARRAY_FILTER_USE_KEY
+        );*/
+
+        foreach ($this->cx->getRequest()->getUrl()->getParamArray() as $key => $value) {
+            if (!in_array($key, $canonicalUrlArguments)) {
+                continue;
+            }
+            $params[$key] = $value;
+        }
+
+        $canonicalUrl = \Cx\Core\Routing\Url::fromPage($canonicalPage, $params);
         header('Link: <' . $canonicalUrl->toString() . '>; rel="canonical"');
     }
 }

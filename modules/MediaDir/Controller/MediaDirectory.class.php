@@ -237,14 +237,13 @@ class MediaDirectory extends MediaDirectoryLibrary
         $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
 
         if($this->arrSettings['settingsShowLevels'] == 1) {
-            if(intval($arrIds[0]) != 0) {
-                $intLevelId = intval($arrIds[0]);
-            } else {
-                $intLevelId = 0;
-            }
-
             if (isset($requestParams['lid'])) {
                 $intLevelId = intval($requestParams['lid']);
+            } elseif (intval($arrIds[0]) != 0) {
+                $intLevelId = intval($arrIds[0]);
+                $this->cx->getRequest()->getUrl()->setParam('lid', $intLevelId);
+            } else {
+                $intLevelId = 0;
             }
 
             if(!empty($arrIds[1])) {
@@ -262,14 +261,13 @@ class MediaDirectory extends MediaDirectoryLibrary
             }
         }
 
-        if($intCategoryCmd != 0) {
-            $intCategoryId = intval($intCategoryCmd);
-        } else {
-            $intCategoryId = 0;
-        }
-
         if (isset($requestParams['cid'])) {
             $intCategoryId = intval($requestParams['cid']);
+        } elseif ($intCategoryCmd != 0) {
+            $intCategoryId = intval($intCategoryCmd);
+            $this->cx->getRequest()->getUrl()->setParam('cid', $intCategoryId);
+        } else {
+            $intCategoryId = 0;
         }
 
         // show block {$this->moduleNameLC}Overview
