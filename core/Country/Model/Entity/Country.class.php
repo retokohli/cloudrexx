@@ -26,6 +26,11 @@ class Country extends \Cx\Model\Base\EntityBase {
      */
     protected $locales;
 
+    /**
+     * Country constructor.
+     *
+     * Creates new instance of Cx\Core\Country\Model\Entity\Country
+     */
     public function __construct()
     {
         $this->locales = new \Doctrine\Common\Collections\ArrayCollection();
