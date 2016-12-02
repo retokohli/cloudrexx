@@ -1757,7 +1757,7 @@ class Config
      */
     public static function getBackendLanguages() {
         $cx = Cx::instanciate();
-        $em = $cx->getDB()->getEntityManager();
+        $em = $cx->getDb()->getEntityManager();
         $backendLangRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Backend');
         $languages = $backendLangRepo->findAll();
         $display = array();
@@ -1775,7 +1775,7 @@ class Config
      */
     public static function getLocales() {
         $cx = Cx::instanciate();
-        $em = $cx->getDB()->getEntityManager();
+        $em = $cx->getDb()->getEntityManager();
         $localeRepository = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
         $locales = $localeRepository->findAll();
         $display = array();
