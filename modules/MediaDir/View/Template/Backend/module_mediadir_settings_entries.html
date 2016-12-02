@@ -227,6 +227,18 @@ function toggleDisplayDourationNotification(){
     </tr>
 </table>
 <br />
+<table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+    <tr>
+        <th colspan="2">{TXT_MEDIADIR_BEHAVIOR}</th>
+    </tr>
+    <tr class="row1">
+        <td width="280">{TXT_MEDIADIR_LEGACY_BEHAVIOR}</td>
+        <td>
+            <input type="radio" name="legacyBehavior" value="1" {MEDIADIR_SETTINGS_LEGACY_BEHAVIOR_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="legacyBehavior" value="0" {MEDIADIR_SETTINGS_LEGACY_BEHAVIOR_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_LEGACY_BEHAVIOR_INFO}</span>
+        </td>
+    </tr>
+</table>
+<br />
 <input type="submit" name="submitSettingsForm" value="{TXT_MEDIADIR_SUBMIT}" />
 </form>
 <!-- END modulemediadir_settings_entries.html -->
