@@ -48,6 +48,8 @@ class MediaDirectory extends MediaDirectoryLibrary
 
     var $pageTitle;
     var $metaTitle;
+    var $metaDescription;
+    var $metaImage;
 
 
     var $arrNavtree = array();
@@ -183,8 +185,20 @@ class MediaDirectory extends MediaDirectoryLibrary
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         $intCmdFormId = 0;
+        $listCategoriesAndLevels = false;
+        $showEntriesOfLevel = false;
+        $showEntriesOfCategory = false;
+        $showLevelDetails = false;
+        $showCategoryDetails = false;
+        $bolLatest = false;
+
+        // whether the loaded form (if at all) does use categories or not
         $bolFormUseCategory = false;
+
+        // whether the loaded form (if at all) does use levels or not
         $bolFormUseLevel = false;
+
+        $intLimitStart = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
 
         //search existing category&level blocks
         $arrExistingBlocks = array();
@@ -237,31 +251,6 @@ class MediaDirectory extends MediaDirectoryLibrary
             $this->_objTpl->touchBlock($this->moduleNameLC.'Overview');
         }
 
-        //get navtree
-        if($this->_objTpl->blockExists($this->moduleNameLC.'Navtree') && ($intCategoryId != 0 || $intLevelId != 0)){
-            $this->getNavtree($intCategoryId, $intLevelId);
-        }
-
-        //get searchform
-        if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
-            $objSearch = new MediaDirectorySearch($this->moduleName);
-            $objSearch->getSearchform($this->_objTpl, 1);
-        }
-
-        //get level / category details
-        if($this->_objTpl->blockExists($this->moduleNameLC.'CategoryLevelDetail')){
-            if ($intCategoryId == 0 && $intLevelId != 0 && $this->arrSettings['settingsShowLevels'] == 1) {
-                $objLevel = new MediaDirectoryLevel($intLevelId, null, 0, $this->moduleName);
-                $objLevel->listLevels($this->_objTpl, 5, $intLevelId);
-            }
-
-            if($intCategoryId != 0) {
-                $objCategory = new MediaDirectoryCategory($intCategoryId, null, 0, $this->moduleName);
-                $objCategory->listCategories($this->_objTpl, 5, $intCategoryId);
-
-            }
-        }
-
         //check form cmd
         if(!empty($_GET['cmd']) && $arrIds[0] != 'search') {
             $arrFormCmd = array();
@@ -278,16 +267,93 @@ class MediaDirectory extends MediaDirectoryLibrary
             }
         }
 
-        //list levels / categories
-        if($this->_objTpl->blockExists($this->moduleNameLC.'CategoriesLevelsList')){
-            if($intCmdFormId != 0) {
+        // check if categories and levels shall be listed
+        if ($this->_objTpl->blockExists($this->moduleNameLC.'CategoriesLevelsList')){
+            $listCategoriesAndLevels = true;
+            if ($intCmdFormId != 0) {   
                 $bolFormUseCategory = $objForms->arrForms[intval($intCmdFormId)]['formUseCategory'];
                 $bolFormUseLevel = $objForms->arrForms[intval($intCmdFormId)]['formUseLevel'];
-            } else {
+            } else {     
                 $bolFormUseCategory = true;
                 $bolFormUseLevel = $this->arrSettings['settingsShowLevels'];
             }
+        }
 
+        // check if latest entries shall be listed instead of the regular listing
+        if (($intCategoryId == 0 && $bolFormUseCategory) || ($intLevelId == 0  && $bolFormUseLevel)) {
+            $bolLatest = true;
+            $intLimitEnd = intval($this->arrSettings['settingsLatestNumOverview']);
+        } else {
+            $bolLatest   = false;
+            $intLimitEnd = intval($this->arrSettings['settingsPagingNumEntries']);
+            if (    !empty($intCmdFormId)
+                &&  !empty($objForms->arrForms[$intCmdFormId]['formEntriesPerPage'])
+            ) {
+                $intLimitEnd = $objForms->arrForms[$intCmdFormId]['formEntriesPerPage'];
+            }
+        }
+
+        //get navtree
+        if($this->_objTpl->blockExists($this->moduleNameLC.'Navtree') && ($intCategoryId != 0 || $intLevelId != 0)){
+            $this->getNavtree($intCategoryId, $intLevelId);
+        }
+
+        //get searchform
+        if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
+            $objSearch = new MediaDirectorySearch($this->moduleName);
+            $objSearch->getSearchform($this->_objTpl, 1);
+        }
+
+        //get level / category details
+        if($this->_objTpl->blockExists($this->moduleNameLC.'CategoryLevelDetail')){
+            if ($intCategoryId == 0 && $intLevelId != 0 && $this->arrSettings['settingsShowLevels']) {
+                $objLevel = new MediaDirectoryLevel($intLevelId, null, 0, $this->moduleName);
+                $showLevelDetails = true;
+            }
+
+            if($intCategoryId != 0) {
+                $objCategory = new MediaDirectoryCategory($intCategoryId, null, 0, $this->moduleName);
+                $showCategoryDetails = true;
+            }
+        }
+
+        // check show entries
+        $showEntries = $showEntriesOfLevel || $showEntriesOfCategory || $bolLatest || (!$bolFormUseCategory && !$bolFormUseLevel);
+
+        if ($showEntries) {
+            $objEntries = new MediaDirectoryEntry($this->moduleName);
+// TODO: Show all entries regardless of set pagging
+            $objEntries->getEntries(null,$intLevelId,$intCategoryId,null,$bolLatest,null,1,$intLimitStart, $intLimitEnd, null, null, $intCmdFormId);
+        }
+
+        if ($showLevelDetails) {
+            $objLevel->listLevels($this->_objTpl, 5, $intLevelId);
+            $showEntriesOfLevel = $objLevel->arrLevels[$intLevelId]['levelShowEntries'];
+
+            // only set page's title to level's name
+            // if not in legacy mode
+            if (!$this->arrSettings['legacyBehavior']) {
+                $this->pageTitle = $objLevel->arrLevels[$intLevelId]['levelName'][0];
+            }
+            $this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelDescription'][0];
+            $this->metaImage = $objLevel->arrLevels[$intLevelId]['levelPicture'];
+        }
+
+        if ($showCategoryDetails) {
+            $objCategory->listCategories($this->_objTpl, 5, $intCategoryId);
+            $showEntriesOfCategory = $objCategory->arrCategories[$intCategoryId]['catShowEntries'];
+
+            // only set page's title to category's name
+            // if not in legacy mode
+            if (!$this->arrSettings['legacyBehavior']) {
+                $this->pageTitle = $objCategory->arrCategories[$intCategoryId]['catName'][0];
+            }
+            $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catDescription'][0];
+            $this->metaImage = $objCategory->arrCategories[$intCategoryId]['catPicture'];
+        }
+
+        //list levels / categories
+        if ($listCategoriesAndLevels) {
             if($this->arrSettings['settingsShowLevels'] == 1 && $intCategoryId == 0 && $bolFormUseLevel) {
                 $objLevels = new MediaDirectoryLevel(null, $intLevelId, 1, $this->moduleName);
                 $objCategories = new MediaDirectoryCategory(null, $intCategoryId, 1, $this->moduleName);
@@ -315,48 +381,30 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         //list entries
-        if($this->_objTpl->blockExists($this->moduleNameLC.'EntryList')){
-            $intLimitStart = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+        if(!$this->_objTpl->blockExists($this->moduleNameLC.'EntryList')){
+            return;
+        }
 
-            //check category / level
-            if(($intCategoryId == 0 && $bolFormUseCategory) || ($intLevelId == 0  && $bolFormUseLevel)) {
-                $bolLatest = true;
-                $intLimitEnd = intval($this->arrSettings['settingsLatestNumOverview']);
-            } else {
-                $bolLatest   = false;
-                $intLimitEnd = intval($this->arrSettings['settingsPagingNumEntries']);
-                if (    !empty($intCmdFormId)
-                    &&  !empty($objForms->arrForms[$intCmdFormId]['formEntriesPerPage'])
-                ) {
-                    $intLimitEnd = $objForms->arrForms[$intCmdFormId]['formEntriesPerPage'];
+        if ($showEntries) {
+            $objEntries->listEntries($this->_objTpl, 2);
+            
+            if(!$bolLatest) {
+                $intNumEntries = intval($objEntries->countEntries());
+                if($intNumEntries > $intLimitEnd) {
+                    $objUrl           = clone \Env::get('Resolver')->getUrl();                        
+                    $currentUrlParams = $objUrl->getSuggestedParams();
+                    $strPaging = getPaging($intNumEntries, $intLimitStart, $currentUrlParams, "<b>".$_ARRAYLANG['TXT_MEDIADIR_ENTRIES']."</b>", true, $intLimitEnd);
+                    $this->_objTpl->setGlobalVariable(array(
+                        $this->moduleLangVar.'_PAGING' =>  $strPaging
+                    ));
                 }
             }
+        }
 
-            //check show entries
-            if((isset($objLevel) && $objLevel->arrLevels[$intLevelId]['levelShowEntries'] == 1) || (isset($objCategory) && $objCategory->arrCategories[$intCategoryId]['catShowEntries'] == 1) || $bolLatest == true || (!$bolFormUseCategory && !$bolFormUseLevel)) {
-                $objEntries = new MediaDirectoryEntry($this->moduleName);
-
-                $objEntries->getEntries(null,$intLevelId,$intCategoryId,null,$bolLatest,null,1,$intLimitStart, $intLimitEnd, null, null, $intCmdFormId);
-                $objEntries->listEntries($this->_objTpl, 2);
-
-                if(!$bolLatest) {
-                    $intNumEntries = intval($objEntries->countEntries());
-                    if($intNumEntries > $intLimitEnd) {
-                        $objUrl           = clone \Env::get('Resolver')->getUrl();
-                        $currentUrlParams = $objUrl->getSuggestedParams();
-                        $strPaging = getPaging($intNumEntries, $intLimitStart, $currentUrlParams, "<b>".$_ARRAYLANG['TXT_MEDIADIR_ENTRIES']."</b>", true, $intLimitEnd);
-                        $this->_objTpl->setGlobalVariable(array(
-                            $this->moduleLangVar.'_PAGING' =>  $strPaging
-                        ));
-                    }
-                }
-            }
-
-            //no entries found
-            if(empty($objEntries->arrEntries)) {
-                $this->_objTpl->hideBlock($this->moduleNameLC.'EntryList');
-                $this->_objTpl->clearVariables();
-            }
+        //no entries found
+        if(empty($objEntries->arrEntries)) {
+            $this->_objTpl->hideBlock($this->moduleNameLC.'EntryList');
+            $this->_objTpl->clearVariables();
         }
     }
 
@@ -437,6 +485,9 @@ class MediaDirectory extends MediaDirectoryLibrary
 
                 $objEntries->listEntries($this->_objTpl, 2);
 
+                // parse GoogleMap
+                $this->parseGoogleMapPlaceholder($this->_objTpl, $this->moduleLangVar.'_SEARCH_GOOGLE_MAP');
+                
                 $urlParams = $_GET;
                 unset($urlParams['pos']);
                 unset($urlParams['section']);
@@ -498,9 +549,69 @@ class MediaDirectory extends MediaDirectoryLibrary
             $objEntry->listEntries($this->_objTpl, 2);
             $objEntry->updateHits($intEntryId);
 
-            //set meta title
-            $this->metaTitle .= " - ".$objEntry->arrEntries[$intEntryId]['entryFields'][0];
-            $this->pageTitle = $objEntry->arrEntries[$intEntryId]['entryFields'][0];
+            //set meta attributes
+            $entries = new MediaDirectoryEntry($this->moduleName);
+            $entries->getEntries($intEntryId, $intLevelId, $intCategoryId, null, null, null, 1, null, 1);
+            $entry = $entries->arrEntries[$intEntryId];
+
+            $objInputfields = new MediaDirectoryInputfield($entry['entryFormId'], false, $entry['entryTranslationStatus'], $this->moduleName);
+            $inputFields = $objInputfields->getInputfields();
+
+            $titleChanged = false;
+            $contentChanged = false;
+
+            foreach ($inputFields as $arrInputfield) {
+                $contextType = isset($arrInputfield['context_type']) ? $arrInputfield['context_type'] : '';
+                if (!in_array($contextType, array('title', 'content', 'image'))) {
+                    continue;
+                }
+                $strType = isset($arrInputfield['type_name']) ? $arrInputfield['type_name'] : '';
+                $strInputfieldClass = "\Cx\Modules\MediaDir\Model\Entity\MediaDirectoryInputfield" . ucfirst($strType);
+                try {
+                    $objInputfield = safeNew($strInputfieldClass, $this->moduleName);
+                    $arrTranslationStatus = (contrexx_input2int($arrInputfield['type_multi_lang']) == 1)
+                        ? $entry['entryTranslationStatus']
+                        : null;
+                    $arrInputfieldContent = $objInputfield->getContent($entry['entryId'], $arrInputfield, $arrTranslationStatus);
+                    switch ($contextType) {
+                        case 'title':
+                            $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE'];
+                            if ($inputfieldValue) {
+                                $this->metaTitle .= ' - ' . $inputfieldValue;
+                                $this->pageTitle = $inputfieldValue;
+                            }
+                            $titleChanged = true;
+                            break;
+                        case 'content':
+                            $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE'];
+                            if ($inputfieldValue) {
+                                $this->metaDescription = $inputfieldValue;
+                            }
+                            $contentChanged = true;
+                            break;
+                        case 'image':
+                            $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE_SRC'];
+                            if ($inputfieldValue) {
+                                $this->metaImage = $inputfieldValue;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (\Exception $e) {
+                    \DBG::log($e->getMessage());
+                    continue;
+                }
+            }
+
+            $firstInputfieldValue = $entries->arrEntries[$intEntryId]['entryFields'][0];
+            if (!$titleChanged && $firstInputfieldValue) {
+                $this->pageTitle = $firstInputfieldValue;
+                $this->metaTitle = $firstInputfieldValue;
+            }
+            if (!$contentChanged && $firstInputfieldValue) {
+                $this->metaDescription = $firstInputfieldValue;
+            }
 
             if(empty($objEntry->arrEntries)) {
                 $this->_objTpl->hideBlock($this->moduleNameLC.'EntryList');
@@ -1056,12 +1167,20 @@ class MediaDirectory extends MediaDirectoryLibrary
     }
 
 
-    function getPageTitle() {
+    public function getPageTitle() {
         return $this->pageTitle;
     }
 
-    function getMetaTitle() {
+    public function getMetaTitle() {
         return $this->metaTitle;
+    }
+
+    public function getMetaDescription() {
+        return $this->metaDescription;
+    }
+
+    public function getMetaImage() {
+        return $this->metaImage;
     }
 }
 ?>

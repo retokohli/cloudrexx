@@ -205,6 +205,11 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     protected $metarobots;
 
     /**
+     * @var string $metaimage
+     */
+    protected $metaimage;
+
+    /**
      * @var date $start
      */
     protected $start;
@@ -329,6 +334,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         $this->content = '';
         $this->metadesc = '';
         $this->metakeys = '';
+        $this->metaimage = '';
         $this->editingStatus = '';
         $this->active = false;
         $this->display = true;
@@ -351,6 +357,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             'cssName' => new \CxValidateString(array('maxlength' => 255)),
             'metatitle' => new \CxValidateString(array('maxlength' => 255)),
             'metarobots' => new \CxValidateString(array('maxlength' => 255)),
+            'metaimage' => new \CxValidateString(array('maxlength' => 255)),
             //'start' => maybe date? format?
             //'end' => maybe date? format?
             'editingStatus' => new \CxValidateString(array('maxlength' => 16)),
@@ -451,13 +458,11 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     }
 
     protected function slugify($string) {
+        // replace international characters
+        $string = $this->getComponent('LanguageManager')->replaceInternationalCharacters($string);
+        // replace spaces
         $string = preg_replace('/\s+/', '-', $string);
-        $string = preg_replace('/ä/', 'ae', $string);
-        $string = preg_replace('/ö/', 'oe', $string);
-        $string = preg_replace('/ü/', 'ue', $string);
-        $string = preg_replace('/Ä/', 'Ae', $string);
-        $string = preg_replace('/Ö/', 'Oe', $string);
-        $string = preg_replace('/Ü/', 'Ue', $string);
+        // replace all non-url characters
         $string = preg_replace('/[^a-zA-Z0-9-_]/', '', $string);
         return $string;
     }
@@ -700,6 +705,26 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     public function getMetarobots()
     {
         return empty($this->metarobots) ? 0 : 1;
+    }
+
+    /**
+     * Set metaimage
+     *
+     * @param string $metaimage
+     */
+    public function setMetaimage($metaimage)
+    {
+        $this->metaimage = $metaimage;
+    }
+
+    /**
+     * Get metaimage
+     *
+     * @return string $metaimage
+     */
+    public function getMetaimage()
+    {
+        return $this->metaimage;
     }
 
     /**
@@ -1195,6 +1220,20 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         // Slug must be unique per language and level of a branch (of the node tree)
         $slugs = array();
         foreach ($this->getNode()->getParent()->getChildren() as $child) {
+            // if virtual lang dirs are deactivated
+            if (!\Cx\Core\Routing\Url::isVirtualLanguageDirsActive()) {
+                if ($this->getLang() == 0) {
+                    // check default language for the same slug
+                    $page = $child->getPage(\FWLanguage::getDefaultLangId());
+                } else {
+                    // check lang '0' for the same slug
+                    $page = $child->getPage(0);
+                }
+                if ($page && $page !== $this) {
+                    $slugs[] = strtolower($page->getSlug());
+                }
+            }
+            // check pages of the same language
             $page = $child->getPage($this->getLang());
             if ($page && $page !== $this) {
                 $slugs[] = strtolower($page->getSlug());
@@ -1479,6 +1518,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             $page->setMetadesc($this->getMetadesc());
             $page->setMetakeys($this->getMetakeys());
             $page->setMetarobots($this->getMetarobots());
+            $page->setMetaimage($this->getMetaimage());
         }
 
         $page->setNode($this->getNode());
@@ -1905,8 +1945,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      *
      */
     public function getURL($protocolAndDomainWithPathOffset, $params) {
-        $path = $this->getPath($this);
-        return $protocolAndDomainWithPathOffset . '/' . \FWLanguage::getLanguageCodeById($this->lang) .$path . $params;
+        return \Cx\Core\Routing\Url::fromPage($this);
     }
 
     /**
@@ -2061,7 +2100,8 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
                 $this->updatedAt,
                 $this->updatedBy,
                 $this->metadesc,
-                $this->metakeys
+                $this->metakeys,
+                $this->metaimage
             )
         );
     }
@@ -2103,5 +2143,6 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         $this->updatedBy = $unserialized[33];
         $this->metadesc = $unserialized[34];
         $this->metakeys = $unserialized[35];
+        $this->metaimage = $unserialized[36];
     }
 }
