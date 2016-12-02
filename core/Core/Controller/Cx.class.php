@@ -1065,11 +1065,11 @@ namespace Cx\Core\Core\Controller {
                     if (!isset($_GET['__cap'])) {
                         break;
                     }
-                    if (preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{2})?' . self::FOLDER_NAME_COMMAND_MODE . '#', $_GET['__cap'])) {
+                    if (preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{2}(-[A-Z]{2})?)?' . self::FOLDER_NAME_COMMAND_MODE . '#', $_GET['__cap'])) {
                         $this->mode = self::MODE_COMMAND;
                         return;
                     }
-                    if (!preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{2})?(/admin|' . $this->getBackendFolderName() . ')#', $_GET['__cap'])) {
+                    if (!preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{2}(-[A-Z]{2})?)?(/admin|' . $this->getBackendFolderName() . ')#', $_GET['__cap'])) {
                         break;
                     }
                     // this does not belong here:
