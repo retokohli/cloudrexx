@@ -687,7 +687,11 @@ class Resolver {
                 $this->resolvePage(true);
             } else { //external target - redirect via HTTP 302
                 if (\FWValidator::isUri($target)) {
-                    header('Location: '.$target);
+                    $this->headers['Location'] = $target;
+                    $emptyString = '';
+                    \Env::set('Resolver', $this);
+                    \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
+                    header('Location: ' . $target);
                     exit;
                 } else {
                     if ($target[0] == '/') {
@@ -704,7 +708,12 @@ class Resolver {
                         }
                     }
 
-                    header('Location: ' . ASCMS_INSTANCE_OFFSET . $langDir . '/' . $target);
+                    $target = ASCMS_INSTANCE_OFFSET . $langDir . '/' . $target;
+                    $this->headers['Location'] = $target;
+                    $emptyString = '';
+                    \Env::set('Resolver', $this);
+                    \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
+                    header('Location: ' . $target);
                     exit;
                 }
             }
@@ -713,7 +722,12 @@ class Resolver {
         //if we followed one or more redirections, the user shall be redirected by 302.
         if ($this->isRedirection && !$this->forceInternalRedirection) {
             $params = $this->url->getSuggestedParams();
-            header('Location: '.$this->page->getURL($this->pathOffset, $params));
+            $target = $this->page->getURL($this->pathOffset, $params);
+            $this->headers['Location'] = $target;
+            $emptyString = '';
+            \Env::set('Resolver', $this);
+            \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
+            header('Location: ' . $target);
             exit;
         }
 
