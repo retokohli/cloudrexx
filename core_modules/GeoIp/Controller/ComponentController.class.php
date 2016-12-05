@@ -267,7 +267,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         $clientIp = $_SERVER['REMOTE_ADDR'];
-        //$clientIp = '46.140.38.38';
+        //$clientIp = '216.58.208.35';
 
         //Get the country name and code by using the ipaddress through GeoIp2 library
         $countryDb    = $this->getDirectory().'/Data/GeoLite2-Country.mmdb';
