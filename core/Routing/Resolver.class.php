@@ -690,6 +690,7 @@ class Resolver {
                     $this->headers['Location'] = $target;
                     $emptyString = '';
                     \Env::set('Resolver', $this);
+                    \Env::set('Page', $this->page);
                     \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
                     header('Location: ' . $target);
                     exit;
@@ -712,6 +713,7 @@ class Resolver {
                     $this->headers['Location'] = $target;
                     $emptyString = '';
                     \Env::set('Resolver', $this);
+                    \Env::set('Page', $this->page);
                     \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
                     header('Location: ' . $target);
                     exit;
@@ -726,6 +728,7 @@ class Resolver {
             $this->headers['Location'] = $target;
             $emptyString = '';
             \Env::set('Resolver', $this);
+            \Env::set('Page', $this->page);
             \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
             header('Location: ' . $target);
             exit;

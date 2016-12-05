@@ -107,7 +107,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             return;
         }
-        $endcode = $this->cache->endContrexxCaching($this->cx->getPage(), $endcode);
+        $page = $this->cx->getPage();
+        if (!$page) {
+            $page = \Env::get('Page');
+        }
+        $endcode = $this->cache->endContrexxCaching($page, $endcode);
     }
 
     /**
