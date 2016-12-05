@@ -1,4 +1,7 @@
 -
+  name: GeoIp
+  type: core_module
+-
   name: Cache
   type: core_module
 # Net depends on Cache (DataSet)
