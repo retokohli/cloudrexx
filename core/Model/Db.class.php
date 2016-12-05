@@ -99,6 +99,11 @@ namespace Cx\Core\Model {
          */
         protected $loggableListener = null;
 
+        /**
+         * @var \Gedmo\Translatable\TranslationListener
+         */
+        protected $translationListener = null;
+
         /*
          * db instance
          * @var \Cx\Core\Model\Model\Entity/Db
@@ -330,6 +335,59 @@ namespace Cx\Core\Model {
             // Session::getInstance()->read('user')->getUsername();
             $evm->addEventSubscriber($this->loggableListener);
 
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $sluggableDriverImpl = $config->newDefaultAnnotationDriver(
+                $cx->getCodeBaseLibraryPath() . '/doctrine/Gedmo/Sluggable'
+            );
+            $chainDriverImpl->addDriver($sluggableDriverImpl,
+                'Gedmo\Sluggable');
+            $sluggableListener = new \Gedmo\Sluggable\SluggableListener();
+            // you should set the used annotation reader to listener,
+            // to avoid creating new one for mapping drivers
+            //$sluggableListener->setAnnotationReader($cachedAnnotationReader);
+            $evm->addEventSubscriber($sluggableListener);
+
+            $timestampableDriverImpl = $config->newDefaultAnnotationDriver(
+                $cx->getCodeBaseLibraryPath() . '/doctrine/Gedmo/Timestampable'
+            );
+            $chainDriverImpl->addDriver($timestampableDriverImpl,
+                'Gedmo\Timestampable');
+            $timestampableListener = new \Gedmo\Timestampable\TimestampableListener();
+            //$timestampableListener->setAnnotationReader($cachedAnnotationReader);
+            $evm->addEventSubscriber($timestampableListener);
+
+            // Note that LANG_ID and other language constants/variables
+            // have not been set yet!
+            // $langCode = \FWLanguage::getLanguageCodeById(LANG_ID);
+            // \DBG::log("LANG_ID ".LANG_ID.", language code: $langCode");
+            // -> LOG: LANG_ID LANG_ID, language code:
+            $translatableDriverImpl = $config->newDefaultAnnotationDriver(
+                $cx->getCodeBaseLibraryPath() . '/doctrine/Gedmo/Translatable/Entity'
+            );
+            $chainDriverImpl->addDriver($translatableDriverImpl,
+                'Gedmo\Translatable');
+            // RK: Note:
+            // This might have been renamed in newer versions:
+            //$translationListener = new \Gedmo\Translatable\TranslatableListener();
+            // In this Doctrine version, it is present as:
+            $this->translationListener = new \Gedmo\Translatable\TranslationListener();
+            // current translation locale should be set from session
+            // or hook later into the listener,
+            // but *before the entity manager is flushed*
+// TODO: Set default locale from the default language?
+            //$this->translationListener->setDefaultLocale('de_ch');
+            // Set the current locale (e.g. from the active language)
+            // wherever that's required.
+            //$translationListener->setTranslatableLocale('de_ch');
+            //$translationListener->setAnnotationReader($cachedAnnotationReader);
+            $evm->addEventSubscriber($this->translationListener);
+
+            // RK: Note:
+            // This is apparently not yet present in this Doctrine version:
+            //$sortableListener = new \Gedmo\Sortable\SortableListener();
+            //$sortableListener->setAnnotationReader($cachedAnnotationReader);
+            //$evm->addEventSubscriber($sortableListener);
+
             //tree stuff
             $treeListener = new \Gedmo\Tree\TreeListener();
             $evm->addEventSubscriber($treeListener);
@@ -351,6 +409,16 @@ namespace Cx\Core\Model {
 
             $this->em = $em;
             return $this->em;
+        }
+
+        /**
+         * Return the TranslationListener
+         * @return \Gedmo\Translatable\TranslationListener
+         * @author  Reto Kohli <reto.kohli@comvation.com>
+         */
+        public function getTranslationListener()
+        {
+            return $this->translationListener;
         }
 
         /**

@@ -36,6 +36,11 @@ class Language extends \Cx\Model\Base\EntityBase {
      */
     protected $localeRelatedByIso1s;
 
+    /**
+     * Language constructor.
+     *
+     * Creates new instance of \Cx\Core\Locale\Model\Entity\Language
+     */
     public function __construct()
     {
         $this->localeRelatedBySourceLanguages = new \Doctrine\Common\Collections\ArrayCollection();
@@ -44,7 +49,7 @@ class Language extends \Cx\Model\Base\EntityBase {
 
     /**
      * Set iso1
-     * TODO: Remove this method after doctrine update
+     * @todo: Remove this method after doctrine update
      *
      * @param string $iso1
      */
@@ -56,7 +61,7 @@ class Language extends \Cx\Model\Base\EntityBase {
      * Get iso1
      * This method fixes the error when getting the identifier in the metadata class info,
      * which automatically calls getId() on an entity to get the identifier
-     * TODO: Remove this method after doctrine update
+     * @todo: Remove this method after doctrine update
      *
      * @return  string $iso1
      */

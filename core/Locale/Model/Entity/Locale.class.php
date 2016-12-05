@@ -46,6 +46,11 @@ class Locale extends \Cx\Model\Base\EntityBase {
      */
     protected $frontends;
 
+    /**
+     * Locale constructor.
+     *
+     * Creates new instance of \Cx\Core\Locale\Model\Entity\Locale
+     */
     public function __construct()
     {
         $this->locales = new \Doctrine\Common\Collections\ArrayCollection();

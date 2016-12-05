@@ -1101,6 +1101,8 @@ $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_IS_PROTECTED'] = "Diese Vorlage ist geschütz
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_KEY'] = "Schlüssel";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_MESSAGE'] = "Nachricht";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_MESSAGE_HTML'] = "Nachricht (HTML)";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ATTACH_PDF'] = "Dynamisches PDF-Dokument anhängen";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_PDF_TEMPLATE'] = "PDF Vorlage";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NAME'] = "Name der Vorlage";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NEW'] = "Neue E-Mail Vorlage hinzufügen";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_PLACEHOLDERS'] = "Verwenden Sie für die Felder einen fixen Wert, sofern dieser bekannt und immer gültig ist.  Setzen Sie einen Platzhalter ein, wenn er automatisch eingesetzt wird.";
@@ -1141,6 +1143,7 @@ $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_REPLY'] = "Nur eine E-Mail Adresse.";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_TO'] = "Trennen Sie mehrere E-Mail Adressen durch Kommas.";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_CC'] = "Trennen Sie mehrere E-Mail Adressen durch Kommas.";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_BCC'] = "Trennen Sie mehrere E-Mail Adressen durch Kommas.";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_ATTACH_PDF'] = "Wählen Sie diese Option, um ein dynamisch generiertes PDF-Dokument dem sendenden E-Mail anzuhängen.";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_WARNING_NONE'] = "Es sind keine E-Mail Vorlagen vorhanden";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ERROR_NO_SECTION_OR_GROUP'] = "Diesem Sprachplatzhalter ist kein Wert zugewiesen.";
 
