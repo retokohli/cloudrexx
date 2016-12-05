@@ -88,7 +88,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param integer $pdfTemplateId          id of the PDF Template
      * @param array   $substitution           array of substitution values
      * @param string  $mailTplKey             MailTemplate key
-     * @param boolean $convertToHtmlEntities  convert input to html entities
+     * @param boolean $convertToHtmlEntities  convert input to HTML entities
      *
      * @return mixed array|null
      */
