@@ -146,7 +146,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $matches = array();
         foreach ($files as $file) {
             // sort out false-positives (header and ESI cache files)
-            if (!preg_match('/([0-9a-f]{32})_([0-9]+)$/', $file, $matches)) {
+            if (!preg_match('/([0-9a-f]{32})_([0-9]+)?$/', $file, $matches)) {
                 continue;
             }
             if (filemtime($file) > (time() - $this->intCachingTime)) {
@@ -210,13 +210,17 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         // write header cache file
         $resolver = \Env::get('Resolver');
         $headers = $resolver->getHeaders();
+        $pageId = '';
+        if ($page) {
+            $pageId = $page->getId();
+        }
         if (count($headers)) {
-            $handleFile = $this->strCachePath . $this->strCacheFilename . '_h' . $page->getId();
+            $handleFile = $this->strCachePath . $this->strCacheFilename . '_h' . $pageId;
             $File = new \Cx\Lib\FileSystem\File($handleFile);
             $File->write(serialize($headers));
         }
         // write page cache file
-        $handleFile = $this->strCachePath . $this->strCacheFilename . '_' . $page->getId();
+        $handleFile = $this->strCachePath . $this->strCacheFilename . '_' . $pageId;
         $File = new \Cx\Lib\FileSystem\File($handleFile);
         $File->write($endcode);
         return $this->internalEsiParsing($endcode);

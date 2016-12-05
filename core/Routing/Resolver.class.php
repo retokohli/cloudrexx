@@ -518,7 +518,10 @@ class Resolver {
 
     public function redirectToCorrectLanguageDir() {
         $this->url->setLangDir(\FWLanguage::getLanguageCodeById($this->lang));
-
+        $this->headers['Location'] = (string) $this->url;
+        $emptyString = '';
+        \Env::set('Resolver', $this);
+        \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
         \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$this->url);
         exit;
     }
