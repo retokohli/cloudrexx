@@ -153,6 +153,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (   !$this->isGeoIpEnabled()
             || !$this->getClientRecord()
         ) {
+            \DBG::msg('GeoIp not initialized');
             return '';
         }
 
@@ -265,19 +266,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return null;
         }
 
-        // Get stats controller to get client ip
-        $statsComponentContoller = $this->getComponent('Stats');
-        if (!$statsComponentContoller) {
-            return null;
-        }
+        $clientIp = $_SERVER['REMOTE_ADDR'];
+        //$clientIp = '216.58.208.35';
 
         //Get the country name and code by using the ipaddress through GeoIp2 library
         $countryDb    = $this->getDirectory().'/Data/GeoLite2-Country.mmdb';
-        $activeLocale = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
+        $activeLocale = $this->defaultLocale;//\FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
         $locale       = in_array($activeLocale, $this->availableLocale) ? $activeLocale : $this->defaultLocale;
         try {
             $reader = new \GeoIp2\Database\Reader($countryDb, array($locale));
-            $this->clientRecord = $reader->country($statsComponentContoller->getCounterInstance()->getClientIp());
+            $this->clientRecord = $reader->country($clientIp);
             return $this->clientRecord;
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());

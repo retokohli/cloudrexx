@@ -136,8 +136,17 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
     /**
      * Start caching functions. If this page is already cached, load it, otherwise create new file
      */
-    public function startContrexxCaching()
+    public function startContrexxCaching($cx)
     {
+        // TODO: $dynVars needs to be built dynamically (via event handler)
+        $this->dynVars = array(
+            'GEO' => array(
+                'country_code' => function() use ($cx) {
+                    return $cx->getComponent('GeoIp')->getCountryCode(array())['content'];
+                },
+            )
+        );
+
         if (!$this->boolIsEnabled) {
             return null;
         }
@@ -179,13 +188,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      */
     public function endContrexxCaching($page, $endcode)
     {
-        // TODO: $dynVars needs to be built dynamically
-        $this->dynVars = array(
-            'GEO' => array(
-                'country_code' => \Cx\Core\Routing\Url::fromApi('Data', array('Plain', 'GeoIp', 'getCountryCode'))->toString(),
-            )
-        );
-        
         // back-replace ESI variables that are url encoded
         foreach ($this->dynVars as $groupName=>$vars) {
             foreach ($vars as $varName=>$url) {
@@ -251,12 +253,12 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $settings = $this->getSettings();
         // apply ESI dynamic variables
         foreach ($this->dynVars as $groupName=>$vars) {
-            foreach ($vars as $varName=>$url) {
+            foreach ($vars as $varName=>$callback) {
                 $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
                 if (strpos($htmlCode, $esiPlaceholder) === false) {
                     continue;
                 }
-                $varValue = $this->getApiResponseForUrl($url);
+                $varValue = $callback();
                 $htmlCode = str_replace($esiPlaceholder, $varValue, $htmlCode);
             }
         }
