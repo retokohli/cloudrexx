@@ -159,6 +159,11 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                     $headers = unserialize(file_get_contents($headerFile));
                     if (is_array($headers)) {
                         foreach ($headers as $name=>$value) {
+                            if (is_numeric($name)) {
+                                // This allows headers without a ':'
+                                header($value);
+                                continue;
+                            }
                             header($name . ': ' . $value);
                         }
                     }

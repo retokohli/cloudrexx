@@ -1288,12 +1288,12 @@ namespace Cx\Core\Core\Controller {
             }
 
             // redirect to correct domain and protocol
-            // TODO: this caches a 302 instead of 301
             // TODO: drop cache when main domain or force option changes
             $url = $protocol . '://' . $domain . $_SERVER['REQUEST_URI'];
             $this->getComponent('Cache')->writeCacheFileForRequest(
                 null,
                 array(
+                    $_SERVER['SERVER_PROTOCOL'] . ' 301 Moved Permanently',
                     'Location' => $url,
                 ),
                 ''
