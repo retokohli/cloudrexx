@@ -250,4 +250,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function internalEsiParsing($htmlCode) {
         return $this->cache->internalEsiParsing($htmlCode);
     }
+
+    /**
+     * Writes the cache file for the current request
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Current page (might be null for redirects before postResolve)
+     * @param array $headers List of headers set for the current response
+     * @param string $endcode Current response
+     */
+    public function writeCacheFileForRequest($page, $headers, $endcode) {
+        $this->cache->writeCacheFileForRequest($page, $headers, $endcode);
+    }
 }

@@ -125,8 +125,10 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         //            system.
         $request = array_merge_recursive($_GET, $_POST);
         ksort($request);
+        $currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
+            $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         $this->arrPageContent = array(
-            'url' => $_SERVER['REQUEST_URI'],
+            'url' => $currentUrl,
             'request' => $request,
             'accept_language' => $_SERVER['HTTP_ACCEPT_LANGUAGE'],
         );
@@ -211,6 +213,17 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         // write header cache file
         $resolver = \Env::get('Resolver');
         $headers = $resolver->getHeaders();
+        $this->writeCacheFileForRequest($page, $headers, $endcode);
+        return $this->internalEsiParsing($endcode);
+    }
+
+    /**
+     * Writes the cache file for the current request
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Current page (might be null for redirects before postResolve)
+     * @param array $headers List of headers set for the current response
+     * @param string $endcode Current response
+     */
+    public function writeCacheFileForRequest($page, $headers, $endcode) {
         $pageId = '';
         if ($page) {
             $pageId = $page->getId();
@@ -224,7 +237,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $handleFile = $this->strCachePath . $this->strCacheFilename . '_' . $pageId;
         $File = new \Cx\Lib\FileSystem\File($handleFile);
         $File->write($endcode);
-        return $this->internalEsiParsing($endcode);
     }
 
     /**
