@@ -128,6 +128,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $this->arrPageContent = array(
             'url' => $_SERVER['REQUEST_URI'],
             'request' => $request,
+            'accept_language' => $_SERVER['HTTP_ACCEPT_LANGUAGE'],
         );
         $this->strCacheFilename = md5(serialize($this->arrPageContent));
     }
