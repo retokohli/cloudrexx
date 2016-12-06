@@ -627,7 +627,7 @@ die("MailTemplate::init(): Empty section!");
                 $arrTemplate['pdf_template'],
                 $substitution,
                 $arrTemplate['key'],
-                false
+                true
             );
         }
 //DBG::log("MailTemplate::send(): Substituted: ".var_export($arrTemplate, true));
