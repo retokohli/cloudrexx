@@ -79,6 +79,7 @@ class YamlSettingEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventL
                     }
                     $value = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
                     $objSetting->setValue($value);
+                    $this->getComponent('Cache')->deleteNonPagePageCache();
                     break;
 
                 case 'forceProtocolFrontend':
@@ -88,6 +89,7 @@ class YamlSettingEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventL
                         }
                         $objSetting->setValue($value);
                     }
+                    $this->getComponent('Cache')->deleteNonPagePageCache();
                     break;
 
                 case 'forceProtocolBackend':
@@ -107,6 +109,7 @@ class YamlSettingEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventL
                     }
                     $value = \Cx\Core\Config\Controller\Config::checkAccessibility($protocol) ? $value : 'off';
                     $objSetting->setValue($value);
+                    $this->getComponent('Cache')->deleteNonPagePageCache();
                     break;
                 
                 case 'cacheReverseProxy':

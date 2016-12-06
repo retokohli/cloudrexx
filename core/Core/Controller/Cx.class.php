@@ -1288,7 +1288,6 @@ namespace Cx\Core\Core\Controller {
             }
 
             // redirect to correct domain and protocol
-            // TODO: drop cache when main domain or force option changes
             $url = $protocol . '://' . $domain . $_SERVER['REQUEST_URI'];
             $this->getComponent('Cache')->writeCacheFileForRequest(
                 null,
