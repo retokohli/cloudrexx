@@ -79,14 +79,12 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         // in case the request's origin is from a mobile devie
         // and this is the first request (the InitCMS object wasn't yet
         // able to determine of the mobile device wishes to be served
-        // with the system's mobile view), we shall deactivate the caching system
-        if (\InitCMS::_is_mobile_phone()
-            && !\InitCMS::_is_tablet()
-            && !isset($_REQUEST['smallscreen'])
-        ) {
-            $this->boolIsEnabled = false;
-            return;
-        }
+        // with the system's mobile view), we shall cache the request separately
+        $isMobile = (
+            \InitCMS::_is_mobile_phone() &&
+            !\InitCMS::_is_tablet() &&
+            !isset($_REQUEST['smallscreen'])
+        );
 
         if ($_CONFIG['cacheEnabled'] == 'off') {
             $this->boolIsEnabled = false;
@@ -128,6 +126,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $this->arrPageContent = array(
             'url' => $_SERVER['REQUEST_URI'],
             'request' => $request,
+            'isMobile' => $isMobile,
         );
         $this->strCacheFilename = md5(serialize($this->arrPageContent));
     }
