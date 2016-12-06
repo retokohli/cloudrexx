@@ -100,6 +100,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Registers event listeners
+     */
+    public function registeredsterEventListeners() {
+        $evm = $this->cx->getEvents();
+        $evm->addModelListener(
+            'postFlush',
+            'Cx\Core\Routing\Model\Entity\RewriteRule',
+            new \Cx\Core_Modules\Cache\Model\Event\RewriteRuleEventListener($this->cx)
+        );
+    }
+
+    /**
      * Ends the contrexx caching after the main template got parsed (frontend only)
      * @param string $endcode The processed data to be sent to the client as response
      */
