@@ -1025,7 +1025,7 @@ class CacheLib
     function deleteSingleFile($intPageId) {
         $intPageId = intval($intPageId);
         if ( 0 < $intPageId ) {
-            $files = glob( $this->strCachePath . '*_' . $intPageId );
+            $files = glob($this->strCachePath . '*_{,h}' . $intPageId, GLOB_BRACE);
             if ( count( $files ) ) {
                 foreach ( $files as $file ) {
                     @unlink( $file );
