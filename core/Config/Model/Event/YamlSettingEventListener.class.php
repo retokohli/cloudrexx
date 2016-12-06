@@ -57,7 +57,7 @@ class YamlSettingEventListenerException extends \Exception {}
  * @package     cloudrexx
  * @subpackage  core_config
  */
-class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
+class YamlSettingEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventListener {
     public function preUpdate($eventArgs) {
         global $_CONFIG,$_ARRAYLANG;
         try {
