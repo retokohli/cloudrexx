@@ -102,7 +102,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Registers event listeners
      */
-    public function registeredsterEventListeners() {
+    public function registerEventListeners() {
         $evm = $this->cx->getEvents();
         $evm->addModelListener(
             'postFlush',
