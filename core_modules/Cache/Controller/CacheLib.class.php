@@ -1059,6 +1059,19 @@ class CacheLib
             $this->deleteSingleFile($pageId);
         }
         return array_keys($pages);
+    } 
+
+    /**
+     * Drops all page cache files that do not belong to a page
+     * Those are cached header redirects
+     */
+    public function deleteNonPagePageCache() {
+        $files = glob($this->strCachePath . '*_{,h}', GLOB_BRACE);
+        if (count($files)) {
+            foreach ($files as $file) {
+                @unlink($file);
+            }
+        }
     }
     
     /**

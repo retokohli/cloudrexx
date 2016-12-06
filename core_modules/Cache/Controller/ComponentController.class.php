@@ -217,6 +217,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Deletes cached header redirects
+     */
+    function deleteNonPagePageCache() {
+        $this->cache->deleteNonPagePageCache();
+    }
+
+    /**
      * @return \Doctrine\Common\Cache\AbstractCache The doctrine cache driver object
      */
     public function getCacheDriver()
