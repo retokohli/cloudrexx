@@ -75,6 +75,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $rewriteRule->getRewriteStatusCode() !=
                 \Cx\Core\Routing\Model\Entity\RewriteRule::REDIRECTION_TYPE_INTERN
             ) {
+                $headers = array(
+                    'Location' => $url->toString(),
+                );
+                if ($rewriteRule->getRewriteStatusCode() == 301) {
+                    array_push(
+                        $headers,
+                        $_SERVER['SERVER_PROTOCOL'] . ' 301 Moved Permanently'
+                    );
+                }
+                $this->getComponent('Cache')->writeCacheFileForRequest(
+                    null,
+                    $headers,
+                    ''
+                );
                 \Cx\Core\Csrf\Controller\Csrf::header(
                     'Location: ' . $url->toString(),
                     true,
