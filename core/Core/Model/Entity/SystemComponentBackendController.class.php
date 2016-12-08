@@ -317,7 +317,7 @@ class SystemComponentBackendController extends Controller {
      * @param array $cmd CMD separated by slashes
      * @param boolean $isSingle Wether edit view or not
      */
-    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd, &$isSingle= false) {
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd, &$isSingle = false) {
         global $_ARRAYLANG;
 
         // Parse entity view generation pages
