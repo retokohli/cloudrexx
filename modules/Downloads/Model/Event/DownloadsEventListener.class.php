@@ -69,8 +69,6 @@ class DownloadsEventListener extends DefaultEventListener
      * @return boolean
      */
     protected function languageStatusUpdate(array $eventArgs) {
-        global $objDatabase;
-
         if (empty($eventArgs)) {
             return;
         }
@@ -81,77 +79,89 @@ class DownloadsEventListener extends DefaultEventListener
             $langId = isset($args['langId']) ? $args['langId'] : 0;
             $langStatus = isset($args['status']) ? $args['status'] : 0;
 
-            if (empty($langId)
-                || !isset($args['status'])
-                || (!$langStatus
-                    && !$eventArgs['langRemovalStatus']
+            if (
+                empty($langId) ||
+                !isset($args['status']) ||
+                (
+                    !$langStatus &&
+                    !$eventArgs['langRemovalStatus']
                 )
             ) {
                 continue;
             }
 
+            $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
             // Update the download locales
-            $downloadQuery = $langStatus ?
-                'INSERT IGNORE INTO
-                                    `' . DBPREFIX . 'module_downloads_download_locale`
-                                    (   `lang_id`,
-                                        `download_id`,
-                                        `name`,
-                                        `source`,
-                                        `source_name`,
-                                        `file_type`,
-                                        `description`,
-                                        `metakeys`
-                                    )
-                                    SELECT ' . $langId . ',
-                                            `download_id`,
-                                            `name`,
-                                            `source`,
-                                            `source_name`,
-                                            `file_type`,
-                                            `description`,
-                                            `metakeys`
-                                    FROM `' . DBPREFIX . 'module_downloads_download_locale`
-                                    WHERE lang_id = ' . $defaultLangId
-                :   'DELETE FROM `' . DBPREFIX . 'module_downloads_download_locale`
-                                            WHERE lang_id = ' . $langId;
-            $objDatabase->Execute($downloadQuery);
+            if ($langStatus) {
+                $downloadQuery = 'INSERT IGNORE INTO `' . DBPREFIX . 'module_downloads_download_locale`
+                    (   
+                        `lang_id`,
+                        `download_id`,
+                        `name`,
+                        `source`,
+                        `source_name`,
+                        `file_type`,
+                        `description`,
+                        `metakeys`
+                    )
+                    SELECT 
+                        ' . $langId . ',
+                        `download_id`,
+                        `name`,
+                        `source`,
+                        `source_name`,
+                        `file_type`,
+                        `description`,
+                        `metakeys`
+                    FROM `' . DBPREFIX . 'module_downloads_download_locale`
+                    WHERE lang_id = ' . $defaultLangId;
+            } else {
+                $downloadQuery = 'DELETE FROM `' . DBPREFIX . 'module_downloads_download_locale`
+                    WHERE lang_id = ' . $langId;
+            }
+            $db->Execute($downloadQuery);
 
             // Update the category locales
-            $categoryQuery = $langStatus ?
-                'INSERT IGNORE INTO
-                                    `' . DBPREFIX . 'module_downloads_category_locale`
-                                    (   `lang_id`,
-                                        `category_id`,
-                                        `name`,
-                                        `description`
-                                    )
-                                    SELECT ' . $langId . ',
-                                            `category_id`,
-                                            `name`,
-                                            `description`
-                                    FROM `' . DBPREFIX . 'module_downloads_category_locale`
-                                    WHERE lang_id = ' . $defaultLangId
-                :   'DELETE FROM `' . DBPREFIX . 'module_downloads_category_locale`
-                                            WHERE lang_id = ' . $langId;
-            $objDatabase->Execute($categoryQuery);
+            if ($langStatus) {
+                $categoryQuery = 'INSERT IGNORE INTO `' . DBPREFIX . 'module_downloads_category_locale`
+                    (   
+                        `lang_id`,
+                        `category_id`,
+                        `name`,
+                        `description`
+                    )
+                    SELECT 
+                        ' . $langId . ',
+                        `category_id`,
+                        `name`,
+                        `description`
+                    FROM `' . DBPREFIX . 'module_downloads_category_locale`
+                    WHERE lang_id = ' . $defaultLangId;
+            } else {
+                $categoryQuery = 'DELETE FROM `' . DBPREFIX . 'module_downloads_category_locale`
+                    WHERE lang_id = ' . $langId;
+            }
+            $db->Execute($categoryQuery);
 
             // Update the group locales
-            $groupQuery = $langStatus ?
-                'INSERT IGNORE INTO
-                                    `' . DBPREFIX . 'module_downloads_group_locale`
-                                    (   `lang_id`,
-                                        `group_id`,
-                                        `name`
-                                    )
-                                    SELECT ' . $langId . ',
-                                            `group_id`,
-                                            `name`
-                                    FROM `' . DBPREFIX . 'module_downloads_group_locale`
-                                    WHERE lang_id = ' . $defaultLangId
-                :   'DELETE FROM `' . DBPREFIX . 'module_downloads_group_locale`
-                                            WHERE lang_id = ' . $langId;
-            $objDatabase->Execute($groupQuery);
+            if ($langStatus) {
+                $groupQuery = 'INSERT IGNORE INTO `' . DBPREFIX . 'module_downloads_group_locale`
+                    (   
+                        `lang_id`,
+                        `group_id`,
+                        `name`
+                    )
+                    SELECT 
+                        ' . $langId . ',
+                        `group_id`,
+                        `name`
+                    FROM `' . DBPREFIX . 'module_downloads_group_locale`
+                    WHERE lang_id = ' . $defaultLangId;
+            } else {
+                $groupQuery = 'DELETE FROM `' . DBPREFIX . 'module_downloads_group_locale`
+                    WHERE lang_id = ' . $langId;
+            }
+            $db->Execute($groupQuery);
         }
     }
 

@@ -38,8 +38,8 @@
 namespace Cx\Core_Modules\Access\Model\Event;
 
 use Cx\Core\Event\Model\Entity\DefaultEventListener;
-use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
 use Cx\Core\MediaSource\Model\Entity\MediaSource;
+use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
 
 /**
  * Class AccessEventListener
@@ -81,43 +81,45 @@ class AccessEventListener extends DefaultEventListener
      * @return boolean
      */
     protected function languageStatusUpdate(array $eventArgs) {
-        global $objDatabase;
-
         if (empty($eventArgs)) {
             return;
         }
-
         $defaultLangId = \FWLanguage::getDefaultLangId();
         foreach ($eventArgs['langData'] as $args) {
 
             $langId = isset($args['langId']) ? $args['langId'] : 0;
             $langStatus = isset($args['status']) ? $args['status'] : 0;
 
-            if (empty($langId)
-                || !isset($args['status'])
-                || (!$langStatus
-                    && !$eventArgs['langRemovalStatus']
+            if (
+                empty($langId) ||
+                !isset($args['status']) ||
+                (
+                    !$langStatus &&
+                    !$eventArgs['langRemovalStatus']
                 )
             ) {
                 continue;
             }
 
             // Update the access user attributes
-            $accessAttrQuery = $langStatus ?
-                                'INSERT IGNORE INTO
-                                    `' . DBPREFIX . 'access_user_attribute_name`
-                                    (   `attribute_id`,
-                                        `lang_id`,
-                                        `name`
-                                    )
-                                    SELECT `attribute_id`,
-                                            ' . $langId . ',
-                                            `name`
-                                    FROM `' . DBPREFIX . 'access_user_attribute_name`
-                                    WHERE lang_id = ' . $defaultLangId
-                                :   'DELETE FROM `' . DBPREFIX . 'access_user_attribute_name`
-                                            WHERE lang_id = ' . $langId;
-            $objDatabase->Execute($accessAttrQuery);
+            if ($langStatus) {
+                $accessAttrQuery = 'INSERT IGNORE INTO `' . DBPREFIX . 'access_user_attribute_name`
+                    (   
+                        `attribute_id`,
+                        `lang_id`,
+                        `name`
+                    )
+                    SELECT 
+                        `attribute_id`,
+                        ' . $langId . ',
+                        `name`
+                    FROM `' . DBPREFIX . 'access_user_attribute_name`
+                    WHERE lang_id = ' . $defaultLangId;
+            } else {
+                $accessAttrQuery = 'DELETE FROM `' . DBPREFIX . 'access_user_attribute_name`
+                    WHERE lang_id = ' . $langId;
+            }
+            \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb()->Execute($accessAttrQuery);
         }
     }
 
