@@ -34,7 +34,6 @@
  */
 
 namespace Cx\Core\View\Controller;
-use Cx\Core\View\Model\Event\LocaleLocaleEventListener;
 
 /**
  * Main controller for View
@@ -58,7 +57,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function registerEventListeners() {
         $evm = $this->cx->getEvents();
         // locale event listener
-        $localeLocaleEventListener = new LocaleLocaleEventListener();
+        $localeLocaleEventListener = new \Cx\Core\View\Model\Event\LocaleLocaleEventListener($this->cx);
         $evm->addModelListener('postPersist', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
         $evm->addModelListener('preRemove', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
     }

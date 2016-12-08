@@ -35,8 +35,6 @@
  */
 
 namespace Cx\Modules\Downloads\Controller;
-use Cx\Modules\Downloads\Model\Event\DownloadsEventListener;
-use Cx\Modules\Downloads\Model\Event\LocaleLocaleEventListener;
 
 /**
  * Main controller for Downloads
@@ -155,10 +153,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function registerEventListeners() {
         $evm = $this->cx->getEvents();
-        $eventListener = new DownloadsEventListener($this->cx);
+        $eventListener = new \Cx\Modules\Downloads\Model\Event\DownloadsEventListener($this->cx);
         $evm->addEventListener('mediasource.load', $eventListener);
         // locale event listener
-        $localeLocaleEventListener = new LocaleLocaleEventListener();
+        $localeLocaleEventListener = new \Cx\Modules\Downloads\Model\Event\LocaleLocaleEventListener($this->cx);
         $evm->addModelListener('postPersist', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
         $evm->addModelListener('preRemove', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
     }

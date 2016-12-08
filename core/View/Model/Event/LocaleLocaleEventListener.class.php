@@ -36,11 +36,7 @@ namespace Cx\Core\View\Model\Event;
  * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
  * @package     cloudrexx
  */
-class LocaleLocaleEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
-
-    public function onEvent($eventName, array $eventArgs) {
-        $this->$eventName(current($eventArgs));
-    }
+class LocaleLocaleEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventListener {
 
     /**
      * Adds new frontend entities for each channel

@@ -35,8 +35,6 @@
  */
 
 namespace Cx\Core_Modules\Access\Controller;
-use Cx\Core_Modules\Access\Model\Event\AccessEventListener;
-use Cx\Core_Modules\Access\Model\Event\LocaleLocaleEventListener;
 
 /**
  * Main controller for Access
@@ -280,10 +278,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function registerEventListeners() {
         $evm = $this->cx->getEvents();
-        $eventListener = new AccessEventListener($this->cx);
+        $eventListener = new \Cx\Core_Modules\Access\Model\Event\AccessEventListener($this->cx);
         $evm->addEventListener('mediasource.load', $eventListener);
         // locale event listener
-        $localeLocaleEventListener = new LocaleLocaleEventListener();
+        $localeLocaleEventListener = new \Cx\Core_Modules\Access\Model\Event\LocaleLocaleEventListener($this->cx);
         $evm->addModelListener('postPersist', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
         $evm->addModelListener('preRemove', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
     }

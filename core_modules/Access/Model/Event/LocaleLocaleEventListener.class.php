@@ -36,11 +36,7 @@ namespace Cx\Core_Modules\Access\Model\Event;
  * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
  * @package     cloudrexx
  */
-class LocaleLocaleEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
-
-    public function onEvent($eventName, array $eventArgs) {
-        $this->$eventName(current($eventArgs));
-    }
+class LocaleLocaleEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventListener {
 
     /**
      * Fills the locale specific user attribute names for the new locale
@@ -50,8 +46,6 @@ class LocaleLocaleEventListener implements \Cx\Core\Event\Model\Entity\EventList
      * @param $eventArgs
      */
     public function postPersist($eventArgs) {
-        global $objDatabase;
-
         // get persisted locale
         $persistedLocale = $eventArgs->getEntity();
 
@@ -59,18 +53,19 @@ class LocaleLocaleEventListener implements \Cx\Core\Event\Model\Entity\EventList
         $localeId = $persistedLocale->getId();
 
         // Add user attribute names for new locale
-        $accessAttrQuery = 'INSERT IGNORE INTO
-                                    `' . DBPREFIX . 'access_user_attribute_name`
-                                    (   `attribute_id`,
-                                        `lang_id`,
-                                        `name`
-                                    )
-                                    SELECT `attribute_id`,
-                                            ' . $localeId . ',
-                                            `name`
-                                    FROM `' . DBPREFIX . 'access_user_attribute_name`
-                                    WHERE lang_id = ' . $defaultLocaleId;
-        $objDatabase->Execute($accessAttrQuery);
+        $accessAttrQuery = 'INSERT IGNORE INTO `' . DBPREFIX . 'access_user_attribute_name`
+            (   
+                `attribute_id`,
+                `lang_id`,
+                `name`
+            )
+            SELECT 
+                `attribute_id`,
+                ' . $localeId . ',
+                `name`
+            FROM `' . DBPREFIX . 'access_user_attribute_name`
+            WHERE lang_id = ' . $defaultLocaleId;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb()->Execute($accessAttrQuery);
     }
 
     /**
@@ -80,15 +75,13 @@ class LocaleLocaleEventListener implements \Cx\Core\Event\Model\Entity\EventList
      * @param $eventArgs
      */
     public function preRemove($eventArgs) {
-        global $objDatabase;
-
         // get locale, which will be deleted
         $delLocale = $eventArgs->getEntity();
         $localeId = $delLocale->getId();
 
         // Update the access user attributes
         $accessAttrQuery = 'DELETE FROM `' . DBPREFIX . 'access_user_attribute_name`
-                                            WHERE lang_id = ' . $localeId;
-        $objDatabase->Execute($accessAttrQuery);
+            WHERE lang_id = ' . $localeId;
+        \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb()->Execute($accessAttrQuery);
     }
 }

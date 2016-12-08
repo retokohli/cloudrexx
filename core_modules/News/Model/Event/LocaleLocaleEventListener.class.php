@@ -36,11 +36,7 @@ namespace Cx\Core_Modules\News\Model\Event;
  * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
  * @package     cloudrexx
  */
-class LocaleLocaleEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
-
-    public function onEvent($eventName, array $eventArgs) {
-        $this->$eventName(current($eventArgs));
-    }
+class LocaleLocaleEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventListener {
 
     /**
      * * Fills the new news locales (news, categories, types and settings) with the default locale's values
@@ -49,75 +45,78 @@ class LocaleLocaleEventListener implements \Cx\Core\Event\Model\Entity\EventList
      * @param $eventArgs
      */
     public function postPersist($eventArgs) {
-        global $objDatabase;
-
         // get persisted locale
         $persistedLocale = $eventArgs->getEntity();
 
         $defaultLocaleId = \FWLanguage::getDefaultLangId();
         $localeId = $persistedLocale->getId();
 
+        $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
         // Add new news locales
-        $newsQuery = 'INSERT IGNORE INTO
-                                `' . DBPREFIX . 'module_news_locale`
-                                (   `news_id`,
-                                    `lang_id`,
-                                    `is_active`,
-                                    `title`,
-                                    `text`,
-                                    `teaser_text`
-                                )
-                                SELECT `news_id`,
-                                        ' . $localeId . ',
-                                        0,
-                                        `title`,
-                                        `text`,
-                                        `teaser_text`
-                                    FROM `' . DBPREFIX . 'module_news_locale`
-                                    WHERE lang_id = ' . $defaultLocaleId;
-        $objDatabase->Execute($newsQuery);
+        $newsQuery = 'INSERT IGNORE INTO `' . DBPREFIX . 'module_news_locale`
+            (   
+                `news_id`,
+                `lang_id`,
+                `is_active`,
+                `title`,
+                `text`,
+                `teaser_text`
+            )
+            SELECT 
+                `news_id`,
+                ' . $localeId . ',
+                0,
+                `title`,
+                `text`,
+                `teaser_text`
+            FROM `' . DBPREFIX . 'module_news_locale`
+            WHERE lang_id = ' . $defaultLocaleId;
+        $db->Execute($newsQuery);
 
         // Add new category locales
-        $catQuery = 'INSERT IGNORE INTO
-                                `' . DBPREFIX . 'module_news_categories_locale`
-                                (   `category_id`,
-                                    `lang_id`,
-                                    `name`
-                                )
-                                SELECT `category_id`,
-                                        ' . $localeId . ',
-                                        `name`
-                                    FROM `' . DBPREFIX . 'module_news_categories_locale`
-                                    WHERE lang_id = ' . $defaultLocaleId;
-        $objDatabase->Execute($catQuery);
+        $catQuery = 'INSERT IGNORE INTO `' . DBPREFIX . 'module_news_categories_locale`
+            (   
+                `category_id`,
+                `lang_id`,
+                `name`
+            )
+            SELECT 
+                `category_id`,
+                ' . $localeId . ',
+                `name`
+            FROM `' . DBPREFIX . 'module_news_categories_locale`
+            WHERE lang_id = ' . $defaultLocaleId;
+        $db->Execute($catQuery);
 
         // Add new type locales
-        $typeQuery = 'INSERT IGNORE INTO
-                                `' . DBPREFIX . 'module_news_types_locale`
-                                (   `type_id`,
-                                    `lang_id`,
-                                    `name`
-                                )
-                                SELECT `type_id`,
-                                        ' . $localeId . ',
-                                        `name`
-                                    FROM `' . DBPREFIX . 'module_news_types_locale`
-                                    WHERE lang_id = ' . $defaultLocaleId;
-        $objDatabase->Execute($typeQuery);
+        $typeQuery = 'INSERT IGNORE INTO `' . DBPREFIX . 'module_news_types_locale`
+            (   
+                `type_id`,
+                `lang_id`,
+                `name`
+            )
+            SELECT 
+                `type_id`,
+                ' . $localeId . ',
+                `name`
+            FROM `' . DBPREFIX . 'module_news_types_locale`
+            WHERE lang_id = ' . $defaultLocaleId;
+        $db->Execute($typeQuery);
 
         // Add new settings locales
-        $settingsQuery = 'INSERT IGNORE INTO
-                                `' . DBPREFIX . 'module_news_settings_locale`
-                                (   `name`,
-                                    `lang_id`,
-                                    `value`
-                                )
-                                SELECT `name`,
-                                        ' . $localeId . ',
-                                        `value`
-                                    FROM `' . DBPREFIX . 'module_news_settings_locale`
-                                    WHERE lang_id = ' . $defaultLocaleId;
-        $objDatabase->Execute($settingsQuery);
+        $settingsQuery = 'INSERT IGNORE INTO `' . DBPREFIX . 'module_news_settings_locale`
+            (   
+                `name`,
+                `lang_id`,
+                `value`
+            )
+            SELECT 
+                `name`,
+                ' . $localeId . ',
+                `value`
+            FROM `' . DBPREFIX . 'module_news_settings_locale`
+            WHERE lang_id = ' . $defaultLocaleId;
+        $db->Execute($settingsQuery);
     }
 
     /**
@@ -127,31 +126,30 @@ class LocaleLocaleEventListener implements \Cx\Core\Event\Model\Entity\EventList
      * @param $eventArgs
      */
     public function preRemove($eventArgs) {
-        global $objDatabase;
-
         // get locale, which will be deleted
         $delLocale = $eventArgs->getEntity();
 
         $localeId = $delLocale->getId();
 
+        $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
         // Delete the news locales
         $newsQuery = 'DELETE FROM `' . DBPREFIX . 'module_news_locale`
-                                WHERE lang_id = ' . $localeId;
-        $objDatabase->Execute($newsQuery);
+            WHERE lang_id = ' . $localeId;
+        $db->Execute($newsQuery);
 
         // Delete the category locales
         $catQuery = 'DELETE FROM `' . DBPREFIX . 'module_news_categories_locale`
-                                WHERE lang_id = ' . $localeId;
-        $objDatabase->Execute($catQuery);
+            WHERE lang_id = ' . $localeId;
+        $db->Execute($catQuery);
 
         // Delete the type locales
         $typeQuery = 'DELETE FROM `' . DBPREFIX . 'module_news_types_locale`
-                                            WHERE lang_id = ' . $localeId;
-        $objDatabase->Execute($typeQuery);
+            WHERE lang_id = ' . $localeId;
+        $db->Execute($typeQuery);
 
         // Update the news settings locale
         $settingsQuery = 'DELETE FROM `' . DBPREFIX . 'module_news_settings_locale`
-                                            WHERE lang_id = ' . $localeId;
-        $objDatabase->Execute($settingsQuery);
+            WHERE lang_id = ' . $localeId;
+        $db->Execute($settingsQuery);
     }
 }

@@ -67,6 +67,17 @@ class Theme extends \Cx\Model\Base\EntityBase
     const THEME_DEFAULT_PREVIEW_FILE = '/core/Core/View/Media/theme_preview.gif'; // path from the document root
     const THEME_COMPONENT_FILE = '/component.yml'; // path from theme folder
 
+    /**
+     * @var array The channel enum values
+     */
+    public static $channels = array(
+        'default', // web
+        self::THEME_TYPE_MOBILE,
+        self::THEME_TYPE_PRINT,
+        self::THEME_TYPE_PDF,
+        self::THEME_TYPE_APP,
+    );
+
     public function __construct($id = null, $themesname = null, $foldername = null, $expert = 1) {
         $this->db = \Env::get('db');
 
