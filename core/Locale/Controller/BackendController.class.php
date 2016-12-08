@@ -113,6 +113,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * Parses the localization configuration page for backend
      *
      * @param \Cx\Core\Html\Sigma $template Template for cmd Backend
+     * @todo: Move setting of options array to getViewGeneratorOptions by giving DataSet an identifier
      */
     public function parseBackendSettings($template) {
         global $_ARRAYLANG;
