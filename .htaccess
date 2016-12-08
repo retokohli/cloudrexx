@@ -20,7 +20,7 @@
     # IMPORTANT: When running Contrexx in a subdirectory (relativ to the webserver's DocumentRoot)
     #            then you'll have to comment-out the following ruleset
     RewriteCond %{REQUEST_URI} ^/\w+(-[A-Z]{2})?/(core|core_modules|lib|modules|feed|media|images|themes)/
-    RewriteRule ^\w+(-[A-Z]{2})?\/(.*)$ /$2 [L]
+    RewriteRule ^\w+(?:-[A-Z]{2})?\/(.*)$ /$1 [L]
 
     # Deny direct access to directories containing sensitive data
     RewriteCond %{ENV:REDIRECT_END} !1
