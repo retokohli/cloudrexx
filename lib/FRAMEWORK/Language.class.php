@@ -480,8 +480,6 @@ class FWLanguage
      */
     public static function getLangIdByIso639_1($langCode)
     {
-        global $_CONFIG;
-
         // Don't bother if the "code" looks like an ID already
         if (is_numeric($langCode)) return $langCode;
 
@@ -508,8 +506,9 @@ class FWLanguage
             return $locale[0]->getId();
         }
         // The code was not found.  Pick the default.
-        if (isset($_CONFIG['defaultLocaleId'])) {
-            return $_CONFIG['defaultLocaleId'];
+        $defaultLocaleId = \Cx\Core\Setting\Controller\Setting::getValue('defaultLocaleId');
+        if (isset($defaultLocaleId)) {
+            return $defaultLocaleId;
         }
         // Still nothing.  Pick the first frontend language available.
         $qb = $em->createQueryBuilder();

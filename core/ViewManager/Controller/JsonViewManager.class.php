@@ -95,13 +95,7 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
      */
     public function activateTheme() {
         // array contains the database value name for each theme type
-        $themeChannels = array(
-            'default', // web
-            \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE,
-            \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PRINT,
-            \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PDF,
-            \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_APP,
-        );
+        $themeChannels = \Cx\Core\View\Model\Entity\Theme::$channels;
 
         $themeId   = isset($_POST['themeId']) ? $_POST['themeId'] : '';
         $themeChannel = isset($_POST['themeType']) && array_key_exists($_POST['themeType'], $themeChannels) ? $themeChannels[intval($_POST['themeType'])] : 0;

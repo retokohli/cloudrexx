@@ -181,15 +181,9 @@ class ViewManager
 
     /**
      * The doctrine entity manager
-     * @var null|\Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
-    private $em = null;
-
-    /**
-     * contains the frontend entities to persist
-     * @var \Cx\Core\View\Model\Entity\Frontend array
-     */
-    private $frontendsToPersist = array();
+    protected $em;
 
     function __construct()
     {
@@ -1246,17 +1240,8 @@ CODE;
         ));
         $i=0;
 
-        // reset entities to persist
-        $this->frontendsToPersist = array();
-
         // channels
-        $channels = array(
-            'default',
-            \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE,
-            \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PRINT,
-            \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PDF,
-            \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_APP,
-        );
+        $channels = \Cx\Core\View\Model\Entity\Theme::$channels;
 
         if (isset($_POST['themesId'])) {
             foreach ($_POST['themesId'] as $langId => $themesId) {
@@ -1266,43 +1251,37 @@ CODE;
                     $themesId
                 );
             }
-            foreach ($_POST['mobileThemesId'] as $langCode => $mobileThemesId) {
+            foreach ($_POST['mobileThemesId'] as $langId => $mobileThemesId) {
                 $this->activateFrontendTheme(
                     $langId,
                     $channels[1],
                     $mobileThemesId
                 );
             }
-            foreach ($_POST['printThemesId'] as $langCode => $printThemesId) {
+            foreach ($_POST['printThemesId'] as $langId => $printThemesId) {
                 $this->activateFrontendTheme(
                     $langId,
                     $channels[2],
                     $printThemesId
                 );
             }
-            foreach ($_POST['pdfThemesId'] as $langCode => $pdfThemesId) {
+            foreach ($_POST['pdfThemesId'] as $langId => $pdfThemesId) {
                 $this->activateFrontendTheme(
                     $langId,
                     $channels[3],
                     $pdfThemesId
                 );
             }
-            foreach ($_POST['appThemesId'] as $langCode => $appThemesId) {
+            foreach ($_POST['appThemesId'] as $langId => $appThemesId) {
                 $this->activateFrontendTheme(
                     $langId,
                     $channels[4],
                     $appThemesId
                 );
             }
-            // persist frontends
-            foreach ($this->frontendsToPersist as $frontend) {
-                $this->em->persist($frontend);
-            }
             $this->em->flush();
             // reinit fwlanguage to show updated frontends
             \FWLanguage::init();
-            // reset persisted entities
-            $this->frontendsToPersist = array();
 
             $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
         }
@@ -1312,11 +1291,7 @@ CODE;
                 continue;
             }
 
-            if (($i % 2) == 0) {
-                $class="row1";
-            } else {
-                $class="row2";
-            }
+            $class = 'row' . ($i % 2 + 1);
 
             $objTemplate->setVariable(array(
                 'THEMES_ROWCLASS'             => $class,
@@ -2679,13 +2654,13 @@ CODE;
 
     /**
      * Gets the right frontend entity by lang id and channel,
-     * updates the theme id and adds updated entity to $this->frontendsToPersist
+     * updates the theme id (when neccessary) and persists the updated entity
      *
      * @param int langId language id of the frontend entity
      * @param string channel used channel of the frontend entity
      * @param int themeId theme id of the frontend entity
      */
-    private function activateFrontendTheme($langId, $channel, $themeId) {
+    protected function activateFrontendTheme($langId, $channel, $themeId) {
         $frontendRepo = $this->em->getRepository('\Cx\Core\View\Model\Entity\Frontend');
         // search for frontend with given language and channel
         $criteria = array(
@@ -2693,7 +2668,9 @@ CODE;
             'channel' => $channel
         );
         $frontend = $frontendRepo->findOneBy($criteria);
-        $frontend->setTheme($themeId);
-        $this->frontendsToPersist[] = $frontend;
+        if ($frontend->getTheme() != $themeId) {
+            $frontend->setTheme($themeId);
+            $this->em->persist($frontend);
+        }
     }
 }

@@ -36,11 +36,7 @@ namespace Cx\Modules\Downloads\Model\Event;
  * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
  * @package     cloudrexx
  */
-class LocaleLocaleEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
-
-    public function onEvent($eventName, array $eventArgs) {
-        $this->$eventName(current($eventArgs));
-    }
+class LocaleLocaleEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventListener  {
 
     /**
      * Fills the new download locales (downloads, categories and groups) with the default locale's values
@@ -49,67 +45,69 @@ class LocaleLocaleEventListener implements \Cx\Core\Event\Model\Entity\EventList
      * @param $eventArgs
      */
     public function postPersist($eventArgs) {
-        global $objDatabase;
-
         // get persisted locale
         $persistedLocale = $eventArgs->getEntity();
 
         $defaultLocaleId = \FWLanguage::getDefaultLangId();
         $localeId = $persistedLocale->getId();
 
+        $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
         // Add new download locales
-        $downloadQuery = 'INSERT IGNORE INTO
-                                `' . DBPREFIX . 'module_downloads_download_locale`
-                                (   `lang_id`,
-                                    `download_id`,
-                                    `name`,
-                                    `source`,
-                                    `source_name`,
-                                    `file_type`,
-                                    `description`,
-                                    `metakeys`
-                                )
-                                SELECT ' . $localeId . ',
-                                        `download_id`,
-                                        `name`,
-                                        `source`,
-                                        `source_name`,
-                                        `file_type`,
-                                        `description`,
-                                        `metakeys`
-                                FROM `' . DBPREFIX . 'module_downloads_download_locale`
+        $downloadQuery = 'INSERT IGNORE INTO `' . DBPREFIX . 'module_downloads_download_locale`
+            (   
+                `lang_id`,
+                `download_id`,
+                `name`,
+                `source`,
+                `source_name`,
+                `file_type`,
+                `description`,
+                `metakeys`
+            )
+            SELECT 
+                ' . $localeId . ',
+                `download_id`,
+                `name`,
+                `source`,
+                `source_name`,
+                `file_type`,
+                `description`,
+                `metakeys`
+            FROM `' . DBPREFIX . 'module_downloads_download_locale`
                                 WHERE lang_id = ' . $defaultLocaleId;
-        $objDatabase->Execute($downloadQuery);
+        $db->Execute($downloadQuery);
 
         // Add new category locales
-        $categoryQuery = 'INSERT IGNORE INTO
-                                `' . DBPREFIX . 'module_downloads_category_locale`
-                                (   `lang_id`,
-                                    `category_id`,
-                                    `name`,
-                                    `description`
-                                )
-                                SELECT ' . $localeId . ',
-                                        `category_id`,
-                                        `name`,
-                                        `description`
-                                FROM `' . DBPREFIX . 'module_downloads_category_locale`
-                                WHERE lang_id = ' . $defaultLocaleId;
-        $objDatabase->Execute($categoryQuery);
+        $categoryQuery = 'INSERT IGNORE INTO `' . DBPREFIX . 'module_downloads_category_locale`
+            (   
+                `lang_id`,
+                `category_id`,
+                `name`,
+                `description`
+            )
+            SELECT 
+                ' . $localeId . ',
+                `category_id`,
+                `name`,
+                `description`
+            FROM `' . DBPREFIX . 'module_downloads_category_locale`
+            WHERE lang_id = ' . $defaultLocaleId;
+        $db->Execute($categoryQuery);
 
         // Add new group locales
-        $groupQuery = 'INSERT IGNORE INTO
-                                `' . DBPREFIX . 'module_downloads_group_locale`
-                                (   `lang_id`,
-                                    `group_id`,
-                                    `name`
-                                )
-                                SELECT ' . $localeId . ',
-                                        `group_id`,
-                                        `name`
-                                FROM `' . DBPREFIX . 'module_downloads_group_locale`
-                                WHERE lang_id = ' . $defaultLocaleId;
-        $objDatabase->Execute($groupQuery);
+        $groupQuery = 'INSERT IGNORE INTO `' . DBPREFIX . 'module_downloads_group_locale`
+            (   
+                `lang_id`,
+                `group_id`,
+                `name`
+            )
+            SELECT 
+                ' . $localeId . ',
+                `group_id`,
+                `name`
+            FROM `' . DBPREFIX . 'module_downloads_group_locale`
+            WHERE lang_id = ' . $defaultLocaleId;
+        $db->Execute($groupQuery);
     }
 
     /**
@@ -119,26 +117,25 @@ class LocaleLocaleEventListener implements \Cx\Core\Event\Model\Entity\EventList
      * @param $eventArgs
      */
     public function preRemove($eventArgs) {
-        global $objDatabase;
-
         // get locale, which will be deleted
         $delLocale = $eventArgs->getEntity();
 
         $localeId = $delLocale->getId();
 
+        $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
         // Delete the download locales
         $downloadQuery = 'DELETE FROM `' . DBPREFIX . 'module_downloads_download_locale`
-                                            WHERE lang_id = ' . $localeId;
-        $objDatabase->Execute($downloadQuery);
+            WHERE lang_id = ' . $localeId;
+        $db->Execute($downloadQuery);
 
         // Delete the category locales
         $categoryQuery = 'DELETE FROM `' . DBPREFIX . 'module_downloads_category_locale`
-                                            WHERE lang_id = ' . $localeId;
-        $objDatabase->Execute($categoryQuery);
+            WHERE lang_id = ' . $localeId;
+        $db->Execute($categoryQuery);
 
         // Delete the group locales
         $groupQuery = 'DELETE FROM `' . DBPREFIX . 'module_downloads_group_locale`
-                                            WHERE lang_id = ' . $localeId;
-        $objDatabase->Execute($groupQuery);
+            WHERE lang_id = ' . $localeId;
+        $db->Execute($groupQuery);
     }
 }
