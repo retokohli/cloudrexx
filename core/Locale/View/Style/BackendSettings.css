@@ -1,0 +1,6 @@
+#content form.cx-ui {
+    overflow-y: visible;
+}
+#content form.cx-ui > fieldset {
+    overflow: visible;
+}

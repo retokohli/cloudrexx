@@ -1266,6 +1266,11 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTPS Port (Frontend)");
             }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('defaultLocaleId')
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultLocaleId',  isset($existingConfig['defaultLocaleId']) ? $existingConfig['defaultLocaleId'] : '0', 10,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getLocales()}', 'site') ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default Locale (Frontend)");
+            }
 
             //administrationArea group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea','Yaml', $configPath);
@@ -1326,6 +1331,11 @@ class Config
                 && !\Cx\Core\Setting\Controller\Setting::add('portBackendHTTPS', isset($existingConfig['portBackendHTTPS']) ? $existingConfig['portBackendHTTPS'] : 443, 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTPS Port (Backend)");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('defaultLanguageId')
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultLanguageId',  isset($existingConfig['defaultLanguageId']) ? $existingConfig['defaultLanguageId'] : 1, 9,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getBackendLanguages()}', 'administrationArea') ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default language (Backend)");
             }
 
             //security group
@@ -1760,6 +1770,42 @@ class Config
         $display = array();
         foreach ($domains As $domain) {
             $display[] = $domain->getId() . ':' . $domain->getNameWithPunycode();
+        }
+        return implode(',', $display);
+    }
+
+    /**
+     * Shows all backend languages
+     *
+     * @access  public
+     * @return  string
+     */
+    public static function getBackendLanguages() {
+        $cx = Cx::instanciate();
+        $em = $cx->getDB()->getEntityManager();
+        $backendLangRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Backend');
+        $languages = $backendLangRepo->findAll();
+        $display = array();
+        foreach ($languages As $language) {
+            $display[] = $language->getId() . ':' . $language->getIso1();
+        }
+        return implode(',', $display);
+    }
+
+    /**
+     * Shows all locales
+     *
+     * @access  public
+     * @return  string
+     */
+    public static function getLocales() {
+        $cx = Cx::instanciate();
+        $em = $cx->getDB()->getEntityManager();
+        $localeRepository = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
+        $locales = $localeRepository->findAll();
+        $display = array();
+        foreach ($locales As $locale) {
+            $display[] = $locale->getId() . ':' . $locale->getLabel();
         }
         return implode(',', $display);
     }

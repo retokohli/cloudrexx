@@ -768,6 +768,7 @@ class InitCMS
                         case 'ComponentManager':
                         case 'ViewManager':
                         case 'LanguageManager':
+                        case 'Locale':
                         case 'ContentWorkflow':
                         case 'Config':
                         case 'SystemLog':
