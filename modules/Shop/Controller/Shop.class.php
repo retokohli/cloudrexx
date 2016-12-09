@@ -2057,14 +2057,56 @@ die("Failed to update the Cart!");
                           case Attribute::TYPE_UPLOAD_MANDATORY:
 //                            $option_price = '&nbsp;';
                             $isUpload = true;
-                            $selectValues .='<input type="input" name="productOption['.$attribute_id.
-                                ']" id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
-                                '" style="width:180px; float:left" />'.
-                                  '<input type="button" name="productOption['.$attribute_id.
-                                ']" onClick="getUploader(cx.jQuery(this));" data-input-id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
-                                '" value="'.$_ARRAYLANG['TXT_SHOP_CHOOSE_FILE'].'"/>'.
-                                  '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
-                                $option_price."</label><br />\n";
+                            $inputName = 'productOption[' . $attribute_id . ']';
+                            $inputId   = 'productOption-' . $product_id . '-' .
+                                $attribute_id . '-' . $domId;
+                            $inputText =
+                                new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                    'input'
+                                );
+                            $inputText->setAttribute('type', 'text');
+                            $inputText->setAttribute('name', $inputName);
+                            $inputText->setAttribute('id', $inputId);
+                            $inputText->setClass(
+                                'product-option-field product-option-upload'
+                            );
+                            if ($arrOption['price'] != 0) {
+                                $inputText->setAttribute(
+                                    'data-price',
+                                    $arrOption['price']
+                                );
+                            }
+                            $inputText->setAttribute(
+                                'style',
+                                'width:180px; float:left'
+                            );
+                            $inputButton =
+                                new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                    'input'
+                                );
+                            $inputButton->setAttribute('type', 'button');
+                            $inputButton->setClass(
+                                'product-option-upload-button'
+                            );
+                            $inputButton->setAttribute(
+                                'data-input-id',
+                                $inputId
+                            );
+                            $inputButton->setAttribute(
+                                'value',
+                                $_ARRAYLANG['TXT_SHOP_CHOOSE_FILE']
+                            );
+                            $label = new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                'label'
+                            );
+                            $label->setAttribute('for', $inputId);
+                            $value = new \Cx\Core\Html\Model\Entity\TextElement(
+                                $option_price
+                            );
+                            $label->addChild($value);
+                            $br = new \Cx\Core\Html\Model\Entity\HtmlElement('br');
+                            $selectValues .= $inputText . $inputButton .
+                                $label . $br;
                             break;
                           case Attribute::TYPE_TEXTAREA_OPTIONAL:
                           case Attribute::TYPE_TEXTAREA_MANDATORY:
@@ -2146,10 +2188,9 @@ die("Failed to update the Cart!");
                     $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader(); //create an uploader
                     $uploader->setCallback('productOptionsUploaderCallback');
                     $uploader->setOptions(array(
-                        'id' => 'productOptionsUploader',
-                        'allowed-extensions' => array('jpg', 'png', 'gif'),
+                        'id'                => 'productOptionsUploader',
                         'data-upload-limit' => 1,
-                        'style' => 'display:none'
+                        'style'             => 'display:none'
                     ));
                     self::$objTemplate->setVariable(array(
                         'SHOP_PRODUCT_OPTIONS_UPLOADER_CODE' => $uploader->getXHtml(),
@@ -4185,48 +4226,58 @@ die("Shop::processRedirect(): This method is obsolete!");
         global $_ARRAYLANG;
 
         $uploaderId = isset($_REQUEST['productOptionsUploaderId'])
-                        ? contrexx_input2raw($_REQUEST['productOptionsUploaderId'])
-                        : '';
+            ? contrexx_input2raw($_REQUEST['productOptionsUploaderId'])
+            : '';
 
         if (empty($uploaderId) || empty($fileName)) {
             return '';
         }
-        $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (
+            \Cx\Lib\FileSystem\FileSystem::exists(
+                $cx->getWebsiteDocumentRootPath() . '/' .
+                Order::UPLOAD_FOLDER . urldecode($fileName)
+            )
+        ) {
+            return urldecode($fileName);
+        }
+
         $objSession = $cx->getComponent('Session')->getSession();
         $tmpFile    = $objSession->getTempPath() . '/' . $uploaderId . '/' . $fileName;
         if (!\Cx\Lib\FileSystem\FileSystem::exists($tmpFile)) {
             return '';
         }
+
         $originalFileName = $fileName;
-        $arrMatch = array();
-        $filename = '';
-        $fileext = '';
+        $arrMatch         = array();
         if (preg_match('/(.+)(\.[^.]+)/', $originalFileName, $arrMatch)) {
             $filename = $arrMatch[1];
-            $fileext = $arrMatch[2];
+            $fileext  = $arrMatch[2];
         } else {
             $filename = $originalFileName;
+            $fileext  = '';
         }
-        if (   $fileext == '.jpg'
-            || $fileext == '.gif'
-            || $fileext == '.png') {
-            $newFileName = $filename.'['.uniqid().']'.$fileext;
-            $newFilePath = Order::UPLOAD_FOLDER.$newFileName;
-            //Move the uploaded file to the path specified in the variable $newFilePath
-            try {
-                $objFile = new \Cx\Lib\FileSystem\File($tmpFile);
-                if ($objFile->move(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath() . '/' . $newFilePath, false)) {
-                   return $newFileName;
-                } else {
-                    \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPLOADING_FILE']);
-                }
-            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                \DBG::msg($e->getMessage());
+
+        $newFileName = $filename.'['.uniqid().']'.$fileext;
+        $newFilePath = Order::UPLOAD_FOLDER.$newFileName;
+        //Move the uploaded file to the path specified in the variable $newFilePath
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File($tmpFile);
+            if (
+                $objFile->move(
+                    $cx->getWebsiteDocumentRootPath() . '/' . $newFilePath,
+                    false
+                )
+            ) {
+               return $newFileName;
+            } else {
+                \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPLOADING_FILE']);
             }
-        } else {
-            \Message::error(sprintf(
-                $_ARRAYLANG['TXT_SHOP_ERROR_WRONG_FILETYPE'], $fileext));
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::msg($e->getMessage());
         }
+
         return '';
     }
 

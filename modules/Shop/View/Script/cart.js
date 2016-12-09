@@ -52,19 +52,34 @@ function shopUpdateCart(data, textStatus, jqXHR) {
             cart += cartProduct;
 
             //Update Quanity-Field for Minimum-Order-Quanity-Validation
-            if(cx.jQuery('input[name="productId"]').length > 0){
-
+            if (cx.jQuery('input[name="productId"]').length > 0){
+                var currentItemsPdtFrm;
                 cx.jQuery('input[name="productId"]').each(function(){
                     var elProductId = cx.jQuery(this);
                     var elProductForm = elProductId.closest("form");
                     var elProductQuanity = elProductForm.find('input[name="orderQuanity"]');
-
-                    if(elProductId.val() == i.id && elProductQuanity.length > 0){
+                    if (elProductId.val() == i.id && elProductQuanity.length > 0){
+                        currentItemsPdtFrm = elProductForm;
                         var orderQuanity = elProductQuanity.val()
                         var effectiveMinimumQuanity = i.minimum_order_quantity - i.quantity;
                         elProductQuanity.attr('data-minimum-order-quantity',effectiveMinimumQuanity);
                     }
-                })
+                });
+
+                if (currentItemsPdtFrm) {
+                    cx.jQuery.each(i.options, function(aId, val){
+                        var elProductOpt = currentItemsPdtFrm.find('input[name="productOption['+ aId +']"]');
+                        var elProductOptVal = cx.jQuery.trim(elProductOpt.val());
+                        if (
+                            elProductOpt &&
+                            elProductOpt.hasClass('product-option-upload') &&
+                            elProductOptVal &&
+                            elProductOptVal !== val
+                        ) {
+                            elProductOpt.val(val);
+                        }
+                    });
+                }
             }
         })
         cart = cartTpl.replace('{SHOP_JS_CART_PRODUCTS}', cart);
