@@ -56,15 +56,33 @@ class FWLanguage
      */
     protected static $locales = array( 99 => 'sm_PL', );
 
-    private static $arrLanguages = null;
+    /**
+     * Array containing the active frontend languages
+     * @var array
+     */
+    protected static $arrFrontendLanguages;
 
     /**
-     * ID of the default language
+     * Array containing the active backend languages
+     * @var array
+     */
+    protected static $arrBackendLanguages;
+
+    /**
+     * ID of the default frontend language
      *
      * @var integer
-     * @access private
+     * @access protected
      */
-    private static $defaultLangId;
+    protected static $defaultFrontendLangId;
+
+    /**
+     * ID of the default backend language
+     *
+     * @var integer
+     * @access protected
+     */
+    protected static $defaultBackendLangId;
 
 
     /**
@@ -75,7 +93,7 @@ class FWLanguage
      * the config, so core/settings.class.php can
      * rewrite .htaccess (virtual lang dirs).
      */
-    static function init()
+    public static function init()
     {
         global $_CONFIG, $objDatabase;
 
@@ -89,7 +107,8 @@ class FWLanguage
             $license->check();
             $full = $license->isInLegalComponents('fulllanguage');
             while (!$objResult->EOF) {
-                self::$arrLanguages[$objResult->fields['id']] = array(
+                // frontend languages
+                static::$arrFrontendLanguages[$objResult->fields['id']] = array(
                     'id'         => $objResult->fields['id'],
                     'lang'       => $objResult->fields['lang'],
                     'name'       => $objResult->fields['name'],
@@ -100,12 +119,17 @@ class FWLanguage
                     'is_default' => $objResult->fields['is_default'],
                     'fallback'   => $objResult->fields['fallback'],
                 );
+                // backend languages
+                static::$arrBackendLanguages = static::$arrFrontendLanguages;
                 if (!$full && $objResult->fields['is_default'] != 'true') {
-                    self::$arrLanguages[$objResult->fields['id']]['frontend'] = 0;
-                    self::$arrLanguages[$objResult->fields['id']]['backend'] = 0;
+                    static::$arrFrontendLanguages[$objResult->fields['id']]['frontend'] = 0;
+                    static::$arrFrontendLanguages[$objResult->fields['id']]['backend'] = 0;
+                    static::$arrBackendLanguages[$objResult->fields['id']]['frontend'] = 0;
+                    static::$arrBackendLanguages[$objResult->fields['id']]['backend'] = 0;
                 }
                 if ($objResult->fields['is_default'] == 'true') {
-                    self::$defaultLangId = $objResult->fields['id'];
+                    static::$defaultFrontendLangId = $objResult->fields['id'];
+                    static::$defaultBackendLangId = $objResult->fields['id'];
                 }
                 $objResult->MoveNext();
             }
@@ -120,11 +144,21 @@ class FWLanguage
      * @return  array             The array of enabled language names
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getNameArray($mode='frontend')
+    public static function getNameArray($mode='frontend')
     {
-        if (!isset(self::$arrLanguages)) self::init();
+        switch($mode) {
+            case 'backend':
+                if (!isset(static::$arrBackendLanguages)) static::init();
+                $arrLanguages = static::$arrBackendLanguages;
+                break;
+            case 'frontend':
+            default:
+                if (!isset(static::$arrFrontendLanguages)) static::init();
+                $arrLanguages = static::$arrFrontendLanguages;
+                break;
+        }
         $arrName = array();
-        foreach (self::$arrLanguages as $lang_id => $arrLanguage) {
+        foreach ($arrLanguages as $lang_id => $arrLanguage) {
             if (empty($arrLanguage[$mode])) continue;
             $arrName[$lang_id] = $arrLanguage['name'];
         }
@@ -142,11 +176,22 @@ class FWLanguage
      * @return  array             The array of enabled language IDs
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getIdArray($mode='frontend')
+    public static function getIdArray($mode='frontend')
     {
-        if (!isset(self::$arrLanguages)) self::init();
+        switch($mode) {
+            case 'backend':
+                if (!isset(static::$arrBackendLanguages)) static::init();
+                $arrLanguages = static::$arrBackendLanguages;
+                break;
+            case 'frontend':
+            default:
+                if (!isset(static::$arrFrontendLanguages)) static::init();
+                $arrLanguages = static::$arrFrontendLanguages;
+                break;
+
+        }
         $arrId = array();
-        foreach (self::$arrLanguages as $lang_id => $arrLanguage) {
+        foreach ($arrLanguages as $lang_id => $arrLanguage) {
             if (empty($arrLanguage[$mode])) continue;
             $arrId[$lang_id] = $lang_id;
         }
@@ -155,28 +200,52 @@ class FWLanguage
 
 
     /**
-     * Returns the ID of the default language
+     * Returns the ID of the default frontend language
      * @return integer Language ID
      */
-    static function getDefaultLangId()
+    public static function getDefaultLangId()
     {
-        if (empty(self::$defaultLangId)) {
-            self::init();
+        if (empty(static::$defaultFrontendLangId)) {
+            static::init();
         }
-        return self::$defaultLangId;
+        return static::$defaultFrontendLangId;
+    }
+
+    /**
+     * Returns the ID of the default backend language
+     * @return integer Language ID
+     */
+    public static function getDefaultBackendLangId()
+    {
+        if (empty(static::$defaultBackendLangId)) {
+            static::init();
+        }
+        return static::$defaultBackendLangId;
     }
 
 
     /**
-     * Returns the complete language data
+     * Returns the complete frontend language data
      * @see     FWLanguage()
      * @return  array           The language data
      * @access  public
      */
-    static function getLanguageArray()
+    public static function getLanguageArray()
     {
-        if (empty(self::$arrLanguages)) self::init();
-        return self::$arrLanguages;
+        if (empty(static::$arrFrontendLanguages)) static::init();
+        return static::$arrFrontendLanguages;
+    }
+
+    /**
+     * Returns the complete backend language data
+     * @see     FWLanguage()
+     * @return  array           The language data
+     * @access  public
+     */
+    public static function getBackendLanguageArray()
+    {
+        if (empty(static::$arrBackendLanguages)) static::init();
+        return static::$arrBackendLanguages;
     }
 
 
@@ -199,11 +268,11 @@ class FWLanguage
      */
     public static function getActiveFrontendLanguages()
     {
-        if (empty(self::$arrLanguages)) {
-            self::init();
+        if (empty(static::$arrFrontendLanguages)) {
+            static::init();
         }
         $arr = array();
-        foreach (self::$arrLanguages as $id => $lang) {
+        foreach (static::$arrFrontendLanguages as $id => $lang) {
             if ($lang['frontend']) {
                 $arr[$id] = $lang;
             }
@@ -231,11 +300,11 @@ class FWLanguage
      */
     public static function getActiveBackendLanguages()
     {
-        if (empty(self::$arrLanguages)) {
-            self::init();
+        if (empty(static::$arrBackendLanguages)) {
+            static::init();
         }
         $arr = array();
-        foreach (self::$arrLanguages as $id => $lang) {
+        foreach (static::$arrBackendLanguages as $id => $lang) {
             if ($lang['backend']) {
                 $arr[$id] = $lang;
             }
@@ -245,18 +314,33 @@ class FWLanguage
 
 
     /**
-     * Returns single language related fields
+     * Returns single frontend language related fields
      *
      * Access language data by specifying the language ID and the index
      * as initialized by {@link FWLanguage()}.
      * @return  mixed           Language data field content
      * @access  public
      */
-    static function getLanguageParameter($id, $index)
+    public static function getLanguageParameter($id, $index)
     {
-        if (empty(self::$arrLanguages)) self::init();
-        return (isset(self::$arrLanguages[$id][$index])
-            ? self::$arrLanguages[$id][$index] : false);
+        if (empty(static::$arrFrontendLanguages)) static::init();
+        return (isset(static::$arrFrontendLanguages[$id][$index])
+            ? static::$arrFrontendLanguages[$id][$index] : false);
+    }
+
+    /**
+     * Returns single backend language related fields
+     *
+     * Access language data by specifying the language ID and the index
+     * as initialized by {@link FWLanguage()}.
+     * @return  mixed           Language data field content
+     * @access  public
+     */
+    public static function getBackendLanguageParameter($id, $index)
+    {
+        if (empty(static::$arrBackendLanguages)) static::init();
+        return (isset(static::$arrBackendLanguages[$id][$index])
+            ? static::$arrBackendLanguages[$id][$index] : false);
     }
 
 
@@ -272,9 +356,9 @@ class FWLanguage
      * @author  Reto Kohli <reto.kohli@comvation.com>
      * @todo    Use the Html class instead
      */
-    static function getMenu($selectedId=0, $menuName='', $onchange='')
+    public static function getMenu($selectedId=0, $menuName='', $onchange='')
     {
-        $menu = self::getMenuoptions($selectedId, true);
+        $menu = static::getMenuoptions($selectedId, true);
         if ($menuName) {
             $menu = "<select id='$menuName' name='$menuName'".
                     ($onchange ? ' onchange="'.$onchange.'"' : '').
@@ -298,9 +382,9 @@ class FWLanguage
      * @author  Reto Kohli <reto.kohli@comvation.com>
      * @todo    Use the Html class instead
      */
-    static function getMenuActiveOnly($selectedId=0, $menuName='', $onchange='')
+    public static function getMenuActiveOnly($selectedId=0, $menuName='', $onchange='')
     {
-        $menu = self::getMenuoptions($selectedId, false);
+        $menu = static::getMenuoptions($selectedId, false);
         if ($menuName) {
             $menu = "<select id='$menuName' name='$menuName'".
                     ($onchange ? ' onchange="'.$onchange.'"' : '').
@@ -320,11 +404,11 @@ class FWLanguage
      * @author  Reto Kohli <reto.kohli@comvation.com>
      * @todo    Use the Html class instead
      */
-    static function getMenuoptions($selectedId=0, $flagInactive=false)
+    public static function getMenuoptions($selectedId=0, $flagInactive=false)
     {
-        if (empty(self::$arrLanguages)) self::init();
+        if (empty(static::$arrFrontendLanguages)) static::init();
         $menuoptions = '';
-        foreach (self::$arrLanguages as $id => $arrLanguage) {
+        foreach (static::$arrFrontendLanguages as $id => $arrLanguage) {
             // Skip inactive ones if desired
             if (!$flagInactive && empty($arrLanguage['frontend']))
                 continue;
@@ -355,7 +439,7 @@ class FWLanguage
      * @global  ADONewConnection
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getLangIdByIso639_1($langCode)
+    public static function getLangIdByIso639_1($langCode)
     {
         global $objDatabase;
 
@@ -406,32 +490,64 @@ class FWLanguage
 
 
     /**
-     * Return the language code from the database for the given ID
+     * Return the language code from the database for the given frontend language ID
      *
      * Returns false on failure, or if the ID is invalid
-     * @param   integer $langId         The language ID
+     * @param   integer $langId         The frontend language ID
      * @return  mixed                   The two letter code, or false
      * @static
      */
-    static function getLanguageCodeById($langId)
+    public static function getLanguageCodeById($langId)
     {
-        if (empty(self::$arrLanguages)) self::init();
-        return self::getLanguageParameter($langId, 'lang');
+        if (empty(static::$arrFrontendLanguages)) static::init();
+        return static::getLanguageParameter($langId, 'lang');
     }
 
 
     /**
-     * Return the language ID for the given code
+     * Return the language code from the database for the given backend language ID
+     *
+     * Returns false on failure, or if the ID is invalid
+     * @param   integer $langId         The frontend language ID
+     * @return  mixed                   The two letter code, or false
+     * @static
+     */
+    public static function getBackendLanguageCodeById($langId)
+    {
+        if (empty(static::$arrBackendLanguages)) static::init();
+        return static::getBackendLanguageParameter($langId, 'lang');
+    }
+
+    /**
+     * Return the frontend language ID for the given code
      *
      * Returns false on failure, or if the code is unknown
      * @param   string                    The two letter code
      * @return  integer   $langId         The language ID, or false
      * @static
      */
-    static function getLanguageIdByCode($code)
+    public static function getLanguageIdByCode($code)
     {
-        if (empty(self::$arrLanguages)) self::init();
-        foreach (self::$arrLanguages as $id => $arrLanguage) {
+        if (empty(static::$arrFrontendLanguages)) static::init();
+        foreach (static::$arrFrontendLanguages as $id => $arrLanguage) {
+            if ($arrLanguage['lang'] == $code) return $id;
+        }
+        return false;
+    }
+
+
+    /**
+     * Return the backend language ID for the given code
+     *
+     * Returns false on failure, or if the code is unknown
+     * @param   string                    The two letter code
+     * @return  integer   $langId         The language ID, or false
+     * @static
+     */
+    public static function getBackendLanguageIdByCode($code)
+    {
+        if (empty(static::$arrBackendLanguages)) static::init();
+        foreach (static::$arrBackendLanguages as $id => $arrLanguage) {
             if ($arrLanguage['lang'] == $code) return $id;
         }
         return false;
@@ -489,33 +605,33 @@ class FWLanguage
     }
 
     /**
-     * Return the fallback language ID for the given ID
+     * Return the fallback language ID for the given frontend language ID
      *
      * Returns false on failure, or if the ID is invalid
      * @param   integer $langId         The language ID
      * @return  integer   $langId         The language ID, or false
      * @static
      */
-    static function getFallbackLanguageIdById($langId)
+    public static function getFallbackLanguageIdById($langId)
     {
-        if (empty(self::$arrLanguages)) self::init();
-        if ($langId == self::getDefaultLangId()) return false;
-        $fallback_lang = self::getLanguageParameter($langId, 'fallback');
-        if ($fallback_lang == 0) $fallback_lang = intval(self::getDefaultLangId());;
+        if (empty(static::$arrFrontendLanguages)) static::init();
+        if ($langId == static::getDefaultLangId()) return false;
+        $fallback_lang = static::getLanguageParameter($langId, 'fallback');
+        if ($fallback_lang == 0) $fallback_lang = intval(static::getDefaultLangId());;
         if ($langId == $fallback_lang) return false;
         return $fallback_lang;
     }
 
     /**
-     * Builds an array mapping language ids to fallback language ids.
+     * Builds an array mapping frontend language ids to fallback language ids.
      *
      * @return array ( language id => fallback language id )
      */
-    static function getFallbackLanguageArray() {
+    public static function getFallbackLanguageArray() {
         global $objDatabase;
         $ret = array();
 
-        $defaultLangId = intval(self::getDefaultLangId());
+        $defaultLangId = intval(static::getDefaultLangId());
 
         $query = "SELECT id, fallback FROM ".DBPREFIX."languages where fallback IS NOT NULL";
         $rs = $objDatabase->Execute($query);
@@ -529,7 +645,7 @@ class FWLanguage
                 $fallbackLangId = $defaultLangId;
             }
 
-            if ($langId == $fallbackLangId || $langId == self::getDefaultLangId()) {
+            if ($langId == $fallbackLangId || $langId == static::getDefaultLangId()) {
                 $fallbackLangId = false;
             }
             $ret[$langId] = $fallbackLangId;
