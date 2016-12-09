@@ -505,7 +505,6 @@ INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scop
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (36,6,'function','backend','TXT_ACCESS_CONTROL',1,'','_self',0,0,36);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (38,7,'function','backend','TXT_MODIFY_MEDIA_FILES',1,'','_self',0,0,38);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (39,7,'function','backend','TXT_UPLOAD_MEDIA_FILES',1,'','_self',0,0,39);
-INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (40,19,'function','backend','TXT_SETTINGS',1,'','_self',0,0,40);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (41,20,'function','backend','TXT_DBM_MAINTENANCE_TITLE',1,'','_self',0,0,41);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (46,21,'function','backend','TXT_ACTIVATE_SKINS',1,'','_self',0,0,46);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (47,21,'function','backend','TXT_EDIT_SKINS',1,'','_self',0,0,47);
@@ -4804,6 +4803,7 @@ INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (
 INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (47,'settingsActiveLanguages','2,1,3');
 INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (48,'settingsFrontendUseMultilang','0');
 INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (49,'settingsIndividualEntryOrder','0');
+INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (52,'legacyBehavior','0');
 INSERT INTO `contrexx_module_mediadir_settings_num_categories` (`group_id`, `num_categories`) VALUES (3,'n');
 INSERT INTO `contrexx_module_mediadir_settings_num_categories` (`group_id`, `num_categories`) VALUES (4,'n');
 INSERT INTO `contrexx_module_mediadir_settings_num_categories` (`group_id`, `num_categories`) VALUES (5,'n');

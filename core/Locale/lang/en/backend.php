@@ -31,7 +31,8 @@
  * values for backend ACT template by SystemComponentBackendController
  *
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
- * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @author      Manuel Schenk <manuel.schenk@comvation.com>
+ * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
  * @package     cloudrexx
  * @subpackage  core_locale
  */
