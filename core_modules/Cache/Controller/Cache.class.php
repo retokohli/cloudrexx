@@ -254,20 +254,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             return $htmlCode;
         }
         
-        // Random include tags
-        $htmlCode = preg_replace_callback(
-            '#<!-- ESI_RANDOM_START -->[\s\S]*<esi:assign name="content_list">\s*\[([^\]]+)\]\s*</esi:assign>[\s\S]*<!-- ESI_RANDOM_END -->#',
-            function($matches) {
-                $uris = explode('\',\'', substr($matches[1], 1, -1));
-                $randomNumber = rand(0, count($uris) - 1);
-                $uri = $uris[$randomNumber];
-                
-                // this needs to match the format below!
-                return '<esi:include src="' . $uri . '" onerror="continue"/>';
-            },
-            $htmlCode
-        );
-        
         // Replace include tags
         $settings = $this->getSettings();
         // apply ESI dynamic variables
@@ -282,7 +268,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             }
         }
         $replaceEsiFn = function($matches) use (&$cxNotYetInitialized, $settings) {
-
             // return cached content if available
             $cacheFile = $this->getCacheFileNameFromUrl($matches[1]);
             if ($settings['internalSsiCache'] == 'on' && file_exists($this->strCachePath . $cacheFile)) {
@@ -320,6 +305,20 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         };
 
         do {
+            // Random include tags
+            $htmlCode = preg_replace_callback(
+                '#<!-- ESI_RANDOM_START -->[\s\S]*<esi:assign name="content_list">\s*\[([^\]]+)\]\s*</esi:assign>[\s\S]*<!-- ESI_RANDOM_END -->#',
+                function($matches) {
+                    $uris = explode('\',\'', substr($matches[1], 1, -1));
+                    $randomNumber = rand(0, count($uris) - 1);
+                    $uri = $uris[$randomNumber];
+                    
+                    // this needs to match the format below!
+                    return '<esi:include src="' . $uri . '" onerror="continue"/>';
+                },
+                $htmlCode
+            );
+
             $htmlCode = preg_replace_callback(
                 '#<esi:include src="([^"]+)" onerror="continue"/>#',
                 $replaceEsiFn,
