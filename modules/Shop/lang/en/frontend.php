@@ -523,3 +523,4 @@ $_ARRAYLANG['TXT_SHOP_PRODUCT_DISCOUNTPRICE_TEXTBLOCK_2'] = "only";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_SINGLE_CART_STOCK_OUTOFF_ERROR'] = "The product <strong>%s</strong> is sold out.";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_MULTIPLE_CART_STOCK_OUTOFF_ERROR'] = "The products <strong>%s</strong> are sold out.";
 $_ARRAYLANG['TXT_SHOP_CHOOSE_FILE'] = 'Choose File';
+$_ARRAYLANG['TXT_SHOP_REMOVE_FILE'] = 'Remove File';

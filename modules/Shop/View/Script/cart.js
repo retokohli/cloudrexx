@@ -66,7 +66,7 @@ function shopUpdateCart(data, textStatus, jqXHR) {
                     }
                 });
 
-                if (currentItemsPdtFrm) {
+                if (currentItemsPdtFrm && i.options_count > 0) {
                     cx.jQuery.each(i.options, function(aId, val){
                         var elProductOpt = currentItemsPdtFrm.find('input[name="productOption['+ aId +']"]');
                         var elProductOptVal = cx.jQuery.trim(elProductOpt.val());

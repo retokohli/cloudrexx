@@ -1153,7 +1153,7 @@ class Order
             if (   $option != $option_full
                 && \File::exists($path)) {
                 $option =
-                    '<a href="'.$path.'" target="uploadimage">'.$option.'</a>';
+                    '<a href="'.$path.'" target="uploadFile">'.$option.'</a>';
             }
             $id = $objResult->fields['id'];
             $price = $objResult->fields['price'];

@@ -1297,6 +1297,7 @@ die("Failed to update the Cart!");
         $formId = 0;
         $arrDefaultImageSize = $arrSize = null;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $isFileAttrExistsInPdt = false;
         foreach ($arrProduct as $objProduct) {
             if (!empty($product_id)) {
                 self::$pageTitle = $objProduct->name();
@@ -1471,6 +1472,9 @@ die("Failed to update the Cart!");
                 $productSubmitFunction = self::productOptions(
                     $id, $formId, $cart_id, $flagMultipart
                 );
+            }
+            if ($flagMultipart) {
+                $isFileAttrExistsInPdt = $flagMultipart;
             }
             $shopProductFormName = "shopProductForm$formId";
             $row = $formId % 2 + 1;
@@ -1649,6 +1653,20 @@ die("Failed to update the Cart!");
                 self::$objTemplate->parse('shopProductRow');
             }
             ++$formId;
+        }
+        if ($isFileAttrExistsInPdt) {
+            //initialize the uploader
+            $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+            $uploader->setCallback('productOptionsUploaderCallback');
+            $uploader->setOptions(array(
+                'id'                => 'productOptionsUploader',
+                'data-upload-limit' => 1,
+                'style'             => 'display:none'
+            ));
+            self::$objTemplate->setVariable(array(
+                'SHOP_PRODUCT_OPTIONS_UPLOADER_CODE' => $uploader->getXHtml(),
+                'SHOP_PRODUCT_OPTIONS_UPLOADER_ID'   => $uploader->getId()
+            ));
         }
         return true;
     }
@@ -1836,7 +1854,6 @@ die("Failed to update the Cart!");
                 self::$objTemplate->hideBlock('shopProductOptionsRow');
                 self::$objTemplate->hideBlock('shopProductOptionsValuesRow');
             } else {
-                $isUpload = false;
                 // Loop through the Attribute Names for the Product
                 foreach ($arrAttributes as $attribute_id => $objAttribute) {
                     $mandatory = false;
@@ -2056,7 +2073,6 @@ die("Failed to update the Cart!");
                           case Attribute::TYPE_UPLOAD_OPTIONAL:
                           case Attribute::TYPE_UPLOAD_MANDATORY:
 //                            $option_price = '&nbsp;';
-                            $isUpload = true;
                             $inputName = 'productOption[' . $attribute_id . ']';
                             $inputId   = 'productOption-' . $product_id . '-' .
                                 $attribute_id . '-' . $domId;
@@ -2065,10 +2081,11 @@ die("Failed to update the Cart!");
                                     'input'
                                 );
                             $inputText->setAttribute('type', 'text');
-                            $inputText->setAttribute('name', $inputName);
                             $inputText->setAttribute('id', $inputId);
+                            $inputText->setAttribute('disabled', 'disabled');
                             $inputText->setClass(
-                                'product-option-field product-option-upload'
+                                'product-option-upload-text
+                                 product-option-field ' . $inputId
                             );
                             if ($arrOption['price'] != 0) {
                                 $inputText->setAttribute(
@@ -2076,9 +2093,15 @@ die("Failed to update the Cart!");
                                     $arrOption['price']
                                 );
                             }
-                            $inputText->setAttribute(
-                                'style',
-                                'width:180px; float:left'
+                            $inputHidden =
+                                new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                    'input'
+                                );
+                            $inputHidden->setAttribute('type', 'text');
+                            $inputHidden->setAttribute('name', $inputName);
+                            $inputHidden->setClass(
+                                'product-option-upload-hidden
+                                 product-option-upload ' . $inputId
                             );
                             $inputButton =
                                 new \Cx\Core\Html\Model\Entity\HtmlElement(
@@ -2096,6 +2119,19 @@ die("Failed to update the Cart!");
                                 'value',
                                 $_ARRAYLANG['TXT_SHOP_CHOOSE_FILE']
                             );
+                            $removeIcon = new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                'img'
+                            );
+                            $removeIcon->setClass('product-option-remove-file');
+                            $removeIcon->setAttribute('data-input-id', $inputId);
+                            $removeIcon->setAttribute(
+                                'src',
+                                '/core/Core/View/Media/icons/delete.gif'
+                            );
+                            $removeIcon->setAttribute(
+                                'title',
+                                $_ARRAYLANG['TXT_SHOP_REMOVE_FILE']
+                            );
                             $label = new \Cx\Core\Html\Model\Entity\HtmlElement(
                                 'label'
                             );
@@ -2106,7 +2142,7 @@ die("Failed to update the Cart!");
                             $label->addChild($value);
                             $br = new \Cx\Core\Html\Model\Entity\HtmlElement('br');
                             $selectValues .= $inputText . $inputButton .
-                                $label . $br;
+                                $removeIcon. $inputHidden . $label . $br;
                             break;
                           case Attribute::TYPE_TEXTAREA_OPTIONAL:
                           case Attribute::TYPE_TEXTAREA_MANDATORY:
@@ -2183,20 +2219,6 @@ die("Failed to update the Cart!");
                     self::$objTemplate->parse('shopProductOptionsValuesRow');
                 }
                 self::$objTemplate->parse('shopProductOptionsRow');
-                if ($isUpload) {
-                    //initialize the uploader
-                    $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader(); //create an uploader
-                    $uploader->setCallback('productOptionsUploaderCallback');
-                    $uploader->setOptions(array(
-                        'id'                => 'productOptionsUploader',
-                        'data-upload-limit' => 1,
-                        'style'             => 'display:none'
-                    ));
-                    self::$objTemplate->setVariable(array(
-                        'SHOP_PRODUCT_OPTIONS_UPLOADER_CODE' => $uploader->getXHtml(),
-                        'SHOP_PRODUCT_OPTIONS_UPLOADER_ID'   => $uploader->getId()
-                    ));
-                }
             }
         }
         return

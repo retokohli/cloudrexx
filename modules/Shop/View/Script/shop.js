@@ -351,6 +351,11 @@ function updateProductPrice($form)
     $form.find('.price .discount .shop-product-discount-price').html(newDiscountPrice.toFixed(2));
 }
 $jq(function () {
+    $jq('.product-option-remove-file').click(function () {
+        var inputId = $jq(this).data('inputId');
+        $jq('.' + inputId).val('');
+        updateProductPrice($jq(this).closest('form'));
+    });
     $jq('.product-option-upload-button').click(function () {
         getUploader($jq(this));
     });

@@ -524,3 +524,4 @@ $_ARRAYLANG['TXT_SHOP_PRODUCT_DISCOUNTPRICE_TEXTBLOCK_2'] = "nur";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_SINGLE_CART_STOCK_OUTOFF_ERROR'] = "Das Produkt <strong>%s</strong> ist ausverkauft.";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_MULTIPLE_CART_STOCK_OUTOFF_ERROR'] = "Die Produkte <strong>%s<strong> sind ausverkauft.";
 $_ARRAYLANG['TXT_SHOP_CHOOSE_FILE'] = 'Datei wählen';
+$_ARRAYLANG['TXT_SHOP_REMOVE_FILE'] = 'Datei löschen';
