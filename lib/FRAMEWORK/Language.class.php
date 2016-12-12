@@ -97,41 +97,82 @@ class FWLanguage
     {
         global $_CONFIG, $objDatabase;
 
-        $objResult = $objDatabase->Execute("
-            SELECT id, lang, name, charset, themesid,
-                   frontend, backend, is_default, fallback
-              FROM ".DBPREFIX."languages
-             ORDER BY id ASC");
-        if ($objResult) {
-            $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
-            $license->check();
-            $full = $license->isInLegalComponents('fulllanguage');
-            while (!$objResult->EOF) {
-                // frontend languages
-                static::$arrFrontendLanguages[$objResult->fields['id']] = array(
-                    'id'         => $objResult->fields['id'],
-                    'lang'       => $objResult->fields['lang'],
-                    'name'       => $objResult->fields['name'],
-                    'charset'    => $objResult->fields['charset'],
-                    'themesid'   => $objResult->fields['themesid'],
-                    'frontend'   => $objResult->fields['frontend'],
-                    'backend'    => $objResult->fields['backend'],
-                    'is_default' => $objResult->fields['is_default'],
-                    'fallback'   => $objResult->fields['fallback'],
-                );
-                // backend languages
-                static::$arrBackendLanguages = static::$arrFrontendLanguages;
-                if (!$full && $objResult->fields['is_default'] != 'true') {
-                    static::$arrFrontendLanguages[$objResult->fields['id']]['frontend'] = 0;
-                    static::$arrFrontendLanguages[$objResult->fields['id']]['backend'] = 0;
-                    static::$arrBackendLanguages[$objResult->fields['id']]['frontend'] = 0;
-                    static::$arrBackendLanguages[$objResult->fields['id']]['backend'] = 0;
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getDb()
+            ->getEntityManager();
+        $localeRepo = $em->getRepository('\Cx\Core\Locale\Model\Entity\Locale');
+        $backendRepo = $em->getRepository('\Cx\Core\Locale\Model\Entity\Backend');
+
+        $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
+        $license->check();
+        $full = $license->isInLegalComponents('fulllanguage');
+
+        // frontend locales
+        foreach($localeRepo->findAll() as $locale) {
+            // get the theme for each channel of the locale's language
+            $themeId = $mobileThemeId = $printThemeId = $pdfThemeId = $appThemeId = 0;
+            foreach ($locale->getFrontends() as $frontend) {
+                switch ($frontend->getChannel()) {
+                    case \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE:
+                        $mobileThemeId = $frontend->getTheme();
+                        break;
+                    case \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PRINT:
+                        $printThemeId = $frontend->getTheme();
+                        break;
+                    case \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PDF:
+                        $pdfThemeId = $frontend->getTheme();
+                        break;
+                    case \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_APP:
+                        $appThemeId = $frontend->getTheme();
+                        break;
+                    default: // web
+                        $themeId = $frontend->getTheme();
+                        break;
                 }
-                if ($objResult->fields['is_default'] == 'true') {
-                    static::$defaultFrontendLangId = $objResult->fields['id'];
-                    static::$defaultBackendLangId = $objResult->fields['id'];
-                }
-                $objResult->MoveNext();
+            }
+            // check if locale is default
+            $isFrontendDefault = $locale->getId() == $_CONFIG['defaultLocaleId'];
+            static::$arrFrontendLanguages[$locale->getId()] = array(
+                'id'  => $locale->getId(),
+                'lang' => $locale->getShortForm(),
+                'name' => $locale->__toString(),
+                'iso1' => $locale->getIso1()->getIso1(),
+                'source_lang' => $locale->getSourceLanguage()->getIso1(),
+                'themesid'   => $themeId,
+                'print_themes_id' => $printThemeId,
+                'pdf_themes_id' => $pdfThemeId,
+                'mobile_themes_id' => $mobileThemeId,
+                'app_themes_id' => $appThemeId,
+                'frontend'   => true, // every existing locale is active
+                'is_default' => $isFrontendDefault,
+                'fallback'   => $locale->getFallback() ? $locale->getFallback()->getId() : false,
+            );
+            // activate only default locale, if system not in full lang mode
+            if (!$full && !$isFrontendDefault) {
+                static::$arrFrontendLanguages[$locale->getId()]['frontend'] = 0;
+            }
+            if ($isFrontendDefault) {
+                static::$defaultFrontendLangId = $locale->getId();
+            }
+        }
+
+        // backend languages
+        foreach($backendRepo->findAll() as $backendLanguage) {
+            // check if language is default
+            $isBackendDefault = $backendLanguage->getId() == $_CONFIG['defaultLanguageId'];
+            static::$arrBackendLanguages[$backendLanguage->getId()] = array(
+                'id' => $backendLanguage->getId(),
+                'lang' => $backendLanguage->getIso1()->getIso1(),
+                'name' => $backendLanguage->__toString(),
+                'backend' => true,
+                'is_default' => $isBackendDefault
+            );
+            // activate only default language, if system not in full lang mode
+            if (!$full && !$isBackendDefault) {
+                static::$arrBackendLanguages[$backendLanguage->getId()]['backend'] = 0;
+            }
+            if ($isBackendDefault) {
+                static::$defaultBackendLangId = $backendLanguage->getId();
             }
         }
     }
@@ -188,7 +229,6 @@ class FWLanguage
                 if (!isset(static::$arrFrontendLanguages)) static::init();
                 $arrLanguages = static::$arrFrontendLanguages;
                 break;
-
         }
         $arrId = array();
         foreach ($arrLanguages as $lang_id => $arrLanguage) {
@@ -257,7 +297,6 @@ class FWLanguage
      *                     'id'         => {lang_id},
      *                     'lang'       => {iso_639-1},
      *                     'name'       => {name},
-     *                     'charset'    => 'UTF-8',
      *                     'themesid'   => {theme_id},
      *                     'frontend'   => {bool},
      *                     'backend'    => {bool},
@@ -289,7 +328,6 @@ class FWLanguage
      *                     'id'         => {lang_id},
      *                     'lang'       => {iso_639-1},
      *                     'name'       => {name},
-     *                     'charset'    => 'UTF-8',
      *                     'themesid'   => {theme_id},
      *                     'frontend'   => {bool},
      *                     'backend'    => {bool},
@@ -436,53 +474,51 @@ class FWLanguage
      * @param   string    $langCode         The ISO 639-1 language code
      * @return  mixed                       The language ID on success,
      *                                      null otherwise
-     * @global  ADONewConnection
+     *
      * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @author  Nicola Tommasi <nicola.tommasi@comvation.com>
      */
     public static function getLangIdByIso639_1($langCode)
     {
-        global $objDatabase;
-
         // Don't bother if the "code" looks like an ID already
         if (is_numeric($langCode)) return $langCode;
 
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getDb()
+            ->getEntityManager();
+        $qb = $em->createQueryBuilder();
+
         // Something like "fr; q=1.0, en-gb; q=0.5"
         $arrLangCode = preg_split('/,\s*/', $langCode);
-        $strLangCode = "'".join("','",
-            preg_replace('/(?:-\w+)?(?:;\s*q(?:\=\d?\.?\d*)?)?/i',
-                '', $arrLangCode))."'";
-        $objResult = $objDatabase->Execute("
-            SELECT id
-              FROM ".DBPREFIX."languages
-             WHERE lang IN ($strLangCode)
-               AND frontend=1");
-        if ($objResult && $objResult->RecordCount()) {
-            return $objResult->fields['id'];
+        $arrLangCode = preg_replace(
+            '/(?:-\w+)?(?:;\s*q(?:\=\d?\.?\d*)?)?/i',
+            '',
+            $arrLangCode
+        );
+        // search for locale with matching iso1 code
+        $qb->select('l')
+            ->from('\Cx\Core\Locale\Model\Entity\Locale', 'l')
+            ->where($qb->expr()->in('l.iso1', $arrLangCode))
+            ->setMaxResults(1);
+        $query = $qb->getQuery();
+        $locale = $query->getResult();
+        if ($locale) {
+            return $locale[0]->getId();
         }
         // The code was not found.  Pick the default.
-        $objResult = $objDatabase->Execute("
-            SELECT id
-              FROM ".DBPREFIX."languages
-             WHERE is_default='true'
-               AND frontend=1");
-        if ($objResult && $objResult->RecordCount()) {
-            return $objResult->fields['id'];
+        $defaultLocaleId = \Cx\Core\Setting\Controller\Setting::getValue('defaultLocaleId');
+        if (isset($defaultLocaleId)) {
+            return $defaultLocaleId;
         }
         // Still nothing.  Pick the first frontend language available.
-        $objResult = $objDatabase->Execute("
-            SELECT id
-              FROM ".DBPREFIX."languages
-             WHERE frontend=1");
-        if ($objResult && $objResult->RecordCount()) {
-            return $objResult->fields['id'];
-        }
-        // Pick the first language.
-        $objResult = $objDatabase->Execute("
-            SELECT id
-              FROM ".DBPREFIX."languages
-             WHERE frontend=1");
-        if ($objResult && $objResult->RecordCount()) {
-            return $objResult->fields['id'];
+        $qb = $em->createQueryBuilder();
+        $qb->select('l')
+            ->from('\Cx\Core\Locale\Model\Entity\Locale', 'l')
+            ->setMaxResults(1);
+        $query = $qb->getQuery();
+        $locale = $query->getSingleResult();
+        if ($locale) {
+            return $locale->getId();
         }
         // Give up.
         return null;
@@ -517,6 +553,7 @@ class FWLanguage
         if (empty(static::$arrBackendLanguages)) static::init();
         return static::getBackendLanguageParameter($langId, 'lang');
     }
+
 
     /**
      * Return the frontend language ID for the given code
@@ -565,12 +602,12 @@ class FWLanguage
      */
     public static function getLocaleByFrontendId($langId)
     {
-        if (array_key_exists($langId, self::$locales)) {
-            return self::$locales[$langId];
+        if (array_key_exists($langId, static::$locales)) {
+            return static::$locales[$langId];
         }
         // Note that this SHOULD NOT pretend the *code* to be a locale!
         // (FTTB, Language code and locale are identical)
-        $locale = self::getLanguageParameter($langId, 'lang');
+        $locale = static::getLanguageParameter($langId, 'lang');
         if ($locale) {
             return $locale;
         }
@@ -591,13 +628,13 @@ class FWLanguage
     public static function getFrontendIdByLocale($locale)
     {
         // TODO: Inefficient, and pointless FTTB (no locales!)
-        $key = array_search($locale, self::$locales);
+        $key = array_search($locale, static::$locales);
         if ($key !== false) {
-            return self::$locales[$key];
+            return static::$locales[$key];
         }
         // Note that this SHOULD NOT pretend the *code* to be a locale!
         // (FTTB, Language code and locale are identical)
-        $id = self::getLanguageIdByCode($locale, 'lang');
+        $id = static::getLanguageIdByCode($locale, 'lang');
         if ($id) {
             return $id;
         }
@@ -628,30 +665,21 @@ class FWLanguage
      * @return array ( language id => fallback language id )
      */
     public static function getFallbackLanguageArray() {
-        global $objDatabase;
-        $ret = array();
-
-        $defaultLangId = intval(static::getDefaultLangId());
-
-        $query = "SELECT id, fallback FROM ".DBPREFIX."languages where fallback IS NOT NULL";
-        $rs = $objDatabase->Execute($query);
-
-        while(!$rs->EOF) {
-            $langId = intval($rs->fields['id']);
-            $fallbackLangId = intval($rs->fields['fallback']);
-
-            //explicitly overwrite null (default) with the default language id
-            if($fallbackLangId === 0) {
-                $fallbackLangId = $defaultLangId;
-            }
+        if (empty(static::$arrFrontendLanguages)) {
+            static::init();
+        }
+        $arr = array();
+        foreach(static::$arrFrontendLanguages as $frontendLanguage) {
+            $langId = $frontendLanguage['id'];
+            $fallbackLangId = $frontendLanguage['fallback'];
 
             if ($langId == $fallbackLangId || $langId == static::getDefaultLangId()) {
-                $fallbackLangId = false;
+                $fallbackLangId =false;
             }
-            $ret[$langId] = $fallbackLangId;
-            $rs->MoveNext();
-        }
 
-        return $ret;
+            $arr[$langId] = $fallbackLangId;
+        }
+        return $arr;
     }
+
 }

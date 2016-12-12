@@ -26,50 +26,40 @@
  */
 
 /**
- * This is the locale component controller
+ * Main controller for View
  *
  * @copyright   Cloudrexx AG
- * @author      Manuel Schenk <manuel.schenk@comvation.com>
  * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
  * @package     cloudrexx
- * @subpackage  core_locale
- * @version     5.0.0
  */
 
-namespace Cx\Core\Locale\Controller;
+namespace Cx\Core\View\Controller;
 
 /**
- * This is the locale component controller
+ * Main controller for View
  *
  * @copyright   Cloudrexx AG
- * @author      Manuel Schenk <manuel.schenk@comvation.com>
  * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
  * @package     cloudrexx
- * @subpackage  core_locale
- * @version     5.0.0
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
 
     /**
-     * Returns all Controller class names for this component (except this)
+     * Register your event listeners here
      *
-     * Be sure to return all your controller classes if you add your own
-     * @return array List of Controller class names (without namespace)
-     */
-    public function getControllerClasses() {
-        return array('Backend');
-    }
-
-    /**
-     * Do something after all active components are loaded
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
      * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * Keep in mind, that you can also register your events later.
+     * Do not do anything else here than initializing your event listeners and
+     * list statements like
+     * $this->cx->getEvents()->addEventListener($eventName, $listener);
      */
-    public function postComponentLoad() {
-        global $objInit;
-        // Initialize base system for language and theme
-        // TODO: Get rid of InitCMS class
-        $objInit = new \InitCMS($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND ? 'frontend' : 'backend', \Env::get('em'));
-        \Env::set('init', $objInit);
+    public function registerEventListeners() {
+        $evm = $this->cx->getEvents();
+        // locale event listener
+        $localeLocaleEventListener = new \Cx\Core\View\Model\Event\LocaleLocaleEventListener($this->cx);
+        $evm->addModelListener('postPersist', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
+        $evm->addModelListener('preRemove', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
     }
+
 }

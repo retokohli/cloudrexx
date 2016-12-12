@@ -83,6 +83,11 @@ class Locale extends \Cx\Model\Base\EntityBase {
     protected $sourceLanguage;
 
     /**
+     * @var \Cx\Core\View\Model\Entity\Frontend
+     */
+    protected $frontends;
+
+    /**
      * Locale constructor.
      *
      * Creates new instance of \Cx\Core\Locale\Model\Entity\Locale
@@ -90,6 +95,7 @@ class Locale extends \Cx\Model\Base\EntityBase {
     public function __construct()
     {
         $this->locales = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->frontends = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -223,10 +229,40 @@ class Locale extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Add frontends
+     *
+     * @param \Cx\Core\View\Model\Entity\Frontend $frontends
+     */
+    public function addFrontends(\Cx\Core\View\Model\Entity\Frontend $frontends)
+    {
+        $this->frontends[] = $frontends;
+    }
+
+    /**
+     * Get frontends
+     *
+     * @return \Doctrine\Common\Collections\Collection $frontends
+     */
+    public function getFrontends()
+    {
+        return $this->frontends;
+    }
+
+    /**
      * @return string The locale's label
      */
     public function __toString()
     {
         return $this->getLabel();
+    }
+
+    /**
+     * Builds short form of locale containing iso1 and alpha2 code (if exists)
+     *
+     * @return string the short form (example: de-CH for swiss german)
+     */
+    public function getShortForm() {
+        $iso1 = $this->iso1->getIso1();
+        return $this->country ?  $iso1 . '-' . $this->country->getAlpha2() : $iso1;
     }
 }

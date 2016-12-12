@@ -68,11 +68,6 @@ class Language extends \Cx\Model\Base\EntityBase {
     protected $backend;
 
     /**
-     * @var \Cx\Core\View\Model\Entity\Frontend
-     */
-    protected $frontends;
-
-    /**
      * @var \Cx\Core\Locale\Model\Entity\Locale
      */
     protected $localeRelatedBySourceLanguages;
@@ -89,7 +84,6 @@ class Language extends \Cx\Model\Base\EntityBase {
      */
     public function __construct()
     {
-        $this->frontends = new \Doctrine\Common\Collections\ArrayCollection();
         $this->localeRelatedBySourceLanguages = new \Doctrine\Common\Collections\ArrayCollection();
         $this->localeRelatedByIso1s = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -194,26 +188,6 @@ class Language extends \Cx\Model\Base\EntityBase {
     public function getBackend()
     {
         return $this->backend;
-    }
-
-    /**
-     * Add frontends
-     *
-     * @param \Cx\Core\View\Model\Entity\Frontend $frontends
-     */
-    public function addFrontends(\Cx\Core\View\Model\Entity\Frontend $frontends)
-    {
-        $this->frontends[] = $frontends;
-    }
-
-    /**
-     * Get frontends
-     *
-     * @return \Doctrine\Common\Collections\Collection $frontends
-     */
-    public function getFrontends()
-    {
-        return $this->frontends;
     }
 
     /**

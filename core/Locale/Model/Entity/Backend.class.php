@@ -91,4 +91,15 @@ class Backend extends \Cx\Model\Base\EntityBase {
     {
         return $this->iso1;
     }
+
+    /**
+     * Returns the display language
+     * using the php \Locale class
+     *
+     * @return string the display language
+     */
+    public function __toString()
+    {
+        return \Locale::getDisplayLanguage($this->iso1->getIso1());
+    }
 }

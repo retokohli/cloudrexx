@@ -35,7 +35,6 @@
  */
 
 namespace Cx\Core_Modules\Access\Controller;
-use Cx\Core_Modules\Access\Model\Event\AccessEventListener;
 
 /**
  * Main controller for Access
@@ -278,9 +277,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * $this->cx->getEvents()->addEventListener($eventName, $listener);
      */
     public function registerEventListeners() {
-        $eventListener = new AccessEventListener($this->cx);
-        $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
-        $this->cx->getEvents()->addEventListener('languageStatusUpdate', $eventListener);
+        $evm = $this->cx->getEvents();
+        $eventListener = new \Cx\Core_Modules\Access\Model\Event\AccessEventListener($this->cx);
+        $evm->addEventListener('mediasource.load', $eventListener);
+        // locale event listener
+        $localeLocaleEventListener = new \Cx\Core_Modules\Access\Model\Event\LocaleLocaleEventListener($this->cx);
+        $evm->addModelListener('postPersist', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
+        $evm->addModelListener('preRemove', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
     }
 
     /**

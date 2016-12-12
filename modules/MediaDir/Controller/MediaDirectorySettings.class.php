@@ -865,25 +865,21 @@ EOF;
             }
         }
 
-        $objLanguages = $objDatabase->Execute("SELECT id,lang,name,frontend,is_default FROM ".DBPREFIX."languages ORDER BY is_default ASC");
         $arrActiveLangs = array();
         $arrActiveLangs = explode(",",$this->arrSettings['settingsActiveLanguages']);
-        if ($objLanguages !== false) {
-            while (!$objLanguages->EOF) {
-                if(in_array($objLanguages->fields['id'], $arrActiveLangs)) {
-                    $strLangStatus = 'checked="checked"';
-                } else {
-                   $strLangStatus = '';
-                }
-                $objTpl->setVariable(array(
-                    $this->moduleLangVar.'_SETTINGS_ACTIVE_LANG_ID' => intval($objLanguages->fields['id']),
-                    $this->moduleLangVar.'_SETTINGS_ACTIVE_LANG_NAME' => htmlspecialchars($objLanguages->fields['name'], ENT_QUOTES, CONTREXX_CHARSET),
-                    $this->moduleLangVar.'_SETTINGS_ACTIVE_LANG_STATUS' => $strLangStatus,
-                ));
-
-                $objTpl->parse('activeLanguageList');
-                $objLanguages->MoveNext();
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $frontendLanguage) {
+            if(in_array($frontendLanguage['id'], $arrActiveLangs)) {
+                $strLangStatus = 'checked="checked"';
+            } else {
+               $strLangStatus = '';
             }
+            $objTpl->setVariable(array(
+                $this->moduleLangVar.'_SETTINGS_ACTIVE_LANG_ID' => intval($frontendLanguage['id']),
+                $this->moduleLangVar.'_SETTINGS_ACTIVE_LANG_NAME' => htmlspecialchars($frontendLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET),
+                $this->moduleLangVar.'_SETTINGS_ACTIVE_LANG_STATUS' => $strLangStatus,
+            ));
+
+            $objTpl->parse('activeLanguageList');
         }
 
         $objTpl->parse('settings_content');

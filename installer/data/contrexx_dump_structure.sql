@@ -470,11 +470,11 @@ CREATE TABLE `contrexx_core_text` (
   FULLTEXT KEY `text` (`text`)
 ) ENGINE=MyISAM;
 CREATE TABLE `contrexx_core_view_frontend` (
-  `language` char(2) COLLATE utf8_unicode_ci NOT NULL,
+  `language` int NOT NULL,
   `theme` int(2) unsigned DEFAULT NULL,
   `channel` enum('default','mobile','print','pdf','app') COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`language`,`theme`,`channel`),
-  CONSTRAINT `contrexx_core_view_frontend_ibfk_language` FOREIGN KEY (`language`) REFERENCES `contrexx_core_locale_language` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `contrexx_core_view_frontend_ibfk_locale` FOREIGN KEY (`language`) REFERENCES `contrexx_core_locale_locale` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `contrexx_core_view_frontend_ibfk_theme` FOREIGN KEY (`theme`) REFERENCES `contrexx_skins` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_wysiwyg_template` (

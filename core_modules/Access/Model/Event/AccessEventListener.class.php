@@ -38,8 +38,8 @@
 namespace Cx\Core_Modules\Access\Model\Event;
 
 use Cx\Core\Event\Model\Entity\DefaultEventListener;
-use Cx\Core\MediaSource\Model\Entity\MediaSource;
 use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
+use Cx\Core\MediaSource\Model\Entity\MediaSource;
 
 /**
  * Class AccessEventListener

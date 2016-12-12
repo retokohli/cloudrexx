@@ -67,15 +67,9 @@ class Frontend extends \Cx\Model\Base\EntityBase {
     protected $channel;
 
     /**
-     * @var \Cx\Core\Locale\Model\Entity\Language
+     * @var \Cx\Core\Locale\Model\Entity\Locale
      */
     protected $localeRelatedByIso1s;
-
-    /**
-     * @var \Cx\Core\View\Model\Entity\Frontend
-     */
-    protected $skin;
-
 
     /**
      * Set language
@@ -140,9 +134,9 @@ class Frontend extends \Cx\Model\Base\EntityBase {
     /**
      * Set localeRelatedByIso1s
      *
-     * @param \Cx\Core\Locale\Model\Entity\Language $localeRelatedByIso1s
+     * @param \Cx\Core\Locale\Model\Entity\Locale $localeRelatedByIso1s
      */
-    public function setLocaleRelatedByIso1s(\Cx\Core\Locale\Model\Entity\Language $localeRelatedByIso1s)
+    public function setLocaleRelatedByIso1s(\Cx\Core\Locale\Model\Entity\Locale $localeRelatedByIso1s)
     {
         $this->localeRelatedByIso1s = $localeRelatedByIso1s;
     }
@@ -150,30 +144,10 @@ class Frontend extends \Cx\Model\Base\EntityBase {
     /**
      * Get localeRelatedByIso1s
      *
-     * @return \Cx\Core\Locale\Model\Entity\Language $localeRelatedByIso1s
+     * @return \Cx\Core\Locale\Model\Entity\Locale $localeRelatedByIso1s
      */
     public function getLocaleRelatedByIso1s()
     {
         return $this->localeRelatedByIso1s;
-    }
-
-    /**
-     * Set skin
-     *
-     * @param \Cx\Core\View\Model\Entity\Frontend $skin
-     */
-    public function setSkin(\Cx\Core\View\Model\Entity\Frontend $skin)
-    {
-        $this->skin = $skin;
-    }
-
-    /**
-     * Get skin
-     *
-     * @return \Cx\Core\View\Model\Entity\Frontend $skin
-     */
-    public function getSkin()
-    {
-        return $this->skin;
     }
 }
