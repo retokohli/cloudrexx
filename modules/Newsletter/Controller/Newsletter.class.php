@@ -226,7 +226,7 @@ class Newsletter extends NewsletterLib
 
     function _profile()
     {
-        global $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $this->_objTpl->setTemplate($this->pageContent);
 
@@ -303,6 +303,16 @@ class Newsletter extends NewsletterLib
 
         $recipientAttributeStatus = json_decode($objInterface->fields['setvalue'], true);
 
+        $captchaOk = true;
+        if (
+            isset($recipientAttributeStatus['captcha']) &&
+            $recipientAttributeStatus['captcha']['active']
+        ) {
+            if (!\Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->check()) {
+                $captchaOk = false;
+                array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_FAILED_CAPTCHA']);
+            }
+        }
         if (isset($_POST['recipient_save'])) {
             if (isset($_POST['email'])) {
                 $recipientEmail = $_POST['email'];
@@ -401,7 +411,7 @@ class Newsletter extends NewsletterLib
                 }
             }
 
-            if (!$isAccessRecipient) {
+            if (!$isAccessRecipient && $captchaOk) {
                     // add or update existing newsletter recipient (for access user see ELSE case)
                     $arrPreAssociatedInactiveLists = $this->_getAssociatedListsOfRecipient($recipientId, false);
                     $arrAssociatedInactiveLists = array_intersect($arrPreAssociatedInactiveLists, $arrAssociatedLists);
@@ -506,7 +516,7 @@ class Newsletter extends NewsletterLib
                     } else {
                         array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NOT_VALID_EMAIL']);
                     }
-            } else {
+            } else if ($captchaOk) {
                 // update subscribed lists of access user
                 $arrAssociatedLists = array_unique($arrAssociatedLists);
                 $objUser->setSubscribedNewsletterListIDs($arrAssociatedLists);
@@ -517,7 +527,7 @@ class Newsletter extends NewsletterLib
                     $arrStatusMessage['error'] = array_merge($arrStatusMessage['error'], $objUser->getErrorMsg());
                 }
             }
-        } elseif ($isNewsletterRecipient) {
+        } elseif ($isNewsletterRecipient && $captchaOk) {
             $objRecipient = $objDatabase->SelectLimit("SELECT uri, sex, salutation, title, lastname, firstname, position, company, industry_sector, address, zip, city, country_id, phone_office, phone_private, phone_mobile, fax, notes, birthday, status, language FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
             if ($objRecipient !== false && $objRecipient->RecordCount() == 1) {
                 $recipientEmail = urldecode($_REQUEST['mail']);
@@ -548,7 +558,7 @@ class Newsletter extends NewsletterLib
                 array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_AUTHENTICATION_FAILED']);
                 $showForm = false;
             }
-        } elseif ($isAccessRecipient) {
+        } elseif ($isAccessRecipient && $capchaOk) {
             $objUser = \FWUser::getFWUserObject()->objUser->getUser($recipientId);
             if ($objUser) {
                 $arrAssociatedLists = $objUser->getSubscribedNewsletterListIDs();
@@ -606,7 +616,8 @@ class Newsletter extends NewsletterLib
                     'recipient_mobile',
                     'recipient_fax',
                     'recipient_birthday',
-                    'recipient_website'
+                    'recipient_website',
+                    'captcha',
                 );
                 foreach ($recipientAttributesArray as $attribute) {
                     if ($this->_objTpl->blockExists($attribute)) {
@@ -622,6 +633,8 @@ class Newsletter extends NewsletterLib
                 }
 
                 $this->_objTpl->setVariable(array(
+                    'TXT_MODULE_CAPTCHA'   => $_CORELANG['TXT_CORE_CAPTCHA'],
+                    'MODULE_CAPTCHA_CODE'  => \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getCode(),
                     'NEWSLETTER_EMAIL'        => htmlentities($recipientEmail, ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_WEBSITE'          => htmlentities($recipientUri, ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_SEX_F'        => $recipientSex == 'f' ? 'checked="checked"' : '',
