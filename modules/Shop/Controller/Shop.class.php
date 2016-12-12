@@ -967,6 +967,7 @@ die("Failed to update the Cart!");
         }
         $cell = 0;
         $arrDefaultImageSize = false;
+        $categoriesPerRow = \Cx\Core\Setting\Controller\Setting::getValue('num_categories_per_row','Shop');
         // For all child categories do...
         foreach ($arrShopCategory as $objCategory) {
             $id = $objCategory->id();
@@ -1036,7 +1037,7 @@ die("Failed to update the Cart!");
             }
             if (self::$objTemplate->blockExists('subCategories')) {
                 self::$objTemplate->parse('subCategories');
-                if (++$cell % 4 == 0) {
+                if (++$cell % $categoriesPerRow == 0) {
                     self::$objTemplate->parse('subCategoriesRow');
                 }
             }

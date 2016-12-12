@@ -79,14 +79,12 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         // in case the request's origin is from a mobile devie
         // and this is the first request (the InitCMS object wasn't yet
         // able to determine of the mobile device wishes to be served
-        // with the system's mobile view), we shall deactivate the caching system
-        if (\InitCMS::_is_mobile_phone()
-            && !\InitCMS::_is_tablet()
-            && !isset($_REQUEST['smallscreen'])
-        ) {
-            $this->boolIsEnabled = false;
-            return;
-        }
+        // with the system's mobile view), we shall cache the request separately
+        $isMobile = (
+            \InitCMS::_is_mobile_phone() &&
+            !\InitCMS::_is_tablet() &&
+            !isset($_REQUEST['smallscreen'])
+        );
 
         if ($_CONFIG['cacheEnabled'] == 'off') {
             $this->boolIsEnabled = false;
@@ -125,9 +123,13 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         //            system.
         $request = array_merge_recursive($_GET, $_POST);
         ksort($request);
+        $currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
+            $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         $this->arrPageContent = array(
-            'url' => $_SERVER['REQUEST_URI'],
+            'url' => $currentUrl,
             'request' => $request,
+            'accept_language' => $_SERVER['HTTP_ACCEPT_LANGUAGE'],
+            'isMobile' => $isMobile,
         );
         $this->strCacheFilename = md5(serialize($this->arrPageContent));
     }
@@ -146,7 +148,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $matches = array();
         foreach ($files as $file) {
             // sort out false-positives (header and ESI cache files)
-            if (!preg_match('/([0-9a-f]{32})_([0-9]+)$/', $file, $matches)) {
+            if (!preg_match('/([0-9a-f]{32})_([0-9]+)?$/', $file, $matches)) {
                 continue;
             }
             if (filemtime($file) > (time() - $this->intCachingTime)) {
@@ -156,6 +158,11 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                     $headers = unserialize(file_get_contents($headerFile));
                     if (is_array($headers)) {
                         foreach ($headers as $name=>$value) {
+                            if (is_numeric($name)) {
+                                // This allows headers without a ':'
+                                header($value);
+                                continue;
+                            }
                             header($name . ': ' . $value);
                         }
                     }
@@ -210,16 +217,30 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         // write header cache file
         $resolver = \Env::get('Resolver');
         $headers = $resolver->getHeaders();
+        $this->writeCacheFileForRequest($page, $headers, $endcode);
+        return $this->internalEsiParsing($endcode);
+    }
+
+    /**
+     * Writes the cache file for the current request
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Current page (might be null for redirects before postResolve)
+     * @param array $headers List of headers set for the current response
+     * @param string $endcode Current response
+     */
+    public function writeCacheFileForRequest($page, $headers, $endcode) {
+        $pageId = '';
+        if ($page) {
+            $pageId = $page->getId();
+        }
         if (count($headers)) {
-            $handleFile = $this->strCachePath . $this->strCacheFilename . '_h' . $page->getId();
+            $handleFile = $this->strCachePath . $this->strCacheFilename . '_h' . $pageId;
             $File = new \Cx\Lib\FileSystem\File($handleFile);
             $File->write(serialize($headers));
         }
         // write page cache file
-        $handleFile = $this->strCachePath . $this->strCacheFilename . '_' . $page->getId();
+        $handleFile = $this->strCachePath . $this->strCacheFilename . '_' . $pageId;
         $File = new \Cx\Lib\FileSystem\File($handleFile);
         $File->write($endcode);
-        return $this->internalEsiParsing($endcode);
     }
 
     /**
@@ -232,20 +253,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         if (!is_a($this->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx')) {
             return $htmlCode;
         }
-        
-        // Random include tags
-        $htmlCode = preg_replace_callback(
-            '#<!-- ESI_RANDOM_START -->[\s\S]*<esi:assign name="content_list">\s*\[([^\]]+)\]\s*</esi:assign>[\s\S]*<!-- ESI_RANDOM_END -->#',
-            function($matches) {
-                $uris = explode('\',\'', substr($matches[1], 1, -1));
-                $randomNumber = rand(0, count($uris) - 1);
-                $uri = $uris[$randomNumber];
-                
-                // this needs to match the format below!
-                return '<esi:include src="' . $uri . '" onerror="continue"/>';
-            },
-            $htmlCode
-        );
         
         // Replace include tags
         $settings = $this->getSettings();
@@ -261,7 +268,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             }
         }
         $replaceEsiFn = function($matches) use (&$cxNotYetInitialized, $settings) {
-
             // return cached content if available
             $cacheFile = $this->getCacheFileNameFromUrl($matches[1]);
             if ($settings['internalSsiCache'] == 'on' && file_exists($this->strCachePath . $cacheFile)) {
@@ -299,6 +305,20 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         };
 
         do {
+            // Random include tags
+            $htmlCode = preg_replace_callback(
+                '#<!-- ESI_RANDOM_START -->[\s\S]*<esi:assign name="content_list">\s*\[([^\]]+)\]\s*</esi:assign>[\s\S]*<!-- ESI_RANDOM_END -->#',
+                function($matches) {
+                    $uris = explode('\',\'', substr($matches[1], 1, -1));
+                    $randomNumber = rand(0, count($uris) - 1);
+                    $uri = $uris[$randomNumber];
+                    
+                    // this needs to match the format below!
+                    return '<esi:include src="' . $uri . '" onerror="continue"/>';
+                },
+                $htmlCode
+            );
+
             $htmlCode = preg_replace_callback(
                 '#<esi:include src="([^"]+)" onerror="continue"/>#',
                 $replaceEsiFn,

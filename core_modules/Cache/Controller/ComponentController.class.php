@@ -100,6 +100,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Registers event listeners
+     */
+    public function registerEventListeners() {
+        $evm = $this->cx->getEvents();
+        $evm->addModelListener(
+            'postFlush',
+            'Cx\Core\Routing\Model\Entity\RewriteRule',
+            new \Cx\Core_Modules\Cache\Model\Event\RewriteRuleEventListener($this->cx)
+        );
+    }
+
+    /**
      * Ends the contrexx caching after the main template got parsed (frontend only)
      * @param string $endcode The processed data to be sent to the client as response
      */
@@ -107,7 +119,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             return;
         }
-        $endcode = $this->cache->endContrexxCaching($this->cx->getPage(), $endcode);
+        $page = $this->cx->getPage();
+        if (!$page) {
+            $page = \Env::get('Page');
+        }
+        $endcode = $this->cache->endContrexxCaching($page, $endcode);
     }
 
     /**
@@ -213,6 +229,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Deletes cached header redirects
+     */
+    function deleteNonPagePageCache() {
+        $this->cache->deleteNonPagePageCache();
+    }
+
+    /**
      * @return \Doctrine\Common\Cache\AbstractCache The doctrine cache driver object
      */
     public function getCacheDriver()
@@ -245,5 +268,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function internalEsiParsing($htmlCode) {
         return $this->cache->internalEsiParsing($htmlCode);
+    }
+
+    /**
+     * Writes the cache file for the current request
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Current page (might be null for redirects before postResolve)
+     * @param array $headers List of headers set for the current response
+     * @param string $endcode Current response
+     */
+    public function writeCacheFileForRequest($page, $headers, $endcode) {
+        $this->cache->writeCacheFileForRequest($page, $headers, $endcode);
     }
 }

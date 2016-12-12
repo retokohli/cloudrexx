@@ -625,7 +625,7 @@ class Yellowpay
             case 'AMOUNT':
                 // Fix cents, like "1.23" to "123"
                 if (preg_match('/\./', $value)) {
-                    $value = intval($value * 100);
+                    $value = intval(bcmul($value, 100, 0));
                 }
                 if ($value === intval($value)) return $value;
                 break;

@@ -121,9 +121,9 @@ class Paging
         // Set up the base navigation entries
         $array_paging = array(
             'first' => '<a class="pagingFirst" href="'.
-                Cx\Core\Routing\Url::encode_amp($firstUrl).'">',
+                Cx\Core\Routing\Url::encode_amp($firstUrl).'" rel="nofollow">',
             'last'  => '<a class="pagingLast" href="'.
-                Cx\Core\Routing\Url::encode_amp($lastUrl).'">',
+                Cx\Core\Routing\Url::encode_amp($lastUrl).'" rel="nofollow">',
             'total' => $numof_rows,
             'lower' => ($numof_rows ? $position + 1 : 0),
             'upper' => $numof_rows,
