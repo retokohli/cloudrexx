@@ -1267,7 +1267,7 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTPS Port (Frontend)");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('defaultLocaleId')
-                && !\Cx\Core\Setting\Controller\Setting::add('defaultLocaleId',  isset($existingConfig['defaultLocaleId']) ? $existingConfig['defaultLocaleId'] : '0', 10,
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultLocaleId',  isset($existingConfig['defaultLocaleId']) ? $existingConfig['defaultLocaleId'] : 1, 10,
                     \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getLocales()}', 'site') ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default Locale (Frontend)");
             }
