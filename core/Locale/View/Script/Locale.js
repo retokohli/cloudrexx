@@ -26,7 +26,7 @@ function updateCurrent(init) {
             fallbackField.children("option[value=" + localeId + "]").remove();
         }
         if (defField.is(":checked")) {
-            fallbackField.hide();
+            fallbackField.val("NULL").hide();
         } else {
             fallbackField.show();
         }

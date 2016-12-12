@@ -87,6 +87,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 return;
                 break;
             case 'Locale':
+                if (isset($_POST) && isset($_POST['updateLocales'])) {
+                    $this->updateLocales($_POST);
+                }
                 $isEdit = false;
                 parent::parsePage($template, $cmd, $isEdit);
                 // register locale js
@@ -385,5 +388,35 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             return $parseObject;
         }
         return $entityClassName;
+    }
+
+    /**
+     * Updates the locales
+     *
+     * Changes the default locale (when neccessary)
+     * and updates the fallbacks
+     *
+     * @param array $post The post data
+     */
+    protected function updateLocales($post) {
+        // check if default locale has changed
+        if (
+            isset($post['langDefaultStatus']) &&
+            \Cx\Core\Setting\Controller\Setting::set('defaultLocaleId', intval($post['langDefaultStatus']))
+        ) {
+            \Cx\Core\Setting\Controller\Setting::update('defaultLocaleId');
+        }
+        // update fallbacks
+        if (isset($post['fallback'])) {
+            $em = $this->cx->getDb()->getEntityManager();
+            $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
+            foreach ($post['fallback'] as $localeId => $fallbackId) {
+                $locale = $localeRepo->find($localeId);
+                $fallback = $localeRepo->find($fallbackId);
+                $locale->setFallback($fallback);
+                $em->persist($locale);
+            }
+            $em->flush();
+        }
     }
 }
