@@ -577,9 +577,25 @@ class ViewGenerator {
                 $tpl->loadTemplateFile('NoEntries.html');
                 return $tpl->get().$addBtn;
             }
+
+            // replace foreign key search criteria
+            $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+            $searchCriteria = contrexx_input2raw($this->getVgParam($_GET['search']));
+            $entityClass = $this->findEntityClass($renderObject);
+            $metaData = $em->getClassMetadata($entityClass);
+            foreach ($metaData->associationMappings as $relationField => $associationMapping) {
+                if (!isset($searchCriteria[$relationField])) {
+                    continue;
+                }
+                $relationClass = $associationMapping['targetEntity'];
+                $relationRepo = $em->getRepository($relationClass);
+                $relationEntity = $relationRepo->find($searchCriteria[$relationField]);
+                $searchCriteria[$relationField] = $relationEntity;
+            }
+
             $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController(
                 $renderObject,
-                contrexx_input2raw($this->getVgParam($_GET['search'])),
+                $searchCriteria,
                 contrexx_input2raw($this->getVgParam($_GET['term'])),
                 $this->options['functions']
             );
