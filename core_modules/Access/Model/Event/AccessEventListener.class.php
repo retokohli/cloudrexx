@@ -119,7 +119,7 @@ class AccessEventListener extends DefaultEventListener
                 $accessAttrQuery = 'DELETE FROM `' . DBPREFIX . 'access_user_attribute_name`
                     WHERE lang_id = ' . $langId;
             }
-            \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb()->Execute($accessAttrQuery);
+            $this->cx->getDb()->getAdoDb()->Execute($accessAttrQuery);
         }
     }
 
