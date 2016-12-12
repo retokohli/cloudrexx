@@ -503,7 +503,7 @@ class ViewGenerator {
     protected function getVgParam($param) {
         $inner = preg_replace('/^(?:{|%7B)(.*)(?:}|%7D)$/', '\1', $param);
         $parts = preg_split('/},{|%7D%2C%7B/', $inner);
-        $value = '';
+        $value = array();
         foreach ($parts as $part) {
             $part = preg_split('/,|%2C/', $part, 2);
             if ($part[0] != $this->viewId) {
@@ -511,12 +511,17 @@ class ViewGenerator {
             }
             $keyVal = preg_split('/=|%3D/', $part[1], 2);
             if (count($keyVal) == 1) {
-                $value = current($keyVal);
-            } else {
-                if (!is_array($value)) {
-                    $value = array();
+                if (empty(current($keyVal))) {
+                    continue;
                 }
-                $value += array($keyVal[0] => $keyVal[1]);
+                $value[] = current($keyVal);
+            } else {
+                $value[$keyVal[0]] = $keyVal[1];
+            }
+        }
+        if (count($value) == 1) {
+            if (key($value) == 0) {
+                return current($value);
             }
         }
         return $value;
