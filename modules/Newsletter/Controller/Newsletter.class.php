@@ -411,7 +411,7 @@ class Newsletter extends NewsletterLib
                 }
             }
 
-            if (!$isAccessRecipient && $captchaOk) {
+            if (!$isAccessRecipient) {
                     // add or update existing newsletter recipient (for access user see ELSE case)
                     $arrPreAssociatedInactiveLists = $this->_getAssociatedListsOfRecipient($recipientId, false);
                     $arrAssociatedInactiveLists = array_intersect($arrPreAssociatedInactiveLists, $arrAssociatedLists);
@@ -433,7 +433,7 @@ class Newsletter extends NewsletterLib
                             $showForm = false;
                         } else {
                             if ($this->_validateRecipientAttributes($recipientAttributeStatus, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientBirthday)) {
-                                if ($this->_isUniqueRecipientEmail($recipientEmail, $recipientId)) {
+                                if ($captchaOk && $this->_isUniqueRecipientEmail($recipientEmail, $recipientId)) {
                                     if (!empty($arrAssociatedInactiveLists) || !empty($arrAssociatedLists) && ($objList = $objDatabase->SelectLimit('SELECT id FROM '.DBPREFIX.'module_newsletter_category WHERE status=1 AND (id='.implode(' OR id=', $arrAssociatedLists).')' , 1)) && $objList->RecordCount() > 0) {
                                         if ($recipientId > 0) {
                                             if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, 1, $arrAssociatedLists, $recipientLanguage)) {
@@ -463,7 +463,7 @@ class Newsletter extends NewsletterLib
                                         }
                                         array_push($arrStatusMessage['error'], sprintf($_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE_IF_ONLY_ONE_LIST_ACTIVE'], $unsub));
                                     }
-                                } elseif (empty($recipientId)) {
+                                } elseif ($captchaOk && empty($recipientId)) {
                                     // We must send a new confirmation e-mail here
                                     // otherwise someone could reactivate someone else's e-mail address
 
@@ -506,7 +506,7 @@ class Newsletter extends NewsletterLib
                                             $showForm = false;
                                         }
                                     }
-                                } else {
+                                } else if ($captchaOk) {
                                     array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBER_ALREADY_INSERTED']);
                                 }
                             } else {
@@ -527,7 +527,7 @@ class Newsletter extends NewsletterLib
                     $arrStatusMessage['error'] = array_merge($arrStatusMessage['error'], $objUser->getErrorMsg());
                 }
             }
-        } elseif ($isNewsletterRecipient && $captchaOk) {
+        } elseif ($isNewsletterRecipient) {
             $objRecipient = $objDatabase->SelectLimit("SELECT uri, sex, salutation, title, lastname, firstname, position, company, industry_sector, address, zip, city, country_id, phone_office, phone_private, phone_mobile, fax, notes, birthday, status, language FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
             if ($objRecipient !== false && $objRecipient->RecordCount() == 1) {
                 $recipientEmail = urldecode($_REQUEST['mail']);
@@ -558,7 +558,7 @@ class Newsletter extends NewsletterLib
                 array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_AUTHENTICATION_FAILED']);
                 $showForm = false;
             }
-        } elseif ($isAccessRecipient && $capchaOk) {
+        } elseif ($isAccessRecipient) {
             $objUser = \FWUser::getFWUserObject()->objUser->getUser($recipientId);
             if ($objUser) {
                 $arrAssociatedLists = $objUser->getSubscribedNewsletterListIDs();
