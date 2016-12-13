@@ -542,6 +542,9 @@ class CacheLib
      * @return \Cx\Core\Routing\Url URL for (Json)Data call
      */
     protected function getUrlFromApi($adapterName, $adapterMethod, $params) {
+        if (isset($_GET['preview'])) {
+            $params['theme'] = intval($_GET['preview']);
+        }
         $url = \Cx\Core\Routing\Url::fromApi('Data', array('Plain', $adapterName, $adapterMethod), $params);
         // make sure params are in correct order:
         $correctIndexOrder = array('page', 'lang', 'user', 'theme', 'country', 'currency');
