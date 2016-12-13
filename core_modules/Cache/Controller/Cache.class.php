@@ -201,6 +201,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             }
         }
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if (
             // do not cache error page
             ($page && $page->getModule() == 'Error') ||
@@ -210,7 +211,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             (
                 session_id() != '' &&
                 \FWUser::getFWUserObject()->objUser->login()
-            )
+            ) ||
+            $cx->getComponent('Uploader')->isActive()
         ) {
             return $this->internalEsiParsing($endcode);
         }
