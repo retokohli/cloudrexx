@@ -520,7 +520,7 @@ class ViewGenerator {
             }
         }
         if (count($value) == 1) {
-            if (key($value) == 0) {
+            if (key($value) === 0) {
                 return current($value);
             }
         }
