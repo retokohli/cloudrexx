@@ -1636,7 +1636,7 @@ INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('cu','chu',0);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('cv','chv',0);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('cy','cym',0);
-INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('da','dan',0);
+INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('da','dan',1);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('de','deu',1);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('dv','div',0);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('dz','dzo',0);
@@ -1652,7 +1652,7 @@ INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('fi','fin',0);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('fj','fij',0);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('fo','fao',0);
-INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('fr','fra',0);
+INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('fr','fra',1);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('fy','fry',0);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('ga','gle',0);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('gd','gla',0);
@@ -1676,7 +1676,7 @@ INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('ik','ipk',0);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('io','ido',0);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('is','isl',0);
-INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('it','ita',0);
+INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('it','ita',1);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('iu','iku',0);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('ja','jpn',0);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('jv','jav',0);
@@ -1739,7 +1739,7 @@ INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('rm','roh',0);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('rn','run',0);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('ro','ron',0);
-INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('ru','rus',0);
+INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('ru','rus',1);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('rw','kin',0);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('sa','san',0);
 INSERT INTO `contrexx_core_locale_language` (`iso_1`,`iso_3`,`source`) VALUES ('sc','srd',0);
