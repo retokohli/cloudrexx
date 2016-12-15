@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * JSON Adapter for Cx\Core\ContentManager\Model\Entity\Page
  * @copyright   Cloudrexx AG
@@ -54,7 +54,7 @@ class JsonPage implements JsonAdapter {
     private $logRepo   = null;
     private $fallbacks = array();
     private $multipleSetState = null;
-    
+
     public $messages;
 
     /**
@@ -79,7 +79,7 @@ class JsonPage implements JsonAdapter {
             $this->fallbacks[\FWLanguage::getLanguageCodeById($lang['id'])] = ((array_key_exists($lang['id'], $fallback_lang_codes)) ? \FWLanguage::getLanguageCodeById($fallback_lang_codes[$lang['id']]) : null);
         }
     }
-    
+
     /**
      * Returns the internal name used as identifier for this adapter
      * @return String Name of this adapter
@@ -87,7 +87,7 @@ class JsonPage implements JsonAdapter {
     public function getName() {
         return 'page';
     }
-    
+
     /**
      * Returns an array of method names accessable from a JSON request
      * @author Michael Ritter <michael.ritter@comvation.com>
@@ -114,7 +114,7 @@ class JsonPage implements JsonAdapter {
     public function getMessagesAsString() {
         return implode("<br />", $this->messages);
     }
-    
+
     /**
      * Returns default permission as object
      * @return Object
@@ -132,17 +132,17 @@ class JsonPage implements JsonAdapter {
      */
     public function get($params) {
         global $_CORELANG;
-        
+
         // Global access check
         if (!\Permission::checkAccess(6, 'static', true) ||
                 !\Permission::checkAccess(35, 'static', true)) {
             throw new \Exception($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
         }
-        
+
         if (isset($params['get']) && isset($params['get']['history'])) {
             $params['get']['history'] = contrexx_input2raw($params['get']['history']);
         }
-        
+
         // pages can be requested in two ways:
         // by page id               - default for existing pages
         // by node id + lang        - to translate an existing page into a new language, assigned to the same node
@@ -156,7 +156,7 @@ class JsonPage implements JsonAdapter {
                     !\Permission::checkAccess($page->getBackendAccessId(), 'dynamic', true)) {
                 throw new \Cx\Core\ContentManager\Model\Entity\PageException($_CORELANG['TXT_CORE_CM_READ_DENIED']);
             }
-            
+
             // load an older revision if asked to do so:
             if (isset($params['get']['history'])) {
                 $this->logRepo->revert($page, $params['get']['history']);
@@ -164,11 +164,11 @@ class JsonPage implements JsonAdapter {
             // load the draft revision if one is available and we're not loading historic data:
             else if ($page->getEditingStatus() == 'hasDraft' || $page->getEditingStatus() == 'hasDraftWaiting') {
                 $this->logRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
-    
+
                 $availableRevisions = $this->logRepo->getLogEntries($page);
                 $this->logRepo->revert($page, $availableRevisions[1]->getVersion());
             }
-            
+
             $pageArray = $this->getPageArray($page);
         } else if (!empty($params['get']['node']) && !empty($params['get']['lang'])) {
             $node = $this->nodeRepo->find($params['get']['node']);
@@ -190,7 +190,7 @@ class JsonPage implements JsonAdapter {
      * @todo Clean up usage of $param and $_GET
      * @global Array $_CORELANG Core language data
      * @param Array $params Client parameters
-     * @return type 
+     * @return type
      */
     public function set($params) {
         global $_CORELANG;
@@ -199,14 +199,14 @@ class JsonPage implements JsonAdapter {
         if (!\Permission::checkAccess(6, 'static', true) || !\Permission::checkAccess(35, 'static', true)) {
             throw new \Exception($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
         }
-        
+
         $newPage = false;
         $reload  = false;
         $pg      = \Env::get('pageguard');
-        
+
         $dataPost  = !empty($params['post'])   ? $params['post']   : array();
         $pageArray = !empty($dataPost['page']) ? $dataPost['page'] : array(); // Only set in the editing mode.
-        
+
         $pageId = !empty($pageArray['id'])    ? intval($pageArray['id'])   : (!empty($dataPost['pageId']) ? intval($dataPost['pageId']) : 0);
         $nodeId = !empty($pageArray['node'])  ? intval($pageArray['node']) : (!empty($dataPost['nodeId']) ? intval($dataPost['nodeId']) : 0);
         $lang   = !empty($pageArray['lang'])  ? contrexx_input2raw($pageArray['lang'])  : (!empty($dataPost['lang']) ? contrexx_input2raw($dataPost['lang']) : \FWLanguage::getLanguageCodeById(\FWLanguage::getDefaultLangId()));
@@ -214,7 +214,7 @@ class JsonPage implements JsonAdapter {
 
         $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
         $cacheManager->deleteSingleFile($pageId);
-        
+
 
         if (!empty($pageArray)) {
             if (!empty($pageArray['target']) && !empty($pageArray['target_protocol'])) {
@@ -648,7 +648,7 @@ class JsonPage implements JsonAdapter {
         if ($page->isDraft()) {
             $version--;
         }
-        
+
         return array(
             'reload' => $reload,
             'id'     => $page->getId(),
@@ -660,19 +660,19 @@ class JsonPage implements JsonAdapter {
 
     /**
      * Sets multiple pages.
-     * 
+     *
      * @param  array  $params  Client parameters.
      */
     public function multipleSet($params) {
         register_shutdown_function(array($this, 'multipleSetShutdown'));
-        
+
         $post = $params['post'];
         $data['post']['lang']   = $post['lang'];
         $data['post']['action'] = $post['action'];
         $recursive = (isset($params['get']['recursive']) && $params['get']['recursive'] == 'true');
         $requestedOffset = (isset($params['get']['offset']) ? $params['get']['offset'] : 0);
         $return = array();
-        
+
         $nodeIdStack = $post['nodes'];
         $this->multipleSetState = array('state' => 'running', 'offset' => 0, 'stack' => $nodeIdStack);
         $offset = 0;
@@ -760,10 +760,10 @@ class JsonPage implements JsonAdapter {
         }
         $this->multipleSetState = null;
         unset($nodeIdStack);
-        
+
         return $return;
     }
-    
+
     public function multipleSetShutdown() {
         if ($this->multipleSetState) {
             $this->multipleSetState['state'] = 'timeout';
@@ -778,12 +778,12 @@ class JsonPage implements JsonAdapter {
      */
     public function setPagePreview($params) {
         global $_CORELANG;
-        
+
         // Global access check
         if (!\Permission::checkAccess(6, 'static', true) || !\Permission::checkAccess(35, 'static', true)) {
             throw new \Exception($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
         }
-        
+
         $page = $this->validatePageArray($params['post']['page']);
         $page['pageId'] = $params['post']['page']['id'];
         $page['lang'] = $params['post']['page']['lang'];
@@ -793,7 +793,7 @@ class JsonPage implements JsonAdapter {
 
     /**
      * Returns a validated page array.
-     * 
+     *
      * @param   array  $page
      * @return  array  $output
      */
@@ -810,6 +810,7 @@ class JsonPage implements JsonAdapter {
             'metakeys' => array('type' => 'String'),
             'metadesc' => array('type' => 'String'),
             'metarobots' => array('type' => 'boolean'),
+            'metaimage' => array('type' => 'String'),
             'content' => array('type' => 'String'),
             'sourceMode' => array('type' => 'boolean'),
             'protection_frontend' => array('type' => 'boolean', 'map_to' => 'frontendProtection'),
@@ -834,13 +835,13 @@ class JsonPage implements JsonAdapter {
 
         foreach ($fields as $field => $meta) {
             $target = isset($meta['map_to']) ? $meta['map_to'] : $field;
-            
+
             if (isset($page[$field])) {
                 $page[$field] = contrexx_input2raw($page[$field]);
             } else {
                 $page[$field] = null;
             }
-            
+
             if (isset($meta['required']) && $meta['required'] === true) {
                 if ($page[$field] == '') {
                     throw new \Cx\Core\ContentManager\Model\Entity\PageException('Required field (' . $field . ') not set!');
@@ -888,7 +889,7 @@ class JsonPage implements JsonAdapter {
 
     public function getHistoryTable($params) {
         global $_CORELANG, $_CONFIG;
-        
+
         if (empty($params['get']['page'])) {
             throw new \Exception('please provide a pageId');
         }
@@ -977,10 +978,10 @@ class JsonPage implements JsonAdapter {
         $tableStyle  = '';
 
         $editingStatus = $page->getEditingStatus();
-        
+
         $functions  = '<a id="preview_'.$version.'" class="historyPreview" title="' . $_ARRAYLANG['TXT_CORE_PREVIEW'] . '" href="' . $historyLink . '" target="_blank" '.$tableStyle.'>' . $_ARRAYLANG['TXT_CORE_PREVIEW'] . '</a>';
         $functions .= '<a id="load_'.$version.'" class="historyLoad" title="' . $_ARRAYLANG['TXT_CORE_LOAD'] . '" href="javascript:loadHistoryVersion('.$version.')" '.$tableStyle.'>' . $_ARRAYLANG['TXT_CORE_LOAD'] . '</a>';
-        
+
         /**
          * @todo This is a copy from JsonNode, move this snippet to its own method
          */
@@ -1049,7 +1050,7 @@ class JsonPage implements JsonAdapter {
                 break;
             }
         }
-        
+
         if (!$page) {
             throw new \Cx\Core\ContentManager\Model\Entity\NodeException('Node (id '.$node->getId().') has no pages.');
         }
@@ -1074,6 +1075,7 @@ class JsonPage implements JsonAdapter {
             'metadesc' => $page->getMetadesc(),
             'metakeys' => $page->getMetakeys(),
             'metarobots' => $page->getMetarobots(),
+            'metaimage' => $page->getMetaimage(),
             // Access Permissions
             'frontend_protection' => $page->isFrontendProtected(),
             'backend_protection' => $page->isBackendProtected(),
@@ -1116,7 +1118,7 @@ class JsonPage implements JsonAdapter {
         } catch (\Cx\Core\ContentManager\Model\Entity\PageException $e) {
             $parentPath = '';
         }
-        
+
         $pageArray = array(
             // Editor Meta
             'id' => $page->getId(),
@@ -1140,6 +1142,7 @@ class JsonPage implements JsonAdapter {
             'metadesc' => $page->getMetadesc(),
             'metakeys' => $page->getMetakeys(),
             'metarobots' => $page->getMetarobots(),
+            'metaimage' => $page->getMetaimage(),
             // Access Permissions
             'frontend_protection' => $page->isFrontendProtected(),
             'backend_protection' => $page->isBackendProtected(),
@@ -1168,7 +1171,7 @@ class JsonPage implements JsonAdapter {
 
         return $pageArray;
     }
-    
+
     private function getBlocks($page) {
         $blocks = $page->getRelatedBlocks();
         $data = array();
@@ -1255,14 +1258,14 @@ class JsonPage implements JsonAdapter {
 
         return false;
     }
-    
+
     /**
      * load the application template based on the application, cmd and theme name
-     * 
+     *
      * @return array
      */
     public function loadApplicationTemplate() {
-        
+
         $application = isset($_GET['app']) ? contrexx_input2raw($_GET['app']) : '';
         $section     = preg_match('#^Media\d+# i', $application) ? 'Media' : $application;
         $cmd         = (isset($_GET['area']) && $_GET['area'] != '') ? contrexx_input2raw($_GET['area']) : 'default';
@@ -1272,7 +1275,7 @@ class JsonPage implements JsonAdapter {
             'area'   => '',
             'path'   => ''
         );
-        
+
         $themeRepo   = new \Cx\Core\View\Model\Repository\ThemeRepository();
         if (!empty($section)) {
             if ($template > 0) {
@@ -1293,7 +1296,7 @@ class JsonPage implements JsonAdapter {
             }
             $result['area'] = ucfirst($cmd);
             $result['path'] = '/themes/'.$themeFolderName.'/'.$moduleFolderName.'/'.$section.'/Template/Frontend';
-            
+
             $additionalArguments = new \Cx\Core\Model\RecursiveArrayAccess(array());
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             $evm = $cx->getEvents();
@@ -1302,12 +1305,12 @@ class JsonPage implements JsonAdapter {
         }
         return $result;
     }
-    
+
     /**
      * read the files under the given path directory
-     * 
+     *
      * @param string $path
-     * 
+     *
      * @return array
      */
     public function readDirs($path) {
@@ -1319,5 +1322,5 @@ class JsonPage implements JsonAdapter {
         }
 
         return $result;
-    }    
+    }
 }
