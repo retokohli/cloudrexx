@@ -322,6 +322,27 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'sourceLanguage' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_SOURCE_LANGUAGE'],
+                            'formfield' => function($fieldname, $fieldtype, $fieldlength, $fieldvalue, $fieldoptions) {
+                                // build select for sourceLanguage
+                                $select = new \Cx\Core\Html\Model\Entity\DataElement(
+                                    $fieldname,
+                                    '',
+                                    \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+                                );
+                                $em = $this->cx->getDb()->getEntityManager();
+                                $criteria = array('source' => true);
+                                $sourceLangs = $em->getRepository('Cx\Core\Locale\Model\Entity\Language')->findBy($criteria);
+                                foreach ($sourceLangs as $lang) {
+                                    $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
+                                    $option->setAttribute('value', $lang->getIso1());
+                                    $option->addChild(new \Cx\Core\Html\Model\Entity\TextElement($lang));
+                                    if ($fieldvalue == $lang) {
+                                        $option->setAttribute('selected');
+                                    }
+                                    $select->addChild($option);
+                                }
+                                return $select;
+                            }
                         ),
                         'locales' => array(
                             'showOverview' => false,
