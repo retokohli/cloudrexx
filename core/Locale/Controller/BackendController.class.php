@@ -82,6 +82,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
         switch (current($cmd)) {
             case 'Backend':
+                if (!empty($_POST)) {
+                    $this->updateBackends($_POST);
+                }
                 // We don't want to parse the entity view
                 $this->parseBackendSettings($template);
                 return;
@@ -155,7 +158,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
                             // build select for active languages
                             $select = new \Cx\Core\Html\Model\Entity\DataElement(
-                                'activeLanguages',
+                                'activeLanguages[]',
                                 '',
                                 \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
                             );
@@ -417,6 +420,69 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 $em->persist($locale);
             }
             $em->flush();
+        }
+    }
+
+    /**
+     * Updates the backend languages
+     *
+     * Changes the default backend language (when neccessary)
+     * and adds or/and deletes backend languages
+     *
+     * @param $post The post data
+     * @todo: Remove $em->clear() and implement better solution to update entities in view
+     */
+    protected function updateBackends($post) {
+        global $_ARRAYLANG;
+
+        if (isset($post['activeLanguages'])) {
+            $em = $this->cx->getDb()->getEntityManager();
+            $backendRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Backend');
+            $langRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Language');
+            // add or/and delete backend languages
+            foreach ($post['activeLanguages'] as $activeLanguage) {
+                // findOneBy doesn't work with an associated field, we have to use query builder
+                // $backend = $backendRepo->findOneBy(array('iso1' => $activeLanguage));
+                $qb = $em->createQueryBuilder();
+                $qb->select('b')
+                    ->from('Cx\Core\Locale\Model\Entity\Backend', 'b')
+                    ->where('b.iso1 = ?1')
+                    ->setParameter(1, $activeLanguage)
+                    ->setMaxResults(1);
+                try {
+                    $qb->getQuery()->getSingleResult();
+                } catch(\Doctrine\ORM\NoResultException $e) { // add new backend languages
+                    $language = $langRepo->find($activeLanguage);
+                    $newBackend = new \Cx\Core\Locale\Model\Entity\Backend();
+                    $newBackend->setIso1($language);
+                    $em->persist($newBackend);
+                    // set backend in language entity to show changes instantly
+                    $language->setBackend($newBackend);
+                }
+            }
+            // check if a backend needs to be deleted
+            foreach ($backendRepo->findAll() as $backend) {
+                if (in_array($backend->getIso1()->getIso1(), $post['activeLanguages'])) {
+                    continue;
+                } else { // delete backend language
+                    if ($backend->getId() == $post['defaultLanguage']) {
+                        \Message::add(sprintf($_ARRAYLANG['TXT_CORE_LOCALE_CANNOT_DELETE_DEFAULT_BACKEND'], $backend));
+                        continue;
+                    }
+                    $em->remove($backend);
+                }
+            }
+            $em->flush();
+            $em->clear();
+
+            // check if default language has changed and still exists
+            if (
+                isset($post['defaultLanguage']) &&
+                $backendRepo->find($post['defaultLanguage']) &&
+                \Cx\Core\Setting\Controller\Setting::set('defaultLanguageId', intval($post['defaultLanguage']))
+            ) {
+                \Cx\Core\Setting\Controller\Setting::update('defaultLanguageId');
+            }
         }
     }
 }
