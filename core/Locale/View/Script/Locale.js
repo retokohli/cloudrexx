@@ -32,3 +32,127 @@ function updateCurrent(init) {
         }
     });
 }
+
+function copyPages(toLangId) {
+    performLanguageAction("copy", toLangId, function(json) {
+        cx.ui.dialog({
+            content: cx.variables.get("copySuccess", "locale/locale"),
+            modal: true,
+            autoOpen: true
+        });
+    });
+}
+
+function linkPages(toLangId) {
+    performLanguageAction("link", toLangId, function(json) {
+        cx.ui.dialog({
+            content: cx.variables.get("linkSuccess", "locale/locale"),
+            modal: true,
+            autoOpen: true
+        });
+    });
+}
+
+function performLanguageAction(actionName, toLangId, action) {
+    var defaultLangId = cx.jQuery(".localeDefault input:checked").parent("tr").children('.localeId').text();
+    var toLangRow = cx.jQuery(".localeId:contains(" + toLangId + ")").parent("tr");
+    var fromLangId = toLangRow.children(".localeFallback").children("select").val();
+    if (fromLangId === "") {
+        return;
+    } else if (fromLangId == 0) {
+        fromLangId = defaultLangId;
+    }
+    var fromLangRow = cx.jQuery(".localeId:contains(" + fromLangId + ")").parent("tr");
+    var fromLangName = fromLangRow.children(".localeLabel").text();
+    var toLangName = toLangRow.children(".localeLabel").text();
+    showActionDialog(actionName, fromLangName, toLangName, function() {
+        var waitDialog = cx.ui.dialog({
+            title: cx.variables.get("waitTitle", "locale/locale"),
+            content: cx.variables.get("waitText", "locale/locale"),
+            modal: true,
+            autoOpen: true,
+            open: function(event, ui) {
+                cx.jQuery(".ui-dialog-titlebar-close").hide();
+            }
+        });
+        var offset = 0;
+        var count = 0;
+        while ((offset < count) || offset == 0) {
+            var url = "index.php?cmd=JsonData&object=cm&act=" + actionName + "&to=" + toLangId + "&offset=" + offset + "&limit=1";
+            cx.jQuery.ajax({
+                async: false,
+                url: url,
+                dataType: "json",
+                type: "GET",
+                success: function(json) {
+                    if (json.status != "success") {
+                        cx.ui.dialog({
+                            title: json.status,
+                            content: json.message,
+                            modal: true,
+                            autoOpen: true
+                        });
+                        return;
+                    }
+                    offset = json.data.offset;
+                    count = json.data.count;
+                    var newText = cx.variables.get("waitText", "locale/locale") + "\n\n" + offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)";
+                    //console.log(offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)");
+                    waitDialog.getElement().html(newText);
+                }
+            });
+        }
+        waitDialog.close();
+        action();
+    }, cx.variables.get("warningText", "locale/locale").replace("%1", fromLangName).replace("%2", toLangName));
+}
+
+/**
+ * @param string action Name of action
+ * @param string fromLang Language name to copy from
+ * @param string toLang Language name to copy to
+ * @param function yesAction Function to call when "yes" is clicked
+ * @param string checkboxText (optional) Text for checkbox label. If null, no checkbox is shown
+ * @return cx.ui.dialog Cx Ui Dialog object
+ */
+function showActionDialog(action, fromLang, toLang, yesAction, checkboxText) {
+    var yesOption = cx.variables.get("yesOption", "locale/locale");
+    var noOption = cx.variables.get("noOption", "locale/locale");
+    var buttons = new Object();
+    buttons[yesOption] = function() {
+        cx.jQuery(this).dialog("close");
+        if (checkboxText) {
+            if (!dialog.getElement().children().children("#really").is(":checked")) {
+                return;
+            }
+        }
+        yesAction();
+    };
+    buttons[noOption] = function() {cx.jQuery(this).dialog("close");}
+    var content = "<p>" + cx.variables.get(action + "Text", "locale/locale");
+    if (action == 'link') {
+        content = content.replace("%1", toLang).replace("%2", fromLang);
+    } else {
+        content = content.replace("%1", fromLang).replace("%2", toLang);
+    }
+    if (checkboxText) {
+        content += "<br /><br /><input type=\"checkbox\" id=\"really\" class=\"really\" value=\"true\" /> <label for=\"really\" class=\"really\">" + checkboxText + "</label>";
+    }
+    content += "</p>";
+    var dialog = cx.ui.dialog({
+        title: cx.variables.get(action + "Title", "locale/locale"),
+        content: content,
+        buttons: buttons,
+        modal: true,
+        width: 400,
+        autoOpen: false
+    });
+    var yesButton = dialog.getElement().siblings(".ui-dialog-buttonpane").children(".ui-dialog-buttonset").children("button").first();
+    yesButton.hide();
+    cx.jQuery("#really").change(function() {
+        console.log('changed');
+        yesButton.toggle(cx.jQuery("#really").is(":checked"));
+    });
+    dialog.open();
+    return dialog;
+}

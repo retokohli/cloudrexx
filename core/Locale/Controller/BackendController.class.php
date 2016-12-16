@@ -95,9 +95,26 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 }
                 $isEdit = false;
                 parent::parsePage($template, $cmd, $isEdit);
-                // register locale js
-                \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Locale.js', 1));
-                if (!$isEdit) { //do not parse blocks in edit view
+                if (!$isEdit) { //do not parse blocks and js in edit view
+                    // set js variables
+                    \JS::activate('cx');
+                    $cxjs = \ContrexxJavascript::getInstance();
+                    $cxjs->setVariable('copyTitle', $_ARRAYLANG['TXT_CORE_LOCALE_COPY_TITLE'], 'locale/locale');
+                    $cxjs->setVariable('copyText', $_ARRAYLANG['TXT_CORE_LOCALE_COPY_TEXT'], 'locale/locale');
+                    $cxjs->setVariable('copySuccess', $_ARRAYLANG['TXT_CORE_LOCALE_COPY_SUCCESS'], 'locale/locale');
+                    $cxjs->setVariable('linkTitle', $_ARRAYLANG['TXT_CORE_LOCALE_LINK_TITLE'], 'locale/locale');
+                    $cxjs->setVariable('linkText', $_ARRAYLANG['TXT_CORE_LOCALE_LINK_TEXT'], 'locale/locale');
+                    $cxjs->setVariable('linkSuccess', $_ARRAYLANG['TXT_CORE_LOCALE_LINK_SUCCESS'], 'locale/locale');
+                    $cxjs->setVariable('warningTitle', $_ARRAYLANG['TXT_CORE_LOCALE_WARNING_TITLE'], 'locale/locale');
+                    $cxjs->setVariable('warningText', $_ARRAYLANG['TXT_CORE_LOCALE_WARNING_TEXT'], 'locale/locale');
+                    $cxjs->setVariable('waitTitle', $_ARRAYLANG['TXT_CORE_LOCALE_WAIT_TITLE'], 'locale/locale');
+                    $cxjs->setVariable('waitText', $_ARRAYLANG['TXT_CORE_LOCALE_WAIT_TEXT'], 'locale/locale');
+                    $cxjs->setVariable('yesOption', $_ARRAYLANG['TXT_YES'], 'locale/locale');
+                    $cxjs->setVariable('noOption', $_ARRAYLANG['TXT_NO'], 'locale/locale');
+                    $cxjs->setVariable('langRemovalLabel', $_ARRAYLANG['TXT_CORE_LOCALE_LABEL_LANG_REMOVAL'], 'locale/locale');
+                    $cxjs->setVariable('langRemovalContent', $_ARRAYLANG['TXT_CORE_LOCALE_LANG_REMOVAL_CONTENT'], 'locale/locale');
+                    // register locale js
+                    \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Locale.js', 1));
                     // parse form around entity view
                     if ($template->blockExists('form_tag_open') && $template->blockExists('form_tag_close')) {
                         $template->touchBlock('form_tag_open');
@@ -260,6 +277,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'label' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_LABEL'],
+                            'table' => array(
+                                'attributes' => array(
+                                    'class' => 'localeLabel',
+                                ),
+                            ),
                         ),
                         'country' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_COUNTRY'],
@@ -357,6 +379,40 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'add' => true,
                         'edit' => true,
                         'delete' => true,
+                        'actions' => function($rowData) {
+                            global $_ARRAYLANG;
+                            // add copy link
+                            $copyLink = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
+                            $copyAttrs = array(
+                                'href' => 'javascript:copyPages(\'' . $rowData['id'] . '\')',
+                                'title' => $_ARRAYLANG['TXT_CORE_LOCALE_ACTION_COPY']
+                            );
+                            $copyLink->setAttributes($copyAttrs);
+                            // add image to link
+                            $copyImg = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
+                            $copyImgAttrs = array(
+                                'src' => '../core/Core/View/Media/icons/copy.gif',
+                                'alt' => $_ARRAYLANG['TXT_CORE_LOCALE_ACTION_COPY']
+                            );
+                            $copyImg->setAttributes($copyImgAttrs);
+                            $copyLink->addChild($copyImg);
+                            // add linking link
+                            $linkLink = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
+                            $linkAttrs = array(
+                                'href' => 'javascript:linkPages(\'' . $rowData['id'] . '\')',
+                                'title' => $_ARRAYLANG['TXT_CORE_LOCALE_ACTION_LINK']
+                            );
+                            $linkLink->setAttributes($linkAttrs);
+                            // add image to link
+                            $linkImg = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
+                            $linkImgAttrs = array(
+                                'src' => '../core/Core/View/Media/icons/linkcopy.gif',
+                                'alt' => $_ARRAYLANG['TXT_CORE_LOCALE_ACTION_LINK']
+                            );
+                            $linkImg->setAttributes($linkImgAttrs);
+                            $linkLink->addChild($linkImg);
+                            return $copyLink . $linkLink;
+                        },
                         'sorting' => true,
                         'paging' => true,
                         'filtering' => false,
