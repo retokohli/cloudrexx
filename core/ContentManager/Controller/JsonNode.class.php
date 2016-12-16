@@ -243,11 +243,11 @@ class JsonNode implements JsonAdapter {
 
             $this->em->flush();
             $this->em->getConnection()->commit();
+            $this->clearCache();
         } catch (\Exception $e) {
             $this->em->getConnection()->rollback();
             throw $e;
         }
-        $this->clearCache();
 
         $nodeLevels = array();
         $nodeStack = array();
@@ -324,11 +324,11 @@ class JsonNode implements JsonAdapter {
 
             $this->em->flush();
             $this->em->getConnection()->commit();
+            $this->clearCache();
         } catch (\Exception $e) {
             $this->em->getConnection()->rollback();
             throw $e;
         }
-        $this->clearCache();
     }
 
     protected function titleExists($parentNode, $lang, $title) {
@@ -398,11 +398,11 @@ class JsonNode implements JsonAdapter {
                 $this->em->flush();
                 $this->em->clear();
                 $this->em->getConnection()->commit();
+                $this->clearCache();
             } catch (\Exception $e) {
                 $this->em->getConnection()->rollback();
                 throw $e;
             }
-            $this->clearCache();
         }
         return array(
             'action'                => 'delete',
@@ -431,11 +431,11 @@ class JsonNode implements JsonAdapter {
             $this->em->flush();
             $this->em->clear();
             $this->em->getConnection()->commit();
+            $this->clearCache();
         } catch (\Exception $e) {
             $this->em->getConnection()->rollback();
             throw $e;
         }
-        $this->clearCache();
 
         return $return;
     }
