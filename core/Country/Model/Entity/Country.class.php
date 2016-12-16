@@ -161,10 +161,18 @@ class Country extends \Cx\Model\Base\EntityBase {
      * Returns the region and the alpha 2 code
      * using the php \Locale class
      *
+     * The region is translated in the front/backend language
+     *
      * @return string for example "Germany (DE)"
      */
     public function __toString()
     {
-        return \Locale::getDisplayRegion('und_' . $this->alpha2) . ' (' . $this->alpha2 . ')';
+        global $objInit;
+        if ($objInit->mode == 'backend') {
+            $inLocale = \FWLanguage::getBackendLanguageCodeById($objInit->getBackendLangId());
+        } else {
+            $inLocale = \FWLanguage::getLanguageCodeById($objInit->getFrontendLangId());
+        }
+        return \Locale::getDisplayRegion('und_' . $this->alpha2, $inLocale) . ' (' . $this->alpha2 . ')';
     }
 }
