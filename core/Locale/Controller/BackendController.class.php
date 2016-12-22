@@ -95,7 +95,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 }
                 $isEdit = false;
                 parent::parsePage($template, $cmd, $isEdit);
-                if (!$isEdit) { //do not parse blocks and js in edit view
+                if ($isEdit) {
+                    \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/LocaleEdit.js', 1));
+                } else { //do not parse blocks and js in edit view
                     // set js variables
                     \JS::activate('cx');
                     $cxjs = \ContrexxJavascript::getInstance();
@@ -428,9 +430,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'form' => array(
                             'id',
-                            'label',
                             'iso1',
                             'country',
+                            'label',
                             'fallback',
                         ),
                     ),
