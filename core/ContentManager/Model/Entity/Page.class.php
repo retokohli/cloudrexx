@@ -1244,6 +1244,10 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         }
         // Alias slugs must not be equal to an existing file or folder
         if ($this->getType() == self::TYPE_ALIAS) {
+            // check if alias matches language tag regex (de-DE, en-US, i-hak, etc.)
+            if (preg_match('/^[a-z]{1,2}(?:-[A-Za-z]{2,4})?$/', $this->getSlug())) {
+                $this->setSlug($this->getSlug() . '-1', true);
+            }
             $invalidAliasNames = array(
                 'admin',
                 'cache',
