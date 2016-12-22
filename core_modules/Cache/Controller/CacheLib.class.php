@@ -542,6 +542,9 @@ class CacheLib
      * @return \Cx\Core\Routing\Url URL for (Json)Data call
      */
     protected function getUrlFromApi($adapterName, $adapterMethod, $params) {
+        if (isset($_GET['preview'])) {
+            $params['theme'] = intval($_GET['preview']);
+        }
         $url = \Cx\Core\Routing\Url::fromApi('Data', array('Plain', $adapterName, $adapterMethod), $params);
         // make sure params are in correct order:
         $correctIndexOrder = array('page', 'lang', 'user', 'theme', 'country', 'currency');
@@ -1025,7 +1028,7 @@ class CacheLib
     function deleteSingleFile($intPageId) {
         $intPageId = intval($intPageId);
         if ( 0 < $intPageId ) {
-            $files = glob( $this->strCachePath . '*_' . $intPageId );
+            $files = glob($this->strCachePath . '*_{,h}' . $intPageId, GLOB_BRACE);
             if ( count( $files ) ) {
                 foreach ( $files as $file ) {
                     @unlink( $file );
@@ -1059,6 +1062,19 @@ class CacheLib
             $this->deleteSingleFile($pageId);
         }
         return array_keys($pages);
+    } 
+
+    /**
+     * Drops all page cache files that do not belong to a page
+     * Those are cached header redirects
+     */
+    public function deleteNonPagePageCache() {
+        $files = glob($this->strCachePath . '*_{,h}', GLOB_BRACE);
+        if (count($files)) {
+            foreach ($files as $file) {
+                @unlink($file);
+            }
+        }
     }
     
     /**

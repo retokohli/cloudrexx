@@ -626,7 +626,8 @@ die("MailTemplate::init(): Empty section!");
             $pdfAttachment = $pdf->generatePDF(
                 $arrTemplate['pdf_template'],
                 $substitution,
-                $arrTemplate['key']
+                $arrTemplate['key'],
+                true
             );
         }
 //DBG::log("MailTemplate::send(): Substituted: ".var_export($arrTemplate, true));

@@ -72,12 +72,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        self::registerYamlSettingEventListener();
+        self::registerYamlSettingEventListener($this->cx);
     }
 
-    public static function registerYamlSettingEventListener() {
-        $evm = \Env::get('cx')->getEvents();
-        $yamlSettingEventListener = new \Cx\Core\Config\Model\Event\YamlSettingEventListener();
+    public static function registerYamlSettingEventListener($cx) {
+        $evm = $cx->getEvents();
+        $yamlSettingEventListener = new \Cx\Core\Config\Model\Event\YamlSettingEventListener($cx);
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core\\Setting\\Model\\Entity\\YamlSetting', $yamlSettingEventListener);
         $evm->addModelListener('postFlush', 'Cx\\Core\\Setting\\Model\\Entity\\YamlSetting', $yamlSettingEventListener);
     }

@@ -1945,7 +1945,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      *
      */
     public function getURL($protocolAndDomainWithPathOffset, $params) {
-        return \Cx\Core\Routing\Url::fromPage($this);
+        return \Cx\Core\Routing\Url::fromPage($this, $params);
     }
 
     /**
