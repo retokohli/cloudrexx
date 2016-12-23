@@ -44,9 +44,9 @@ $_ARRAYLANG['TXT_CORE_LOCALE'] = 'Localization';
 $_ARRAYLANG['TXT_CORE_LOCALE_DESCRIPTION'] = 'Handles language versions by their country and/or the effective language.';
 
 // Module ACTs:
-$_ARRAYLANG['TXT_CORE_LOCALE_ACT_DEFAULT'] = 'Frontend';
-$_ARRAYLANG['TXT_CORE_LOCALE_ACT_LOCALE'] = 'Frontend';
-$_ARRAYLANG['TXT_CORE_LOCALE_ACT_BACKEND'] = 'Backend';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACT_DEFAULT'] = 'Webiste';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACT_LOCALE'] = 'Website';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACT_BACKEND'] = 'Administration area';
 
 // Module fields
 $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID'] = 'ID';
