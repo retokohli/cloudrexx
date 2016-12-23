@@ -165,6 +165,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         // set view generator options
         $options = array(
             'array' => array(
+                'entityName' => $_ARRAYLANG['TXT_CORE_LOCALE_BACKEND_NAME'],
                 'fields' => array(
                     'active' => array(
                         'header' => $_ARRAYLANG['TXT_CORE_LOCALE_ACTIVE_LANGUAGES'],
@@ -266,6 +267,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     $_GET['order'] = 'id';
                 }
                 return array(
+                    'entityName' => $_ARRAYLANG['TXT_CORE_LOCALE_LOCALE_NAME'],
                     'header' => $_ARRAYLANG['TXT_CORE_LOCALE_ACT_LOCALE'],
                     'fields' => array(
                         'id' => array(
