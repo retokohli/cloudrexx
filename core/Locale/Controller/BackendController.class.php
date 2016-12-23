@@ -313,6 +313,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'fallback' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_FALLBACK'],
+                            'tooltip' => $_ARRAYLANG['TXT_CORE_LOCALE_FALLBACK_TOOLTIP'],
                             'table' => array(
                                 'attributes' => array(
                                     'class' => 'localeFallback',
@@ -350,6 +351,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'sourceLanguage' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_SOURCE_LANGUAGE'],
+                            'tooltip' => $_ARRAYLANG['TXT_CORE_LOCALE_SOURCE_LANGUAGE_TOOLTIP'],
                             'formfield' => function($fieldname, $fieldtype, $fieldlength, $fieldvalue, $fieldoptions) {
                                 // build select for sourceLanguage
                                 $select = new \Cx\Core\Html\Model\Entity\DataElement(

@@ -61,6 +61,10 @@ $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_SOURCE_LANGUAGE'] = 'Source language';
 $_ARRAYLANG['TXT_CORE_LOCALE_ACTIVE_LANGUAGES'] = 'Active languages';
 $_ARRAYLANG['TXT_CORE_LOCALE_DEFAULT_LANGUAGE'] = 'Default language';
 
+// Tooltips
+$_ARRAYLANG['TXT_CORE_LOCALE_FALLBACK_TOOLTIP'] = 'Not existing content is replaced with the content of the fallback language.';
+$_ARRAYLANG['TXT_CORE_LOCALE_SOURCE_LANGUAGE_TOOLTIP'] = 'Specifies which language files to use.';
+
 $_ARRAYLANG['TXT_CORE_LOCALE_BACKEND_SELECT_ACTIVE_LANGUAGES'] = 'Select active languages...';
 $_ARRAYLANG['TXT_CORE_LOCALE_CANNOT_DELETE_DEFAULT_BACKEND'] = 'The language %s was not deleted, because it is the default one.';
 $_ARRAYLANG['TXT_CORE_LOCALE_ACTION_COPY'] = 'Copy contents from this language\'s fallback language to this language';
