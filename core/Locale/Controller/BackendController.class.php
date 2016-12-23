@@ -117,6 +117,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     $cxjs->setVariable('langRemovalContent', $_ARRAYLANG['TXT_CORE_LOCALE_LANG_REMOVAL_CONTENT'], 'locale/locale');
                     // register locale js
                     \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Locale.js', 1));
+                    // register locale css
+                    \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/Locale.css', 1));
                     // parse form around entity view
                     if ($template->blockExists('form_tag_open') && $template->blockExists('form_tag_close')) {
                         $template->touchBlock('form_tag_open');

@@ -77,3 +77,4 @@ $_ARRAYLANG['TXT_YES'] = 'Yes';
 $_ARRAYLANG['TXT_NO'] = 'No';
 $_ARRAYLANG['TXT_CORE_LOCALE_LABEL_LANG_REMOVAL'] = 'Confirm language data removal';
 $_ARRAYLANG['TXT_CORE_LOCALE_LANG_REMOVAL_CONTENT'] = 'Remove all language related data of the deactivated language from all applications.';
+$_ARRAYLANG['TXT_CORE_LOCALE_SAVE'] = 'Apply changes';
