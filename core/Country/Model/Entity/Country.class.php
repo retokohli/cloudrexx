@@ -167,7 +167,7 @@ class Country extends \Cx\Model\Base\EntityBase {
      */
     public function __toString()
     {
-        global $objInit;
+        $objInit = \Env::get('init');
         if ($objInit->mode == 'backend') {
             $inLocale = \FWLanguage::getBackendLanguageCodeById($objInit->getBackendLangId());
         } else {
