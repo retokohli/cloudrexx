@@ -82,29 +82,36 @@ function performLanguageAction(actionName, toLangId, action) {
         var offset = 0;
         var count = 0;
         while ((offset < count) || offset == 0) {
-            var url = "index.php?cmd=JsonData&object=cm&act=" + actionName + "&to=" + toLangId + "&offset=" + offset + "&limit=1";
-            cx.jQuery.ajax({
-                async: false,
-                url: url,
-                dataType: "json",
-                type: "GET",
-                success: function(json) {
-                    if (json.status != "success") {
-                        cx.ui.dialog({
-                            title: json.status,
-                            content: json.message,
-                            modal: true,
-                            autoOpen: true
-                        });
-                        return;
+            cx.ajax(
+                "cm",
+                actionName,
+                {
+                    data: {
+                        to: toLangId,
+                        offset: offset,
+                        limit: 1,
+                    },
+                    async: false,
+                    dataType: "json",
+                    type: "GET",
+                    success: function(json) {
+                        if (json.status != "success") {
+                            cx.ui.dialog({
+                                title: json.status,
+                                content: json.message,
+                                modal: true,
+                                autoOpen: true
+                            });
+                            return;
+                        }
+                        offset = json.data.offset;
+                        count = json.data.count;
+                        var newText = cx.variables.get("waitText", "locale/locale") + "\n\n" + offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)";
+                        //console.log(offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)");
+                        waitDialog.getElement().html(newText);
                     }
-                    offset = json.data.offset;
-                    count = json.data.count;
-                    var newText = cx.variables.get("waitText", "locale/locale") + "\n\n" + offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)";
-                    //console.log(offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)");
-                    waitDialog.getElement().html(newText);
                 }
-            });
+            );
         }
         waitDialog.close();
         action();

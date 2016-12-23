@@ -1,22 +1,23 @@
-jQuery(document).ready(function() {
-    jQuery("#form-0-iso1, #form-0-country").change(function() {
+cx.jQuery(document).ready(function() {
+    cx.jQuery("#form-0-iso1, #form-0-country").change(function() {
         generateLabel();
     });
 
     function generateLabel() {
-        var iso1 = jQuery("#form-0-iso1").val();
-        var alpha2 = jQuery("#form-0-country").val();
+        var iso1 = cx.jQuery("#form-0-iso1").val();
+        var alpha2 = cx.jQuery("#form-0-country").val();
 
-        jQuery.getJSON(
-            "index.php?cmd=jsondata",
+        cx.ajax(
+            "Locale",
+            "getGeneratedLabel",
             {
-                object: "Locale",
-                act: "getGeneratedLabel",
-                "iso1": iso1,
-                "alpha2": alpha2
-            },
-            function(data) {
-                jQuery('#form-0-label').val(data.data);
+                data: {
+                    iso1: iso1,
+                    alpha2: alpha2
+                },
+                success: function(json) {
+                    cx.jQuery('#form-0-label').val(json.data);
+                }
             }
         );
 
