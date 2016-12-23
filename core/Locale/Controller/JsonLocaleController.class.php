@@ -42,7 +42,7 @@ namespace Cx\Core\Locale\Controller;
  * @package     cloudrexx
  * @subpackage  core_locale
  */
-class JsonLocaleController extends Controller implements \Cx\Core\Json\JsonAdapter {
+class JsonLocaleController extends \Cx\Core\Core\Model\Entity\Controller implements \Cx\Core\Json\JsonAdapter {
 
     /**
      * Returns the internal name used as identifier for this adapter

@@ -57,7 +57,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return array List of Controller class names (without namespace)
      */
     public function getControllerClasses() {
-        return array('Backend','JsonLocaleController');
+        return array('Backend','JsonLocale');
     }
 
     /**
