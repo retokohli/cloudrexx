@@ -95,11 +95,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 }
                 $isEdit = false;
                 parent::parsePage($template, $cmd, $isEdit);
+                \JS::activate('cx');
                 if ($isEdit) {
                     \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/LocaleEdit.js', 1));
                 } else { //do not parse blocks and js in edit view
                     // set js variables
-                    \JS::activate('cx');
                     $cxjs = \ContrexxJavascript::getInstance();
                     $cxjs->setVariable('copyTitle', $_ARRAYLANG['TXT_CORE_LOCALE_COPY_TITLE'], 'locale/locale');
                     $cxjs->setVariable('copyText', $_ARRAYLANG['TXT_CORE_LOCALE_COPY_TEXT'], 'locale/locale');
