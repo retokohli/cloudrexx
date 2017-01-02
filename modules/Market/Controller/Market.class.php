@@ -560,46 +560,152 @@ class Market extends MarketLibrary
     }
 
 
-    function getSearch() {
+    /**
+     * Get search content
+     */
+    public function getSearch()
+    {
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
-         global $objDatabase, $_ARRAYLANG, $_CORELANG;
+        $catId = isset($_GET['catid']) ? contrexx_input2int($_GET['catid']) : 0;
+        $type  = isset($_GET['type']) ? contrexx_input2raw($_GET['type']) : '';
+        $price = isset($_GET['price']) ? contrexx_input2raw($_GET['price']) : '';
+        $order = ($this->settings['indexview']['value'] == 1)
+            ? 'name' : 'displayorder';
 
-         $options = '';
-
-         if  ($this->settings['indexview']['value'] == 1) {
-            $order = "name";
-        } else {
-            $order = "displayorder";
-        }
-
-        $objResultSearch = $objDatabase->Execute("SELECT id, name, description FROM ".DBPREFIX."module_market_categories WHERE status = '1' ORDER BY ".$order."");
-
+        //Create category dropdown
+        $objResultSearch = $objDatabase->Execute(
+            'SELECT `id`, `name`, `description`
+                FROM ' . DBPREFIX . 'module_market_categories
+                WHERE status = 1
+                ORDER BY ' . $order
+        );
         if ($objResultSearch !== false) {
-            while(!$objResultSearch->EOF) {
-                $options .= '<option value="'.$objResultSearch->fields['id'].'">'.$objResultSearch->fields['name'].'</option>';
+            $catSelect = new \Cx\Core\Html\Model\Entity\HtmlElement('select');
+            $catSelect->setAttributes(array(
+                'id'   => 'catid',
+                'name' => 'catid'
+            ));
+            //default option
+            $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
+            $option->setAttribute('value', '');
+            $option->addChild(
+                new \Cx\Core\Html\Model\Entity\TextElement(
+                    $_ARRAYLANG['TXT_MARKET_ALL_CATEGORIES']
+                )
+            );
+            $catSelect->addChild($option);
+            while (!$objResultSearch->EOF) {
+                $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
+                $option->setAttribute(
+                    'value',
+                    contrexx_raw2xhtml($objResultSearch->fields['id'])
+                );
+                if ($catId == $objResultSearch->fields['id']) {
+                    $option->setAttribute('selected', 'selected');
+                }
+                $option->addChild(
+                    new \Cx\Core\Html\Model\Entity\TextElement(
+                        contrexx_raw2xhtml($objResultSearch->fields['name'])
+                    )
+                );
+                $catSelect->addChild($option);
                 $objResultSearch->MoveNext();
             }
         }
 
-        $inputs      = '<p><label for="catid">'.$_ARRAYLANG['TXT_MARKET_CATEGORY'].'</label><select id="catid" name="catid"><option value="">'.$_ARRAYLANG['TXT_MARKET_ALL_CATEGORIES'].'</option>'.$options.'</select></p>';
-        $inputs     .= '<p><label for="type">'.$_ARRAYLANG['TXT_TYPE'].'</label><select id="type" name="type"><option value="">'.$_ARRAYLANG['TXT_MARKET_ALL_TYPES'].'</option><option value="offer">'.$_ARRAYLANG['TXT_MARKET_OFFER'].'</option><option value="search">'.$_ARRAYLANG['TXT_MARKET_SEARCH'].'</option></select></p>';
+        //Create category row
+        $pTagOne  = new \Cx\Core\Html\Model\Entity\HtmlElement('p');
+        $catLabel = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
+        $catLabel->setAttribute('for', 'catid');
+        $catLabel->addChild(
+            new \Cx\Core\Html\Model\Entity\TextElement(
+                $_ARRAYLANG['TXT_MARKET_CATEGORY']
+            )
+        );
+        $pTagOne->addChild($catLabel);
+        $pTagOne->addChild($catSelect);
 
-        $options = '';
+        //Create type row
+        $pTagTwo = new \Cx\Core\Html\Model\Entity\HtmlElement('p');
+        $typeLabel = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
+        $typeLabel->setAttribute('for', 'type');
+        $typeLabel->addChild(
+            new \Cx\Core\Html\Model\Entity\TextElement(
+                $_ARRAYLANG['TXT_TYPE']
+            )
+        );
+        $pTagTwo->addChild($typeLabel);
+        //Create type dropdown
+        $typeSelect = new \Cx\Core\Html\Model\Entity\HtmlElement('select');
+        $typeSelect->setAttributes(array(
+            'id'   => 'type',
+            'name' => 'type'
+        ));
+        $types = array(
+            ''       => $_ARRAYLANG['TXT_MARKET_ALL_TYPES'],
+            'offer'  => $_ARRAYLANG['TXT_MARKET_OFFER'],
+            'search' => $_ARRAYLANG['TXT_MARKET_SEARCH']
+        );
+        foreach ($types as $typeKey => $typeValue) {
+            $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
+            $option->setAttribute('value', $typeKey);
+            if ($type == $typeKey) {
+                $option->setAttribute('selected', 'selected');
+            }
+            $option->addChild(
+                new \Cx\Core\Html\Model\Entity\TextElement($typeValue)
+            );
+            $typeSelect->addChild($option);
+        }
+        $pTagTwo->addChild($typeSelect);
 
-        $arrPrices = explode(",", $this->settings['searchPrice']);
-
+        //Create price dropdown
+        $priceSelect = new \Cx\Core\Html\Model\Entity\HtmlElement('select');
+        $priceSelect->setAttributes(array(
+            'id'   => 'price',
+            'name' => 'price'
+        ));
+        $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
+        $option->setAttribute('value', '');
+        $option->addChild(
+            new \Cx\Core\Html\Model\Entity\TextElement(
+                $_ARRAYLANG['TXT_MARKET_ALL_PRICES']
+            )
+        );
+        $priceSelect->addChild($option);
+        $arrPrices = explode(',', $this->settings['searchPrice']);
         foreach ($arrPrices as $priceValue) {
-            $options .= '<option value="'.$priceValue.'">'.$priceValue.' '.$this->settings['currency'].'</option>';
+            $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
+            $option->setAttribute('value', $priceValue);
+            if ($price == $priceValue) {
+                $option->setAttribute('selected', 'selected');
+            }
+            $option->addChild(
+                new \Cx\Core\Html\Model\Entity\TextElement(
+                    $priceValue . ' ' . $this->settings['currency']
+                )
+            );
+            $priceSelect->addChild($option);
         }
 
-        $inputs     .= '<p><label for="cpricetid">'.$_ARRAYLANG['TXT_MARKET_PRICE_MAX'].'</label><select id="price" name="price"><option value="">'.$_ARRAYLANG['TXT_MARKET_ALL_PRICES'].'</option>'.$options.'</select></p>';
-
+        //Create price row
+        $pTagThree  = new \Cx\Core\Html\Model\Entity\HtmlElement('p');
+        $priceLabel = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
+        $priceLabel->setAttribute('for', 'cpricetid');
+        $priceLabel->addChild(
+            new \Cx\Core\Html\Model\Entity\TextElement(
+                $_ARRAYLANG['TXT_MARKET_PRICE_MAX']
+            )
+        );
+        $pTagThree->addChild($priceLabel);
+        $pTagThree->addChild($priceSelect);
 
         // set variables
         $this->_objTpl->setVariable(array(
-            'TXT_MARKET_SEARCH'                    => $_CORELANG['TXT_SEARCH'],
-            'TXT_MARKET_SEARCH_EXP'                => $_CORELANG['TXT_EXP_SEARCH'],
-            'MARKET_EXP_SEARCH_FIELD'             => $inputs,
+            'TXT_MARKET_SEARCH'       => $_CORELANG['TXT_SEARCH'],
+            'TXT_MARKET_SEARCH_EXP'   => $_CORELANG['TXT_EXP_SEARCH'],
+            'MARKET_EXP_SEARCH_FIELD' => $pTagOne . $pTagTwo . $pTagThree,
         ));
     }
 
@@ -1120,8 +1226,11 @@ class Market extends MarketLibrary
     }
 
 
-
-    function searchEntry() {
+    /**
+     * Parse Search entry list
+     */
+    public function searchEntry()
+    {
 
         global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
@@ -1162,7 +1271,8 @@ class Market extends MarketLibrary
         $searchTermOrg = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
         $catId         = isset($_GET['catid']) ? contrexx_input2int($_GET['catid']) : 0;
         $type          = isset($_GET['type']) ? contrexx_input2raw($_GET['type']) : '';
-        $price         = isset($_GET['price']) ? contrexx_input2raw($_GET['price']) : '';
+        $searchPrice   = isset($_GET['price']) ? contrexx_input2raw($_GET['price']) : '';
+        $check         = isset($_GET['check']) ? contrexx_input2raw($_GET['check']) : '';
         $where         = array('status = 1');
         $tmpTerm       = '';
         $array = explode(' ', $searchTermOrg);
@@ -1184,9 +1294,9 @@ class Market extends MarketLibrary
                 $searchTermExp .= '&amp;type=' . $type;
             }
 
-            if (!empty($price)) {
-                $where[] = 'price <= ' . contrexx_input2db($price);
-                $searchTermExp .= '&amp;price=' . $price;
+            if (!empty($searchPrice)) {
+                $where[] = 'price <= ' . contrexx_input2db($searchPrice);
+                $searchTermExp .= '&amp;price=' . $searchPrice;
             }
         }
 
@@ -1357,8 +1467,18 @@ class Market extends MarketLibrary
             $this->_objTpl->hideBlock('showEntries');
         }
 
+        $showExpandSearch = false;
+        if (
+            $check == 'exp' &&
+            (!empty($catId) || !empty($type) || !empty($searchPrice))
+        ) {
+            $showExpandSearch = true;
+        }
         $this->_objTpl->setVariable(array(
-            'TXT_MARKET_SEARCHTERM' => $searchTermOrg,
+            'TXT_MARKET_SEARCHTERM'        => $searchTermOrg,
+            'TXT_MARKET_EXP_SEARCH'        => $showExpandSearch ? 'exp' : 'norm',
+            'TXT_MARKET_EXP_SEARCH_TOGGLE' => $showExpandSearch
+                ? 'display:block;' : 'display:none;'
         ));
 
         $this->_objTpl->parse('showEntriesHeader');
