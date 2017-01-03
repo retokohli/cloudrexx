@@ -29,23 +29,17 @@
                     document.getElementById('no_password').style.display = 'none';
                     document.getElementById('password').className = '';
                 }
-                if (form.coreCaptchaCode) {
-                    if (form.coreCaptchaCode.value == '') {
-                        if (form.coreCaptchaCode.focus && form_submitted == true)
-                            form.coreCaptchaCode.focus();
-                        document.getElementById('no_captcha_code').style.display = 'block';
-                        document.getElementById('coreCaptchaCode').className = 'error';
-                        form_submitted = false;
-                    } else {
-                        document.getElementById('no_captcha_code').style.display = 'none';
-                        document.getElementById('coreCaptchaCode').className = '';
-                    }
+                var isCaptchaOk = true;
+                {CAPTCHA_VALIDATION_CODE}
+                $J('#no_captcha_code').hide();
+                if (!isCaptchaOk) {
+                    $J('#no_captcha_code').show();
+                    form_submitted = false;
                 }
 
-                if (form_submitted == false) {
+                if (!form_submitted) {
                     return false;
                 }
-
                 //form.PASSWORD.value=MD5(form.hash.value)
                 form.PASSWORD.value=form.hash.value;
                 form.hash.value='';

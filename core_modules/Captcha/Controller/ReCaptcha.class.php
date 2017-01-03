@@ -93,6 +93,22 @@ HTML;
         return $code;
     }
 
+    /*
+     * Get captcha validation code
+     *
+     * @return string Returns JS code
+     */
+    public function getJSValidationFn()
+    {
+        $capchaValidationCode = <<<JSCaptchaValidation
+            var response = grecaptcha.getResponse();
+            if (response.length == 0) {
+                isCaptchaOk = false;
+            }
+JSCaptchaValidation;
+         return $capchaValidationCode;
+    }
+
     /**
      * Check the captcha code
      *

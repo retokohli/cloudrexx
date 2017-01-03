@@ -227,6 +227,21 @@ class ContrexxCaptcha implements CaptchaInterface {
     }
 
     /**
+     * Get captcha validation code
+     *
+     * @return string Returns JS code
+     */
+    public function getJSValidationFn()
+    {
+        $capchaValidationCode = <<<JSCaptchaValidation
+            var code = \$J('#coreCaptchaCode').val();
+            if (\$J.trim(code) === '') {
+                isCaptchaOk = false;
+            }
+JSCaptchaValidation;
+    return $capchaValidationCode;
+    }
+    /**
      * checks whether the entered string matches the captcha.
      * if the check is already done the result will be returned.
      *
