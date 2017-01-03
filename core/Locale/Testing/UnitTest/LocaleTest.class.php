@@ -81,4 +81,17 @@ class LocaleTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
         $this->assertEquals($iso1, $locale->getShortForm());
     }
 
+    /**
+     * @covers \Cx\Core\Locale\Model\Entity\Locale::__toString
+     */
+    public function testToString() {
+        // Arrange
+        $label = 'testLocale';
+        $locale = new \Cx\Core\Locale\Model\Entity\Locale();
+        // Act
+        $locale->setLabel($label);
+        // Arrange
+        $this->assertEquals($label, $locale->__toString());
+    }
+
 }
