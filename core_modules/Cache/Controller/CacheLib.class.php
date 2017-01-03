@@ -787,27 +787,36 @@ class CacheLib
     protected function getDomainsAndPorts() {
         $domainsAndPorts = array();
         $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
-        $domains = $domainRepo->findAll();
-        foreach (array('http', 'https') as $protocol) {
+        $forceDomainUrl = \Cx\Core\Setting\Controller\Setting::getValue(
+            'forceDomainUrl',
+            'Config'
+        );
+        if (isset($forceDomainUrl) && $forceDomainUrl == 'on') {
+            $domains = array($domainRepo->getMainDomain());
+        } else {
+            $domains = $domainRepo->findAll();
+        }
+        $forceProtocolFrontend = \Cx\Core\Setting\Controller\Setting::getValue(
+            'forceProtocolFrontend',
+            'Config'
+        );
+        if (isset($forceProtocolFrontend) && $forceProtocolFrontend != 'none') {
+            $protocols = array($forceProtocolFrontend);
+        } else {
+            $protocols = array('http', 'https');
+        }
+        foreach ($protocols as $protocol) {
             foreach ($domains as $domain) {
                 $domainsAndPorts[] = array(
                     $domain->getName(),
-                    \Cx\Core\Setting\Controller\Setting::getValue('portFrontend' . strtoupper($protocol), 'Config')
+                    \Cx\Core\Setting\Controller\Setting::getValue(
+                        'portFrontend' . strtoupper($protocol),
+                        'Config'
+                    )
                 );
             }
         }
         return $domainsAndPorts;
-
-        $requestDomain = $_CONFIG['domainUrl'];
-        $domainOffset  = ASCMS_PATH_OFFSET;
-
-        $request  = "BAN $domainOffset HTTP/1.0\r\n";
-        $request .= "Host: $requestDomain\r\n";
-        $request .= "User-Agent: Cloudrexx Varnish Cache Clear\r\n";
-        $request .= "Connection: Close\r\n\r\n";
-
-        fwrite($varnishSocket, $request);
-        fclose($varnishSocket);
     }
 
     /**
