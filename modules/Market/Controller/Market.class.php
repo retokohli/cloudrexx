@@ -576,8 +576,8 @@ class Market extends MarketLibrary
         //Create category dropdown
         $objResultSearch = $objDatabase->Execute(
             'SELECT `id`, `name`, `description`
-                FROM ' . DBPREFIX . 'module_market_categories
-                WHERE status = 1
+                FROM `' . DBPREFIX . 'module_market_categories`
+                WHERE `status` = 1
                 ORDER BY ' . $order
         );
         if ($objResultSearch !== false) {
@@ -1285,17 +1285,17 @@ class Market extends MarketLibrary
         if ($_GET['check'] == 'exp') {
             $searchTermExp = "&amp;check=exp&amp;term=".$searchTermOrg;
             if (!empty($catId)) {
-                $where[] = 'catid = ' . $catId;
+                $where[] = 'catid = ' . contrexx_raw2db($catId);
                 $searchTermExp .= '&amp;catid=' . $catId;
             }
 
             if (!empty($type)) {
-                $where[] = 'type LIKE ("%' . contrexx_input2db($type) . '%")';
+                $where[] = 'type LIKE ("%' . contrexx_raw2db($type) . '%")';
                 $searchTermExp .= '&amp;type=' . $type;
             }
 
             if (!empty($searchPrice)) {
-                $where[] = 'price <= ' . contrexx_input2db($searchPrice);
+                $where[] = 'price <= ' . contrexx_raw2db($searchPrice);
                 $searchTermExp .= '&amp;price=' . $searchPrice;
             }
         }
@@ -1333,13 +1333,13 @@ class Market extends MarketLibrary
                 $objDatabase,
                 null,
                 'LIKE',
-                '("%' . contrexx_input2db($searchTerm) . '%")',
+                '("%' . contrexx_raw2db($searchTerm) . '%")',
                 'OR '
             );
-            $where[] = '(title LIKE ("%' . contrexx_input2db($searchTerm) . '%")
-                OR description LIKE ("%' . contrexx_input2db($searchTerm) . '%")
+            $where[] = '(title LIKE ("%' . contrexx_raw2db($searchTerm) . '%")
+                OR description LIKE ("%' . contrexx_raw2db($searchTerm) . '%")
                 OR ' . $specialFieldsComparision . ')';
-            $score = ', MATCH (title,description) AGAINST ("%' . contrexx_input2db($searchTerm) . '%") AS score';
+            $score = ', MATCH (title,description) AGAINST ("%' . contrexx_raw2db($searchTerm) . '%") AS score';
         }
         $query   =
             'SELECT id,
@@ -1435,7 +1435,7 @@ class Market extends MarketLibrary
                 } else {
                     $price = $objResult->fields['price'] . ' ' . $this->settings['currency'];
                 }
-
+                
                 $this->_objTpl->setVariable(array(
                     'MARKET_ENDDATE' => $enddate,
                     'MARKET_TITLE' => $objResult->fields['title'],
