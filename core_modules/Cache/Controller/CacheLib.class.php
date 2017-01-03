@@ -792,7 +792,7 @@ class CacheLib
             'Config'
         );
         if (isset($forceDomainUrl) && $forceDomainUrl == 'on') {
-            $domains = array($domainRepo->getMainDomain())
+            $domains = array($domainRepo->getMainDomain());
         } else {
             $domains = $domainRepo->findAll();
         }
