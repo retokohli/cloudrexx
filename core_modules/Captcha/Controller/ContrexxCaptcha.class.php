@@ -233,13 +233,13 @@ class ContrexxCaptcha implements CaptchaInterface {
      */
     public function getJSValidationFn()
     {
-        $capchaValidationCode = <<<JSCaptchaValidation
+        $captchaValidationCode = <<<JSCaptchaValidation
             var code = \$J('#coreCaptchaCode').val();
             if (\$J.trim(code) === '') {
                 isCaptchaOk = false;
             }
 JSCaptchaValidation;
-    return $capchaValidationCode;
+        return $captchaValidationCode;
     }
     /**
      * checks whether the entered string matches the captcha.

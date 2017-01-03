@@ -100,13 +100,13 @@ HTML;
      */
     public function getJSValidationFn()
     {
-        $capchaValidationCode = <<<JSCaptchaValidation
+        $captchaValidationCode = <<<JSCaptchaValidation
             var response = grecaptcha.getResponse();
             if (response.length == 0) {
                 isCaptchaOk = false;
             }
 JSCaptchaValidation;
-         return $capchaValidationCode;
+        return $captchaValidationCode;
     }
 
     /**
