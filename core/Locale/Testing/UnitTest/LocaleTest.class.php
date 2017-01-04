@@ -54,10 +54,8 @@ class LocaleTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
         $iso1 = 'de';
         $alpha2 = 'CH';
         $expectedShortForm = $iso1 . '-' . $alpha2;
-        $language = self::$em
-            ->find('\Cx\Core\Locale\Model\Entity\Language', $iso1);
-        $country = self::$em
-            ->find('\Cx\Core\Country\Model\Entity\Country', $alpha2);
+        $language = $this->getLanguageMock($iso1);
+        $country = $this->getCountryMock($alpha2);
         $locale = new \Cx\Core\Locale\Model\Entity\Locale();
         // Act
         $locale->setIso1($language);
@@ -72,8 +70,7 @@ class LocaleTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     public function testShortFormLangOnly() {
         // Arrange
         $iso1 = 'de';
-        $language = self::$em
-            ->find('\Cx\Core\Locale\Model\Entity\Language', $iso1);
+        $language = $this->getLanguageMock($iso1);
         $locale = new \Cx\Core\Locale\Model\Entity\Locale();
         // Act
         $locale->setIso1($language);
@@ -92,6 +89,32 @@ class LocaleTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
         $locale->setLabel($label);
         // Arrange
         $this->assertEquals($label, $locale->__toString());
+    }
+
+    /**
+     * @param $iso1
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    protected function getLanguageMock($iso1) {
+        $mock = $this->getMock(
+            '\Cx\Core\Locale\Model\Entity\Language',
+            array('getIso1')
+        );
+        $mock->method('getIso1')->willReturn($iso1);
+        return $mock;
+    }
+
+    /**
+     * @param $alpha2
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    protected function getCountryMock($alpha2) {
+        $mock = $this->getMock(
+            '\Cx\Core\Country\Model\Entity\Country',
+            array('getAlpha2')
+        );
+        $mock->method('getAlpha2')->willReturn($alpha2);
+        return $mock;
     }
 
 }
