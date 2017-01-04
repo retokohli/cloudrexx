@@ -906,7 +906,46 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
     }
 
+    /**
+     * Parse entries in template block mediadirList of supplied template object $template.
+     * If $block is set, then the template block identifined by $block will be parsed
+     * instead of mediadirList.
+     * Using $filter the entries to be parsed can be filtered by form, category and/or level
+     * association.
+     * @param   \Cx\Core\Html\Sigma $template   Template object to be used for parsing
+     * @param   string  $block  The template block to be parsed. If not set, the template block mediadirList will be parsed.
+     * @param   array   $filter Filter the entries to be parsed by form, category and/or level association. Schema:
+     *                          array(
+     *                                  'form'     => <form-id>,
+     *                                  'category' => <category-id>,
+     *                                  'level'    => <level-id>
+     *                          )
+     */
+    public function parseEntries($template, $block = '', $filter = array()) {
+        $objEntry = new MediaDirectoryEntry($this->moduleName);
 
+        $formId = null;
+        $categoryId = null;
+        $levelId = null;
+
+        if (isset($filter['form'])) {
+            $formId = $filter['form'];
+        }
+        if (isset($filter['category'])) {
+            $categoryId = $filter['category'];
+        }
+        if (isset($filter['level'])) {
+            $levelId = $filter['level'];
+        }
+
+        if (empty($block)) {
+            $block = $this->moduleNameLC.'List';
+        }
+
+        $objEntry->getEntries(null, $levelId, $categoryId, null, null, null, true, null, $this->arrSettings['settingsPagingNumEntries'], null, null, $formId);
+        $objEntry->setStrBlockName($block);
+        $objEntry->listEntries($template, 2);
+    }
 
     function showPopular()
     {
