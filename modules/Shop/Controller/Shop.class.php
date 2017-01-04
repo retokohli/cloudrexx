@@ -1298,6 +1298,7 @@ die("Failed to update the Cart!");
         $arrDefaultImageSize = $arrSize = null;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $isFileAttrExistsInPdt = false;
+        $uploader = false;
         foreach ($arrProduct as $objProduct) {
             if (!empty($product_id)) {
                 self::$pageTitle = $objProduct->name();
@@ -1475,6 +1476,19 @@ die("Failed to update the Cart!");
             }
             if ($flagMultipart) {
                 $isFileAttrExistsInPdt = $flagMultipart;
+                if (!$uploader) {
+                    //initialize the uploader
+                    $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+                    $uploader->setCallback('productOptionsUploaderCallback');
+                    $uploader->setOptions(array(
+                        'id'                => 'productOptionsUploader',
+                        'data-upload-limit' => 1,
+                        'style'             => 'display:none'
+                    ));
+                }
+                self::$objTemplate->setVariable(array(
+                    'SHOP_PRODUCT_OPTIONS_UPLOADER_ID'   => $uploader->getId()
+                ));
             }
             $shopProductFormName = "shopProductForm$formId";
             $row = $formId % 2 + 1;
@@ -1655,17 +1669,8 @@ die("Failed to update the Cart!");
             ++$formId;
         }
         if ($isFileAttrExistsInPdt) {
-            //initialize the uploader
-            $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
-            $uploader->setCallback('productOptionsUploaderCallback');
-            $uploader->setOptions(array(
-                'id'                => 'productOptionsUploader',
-                'data-upload-limit' => 1,
-                'style'             => 'display:none'
-            ));
             self::$objTemplate->setVariable(array(
                 'SHOP_PRODUCT_OPTIONS_UPLOADER_CODE' => $uploader->getXHtml(),
-                'SHOP_PRODUCT_OPTIONS_UPLOADER_ID'   => $uploader->getId()
             ));
         }
         return true;
