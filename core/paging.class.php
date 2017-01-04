@@ -84,6 +84,8 @@ class Paging
     ) {
         global $_CONFIG, $_CORELANG;
 
+        $headIncludes = array();
+
         if (empty($results_per_page)) $results_per_page = intval($_CONFIG['corePagingLimit']);
         if ($numof_rows <= $results_per_page && !$showeverytime) return '';
         $parameter_name = self::getParametername($parameter_name);
@@ -119,9 +121,9 @@ class Paging
         // Set up the base navigation entries
         $array_paging = array(
             'first' => '<a class="pagingFirst" href="'.
-                Cx\Core\Routing\Url::encode_amp($firstUrl).'">',
+                Cx\Core\Routing\Url::encode_amp($firstUrl).'" rel="nofollow">',
             'last'  => '<a class="pagingLast" href="'.
-                Cx\Core\Routing\Url::encode_amp($lastUrl).'">',
+                Cx\Core\Routing\Url::encode_amp($lastUrl).'" rel="nofollow">',
             'total' => $numof_rows,
             'lower' => ($numof_rows ? $position + 1 : 0),
             'upper' => $numof_rows,
@@ -135,6 +137,11 @@ class Paging
             $previousUrl->setParam($parameter_name, ($position - $results_per_page));
             $array_paging['previous_link'] =
                 '<a href="'.Cx\Core\Routing\Url::encode_amp($previousUrl).'">';
+
+            $link = new \Cx\Core\Html\Model\Entity\HtmlElement('link');
+            $link->setAttribute('href', $previousUrl->toString());
+            $link->setAttribute('rel', 'prev');
+            $headIncludes[] = $link;
         }
         if (($numof_rows - $position) > $results_per_page) {
             $int_new_position = $position + $results_per_page;
@@ -142,7 +149,22 @@ class Paging
             $nextUrl->setParam($parameter_name, $int_new_position);
             $array_paging['next_link'] =
                 '<a href="'.Cx\Core\Routing\Url::encode_amp($nextUrl).'">';
+
+            $link = new \Cx\Core\Html\Model\Entity\HtmlElement('link');
+            $link->setAttribute('href', $nextUrl->toString());
+            $link->setAttribute('rel', 'next');
+            $headIncludes[] = $link;
         }
+
+        // TODO: This is a temporary solution for setting HEAD_INCLUDES.
+        //       The proper and correct way will by handled by the
+        //       upcoming implementation of the response object.
+        if ($headIncludes) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getTemplate()->setVariable(
+                'HEAD_INCLUDES', join("\n", $headIncludes)
+            );
+        }
+
         // Add single pages, indexed by page numbers [1 .. numof_pages]
         for ($i = 1; $i <= $numof_pages; ++$i) {
             if ($i == $page_number) {

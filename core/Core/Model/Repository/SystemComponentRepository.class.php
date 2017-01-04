@@ -250,6 +250,28 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
+     * Call hook script of all SystemComponents after they are loaded
+     */
+    public function callPostComponentLoadHooks() {
+        $this->callHooks(
+            'postComponentLoad',
+            array()
+        );
+    }
+
+    /**
+     * Call hook script of all SystemComponents after initalization
+     */
+    public function callPostInitHooks() {
+        $this->callHooks(
+            'postInit',
+            array(
+                $this->cx,
+            )
+        );
+    }
+
+    /**
      * Call hook script of all SystemComponents to register events
      */
     public function callRegisterEventsHooks() {
@@ -380,11 +402,36 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
 
     /**
      * Call hook script of all SystemComponents after finalization
+     * @param string $encode The cx endcode passed by reference
      */
-    public function callPostFinalizeHooks() {
+    public function callPostFinalizeHooks(&$endcode) {
         $this->callHooks(
             'postFinalize',
-            array()
+            array(
+                &$endcode,
+            )
         );
+    }
+
+    /**
+     * Loads the systemComponent using the doctrine entity manager for the existing SystemComponentController and adds it to the repository
+     * @param array $preLoadedComponents An array containing the preloaded components
+     */
+    public function setPreLoadedComponents($preLoadedComponents) {
+        foreach($preLoadedComponents as $componentName=>$preLoadedComponent) {
+            // get systemComponent by name
+            $systemComponent = parent::findOneBy(array('name' => $componentName));
+            // set systemComponent on existing systemComponentController
+            $preLoadedComponent->setSystemComponent($systemComponent);
+            // add yaml directory
+            $yamlDir = $this->cx->getClassLoader()->getFilePath($preLoadedComponent->getDirectory(false).'/Model/Yaml');
+            if (file_exists($yamlDir)) {
+                $this->cx->getDb()->addSchemaFileDirectories(array($yamlDir));
+            }
+            // store the systemComponent with its now loaded id as key to the array of loaded components
+            $this->loadedComponents[$preLoadedComponent->getId()] = $preLoadedComponent;
+            // Add JSON adapter
+            \Cx\Core\Json\JsonData::addAdapter($preLoadedComponent->getControllersAccessableByJson(), $preLoadedComponent->getNamespace() . '\\Controller');
+        }
     }
 }
