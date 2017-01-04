@@ -181,9 +181,9 @@ class Paging
         $paging =
             $paging_text.
             '&nbsp;<span class="pagingLower">'.$array_paging['lower'].
-            '</span>&nbsp;'.$_CORELANG['TXT_TO'].
+            '</span>&nbsp;'.$_CORELANG['TXT_PAGING_TO'].
             '&nbsp;<span class="pagingUpper">'.$array_paging['upper'].
-            '</span>&nbsp;'.$_CORELANG['TXT_FROM'].
+            '</span>&nbsp;'.$_CORELANG['TXT_PAGING_OUT_OF'].
             '&nbsp;<span class="pagingTotal">'.$array_paging['total'].
             '</span>';
         if ($numof_pages) $paging .=
