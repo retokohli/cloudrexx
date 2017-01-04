@@ -703,6 +703,15 @@ class CalendarEventManager extends CalendarLibrary
                 $this->moduleLangVar.'_REGISTRATIONS_SUBSCRIBER'=> $objEvent->numSubscriber,
             ));
 
+            // hide attachment template block in case no attachment is set
+            if ($objTpl->blockExists('calendarAttachment')) {
+                if (empty($objEvent->attach)) {
+                    $objTpl->hideBlock('calendarAttachment');
+                } else {
+                    $objTpl->parse('calendarAttachment');
+                }
+            }
+
             //show date and time by user settings
             if($objTpl->blockExists('calendarDateDetail')) {
 
@@ -1258,6 +1267,15 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_FREE_PLACES'    => $freeSeats,
                     $this->moduleLangVar.'_EVENT_ACCESS'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_ACCESS_'.$objEvent->access],
                 ));
+
+                // hide attachment template block in case no attachment is set
+                if ($objTpl->blockExists('calendarAttachment')) {
+                    if (empty($objEvent->attach)) {
+                        $objTpl->hideBlock('calendarAttachment');
+                    } else {
+                        $objTpl->parse('calendarAttachment');
+                    }
+                }
 
                 if ($objEvent->showDetailView) {
                     $objTpl->setVariable(array(
