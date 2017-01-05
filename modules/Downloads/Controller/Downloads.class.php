@@ -875,7 +875,7 @@ JS_CODE;
     }
 
 
-    private function parseCategories($objCategory, $arrCategoryBlocks, $categoryLimit = null, $variablePrefix = '', $rowBlock = null, $arrSubCategoryBlocks = null, $subCategoryLimit = null)
+    private function parseCategories($objCategory, $arrCategoryBlocks, $categoryLimit = null, $variablePrefix = '', $rowBlock = null, $arrSubCategoryBlocks = null, $subCategoryLimit = null, $subPrefix = '')
     {
         global $_ARRAYLANG;
 
@@ -899,9 +899,17 @@ JS_CODE;
 
                 // parse subcategories
                 if (isset($arrSubCategoryBlocks)) {
-                    $this->parseCategories($objSubcategory, array('downloads_overview_subcategory_list', 'downloads_overview_subcategory'), $subCategoryLimit, 'SUB');
+                    $this->parseCategories($objSubcategory, array(
+                        'downloads_overview_subcategory_list',
+                        'downloads_overview_subcategory'),
+                        $subCategoryLimit,
+                        'SUB',
+                        null,
+                        null,
+                        null,
+                        'OVERVIEW_');
                 }
-                $this->parseDownloads($objSubcategory, 'SUBCATEGORY_');
+                $this->parseDownloads($objSubcategory, $subPrefix . 'SUBCATEGORY_');
 
                 // parse category
                 $this->objTemplate->parse($arrCategoryBlocks[1]);
