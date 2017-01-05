@@ -19,22 +19,9 @@
                         </div>
                         <div class="content">
                             <!-- BEGIN downloads_overview_subcategory_list -->
-                            <ul class="subcategory_list">
-                                <!-- BEGIN downloads_overview_subcategory -->
-                                <li>
-                                    <a href="index.php?section=Downloads&amp;category={DOWNLOADS_SUBCATEGORY_ID}">{DOWNLOADS_SUBCATEGORY_NAME}</a>
-                                    <!-- BEGIN downloads_overview_subcategory_file_list -->
-                                    <ul class="subcategory_file_list">
-                                        <!-- BEGIN downloads_overview_subcategory_file -->
-                                        <li>
-                                            <a href="{DOWNLOADS_OVERVIEW_SUBCATEGORY_FILE_DETAIL_SRC}">{DOWNLOADS_OVERVIEW_SUBCATEGORY_FILE_NAME}</a>
-                                        </li>
-                                        <!-- END downloads_overview_subcategory_file -->
-                                    </ul>
-                                    <!-- END downloads_overview_subcategory_file_list -->
-                                </li>
-                                <!-- END downloads_overview_subcategory -->
-                            </ul>
+                            <!-- BEGIN downloads_overview_subcategory -->
+                            <a href="index.php?section=Downloads&amp;category={DOWNLOADS_SUBCATEGORY_ID}">{DOWNLOADS_SUBCATEGORY_NAME}</a>,
+                            <!-- END downloads_overview_subcategory -->
                             <!-- END downloads_overview_subcategory_list -->
                             <a href="index.php?section=Downloads&amp;category={DOWNLOADS_CATEGORY_ID}" class="more">{TXT_DOWNLOADS_MORE}...</a>
                         </div>
@@ -63,15 +50,6 @@
                 <div class="title">
                     <a href="index.php?section=Downloads&amp;category={DOWNLOADS_SUBCATEGORY_ID}"><img src="modules/Downloads/View/Media/folder_front.gif" alt="modules/Downloads/View/Media/folder_front.gif" style="position: relative; top: 4px;" />{DOWNLOADS_SUBCATEGORY_NAME}</a>
                 </div>
-                <!-- BEGIN downloads_subcategory_file_list -->
-                <ul class="subcategory_file_list">
-                    <!-- BEGIN downloads_subcategory_file -->
-                    <li>
-                        <a href="{DOWNLOADS_SUBCATEGORY_FILE_DETAIL_SRC}">{DOWNLOADS_SUBCATEGORY_FILE_NAME}</a>
-                    </li>
-                    <!-- END downloads_subcategory_file -->
-                </ul>
-                <!-- END downloads_subcategory_file_list -->
             </div>
             <!-- END downloads_subcategory -->
         </div>
@@ -199,9 +177,9 @@
             <!-- BEGIN downloads_simple_file_upload -->
             {UPLOADER_CODE}
             <script type="text/javascript">
-              function uploadFinishedCallbackJs(){
+                function uploadFinishedCallbackJs(){
                     window.location = '{DOWNLOADS_UPLOAD_REDIRECT_URL}';
-              }
+                }
             </script>
             <!-- END downloads_simple_file_upload -->
             <!-- BEGIN downloads_advanced_file_upload -->
