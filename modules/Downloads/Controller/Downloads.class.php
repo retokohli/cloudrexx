@@ -899,17 +899,24 @@ JS_CODE;
 
                 // parse subcategories
                 if (isset($arrSubCategoryBlocks)) {
-                    $this->parseCategories($objSubcategory, array(
-                        'downloads_overview_subcategory_list',
-                        'downloads_overview_subcategory'),
+                    $this->parseCategories(
+                        $objSubcategory,
+                        array(
+                            'downloads_overview_subcategory_list',
+                            'downloads_overview_subcategory'
+                        ),
                         $subCategoryLimit,
                         'SUB',
                         null,
                         null,
                         null,
-                        'OVERVIEW_');
+                        'OVERVIEW_'
+                    );
                 }
-                $this->parseDownloads($objSubcategory, $subPrefix . 'SUBCATEGORY_');
+                $this->parseDownloads(
+                    $objSubcategory,
+                    $subPrefix . 'SUBCATEGORY_'
+                );
 
                 // parse category
                 $this->objTemplate->parse($arrCategoryBlocks[1]);
