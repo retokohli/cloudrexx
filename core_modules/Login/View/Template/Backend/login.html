@@ -31,10 +31,18 @@
                 }
                 var isCaptchaOk = true;
                 {CAPTCHA_VALIDATION_CODE}
-                $J('#no_captcha_code').hide();
+                document.getElementById('no_captcha_code').style.display = 'none';
                 if (!isCaptchaOk) {
-                    $J('#no_captcha_code').show();
+                    if (form.coreCaptchaCode) {
+                        if (form.coreCaptchaCode.focus && form_submitted == true) {
+                            form.coreCaptchaCode.focus();
+                        }
+                        document.getElementById('coreCaptchaCode').className = 'error';
+                    }
+                    document.getElementById('no_captcha_code').style.display = 'block';
                     form_submitted = false;
+                } else if (form.coreCaptchaCode){
+                    document.getElementById('coreCaptchaCode').className = '';
                 }
 
                 if (!form_submitted) {
@@ -61,9 +69,9 @@
                 <input tabindex="2" type="password" name="hash" value="" id="password" />
                 <input type="hidden" name="PASSWORD" value="" />
             </div>
+            <div class="error" id="no_captcha_code" style="display: none;">{TXT_LOGIN_ENTER_CAPTCHA}</div>
             <!-- BEGIN captcha -->
             <div>
-                <div class="error" id="no_captcha_code" style="display: none;">{TXT_LOGIN_ENTER_CAPTCHA}</div>
                 {CAPTCHA_CODE}
             </div>
             <!-- END captcha -->

@@ -234,10 +234,12 @@ class ContrexxCaptcha implements CaptchaInterface {
     public function getJSValidationFn()
     {
         $captchaValidationCode = <<<JSCaptchaValidation
+        if (\$J('#captcha').length) {
             var code = \$J('#coreCaptchaCode').val();
             if (\$J.trim(code) === '') {
                 isCaptchaOk = false;
             }
+        }
 JSCaptchaValidation;
         return $captchaValidationCode;
     }

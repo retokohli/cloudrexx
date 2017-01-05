@@ -101,10 +101,12 @@ HTML;
     public function getJSValidationFn()
     {
         $captchaValidationCode = <<<JSCaptchaValidation
+        if (\$J('#captcha').length) {
             var response = grecaptcha.getResponse();
             if (response.length == 0) {
                 isCaptchaOk = false;
             }
+        }
 JSCaptchaValidation;
         return $captchaValidationCode;
     }
