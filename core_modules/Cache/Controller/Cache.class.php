@@ -196,20 +196,69 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         }
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        if (
-            // do not cache error page
-            ($page && $page->getModule() == 'Error') ||
-            // do not create cache files if caching is disabled
-            !$this->boolIsEnabled ||
-            // do not cache if a user is logged in
-            (
-                session_id() != '' &&
-                \FWUser::getFWUserObject()->objUser->login()
-            ) ||
-            $cx->getComponent('Uploader')->isActive()
-        ) {
-            return $this->internalEsiParsing($endcode);
-        }
+        
+        $exceptions = array(
+            // never cache errors
+            'Error', 
+
+            // never cache when caching is disabled
+            function($cx, $page) {
+                return !$this->boolIsEnabled;
+            },
+
+            // all the following exceptions are TEMPORARY and only necessary
+            // due to non-proper implementation of caching mechanisms
+            
+            // do not cache if a user is logged in (since we can't handle user based ESI caches yet)
+            function ($cx, $page) {
+                return session_id() != '' &&
+                    \FWUser::getFWUserObject()->objUser->login();
+            },
+
+            // do not cache if uploader is in use (since its ID will get cached otherwise)
+            function ($cx, $page) {
+                return $cx->getComponent('Uploader')->isActive();
+            },
+
+            // here come the modules:
+            'Agb',
+            'Block',
+            'Cache',
+            'Calendar' => array(
+                'my_events',
+                'add',
+                'edit',
+                'register',
+                'sign',
+                'success',
+            ),
+            'Contact',
+            'Home',
+            'Ids',
+            'Imprint',
+            'Login',
+            'MediaDir' => array(
+                'latest',
+                'popular',
+                'myentries',
+                'adduser',
+                'confirm_in_progress',
+                'add',
+                'edit',
+            ),
+            'News' => array(
+                'submit',
+            ),
+            'Newsletter' => array(
+                function($page) {
+                    return $page->getCmd() == 'profile' && $_SERVER['REQUEST_METHOD'] != 'POST';
+                },
+            ),
+            'Privacy',
+            'Recommend',
+            'Search',
+            'Sitemap',
+        );
 
         if ($this->isException($page, $cx)) {
             return $this->internalEsiParsing($endcode);
