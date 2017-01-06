@@ -121,9 +121,9 @@ class Paging
         // Set up the base navigation entries
         $array_paging = array(
             'first' => '<a class="pagingFirst" href="'.
-                Cx\Core\Routing\Url::encode_amp($firstUrl).'" rel="nofollow">',
+                Cx\Core\Routing\Url::encode_amp($firstUrl->toString()).'" rel="nofollow">',
             'last'  => '<a class="pagingLast" href="'.
-                Cx\Core\Routing\Url::encode_amp($lastUrl).'" rel="nofollow">',
+                Cx\Core\Routing\Url::encode_amp($lastUrl->toString()).'" rel="nofollow">',
             'total' => $numof_rows,
             'lower' => ($numof_rows ? $position + 1 : 0),
             'upper' => $numof_rows,
@@ -175,15 +175,15 @@ class Paging
                 $pageUrl->setParam($parameter_name, (($i-1) * $results_per_page));
                 $array_paging[$i] =
                     '<a class="pagingPage'.$i.'" href="'.
-                    Cx\Core\Routing\Url::encode_amp($pageUrl).'">'.$i.'</a>';
+                    Cx\Core\Routing\Url::encode_amp($pageUrl->toString()).'">'.$i.'</a>';
             }
         }
         $paging =
             $paging_text.
             '&nbsp;<span class="pagingLower">'.$array_paging['lower'].
-            '</span>&nbsp;'.$_CORELANG['TXT_TO'].
+            '</span>&nbsp;'.$_CORELANG['TXT_PAGING_TO'].
             '&nbsp;<span class="pagingUpper">'.$array_paging['upper'].
-            '</span>&nbsp;'.$_CORELANG['TXT_FROM'].
+            '</span>&nbsp;'.$_CORELANG['TXT_PAGING_OUT_OF'].
             '&nbsp;<span class="pagingTotal">'.$array_paging['total'].
             '</span>';
         if ($numof_pages) $paging .=

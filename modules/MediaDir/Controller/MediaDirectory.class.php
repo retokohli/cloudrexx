@@ -329,7 +329,9 @@ class MediaDirectory extends MediaDirectoryLibrary
         if ($showLevelDetails) {
             $objLevel->listLevels($this->_objTpl, 5, $intLevelId);
             $showEntriesOfLevel = $objLevel->arrLevels[$intLevelId]['levelShowEntries'];
+        }
 
+        if ($objLevel) {
             // only set page's title to level's name
             // if not in legacy mode
             if (!$this->arrSettings['legacyBehavior']) {
@@ -342,7 +344,9 @@ class MediaDirectory extends MediaDirectoryLibrary
         if ($showCategoryDetails) {
             $objCategory->listCategories($this->_objTpl, 5, $intCategoryId);
             $showEntriesOfCategory = $objCategory->arrCategories[$intCategoryId]['catShowEntries'];
+        }
 
+        if ($objCategory) {
             // only set page's title to category's name
             // if not in legacy mode
             if (!$this->arrSettings['legacyBehavior']) {
