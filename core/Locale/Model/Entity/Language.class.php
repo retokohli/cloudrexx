@@ -240,11 +240,10 @@ class Language extends \Cx\Model\Base\EntityBase {
      */
     public function __toString()
     {
-        $objInit = \Env::get('init');
-        if ($objInit->mode == 'backend') {
-            $inLocale = \FWLanguage::getBackendLanguageCodeById($objInit->getBackendLangId());
+        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+            $inLocale = \FWLanguage::getBackendLanguageCodeById(LANG_ID);
         } else {
-            $inLocale = \FWLanguage::getLanguageCodeById($objInit->getFrontendLangId());
+            $inLocale = \FWLanguage::getLanguageCodeById(LANG_ID);
         }
         return \Locale::getDisplayLanguage($this->iso1, $inLocale) . ' (' . $this->iso1 . ')';
     }
