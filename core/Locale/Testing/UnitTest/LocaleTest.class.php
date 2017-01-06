@@ -47,7 +47,7 @@ namespace Cx\Core\Locale\Testing\UnitTest;
 class LocaleTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
 
     /**
-     * @covers \Cx\Core\Locale\Model\Entity\Locale::getShortForm
+     * Tests short form generation for locales with language and country
      */
     public function testShortFormLangAndCountry() {
         // Arrange
@@ -65,7 +65,7 @@ class LocaleTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     }
 
     /**
-     * @covers \Cx\Core\Locale\Model\Entity\Locale::getShortForm
+     * Tests short form generation for locales without country
      */
     public function testShortFormLangOnly() {
         // Arrange
@@ -79,7 +79,7 @@ class LocaleTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     }
 
     /**
-     * @covers \Cx\Core\Locale\Model\Entity\Locale::__toString
+     * Tests if magic method __toString returns the locale's label
      */
     public function testToString() {
         // Arrange
