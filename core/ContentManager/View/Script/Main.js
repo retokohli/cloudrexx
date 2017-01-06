@@ -965,7 +965,6 @@ cx.cm = function(target) {
                 "page_metatitle",
                 "page_metadesc",
                 "page_metakeys",
-                "page_metaimage",
                 "page_slug"
             ];
             cx.jQuery.each(fields, function(index, el) {
