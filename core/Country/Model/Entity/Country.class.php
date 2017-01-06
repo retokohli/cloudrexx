@@ -168,7 +168,11 @@ class Country extends \Cx\Model\Base\EntityBase {
     public function __toString()
     {
         $objInit = \Env::get('init');
-        $inLocale = \FWLanguage::getLanguageCodeById(LANG_ID);
+        if ($objInit->mode == 'backend') {
+            $inLocale = \FWLanguage::getBackendLanguageCodeById(LANG_ID);
+        } else {
+            $inLocale = \FWLanguage::getLanguageCodeById(LANG_ID);
+        }
         return \Locale::getDisplayRegion('und_' . $this->alpha2, $inLocale) . ' (' . $this->alpha2 . ')';
     }
 }
