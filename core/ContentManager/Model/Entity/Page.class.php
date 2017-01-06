@@ -1244,10 +1244,6 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         }
         // Alias slugs must not be equal to an existing file or folder
         if ($this->getType() == self::TYPE_ALIAS) {
-            // check if alias matches language tag regex (de-DE, en-US, i-hak, etc.)
-            if (preg_match('/^[a-z]{1,2}(?:-[A-Za-z]{2,4})?$/', $this->getSlug())) {
-                $this->setSlug($this->getSlug() . '-1', true);
-            }
             $invalidAliasNames = array(
                 'admin',
                 'cache',
@@ -1273,7 +1269,11 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             foreach (\FWLanguage::getActiveFrontendLanguages() as $id=>$lang) {
                 $invalidAliasNames[] = $lang['lang'];
             }
-            if (in_array($this->getSlug(), $invalidAliasNames)) {
+            if (
+                in_array($this->getSlug(), $invalidAliasNames) ||
+                // check if alias matches language tag regex (de, en-US, i-hak, etc.)
+                preg_match('/^[a-z]{1,2}(?:-[A-Za-z]{2,4})?$/', $this->getSlug())
+            ) {
                 $lang = \Env::get('lang');
                 throw new PageException('Cannot use name of existing files, folders or languages as alias.', $lang['TXT_CORE_CANNOT_USE_AS_ALIAS']);
             }
