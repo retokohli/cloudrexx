@@ -40,7 +40,7 @@ function updateCurrent(init) {
 function copyPages(toLangId) {
     performLanguageAction("copy", toLangId, function(json) {
         cx.ui.dialog({
-            content: cx.variables.get("copySuccess", "locale/locale"),
+            content: cx.variables.get("copySuccess", "Locale/Locale"),
             modal: true,
             autoOpen: true
         });
@@ -50,7 +50,7 @@ function copyPages(toLangId) {
 function linkPages(toLangId) {
     performLanguageAction("link", toLangId, function(json) {
         cx.ui.dialog({
-            content: cx.variables.get("linkSuccess", "locale/locale"),
+            content: cx.variables.get("linkSuccess", "Locale/Locale"),
             modal: true,
             autoOpen: true
         });
@@ -71,8 +71,8 @@ function performLanguageAction(actionName, toLangId, action) {
     var toLangName = toLangRow.children(".localeLabel").text();
     showActionDialog(actionName, fromLangName, toLangName, function() {
         var waitDialog = cx.ui.dialog({
-            title: cx.variables.get("waitTitle", "locale/locale"),
-            content: cx.variables.get("waitText", "locale/locale"),
+            title: cx.variables.get("waitTitle", "Locale/Locale"),
+            content: cx.variables.get("waitText", "Locale/Locale"),
             modal: true,
             autoOpen: true,
             open: function(event, ui) {
@@ -106,7 +106,7 @@ function performLanguageAction(actionName, toLangId, action) {
                         }
                         offset = json.data.offset;
                         count = json.data.count;
-                        var newText = cx.variables.get("waitText", "locale/locale") + "\n\n" + offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)";
+                        var newText = cx.variables.get("waitText", "Locale/Locale") + "\n\n" + offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)";
                         //console.log(offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)");
                         waitDialog.getElement().html(newText);
                     }
@@ -115,7 +115,7 @@ function performLanguageAction(actionName, toLangId, action) {
         }
         waitDialog.close();
         action();
-    }, cx.variables.get("warningText", "locale/locale").replace("%1", fromLangName).replace("%2", toLangName));
+    }, cx.variables.get("warningText", "Locale/Locale").replace("%1", fromLangName).replace("%2", toLangName));
 }
 
 /**
@@ -127,8 +127,8 @@ function performLanguageAction(actionName, toLangId, action) {
  * @return cx.ui.dialog Cx Ui Dialog object
  */
 function showActionDialog(action, fromLang, toLang, yesAction, checkboxText) {
-    var yesOption = cx.variables.get("yesOption", "locale/locale");
-    var noOption = cx.variables.get("noOption", "locale/locale");
+    var yesOption = cx.variables.get("yesOption", "Locale/Locale");
+    var noOption = cx.variables.get("noOption", "Locale/Locale");
     var buttons = new Object();
     buttons[yesOption] = function() {
         cx.jQuery(this).dialog("close");
@@ -140,7 +140,7 @@ function showActionDialog(action, fromLang, toLang, yesAction, checkboxText) {
         yesAction();
     };
     buttons[noOption] = function() {cx.jQuery(this).dialog("close");}
-    var content = "<p>" + cx.variables.get(action + "Text", "locale/locale");
+    var content = "<p>" + cx.variables.get(action + "Text", "Locale/Locale");
     if (action == 'link') {
         content = content.replace("%1", toLang).replace("%2", fromLang);
     } else {
@@ -151,7 +151,7 @@ function showActionDialog(action, fromLang, toLang, yesAction, checkboxText) {
     }
     content += "</p>";
     var dialog = cx.ui.dialog({
-        title: cx.variables.get(action + "Title", "locale/locale"),
+        title: cx.variables.get(action + "Title", "Locale/Locale"),
         content: content,
         buttons: buttons,
         modal: true,

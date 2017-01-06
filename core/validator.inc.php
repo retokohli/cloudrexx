@@ -344,16 +344,27 @@ function contrexx_raw2encodedUrl($source, $encodeDash=false)
         return $arr;
     }
     $cutHttp = false;
+    $https = false;
     if (!$encodeDash && substr($source, 0, 7) == 'http://') {
         $source = substr($source, 7);
         $cutHttp = true;
+    } else if (!$encodeDash && substr($source, 0, 8) == 'https://') {
+        $source = substr($source, 8);
+        $cutHttp = true;
+        $https = true;
     }
     $source = array_map('rawurlencode', explode('/', $source));
     if ($encodeDash) {
         $source = str_replace('-', '%2D', $source);
     }
     $result = implode('/', $source);
-    if ($cutHttp) $result = 'http://'.$result;
+    if ($cutHttp) {
+        $protocol = 'http';
+        if ($https) {
+            $protocol .= 's';
+        }
+        $result = $protocol . '://' . $result;
+    }
     return $result;
 }
 
