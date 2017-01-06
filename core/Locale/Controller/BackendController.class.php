@@ -492,17 +492,18 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             \Cx\Core\Setting\Controller\Setting::update('defaultLocaleId');
         }
         // update fallbacks
-        if (isset($post['fallback'])) {
-            $em = $this->cx->getDb()->getEntityManager();
-            $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
-            foreach ($post['fallback'] as $localeId => $fallbackId) {
-                $locale = $localeRepo->find($localeId);
-                $fallback = $localeRepo->find($fallbackId);
-                $locale->setFallback($fallback);
-                $em->persist($locale);
-            }
-            $em->flush();
+        if (!isset($post['fallback'])) {
+            return;
         }
+        $em = $this->cx->getDb()->getEntityManager();
+        $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
+        foreach ($post['fallback'] as $localeId => $fallbackId) {
+            $locale = $localeRepo->find($localeId);
+            $fallback = $localeRepo->find($fallbackId);
+            $locale->setFallback($fallback);
+            $em->persist($locale);
+        }
+        $em->flush();
     }
 
     /**
