@@ -1306,7 +1306,7 @@ if (!$limit) {
                 )),
             );
         }
-        $arrItems = $objOrder->getItems();
+        $arrItems = $objOrder->getItems(false);
         if (!$arrItems) {
             \Message::warning($_ARRAYLANG['TXT_SHOP_ORDER_WARNING_NO_ITEM']);
         }
