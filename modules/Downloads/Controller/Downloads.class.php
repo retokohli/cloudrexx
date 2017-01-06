@@ -1124,7 +1124,7 @@ JS_CODE;
                 'TXT_DOWNLOADS_' . $variablePrefix .'DOWNLOADS'   => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']
             ));
 
-            $this->objTemplate->parse('downloads_' . strtoupper(strtolower) . 'file_list');
+            $this->objTemplate->parse('downloads_' . strtoupper($variablePrefix) . 'file_list');
         }
     }
 
