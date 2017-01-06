@@ -101,20 +101,20 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 } else { //do not parse blocks and js in edit view
                     // set js variables
                     $cxjs = \ContrexxJavascript::getInstance();
-                    $cxjs->setVariable('copyTitle', $_ARRAYLANG['TXT_CORE_LOCALE_COPY_TITLE'], 'locale/locale');
-                    $cxjs->setVariable('copyText', $_ARRAYLANG['TXT_CORE_LOCALE_COPY_TEXT'], 'locale/locale');
-                    $cxjs->setVariable('copySuccess', $_ARRAYLANG['TXT_CORE_LOCALE_COPY_SUCCESS'], 'locale/locale');
-                    $cxjs->setVariable('linkTitle', $_ARRAYLANG['TXT_CORE_LOCALE_LINK_TITLE'], 'locale/locale');
-                    $cxjs->setVariable('linkText', $_ARRAYLANG['TXT_CORE_LOCALE_LINK_TEXT'], 'locale/locale');
-                    $cxjs->setVariable('linkSuccess', $_ARRAYLANG['TXT_CORE_LOCALE_LINK_SUCCESS'], 'locale/locale');
-                    $cxjs->setVariable('warningTitle', $_ARRAYLANG['TXT_CORE_LOCALE_WARNING_TITLE'], 'locale/locale');
-                    $cxjs->setVariable('warningText', $_ARRAYLANG['TXT_CORE_LOCALE_WARNING_TEXT'], 'locale/locale');
-                    $cxjs->setVariable('waitTitle', $_ARRAYLANG['TXT_CORE_LOCALE_WAIT_TITLE'], 'locale/locale');
-                    $cxjs->setVariable('waitText', $_ARRAYLANG['TXT_CORE_LOCALE_WAIT_TEXT'], 'locale/locale');
-                    $cxjs->setVariable('yesOption', $_ARRAYLANG['TXT_YES'], 'locale/locale');
-                    $cxjs->setVariable('noOption', $_ARRAYLANG['TXT_NO'], 'locale/locale');
-                    $cxjs->setVariable('langRemovalLabel', $_ARRAYLANG['TXT_CORE_LOCALE_LABEL_LANG_REMOVAL'], 'locale/locale');
-                    $cxjs->setVariable('langRemovalContent', $_ARRAYLANG['TXT_CORE_LOCALE_LANG_REMOVAL_CONTENT'], 'locale/locale');
+                    $cxjs->setVariable('copyTitle', $_ARRAYLANG['TXT_CORE_LOCALE_COPY_TITLE'], 'Locale/Locale');
+                    $cxjs->setVariable('copyText', $_ARRAYLANG['TXT_CORE_LOCALE_COPY_TEXT'], 'Locale/Locale');
+                    $cxjs->setVariable('copySuccess', $_ARRAYLANG['TXT_CORE_LOCALE_COPY_SUCCESS'], 'Locale/Locale');
+                    $cxjs->setVariable('linkTitle', $_ARRAYLANG['TXT_CORE_LOCALE_LINK_TITLE'], 'Locale/Locale');
+                    $cxjs->setVariable('linkText', $_ARRAYLANG['TXT_CORE_LOCALE_LINK_TEXT'], 'Locale/Locale');
+                    $cxjs->setVariable('linkSuccess', $_ARRAYLANG['TXT_CORE_LOCALE_LINK_SUCCESS'], 'Locale/Locale');
+                    $cxjs->setVariable('warningTitle', $_ARRAYLANG['TXT_CORE_LOCALE_WARNING_TITLE'], 'Locale/Locale');
+                    $cxjs->setVariable('warningText', $_ARRAYLANG['TXT_CORE_LOCALE_WARNING_TEXT'], 'Locale/Locale');
+                    $cxjs->setVariable('waitTitle', $_ARRAYLANG['TXT_CORE_LOCALE_WAIT_TITLE'], 'Locale/Locale');
+                    $cxjs->setVariable('waitText', $_ARRAYLANG['TXT_CORE_LOCALE_WAIT_TEXT'], 'Locale/Locale');
+                    $cxjs->setVariable('yesOption', $_ARRAYLANG['TXT_YES'], 'Locale/Locale');
+                    $cxjs->setVariable('noOption', $_ARRAYLANG['TXT_NO'], 'Locale/Locale');
+                    $cxjs->setVariable('langRemovalLabel', $_ARRAYLANG['TXT_CORE_LOCALE_LABEL_LANG_REMOVAL'], 'Locale/Locale');
+                    $cxjs->setVariable('langRemovalContent', $_ARRAYLANG['TXT_CORE_LOCALE_LANG_REMOVAL_CONTENT'], 'Locale/Locale');
                     // register locale js
                     \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Locale.js', 1));
                     // parse form around entity view
