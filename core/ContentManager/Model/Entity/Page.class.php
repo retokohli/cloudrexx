@@ -1271,7 +1271,10 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             }
             if (in_array($this->getSlug(), $invalidAliasNames)) {
                 $lang = \Env::get('lang');
-                throw new PageException('Cannot use name of existing files, folders or languages as alias.', $lang['TXT_CORE_CANNOT_USE_AS_ALIAS']);
+                $error = array(
+                    'slug' => array($lang['TXT_CORE_CANNOT_USE_AS_ALIAS'])
+                );
+                throw new \Cx\Model\Base\ValidationException($error);
             }
         }
         //workaround, this method is regenerated each time
