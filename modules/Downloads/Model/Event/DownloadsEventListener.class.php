@@ -90,7 +90,7 @@ class DownloadsEventListener extends DefaultEventListener
                 continue;
             }
 
-            $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
+            $db = $this->cx->getDb()->getAdoDb();
             // Update the download locales
             if ($langStatus) {
                 $downloadQuery = 'INSERT IGNORE INTO `' . DBPREFIX . 'module_downloads_download_locale`

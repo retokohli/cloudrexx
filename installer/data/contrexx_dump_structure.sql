@@ -237,7 +237,7 @@ CREATE TABLE `contrexx_content_page` (
   CONSTRAINT `contrexx_content_page_ibfk_3` FOREIGN KEY (`node_id`) REFERENCES `contrexx_content_node` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_core_country_country` (
-  `alpha2` char(2) NOT NULL DEFAULT '',
+  `alpha2` char(2) NOT NULL COLLATE utf8_unicode_ci,
   `alpha3` char(3) NOT NULL DEFAULT '',
   `ord` int(5) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`alpha2`),

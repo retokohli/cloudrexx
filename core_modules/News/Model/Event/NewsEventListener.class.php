@@ -149,7 +149,7 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 continue;
             }
 
-            $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
+            $db = $this->cx->getDb()->getAdoDb();
             //Update the news locale
             if ($langStatus) {
                 $newsQuery = 'INSERT IGNORE INTO `' . DBPREFIX . 'module_news_locale`

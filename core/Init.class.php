@@ -294,21 +294,39 @@ class InitCMS
      * Returns the language ID best matching the client's request
      *
      * If no match can be found, returns the default frontend language.
+     *
+     * @return int The language ID
      */
     function _selectBestLanguage()
     {
         global $_CONFIG;
 
-        if (   isset($_CONFIG['languageDetection'])
-            && $_CONFIG['languageDetection'] == 'on') {
-            $arrAcceptedLanguages = $this->_getClientAcceptedLanguages();
-        foreach (array_keys($arrAcceptedLanguages) as $language) {
-            if (in_array($language, array_keys($this->arrLangNames))) {
-                return $this->arrLangNames[$language];
-            } elseif (in_array($strippedLanguage = substr($language, 0, strpos($language, '-')), array_keys($this->arrLangNames))) {
-                return $this->arrLangNames[$strippedLanguage];
+        if (
+            isset($_CONFIG['languageDetection']) &&
+            $_CONFIG['languageDetection'] == 'on'
+        ) {
+            // check if best client accepted language exists
+            if (
+                isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) &&
+                $bestAvailableLocale = \Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']) &&
+                $langId = \FWLanguage::getLanguageIdByCode($bestAvailableLocale)
+            ) {
+                return $langId;
             }
-        }
+            // check if any of the client accepted languages exist
+            $arrAcceptedLanguages = $this->_getClientAcceptedLanguages();
+            foreach (array_keys($arrAcceptedLanguages) as $language) {
+                if ($langId = \FWLanguage::getLanguageIdByCode($language)) {
+                    return $langId;
+                } elseif (
+                    $langId = \FWLanguage::getLanguageIdByCode(
+                        // stripped lang: e.g 'en-US' becomes 'en'
+                        substr($language, 0, strpos($language, '-'))
+                    )
+                ) {
+                    return $langId;
+                }
+            }
         }
         return $this->defaultFrontendLangId;
     }

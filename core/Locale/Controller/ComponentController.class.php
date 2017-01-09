@@ -57,7 +57,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return array List of Controller class names (without namespace)
      */
     public function getControllerClasses() {
-        return array('Backend');
+        return array('Backend','JsonLocale');
     }
 
     /**
@@ -72,4 +72,19 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objInit = new \InitCMS($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND ? 'frontend' : 'backend', \Env::get('em'));
         \Env::set('init', $objInit);
     }
+
+    /**
+     * Returns a list of JsonAdapter class names
+     *
+     * The array values might be a class name without namespace. In that case
+     * the namespace \Cx\{component_type}\{component_name}\Controller is used.
+     * If the array value starts with a backslash, no namespace is added.
+     *
+     * Avoid calculation of anything, just return an array!
+     * @return array List of ComponentController classes
+     */
+    public function getControllersAccessableByJson() {
+        return array('JsonLocaleController');
+    }
+
 }

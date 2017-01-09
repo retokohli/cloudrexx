@@ -1266,10 +1266,11 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
                 'webcam',
                 'favicon.ico',
             );
-            foreach (\FWLanguage::getActiveFrontendLanguages() as $id=>$lang) {
-                $invalidAliasNames[] = $lang['lang'];
-            }
-            if (in_array($this->getSlug(), $invalidAliasNames)) {
+            if (
+                in_array($this->getSlug(), $invalidAliasNames) ||
+                // check if alias matches language tag regex (de, en-US, i-hak, etc.)
+                preg_match('/^[a-z]{1,2}(?:-[A-Za-z]{2,4})?$/', $this->getSlug())
+            ) {
                 $lang = \Env::get('lang');
                 $error = array(
                     'slug' => array($lang['TXT_CORE_CANNOT_USE_AS_ALIAS'])

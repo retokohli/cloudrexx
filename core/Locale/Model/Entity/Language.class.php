@@ -234,10 +234,17 @@ class Language extends \Cx\Model\Base\EntityBase {
      * Returns the language and the iso1 code
      * using the php \Locale class
      *
+     * The language is translated in the front/backend language
+     *
      * @return string for example "German (de)"
      */
     public function __toString()
     {
-        return \Locale::getDisplayLanguage($this->iso1) . ' (' . $this->iso1 . ')';
+        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+            $inLocale = \FWLanguage::getBackendLanguageCodeById(LANG_ID);
+        } else {
+            $inLocale = \FWLanguage::getLanguageCodeById(LANG_ID);
+        }
+        return \Locale::getDisplayLanguage($this->iso1, $inLocale) . ' (' . $this->iso1 . ')';
     }
 }

@@ -637,12 +637,12 @@ class ViewGenerator {
         } else {
             $entityClassWithNS = get_class($this->object);
         }
+        $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
         if ($entityClassWithNS != 'array') {
             $entityObject = \Env::get('em')->getClassMetadata($entityClassWithNS);
             $primaryKeyNames = $entityObject->getIdentifierFieldNames(); // get the name of primary key in database table
             if ($entityId == 0 && !empty($this->options['functions']['add'])) { // load add entry form
                 $this->setProperCancelUrl('add');
-                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
                 $actionUrl->setParam('add', 1);
                 $title = sprintf($_CORELANG['TXT_CORE_ADD_ENTITY'], $entityTitle);
                 $entityColumnNames = $entityObject->getColumnNames(); // get all database field names
@@ -680,7 +680,6 @@ class ViewGenerator {
                 }
             } elseif ($entityId != 0 && $this->object->entryExists($entityId)) { // load edit entry form
                 $this->setProperCancelUrl('editid');
-                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
                 $actionUrl->setParam('editid', null);
                 $title = sprintf($_CORELANG['TXT_CORE_EDIT_ENTITY'], $entityTitle);
 

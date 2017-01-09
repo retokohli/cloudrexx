@@ -82,25 +82,50 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
         switch (current($cmd)) {
             case 'Backend':
+                if (!empty($_POST)) {
+                    $this->updateBackends($_POST);
+                }
                 // We don't want to parse the entity view
                 $this->parseBackendSettings($template);
                 return;
                 break;
             case 'Locale':
+                if (isset($_POST) && isset($_POST['updateLocales'])) {
+                    $this->updateLocales($_POST);
+                }
                 $isEdit = false;
                 parent::parsePage($template, $cmd, $isEdit);
+                \JS::activate('cx');
+                if ($isEdit) { //do not parse blocks and js in edit view
+                    \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/LocaleEdit.js', 1));
+                    break;
+                }
+                // set js variables
+                $cxjs = \ContrexxJavascript::getInstance();
+                $cxjs->setVariable('copyTitle', $_ARRAYLANG['TXT_CORE_LOCALE_COPY_TITLE'], 'Locale/Locale');
+                $cxjs->setVariable('copyText', $_ARRAYLANG['TXT_CORE_LOCALE_COPY_TEXT'], 'Locale/Locale');
+                $cxjs->setVariable('copySuccess', $_ARRAYLANG['TXT_CORE_LOCALE_COPY_SUCCESS'], 'Locale/Locale');
+                $cxjs->setVariable('linkTitle', $_ARRAYLANG['TXT_CORE_LOCALE_LINK_TITLE'], 'Locale/Locale');
+                $cxjs->setVariable('linkText', $_ARRAYLANG['TXT_CORE_LOCALE_LINK_TEXT'], 'Locale/Locale');
+                $cxjs->setVariable('linkSuccess', $_ARRAYLANG['TXT_CORE_LOCALE_LINK_SUCCESS'], 'Locale/Locale');
+                $cxjs->setVariable('warningTitle', $_ARRAYLANG['TXT_CORE_LOCALE_WARNING_TITLE'], 'Locale/Locale');
+                $cxjs->setVariable('warningText', $_ARRAYLANG['TXT_CORE_LOCALE_WARNING_TEXT'], 'Locale/Locale');
+                $cxjs->setVariable('waitTitle', $_ARRAYLANG['TXT_CORE_LOCALE_WAIT_TITLE'], 'Locale/Locale');
+                $cxjs->setVariable('waitText', $_ARRAYLANG['TXT_CORE_LOCALE_WAIT_TEXT'], 'Locale/Locale');
+                $cxjs->setVariable('yesOption', $_ARRAYLANG['TXT_YES'], 'Locale/Locale');
+                $cxjs->setVariable('noOption', $_ARRAYLANG['TXT_NO'], 'Locale/Locale');
+                $cxjs->setVariable('langRemovalLabel', $_ARRAYLANG['TXT_CORE_LOCALE_LABEL_LANG_REMOVAL'], 'Locale/Locale');
+                $cxjs->setVariable('langRemovalContent', $_ARRAYLANG['TXT_CORE_LOCALE_LANG_REMOVAL_CONTENT'], 'Locale/Locale');
                 // register locale js
                 \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Locale.js', 1));
-                if (!$isEdit) { //do not parse blocks in edit view
-                    // parse form around entity view
-                    if ($template->blockExists('form_tag_open') && $template->blockExists('form_tag_close')) {
-                        $template->touchBlock('form_tag_open');
-                        $template->touchBlock('form_tag_close');
-                    }
-                    // parse form actions
-                    if ($template->blockExists('form_actions')) {
-                        $template->touchBlock('form_actions');
-                    }
+                // parse form around entity view
+                if ($template->blockExists('form_tag_open') && $template->blockExists('form_tag_close')) {
+                    $template->touchBlock('form_tag_open');
+                    $template->touchBlock('form_tag_close');
+                }
+                // parse form actions
+                if ($template->blockExists('form_actions')) {
+                    $template->touchBlock('form_actions');
                 }
                 break;
             default:
@@ -152,7 +177,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
                             // build select for active languages
                             $select = new \Cx\Core\Html\Model\Entity\DataElement(
-                                'activeLanguages',
+                                'activeLanguages[]',
                                 '',
                                 \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
                             );
@@ -254,6 +279,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'label' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_LABEL'],
+                            'table' => array(
+                                'attributes' => array(
+                                    'class' => 'localeLabel',
+                                ),
+                            ),
                         ),
                         'country' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_COUNTRY'],
@@ -316,6 +346,27 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'sourceLanguage' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_SOURCE_LANGUAGE'],
+                            'formfield' => function($fieldname, $fieldtype, $fieldlength, $fieldvalue, $fieldoptions) {
+                                // build select for sourceLanguage
+                                $select = new \Cx\Core\Html\Model\Entity\DataElement(
+                                    $fieldname,
+                                    '',
+                                    \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+                                );
+                                $em = $this->cx->getDb()->getEntityManager();
+                                $criteria = array('source' => true);
+                                $sourceLangs = $em->getRepository('Cx\Core\Locale\Model\Entity\Language')->findBy($criteria);
+                                foreach ($sourceLangs as $lang) {
+                                    $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
+                                    $option->setAttribute('value', $lang->getIso1());
+                                    $option->addChild(new \Cx\Core\Html\Model\Entity\TextElement($lang));
+                                    if ($fieldvalue == $lang) {
+                                        $option->setAttribute('selected');
+                                    }
+                                    $select->addChild($option);
+                                }
+                                return $select;
+                            }
                         ),
                         'locales' => array(
                             'showOverview' => false,
@@ -330,6 +381,40 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'add' => true,
                         'edit' => true,
                         'delete' => true,
+                        'actions' => function($rowData) {
+                            global $_ARRAYLANG;
+                            // add copy link
+                            $copyLink = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
+                            $copyAttrs = array(
+                                'href' => 'javascript:copyPages(\'' . $rowData['id'] . '\')',
+                                'title' => $_ARRAYLANG['TXT_CORE_LOCALE_ACTION_COPY']
+                            );
+                            $copyLink->setAttributes($copyAttrs);
+                            // add image to link
+                            $copyImg = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
+                            $copyImgAttrs = array(
+                                'src' => '../core/Core/View/Media/icons/copy.gif',
+                                'alt' => $_ARRAYLANG['TXT_CORE_LOCALE_ACTION_COPY']
+                            );
+                            $copyImg->setAttributes($copyImgAttrs);
+                            $copyLink->addChild($copyImg);
+                            // add linking link
+                            $linkLink = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
+                            $linkAttrs = array(
+                                'href' => 'javascript:linkPages(\'' . $rowData['id'] . '\')',
+                                'title' => $_ARRAYLANG['TXT_CORE_LOCALE_ACTION_LINK']
+                            );
+                            $linkLink->setAttributes($linkAttrs);
+                            // add image to link
+                            $linkImg = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
+                            $linkImgAttrs = array(
+                                'src' => '../core/Core/View/Media/icons/linkcopy.gif',
+                                'alt' => $_ARRAYLANG['TXT_CORE_LOCALE_ACTION_LINK']
+                            );
+                            $linkImg->setAttributes($linkImgAttrs);
+                            $linkLink->addChild($linkImg);
+                            return $copyLink . $linkLink;
+                        },
                         'sorting' => true,
                         'paging' => true,
                         'filtering' => false,
@@ -345,9 +430,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'form' => array(
                             'id',
-                            'label',
                             'iso1',
                             'country',
+                            'label',
                             'fallback',
                         ),
                     ),
@@ -385,5 +470,108 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             return $parseObject;
         }
         return $entityClassName;
+    }
+
+    /**
+     * Updates the locales
+     *
+     * Changes the default locale (when neccessary)
+     * and updates the fallbacks
+     *
+     * @param array $post The post data
+     */
+    protected function updateLocales($post) {
+        // check if default locale has changed
+        if (
+            isset($post['langDefaultStatus']) &&
+            \Cx\Core\Setting\Controller\Setting::set(
+                'defaultLocaleId',
+                intval($post['langDefaultStatus'])
+            )
+        ) {
+            \Cx\Core\Setting\Controller\Setting::update('defaultLocaleId');
+        }
+        // update fallbacks
+        if (!isset($post['fallback'])) {
+            return;
+        }
+        $em = $this->cx->getDb()->getEntityManager();
+        $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
+        foreach ($post['fallback'] as $localeId => $fallbackId) {
+            $locale = $localeRepo->find($localeId);
+            $fallback = $localeRepo->find($fallbackId);
+            $locale->setFallback($fallback);
+            $em->persist($locale);
+        }
+        $em->flush();
+    }
+
+    /**
+     * Updates the backend languages
+     *
+     * Changes the default backend language (when neccessary)
+     * and adds or/and deletes backend languages
+     *
+     * @param $post The post data
+     * @todo: Add param with entity Language to em->clear after doctrine update
+     */
+    protected function updateBackends($post) {
+        global $_ARRAYLANG;
+
+        if (!isset($post['activeLanguages'])) {
+            return;
+        }
+        $em = $this->cx->getDb()->getEntityManager();
+        $backendRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Backend');
+        $langRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Language');
+        // add or/and delete backend languages
+        foreach ($post['activeLanguages'] as $activeLanguage) {
+            // check if backend entity already exists
+            if ($backendRepo->findOneBy(array('iso1' => $activeLanguage))) {
+                continue;
+            }
+            $language = $langRepo->find($activeLanguage);
+            $newBackend = new \Cx\Core\Locale\Model\Entity\Backend();
+            $newBackend->setIso1($language);
+            $em->persist($newBackend);
+            // set backend in language entity to show changes instantly
+            $language->setBackend($newBackend);
+        }
+        // check if a backend needs to be deleted
+        foreach ($backendRepo->findAll() as $backend) {
+            if (
+                in_array(
+                    $backend->getIso1()->getIso1(),
+                    $post['activeLanguages']
+                )
+            ) {
+                continue;
+            }
+            // delete backend language
+            if ($backend->getId() == $post['defaultLanguage']) {
+                \Message::add(
+                    sprintf(
+                        $_ARRAYLANG['TXT_CORE_LOCALE_CANNOT_DELETE_DEFAULT_BACKEND'],
+                        $backend
+                    )
+                );
+                continue;
+            }
+            $em->remove($backend);
+        }
+        $em->flush();
+        $em->clear();
+
+        // check if default language has changed and still exists
+        if (
+            isset($post['defaultLanguage']) &&
+            $backendRepo->find($post['defaultLanguage']) &&
+            \Cx\Core\Setting\Controller\Setting::set(
+                'defaultLanguageId',
+                intval($post['defaultLanguage'])
+            )
+        ) {
+            \Cx\Core\Setting\Controller\Setting::update('defaultLanguageId');
+        }
     }
 }
