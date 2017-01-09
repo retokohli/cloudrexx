@@ -101,12 +101,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             return;
         }
 
-// TODO: Reimplement - see #1205
-        /*if ($this->isException()) {
-            $this->boolIsEnabled = false;
-            return;
-        }*/
-
         if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_MINIMAL) {
             $this->boolIsEnabled = false;
             return;
@@ -202,20 +196,92 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         }
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        if (
-            // do not cache error page
-            ($page && $page->getModule() == 'Error') ||
-            // do not create cache files if caching is disabled
-            !$this->boolIsEnabled ||
-            // do not cache if a user is logged in
-            (
-                session_id() != '' &&
-                \FWUser::getFWUserObject()->objUser->login()
-            ) ||
-            $cx->getComponent('Uploader')->isActive()
-        ) {
+        
+        $exceptions = array(
+            // never cache errors
+            'Error', 
+
+            // never cache when caching is disabled
+            function($cx, $page) {
+                return !$this->boolIsEnabled;
+            },
+
+            // all the following exceptions are TEMPORARY and only necessary
+            // due to non-proper implementation of caching mechanisms
+            
+            // do not cache if a user is logged in (since we can't handle user based ESI caches yet)
+            function ($cx, $page) {
+                return session_id() != '' &&
+                    \FWUser::getFWUserObject()->objUser->login();
+            },
+
+            // do not cache if uploader is in use (since its ID will get cached otherwise)
+            function ($cx, $page) {
+                return $cx->getComponent('Uploader')->isActive();
+            },
+
+            // here come the modules:
+            'Access',
+            'Blog',
+            'Calendar' => array(
+                'my_events',
+                'add',
+                'edit',
+                'register',
+                'sign',
+                'success',
+            ),
+            'Checkout',
+            'Crm',
+            'Data',
+            'Directory',
+            'DocSys',
+            'Downloads',
+            'Ecard',
+            'Egov',
+            'Feed',
+            'FileSharing',
+            'Forum',
+            'Gallery',
+            'GuestBook',
+            'Jobs',
+            'Knowledge',
+            'Livecam',
+            'Market',
+            'Media',
+            'Media1',
+            'Media2',
+            'Media3',
+            'Media4',
+            'MediaDir' => array(
+                'latest',
+                'popular',
+                'myentries',
+                'adduser',
+                'confirm_in_progress',
+                'add',
+                'edit',
+            ),
+            'MemberDir',
+            'News' => array(
+                'submit',
+            ),
+            'Newsletter' => array(
+                function($page) {
+                    return $page->getCmd() == 'profile' && $_SERVER['REQUEST_METHOD'] != 'POST';
+                },
+            ),
+            'Podcast',
+            'Shop',
+            'Survey',
+            'U2u',
+            'Voting',
+        );
+
+        if ($this->isException($page, $cx)) {
             return $this->internalEsiParsing($endcode);
         }
+
         // write header cache file
         $resolver = \Env::get('Resolver');
         $headers = $resolver->getHeaders();
@@ -335,49 +401,72 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
     }
 
     /**
-     * Check the exception-list for this site
-     *
-     * @global     array        $_EXCEPTIONS
-     * @return     boolean        true: Site has been found in exception list
-     * @todo    Reimplement! Use for restricting caching-option in CM - see #1205
+     * This parses the list of exceptions (defined in endContrexxCaching()),
+     * which will not be cached. Each entry can be:
+     * - A component name, this will stop caching for the whole component
+     * - An array with the component name as key and a list of conditions as
+     *   value. In that case, the sub-conditions can either be a cmd of the
+     *   component or a callback (function($page) {}) which returns true
+     *   if the exception matches and false otherwise.
+     * - A callback (function($cx, $page) {}) which returns true if the
+     *   exception matches and false otherwise.
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $cx Current page
+     * @param \Cx\Core\Core\Controller\Cx Current Cx instance
+     * @return boolean True if current request matches an exception, false otherwise
      */
-    public function isException()
+    public function isException($page, $cx)
     {
-        global $_EXCEPTIONS;
-
-        if (is_array($_EXCEPTIONS)) {
-            foreach ($_EXCEPTIONS as $intKey => $arrInner) {
-                if (count($arrInner) == 1) {
-                    //filter a complete module
-                    if ($_REQUEST['section'] == $arrInner['section']) {
-                        return true;
-                    }
-                } else {
-                    //filter a specific part of a module
-                    $intArrLength = count($arrInner);
-                    $intHits = 0;
-
-                    foreach ($arrInner as $strKey => $strValue) {
-                        if ($strKey == 'section') {
-                            if ($_REQUEST['section'] == $strValue) {
-                                ++$intHits;
-                            }
-                        } else {
-                            if (isset($_REQUEST[$strKey]) && preg_match($strValue, $_REQUEST[$strKey])) {
-                                ++$intHits;
-                            }
-                        }
-                    }
-
-                    if ($intHits == $intArrLength) {
-                        //all fields have been found, don't cache
-                        return true;
+        foreach ($this->exceptions as $componentName=>$conditions) {
+            // find the correct component name
+            if (is_numeric($componentName)) {
+                if (is_callable($conditions) && $conditions($cx, $page)) {
+                    // callback exception matches: do not cache:
+                    return true;
+                }
+                if (!is_string($conditions)) {
+                    continue;
+                }
+                $componentName = $conditions;
+            }
+            // since we're looking for component exceptions, we only have to check
+            // if we have a component page:
+            if (
+                !$page ||
+                $page->getType() != \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION
+            ) {
+                continue;
+            }
+            // check if the component name matches
+            if ($page->getModule() != $componentName) {
+                continue;
+            }
+            // if we have sub-conditions, we need to check them as well:
+            if (is_array($conditions)) {
+                $match = false;
+                foreach ($conditions as $condition) {
+                    // sub-condition can be a CMD or a callback
+                    if (
+                        (
+                            is_callable($condition) && $condition($page)
+                        ) ||
+                        (
+                            $page->getCmd() == $condition
+                        )
+                    ) {
+                        // sub-condition matches: do not cache
+                        $match = true;
+                        break;
                     }
                 }
+                // no sub-condition has matched, jump to next exception
+                if (!$match) {
+                    continue;
+                }
             }
+            // exception has matched (including sub-conditions, if any): do not cache
+            return true;
         }
-
-        return false; //if we are coming to this line, no exception has been found
+        return false;
     }
 
     /**
