@@ -86,10 +86,12 @@ class LanguageTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
         $this->assertEquals($backend, $language->getBackend());
         $this->assertInstanceOf(
             '\Doctrine\Common\Collections\ArrayCollection',
-            $language->getLocaleRelatedBySourceLanguages());
+            $language->getLocaleRelatedBySourceLanguages()
+        );
         $this->assertInstanceOf(
             '\Doctrine\Common\Collections\ArrayCollection',
-            $language->getLocaleRelatedByIso1s());
+            $language->getLocaleRelatedByIso1s()
+        );
     }
 
 }

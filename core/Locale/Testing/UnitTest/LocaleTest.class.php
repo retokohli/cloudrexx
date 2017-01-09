@@ -114,6 +114,14 @@ class LocaleTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
         $this->assertEquals($country, $locale->getCountry());
         $this->assertEquals($fallback, $locale->getFallback());
         $this->assertEquals($language, $locale->getSourceLanguage());
+        $this->assertInstanceOf(
+            '\Doctrine\Common\Collections\ArrayCollection',
+            $locale->getLocales()
+        );
+        $this->assertInstanceOf(
+            '\Doctrine\Common\Collections\ArrayCollection',
+            $locale->getFrontends()
+        );
     }
 
     /**
