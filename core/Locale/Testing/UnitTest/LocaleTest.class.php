@@ -92,6 +92,31 @@ class LocaleTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     }
 
     /**
+     * Tests the setter and getter methods
+     */
+    public function testSetterAndGetter() {
+        // Arrange
+        $label = 'testLocale';
+        $language = $this->getLanguageMock('de');
+        $country = $this->getCountryMock('DE');
+        $fallback = new \Cx\Core\Locale\Model\Entity\Locale();
+        $locale = new \Cx\Core\Locale\Model\Entity\Locale();
+        // Act
+        $locale->setLabel($label);
+        $locale->setIso1($language);
+        $locale->setCountry($country);
+        $locale->setFallback($fallback);
+        $locale->setSourceLanguage($language);
+        // Assert
+        $this->assertNull($locale->getId());
+        $this->assertEquals($label, $locale->getLabel());
+        $this->assertEquals($language, $locale->getIso1());
+        $this->assertEquals($country, $locale->getCountry());
+        $this->assertEquals($fallback, $locale->getFallback());
+        $this->assertEquals($language, $locale->getSourceLanguage());
+    }
+
+    /**
      * @param $iso1
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
