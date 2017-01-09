@@ -65,4 +65,31 @@ class LanguageTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
         $this->assertEquals($expected, $language->__toString());
     }
 
+    /**
+     * Tests the setter and getter methods
+     */
+    public function testSetterAndGetter() {
+        // Arrange
+        $iso1 = 'de';
+        $iso3 = 'deu';
+        $backend = $this->getMock('\Cx\Core\Locale\Model\Entity\Backend');
+        $language = new \Cx\Core\Locale\Model\Entity\Language();
+        // Act
+        $language->setIso1($iso1);
+        $language->setIso3($iso3);
+        $language->setSource(true);
+        $language->setBackend($backend);
+        // Assert
+        $this->assertEquals($iso1, $language->getIso1());
+        $this->assertEquals($iso3, $language->getIso3());
+        $this->assertTrue($language->getSource());
+        $this->assertEquals($backend, $language->getBackend());
+        $this->assertInstanceOf(
+            '\Doctrine\Common\Collections\ArrayCollection',
+            $language->getLocaleRelatedBySourceLanguages());
+        $this->assertInstanceOf(
+            '\Doctrine\Common\Collections\ArrayCollection',
+            $language->getLocaleRelatedByIso1s());
+    }
+
 }
