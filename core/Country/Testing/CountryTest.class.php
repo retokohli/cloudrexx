@@ -61,8 +61,31 @@ class CountryTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
         define('LANG_ID', 1);
         // Act
         $country = self::$em->find('\Cx\Core\Country\Model\Entity\Country', $alpha2);
-        // Arrange
+        // Assert
         $this->assertEquals($expected, $country->__toString());
+    }
+
+    /**
+     * Tests the setter and getter methods
+     */
+    public function testSetterAndGetter() {
+        // Arrange
+        $alpha2 = 'DE';
+        $alpha3 = 'DEU';
+        $ord = 1;
+        $country = new \Cx\Core\Country\Model\Entity\Country();
+        // Act
+        $country->setAlpha2($alpha2);
+        $country->setAlpha3($alpha3);
+        $country->setOrd($ord);
+        // Assert
+        $this->assertEquals($alpha2, $country->getAlpha2());
+        $this->assertEquals($alpha3, $country->getAlpha3());
+        $this->assertEquals($ord, $country->getOrd());
+        $this->assertInstanceOf(
+            '\Doctrine\Common\Collections\ArrayCollection',
+            $country->getLocales()
+        );
     }
 
 }
