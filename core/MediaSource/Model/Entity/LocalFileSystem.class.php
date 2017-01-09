@@ -65,22 +65,24 @@ class LocalFileSystem extends EntityBase implements FileSystem
             return $this->fileListCache[$directory][$recursive][$readonly];
         }
 
+        $path = rtrim($this->rootPath . '/' . $directory,'/');
+        $regex = '/^((?!thumb(_[a-z]+)?).)*$/';
         if ($recursive) {
             $iteratorIterator = new \RegexIterator(
                 new \RecursiveIteratorIterator(
                     new \RecursiveDirectoryIterator(
-                        rtrim($this->rootPath . '/' . $directory,'/')
+                        $path
                     ),
                     \RecursiveIteratorIterator::SELF_FIRST
-                ), '/^((?!thumb(_[a-z]+)?).)*$/'
+                ), $regex
             );
         } else {
             $iteratorIterator = new \RegexIterator(
                 new \IteratorIterator(
                     new \DirectoryIterator(
-                        rtrim($this->rootPath . '/' . $directory,'/')
+                        $path
                     )
-                ), '/^((?!thumb(_[a-z]+)?).)*$/'
+                ), $regex
             );
         }
 
