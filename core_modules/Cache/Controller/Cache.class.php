@@ -398,14 +398,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      */
     public function isException($page, $cx)
     {
-        // since we're looking for component exceptions, we only have to check
-        // if we have a component page:
-        if (
-            !$page ||
-            $page->getType() != \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION
-        ) {
-            return false;
-        }
         foreach ($this->exceptions as $componentName=>$conditions) {
             // find the correct component name
             if (is_numeric($componentName)) {
@@ -417,6 +409,14 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                     continue;
                 }
                 $componentName = $conditions;
+            }
+            // since we're looking for component exceptions, we only have to check
+            // if we have a component page:
+            if (
+                !$page ||
+                $page->getType() != \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION
+            ) {
+                continue;
             }
             // check if the component name matches
             if ($page->getModule() != $componentName) {
