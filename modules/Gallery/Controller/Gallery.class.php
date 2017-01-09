@@ -703,9 +703,9 @@ class Gallery
 
             if (isset($strCategory2)) { // this is a subcategory
                 $strOutput .= ' / <a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$intParentId.'" title="'.$strCategory2.'" target="_self">'.$strCategory2.'</a>';
-                $strOutput .= ' / <a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$intCatId.'" title="'.$strCategory1.'" target="_self">'.$strCategory1.'</a>';
+                $strOutput .= ' / <a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$intCatId.'" title="'.$strCategory1.'" target="_self" rel="nofollow">'.$strCategory1.'</a>';
             } else {
-                $strOutput .= ' / <a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$intCatId.'" title="'.$strCategory1.'" target="_self">'.$strCategory1.'</a>';
+                $strOutput .= ' / <a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$intCatId.'" title="'.$strCategory1.'" target="_self" rel="nofollow">'.$strCategory1.'</a>';
             }
         }
         return $strOutput;

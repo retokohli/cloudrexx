@@ -1453,12 +1453,12 @@ table.adminlist td.nowrap {
 }
 
 .warningbox, #warningbox {
-    background: #FEF0D0;
-    color: #DA7A0A;
+    background: #fcf8e3;
+    color: #8a6d3b;
 }
 
 .warningbox a, #warningbox a {
-    color: #DB7A0A;
+    color: #8a6d3b;
 }
 
 .news,

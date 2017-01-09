@@ -505,7 +505,7 @@ class ViewGenerator {
     protected function getVgParam($param) {
         $inner = preg_replace('/^(?:{|%7B)(.*)(?:}|%7D)$/', '\1', $param);
         $parts = preg_split('/},{|%7D%2C%7B/', $inner);
-        $value = '';
+        $value = array();
         foreach ($parts as $part) {
             $part = preg_split('/,|%2C/', $part, 2);
             if ($part[0] != $this->viewId) {
@@ -513,12 +513,17 @@ class ViewGenerator {
             }
             $keyVal = preg_split('/=|%3D/', $part[1], 2);
             if (count($keyVal) == 1) {
-                $value = current($keyVal);
-            } else {
-                if (!is_array($value)) {
-                    $value = array();
+                if (empty(current($keyVal))) {
+                    continue;
                 }
-                $value += array($keyVal[0] => $keyVal[1]);
+                $value[] = current($keyVal);
+            } else {
+                $value[$keyVal[0]] = $keyVal[1];
+            }
+        }
+        if (count($value) == 1) {
+            if (key($value) === 0) {
+                return current($value);
             }
         }
         return $value;
@@ -574,9 +579,25 @@ class ViewGenerator {
                 $tpl->loadTemplateFile('NoEntries.html');
                 return $tpl->get().$addBtn;
             }
+
+            // replace foreign key search criteria
+            $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+            $searchCriteria = contrexx_input2raw($this->getVgParam($_GET['search']));
+            $entityClass = $this->findEntityClass($renderObject);
+            $metaData = $em->getClassMetadata($entityClass);
+            foreach ($metaData->associationMappings as $relationField => $associationMapping) {
+                if (!isset($searchCriteria[$relationField])) {
+                    continue;
+                }
+                $relationClass = $associationMapping['targetEntity'];
+                $relationRepo = $em->getRepository($relationClass);
+                $relationEntity = $relationRepo->find($searchCriteria[$relationField]);
+                $searchCriteria[$relationField] = $relationEntity;
+            }
+
             $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController(
                 $renderObject,
-                contrexx_input2raw($this->getVgParam($_GET['search'])),
+                $searchCriteria,
                 contrexx_input2raw($this->getVgParam($_GET['term'])),
                 $this->options['functions']
             );

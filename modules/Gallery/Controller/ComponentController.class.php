@@ -68,6 +68,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     \Env::get('cx')->getPage()->setTitle($topGalleryName);
                     \Env::get('cx')->getPage()->setContentTitle($topGalleryName);
                     \Env::get('cx')->getPage()->setMetaTitle($topGalleryName);
+                    \Env::get('cx')->getPage()->setMetadesc($topGalleryName);
                 }
 
                 break;
