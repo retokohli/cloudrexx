@@ -44,11 +44,13 @@ $_ARRAYLANG['TXT_CORE_LOCALE'] = 'Lokalisierung';
 $_ARRAYLANG['TXT_CORE_LOCALE_DESCRIPTION'] = 'Steuert die Sprachversionen anhand des Landes und/oder der effektiven Sprache.';
 
 // Module ACTs:
-$_ARRAYLANG['TXT_CORE_LOCALE_ACT_DEFAULT'] = 'Frontend';
-$_ARRAYLANG['TXT_CORE_LOCALE_ACT_LOCALE'] = 'Frontend';
-$_ARRAYLANG['TXT_CORE_LOCALE_ACT_BACKEND'] = 'Backend';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACT_DEFAULT'] = 'Website';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACT_LOCALE'] = 'Website';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACT_BACKEND'] = 'Administrationsoberfläche';
 
 // Module fields
+$_ARRAYLANG['TXT_CORE_LOCALE_LOCALE_NAME'] = 'Sprachversion';
+$_ARRAYLANG['TXT_CORE_LOCALE_BACKEND_NAME'] = 'Sprachen bearbeiten';
 $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID'] = 'ID';
 $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO1'] = 'Sprache';
 $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_LABEL'] = 'Label';
@@ -58,6 +60,10 @@ $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_DEFAULT'] = 'Standard';
 $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_SOURCE_LANGUAGE'] = 'Quellsprache';
 $_ARRAYLANG['TXT_CORE_LOCALE_ACTIVE_LANGUAGES'] = 'Aktive Sprachen';
 $_ARRAYLANG['TXT_CORE_LOCALE_DEFAULT_LANGUAGE'] = 'Standard Sprache';
+
+// Tooltips
+$_ARRAYLANG['TXT_CORE_LOCALE_FALLBACK_TOOLTIP'] = 'Nicht vorhandene Inhalte werden durch die Inhalte der Fallback-Sprache ersetzt.';
+$_ARRAYLANG['TXT_CORE_LOCALE_SOURCE_LANGUAGE_TOOLTIP'] = 'Gibt an welche Sprachdateien verwendet werden.';
 
 $_ARRAYLANG['TXT_CORE_LOCALE_BACKEND_SELECT_ACTIVE_LANGUAGES'] = 'Aktive Sprachen auswählen...';
 $_ARRAYLANG['TXT_CORE_LOCALE_CANNOT_DELETE_DEFAULT_BACKEND'] = 'Die Sprache %s wurde nicht gelöscht, da diese als Standard-Sprache ausgewählt ist.';
@@ -77,3 +83,4 @@ $_ARRAYLANG['TXT_YES'] = 'Ja';
 $_ARRAYLANG['TXT_NO'] = 'Nein';
 $_ARRAYLANG['TXT_CORE_LOCALE_LABEL_LANG_REMOVAL'] = 'Bitte bestätigen Sie das Entfernen der Sprachdaten!';
 $_ARRAYLANG['TXT_CORE_LOCALE_LANG_REMOVAL_CONTENT'] = 'Sprachbezogene Daten der deaktivieren Sprachen in allen Anwendungen löschen.';
+$_ARRAYLANG['TXT_CORE_LOCALE_SAVE'] = 'Änderungen übernehmen';

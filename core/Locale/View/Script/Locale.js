@@ -9,6 +9,10 @@ cx.jQuery(document).ready(function() {
         }
     });
     cx.jQuery('.localeFallback select').width(maxFallbackSelectWidth);
+
+    cx.jQuery("#content form :input").change(function() {
+       cx.jQuery("#content form input[name=\"updateLocales\"").show();
+    });
 });
 
 cx.jQuery(function() {

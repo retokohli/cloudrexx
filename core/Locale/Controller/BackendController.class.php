@@ -118,6 +118,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 $cxjs->setVariable('langRemovalContent', $_ARRAYLANG['TXT_CORE_LOCALE_LANG_REMOVAL_CONTENT'], 'Locale/Locale');
                 // register locale js
                 \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Locale.js', 1));
+                // register locale css
+                \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/Locale.css', 1));
                 // parse form around entity view
                 if ($template->blockExists('form_tag_open') && $template->blockExists('form_tag_close')) {
                     $template->touchBlock('form_tag_open');
@@ -163,6 +165,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         // set view generator options
         $options = array(
             'array' => array(
+                'entityName' => $_ARRAYLANG['TXT_CORE_LOCALE_BACKEND_NAME'],
                 'fields' => array(
                     'active' => array(
                         'header' => $_ARRAYLANG['TXT_CORE_LOCALE_ACTIVE_LANGUAGES'],
@@ -264,6 +267,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     $_GET['order'] = 'id';
                 }
                 return array(
+                    'entityName' => $_ARRAYLANG['TXT_CORE_LOCALE_LOCALE_NAME'],
                     'header' => $_ARRAYLANG['TXT_CORE_LOCALE_ACT_LOCALE'],
                     'fields' => array(
                         'id' => array(
@@ -309,6 +313,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'fallback' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_FALLBACK'],
+                            'tooltip' => $_ARRAYLANG['TXT_CORE_LOCALE_FALLBACK_TOOLTIP'],
                             'table' => array(
                                 'attributes' => array(
                                     'class' => 'localeFallback',
@@ -346,6 +351,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'sourceLanguage' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_SOURCE_LANGUAGE'],
+                            'tooltip' => $_ARRAYLANG['TXT_CORE_LOCALE_SOURCE_LANGUAGE_TOOLTIP'],
                             'formfield' => function($fieldname, $fieldtype, $fieldlength, $fieldvalue, $fieldoptions) {
                                 // build select for sourceLanguage
                                 $select = new \Cx\Core\Html\Model\Entity\DataElement(

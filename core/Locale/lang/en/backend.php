@@ -44,11 +44,13 @@ $_ARRAYLANG['TXT_CORE_LOCALE'] = 'Localization';
 $_ARRAYLANG['TXT_CORE_LOCALE_DESCRIPTION'] = 'Handles language versions by their country and/or the effective language.';
 
 // Module ACTs:
-$_ARRAYLANG['TXT_CORE_LOCALE_ACT_DEFAULT'] = 'Frontend';
-$_ARRAYLANG['TXT_CORE_LOCALE_ACT_LOCALE'] = 'Frontend';
-$_ARRAYLANG['TXT_CORE_LOCALE_ACT_BACKEND'] = 'Backend';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACT_DEFAULT'] = 'Webiste';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACT_LOCALE'] = 'Website';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACT_BACKEND'] = 'Administration area';
 
 // Module fields
+$_ARRAYLANG['TXT_CORE_LOCALE_LOCALE_NAME'] = 'Locale';
+$_ARRAYLANG['TXT_CORE_LOCALE_BACKEND_NAME'] = 'Edit languages';
 $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ID'] = 'ID';
 $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_ISO1'] = 'Language';
 $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_LABEL'] = 'Label';
@@ -58,6 +60,10 @@ $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_DEFAULT'] = 'Default';
 $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_SOURCE_LANGUAGE'] = 'Source language';
 $_ARRAYLANG['TXT_CORE_LOCALE_ACTIVE_LANGUAGES'] = 'Active languages';
 $_ARRAYLANG['TXT_CORE_LOCALE_DEFAULT_LANGUAGE'] = 'Default language';
+
+// Tooltips
+$_ARRAYLANG['TXT_CORE_LOCALE_FALLBACK_TOOLTIP'] = 'Not existing content is replaced with the content of the fallback language.';
+$_ARRAYLANG['TXT_CORE_LOCALE_SOURCE_LANGUAGE_TOOLTIP'] = 'Specifies which language files to use.';
 
 $_ARRAYLANG['TXT_CORE_LOCALE_BACKEND_SELECT_ACTIVE_LANGUAGES'] = 'Select active languages...';
 $_ARRAYLANG['TXT_CORE_LOCALE_CANNOT_DELETE_DEFAULT_BACKEND'] = 'The language %s was not deleted, because it is the default one.';
@@ -77,3 +83,4 @@ $_ARRAYLANG['TXT_YES'] = 'Yes';
 $_ARRAYLANG['TXT_NO'] = 'No';
 $_ARRAYLANG['TXT_CORE_LOCALE_LABEL_LANG_REMOVAL'] = 'Confirm language data removal';
 $_ARRAYLANG['TXT_CORE_LOCALE_LANG_REMOVAL_CONTENT'] = 'Remove all language related data of the deactivated language from all applications.';
+$_ARRAYLANG['TXT_CORE_LOCALE_SAVE'] = 'Apply changes';
