@@ -87,7 +87,7 @@ class LocaleTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
         $locale = new \Cx\Core\Locale\Model\Entity\Locale();
         // Act
         $locale->setLabel($label);
-        // Arrange
+        // Assert
         $this->assertEquals($label, $locale->__toString());
     }
 
