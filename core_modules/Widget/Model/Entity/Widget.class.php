@@ -45,6 +45,12 @@ namespace Cx\Core_Modules\Widget\Model\Entity;
 abstract class Widget extends \Cx\Model\Base\EntityBase {
 
     /**
+     * Component which registered this widget
+     * @var \Cx\Core\Core\Model\Entity\SystemComponentController
+     */
+    protected $component;
+
+    /**
      * Name of this widget
      * @var string
      */
@@ -58,10 +64,12 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
 
     /**
      * Instanciates a new widget
+     * @param \Cx\Core\Core\Model\Entity\SystemComponentController $component Component registering this widget
      * @param string $name Name of this widget
      * @param boolean $hasContent Wheter this widget has content or not
      */
-    public function __construct($name, $hasContent = false) {
+    public function __construct($component, $name, $hasContent = false) {
+        $this->component = $component;
         $this->name = $name;
         $this->hasContent = $hasContent;
     }

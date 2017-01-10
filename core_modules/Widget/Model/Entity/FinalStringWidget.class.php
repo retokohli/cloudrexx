@@ -40,7 +40,11 @@ namespace Cx\Core_Modules\Widget\Model\Entity;
  * Usage:
  * ```php
  * $this->getComponent('Widget')->registerWidget(
- *     new \Cx\Core_Modules\Widget\Model\Entity\FinalStringWidget('FOO', 'bar')
+ *     new \Cx\Core_Modules\Widget\Model\Entity\FinalStringWidget(
+ *         $this->getSystemComponentController(),
+ *         'FOO',
+ *         'bar'
+ *     )
  * );
  * ```
  * The above example replaces Sigma placeholder "FOO" by string "bar"
@@ -58,11 +62,12 @@ class FinalStringWidget extends Widget {
 
     /**
      * Instanciates a new widget
+     * @param \Cx\Core\Core\Model\Entity\SystemComponentController $component Component registering this widget
      * @param string $name Name of this widget
      * @param string $string String to display
      */
-    public function __construct($name, $string) {
-        parent::__construct($name, false);
+    public function __construct($component, $name, $string) {
+        parent::__construct($component, $name, false);
         $this->string = $string;
     }
 
