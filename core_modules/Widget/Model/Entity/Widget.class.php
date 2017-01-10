@@ -87,5 +87,27 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
      * @param \HTML_Template_Sigma $template Template to parse this widget into
      * @param \Cx\Core\Routing\Model\Entity\Reponse $response Current response object
      */
-    public abstract function parse($template, $response);
+    public function parse($template, $response) {
+        if (!$this->hasContent()) {
+            if (!$template->hasPlaceholder($this->getName())) {
+                return;
+            }
+            $template->setVariable(
+                $this->getName(),
+                $this->internalParse($template, $response)
+            );
+        } else {
+            if (!$template->hasBlock($this->getName())) {
+                return;
+            }
+            $this->internalParse($template, $response);
+        }
+    }
+
+    /**
+     * Really parses this widget into $template
+     * @param \HTML_Template_Sigma $template Template to parse this widget into
+     * @param \Cx\Core\Routing\Model\Entity\Reponse $response Current response object
+     */
+    public abstract function internalParse($template, $response);
 }
