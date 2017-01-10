@@ -110,6 +110,10 @@ class ContentManager extends \Module
         \JS::registerJS('lib/javascript/lock.js');
         \JS::registerJS('lib/javascript/jquery/jquery.history.max.js');
 
+        $objCx = \ContrexxJavascript::getInstance();
+        $objCx->setVariable('save_loaded', \Cx\Core\ContentManager\Model\Entity\Node::JSTREE_COOKIE_LOAD, 'contentmanager/jstree');
+        $objCx->setVariable('save_opened', \Cx\Core\ContentManager\Model\Entity\Node::JSTREE_COOKIE_OPEN, 'contentmanager/jstree');
+
 // this can be used to debug the tree, just add &tree=verify or &tree=fix
         $tree = null;
         if (isset($_GET['tree'])) {
@@ -123,7 +127,6 @@ class ContentManager extends \Module
             // this should print "bool(true)"
             var_dump($this->nodeRepository->recover());
         }
-        $objCx    = \ContrexxJavascript::getInstance();
 
         $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
         $defaultTheme = $themeRepo->getDefaultTheme();
