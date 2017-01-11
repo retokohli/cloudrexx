@@ -108,7 +108,7 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
      */
     public function parse($template, $response, $targetComponent, $targetEntity, $targetId) {
         if (!$this->hasContent()) {
-            if (!$template->hasPlaceholder($this->getName())) {
+            if (!$template->placeholderExists($this->getName())) {
                 return;
             }
             $template->setVariable(
