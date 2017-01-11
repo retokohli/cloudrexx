@@ -634,8 +634,15 @@ class JsonPage implements JsonAdapter {
             }
             $this->em->getConnection()->commit();
 
-            $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-            $cacheManager->deleteSingleFile($pageId);
+            // Drop cache of our page and all pages pointing to our page
+            $pageIdsToDropCache = $this->pageRepo->getPagesPointingTo($page);
+            $pageIdsToDropCache[] = $page->getId();
+
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cacheComponent = $cx->getComponent('Cache');
+            foreach ($pageIdsToDropCache as $pageIdToDropCache) {
+                $cacheComponent->deleteSingleFile($pageIdToDropCache);
+            }
         } catch (\Exception $e) {
             $this->em->getConnection()->rollback();
             throw $e;
