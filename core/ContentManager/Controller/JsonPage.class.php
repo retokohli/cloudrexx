@@ -212,10 +212,6 @@ class JsonPage implements JsonAdapter {
         $lang   = !empty($pageArray['lang'])  ? contrexx_input2raw($pageArray['lang'])  : (!empty($dataPost['lang']) ? contrexx_input2raw($dataPost['lang']) : \FWLanguage::getLanguageCodeById(\FWLanguage::getDefaultLangId()));
         $action = !empty($dataPost['action']) ? contrexx_input2raw($dataPost['action']) : '';
 
-        $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-        $cacheManager->deleteSingleFile($pageId);
-
-
         if (!empty($pageArray)) {
             if (!empty($pageArray['target']) && !empty($pageArray['target_protocol'])) {
                 $pageArray['target'] = $pageArray['target_protocol'] . $pageArray['target'];
@@ -637,6 +633,9 @@ class JsonPage implements JsonAdapter {
                 $this->em->flush();
             }
             $this->em->getConnection()->commit();
+
+            $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
+            $cacheManager->deleteSingleFile($pageId);
         } catch (\Exception $e) {
             $this->em->getConnection()->rollback();
             throw $e;
