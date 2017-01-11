@@ -88,7 +88,7 @@ class MwbExporterTable extends \MwbExporter\Formatter\Doctrine2\Yaml\Model\Table
         }
         $componentTypeNS = \Cx\Core\Core\Model\Entity\SystemComponent::getBaseNamespaceForType($matches[1]);
         $tableArray      = explode('_', $matches[2]);
-        $componentName   = array_shift($tableArray);
+        $componentName   = $this->getComponentName(array_shift($tableArray));
 
         return $componentTypeNS . '\\' . ucfirst($componentName);
     }
@@ -132,5 +132,33 @@ class MwbExporterTable extends \MwbExporter\Formatter\Doctrine2\Yaml\Model\Table
         $entityName = implode('_', $tableArray);
 
         return $this->beautify($entityName);
+    }
+
+    /**
+     * Get component name by LOWER CASE name
+     *
+     * @param string $name component name in lowercase
+     *
+     * @return string
+     */
+    public function getComponentName($name)
+    {
+        if (empty($name)) {
+            return;
+        }
+
+        $em  = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+        $qb  = $em->createQueryBuilder();
+        $qb->select('c')
+           ->from('\Cx\Core\Core\Model\Entity\SystemComponent', 'c')
+           ->where('LOWER(c.name) = :name')
+           ->getDql();
+        $qb->setParameter('name', strtolower($name));
+        $result = $qb->getQuery()->getResult();
+        if (!$result) {
+            return $name;
+        }
+
+        return $result[0] ? $result[0]->getName() : $name;
     }
 }
