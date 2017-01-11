@@ -73,6 +73,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $template = new \Cx\Core\Html\Sigma();
         $template->setTemplate($page->getContent());
         $this->parseWidgets($template, 'ContentManager', 'Page', $page->getId());
+        $page->setContent($template->get());
     }
 
     /**
