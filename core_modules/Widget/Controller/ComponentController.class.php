@@ -63,6 +63,35 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Do something after content is loaded from DB
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
+     */
+    public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        $template = new \Cx\Core\Html\Sigma();
+        $template->setTemplate($page->getContent());
+        $this->parseWidgets($template, 'ContentManager', 'Page', $page->getId());
+    }
+
+    /**
+     * Do something before main template gets parsed
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
+     * @param \Cx\Core\Html\Sigma                       $template   The main template
+     */
+    public function preFinalize(\Cx\Core\Html\Sigma $template) {
+        $this->parseWidgets(
+            $template,
+            'View',
+            'Theme',
+            \Env::get('init')->getCurrentThemeId()
+        );
+    }
+
+    /**
      * Registers a Widget
      *
      * @param \Cx\Core_Modules\Widget\Model\Entity\Widget $widget Widget to add
