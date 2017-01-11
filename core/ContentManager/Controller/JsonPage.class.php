@@ -265,8 +265,8 @@ class JsonPage implements JsonAdapter {
 
                     // add parent node to ID, so the node containing the new page is opened
                     $openNodes = array();
-                    if (isset($_COOKIE[\Cx\Core\ContentManager\Model\Entity\Node::JSTREE_COOKIE_OPEN])) {
-                        $openNodes = explode(',', $_COOKIE[\Cx\Core\ContentManager\Model\Entity\Node::JSTREE_COOKIE_OPEN]);
+                    if (isset($_COOKIE[\Cx\Core\ContentManager\Controller\ContentManager::JSTREE_COOKIE_OPEN])) {
+                        $openNodes = explode(',', $_COOKIE[\Cx\Core\ContentManager\Controller\ContentManager::JSTREE_COOKIE_OPEN]);
                     }
                     if ($openNodes == array(0=>'')) {
                         $openNodes = array();
@@ -274,7 +274,7 @@ class JsonPage implements JsonAdapter {
                     if (!in_array('#node_' . $parentNode->getId(), $openNodes)) {
                         $openNodes[] = '#node_' . $parentNode->getId();
                     }
-                    setcookie(\Cx\Core\ContentManager\Model\Entity\Node::JSTREE_COOKIE_OPEN, implode(',', $openNodes), 0, \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath() . '/');
+                    setcookie(\Cx\Core\ContentManager\Controller\ContentManager::JSTREE_COOKIE_OPEN, implode(',', $openNodes), 0, \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath() . '/');
 
                     $this->em->persist($node);
                     $this->em->flush();

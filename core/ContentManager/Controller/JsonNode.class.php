@@ -172,14 +172,14 @@ class JsonNode implements JsonAdapter {
                     $node = $node->getParent();
                 }
                 $openNodes2 = array();
-                if (isset($_COOKIE[\Cx\Core\ContentManager\Model\Entity\Node::JSTREE_COOKIE_OPEN])) {
-                    $openNodes2 = explode(',', $_COOKIE[\Cx\Core\ContentManager\Model\Entity\Node::JSTREE_COOKIE_OPEN]);
+                if (isset($_COOKIE[\Cx\Core\ContentManager\Controller\ContentManager::JSTREE_COOKIE_OPEN])) {
+                    $openNodes2 = explode(',', $_COOKIE[\Cx\Core\ContentManager\Controller\ContentManager::JSTREE_COOKIE_OPEN]);
                 }
                 if ($openNodes2 == array(0=>'')) {
                     $openNodes2 = array();
                 }
                 $openNodes = array_merge($openNodes, $openNodes2);
-                setcookie(\Cx\Core\ContentManager\Model\Entity\Node::JSTREE_COOKIE_OPEN, implode(',', $openNodes), 0, \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath() . '/');
+                setcookie(\Cx\Core\ContentManager\Controller\ContentManager::JSTREE_COOKIE_OPEN, implode(',', $openNodes), 0, \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath() . '/');
             }
         }
 
@@ -476,8 +476,8 @@ class JsonNode implements JsonAdapter {
 
         // get open nodes
         $open_nodes = array();
-        if (isset($_COOKIE[\Cx\Core\ContentManager\Model\Entity\Node::JSTREE_COOKIE_OPEN])) {
-            $tmp_open_nodes = explode(',', $_COOKIE[\Cx\Core\ContentManager\Model\Entity\Node::JSTREE_COOKIE_OPEN]);
+        if (isset($_COOKIE[\Cx\Core\ContentManager\Controller\ContentManager::JSTREE_COOKIE_OPEN])) {
+            $tmp_open_nodes = explode(',', $_COOKIE[\Cx\Core\ContentManager\Controller\ContentManager::JSTREE_COOKIE_OPEN]);
             foreach ($tmp_open_nodes as $node) {
                 $node_id = substr($node, 6);
                 $open_nodes[$node_id] = true;

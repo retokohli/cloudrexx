@@ -57,18 +57,6 @@ class NodeException extends \Exception {}
 class Node extends \Cx\Model\Base\EntityBase implements \Serializable
 {
     /**
-     * Name of the cookie to be used by the jstree javascript
-     * library to save the loaded nodes
-     */
-    const JSTREE_COOKIE_LOAD = 'jstree_load_ContentManager_node';
-
-    /**
-     * Name of the cookie to be used by the jstree javascript
-     * library to save the opened nodes
-     */
-    const JSTREE_COOKIE_OPEN = 'jstree_open_ContentManager_node';
-
-    /**
      * @var integer $id
      */
     private $id;
