@@ -75,6 +75,14 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Returns the component which registered this widget
+     * @return \Cx\Core\Core\Model\Entity\SystemComponentController Registering component
+     */
+    public function getComponent() {
+        return $this->component;
+    }
+
+    /**
      * Returns the name of this widget
      * @return string Name of this widget
      */
@@ -94,28 +102,37 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
      * Parses this widget into $template
      * @param \HTML_Template_Sigma $template Template to parse this widget into
      * @param \Cx\Core\Routing\Model\Entity\Reponse $response Current response object
+     * @param string $targetComponent Parse target component name
+     * @param string $targetEntity Parse target entity name
+     * @param string $targetId Parse target entity ID
      */
-    public function parse($template, $response) {
+    public function parse($template, $response, $targetComponent, $targetEntity, $targetId) {
         if (!$this->hasContent()) {
             if (!$template->hasPlaceholder($this->getName())) {
                 return;
             }
             $template->setVariable(
                 $this->getName(),
-                $this->internalParse($template, $response)
+                $this->internalParse($template, $response, $targetComponent, $targetEntity, $targetId)
             );
         } else {
             if (!$template->hasBlock($this->getName())) {
                 return;
             }
-            $this->internalParse($template, $response);
+            $this->internalParse($template, $response, $targetComponent, $targetEntity, $targetId);
         }
     }
 
     /**
      * Really parses this widget into $template
+     * If this Widget has no content, the replacement can simply be returned
+     * as string. Otherwise the replacement must be done in $template.
      * @param \HTML_Template_Sigma $template Template to parse this widget into
      * @param \Cx\Core\Routing\Model\Entity\Reponse $response Current response object
+     * @param string $targetComponent Parse target component name
+     * @param string $targetEntity Parse target entity name
+     * @param string $targetId Parse target entity ID
+     * @return string Replacement for widgets without content, NULL otherwise
      */
-    public abstract function internalParse($template, $response);
+    public abstract function internalParse($template, $response, $targetComponent, $targetEntity, $targetId);
 }

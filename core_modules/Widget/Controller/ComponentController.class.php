@@ -28,7 +28,7 @@
 /**
  * Main controller for Widget handler
  *
- * @author Michael Ritter <michael.ritter@cloadrexx.com>
+ * @author Michael Ritter <michael.ritter@cloudrexx.com>
  * @package cloudrexx
  * @subpackage coremodules_widget
  */
@@ -38,7 +38,7 @@ namespace Cx\Core_Modules\Widget\Controller;
 /**
  * Main controller for Widget handler
  *
- * @author Michael Ritter <michael.ritter@cloadrexx.com>
+ * @author Michael Ritter <michael.ritter@cloudrexx.com>
  * @package cloudrexx
  * @subpackage coremodules_widget
  */
@@ -72,13 +72,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Parses the widget on a template
+     * Parses the widgets on a template
      *
      * @param \HTML_Template_Sigma $template Template to parse widgets into
+     * @param string $targetComponent Parse target component name
+     * @param string $targetEntity Parse target entity name
+     * @param string $targetId Parse target entity ID
      */
-    public function parseWidgets($template) {
+    public function parseWidgets($template, $targetComponent, $targetEntity, $targetId) {
         foreach ($this->widgets as $widget) {
-            $widget->parse($template);
+            $widget->parse($template, null, $targetComponent, $targetEntity, $targetId);
         }
     }
 
@@ -88,5 +91,56 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function getWidgets() {
         return $this->widgets;
+    }
+
+    /**
+     * Looks up the template content of a widget
+     * @param string $widgetName Name of the widget to get content for
+     * @param int $themeId ID of the theme to get Widget content for
+     * @param int $pageId ID of the page to get Widget content for
+     * @param string $targetComponent Parse target component name
+     * @param string $targetEntity Parse target entity name
+     * @param string $targetId Parse target entity ID
+     * @return \Cx\Core\Html\Sigma Widget content as template
+     */
+    public function getWidgetContent($widgetName, $themeId, $pageId, $targetComponent, $targetEntity, $targetId) {
+        $em = $this->cx->getDb()->getEntityManager();
+        $theme = $em->find('Cx\Core\View\Model\Entity\Theme', $themeId);
+        // Since version number is not yet defined (XY), we do not check this yet
+        if (false) {//version_compare($theme->getVersionNumber(), 'XY' '>=') {
+            // load theme file contents:
+            // /themes/<theme>/<widgetComponentType>/<widgetComponentName>/Widget/<widgetName>/<targetComponentName>/<targetEntityName>/<targetId>.html
+            return;
+        }
+        $page = $em->find('Cx\Core\ContentManager\Model\Entity\Page', $pageId);
+        $parseTarget = $this->getParseTarget($targetComponent, $targetEntity, $targetId);
+        return $parseTarget->getWidgetContent($widgetName, $theme, $page);
+    }
+
+    /**
+     * Returns the parse target entity
+     * @param string $componentName Parse target component name
+     * @param string $entityName Parse target entity name
+     * @param string $entityId Parse target entity id
+     * @return \Cx\Model\Base\EntityBase Parse target entity
+     */
+    protected function getParseTarget($componentName, $entityName, $entityId) {
+        // the following IF block can be dropped as soon as Block is a Doctrine entity
+        if ($componentName == 'Block' && $entityName == 'Block') {
+            return null;
+        }
+        $em = $this->cx->getDb()->getEntityManager();
+        $component = $this->getComponent($componentName);
+        if (!$component) {
+            throw new \Exception('Component not found: "' . $componentName . '"');
+        }
+        $target = $em->find(
+            'Cx\\' . $component->getType() . '\\' . $component->getName() . '\\Model\\Entity\\' . $entityName,
+            $entityId
+        );
+        if (!is_a($target, $this->getNamespace() . '\Model\Entity\WidgetParseTarget')) {
+            throw new \Exception('Invalid parse target specified');
+        }
+        return $target;
     }
 }
