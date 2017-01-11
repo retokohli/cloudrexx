@@ -80,11 +80,17 @@ class FinalStringWidget extends Widget {
     }
 
     /**
-     * Parses this widget into $template
+     * Really parses this widget into $template
+     * If this Widget has no content, the replacement can simply be returned
+     * as string. Otherwise the replacement must be done in $template.
      * @param \HTML_Template_Sigma $template Template to parse this widget into
      * @param \Cx\Core\Routing\Model\Entity\Reponse $response Current response object
+     * @param string $targetComponent Parse target component name
+     * @param string $targetEntity Parse target entity name
+     * @param string $targetId Parse target entity ID
+     * @return string Replacement for widgets without content, NULL otherwise
      */
-    public function internalParse($template, $response) {
+    public function internalParse($template, $response, $targetComponent, $targetEntity, $targetId) {
         return $this->getString();
     }
 }
