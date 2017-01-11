@@ -122,8 +122,8 @@ class ContentManager extends \Module
         \JS::registerJS('lib/javascript/jquery/jquery.history.max.js');
 
         $objCx = \ContrexxJavascript::getInstance();
-        $objCx->setVariable('save_loaded', self::JSTREE_COOKIE_LOAD, 'contentmanager/jstree');
-        $objCx->setVariable('save_opened', self::JSTREE_COOKIE_OPEN, 'contentmanager/jstree');
+        $objCx->setVariable('save_loaded', static::JSTREE_COOKIE_LOAD, 'contentmanager/jstree');
+        $objCx->setVariable('save_opened', static::JSTREE_COOKIE_OPEN, 'contentmanager/jstree');
 
 // this can be used to debug the tree, just add &tree=verify or &tree=fix
         $tree = null;
@@ -178,7 +178,7 @@ class ContentManager extends \Module
         }
 
         $this->template->setVariable(array(
-            'CORE_CM_METAIMAGE_BUTTON' => self::showMediaBrowserButton('Metaimage')
+            'CORE_CM_METAIMAGE_BUTTON' => static::showMediaBrowserButton('Metaimage')
         ));
 
         $mediaBrowser = new MediaBrowser();
