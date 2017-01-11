@@ -222,6 +222,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Deletes a file from page cache
+     * @param int $pageId ID of the page to drop cache of
+     */
+    public function deleteSingleFile($pageId) {
+        $this->cache->deleteSingleFile($pageId);
+    }
+
+    /**
      * Delete all cached files for a component from cache-folder
      */
     function deleteComponentFiles($componentName) {
