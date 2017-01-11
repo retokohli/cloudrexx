@@ -116,7 +116,7 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
                 $this->internalParse($template, $response, $targetComponent, $targetEntity, $targetId)
             );
         } else {
-            if (!$template->hasBlock($this->getName())) {
+            if (!$template->blockExists($this->getName())) {
                 return;
             }
             $this->internalParse($template, $response, $targetComponent, $targetEntity, $targetId);
