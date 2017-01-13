@@ -40,6 +40,7 @@
             get: function (type) {
                 var deferred = $q.defer();
                 $http.get(cx.variables.get("cadminPath", "contrexx") + 'index.php?cmd=jsondata&object=MediaBrowser&act=' + type + '&csrf=' + cx.variables.get('csrf')).success(function (jsonadapter, status, headers) {
+                    console.log(jsonadapter);
                     if (jsonadapter.data instanceof Object) {
                         deferred.resolve(jsonadapter.data);
                     }
@@ -54,8 +55,15 @@
                 });
                 return deferred.promise;
             },
-            getByMediaType: function (mediatype) {
-                return this.get('getFiles&mediatype=' + mediatype)
+            getByMediaTypeAndPath: function (mediatype, path) {
+                var params = '';
+                if (mediatype) {
+                    params += '&mediatype=' + mediatype;
+                }
+                if (path) {
+                    params += '&path=' + path;
+                }
+                return this.get('getFiles' + params)
             }
         }
     });
@@ -93,7 +101,7 @@
 
 
             $scope.path = [
-                {name: cx.variables.get('TXT_FILEBROWSER_FILES', 'mediabrowser'), path: 'files', standard: true}
+                {name: cx.variables.get('TXT_FILEBROWSER_FILES', 'mediabrowser'), path: '', standard: true}
             ];
 
             $scope.activeController = mediabrowserConfig.get('startView');
@@ -123,7 +131,6 @@
                         else {
                             $scope.selectedSource = data[0];
                         }
-                        $scope.path[0].path = $scope.selectedSource.value;
                         if (mediabrowserConfig.get('mediatypes') != 'all') {
                             var i = data.length;
                             while (i--) {
@@ -133,7 +140,7 @@
                             }
                         }
 
-                        mediabrowserFiles.getByMediaType($scope.selectedSource.value).then(
+                        mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, '').then(
                             function getFiles(data) {
                                 $scope.loadingSources = false;
                                 $scope.dataFiles = data;
@@ -142,12 +149,6 @@
                                     mediabrowserConfig.set('lastPath',$scope.path);
                                 }
                                 else {
-                                    var oldpath = mediabrowserConfig.get('lastPath');
-                                    for (var i in oldpath){
-                                        if (i > 0){
-                                            $scope.extendPath(oldpath[i].path);
-                                        }
-                                    }
                                     $scope.inRootDirectory = ($scope.path.length == 1);
                                     jQuery(".filelist").fadeIn();
                                 }
@@ -234,8 +235,10 @@
 
             $scope.getPathAsString = function () {
                 var pathstring = '';
-                $scope.path.forEach(function (path) {
-                    pathstring += path.path + '/';
+                $scope.path.forEach(function (path, key) {
+                    if (key != 0) {
+                        pathstring += path.path + '/';
+                    }
                 });
                 return pathstring;
             };
@@ -279,25 +282,16 @@
             };
 
             $scope.updateSource = function () {
-                var oldpath = $scope.path;
-                var oldSource = $scope.path[0].path;
                 $scope.path = [
-                    {name: "" + $scope.selectedSource.name, path: $scope.selectedSource.value, standard: true}
+                    {name: "" + $scope.selectedSource.name, path: '', standard: true}
                 ];
                 $scope.loadingSources = true;
-                mediabrowserFiles.getByMediaType($scope.selectedSource.value).then(
+                mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, '').then(
                     function getFiles(data) {
                         $scope.loadingSources = false;
                         $scope.dataFiles = data;
                         $scope.files = data;
                         $timeout(function () {
-                            if (oldSource == $scope.selectedSource.value){
-                                for (var i in oldpath){
-                                    if (i > 0){
-                                        $scope.extendPath(oldpath[i].path);
-                                    }
-                                }
-                            }
                             $scope.$apply();
                             jQuery(".filelist").fadeIn();
                         });
@@ -323,8 +317,43 @@
              */
             $scope.extendPath = function (dirName) {
                 if (Array.isArray($scope.path)) {
-                    $scope.path.push({name: dirName, path: dirName, standard: false});
+                    $scope.path.push({
+                        name: dirName,
+                        path: dirName,
+                        standard: false
+                    });
                 }
+                $scope.loadingSources = true;
+                mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, $scope.getPathAsString()).then(
+                    function getFiles(data) {
+                        $scope.loadingSources = false;
+
+                        // set value in nested array by string path
+                        var newPath = [];
+                        $scope.path.forEach(function (path) {
+                            if (path.path != '') {
+                                newPath.push(path.path);
+                            }
+                        });
+                        setValueInFilesByPath(newPath, data);
+                        function setValueInFilesByPath(path, value) {
+                            if (path.length == 1 && value !== undefined) {
+                                return $scope.dataFiles[path[0]] = Object.assign($scope.dataFiles[path[0]], value);
+                            } else if (path.length == 0) {
+                                return $scope.dataFiles;
+                            } else {
+                                return $scope.setValueInFilesByPath($scope.dataFiles[path[0]], path.slice(1), value);
+                            }
+                        }
+
+                        $scope.files = $scope.dataFiles;
+                        console.log($scope.files);
+                        $timeout(function () {
+                            $scope.$apply();
+                            jQuery('.filelist').fadeIn();
+                        });
+                    }
+                );
                 $scope.searchString = '';
                 $scope.refreshBrowser();
             };
@@ -506,9 +535,9 @@
              * @returns {string}
              */
             $scope.getPathString = function () {
-                var returnValue = '/';
+                var returnValue = '';
                 $scope.path.forEach(function (pathpart) {
-                    returnValue += pathpart.path + '/';
+                    returnValue += pathpart.path + '';
                 });
                 return returnValue;
             };
