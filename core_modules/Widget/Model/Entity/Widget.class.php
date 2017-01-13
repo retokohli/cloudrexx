@@ -105,8 +105,9 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
      * @param string $targetComponent Parse target component name
      * @param string $targetEntity Parse target entity name
      * @param string $targetId Parse target entity ID
+     * @param array $excludedWidgets List of widget names that shall not be parsed
      */
-    public function parse($template, $response, $targetComponent, $targetEntity, $targetId) {
+    public function parse($template, $response, $targetComponent, $targetEntity, $targetId, $excludedWidgets = array()) {
         if (!$this->hasContent()) {
             if (!$template->placeholderExists($this->getName())) {
                 return;
@@ -121,11 +122,13 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
             }
             $this->internalParse($template, $response, $targetComponent, $targetEntity, $targetId);
             // recurse:
+            $excludedWidgets[] = $this->getName();
             $this->getSystemComponentController()->parseWidgets(
                 $template,
                 $targetComponent,
                 $targetEntity,
-                $targetId
+                $targetId,
+                $excludedWidgets
             );
         }
     }

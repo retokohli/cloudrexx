@@ -108,9 +108,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param string $targetComponent Parse target component name
      * @param string $targetEntity Parse target entity name
      * @param string $targetId Parse target entity ID
+     * @param array $excludedWidgets List of widget names that shall not be parsed
      */
-    public function parseWidgets($template, $targetComponent, $targetEntity, $targetId) {
+    public function parseWidgets($template, $targetComponent, $targetEntity, $targetId, $excludedWidgets = array()) {
         foreach ($this->widgets as $widget) {
+            if (in_array($widget->getName(), $excludedWidgets)) {
+                continue;
+            }
             $widget->parse($template, null, $targetComponent, $targetEntity, $targetId);
         }
     }
