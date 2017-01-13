@@ -144,7 +144,6 @@
                                 $scope.loadingSources = false;
                                 $scope.allFiles = data;
                                 $scope.files = $scope.getValueByPath($scope.allFiles, $scope.path);
-                                console.log($scope.getValueByPath($scope.allFiles, $scope.path));
                                 if (!mediabrowserConfig.isset('lastPath')){
                                     mediabrowserConfig.set('lastPath',$scope.path);
                                 }
@@ -327,30 +326,11 @@
                 mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, $scope.getPathAsString()).then(
                     function getFiles(data) {
                         $scope.loadingSources = false;
-
-                        // set value in nested array by string path
-                        var newPath = [];
-                        $scope.path.forEach(function (path) {
-                            if (path.path != '') {
-                                newPath.push(path.path);
-                            }
-                        });
-                        setValueInFilesByPath(newPath, data);
-                        function setValueInFilesByPath(path, value) {
-                            if (path.length == 1 && value !== undefined) {
-                                return $scope.allFiles[path[0]] = Object.assign($scope.allFiles[path[0]], value);
-                            } else if (path.length == 0) {
-                                return $scope.allFiles;
-                            } else {
-                                return $scope.setValueInFilesByPath($scope.allFiles[path[0]], path.slice(1), value);
-                            }
-                        }
-
+                        $scope.allFiles = $scope.addValueByPath($scope.allFiles, $scope.path, data);
                         $scope.files = $scope.getValueByPath($scope.allFiles, $scope.path);
-                        console.log($scope.files);
                         $timeout(function () {
                             $scope.$apply();
-                            jQuery('.filelist').fadeIn();
+                            jQuery(".filelist").fadeIn();
                         });
                     }
                 );
@@ -373,21 +353,36 @@
             };
 
             $scope.getValueByPath = function (obj, path) {
-                var newPath = [];
-                path.forEach(function (path) {
-                    if (path.path != '') {
-                        newPath.push(path.path);
-                    }
-                });
-                for (var i = 0; i < newPath.length; i++) {
+                var path = $scope.cleanupPath(path);
+                for (var i = 0; i < path.length; i++) {
                     if (!obj) return null;
-                    obj = obj[newPath[i]];
+                    obj = obj[path[i]];
                 }
                 return obj;
             };
 
+            $scope.addValueByPath = function (obj, path, value) {
+                var path = $scope.cleanupPath(path);
+                if (path.length == 1 && value !== undefined) {
+                    return obj[path[0]] = Object.assign(obj[path[0]], value);
+                } else if (path.length == 0) {
+                    return obj;
+                } else {
+                    return $scope.addValueByPath(obj[path[0]], path.slice(1), value);
+                }
+            };
+
             $scope.setFiles = function (files) {
                 $scope.files = files;
+            };
+
+            $scope.cleanupPath = function (path) {
+                var newPath = [];
+                path.forEach(function (pathPart) {
+                    if (pathPart.path != '') {
+                        newPath.push(pathPart.path);
+                    }
+                });
             };
 
             $scope.changeLocation = function (url, forceReload) {
