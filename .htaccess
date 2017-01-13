@@ -61,7 +61,7 @@
 
     # Resolve language specific sitemap.xml
     RewriteCond %{ENV:REDIRECT_END} !1
-    RewriteRule ^([a-z]{1,2}(?:-[A-Za-z]{2,4})?)\/sitemap.xml$ ${websiteDomainContentMap:%{HTTP_HOST}|}/sitemap_$1.xml [L,NC,E=END:1]
+    RewriteRule ^([a-z]{1,2}(?:-[A-Za-z]{2,4})?)\/sitemap(?:_[a-z]{1,2}(?:-[A-Za-z]{2,4})?)?.xml$ ${websiteDomainContentMap:%{HTTP_HOST}|}/sitemap_$1.xml [L,NC,E=END:1]
 
     # Allow directory index files
     RewriteCond %{REQUEST_FILENAME}/index.php -f
