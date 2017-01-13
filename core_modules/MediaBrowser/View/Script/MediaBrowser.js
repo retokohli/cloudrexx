@@ -353,7 +353,7 @@
             };
 
             $scope.getValueByPath = function (obj, path) {
-                var path = $scope.cleanupPath(path);
+                path = $scope.cleanupArray(path);
                 for (var i = 0; i < path.length; i++) {
                     if (!obj) return null;
                     obj = obj[path[i]];
@@ -362,9 +362,13 @@
             };
 
             $scope.addValueByPath = function (obj, path, value) {
-                var path = $scope.cleanupPath(path);
+                path = $scope.cleanupArray(path);
                 if (path.length == 1 && value !== undefined) {
-                    return obj[path[0]] = Object.assign(obj[path[0]], value);
+                    if (obj[path[0]] === undefined) {
+                        obj[path[0]] = {};
+                    }
+                    obj[path[0]] = Object.assign(obj[path[0]], value);
+                    return obj;
                 } else if (path.length == 0) {
                     return obj;
                 } else {
@@ -376,13 +380,14 @@
                 $scope.files = files;
             };
 
-            $scope.cleanupPath = function (path) {
+            $scope.cleanupArray = function (path) {
                 var newPath = [];
                 path.forEach(function (pathPart) {
                     if (pathPart.path != '') {
                         newPath.push(pathPart.path);
                     }
                 });
+                return newPath;
             };
 
             $scope.changeLocation = function (url, forceReload) {
