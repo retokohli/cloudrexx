@@ -40,7 +40,6 @@
             get: function (type) {
                 var deferred = $q.defer();
                 $http.get(cx.variables.get("cadminPath", "contrexx") + 'index.php?cmd=jsondata&object=MediaBrowser&act=' + type + '&csrf=' + cx.variables.get('csrf')).success(function (jsonadapter, status, headers) {
-                    console.log(jsonadapter);
                     if (jsonadapter.data instanceof Object) {
                         deferred.resolve(jsonadapter.data);
                     }
@@ -95,7 +94,7 @@
             $scope.sources = [];
             $scope.fileCallBack = '';
             $scope.files = [];
-            $scope.dataFiles = [];
+            $scope.allFiles = [];
             $scope.sites = [];
             $scope.loadingSources = true;
 
@@ -143,8 +142,9 @@
                         mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, '').then(
                             function getFiles(data) {
                                 $scope.loadingSources = false;
-                                $scope.dataFiles = data;
-                                $scope.files = $scope.dataFiles;
+                                $scope.allFiles = data;
+                                $scope.files = $scope.getValueByPath($scope.allFiles, $scope.path);
+                                console.log($scope.getValueByPath($scope.allFiles, $scope.path));
                                 if (!mediabrowserConfig.isset('lastPath')){
                                     mediabrowserConfig.set('lastPath',$scope.path);
                                 }
@@ -289,8 +289,8 @@
                 mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, '').then(
                     function getFiles(data) {
                         $scope.loadingSources = false;
-                        $scope.dataFiles = data;
-                        $scope.files = data;
+                        $scope.allFiles = data;
+                        $scope.files = $scope.getValueByPath($scope.allFiles, $scope.path);
                         $timeout(function () {
                             $scope.$apply();
                             jQuery(".filelist").fadeIn();
@@ -301,9 +301,9 @@
 
             $scope.refreshBrowser = function () {
                 mediabrowserConfig.set('lastPath',$scope.path);
-                var files = $scope.dataFiles;
+                var files = $scope.allFiles;
                 $scope.selectedFiles = [];
-                $scope.setFiles($scope.dataFiles);
+                $scope.setFiles($scope.allFiles);
                 $scope.path.forEach(function (pathpart) {
                     if (!pathpart.standard) {
                         files = files[pathpart.path];
@@ -338,15 +338,15 @@
                         setValueInFilesByPath(newPath, data);
                         function setValueInFilesByPath(path, value) {
                             if (path.length == 1 && value !== undefined) {
-                                return $scope.dataFiles[path[0]] = Object.assign($scope.dataFiles[path[0]], value);
+                                return $scope.allFiles[path[0]] = Object.assign($scope.allFiles[path[0]], value);
                             } else if (path.length == 0) {
-                                return $scope.dataFiles;
+                                return $scope.allFiles;
                             } else {
-                                return $scope.setValueInFilesByPath($scope.dataFiles[path[0]], path.slice(1), value);
+                                return $scope.setValueInFilesByPath($scope.allFiles[path[0]], path.slice(1), value);
                             }
                         }
 
-                        $scope.files = $scope.dataFiles;
+                        $scope.files = $scope.getValueByPath($scope.allFiles, $scope.path);
                         console.log($scope.files);
                         $timeout(function () {
                             $scope.$apply();
@@ -370,6 +370,20 @@
                     }
                 }
                 $scope.refreshBrowser();
+            };
+
+            $scope.getValueByPath = function (obj, path) {
+                var newPath = [];
+                path.forEach(function (path) {
+                    if (path.path != '') {
+                        newPath.push(path.path);
+                    }
+                });
+                for (var i = 0; i < newPath.length; i++) {
+                    if (!obj) return null;
+                    obj = obj[newPath[i]];
+                }
+                return obj;
             };
 
             $scope.setFiles = function (files) {
