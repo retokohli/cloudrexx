@@ -445,7 +445,11 @@ class CacheLib
                 $settings['internalSsiCache'] != 'on'
             )
         ) {
-            return $this->getApiResponseForUrl($url);
+            try {
+                return $this->getApiResponseForUrl($url);
+            } catch (\Exception $e) {
+                return '';
+            }
         }
         return $this->getSsiProxy()->getSsiProcessor()->getIncludeCode($url->toString());
     }
@@ -471,7 +475,11 @@ class CacheLib
                 $settings['internalSsiCache'] != 'on'
             )
         ) {
-            return $this->getApiResponseForUrl($urls[rand(0, (count($urls) - 1))]);
+            try {
+                return $this->getApiResponseForUrl($urls[rand(0, (count($urls) - 1))]);
+            } catch (\Exception $e) {
+                return '';
+            }
         }
         return $this->getSsiProxy()->getSsiProcessor()->getRandomizedIncludeCode($urls);
     }
@@ -480,6 +488,7 @@ class CacheLib
      * Returns the content of the API response for an API URL
      * This gets data internally and does not do a HTTP request!
      * @param string $url API URL
+     * @throws \Exception If JsonAdapter request did not succeed
      * @return string API content or empty string
      */
     protected function getApiResponseForUrl($url) {
@@ -516,7 +525,7 @@ class CacheLib
             !isset($response['data']) ||
             !isset($response['data']['content'])
         ) {
-            return '';
+            throw new \Exception('JsonAdapter returned with an error');
         }
         return $response['data']['content'];
     }
