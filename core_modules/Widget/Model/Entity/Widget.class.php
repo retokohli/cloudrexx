@@ -120,6 +120,13 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
                 return;
             }
             $this->internalParse($template, $response, $targetComponent, $targetEntity, $targetId);
+            // recurse:
+            $this->getSystemComponentController()->parseWidgets(
+                $template,
+                $targetComponent,
+                $targetEntity,
+                $targetId
+            );
         }
     }
 
