@@ -157,7 +157,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     protected function getParseTarget($componentName, $entityName, $entityId) {
         // the following IF block can be dropped as soon as Block is a Doctrine entity
         if ($componentName == 'Block' && $entityName == 'Block') {
-            return null;
+            return new \Cx\Modules\Block\Model\Entity\Block($entityId);
         }
         $em = $this->cx->getDb()->getEntityManager();
         $component = $this->getComponent($componentName);
