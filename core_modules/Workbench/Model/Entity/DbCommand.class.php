@@ -121,6 +121,8 @@ class DbCommand extends Command {
                 // check for mwb file
                 if (!empty($componentType) && !empty($componentName)) {
                     $this->tryYamlGeneration($componentType, $componentName);
+                    \DBG::log('Completed: tryYamlGeneration');
+                    return;
                 }
                 
                 // doctrine orm:generate-entities --filter="{component filter}" entities
@@ -396,11 +398,75 @@ class DbCommand extends Command {
         );
 
         try {
-            $outDir    = $component->getDirectory() . '/Model/Yaml';
+            $outputDir = \cmsSession::getInstance()->getTempPath() . '/workbench/Yaml';
             $bootstrap = new \MwbExporter\Bootstrap();
             $formatter = new Doctrine2YamlFormatter('doctrine2-yaml');
             $formatter->setup($setup);
-            $bootstrap->export($formatter, $mwbFile, $outDir, 'file');
+            $bootstrap->export($formatter, $mwbFile, $outputDir, 'file');
+
+            \Cx\Lib\FileSystem\FileSystem::makeWritable($this->cx->getWebsiteTempPath() . '/workbench');
+            \Cx\Lib\FileSystem\FileSystem::makeWritable($outputDir);
+
+            //Move the generated yaml file from tmp to corresponding component
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($outputDir)) {
+                $this->interface->show('Unable to create YAML files.');
+                return;
+            }
+
+            $components    = array();
+            $errorFiles    = array();
+            $em            = $this->cx->getDb()->getEntityManager();
+            $componentRepo = $em->getRepository('\Cx\Core\Core\Model\Entity\SystemComponent');
+            foreach (glob($outputDir . '/*.yml') as $yamlFile) {
+                $fileName  = basename($yamlFile);
+                $fileParts = explode('.', $fileName);
+                if (count($fileParts) != 8) {
+                    continue;
+                }
+                if (!isset($components[$fileParts[2]])) {
+                    $components[$fileParts[2]] =
+                        $componentRepo->findOneBy(array('name' => $fileParts[2]));
+                    if (!$components[$fileParts[2]]) {
+                        $errorFiles[] = $fileName;
+                        continue;
+                    }
+                }
+                $filePath = $components[$fileParts[2]]
+                    ->getDirectory() . '/Model/Yaml';
+                if (!\Cx\Lib\FileSystem\FileSystem::exists($filePath)) {
+                    if (
+                        !\Cx\Lib\FileSystem\FileSystem::make_folder(
+                            $filePath,
+                            true
+                        )
+                    ) {
+                        $errorFiles[] = $fileName;
+                        continue;
+                    }
+                } else {
+                    //yml backup
+                }
+
+                if (
+                    !\Cx\Lib\FileSystem\FileSystem::copyFile(
+                        $outputDir. '/',
+                        $fileName,
+                        $filePath . '/',
+                        $fileName
+                    )
+                ) {
+                   $errorFiles[] = $fileName;
+                }
+            }
+
+            if (empty($errorFiles)) {
+                $this->interface->show('YAML files created successfully.');
+                return;
+            }
+            $errorText = count($errorFiles) > 1
+                ? 'Unable to create the following yml files'
+                : 'Unable to create the yml file';
+            $this->interface->show($errorText . implode(',', $errorFiles) . '!');
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());
         }
