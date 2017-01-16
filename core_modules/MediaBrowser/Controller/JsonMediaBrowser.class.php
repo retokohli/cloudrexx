@@ -145,9 +145,11 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
             ? $params['get']['path'] : '/';
         $mediaType = (strlen($params['get']['mediatype']) > 0)
             ? $params['get']['mediatype'] : 'files';
+        $recursive = (strlen($params['get']['recursive']) > 0)
+            ? $params['get']['recursive'] : false;
 
         $mediaTypes = $this->cx->getMediaSourceManager()->getMediaTypes();
-        return $mediaTypes[$mediaType]->getFileSystem()->getFileList($filePath);
+        return $mediaTypes[$mediaType]->getFileSystem()->getFileList($filePath, $recursive);
     }
 
     /**

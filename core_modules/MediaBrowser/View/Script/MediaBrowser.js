@@ -54,13 +54,16 @@
                 });
                 return deferred.promise;
             },
-            getByMediaTypeAndPath: function (mediatype, path) {
+            getByMediaTypeAndPath: function (mediatype, path, recursive) {
                 var params = '';
                 if (mediatype) {
                     params += '&mediatype=' + mediatype;
                 }
                 if (path) {
                     params += '&path=' + path;
+                }
+                if (recursive) {
+                    params += '&recursive=' + recursive;
                 }
                 return this.get('getFiles' + params)
             }
@@ -139,7 +142,7 @@
                             }
                         }
 
-                        mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, '').then(
+                        mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, '', false).then(
                             function getFiles(data) {
                                 $scope.loadingSources = false;
                                 $scope.allFiles = data;
@@ -280,12 +283,19 @@
                 $scope.activeController = tab.controller;
             };
 
-            $scope.updateSource = function () {
+            $scope.updateSourceSearch = function () {
+                if (!$scope.searchSourceLoaded) {
+                    $scope.updateSource(true);
+                }
+                $scope.searchSourceLoaded = true;
+            };
+
+            $scope.updateSource = function (recursive) {
                 $scope.path = [
                     {name: "" + $scope.selectedSource.name, path: '', standard: true}
                 ];
                 $scope.loadingSources = true;
-                mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, '').then(
+                mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, '', recursive).then(
                     function getFiles(data) {
                         $scope.loadingSources = false;
                         $scope.allFiles = data;
@@ -324,7 +334,7 @@
                 var potentialValue = $scope.getValueByPath($scope.allFiles, $scope.path);
                 if ($scope.objectSize(potentialValue) < 3) {
                     $scope.loadingSources = true;
-                    mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, $scope.getPathAsString()).then(
+                    mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, $scope.getPathAsString(), false).then(
                         function getFiles(data) {
                             $scope.loadingSources = false;
                             $scope.allFiles = $scope.addValueByPath($scope.allFiles, $scope.path, data);
@@ -421,7 +431,7 @@
 
 
             $scope.afterUpload = function () {
-                $scope.updateSource();
+                $scope.updateSource(false);
             };
 
             $scope.length = function (obj) {
@@ -691,7 +701,7 @@
                                                 title: cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser')
                                              });
                                         }
-                                        $scope.updateSource();
+                                        $scope.updateSource(false);
                                     }).error(function () {
                                         bootbox.alert({
                                             className: "media-browser-modal-window",
@@ -743,7 +753,7 @@
                                         'X-Requested-With': 'XMLHttpRequest'
                                     }
                                 }).success(function (jsonadapter) {
-                                    $scope.updateSource();
+                                    $scope.updateSource(false);
                                 }).error(function () {
                                     bootbox.alert({
                                         className: "media-browser-modal-window",
@@ -784,7 +794,7 @@
                                     data: $.param({dir: dirName}),
                                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                                 }).success(function (jsonadapter) {
-                                    $scope.updateSource();
+                                    $scope.updateSource(false);
                                 }).error(function () {
                                     bootbox.alert({
                                         className: "media-browser-modal-window",

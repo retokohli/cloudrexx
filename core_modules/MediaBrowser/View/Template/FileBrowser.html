@@ -7,7 +7,7 @@
         </ul>
     </div>
     <div class="fileOptions">
-        <input type="search" id="fileSearch" placeholder="Search.. " data-ng-model="searchConfig.string">
+        <input type="search" id="fileSearch" placeholder="Search.. " data-ng-model="searchConfig.string" data-ng-change="updateSourceSearch()">
         <label for="FileSearchIsRegex" id="FileSearchIsRegexLabel" data-tooltip-placement="bottom" data-tooltip="{{
             'TXT_FILEBROWSER_EXTENDED_FILE_SEARCH_EXPLANATION' | translate }}">
             <input type="checkbox" id="FileSearchIsRegex" data-ng-model="searchConfig.isRegex"/>
