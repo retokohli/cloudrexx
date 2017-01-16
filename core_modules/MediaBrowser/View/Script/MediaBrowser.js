@@ -372,7 +372,8 @@
                 } else if (path.length == 0) {
                     return obj;
                 } else {
-                    return $scope.addValueByPath(obj[path[0]], path.slice(1), value);
+                    obj[path[0]] = $scope.addValueByPath(obj[path[0]], path.slice(1), value);
+                    return obj;
                 }
             };
 
