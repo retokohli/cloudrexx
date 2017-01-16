@@ -353,18 +353,18 @@
             };
 
             $scope.getValueByPath = function (obj, path) {
-                path = $scope.cleanupArray(path);
-                for (var i = 0; i < path.length; i++) {
-                    if (!obj) return null;
-                    obj = obj[path[i]];
+                path = $scope.cleanupPath(path);
+                if (path.length) {
+                    return $scope.getValueByPath(obj[path[0]], path.slice(1));
+                } else {
+                    return obj;
                 }
-                return obj;
             };
 
             $scope.addValueByPath = function (obj, path, value) {
-                path = $scope.cleanupArray(path);
-                if (path.length == 1 && value !== undefined) {
-                    if (obj[path[0]] === undefined) {
+                path = $scope.cleanupPath(path);
+                if (path.length == 1 && value != undefined) {
+                    if (obj[path[0]] == undefined) {
                         obj[path[0]] = {};
                     }
                     obj[path[0]] = Object.assign(obj[path[0]], value);
@@ -380,14 +380,20 @@
                 $scope.files = files;
             };
 
-            $scope.cleanupArray = function (path) {
-                var newPath = [];
+            $scope.cleanupPath = function (path) {
+                var cleanPath = [];
                 path.forEach(function (pathPart) {
-                    if (pathPart.path != '') {
-                        newPath.push(pathPart.path);
+                    if (pathPart.path != undefined) {
+                        if (pathPart.path != '') {
+                            cleanPath.push(pathPart.path);
+                        }
+                    } else {
+                        if (pathPart != '') {
+                            cleanPath.push(pathPart);
+                        }
                     }
                 });
-                return newPath;
+                return cleanPath;
             };
 
             $scope.changeLocation = function (url, forceReload) {
