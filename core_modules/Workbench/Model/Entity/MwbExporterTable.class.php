@@ -134,6 +134,39 @@ class MwbExporterTable extends \MwbExporter\Formatter\Doctrine2\Yaml\Model\Table
         return $this->beautify($entityName);
     }
 
+    protected function getColumnsAsYAML(&$values)
+    {
+        foreach ($this->getColumns() as $column) {
+            $columnName   = $column->getColumnName();
+            $columnValues = $column->asYAML();
+            if (preg_match('/_/', $columnName)) {
+                $columnParts = explode('_', $columnName);
+                $columnName  = '';
+                foreach ($columnParts as $key => $columnValue) {
+                    $columnName .= ($key == 0)
+                        ? $columnValue : ucfirst($columnValue);
+                }
+                $columnValues['column'] = $column->getColumnName();
+            }
+            if ($column->isPrimary()) {
+                if (!isset($values['id'])) {
+                    $values['id'] = array();
+                }
+                $values['id'][$columnName] = $columnValues;
+            } else {
+                if ($column->isIgnored()) {
+                    continue;
+                }
+                if (!isset($values['fields'])) {
+                    $values['fields'] = array();
+                }
+                $values['fields'][$columnName] = $columnValues;
+            }
+        }
+
+        return $this;
+    }
+
     /**
      * Get relations as YML
      *
