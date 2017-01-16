@@ -299,13 +299,12 @@
             };
 
             $scope.refreshBrowser = function () {
-                mediabrowserConfig.set('lastPath',$scope.path);
+                mediabrowserConfig.set('lastPath', $scope.path);
                 var files = $scope.allFiles;
-                $scope.selectedFiles = [];
                 $scope.setFiles($scope.allFiles);
-                $scope.path.forEach(function (pathpart) {
-                    if (!pathpart.standard) {
-                        files = files[pathpart.path];
+                $scope.path.forEach(function (pathPart) {
+                    if (!pathPart.standard) {
+                        files = files[pathPart.path];
                     }
                 });
                 $scope.setFiles(files);
@@ -322,18 +321,21 @@
                         standard: false
                     });
                 }
-                $scope.loadingSources = true;
-                mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, $scope.getPathAsString()).then(
-                    function getFiles(data) {
-                        $scope.loadingSources = false;
-                        $scope.allFiles = $scope.addValueByPath($scope.allFiles, $scope.path, data);
-                        $scope.files = $scope.getValueByPath($scope.allFiles, $scope.path);
-                        $timeout(function () {
-                            $scope.$apply();
-                            jQuery(".filelist").fadeIn();
-                        });
-                    }
-                );
+                var potentialValue = $scope.getValueByPath($scope.allFiles, $scope.path);
+                if ($scope.objectSize(potentialValue) < 3) {
+                    $scope.loadingSources = true;
+                    mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, $scope.getPathAsString()).then(
+                        function getFiles(data) {
+                            $scope.loadingSources = false;
+                            $scope.allFiles = $scope.addValueByPath($scope.allFiles, $scope.path, data);
+                            $scope.files = $scope.getValueByPath($scope.allFiles, $scope.path);
+                            $timeout(function () {
+                                $scope.$apply();
+                                jQuery(".filelist").fadeIn();
+                            });
+                        }
+                    );
+                }
                 $scope.searchString = '';
                 $scope.refreshBrowser();
             };
@@ -395,6 +397,14 @@
                     }
                 });
                 return cleanPath;
+            };
+
+            $scope.objectSize = function (obj) {
+                var size = 0, key;
+                for (key in obj) {
+                    if (obj.hasOwnProperty(key)) size++;
+                }
+                return size;
             };
 
             $scope.changeLocation = function (url, forceReload) {
