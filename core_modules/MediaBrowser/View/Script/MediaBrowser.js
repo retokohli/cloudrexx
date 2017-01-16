@@ -291,6 +291,9 @@
             };
 
             $scope.updateSource = function (recursive) {
+                if (!recursive) {
+                    $scope.searchSourceLoaded = false
+                }
                 $scope.path = [
                     {name: "" + $scope.selectedSource.name, path: '', standard: true}
                 ];
