@@ -122,9 +122,13 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $this->arrPageContent = array(
             'url' => $currentUrl,
             'request' => $request,
-            'accept_language' => $_SERVER['HTTP_ACCEPT_LANGUAGE'],
             'isMobile' => $isMobile,
         );
+        // since crawlers do not send accept language header, we make it optional
+        // in order to keep the logs clean
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $this->arrPageContent['accept_language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+        }
         $this->strCacheFilename = md5(serialize($this->arrPageContent));
     }
 
@@ -331,7 +335,11 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 if (strpos($htmlCode, $esiPlaceholder) === false) {
                     continue;
                 }
-                $varValue = $this->getApiResponseForUrl($url);
+                try {
+                    $varValue = $this->getApiResponseForUrl($url);
+                } catch (\Exception $e) {
+                    $varValue = '';
+                }
                 $htmlCode = str_replace($esiPlaceholder, $varValue, $htmlCode);
             }
         }
@@ -362,11 +370,15 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 define('FRONTEND_LANG_ID', 1);
             }
 
-            $content = $this->getApiResponseForUrl($matches[1]);
+            try {
+                $content = $this->getApiResponseForUrl($matches[1]);
 
-            if ($settings['internalSsiCache'] == 'on') {
-                $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
-                $file->write($content);
+                if ($settings['internalSsiCache'] == 'on') {
+                    $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
+                    $file->write($content);
+                }
+            } catch (\Exception $e) {
+                $content = '';
             }
 
             return $content;
