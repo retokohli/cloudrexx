@@ -965,7 +965,6 @@ cx.cm = function(target) {
                 "page_metatitle",
                 "page_metadesc",
                 "page_metakeys",
-                "page_metaimage",
                 "page_slug"
             ];
             cx.jQuery.each(fields, function(index, el) {
@@ -1187,7 +1186,10 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             }
         },
         "cookies" : {
-            'save_selected' : false
+            'save_loaded' : cx.variables.get('save_loaded', 'contentmanager/jstree'),
+            'save_opened' : cx.variables.get('save_opened', 'contentmanager/jstree'),
+            'save_selected' : false,
+            'cookie_options': {path: cx.variables.get('basePath')}
         }
     })
     .bind("before.jstree", function(e, data) {

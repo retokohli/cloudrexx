@@ -74,6 +74,32 @@ class ModelEventListener implements EventListener {
         ) {
             return;
         }
+        // onFlush has different arguments
+        if ($em instanceof \Doctrine\ORM\Event\OnFlushEventArgs) {
+            $em = $em->getEntityManager();
+            $uow = $em->getUnitOfWork();
+            $entityClasses = array();
+            foreach (
+                array(
+                    'EntityInsertions',
+                    'EntityUpdates',
+                    'EntityDeletions',
+                    'CollectionDeletions',
+                    'CollectionUpdates',
+                ) as $method
+            ) {
+                $method = 'getScheduled' . $method;
+                $entityClasses += array_unique(array_map('get_class', $uow->$method()));
+            }
+            $entityClasses = array_unique($entityClasses);
+            $proxyClass = 'Cx\\Model\\Proxies\\' . str_replace('\\', '', $this->entityClass) . 'Proxy';
+            if (
+                !in_array($this->entityClass, $entityClasses) &&
+                !in_array($proxyClass, $entityClasses)
+            ) {
+                return;
+            }
+        }
         $eventName = substr($eventName, 6);
         if (is_callable($this->listener)) {
             $listener = $this->listener;

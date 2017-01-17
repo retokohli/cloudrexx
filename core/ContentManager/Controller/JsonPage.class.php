@@ -212,10 +212,6 @@ class JsonPage implements JsonAdapter {
         $lang   = !empty($pageArray['lang'])  ? contrexx_input2raw($pageArray['lang'])  : (!empty($dataPost['lang']) ? contrexx_input2raw($dataPost['lang']) : \FWLanguage::getLanguageCodeById(\FWLanguage::getDefaultLangId()));
         $action = !empty($dataPost['action']) ? contrexx_input2raw($dataPost['action']) : '';
 
-        $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-        $cacheManager->deleteSingleFile($pageId);
-
-
         if (!empty($pageArray)) {
             if (!empty($pageArray['target']) && !empty($pageArray['target_protocol'])) {
                 $pageArray['target'] = $pageArray['target_protocol'] . $pageArray['target'];
@@ -264,17 +260,17 @@ class JsonPage implements JsonAdapter {
                     $parentNode->addChildren($node);
 
                     // add parent node to ID, so the node containing the new page is opened
-                    if (!isset($_COOKIE['jstree_open'])) {
-                        $_COOKIE['jstree_open'] = '';
+                    $openNodes = array();
+                    if (isset($_COOKIE[\Cx\Core\ContentManager\Controller\ContentManager::JSTREE_COOKIE_OPEN])) {
+                        $openNodes = explode(',', $_COOKIE[\Cx\Core\ContentManager\Controller\ContentManager::JSTREE_COOKIE_OPEN]);
                     }
-                    $openNodes = explode(',', $_COOKIE['jstree_open']);
                     if ($openNodes == array(0=>'')) {
                         $openNodes = array();
                     }
                     if (!in_array('#node_' . $parentNode->getId(), $openNodes)) {
                         $openNodes[] = '#node_' . $parentNode->getId();
                     }
-                    setcookie('jstree_open', implode(',', $openNodes));
+                    setcookie(\Cx\Core\ContentManager\Controller\ContentManager::JSTREE_COOKIE_OPEN, implode(',', $openNodes), 0, \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath() . '/');
 
                     $this->em->persist($node);
                     $this->em->flush();
@@ -637,6 +633,16 @@ class JsonPage implements JsonAdapter {
                 $this->em->flush();
             }
             $this->em->getConnection()->commit();
+
+            // Drop cache of our page and all pages pointing to our page
+            $pageIdsToDropCache = $this->pageRepo->getPagesPointingTo($page);
+            $pageIdsToDropCache[] = $page->getId();
+
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cacheComponent = $cx->getComponent('Cache');
+            foreach ($pageIdsToDropCache as $pageIdToDropCache) {
+                $cacheComponent->deleteSingleFile($pageIdToDropCache);
+            }
         } catch (\Exception $e) {
             $this->em->getConnection()->rollback();
             throw $e;
