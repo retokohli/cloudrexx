@@ -512,19 +512,17 @@ class DbCommand extends Command {
                 }
             }
 
-            if (
-                $first &&
-                \Cx\Lib\FileSystem\FileSystem::exists(
-                    $filePath . '/' . $fileName
-                )
-            ) {
+            $isFileAlreadyExists = \Cx\Lib\FileSystem\FileSystem::exists(
+                $filePath . '/' . $fileName
+            );
+            if ($first && $isFileAlreadyExists) {
                 $first      = false;
                 $backupFile = $this->interface->yesNo(
                     'Do you want to backup the existing YAML files?'
                 );
             }
 
-            if (!$backupFile) {
+            if (!$isFileAlreadyExists || !$backupFile) {
                 goto copyFile;
             }
 

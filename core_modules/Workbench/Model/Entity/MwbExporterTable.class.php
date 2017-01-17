@@ -134,6 +134,13 @@ class MwbExporterTable extends \MwbExporter\Formatter\Doctrine2\Yaml\Model\Table
         return $this->beautify($entityName);
     }
 
+    /**
+     * Get column as YAML
+     *
+     * @param array $values array of yml file content
+     *
+     * @return \Cx\Core_Modules\Workbench\Model\Entity\MwbExporterTable
+     */
     protected function getColumnsAsYAML(&$values)
     {
         foreach ($this->getColumns() as $column) {
@@ -168,7 +175,7 @@ class MwbExporterTable extends \MwbExporter\Formatter\Doctrine2\Yaml\Model\Table
     }
 
     /**
-     * Get relations as YML
+     * Get relations as YAML
      *
      * @param array $values array of YAML contents
      *
@@ -284,6 +291,73 @@ class MwbExporterTable extends \MwbExporter\Formatter\Doctrine2\Yaml\Model\Table
                         ? null
                         : lcfirst($this->getRelatedVarName($inversedBy, $related)),
                 ), $this->getJoins($foreign, false));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get manyToMany relations
+     *
+     * @param array $values array of yml content
+     *
+     * @return \Cx\Core_Modules\Workbench\Model\Entity\MwbExporterTable
+     */
+    protected function getM2MRelationsAsYAML(&$values)
+    {
+        // many to many relations
+        foreach ($this->getTableM2MRelations() as $relation) {
+            $fk1 = $relation['reference'];
+            $isOwningSide = $this->getFormatter()->isOwningSide($relation, $fk2);
+            $mappings = array(
+                'targetEntity' => $relation['refTable']
+                    ->getModelNameAsFQCN($this->getEntityNamespace()),
+                'mappedBy'     => null,
+                'inversedBy'   => lcfirst($this->getPluralModelName()),
+                'cascade'      => $this->getFormatter()
+                    ->getCascadeOption($fk1->parseComment('cascade')),
+                'fetch'        => $this->getFormatter()
+                    ->getFetchOption($fk1->parseComment('fetch')),
+            );
+            $relationName = lcfirst(
+                \Doctrine\Common\Inflector\Inflector::pluralize(
+                    $relation['refTable']->getPluralModelName()
+                )
+            );
+            // if this is the owning side, also output the JoinTable Annotation
+            // otherwise use "mappedBy" feature
+            if ($isOwningSide) {
+                if ($fk1->isUnidirectional()) {
+                    unset($mappings['inversedBy']);
+                }
+
+                $type = 'manyToMany';
+                if (!isset($values[$type])) {
+                    $values[$type] = array();
+                }
+                $values[$type][$relationName] = array_merge($mappings, array(
+                    'joinTable' => array(
+                        'name'               => $fk1
+                            ->getOwningTable()->getRawTableName(),
+                        'joinColumns'        => $this
+                            ->convertJoinColumns($this->getJoins($fk1, false)),
+                        'inverseJoinColumns' => $this
+                            ->convertJoinColumns($this->getJoins($fk2, false)),
+                    ),
+                ));
+            } else {
+                if ($fk2->isUnidirectional()) {
+                    continue;
+                }
+                $mappings['mappedBy'] = $mappings['inversedBy'];
+                $mappings['inversedBy'] = null;
+
+                $type = 'manyToMany';
+                if (!isset($values[$type])) {
+                    $values[$type] = array();
+                }
+                $values[$type][$relationName] = $mappings;
             }
         }
 
