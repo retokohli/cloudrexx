@@ -67,7 +67,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
     /**
      * @todo    Option $recursive does not work. It always acts as recursive is set to TRUE
      */
-    public function getFileList($directory, $recursive = false, $readonly = false) {
+    public function getFileList($directory, $recursive = true, $readonly = false) {
         if (isset($this->fileListCache[$directory][$recursive][$readonly])) {
             return $this->fileListCache[$directory][$recursive][$readonly];
         }
