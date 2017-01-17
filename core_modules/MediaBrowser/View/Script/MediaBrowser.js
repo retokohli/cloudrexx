@@ -147,10 +147,20 @@
                                 $scope.loadingSources = false;
                                 $scope.allFiles = data;
                                 $scope.files = $scope.getValueByPath($scope.allFiles, $scope.path);
-                                if (!mediabrowserConfig.isset('lastPath')){
-                                    mediabrowserConfig.set('lastPath',$scope.path);
-                                }
-                                else {
+                                if (!mediabrowserConfig.isset('lastPath')) {
+                                    mediabrowserConfig.set('lastPath', $scope.path);
+                                } else {
+                                    var oldPath = mediabrowserConfig.get('lastPath');
+                                    var i = 1;
+                                    var extendPathNext = function () {
+                                        $scope.extendPath(oldPath[i].path).then(function () {
+                                            i++;
+                                            if (i < oldPath.length) {
+                                                extendPathNext();
+                                            }
+                                        });
+                                    };
+                                    extendPathNext();
                                     $scope.inRootDirectory = ($scope.path.length == 1);
                                     jQuery(".filelist").fadeIn();
                                 }
@@ -337,7 +347,7 @@
                 var potentialValue = $scope.getValueByPath($scope.allFiles, $scope.path);
                 if ($scope.objectSize(potentialValue) < 3) {
                     $scope.loadingSources = true;
-                    mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, $scope.getPathAsString(), false).then(
+                    return mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, $scope.getPathAsString(), false).then(
                         function getFiles(data) {
                             $scope.loadingSources = false;
                             $scope.allFiles = $scope.addValueByPath($scope.allFiles, $scope.path, data);
@@ -346,11 +356,11 @@
                                 $scope.$apply();
                                 jQuery(".filelist").fadeIn();
                             });
+                            $scope.searchString = '';
+                            $scope.refreshBrowser();
                         }
                     );
                 }
-                $scope.searchString = '';
-                $scope.refreshBrowser();
             };
 
             /**
