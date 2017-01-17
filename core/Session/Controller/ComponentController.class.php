@@ -69,4 +69,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getSession() {
         return \Cx\Core\Session\Model\Entity\Session::getInstance();
     }
+
+    /**
+     * Returns the state of the session
+     * @return boolean TRUE if the session has been initialized, otherwise FALSE
+     */
+    public function isInitialized() {
+        return \Cx\Core\Session\Model\Entity\Session::isInitialized();
+    }
 }

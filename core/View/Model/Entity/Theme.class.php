@@ -155,24 +155,6 @@ class Theme extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * @return string the preview image source web path
-     */
-    public function getPreviewImage() {
-        $websiteFilePath  = \Env::get('cx')->getWebsiteThemesPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
-        $codeBaseFilePath = \Env::get('cx')->getCodeBaseThemesPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
-        $filePath         = file_exists($websiteFilePath)
-                            ? $websiteFilePath
-                            : ( file_exists($codeBaseFilePath)
-                                ? $codeBaseFilePath
-                                : ''
-                              );
-        if ($filePath && file_exists($filePath)) {
-            return \Env::get('cx')->getWebsiteThemesWebPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
-        }
-        return \Env::get('cx')->getCodeBaseOffsetPath(). self::THEME_DEFAULT_PREVIEW_FILE;
-    }
-
-    /**
      * @return string the extra description includes the names of end devices, where
      * the theme is set as default
      */
@@ -380,5 +362,39 @@ class Theme extends \Cx\Model\Base\EntityBase
 
     public function addDefault($type) {
         $this->defaults[] = $type;
+    }
+
+    /**
+     * Get the themes file path
+     *
+     * @param type $filePath
+     * @return string
+     */
+    public function getFilePath($filePath)
+    {
+        if (empty($filePath)) {
+            return '';
+        }
+        $fileSystem = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getMediaSourceManager()
+            ->getMediaType('themes')
+            ->getFileSystem();
+        $file = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($filePath, $fileSystem);
+
+        return $fileSystem->getFullPath($file);
+    }
+
+    /**
+     * Preview image source web path
+     *
+     * @return string the preview image source web path
+     */
+    public function getPreviewImage()
+    {
+        $filePath = $this->getFilePath($this->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE);
+        if ($filePath && file_exists($filePath)) {
+            return $this->cx->getWebsiteThemesWebPath() . '/' . $this->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE;
+        }
+        return $this->cx->getCodeBaseOffsetPath(). \Cx\Core\View\Model\Entity\Theme::THEME_DEFAULT_PREVIEW_FILE;
     }
 }
