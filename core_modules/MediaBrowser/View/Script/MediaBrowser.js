@@ -43,7 +43,7 @@
                     if (jsonadapter.data instanceof Object) {
                         deferred.resolve(jsonadapter.data);
                     }
-                    else if (jsonadapter.match(/login_form/)){
+                    else if (jsonadapter.match(/login_form/)) {
                         deferred.reject(cx.variables.get('TXT_FILEBROWSER_LOGGED_OUT', 'mediabrowser'));
                     }
                     else {
@@ -103,12 +103,16 @@
 
 
             $scope.path = [
-                {name: cx.variables.get('TXT_FILEBROWSER_FILES', 'mediabrowser'), path: '', standard: true}
+                {
+                    name: cx.variables.get('TXT_FILEBROWSER_FILES', 'mediabrowser'),
+                    path: '',
+                    standard: true
+                }
             ];
 
             $scope.activeController = mediabrowserConfig.get('startView');
 
-            $scope.loadSites = function() {
+            $scope.loadSites = function () {
                 mediabrowserFiles.get('getSites').then(
                     function getSites(data) {
                         $scope.sites = data;
@@ -117,7 +121,7 @@
             };
 
             var attempts = 0;
-            $scope.loadSources = function(){
+            $scope.loadSources = function () {
                 mediabrowserFiles.get('getSources').then(
                     function getSources(data) {
                         $scope.sources = data;
@@ -169,7 +173,7 @@
                     }, function (reason) {
                         // If the request fails, try it 3 more times.
                         attempts++;
-                        if (attempts < 4){
+                        if (attempts < 4) {
                             $scope.loadSources();
                         }
                         else {
@@ -185,11 +189,11 @@
             };
 
             setTimeout(function () {
-                $scope.initialize = function(){
+                $scope.initialize = function () {
                     $scope.loadSites();
                     $scope.loadSources();
                 }();
-            },400);
+            }, 400);
 
             $scope.ok = function () {
                 $modalInstance.close();
@@ -260,10 +264,10 @@
                 var isStartviewInViews = false;
                 var newTabNames = mediabrowserConfig.get('views');
 
-                if(newTabNames.indexOf("filebrowser") !== -1 && newTabNames.indexOf("uploader") === -1){
+                if (newTabNames.indexOf("filebrowser") !== -1 && newTabNames.indexOf("uploader") === -1) {
                     newTabNames.push("uploader");
                 }
-                if(newTabNames.indexOf("filebrowser") === -1 && newTabNames.indexOf("uploader") !== -1){
+                if (newTabNames.indexOf("filebrowser") === -1 && newTabNames.indexOf("uploader") !== -1) {
                     newTabNames.push("filebrowser");
                 }
 
@@ -305,7 +309,11 @@
                     $scope.searchSourceLoaded = false
                 }
                 $scope.path = [
-                    {name: "" + $scope.selectedSource.name, path: '', standard: true}
+                    {
+                        name: "" + $scope.selectedSource.name,
+                        path: '',
+                        standard: true
+                    }
                 ];
                 $scope.loadingSources = true;
                 mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, '', recursive).then(
@@ -442,7 +450,6 @@
             };
 
 
-
             $scope.afterUpload = function () {
                 $scope.updateSource(false);
             };
@@ -451,7 +458,7 @@
                 var size = 0, key;
                 for (key in obj) {
                     /* Angularjs */
-                    if (key != '$$hashKey'){
+                    if (key != '$$hashKey') {
                         if (obj.hasOwnProperty(key)) size++;
                     }
                 }
@@ -475,7 +482,7 @@
             $scope.showUploadedHint = false;
 
             $scope.template = {
-                url: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/Uploader.html'
+                url: cx.variables.get('basePath', 'contrexx') + 'core_modules/MediaBrowser/View/Template/Uploader.html'
             };
 
             $scope.loadedTemplate = function () {
@@ -486,9 +493,9 @@
                     container: 'uploader',
                     drop_element: "uploader",
                     url: '?csrf=' + cx.variables.get('csrf') + '&cmd=jsondata&object=Uploader&act=upload',
-                    flash_swf_url: cx.variables.get('basePath','contrexx')+'lib/plupload/js/Moxie.swf',
-                    silverlight_xap_url: cx.variables.get('basePath','contrexx')+'lib/plupload/js/Moxie.xap',
-                    chunk_size: cx.variables.get('chunk_size','mediabrowser'),
+                    flash_swf_url: cx.variables.get('basePath', 'contrexx') + 'lib/plupload/js/Moxie.swf',
+                    silverlight_xap_url: cx.variables.get('basePath', 'contrexx') + 'lib/plupload/js/Moxie.xap',
+                    chunk_size: cx.variables.get('chunk_size', 'mediabrowser'),
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'Check-CSRF': 'false'
@@ -497,7 +504,7 @@
                         "path": ''
                     },
                     init: {
-                        Init: function(){
+                        Init: function () {
                             $J('#selectFileFromComputer').prop("disabled", false);
                         },
                         FilesAdded: function (up, files) {
@@ -506,7 +513,7 @@
                                 $scope.finishedUpload = false;
                             }
                             for (var file in files) {
-                                if (files.hasOwnProperty(file)){
+                                if (files.hasOwnProperty(file)) {
                                     $scope.uploaderData.filesToUpload.push(files[file]);
                                 }
                             }
@@ -538,7 +545,7 @@
                 });
                 $scope.uploader.init();
 
-                jQuery( ".uploadPlatform" ).mouseenter(function() {
+                jQuery(".uploadPlatform").mouseenter(function () {
                     $scope.uploader.refresh();
                 });
             };
@@ -578,10 +585,9 @@
             };
 
             $scope.template = {
-                url: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/FileBrowser.html'
+                url: cx.variables.get('basePath', 'contrexx') + 'core_modules/MediaBrowser/View/Template/FileBrowser.html'
             };
             // __construct
-
 
 
             /**
@@ -595,7 +601,6 @@
                 });
                 return returnValue;
             };
-
 
 
             /**
@@ -633,7 +638,7 @@
                             }
                             $scope.closeModal();
                         }
-                        else if (!mediabrowserConfig.get('multipleSelect')){
+                        else if (!mediabrowserConfig.get('multipleSelect')) {
                             $scope.selectedFiles = [];
                             if (!jQuery.isEmptyObject($scope.lastActiveFile)) {
                                 $scope.lastActiveFile.datainfo.active = false;
@@ -641,7 +646,7 @@
                             $scope.lastActiveFile = file;
                             $scope.selectedFiles.push(file);
                         }
-                        else if (mediabrowserConfig.get('multipleSelect')){
+                        else if (mediabrowserConfig.get('multipleSelect')) {
                             $scope.selectedFiles.push(file);
                         }
                     }
@@ -649,9 +654,9 @@
                 }
             };
 
-            $scope.escapeString = function(string){
-                return string.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
-                    return '&#'+i.charCodeAt(0)+';';
+            $scope.escapeString = function (string) {
+                return string.replace(/[\u00A0-\u9999<>\&]/gim, function (i) {
+                    return '&#' + i.charCodeAt(0) + ';';
                 });
             };
 
@@ -712,7 +717,7 @@
                                             bootbox.alert({
                                                 className: "media-browser-modal-window",
                                                 title: cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser')
-                                             });
+                                            });
                                         }
                                         $scope.updateSource(false);
                                     }).error(function () {
@@ -726,7 +731,7 @@
                         }
                     }
                 });
-                renameDialog.bind('shown.bs.modal', function(){
+                renameDialog.bind('shown.bs.modal', function () {
                     renameDialog.find("input").select().keypress(function (e) {
                         if (e.which == 13) {
                             e.preventDefault();
@@ -757,7 +762,7 @@
                             callback: function () {
                                 $http({
                                     method: 'POST',
-                                    url: 'index.php?cmd=jsondata&object=MediaBrowser&act=removeFile&path=' + encodeURI($scope.getPathAsString())  + '&csrf=' + cx.variables.get('csrf'),
+                                    url: 'index.php?cmd=jsondata&object=MediaBrowser&act=removeFile&path=' + encodeURI($scope.getPathAsString()) + '&csrf=' + cx.variables.get('csrf'),
                                     data: $.param({
                                         file: file
                                     }),
@@ -770,7 +775,7 @@
                                 }).error(function () {
                                     bootbox.alert({
                                         className: "media-browser-modal-window",
-                                        title:cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser')
+                                        title: cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser')
                                     });
                                 });
 
@@ -779,7 +784,7 @@
                         }
                     }
                 });
-                removeDialog.bind('shown.bs.modal', function(){
+                removeDialog.bind('shown.bs.modal', function () {
                     removeDialog.find(".btn-danger").focus();
                 });
             };
@@ -840,11 +845,11 @@
     mediaBrowserApp.controller('SitestructureCtrl', ['$scope', 'mediabrowserConfig',
         function ($scope, mediabrowserConfig) {
 
-            $scope.activeLanguage = cx.variables.get('language','mediabrowser');
-            $scope.activeLanguages = cx.variables.get('languages','mediabrowser');
+            $scope.activeLanguage = cx.variables.get('language', 'mediabrowser');
+            $scope.activeLanguages = cx.variables.get('languages', 'mediabrowser');
 
             $scope.template = {
-                url: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/Sitestructure.html'
+                url: cx.variables.get('basePath', 'contrexx') + 'core_modules/MediaBrowser/View/Template/Sitestructure.html'
             };
 
             $scope.clickPage = function (site) {
@@ -876,7 +881,7 @@
             restrict: 'A',
             link: function (scope, el, attrs) {
                 if (attrs.previewImage !== 'none') {
-                    if (attrs.hasPreviewImage == 'true'){
+                    if (attrs.hasPreviewImage == 'true') {
                         jQuery(el).popover({
                             trigger: 'hover',
                             html: true,
@@ -885,15 +890,14 @@
                         });
                     }
                     else {
-                        $http.get('index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=' + attrs.previewImage).
-                            success(function (data, status, headers, config) {
-                                jQuery(el).popover({
-                                    trigger: 'hover',
-                                    html: true,
-                                    content: '<img src="' + attrs.previewImage.replace(/<[^>]*>/g, '') + '"  />',
-                                    placement: 'right'
-                                });
-                            })
+                        $http.get('index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=' + attrs.previewImage).success(function (data, status, headers, config) {
+                            jQuery(el).popover({
+                                trigger: 'hover',
+                                html: true,
+                                content: '<img src="' + attrs.previewImage.replace(/<[^>]*>/g, '') + '"  />',
+                                placement: 'right'
+                            });
+                        })
                     }
                 }
             }
@@ -944,7 +948,7 @@
     }]);
 
     mediaBrowserApp.filter('findPage', function () {
-        return function (items, search,activeLanguage) {
+        return function (items, search, activeLanguage) {
             if (!items) {
                 return [];
             }
@@ -1050,14 +1054,14 @@
 
             angular.bootstrap(jQuery(this).next('.mediaBrowserScope')[0], ['MediaBrowser']);
             var scope = angular.element(jQuery(this).next()[0]).injector();
-            if (!scope){
+            if (!scope) {
                 console.warn('.mediaBrowserScope Element is missing, please generate the button only with the mediabrowser class and not by yourself!');
                 return;
             }
 
             jQuery(this).on('click', function (event, config) {
                 var mediabrowserConfig = scope.get('mediabrowserConfig');
-                if (mediabrowserConfig.get('isOpen')){
+                if (mediabrowserConfig.get('isOpen')) {
                     return;
                 }
                 var $modal = scope.get('$modal');
@@ -1115,18 +1119,18 @@
                     }
                 }
 
-                mediabrowserConfig.set('isOpen',true);
+                mediabrowserConfig.set('isOpen', true);
                 $modal.open({
-                    templateUrl: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/MediaBrowserModal.html',
+                    templateUrl: cx.variables.get('basePath', 'contrexx') + 'core_modules/MediaBrowser/View/Template/MediaBrowserModal.html',
                     controller: 'MainCtrl',
                     dialogClass: 'media-browser-modal',
                     size: 'lg',
                     backdrop: 'static',
                     backdropClass: 'media-browser-modal-backdrop',
                     windowClass: 'media-browser-modal-window'
-                }).result.finally(function(){
-                        mediabrowserConfig.set('isOpen',false);
-                    });
+                }).result.finally(function () {
+                    mediabrowserConfig.set('isOpen', false);
+                });
 
                 /**
                  * Configuring Callbacks
