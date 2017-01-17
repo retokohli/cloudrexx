@@ -218,7 +218,8 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
             $this->setMessage(
                 $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()->moveFile(
                     new \Cx\Core\MediaSource\Model\Entity\LocalFile(
-                        $strPath . $oldName
+                        $strPath . $oldName,
+                        $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()
                     ), $newName
                 )
             );
@@ -241,7 +242,8 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
             $this->setMessage(
                 $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()->removeFile(
                     new \Cx\Core\MediaSource\Model\Entity\LocalFile(
-                        $strPath . $filename
+                        $strPath . $filename,
+                        $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()
                     )
                 )
             );
@@ -327,7 +329,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
         $localFileSystem = new \Cx\Core\MediaSource\Model\Entity\LocalFileSystem($folder);
 
         $file    = '/' . $path;
-        $objFile = new \Cx\Core\MediaSource\Model\Entity\LocalFile($file);
+        $objFile = new \Cx\Core\MediaSource\Model\Entity\LocalFile($file, $localFileSystem);
 
         $this->setMessage($localFileSystem->removeFile($objFile));
 
