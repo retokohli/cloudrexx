@@ -120,14 +120,7 @@ class DbCommand extends Command {
                 
                 // check for mwb file
                 if (!empty($componentType) && !empty($componentName)) {
-                    if (
-                        !$this->tryYamlGeneration(
-                            $componentType,
-                            $componentName
-                        )
-                    ) {
-                        return;
-                    }
+                    $this->tryYamlGeneration($componentType, $componentName);
                 }
                 
                 // doctrine orm:generate-entities --filter="{component filter}" entities
@@ -362,7 +355,6 @@ class DbCommand extends Command {
             $mwbFiles[] = $file[0];
         }
         spl_autoload_register(array($this, 'mwbExporterAutoload'));
-        $status = true;
         while (true) {
             if (!count($mwbFiles)) {
                 return;
@@ -377,21 +369,15 @@ class DbCommand extends Command {
                 return;
             }
             $mwbFile = $mwbFiles[$retVal - 1];
-            if (!$this->generateYamlFromMySqlWorkbenchFile($mwbFile)) {
-                $status = false;
-            }
+            $this->generateYamlFromMySqlWorkbenchFile($mwbFile);
             unset($mwbFiles[$retVal - 1]);
         }
-
-        return $status;
     }
 
     /**
      * Generate yaml files to component's yaml directory based on file $mwbFile
      *
      * @param string $mwbFile Path to mysql workbench file
-     *
-     * @return boolean
      */
     protected function generateYamlFromMySqlWorkbenchFile($mwbFile)
     {
@@ -413,7 +399,7 @@ class DbCommand extends Command {
             $bootstrap->export($formatter, $mwbFile, $outputDir, 'file');
 
             //Move the generated yaml file from tmp to corresponding component
-            return $this->moveYamlFilesToComponent($tempPath);
+            $this->moveYamlFilesToComponent($tempPath);
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());
         }
@@ -465,14 +451,14 @@ class DbCommand extends Command {
      *
      * @param string $tempPath workbench tmp path
      *
-     * @return boolean
+     * @return null
      */
     public function moveYamlFilesToComponent($tempPath)
     {
         $outputDir = $tempPath . '/yaml';
         if (!\Cx\Lib\FileSystem\FileSystem::exists($outputDir)) {
             $this->interface->show('Unable to create YAML files.');
-            return false;
+            return;
         }
 
         $first         = true;
@@ -532,16 +518,14 @@ class DbCommand extends Command {
                 $this->interface->show(
                     'Unable to backup the YAML files.'
                 );
-                return false;
+                return;
             }
 
             copyFile:
             if (
-                !\Cx\Lib\FileSystem\FileSystem::copyFile(
-                    $outputDir . '/',
-                    $fileName,
-                    $filePath . '/',
-                    $fileName,
+                !\Cx\Lib\FileSystem\FileSystem::copy_file(
+                    $outputDir . '/' . $fileName,
+                    $filePath . '/' . $fileName,
                     true
                 )
             ) {
@@ -557,15 +541,13 @@ class DbCommand extends Command {
                     $tempPath . '/yamlBackup' . '.'
                 );
             }
-            return true;
+            return;
         }
 
         $errorText = count($errorFiles) > 1
             ? "Unable to create the following yml files: \r\n"
             : "Unable to create the yml file ";
         $this->interface->show($errorText . implode("\r\n", $errorFiles));
-
-        return false;
     }
 
     /**
