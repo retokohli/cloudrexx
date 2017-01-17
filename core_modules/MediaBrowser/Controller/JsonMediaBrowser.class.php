@@ -41,7 +41,6 @@ use Cx\Core\Core\Model\Entity\SystemComponent;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
 use Cx\Core\Json\JsonAdapter;
 use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowserPageTree;
-use Cx\Core\MediaSource\Model\Entity\ThumbnailGenerator;
 
 /**
  * JSON Adapter for Uploader
@@ -188,11 +187,12 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      * @param $params
      */
     public function createDir($params) {
-        $pathArray                 = explode('/', $params['get']['path']);
+        $pathArray = explode('/', $params['get']['path']);
         // Shift off the first element of the array to get the media type.
-        $mediaType = array_shift($pathArray);
+        $mediaType = (strlen($params['get']['mediatype']) > 0)
+            ? $params['get']['mediatype'] : 'files';
         $strPath = '/' . utf8_decode(join('/', $pathArray));
-        $dir        = utf8_decode($params['post']['dir']) . '/';
+        $dir = utf8_decode($params['post']['dir']) . '/';
         $this->setMessage(
             $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()->createDirectory(
                 $strPath, $dir
