@@ -433,13 +433,10 @@ class DbCommand extends Command {
         }
 
         //backup the yml file
-        if (
-            !\Cx\Lib\FileSystem\FileSystem::move(
-                $sourceDir . '/' . $fileName,
-                $destDir . '/' . $fileName,
-                true
-            )
-        ) {
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File($sourceDir . '/' . $fileName);
+            $objFile->move($destDir . '/' . $fileName, true);
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             return false;
         }
 
@@ -522,14 +519,11 @@ class DbCommand extends Command {
             }
 
             copyFile:
-            if (
-                !\Cx\Lib\FileSystem\FileSystem::copy_file(
-                    $outputDir . '/' . $fileName,
-                    $filePath . '/' . $fileName,
-                    true
-                )
-            ) {
-               $errorFiles[] = $fileName;
+            try {
+                $objFile = new \Cx\Lib\FileSystem\File($outputDir . '/' . $fileName);
+                $objFile->move($filePath . '/' . $fileName, true);
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                $errorFiles[] = $fileName;
             }
         }
 
