@@ -371,6 +371,9 @@ class InitCMS
      */
     function getUserFrontendLangId()
     {
+        // check if session has been initialized yet
+        $session = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->isInitialized();
+
 // Mind: Changed from $_POST to $_REQUEST, so it can be changed by
 // clicking a link (used in the Shop, and for MailTemplates)
         if (!empty($_REQUEST['userFrontendLangId'])) {
@@ -381,7 +384,7 @@ class InitCMS
             }
         } elseif (!empty($_COOKIE['userFrontendLangId'])) {
             $id = FWLanguage::getLanguageIdByCode($_COOKIE['userFrontendLangId']);
-        } elseif (!empty($_SESSION['userFrontendLangId'])) {
+        } elseif ($session && !empty($_SESSION['userFrontendLangId'])) {
             $id = intval($_SESSION['userFrontendLangId']);
         } else {
             $id = $this->defaultFrontendLangId;
@@ -390,8 +393,13 @@ class InitCMS
             $id = $this->defaultFrontendLangId;
         }
         $this->userFrontendLangId = $id;
-        $_SESSION['userFrontendLangId'] = $id;
-        setcookie("userFrontendLangId", "", time() - 3600);
+
+        if ($session) {
+            $_SESSION['userFrontendLangId'] = $id;
+            // unset cookie as option is now stored in session
+            setcookie("userFrontendLangId", "", time() - 3600);
+        }
+
         return $this->userFrontendLangId;
     }
 

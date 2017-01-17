@@ -75,7 +75,14 @@ class ModelEventListener implements EventListener {
             return;
         }
         // onFlush has different arguments
-        if ($em instanceof \Doctrine\ORM\Event\OnFlushEventArgs) {
+        if (
+            !is_a(
+                $this->entityClass,
+                'Cx\Core\Model\Model\Entity\YamlEntity',
+                true
+            ) &&
+            $em instanceof \Doctrine\ORM\Event\OnFlushEventArgs
+        ) {
             $em = $em->getEntityManager();
             $uow = $em->getUnitOfWork();
             $entityClasses = array();
