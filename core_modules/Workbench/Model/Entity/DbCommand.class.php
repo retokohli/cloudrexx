@@ -399,7 +399,7 @@ class DbCommand extends Command {
             $bootstrap->export($formatter, $mwbFile, $outputDir, 'file');
 
             //Move the generated yaml file from tmp to corresponding component
-            $this->moveYamlFilesToComponent($tempPath);
+            $this->moveYamlFilesToComponent($tempPath, $outputDir);
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());
         }
@@ -446,14 +446,14 @@ class DbCommand extends Command {
     /**
      * Move the created Yaml files into corresponding component
      *
-     * @param string $tempPath workbench tmp path
+     * @param string $tempWorkbenchPath workbench tmp path
+     * @param string $ymlFilePath       yml file path
      *
      * @return null
      */
-    public function moveYamlFilesToComponent($tempPath)
+    public function moveYamlFilesToComponent($tempWorkbenchPath, $ymlFilePath)
     {
-        $outputDir = $tempPath . '/yaml';
-        if (!\Cx\Lib\FileSystem\FileSystem::exists($outputDir)) {
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($ymlFilePath)) {
             $this->interface->show('Unable to create YAML files.');
             return;
         }
@@ -466,7 +466,7 @@ class DbCommand extends Command {
         $componentRepo = $em->getRepository(
             '\Cx\Core\Core\Model\Entity\SystemComponent'
         );
-        foreach (glob($outputDir . '/*.yml') as $yamlFile) {
+        foreach (glob($ymlFilePath . '/*.yml') as $yamlFile) {
             $fileName  = basename($yamlFile);
             $fileParts = explode('.', $fileName);
             if (count($fileParts) != 8) {
@@ -506,10 +506,10 @@ class DbCommand extends Command {
             }
 
             if (!$isFileAlreadyExists || !$backupFile) {
-                goto copyFile;
+                goto moveFileToComponent;
             }
 
-            $destDir = $tempPath . '/yamlBackup/' .
+            $destDir = $tempWorkbenchPath . '/yamlBackup/' .
                 $components[$fileParts[2]]->getName() . '/Model/Yaml';
             if (!$this->backupYamlFile($filePath, $destDir, $fileName)) {
                 $this->interface->show(
@@ -518,9 +518,9 @@ class DbCommand extends Command {
                 return;
             }
 
-            copyFile:
+            moveFileToComponent:
             try {
-                $objFile = new \Cx\Lib\FileSystem\File($outputDir . '/' . $fileName);
+                $objFile = new \Cx\Lib\FileSystem\File($ymlFilePath . '/' . $fileName);
                 $objFile->move($filePath . '/' . $fileName, true);
             } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                 $errorFiles[] = $fileName;
@@ -532,7 +532,7 @@ class DbCommand extends Command {
             if ($backupFile) {
                 $this->interface->show(
                     'The files have been backed-up to ' .
-                    $tempPath . '/yamlBackup' . '.'
+                    $tempWorkbenchPath . '/yamlBackup' . '.'
                 );
             }
             return;
