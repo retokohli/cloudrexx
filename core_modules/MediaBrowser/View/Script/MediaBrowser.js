@@ -353,6 +353,8 @@
                     });
                 }
                 var potentialValue = $scope.getValueByPath($scope.allFiles, $scope.path);
+                $scope.searchString = '';
+                $scope.refreshBrowser();
                 if ($scope.objectSize(potentialValue) < 3) {
                     $scope.loadingSources = true;
                     return mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, $scope.getPathAsString(), false).then(
@@ -364,8 +366,6 @@
                                 $scope.$apply();
                                 jQuery(".filelist").fadeIn();
                             });
-                            $scope.searchString = '';
-                            $scope.refreshBrowser();
                         }
                     );
                 }
