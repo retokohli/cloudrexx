@@ -318,7 +318,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return 'Cache clear user [<engine>]
 Cache clear page [<pageId>]
 Cache clear (esi|proxy) [<urlPattern>]
-Cache clear opcode
+Cache clear opcode [<engine>]
 Cache clear all';
     }
 
