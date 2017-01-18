@@ -110,8 +110,8 @@ CKEDITOR.editorConfig = function( config )
     config.bodyClass = cx.variables.get('bodyClass', 'wysiwyg');
     config.bodyId = cx.variables.get('bodyId', 'wysiwyg');
     if (
-        window.location.pathname == '/cadmin/Config/Wysiwyg' ||
-        window.location.pathname == '/cadmin/Access/group'
+        window.location.pathname == cx.variables.get('cadminPath') + 'Config/Wysiwyg' ||
+        window.location.pathname == cx.variables.get('cadminPath') + 'Access/group'
     ) {
         <?php echo $wysiwyg->getRemovedButtons(); ?>;
     }
@@ -148,8 +148,8 @@ CKEDITOR.on('instanceReady',function(){
         }).bind(loadingTemplates)();
     }
 
-    if (cx.variables.get('language') == 'de') {
-        var translations = cx.variables.get('toolbarTranslations', 'toolbarConfigurator');
+    var translations = cx.variables.get('toolbarTranslations', 'toolbarConfigurator');
+    if (translations && cx.variables.get('language') == 'de') {
         cx.jQuery('div.toolbarModifier ul[data-type="table-body"] > li[data-type="group"] > ul > li[data-type="subgroup"] > p > span').each(
             function() {
                 if (translations.hasOwnProperty(cx.jQuery(this).text())) {

@@ -3,7 +3,7 @@ CKEDITOR.on('instanceReady',function() {
   // An user group is edited and therefore the buttons removed by the default
   // configuration need to be removed as well
   // Get the buttons that shall be removed
-  if (window.location.pathname == '/cadmin/Access/group') {
+  if (window.location.pathname == cx.variables.get('cadminPath') + 'Access/group') {
     removedButtons = cx.variables.get('removedButtons', 'wysiwyg/groups');
   } else {
     removedButtons = cx.variables.get('removedButtons', 'wysiwyg/default');

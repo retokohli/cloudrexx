@@ -640,7 +640,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             // Load entity manager
             $dbCon = $cx->getDb()->getAdoDb();
             // Instantiate a new Toolbarcontroller
-            $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController($cx);
+            $toolbarController = $cx->getComponent('Wysiwyg')->getController('Toolbar');
             $newButtons = $_POST['removedButtons'];
             // Get the assigned toolbar id of the current group
             $toolbarIdRes = $dbCon->Execute('
@@ -836,7 +836,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         // Parse toolbar configurator
         $cx = \Env::get('cx');
-        $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController($cx);
+        $toolbarController = $cx->getComponent('Wysiwyg')->getController('Toolbar');
         $toolbarConfigurator = $toolbarController->getToolbarConfiguratorTemplate('/core/Wysiwyg/');
         $this->_objTpl->setGlobalVariable('ACCESS_WYSIWYG_TAB_NR', $tabNr);
         $this->_objTpl->setVariable(array(

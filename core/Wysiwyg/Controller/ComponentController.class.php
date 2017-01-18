@@ -51,15 +51,6 @@ use Cx\Core\Wysiwyg\Model\Event\WysiwygEventListener;
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController implements \Cx\Core\Event\Model\Entity\EventListener {
 
     /**
-     * Initializes a controller
-     * @param \Cx\Core\Core\Model\Entity\SystemComponent $systemComponent SystemComponent to decorate
-     * @param \Cx\Core\Core\Controller\Cx                               $cx         The Cloudrexx main class
-     */
-    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponent $systemComponent, \Cx\Core\Core\Controller\Cx $cx) {
-        parent::__construct($systemComponent, $cx);
-    }
-
-    /**
      * Add the event listener
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
@@ -209,9 +200,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *                          setting
      */
     public function getToolbar($type = 'Full') {
-        $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController(
-            $this->cx
-        );
+        $toolbarController = $this->getController('Toolbar');
         return $toolbarController->getToolbar($type);
     }
 
@@ -224,9 +213,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *                                      config.removedButtons from the string
      */
     public function getRemovedButtons() {
-        $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController(
-            $this->cx
-        );
+        $toolbarController = $this->getController('Toolbar');
         $buttons = $toolbarController->getRemovedButtons();
         return $buttons;
     }

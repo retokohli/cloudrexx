@@ -115,7 +115,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 $template->setVariable('WYSIWYG_CONFIG_TEMPLATE', $tmpl->get());
                 break;
             case 'Functions':
-                $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController($this->cx);
+                $toolbarController = $this->getController('Toolbar');
                 // check if the toolbar shall be saved
                 if (isset($_POST) && isset($_POST['save'])) {
                     // Get the database connection
@@ -295,7 +295,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @param string $entityClassName contains the FQCN from entity
      * @return array array containing the options
      */
-    protected function getViewGeneratorOptions($entityClassName) {
+    protected function getViewGeneratorOptions($entityClassName, $dataSetIdentifier = '') {
         global $_ARRAYLANG;
 
         $classNameParts = explode('\\', $entityClassName);

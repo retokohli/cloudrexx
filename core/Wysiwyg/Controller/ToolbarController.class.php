@@ -48,7 +48,7 @@ namespace Cx\Core\Wysiwyg\Controller;
  * @subpackage  core_wysiwyg
  * @version     1.0.0
  */
-class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
+class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
     /**
      * This is the default toolbar for either full or small
      * @var     array       $defaultFull
@@ -69,6 +69,7 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         array('Maximize'),
         array('Div','CreateDiv'),
     );
+
     /**
      * This is the default toolbar for Bbcode
      * @var     array       $defaultBbcode
@@ -79,6 +80,7 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         array('Undo','Redo','-','Replace','-','SelectAll','RemoveFormat'),
         array('Bold','Italic','Underline','Link','Unlink','SpecialChar'),
     );
+
     /**
      * This is the default toolbar for frontend editing contend
      * @var     array       $defaultFrontendEditingContent
@@ -98,6 +100,7 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         array('TextColor','BGColor'),
         array('ShowBlocks')
     );
+
     /**
      * This is the default toolbar for frontend editing title
      * @var     array       $defaultFrontendEditingTitle
@@ -108,18 +111,14 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         array('Cut','Copy','Paste','-','Scayt'),
         array('Undo','Redo')
     );
+
     /**
      * These are the buttons that are removed by default and are not accessible
      * @var     string      Functions that shall never be available in Cloudrexx
      * @access  protected
      */
     protected $defaultRemovedButtons = 'autoFormat,CommentSelectedRange,UncommentSelectedRange,AutoComplete,Preview,Smiley,Iframe,Styles';
-    /**
-     * The cx-framework to laod the database and other classes
-     * @var     \Cx\Core\Core\Controller\Cx Cloudrexx framewrok-object
-     * @access  protected
-     */
-    protected $cx;
+
     /**
      * Contains all available types of toolbars
      * @var     array       Contains all the type of toolbars available in Cloudrexx
@@ -143,8 +142,9 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
      * ToolbarController constructor.
      * @param \Cx\Core\Core\Controller\Cx $cx
      */
-    public function __construct(\Cx\Core\Core\Controller\Cx $cx) {
-        $this->cx = $cx;
+    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
+        parent::__construct($systemComponentController, $cx);
+
         // Get the database connection
         $this->dbCon = $cx->getDb()->getAdoDb();
     }
@@ -235,7 +235,6 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
             'js/toolbartextmodifier',
         );
         $ckeditorLibPath = '/lib/ckeditor/samples';
-        \JS::registerJS($componentRoot . '/ckeditor.config.js.php');
         \JS::registerJS($componentRoot . '/View/Script/Backend.js');
         \JS::registerJS($componentRoot . '/View/Script/ToolbarButtonsRemover.js');
         // register js and css files for the toolbarconfigurator
@@ -612,7 +611,7 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
     public function getToolbarByGroupId($groupId) {
         // Prepare the query to load the user group toolbar
         $query = 'SELECT `toolbar` FROM `' . DBPREFIX . 'access_user_groups`
-                      WHERE `group_id` = ' . $groupId . '
+                      WHERE `group_id` = ' . intval($groupId) . '
                       LIMIT 1';
         $toolbarIdRes = $this->dbCon->Execute($query);
         // Verify that the query could be executed

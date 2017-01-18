@@ -7,15 +7,15 @@
 function prepareConfiguration(formname) {
   formname = !formname ? '' : formname;
   // Trigger the download of the configuration
-  jQuery('[data-group="edit"]').click();
+  cx.jQuery('[data-group="edit"]').click();
   // get the content of the textarea
-  var configuration = jQuery('.configCode').val();
+  var configuration = cx.jQuery('.configCode').val();
   // go back to the configurator view
-  jQuery('[data-group="config"]').click();
+  cx.jQuery('[data-group="config"]').click();
   var pattern = /config\.removeButtons\s=\s'([a-z0-9,]*)*/i;
   if (pattern.test(configuration)) {
     var removedButtons = pattern.exec(configuration);
-    jQuery('form[name="' + formname + '"]').append(jQuery('<input />').attr({
+    cx.jQuery('form[name="' + formname + '"]').append(cx.jQuery('<input />').attr({
       "type":   'hidden',
       "name":   'removedButtons',
       "value":  removedButtons[1]
