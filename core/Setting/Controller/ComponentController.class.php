@@ -185,9 +185,8 @@ Setting delete <component> [<group>] [<engine>] [<repository>] <name>';
                         echo 'Illegal syntax';
                         return;
                 }
-                $hydrator = new \Cx\Core_Modules\DataAccess\Controller\RawOutputController(
-                    $this,
-                    $this->cx
+                $hydrator = $this->getComponent('DataAccess')->getController(
+                    'RawOutput'
                 );
                 echo $hydrator->parse(
                     array(
