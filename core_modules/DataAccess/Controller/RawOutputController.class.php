@@ -153,7 +153,7 @@ class RawOutputController extends OutputController {
         $data = $data['data'];
 
         if (!count($data)) {
-            return '(Empty set)' . "\n";
+            return '(Empty set)' . static::LINE_END;
         }
         return $this->tablify($data);
     }
