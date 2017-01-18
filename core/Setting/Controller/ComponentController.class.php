@@ -176,7 +176,7 @@ Setting delete <component> [<group>] [<engine>] [<repository>] <name>';
                             echo 'Not enough arguments';
                             return;
                         }
-                        $data = \Cx\Core\Setting\Controller\Setting::getValue(
+                        $data = \Cx\Core\Setting\Controller\Setting::delete(
                             array_shift($arguments),
                             $group
                         );
