@@ -82,11 +82,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($short) {
             return 'Allows to show, add, edit and remove settings';
         }
-        return 'Setting list <component> [<group>] [<engine>] [<repository>]
-Setting get <component> [<group>] [<engine>] [<repository>] <name>
-Setting set <component> [<group>] [<engine>] [<repository>] <name> <value>
-Setting add <component> [<group>] [<engine>] [<repository>] <name> <value> <ord> <type> <values>
-Setting delete <component> [<group>] [<engine>] [<repository>] <name>';
+        return 'Setting list <component> [-group=<group>] [-engine=<engine>] [-repository=<repository>]
+Setting get <component> [-group=<group>] [-engine=<engine>] [-repository=<repository>] <name>
+Setting set <component> [-group=<group>] [-engine=<engine>] [-repository=<repository>] <name> <value>
+Setting add <component> [-group=<group>] [-engine=<engine>] [-repository=<repository>]<name> <value> <ord> <type> <values>
+Setting delete <component> [-group=<group>] [-engine=<engine>] [-repository=<repository>] <name>';
     }
 
     /**
