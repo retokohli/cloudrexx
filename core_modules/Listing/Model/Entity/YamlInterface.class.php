@@ -56,6 +56,6 @@ class YamlInterface implements Exportable, Importable {
     }
 
     public function import($dataAsString) {
-        return $this->yaml->load($dataAsString);
+        return $this->yaml->parse($dataAsString);
     }
 }
