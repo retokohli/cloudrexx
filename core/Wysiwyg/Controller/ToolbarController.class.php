@@ -55,19 +55,20 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
      * @access  protected
      */
     protected $defaultFull = array(
-        array('Source','-','NewPage','Templates'),
+        array('Source','searchCode','-','NewPage','Templates'),
         array('Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'),
-        array('Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'),
+        array('Undo','Redo','-','CopyFormatting','-','Find','Replace','-','SelectAll','RemoveFormat'),
         array('Bold','Italic','Underline','Strike','-','Subscript','Superscript'),
         array('NumberedList','BulletedList','-','Outdent','Indent', 'Blockquote'),
         array('JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'),
+        array('BidiLtr','BidiRtl'),
         array('Link','Unlink','Anchor'),
         array('Image','Flash','Table','HorizontalRule','SpecialChar'),
-        array('Format'),
+        array('Styles','Format','Font','FontSize'),
         array('TextColor','BGColor'),
         array('ShowBlocks'),
-        array('Maximize'),
         array('Div','CreateDiv'),
+        array('Maximize'),
     );
 
     /**
@@ -89,14 +90,14 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
     protected $defaultFrontendEditingContent = array(
         array('Publish','Save','Templates'),
         array('Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'),
-        array('Undo','Redo','-','Replace','-','SelectAll','RemoveFormat'),
+        array('Undo','Redo','-','CopyFormatting','-','Replace','-','SelectAll','RemoveFormat'),
         array('Bold','Italic','Underline','Strike','-','Subscript','Superscript'),
         array('NumberedList','BulletedList','-','Outdent','Indent', 'Blockquote'),
         '/',
         array('JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'),
         array('Link','Unlink','Anchor'),
         array('Image','Flash','Table','HorizontalRule','SpecialChar'),
-        array('Format'),
+        array('Styles','Format','Font','FontSize'),
         array('TextColor','BGColor'),
         array('ShowBlocks')
     );
@@ -117,7 +118,7 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
      * @var     string      Functions that shall never be available in Cloudrexx
      * @access  protected
      */
-    protected $defaultRemovedButtons = 'autoFormat,CommentSelectedRange,UncommentSelectedRange,AutoComplete,Preview,Smiley,Iframe,Styles';
+    protected $defaultRemovedButtons = 'autoFormat,CommentSelectedRange,UncommentSelectedRange,AutoComplete';
 
     /**
      * Contains all available types of toolbars
@@ -509,7 +510,7 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
         // Initiate $translations as empty stdClass object
         $translations = new \stdClass();
         // Get the language file of the Wysiwyg component (this one btw.)
-        $_ARRAYLANG = $init->getComponentSpecificLanguageData('Wysiwyg', false, 1);
+        $_ARRAYLANG = $init->getComponentSpecificLanguageData('Wysiwyg', false);
         // Populate the std object with the translations
         $translations->mode = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_MODE'];
         $translations->document = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_DOCUMENT'];
@@ -530,6 +531,7 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
         $translations->styles = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_STYLES'];
         $translations->colors = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_COLORS'];
         $translations->tools = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_TOOLS'];
+        $translations->bidi = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_BIDI'];
         \ContrexxJavascript::getInstance()->setVariable(
             'toolbarTranslations',
             $translations,

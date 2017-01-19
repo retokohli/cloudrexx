@@ -148,7 +148,7 @@ CKEDITOR.on('instanceReady',function(){
     }
 
     var translations = cx.variables.get('toolbarTranslations', 'toolbarConfigurator');
-    if (translations && cx.variables.get('language') == 'de') {
+    if (translations) {
         cx.jQuery('div.toolbarModifier ul[data-type="table-body"] > li[data-type="group"] > ul > li[data-type="subgroup"] > p > span').each(
             function() {
                 if (translations.hasOwnProperty(cx.jQuery(this).text())) {
