@@ -403,7 +403,6 @@ namespace Cx\Core\Model {
 
             //resolve enum, set errors
             $conn = $em->getConnection();
-            $conn->setCharset($this->db->getCharset());
             $conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
             $conn->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');
 
