@@ -69,7 +69,7 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
      */
     public function getElement($className, $raw = false)
     {
-        $result = $this->_loadMappingFile($this->_findMappingFile($className));
+        $result = $this->loadMappingFile($this->locator->findMappingFile($className));
         if (!$raw && $result[$className]['type'] == 'YamlEntity') {
             $result[$className]['type'] = 'entity';
         }
