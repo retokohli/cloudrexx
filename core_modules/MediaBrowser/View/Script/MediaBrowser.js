@@ -904,7 +904,7 @@
             restrict: 'A',
             link: function (scope, el, attrs) {
                 if (attrs.previewImage !== 'none') {
-                    if (attrs.hasPreviewImage == 'true') {
+                    if (attrs.hasPreviewImage) {
                         jQuery(el).popover({
                             trigger: 'hover',
                             html: true,
