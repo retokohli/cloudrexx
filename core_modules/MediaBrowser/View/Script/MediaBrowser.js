@@ -112,12 +112,19 @@
 
             $scope.activeController = mediabrowserConfig.get('startView');
 
+            // load content tree
             $scope.loadSites = function () {
-                mediabrowserFiles.get('getSites').then(
-                    function getSites(data) {
-                        $scope.sites = data;
+                $scope.tabs.forEach(function (tab) {
+                    // only load tree if site-tree tab has been loaded
+                    if (tab.controller == 'SitestructureCtrl') {
+                        mediabrowserFiles.get('getSites').then(
+                            function getSites(data) {
+                                $scope.sites = data;
+                            }
+                        );
+                        return;
                     }
-                );
+                });
             };
 
             var attempts = 0;
