@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -15,36 +13,50 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * and is licensed under the MIT license. For more information, see
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * JoinVariableDeclaration ::= Join [IndexBy]
+ * WhenClause ::= "WHEN" ConditionalExpression "THEN" ScalarExpression
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @since   2.2
+ * 
  * @link    www.doctrine-project.org
- * @since   2.0
- * @version $Revision: 3938 $
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class JoinVariableDeclaration extends Node
+class WhenClause extends Node
 {
-    public $join = null;
-    public $indexBy = null;
+    /**
+     * @var ConditionalExpression
+     */
+    public $caseConditionExpression = null;
 
-    public function __construct($join, $indexBy)
+    /**
+     * @var mixed
+     */
+    public $thenScalarExpression = null;
+
+    /**
+     * @param ConditionalExpression $caseConditionExpression
+     * @param mixed                 $thenScalarExpression
+     */
+    public function __construct($caseConditionExpression, $thenScalarExpression)
     {
-        $this->join = $join;
-        $this->indexBy = $indexBy;
+        $this->caseConditionExpression = $caseConditionExpression;
+        $this->thenScalarExpression = $thenScalarExpression;
     }
-    
+
+    /**
+     * {@inheritdoc}
+     */
     public function dispatch($sqlWalker)
     {
-        return $sqlWalker->walkJoinVariableDeclaration($this);
+        return $sqlWalker->walkWhenClauseExpression($this);
     }
 }

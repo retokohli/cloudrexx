@@ -1,7 +1,6 @@
 <?php
+
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -15,45 +14,42 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
+ * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping\Driver;
-
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+namespace Doctrine\ORM\Mapping;
 
 /**
- * Contract for metadata drivers.
+ * A resolver is used to instantiate an entity listener.
  *
- * @since 2.0
- * @author Jonathan H. Wage <jonwage@gmail.com>
- * @todo Rename: MetadataDriver or MappingDriver
+ * @since   2.4
+ * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-interface Driver
+interface EntityListenerResolver
 {
     /**
-     * Loads the metadata for the specified class into the provided container.
+     * Clear all instances from the set, or a specific class when given.
+     *
+     * @param  string $className The fully-qualified class name
      * 
-     * @param string $className
-     * @param ClassMetadataInfo $metadata
+     * @return void
      */
-    function loadMetadataForClass($className, ClassMetadataInfo $metadata);
-    
-    /**
-     * Gets the names of all mapped classes known to this driver.
-     * 
-     * @return array The names of all mapped classes known to this driver.
-     */
-    function getAllClassNames(); 
+    function clear($className = null);
 
     /**
-     * Whether the class with the specified name should have its metadata loaded.
-     * This is only the case if it is either mapped as an Entity or a
-     * MappedSuperclass.
+     * Returns a entity listener instance for the given class name.
      *
-     * @param string $className
-     * @return boolean
+     * @param   string $className The fully-qualified class name
+     * 
+     * @return  object An entity listener
      */
-    function isTransient($className);
+    function resolve($className);
+
+    /**
+     * Register a entity listener instance.
+     *
+     * @param   object $object An entity listener
+     */
+    function register($object);
 }
