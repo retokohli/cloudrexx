@@ -508,7 +508,7 @@
                     browse_button: 'selectFileFromComputer',
                     container: 'uploader',
                     drop_element: "uploader",
-                    url: '?csrf=' + cx.variables.get('csrf') + '&cmd=jsondata&object=Uploader&act=upload',
+                    url: cx.variables.get('cadminPath','contrexx') + '?csrf=' + cx.variables.get('csrf') + '&cmd=jsondata&object=Uploader&act=upload',
                     flash_swf_url: cx.variables.get('basePath', 'contrexx') + 'lib/plupload/js/Moxie.swf',
                     silverlight_xap_url: cx.variables.get('basePath', 'contrexx') + 'lib/plupload/js/Moxie.xap',
                     chunk_size: cx.variables.get('chunk_size', 'mediabrowser'),
@@ -906,7 +906,8 @@
                         });
                     }
                     else {
-                        $http.get('index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=' + attrs.previewImage).success(function (data, status, headers, config) {
+                        cxCadminPath = cx.variables.get('cadminPath');
+                        $http.get(cxCadminPath + 'index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=' + attrs.previewImage).success(function (data, status, headers, config) {
                             jQuery(el).popover({
                                 trigger: 'hover',
                                 html: true,
