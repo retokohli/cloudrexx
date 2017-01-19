@@ -105,7 +105,7 @@
             $scope.path = [
                 {
                     name: cx.variables.get('TXT_FILEBROWSER_FILES', 'mediabrowser'),
-                    path: '',
+                    path: 'files',
                     standard: true
                 }
             ];
@@ -137,6 +137,7 @@
                         else {
                             $scope.selectedSource = data[0];
                         }
+                        $scope.path[0].path = $scope.selectedSource.value;
                         if (mediabrowserConfig.get('mediatypes') != 'all') {
                             var i = data.length;
                             while (i--) {
@@ -431,13 +432,13 @@
 
             $scope.cleanupPath = function (path) {
                 var cleanPath = [];
-                path.forEach(function (pathPart) {
+                path.forEach(function (pathPart, key) {
                     if (pathPart.path != undefined) {
-                        if (pathPart.path != '') {
+                        if (key != 0) {
                             cleanPath.push(pathPart.path);
                         }
                     } else {
-                        if (pathPart != '') {
+                        if (key != 0) {
                             cleanPath.push(pathPart);
                         }
                     }
@@ -532,7 +533,7 @@
                                     $scope.uploaderData.filesToUpload.push(files[file]);
                                 }
                             }
-                            $scope.uploader.settings.multipart_params.path = 'files/' + $scope.getPathAsString();
+                            $scope.uploader.settings.multipart_params.path = $scope.selectedSource.value + '/' + $scope.getPathAsString();
 
                             $scope.$digest();
                         },
