@@ -62,6 +62,7 @@ class Wysiwyg
             'height' => 200,
             'fullPage' => 'false',
             'extraPlugins' => array(),
+            'removePlugins' => array('bbcode'),
         ),
         'full' => array(
             'toolbar' => 'Full',
@@ -69,6 +70,7 @@ class Wysiwyg
             'height' => 450,
             'fullPage' => 'false',
             'extraPlugins' => array(),
+            'removePlugins' => array('bbcode'),
         ),
         'fullpage' => array(
             'toolbar' => 'Full',
@@ -76,13 +78,15 @@ class Wysiwyg
             'height' => 450,
             'fullPage' => 'true',
             'extraPlugins' => array(),
+            'removePlugins' => array('bbcode'),
         ),
         'bbcode' => array(
             'toolbar' => 'BBCode',
             'width' => '100%',
             'height' => 200,
             'fullPage' => 'false',
-            'extraPlugins' => array('bbcode'),
+            'extraPlugins' => array(),
+            'removePlugins' => array('bbcode'),
         ),
     );
 
@@ -108,6 +112,11 @@ class Wysiwyg
     private $extraPlugins;
 
     /**
+     * @var array array of plugins to be deactivated in the wysiwyg editor
+     */
+    protected $removePlugins;
+
+    /**
      * Initialize WYSIWYG editor
      *
      * @param string $name the name content for name attribute
@@ -115,14 +124,16 @@ class Wysiwyg
      * @param string $type the type of editor to use: possible types are small, full, bbcode
      * @param null|int $langId the language id
      * @param array $extraPlugins extra plugins to activate
+     * @param array $removePlugins deactivate plugins
      */
-    public function __construct($name, $value = '', $type = 'small', $langId = null, $extraPlugins = array())
+    public function __construct($name, $value = '', $type = 'small', $langId = null, $extraPlugins = array(), $removePlugins = array())
     {
         $this->name = $name;
         $this->value = $value;
         $this->type = strtolower($type);
         $this->langId = $langId ? intval($langId) : FRONTEND_LANG_ID;
         $this->extraPlugins = $extraPlugins;
+        $this->removePlugins = $removePlugins;
     }
 
     /**
@@ -154,6 +165,11 @@ class Wysiwyg
         $extraPlugins = array_merge($this->extraPlugins, $this->types[$this->type]['extraPlugins']);
         if (!empty($extraPlugins)) {
             $options[] = "extraPlugins: '" . implode(',', $extraPlugins) . "'";
+        }
+
+        $removePlugins = array_merge($this->removePlugins, $this->types[$this->type]['removePlugins']);
+        if (!empty($removePlugins)) {
+            $options[] = "removePlugins: '" . implode(',', $removePlugins) . "'";
         }
 
         $onReady = "CKEDITOR.replace('".$this->name."', { %s });";
@@ -284,5 +300,21 @@ class Wysiwyg
     public function getExtraPlugins()
     {
         return $this->extraPlugins;
+    }
+
+    /**
+     * @param array $removePlugins
+     */
+    public function setRemovePlugins($removePlugins)
+    {
+        $this->removePlugins = $removePlugins;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRemovePlugins()
+    {
+        return $this->removePlugins;
     }
 }
