@@ -103,7 +103,6 @@ CKEDITOR.editorConfig = function( config )
     config.toolbar_FrontendEditingContent = <?php echo $wysiwyg->getToolbar('frontendEditingContent') ?>;
 
     config.toolbar_FrontendEditingTitle = <?php echo $wysiwyg->getToolbar('frontendEditingTitle') ?>;
-    config.extraPlugins = 'codemirror';
 
     //Set the CSS Stuff
     config.contentsCss = cx.variables.get('css', 'wysiwyg');
