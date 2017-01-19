@@ -70,7 +70,7 @@ if(!cx.variables.get('css', 'wysiwyg')) {
 CKEDITOR.scriptLoader.load( '<?php echo $cx->getCodeBaseCoreModuleWebPath().'/MediaBrowser/View/Script/MediaBrowserCkeditorPlugin.js'   ?>' );
 CKEDITOR.editorConfig = function( config )
 {
-    config.skin = 'moono';
+    config.skin = 'moono-lisa';
 
     config.height = 307;
     config.uiColor = '#ececec';
@@ -226,7 +226,7 @@ cx.bind("loadingEnd", function(myArgs) {
                     var config = {
                         customConfig: cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'),
                         toolbar: 'Full',
-                        skin: 'moono'
+                        skin: 'moono-lisa'
                     };
                     CKEDITOR.replace('page[content]', config);
                 }
