@@ -367,10 +367,8 @@ namespace Cx\Core\Model {
             $chainDriverImpl->addDriver($translatableDriverImpl,
                 'Gedmo\Translatable');
             // RK: Note:
-            // This might have been renamed in newer versions:
-            //$translationListener = new \Gedmo\Translatable\TranslatableListener();
             // In this Doctrine version, it is present as:
-            $this->translationListener = new \Gedmo\Translatable\TranslationListener();
+            $this->translationListener = new \Gedmo\Translatable\TranslatableListener();
             // current translation locale should be set from session
             // or hook later into the listener,
             // but *before the entity manager is flushed*
