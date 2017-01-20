@@ -278,6 +278,7 @@ CREATE TABLE `contrexx_core_locale_locale` (
   `country` char(2) COLLATE utf8_unicode_ci DEFAULT NULL,
   `fallback` int COLLATE utf8_unicode_ci DEFAULT NULL,
   `source_language` char(2) COLLATE utf8_unicode_ci NOT NULL,
+  `order_no` int(11) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `iso_1` (`iso_1`, `country`),
   CONSTRAINT `contrexx_core_locale_locale_ibfk_country` FOREIGN KEY (`country`) REFERENCES `contrexx_core_country_country` (`alpha2`) ON DELETE NO ACTION ON UPDATE NO ACTION,
