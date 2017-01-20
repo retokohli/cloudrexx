@@ -281,7 +281,7 @@ namespace Cx\Core\Model {
             }
 
             $drivers = $this->em->getConfiguration()->getMetadataDriverImpl()->getDrivers();
-            $drivers['Cx']->addPaths($paths);
+            $drivers['Cx']->getLocator()->addPaths($paths);
         }
 
         /**
