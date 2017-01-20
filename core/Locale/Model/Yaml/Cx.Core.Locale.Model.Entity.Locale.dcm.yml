@@ -20,6 +20,10 @@ Cx\Core\Locale\Model\Entity\Locale:
       type: string
       length: 255
       nullable: true
+    orderNo:
+      column: order_no
+      type: integer
+      nullable: false
   uniqueConstraints:
     unique_iso_1_country:
       columns: [ iso_1, country ]

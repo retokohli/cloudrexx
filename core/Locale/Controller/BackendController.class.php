@@ -289,6 +289,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 ),
                             ),
                         ),
+                        'orderNo' => array(
+                            'showOverview' => false,
+                            'showDetail' => false,
+                        ),
                         'country' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_COUNTRY'],
                         ),
@@ -421,12 +425,16 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             $linkLink->addChild($linkImg);
                             return $copyLink . $linkLink;
                         },
-                        'sorting' => true,
+                        'sorting'   => true,
+                        'sortBy' => array(
+                            'field' => array('orderNo' => SORT_ASC),
+                        ),
                         'paging' => true,
                         'filtering' => false,
                     ),
                     'order' => array(
                         'overview' => array(
+                            'orderNo',
                             'id',
                             'label',
                             'iso1',
