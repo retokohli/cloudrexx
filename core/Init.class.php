@@ -315,17 +315,24 @@ class InitCMS
             }
             // check if any of the client accepted languages exist
             $arrAcceptedLanguages = $this->_getClientAcceptedLanguages();
+            $strippedMatch = 0;
             foreach (array_keys($arrAcceptedLanguages) as $language) {
                 if ($langId = \FWLanguage::getLanguageIdByCode($language)) {
                     return $langId;
                 } elseif (
-                    $langId = \FWLanguage::getLanguageIdByCode(
+                    ($langId = \FWLanguage::getLanguageIdByCode(
                         // stripped lang: e.g 'en-US' becomes 'en'
                         substr($language, 0, strpos($language, '-'))
-                    )
+                    )) &&
+                    // only set the first stripped match, it's the most relevant
+                    (!$strippedMatch)
                 ) {
-                    return $langId;
+                    $strippedMatch = $langId;
                 }
+            }
+            // No full match, try to return the stripped match
+            if ($strippedMatch) {
+                return $strippedMatch;
             }
         }
         return $this->defaultFrontendLangId;
