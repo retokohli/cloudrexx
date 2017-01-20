@@ -105,7 +105,7 @@
             $scope.path = [
                 {
                     name: cx.variables.get('TXT_FILEBROWSER_FILES', 'mediabrowser'),
-                    path: 'files',
+                    path: '',
                     standard: true
                 }
             ];
@@ -438,13 +438,13 @@
 
             $scope.cleanupPath = function (path) {
                 var cleanPath = [];
-                path.forEach(function (pathPart, key) {
+                path.forEach(function (pathPart) {
                     if (pathPart.path != undefined) {
-                        if (key != 0) {
+                        if (pathPart.path != '') {
                             cleanPath.push(pathPart.path);
                         }
                     } else {
-                        if (key != 0) {
+                        if (pathPart != '') {
                             cleanPath.push(pathPart);
                         }
                     }
@@ -904,14 +904,16 @@
             link: function (scope, el, attrs) {
                 if (attrs.previewImage !== 'none') {
                     if (attrs.hasPreviewImage) {
+                        // console.log('has thumb');
                         jQuery(el).popover({
                             trigger: 'hover',
                             html: true,
                             content: '<img src="' + attrs.previewImage.replace(/<[^>]*>/g, '') + '"  />',
                             placement: 'right'
                         });
-                    }
-                    else {
+                    } else {
+                        // console.log('has no thumb');
+                        // console.log(attrs);
                         cxCadminPath = cx.variables.get('cadminPath');
                         $http.get(cxCadminPath + 'index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=' + attrs.previewImage).success(function (data, status, headers, config) {
                             jQuery(el).popover({
@@ -920,13 +922,13 @@
                                 content: '<img src="' + attrs.previewImage.replace(/<[^>]*>/g, '') + '"  />',
                                 placement: 'right'
                             });
+                            attr.hasPreviewImage = '1';
                         })
                     }
                 }
             }
         };
     }]);
-
 
     mediaBrowserApp.factory('Thumbnail', function ($q) {
         return {
