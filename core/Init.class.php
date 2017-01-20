@@ -330,6 +330,15 @@ class InitCMS
                     $strippedMatch = $langId;
                 }
             }
+            $clientRecord = \Env::get('cx')->getComponent('GeoIp')->getClientRecord();
+            $clientAlpha2 = $clientRecord->country->isoCode;
+            // try to get locale with geoip
+            if (
+                $clientAlpha2 &&
+                $langId = \FWLanguage::getLanguageIdByAlpha2($clientAlpha2)
+            ) {
+                return $langId;
+            }
             // No full match, try to return the stripped match
             if ($strippedMatch) {
                 return $strippedMatch;
