@@ -315,29 +315,44 @@ class InitCMS
             }
             // check if any of the client accepted languages exist
             $arrAcceptedLanguages = $this->_getClientAcceptedLanguages();
+            $strippedLangs = array();
             $strippedMatch = 0;
             foreach (array_keys($arrAcceptedLanguages) as $language) {
                 if ($langId = \FWLanguage::getLanguageIdByCode($language)) {
                     return $langId;
-                } elseif (
-                    // only set the first stripped match, it's the most relevant
-                    !$strippedMatch &&
-                    $langId = \FWLanguage::getLanguageIdByCode(
-                        // stripped lang: e.g 'en-US' becomes 'en'
-                        substr($language, 0, strpos($language, '-'))
-                    )
-                ) {
-                    $strippedMatch = $langId;
+                } else {
+                    // stripped lang: e.g 'en-US' becomes 'en'
+                    if ($pos = strpos($language, '-')) {
+                        $language = substr($language, 0, $pos);
+                    }
+                    //store browser languages to maybe use with geoip later
+                    $strippedLangs[] = $language;
+                    // check for existence of stripped language
+                    if (
+                        // only check for actual stripped languages
+                        $pos &&
+                        // only set the first stripped match, it's the most relevant
+                        !$strippedMatch &&
+                        $langId = \FWLanguage::getLanguageIdByCode(
+                            $language
+                        )
+                    ) {
+                        $strippedMatch = $langId;
+                    }
                 }
             }
             // try to get locale with geoip
             $clientRecord = \Env::get('cx')->getComponent('GeoIp')->getClientRecord();
             $clientAlpha2 = $clientRecord->country->isoCode;
-            if (
-                $clientAlpha2 &&
-                $langId = \FWLanguage::getLanguageIdByAlpha2($clientAlpha2)
-            ) {
-                return $langId;
+            if ($clientAlpha2) {
+                foreach ($strippedLangs as $language) {
+                    $localeCode = $language . '-' . $clientAlpha2;
+                    if (
+                        $langId = \FWLanguage::getLanguageIdByCode($localeCode)
+                    ) {
+                        return $langId;
+                    }
+                }
             }
             // No match with full locale or geoip, try to return stripped match
             if ($strippedMatch) {
