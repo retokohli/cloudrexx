@@ -144,7 +144,6 @@
                         else {
                             $scope.selectedSource = data[0];
                         }
-                        $scope.path[0].path = $scope.selectedSource.value;
                         if (mediabrowserConfig.get('mediatypes') != 'all') {
                             var i = data.length;
                             while (i--) {
@@ -332,7 +331,7 @@
                         $scope.allFiles = data;
                         $scope.files = $scope.getValueByPath($scope.allFiles, $scope.path);
                         var oldPath = mediabrowserConfig.get('lastPath');
-                        if (oldPath.length > 1) {
+                        if (oldPath.length > 1 && oldPath[0].path == $scope.selectedSource.value) {
                             var i = 1;
                             var extendPathNext = function () {
                                 $scope.extendPath(oldPath[i].path).then(function () {
@@ -515,7 +514,7 @@
                     browse_button: 'selectFileFromComputer',
                     container: 'uploader',
                     drop_element: "uploader",
-                    url: cx.variables.get('cadminPath','contrexx') + '?csrf=' + cx.variables.get('csrf') + '&cmd=jsondata&object=Uploader&act=upload',
+                    url: cx.variables.get('cadminPath', 'contrexx') + '?csrf=' + cx.variables.get('csrf') + '&cmd=jsondata&object=Uploader&act=upload',
                     flash_swf_url: cx.variables.get('basePath', 'contrexx') + 'lib/plupload/js/Moxie.swf',
                     silverlight_xap_url: cx.variables.get('basePath', 'contrexx') + 'lib/plupload/js/Moxie.xap',
                     chunk_size: cx.variables.get('chunk_size', 'mediabrowser'),
