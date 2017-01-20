@@ -39,7 +39,7 @@ namespace Cx\Core\ContentManager\Model\Entity;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\Entity;
-use Gedmo\Loggable\Entity\AbstractLogEntry;
+use Gedmo\Loggable\Entity\MappedSuperclass\AbstractLogEntry;
 
 /**
  * Cx\Core\ContentManager\Model\Entity\LogEntry
@@ -71,7 +71,7 @@ class LogEntry extends AbstractLogEntry
      * @Id
      * @GeneratedValue
      */
-    private $id;
+    protected $id;
 
     /**
      * Get id
