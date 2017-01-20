@@ -320,26 +320,26 @@ class InitCMS
                 if ($langId = \FWLanguage::getLanguageIdByCode($language)) {
                     return $langId;
                 } elseif (
-                    ($langId = \FWLanguage::getLanguageIdByCode(
+                    // only set the first stripped match, it's the most relevant
+                    !$strippedMatch &&
+                    $langId = \FWLanguage::getLanguageIdByCode(
                         // stripped lang: e.g 'en-US' becomes 'en'
                         substr($language, 0, strpos($language, '-'))
-                    )) &&
-                    // only set the first stripped match, it's the most relevant
-                    (!$strippedMatch)
+                    )
                 ) {
                     $strippedMatch = $langId;
                 }
             }
+            // try to get locale with geoip
             $clientRecord = \Env::get('cx')->getComponent('GeoIp')->getClientRecord();
             $clientAlpha2 = $clientRecord->country->isoCode;
-            // try to get locale with geoip
             if (
                 $clientAlpha2 &&
                 $langId = \FWLanguage::getLanguageIdByAlpha2($clientAlpha2)
             ) {
                 return $langId;
             }
-            // No full match, try to return the stripped match
+            // No match with full locale or geoip, try to return stripped match
             if ($strippedMatch) {
                 return $strippedMatch;
             }
