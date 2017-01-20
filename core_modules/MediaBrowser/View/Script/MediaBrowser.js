@@ -416,6 +416,22 @@
                 }
             };
 
+            $scope.setDatainfoAttributeByPath = function (obj, path, attribute, value) {
+                path = $scope.cleanupPath(path);
+                if (path.length == 1 && value != undefined) {
+                    if (obj[path[0]] == undefined) {
+                        obj[path[0]] = {};
+                    }
+                    obj[path[0]]['datainfo'][attribute] = value;
+                    return obj;
+                } else if (path.length == 0) {
+                    return obj;
+                } else {
+                    obj[path[0]] = $scope.setDatainfoAttributeByPath(obj[path[0]], path.slice(1), attribute, value);
+                    return obj;
+                }
+            };
+
             $scope.addValueByPath = function (obj, path, value) {
                 path = $scope.cleanupPath(path);
                 if (path.length == 1 && value != undefined) {
@@ -910,8 +926,7 @@
                             content: '<img src="' + attrs.previewImage.replace(/<[^>]*>/g, '') + '"  />',
                             placement: 'right'
                         });
-                    }
-                    else {
+                    } else {
                         cxCadminPath = cx.variables.get('cadminPath');
                         $http.get(cxCadminPath + 'index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=' + attrs.previewImage).success(function (data, status, headers, config) {
                             jQuery(el).popover({
@@ -920,7 +935,9 @@
                                 content: '<img src="' + attrs.previewImage.replace(/<[^>]*>/g, '') + '"  />',
                                 placement: 'right'
                             });
-                        })
+                        });
+                        var path = attrs.previewImage.replace('.thumb_thumbnail', '').split('/').splice(3);
+                        scope.allFiles = scope.setDatainfoAttributeByPath(scope.allFiles, path, 'hasPreview', '1');
                     }
                 }
             }

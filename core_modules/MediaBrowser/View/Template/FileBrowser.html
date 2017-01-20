@@ -22,7 +22,7 @@
                     </a>
                 </li>
                 <li>
-                    <a ng-click="updateSource(false)"><i class="icon-refresh"></i>
+                    <a ng-click="updateSource()"><i class="icon-refresh"></i>
                         <span class="fileActions-text"> {{:: 'TXT_FILEBROWSER_RELOAD' | translate }} </span>
                     </a>
                 </li>
@@ -67,9 +67,12 @@
                     <td width="2%" class="col_1"><i class="icon-fileType icon-fileType{{file.datainfo.extension}}"></i>
                     </td>
                     <td width="50%" class="col_2">
-                        <a data-sglclick="clickFile(file, $index, false)" data-ng-dblclick="clickFile(file, $index, true)"
-                           data-preview-image="{{file.datainfo.preview}}" data-has-preview-image="{{file.datainfo.hasPreview}}"
-                                >  <div class="fileName">{{file.datainfo.name}}</div></a>
+                        <a data-sglclick="clickFile(file, $index, false)"
+                           data-ng-dblclick="clickFile(file, $index, true)"
+                           data-preview-image="{{file.datainfo.preview}}"
+                           data-has-preview-image="{{file.datainfo.hasPreview}}">
+                            <div class="fileName">{{file.datainfo.name}}</div>
+                        </a>
                     </td>
 
                     <td class="fileSize col_4" width="18%">
