@@ -65,5 +65,9 @@ class Mail extends \PHPMailer
             }
         }
         $this->CharSet = CONTREXX_CHARSET;
+
+        self::$validator = function ($address) {
+            return \FWValidator::isEmail($address);
+        };
     }
 }
