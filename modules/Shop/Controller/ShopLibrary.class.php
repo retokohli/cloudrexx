@@ -262,7 +262,7 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
         // If the image is situated in or below the shop image folder,
         // don't bother to copy it.
         if (!preg_match($shopImageFolderRe, $imageFileSource)) {
-            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $imageFileTarget) 
+            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $imageFileTarget)
              && preg_match('/(\.\w+)$/', $imageFileSource, $arrMatch)) {
                 $imageFileTarget = preg_replace('/\.\w+$/', uniqid().$arrMatch[1], $imageFileTarget);
                 \Message::information(sprintf(
@@ -394,8 +394,17 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
      */
     static function getSubstitutionArray()
     {
+        // fetch shop country name
+        $countryId = \Cx\Core\Setting\Controller\Setting::getValue('country_id','Shop');
+        $country = \Cx\Core\Country\Controller\Country::getNameById($countryId);
+
         return array(
-            'SHOP_COMPANY' => \Cx\Core\Setting\Controller\Setting::getValue('company','Shop'),
+            'SHOP_COMPANY'  => \Cx\Core\Setting\Controller\Setting::getValue('company','Shop'),
+            'SHOP_ADDRESS'  => \Cx\Core\Setting\Controller\Setting::getValue('address','Shop'),
+            'SHOP_TELEPHONE'=> \Cx\Core\Setting\Controller\Setting::getValue('telephone','Shop'),
+            'SHOP_FAX'      => \Cx\Core\Setting\Controller\Setting::getValue('fax','Shop'),
+            'SHOP_COUNTRY'  => $country,
+            'SHOP_EMAIL'    => \Cx\Core\Setting\Controller\Setting::getValue('email','Shop'),
             'SHOP_HOMEPAGE' => \Cx\Core\Routing\Url::fromModuleAndCmd(
                 'Shop', '', FRONTEND_LANG_ID)->toString(),
         );

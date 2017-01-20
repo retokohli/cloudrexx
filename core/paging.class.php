@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Paging
  *
@@ -84,6 +84,8 @@ class Paging
     ) {
         global $_CONFIG, $_CORELANG;
 
+        $headIncludes = array();
+
         if (empty($results_per_page)) $results_per_page = intval($_CONFIG['corePagingLimit']);
         if ($numof_rows <= $results_per_page && !$showeverytime) return '';
         $parameter_name = self::getParametername($parameter_name);
@@ -119,9 +121,9 @@ class Paging
         // Set up the base navigation entries
         $array_paging = array(
             'first' => '<a class="pagingFirst" href="'.
-                Cx\Core\Routing\Url::encode_amp($firstUrl).'">',
+                Cx\Core\Routing\Url::encode_amp($firstUrl->toString()).'" rel="nofollow">',
             'last'  => '<a class="pagingLast" href="'.
-                Cx\Core\Routing\Url::encode_amp($lastUrl).'">',
+                Cx\Core\Routing\Url::encode_amp($lastUrl->toString()).'" rel="nofollow">',
             'total' => $numof_rows,
             'lower' => ($numof_rows ? $position + 1 : 0),
             'upper' => $numof_rows,
@@ -135,6 +137,11 @@ class Paging
             $previousUrl->setParam($parameter_name, ($position - $results_per_page));
             $array_paging['previous_link'] =
                 '<a href="'.Cx\Core\Routing\Url::encode_amp($previousUrl).'">';
+
+            $link = new \Cx\Core\Html\Model\Entity\HtmlElement('link');
+            $link->setAttribute('href', $previousUrl->toString());
+            $link->setAttribute('rel', 'prev');
+            $headIncludes[] = $link;
         }
         if (($numof_rows - $position) > $results_per_page) {
             $int_new_position = $position + $results_per_page;
@@ -142,7 +149,22 @@ class Paging
             $nextUrl->setParam($parameter_name, $int_new_position);
             $array_paging['next_link'] =
                 '<a href="'.Cx\Core\Routing\Url::encode_amp($nextUrl).'">';
+
+            $link = new \Cx\Core\Html\Model\Entity\HtmlElement('link');
+            $link->setAttribute('href', $nextUrl->toString());
+            $link->setAttribute('rel', 'next');
+            $headIncludes[] = $link;
         }
+
+        // TODO: This is a temporary solution for setting HEAD_INCLUDES.
+        //       The proper and correct way will by handled by the
+        //       upcoming implementation of the response object.
+        if ($headIncludes) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getTemplate()->setVariable(
+                'HEAD_INCLUDES', join("\n", $headIncludes)
+            );
+        }
+
         // Add single pages, indexed by page numbers [1 .. numof_pages]
         for ($i = 1; $i <= $numof_pages; ++$i) {
             if ($i == $page_number) {
@@ -153,15 +175,15 @@ class Paging
                 $pageUrl->setParam($parameter_name, (($i-1) * $results_per_page));
                 $array_paging[$i] =
                     '<a class="pagingPage'.$i.'" href="'.
-                    Cx\Core\Routing\Url::encode_amp($pageUrl).'">'.$i.'</a>';
+                    Cx\Core\Routing\Url::encode_amp($pageUrl->toString()).'">'.$i.'</a>';
             }
         }
         $paging =
             $paging_text.
             '&nbsp;<span class="pagingLower">'.$array_paging['lower'].
-            '</span>&nbsp;'.$_CORELANG['TXT_TO'].
+            '</span>&nbsp;'.$_CORELANG['TXT_PAGING_TO'].
             '&nbsp;<span class="pagingUpper">'.$array_paging['upper'].
-            '</span>&nbsp;'.$_CORELANG['TXT_FROM'].
+            '</span>&nbsp;'.$_CORELANG['TXT_PAGING_OUT_OF'].
             '&nbsp;<span class="pagingTotal">'.$array_paging['total'].
             '</span>';
         if ($numof_pages) $paging .=
@@ -200,10 +222,10 @@ class Paging
 
             return intval($_REQUEST[$parameter_name]);
         }
-            
+
         if (!isset($_SESSION['paging'])) {
             $_SESSION['paging'] = array();
-        }        
+        }
         if (!isset($_SESSION['paging'][$parameter_name]))
             $_SESSION['paging'][$parameter_name] = 0;
         if (isset($_REQUEST[$parameter_name])) {
@@ -254,7 +276,7 @@ class Paging
             true)));
 */
         $arrStack = debug_backtrace();
-      	$i = 0;
+          $i = 0;
         while ($arrStack[$i]['class'] == 'Paging') {
             ++$i;
         }
@@ -277,10 +299,10 @@ class Paging
         // it must not exceed the allowed session-variable-key-length.
         // Therefore, if required, the parameter name is hashed and cut to the
         // maximum allowed session-variable-key-length.
-        if (strlen($parameterName) > \cmsSession::getVariableKeyMaxLength()) {
-            $parameterName = substr(md5($parameterName), 0, \cmsSession::getVariableKeyMaxLength());
+        if (strlen($parameterName) > \Cx\Core\Session\Model\Entity\Session::getVariableKeyMaxLength()) {
+            $parameterName = substr(md5($parameterName), 0, \Cx\Core\Session\Model\Entity\Session::getVariableKeyMaxLength());
         }
-        
+
         return $parameterName;
     }
 }

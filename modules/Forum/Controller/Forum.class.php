@@ -400,7 +400,7 @@ class Forum extends ForumLibrary {
      */
     function showForum($intForumId)
     {
-        global $objDatabase, $_ARRAYLANG, $objCache, $_LANGID, $_CORELANG;
+        global $objDatabase, $_ARRAYLANG, $_LANGID, $_CORELANG;
 
         if ($intForumId == 0) {
             //wrong id, redirect
@@ -617,7 +617,7 @@ class Forum extends ForumLibrary {
      */
     function showThread($intThreadId)
     {
-        global $objDatabase, $_ARRAYLANG, $objCache;
+        global $objDatabase, $_ARRAYLANG;
 
         $objFWUser = \FWUser::getFWUserObject();
         $this->_communityLogin();
@@ -723,7 +723,7 @@ class Forum extends ForumLibrary {
             $this->_objTpl->touchBlock('previewNewPost');
             $this->_objTpl->hideBlock('previewEditPost');
         }
-        
+
         if($_REQUEST['act'] == 'quote'){
             $quoteContent = $this->_getPostingData($intPostId);
             $subject = 'RE: '.addcslashes(htmlentities($quoteContent['subject'], ENT_QUOTES, CONTREXX_CHARSET), '\\');
@@ -1715,7 +1715,7 @@ class Forum extends ForumLibrary {
                             offset = document.documentElement.scrollTop;
                         }
                         if(document.getElementById("scrollpos")){
-                        	document.getElementById("scrollpos").value = offset;
+                            document.getElementById("scrollpos").value = offset;
                         }
                     }
                 //]]>
