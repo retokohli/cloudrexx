@@ -308,18 +308,18 @@
 
             $scope.updateSourceSearch = function () {
                 if (!$scope.searchSourceLoaded) {
-                    $scope.updateSource(true);
+                    $scope.updateSource(true, false);
                 }
                 $scope.searchSourceLoaded = true;
             };
 
-            $scope.updateSource = function (recursive) {
+            $scope.updateSource = function (recursive, sourceChanged) {
                 if (!recursive) {
                     $scope.searchSourceLoaded = false
                 }
                 $scope.path = [
                     {
-                        name: "" + $scope.selectedSource.name,
+                        name: $scope.selectedSource.name,
                         path: '',
                         standard: true
                     }
@@ -331,7 +331,7 @@
                         $scope.allFiles = data;
                         $scope.files = $scope.getValueByPath($scope.allFiles, $scope.path);
                         var oldPath = mediabrowserConfig.get('lastPath');
-                        if (oldPath.length > 1 && oldPath[0].path == $scope.selectedSource.value) {
+                        if (oldPath.length > 0 && sourceChanged == false) {
                             var i = 1;
                             var extendPathNext = function () {
                                 $scope.extendPath(oldPath[i].path).then(function () {
@@ -489,7 +489,7 @@
 
 
             $scope.afterUpload = function () {
-                $scope.updateSource(false);
+                $scope.updateSource(false, false);
             };
 
             $scope.length = function (obj) {
@@ -757,7 +757,7 @@
                                                 title: cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser')
                                             });
                                         }
-                                        $scope.updateSource(false);
+                                        $scope.updateSource(false, false);
                                     }).error(function () {
                                         bootbox.alert({
                                             className: "media-browser-modal-window",
@@ -809,7 +809,7 @@
                                         'X-Requested-With': 'XMLHttpRequest'
                                     }
                                 }).success(function (jsonadapter) {
-                                    $scope.updateSource(false);
+                                    $scope.updateSource(false, false);
                                 }).error(function () {
                                     bootbox.alert({
                                         className: "media-browser-modal-window",
@@ -850,7 +850,7 @@
                                     data: $.param({dir: dirName}),
                                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                                 }).success(function (jsonadapter) {
-                                    $scope.updateSource(false);
+                                    $scope.updateSource(false, false);
                                 }).error(function () {
                                     bootbox.alert({
                                         className: "media-browser-modal-window",

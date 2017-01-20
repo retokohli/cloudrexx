@@ -15,7 +15,7 @@
                 </li>
             </ul>
             <select class="selectsource" data-ng-options="source as source.name for source in sources"
-                    data-ng-model="selectedSource" data-ng-change="updateSource(false)"
+                    data-ng-model="selectedSource" data-ng-change="updateSource(false, true)"
                     data-ng-show="activeController == 'MediaBrowserListCtrl'"
                     data-ng-class="loadingSources ? 'loading' : ''">
                 <option value="files">
