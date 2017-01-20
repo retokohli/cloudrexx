@@ -331,7 +331,7 @@
                         $scope.allFiles = data;
                         $scope.files = $scope.getValueByPath($scope.allFiles, $scope.path);
                         var oldPath = mediabrowserConfig.get('lastPath');
-                        if (oldPath.length > 0 && sourceChanged == false) {
+                        if (oldPath.length > 1 && sourceChanged == false) {
                             var i = 1;
                             var extendPathNext = function () {
                                 $scope.extendPath(oldPath[i].path).then(function () {
