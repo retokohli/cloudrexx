@@ -105,7 +105,7 @@
             $scope.path = [
                 {
                     name: cx.variables.get('TXT_FILEBROWSER_FILES', 'mediabrowser'),
-                    path: 'files',
+                    path: '',
                     standard: true
                 }
             ];
@@ -438,13 +438,13 @@
 
             $scope.cleanupPath = function (path) {
                 var cleanPath = [];
-                path.forEach(function (pathPart, key) {
+                path.forEach(function (pathPart) {
                     if (pathPart.path != undefined) {
-                        if (key != 0) {
+                        if (pathPart.path != '') {
                             cleanPath.push(pathPart.path);
                         }
                     } else {
-                        if (key != 0) {
+                        if (pathPart != '') {
                             cleanPath.push(pathPart);
                         }
                     }
