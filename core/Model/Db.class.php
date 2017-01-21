@@ -295,7 +295,7 @@ namespace Cx\Core\Model {
 
             $config = new \Doctrine\ORM\Configuration();
 
-            //$config->setResultCacheImpl($this->cacheDriver);
+            $config->setResultCacheImpl($this->cacheDriver);
             $config->setMetadataCacheImpl($this->cacheDriver);
             $config->setQueryCacheImpl($this->cacheDriver);
 
