@@ -56,9 +56,14 @@ abstract class WidgetParseTarget extends \Cx\Model\Base\EntityBase {
             $template->placeholderExists($widgetName) ||
             !$template->blockExists($widgetName)
         ) {
-            return $widgetTemplate;
+            return $template;
         }
-        $widgetTemplate->setTemplate($template->_blocks[$widgetName]);
+        $widgetTemplate = new \Cx\Core\Html\Sigma();
+        $widgetTemplate->setTemplate(
+            '<!-- BEGIN ' . $widgetName . ' -->' .
+            $template->_blocks[$widgetName] .
+            '<!-- END ' . $widgetName . ' -->'
+        );
         return $widgetTemplate;
     }
 
