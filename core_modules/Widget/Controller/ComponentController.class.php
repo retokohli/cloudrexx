@@ -176,7 +176,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             throw new \Exception('Component not found: "' . $componentName . '"');
         }
         $target = $em->find(
-            'Cx\\' . $component->getType() . '\\' . $component->getName() . '\\Model\\Entity\\' . $entityName,
+            'Cx\\' . ucfirst($component->getType()) . '\\' . $component->getName() . '\\Model\\Entity\\' . $entityName,
             $entityId
         );
         if (!is_a($target, $this->getNamespace() . '\Model\Entity\WidgetParseTarget')) {
