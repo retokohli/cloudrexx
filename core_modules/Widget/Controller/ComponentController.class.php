@@ -146,7 +146,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function getWidgetContent($widgetName, $themeId, $pageId, $targetComponent, $targetEntity, $targetId) {
         $em = $this->cx->getDb()->getEntityManager();
-        $theme = $em->find('Cx\Core\View\Model\Entity\Theme', $themeId);
+        $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $theme = $themeRepo->findById($themeId);
         // Since version number is not yet defined (XY), we do not check this yet
         if (false) {//version_compare($theme->getVersionNumber(), 'XY' '>=') {
             // load theme file contents:
@@ -169,6 +170,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // the following IF block can be dropped as soon as Block is a Doctrine entity
         if ($componentName == 'Block' && $entityName == 'Block') {
             return new \Cx\Modules\Block\Model\Entity\Block($entityId);
+        } else if ($componentName == 'View' && $entityName == 'Theme') {
+            $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
+            return $themeRepo->findById($entityId);
         }
         $em = $this->cx->getDb()->getEntityManager();
         $component = $this->getComponent($componentName);
