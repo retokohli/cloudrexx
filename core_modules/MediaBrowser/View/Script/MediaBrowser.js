@@ -738,9 +738,13 @@
                                 if (newName === null) {
 
                                 } else {
+                                    var path = encodeURI($scope.getPathAsString());
+                                    if (path == '') {
+                                        path = '/';
+                                    }
                                     $http({
                                         method: 'POST',
-                                        url: 'index.php?cmd=jsondata&object=MediaBrowser&act=renameFile&path=' + encodeURI($scope.getPathAsString()) + '&csrf=' + cx.variables.get('csrf'),
+                                        url: 'index.php?cmd=jsondata&object=MediaBrowser&act=renameFile&path=' + path + '&mediatype=' + $scope.selectedSource.value + '&csrf=' + cx.variables.get('csrf'),
                                         data: $.param({
                                             oldName: file.datainfo.name,
                                             newName: newName
@@ -754,14 +758,14 @@
                                         if (!jsonadapter.message) {
                                             bootbox.alert({
                                                 className: "media-browser-modal-window",
-                                                title: cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser')
+                                                message: cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser')
                                             });
                                         }
                                         $scope.updateSource(false, false);
                                     }).error(function () {
                                         bootbox.alert({
                                             className: "media-browser-modal-window",
-                                            title: cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser')
+                                            message: cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser')
                                         });
                                     });
                                 }
@@ -798,9 +802,13 @@
                             label: cx.variables.get('TXT_FILEBROWSER_FILE_REMOVE', 'mediabrowser'),
                             className: "btn-danger",
                             callback: function () {
+                                var path = encodeURI($scope.getPathAsString());
+                                if (path == '') {
+                                    path = '/';
+                                }
                                 $http({
                                     method: 'POST',
-                                    url: 'index.php?cmd=jsondata&object=MediaBrowser&act=removeFile&path=' + encodeURI($scope.getPathAsString()) + '&csrf=' + cx.variables.get('csrf'),
+                                    url: 'index.php?cmd=jsondata&object=MediaBrowser&act=removeFile&path=' + path + '&mediatype=' + $scope.selectedSource.value + '&csrf=' + cx.variables.get('csrf'),
                                     data: $.param({
                                         file: file
                                     }),
@@ -813,7 +821,7 @@
                                 }).error(function () {
                                     bootbox.alert({
                                         className: "media-browser-modal-window",
-                                        title: cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser')
+                                        message: cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser')
                                     });
                                 });
 
@@ -839,7 +847,7 @@
                 bootbox.prompt(
                     {
                         className: "media-browser-modal-window",
-                        title: cx.variables.get('TXT_FILEBROWSER_DIRECTORY_NAME', 'mediabrowser'),
+                        message: cx.variables.get('TXT_FILEBROWSER_DIRECTORY_NAME', 'mediabrowser'),
                         callback: function (dirName) {
                             if (dirName === null) {
 
@@ -854,7 +862,7 @@
                                 }).error(function () {
                                     bootbox.alert({
                                         className: "media-browser-modal-window",
-                                        title: cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser')
+                                        message: cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser')
                                     });
                                 });
                             }
