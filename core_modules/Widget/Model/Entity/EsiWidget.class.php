@@ -109,6 +109,11 @@ class EsiWidget extends Widget {
             $this->getJsonMethodName(),
             $this->getEsiParams($targetComponent, $targetEntity, $targetId)
         );
+        if (!$this->hasContent()) {
+            return $esiContent;
+        }
+        $template->replaceBlock($this->getName(), $esiContent);
+        $template->touchBlock($this->getName());
     }
 
     /**
