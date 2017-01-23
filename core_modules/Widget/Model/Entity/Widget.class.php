@@ -78,7 +78,7 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
      * Returns the component which registered this widget
      * @return \Cx\Core\Core\Model\Entity\SystemComponentController Registering component
      */
-    public function getComponent() {
+    public function getRegisteringComponent() {
         return $this->component;
     }
 
