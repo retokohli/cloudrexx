@@ -115,7 +115,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             if (in_array($widget->getName(), $excludedWidgets)) {
                 continue;
             }
-            $widget->parse($template, null, $targetComponent, $targetEntity, $targetId);
+            $widget->parse(
+                $template,
+                null,
+                $targetComponent,
+                $targetEntity,
+                $targetId,
+                $excludedWidgets
+            );
         }
     }
 
