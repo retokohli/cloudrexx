@@ -263,21 +263,7 @@ class CalendarMailManager extends CalendarLibrary {
 
             $recipients = $this->getSendMailRecipients($actionId, $event, $regId, $objRegistration);
 
-            $objMail = new \phpmailer();
-
-            if ($_CONFIG['coreSmtpServer'] > 0) {
-                $arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
-                if ($arrSmtp !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
-            }
-
-            $objMail->CharSet = CONTREXX_CHARSET;
+            $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
             $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
 
             foreach ($recipients as $mailAdress => $langId) {
