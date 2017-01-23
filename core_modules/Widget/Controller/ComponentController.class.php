@@ -144,7 +144,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param string $targetId Parse target entity ID
      * @return \Cx\Core\Html\Sigma Widget content as template
      */
-    public function getWidgetContent($widgetName, $themeId, $pageId, $targetComponent, $targetEntity, $targetId) {
+    public function getWidgetContent($widgetName, $themeId, $pageId, $targetComponent, $targetEntity, $targetId, $channel) {
         $em = $this->cx->getDb()->getEntityManager();
         $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
         $theme = $themeRepo->findById($themeId);
@@ -155,8 +155,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
         $page = $em->find('Cx\Core\ContentManager\Model\Entity\Page', $pageId);
-        $parseTarget = $this->getParseTarget($targetComponent, $targetEntity, $targetId);
-        return $parseTarget->getWidgetContent($widgetName, $theme, $page);
+        $parseTarget = $this->getParseTarget(
+            $targetComponent,
+            $targetEntity,
+            $targetId
+        );
+        return $parseTarget->getWidgetContent($widgetName, $theme, $page, $channel);
     }
 
     /**

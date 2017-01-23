@@ -49,9 +49,13 @@ abstract class WidgetParseTarget extends \Cx\Model\Base\EntityBase {
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page which is parsed
      * @return \Cx\Core\Html\Sigma Widget content
      */
-    public function getWidgetContent($widgetName, $theme, $page) {
-        $template = $this->getContentTemplateForWidget($widgetName);
-        $widgetTemplate = new \Cx\Core\Html\Sigma();
+    public function getWidgetContent($widgetName, $theme, $page, $channel) {
+        $template = $this->getContentTemplateForWidget(
+            $widgetName,
+            $page->getLang(),
+            $page,
+            $channel
+        );
         if (
             $template->placeholderExists($widgetName) ||
             !$template->blockExists($widgetName)
@@ -69,12 +73,15 @@ abstract class WidgetParseTarget extends \Cx\Model\Base\EntityBase {
 
     /**
      * Returns the template in which the widget can be used
-     * @param string $widgetName
+     * @param string $widgetName Name of the Widget to get template for
+     * @param int $langId Language ID
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Current page
+     * @param string $channel Current channel
      * @return \Cx\Core\Html\Sigma Template which may contain the widget
      */
-    protected function getContentTemplateForWidget($widgetName) {
+    protected function getContentTemplateForWidget($widgetName, $langId, $page, $channel) {
         $getter = 'get' . ucfirst($this->getWidgetContentAttributeName($widgetName));
-        $content = $this->$getter();
+        $content = $this->$getter($langId, $channel);
         $template = new \Cx\Core\Html\Sigma();
         $template->setTemplate($content);
         return $template;
