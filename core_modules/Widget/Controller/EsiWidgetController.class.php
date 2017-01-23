@@ -33,7 +33,7 @@
  * @subpackage coremodules_widget
  */
 
-namespace Cx\Core_Modules\Widget\Model\Entity;
+namespace Cx\Core_Modules\Widget\Controller;
 
 /**
  * JsonAdapter Controller to handle EsiWidgets
@@ -98,6 +98,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
             'targetComponent',
             'targetEntity',
             'targetId',
+            'channel',
         );
         $params['get'] = contrexx_input2raw($params['get']);
         foreach ($requiredParams as $requiredParam) {
@@ -107,21 +108,30 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
         }
 
         // resolve widget template
-        $widgetTemplate = $this->getComponentController()->getWidgetTemplate(
+        $widgetTemplate = $this->getComponent('Widget')->getWidgetContent(
             $params['get']['name'],
             $params['get']['theme'],
             $params['get']['page'],
             $params['get']['targetComponent'],
             $params['get']['targetEntity'],
-            $params['get']['targetId']
+            $params['get']['targetId'],
+            $params['get']['channel']
         );
-
+        
+        $this->parseWidget(
+            $params['get']['name'],
+            $widgetTemplate,
+            $params['get']['lang']
+        );
+        $this->getComponent('Widget')->parseWidgets(
+            $widgetTemplate,
+            $params['get']['targetComponent'],
+            $params['get']['targetEntity'],
+            $params['get']['targetId'],
+            array($params['get']['name'])
+        );
         return array(
-            'content' => $this->parseWidget(
-                $params['get']['name'],
-                $widgetTemplate,
-                $params['get']['lang']
-            )
+            'content' => $widgetTemplate->get(),
         );
     }
 
