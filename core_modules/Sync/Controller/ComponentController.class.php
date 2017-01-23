@@ -536,6 +536,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             echo 'Processing changes to ' . count($nonLockedHosts) . ' host(s)' . "\n";
             foreach ($nonLockedHosts as $host) {
                 // skip if locked
+                $em->refresh($host);
                 if (!$host->lock()) {
                     echo 'Host ' . $host->getHost() . ' locked, skipping' . "\n";
                     continue;
