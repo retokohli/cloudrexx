@@ -106,7 +106,7 @@ class PageRepository extends EntityRepository {
      * @return array
      * @override
      */
-    public function findBy(array $criteria, $inactive_langs = false)
+    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null, $inactive_langs = false)
     {
         $activeLangs = \FWLanguage::getActiveFrontendLanguages();
 
@@ -694,7 +694,7 @@ class PageRepository extends EntityRepository {
             $pages = $this->findBy(array(
                 'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS,
                 'slug' => $parts[0],
-            ), true);
+            ), null, null, null, true);
             $page = null;
             if (count($pages) == 1) {
                 $page = $pages[0];

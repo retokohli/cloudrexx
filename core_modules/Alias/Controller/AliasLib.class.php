@@ -81,7 +81,7 @@ class AliasLib
             // show all entries
             $aliases = $this->pageRepository->findBy(array(
                 'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS,
-            ), true);
+            ), null, null, null, true);
         } else {
             // query builder for filtering entries
             $qb = $this->pageRepository->createQueryBuilder('p');
@@ -128,7 +128,7 @@ class AliasLib
         $crit = array(
             'node' => $aliasId,
         );
-        return current($this->pageRepository->findBy($crit, true));
+        return current($this->pageRepository->findBy($crit, null, null, null, true));
     }
 
 
@@ -159,7 +159,7 @@ class AliasLib
                 'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS,
                 'target' => $target,
             );
-            $aliases = $this->pageRepository->findBy($crit, true);
+            $aliases = $this->pageRepository->findBy($crit, null, null, null, true);
         }
 
         return $aliases;
@@ -181,7 +181,7 @@ class AliasLib
                 'lang' => $target_lang_id,
             );
             $page_repo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-            $targetPage = $page_repo->findBy($crit, true);
+            $targetPage = $page_repo->findBy($crit, null, null, null, true);
             $targetPage = $targetPage[0];
             $targetPath = $page_repo->getPath($targetPage);
             $arrAlias['pageUrl'] = "/".$targetPath;

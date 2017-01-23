@@ -1862,8 +1862,8 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
 
         // merge both resultsets
         $aliases = array_merge(
-                $pageRepo->findBy($crit1, true),
-                $pageRepo->findBy($crit2, true)
+                $pageRepo->findBy($crit1, null, null, null, true),
+                $pageRepo->findBy($crit2, null, null, null, true)
         );
         return $aliases;
     }
