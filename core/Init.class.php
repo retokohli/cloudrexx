@@ -342,7 +342,9 @@ class InitCMS
                 }
             }
             // try to get locale with geoip
-            $clientRecord = \Env::get('cx')->getComponent('GeoIp')->getClientRecord();
+            $clientRecord = \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getComponent('GeoIp')
+                ->getClientRecord();
             $clientAlpha2 = $clientRecord->country->isoCode;
             if ($clientAlpha2) {
                 foreach ($strippedLangs as $language) {
