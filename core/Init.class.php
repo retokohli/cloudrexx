@@ -1229,4 +1229,16 @@ class InitCMS
     {
         return $this->pageThemeId;
     }
+
+    /**
+     * Returns the current channel
+     * @throws \Exception If channel is not yet set, call setFrontendLangId() to set it
+     * @return string Channel
+     */
+    public function getCurrentChannel() {
+        if (!$this->currentChannel) {
+            throw new \Exception('Channel not yet set');
+        }
+        return $this->currentChannel;
+    }
 }
