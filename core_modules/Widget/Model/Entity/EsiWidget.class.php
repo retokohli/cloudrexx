@@ -125,13 +125,26 @@ class EsiWidget extends Widget {
      */
     protected function getEsiParams($targetComponent, $targetEntity, $targetId) {
         if (empty($this->jsonParams)) {
+            if ($this->cx->getPage()) {
+                $pageId = $this->cx->getPage()->getId();
+                $langCode = \FWLanguage::getLanguageCodeById($this->cx->getPage()->getLang());
+                $themeId = \Env::get('init')->getCurrentThemeId();
+                $channel = \Env::get('init')->getCurrentChannel();
+            } else if ($_GET['page']) {
+                $pageId = contrexx_input2raw($_GET['page']);
+                $langCode = contrexx_input2raw($_GET['lang']);
+                $themeId = contrexx_input2raw($_GET['theme']);
+                $channel = contrexx_input2raw($_GET['channel']);
+            }
             return array(
                 'name' => $this->getName(),
-                'theme' => \Env::get('init')->getCurrentThemeId(),
-                'page' => $this->cx->getPage()->getId(),
+                'theme' => $themeId,
+                'page' => $pageId,
+                'lang' => $langCode,
                 'targetComponent' => $targetComponent,
                 'targetEntity' => $targetEntity,
                 'targetId' => $targetId,
+                'channel' => $channel,
             );
         }
         return $this->jsonParams;
