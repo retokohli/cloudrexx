@@ -104,7 +104,7 @@ class EsiWidget extends Widget {
      * @return string Replacement for widgets without content, NULL otherwise
      */
     public function internalParse($template, $response, $targetComponent, $targetEntity, $targetId) {
-        return $this->getComponent('Cache')->getEsiContent(
+        $esiContent = $this->getComponent('Cache')->getEsiContent(
             $this->getJsonAdapterName(),
             $this->getJsonMethodName(),
             $this->getEsiParams($targetComponent, $targetEntity, $targetId)
