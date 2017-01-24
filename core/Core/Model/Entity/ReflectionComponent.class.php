@@ -127,7 +127,7 @@ class ReflectionComponent {
             $metaTypes = array('core'=>'core', 'core_module'=>'system', 'module'=>'application', 'lib'=>'other');
             $yaml = new \Symfony\Component\Yaml\Yaml();
             $content = file_get_contents(ASCMS_APP_CACHE_FOLDER . '/meta.yml');
-            $meta = $yaml->load($content);
+            $meta = $yaml->parse($content);
             $type = array_key_exists($meta['DlcInfo']['type'], $metaTypes) ? $meta['DlcInfo']['type'] : 'lib';
 
             // initialize ReflectionComponent
@@ -322,7 +322,7 @@ class ReflectionComponent {
         // Read meta file
         $yaml = new \Symfony\Component\Yaml\Yaml();
         $content = file_get_contents(ASCMS_APP_CACHE_FOLDER . '/meta.yml');
-        $meta = $yaml->load($content);
+        $meta = $yaml->parse($content);
 
         // Check dependencies
         echo "Checking  dependencies ... ";
@@ -388,7 +388,7 @@ class ReflectionComponent {
 
         $classes = array();
         foreach (glob($ymlDirectory.'/*.yml') as $yml) {
-            $ymlArray  = \Symfony\Component\Yaml\Yaml::load($yml);
+            $ymlArray  = \Symfony\Component\Yaml\Yaml::parse($yml);
             $classes[] = $em->getClassMetadata(key($ymlArray));
         }
 
@@ -598,7 +598,7 @@ class ReflectionComponent {
             // Read meta file
             $yaml = new \Symfony\Component\Yaml\Yaml();
             $content = file_get_contents($componentFolder . '/meta.yml');
-            $meta = $yaml->load($content);
+            $meta = $yaml->parse($content);
             if (isset($meta['DlcInfo']['additionalFiles'])) {
                 foreach ($meta['DlcInfo']['additionalFiles'] as $additionalFile) {
                     $srcPath = $websitePath. '/'. $additionalFile;

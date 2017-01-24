@@ -323,7 +323,7 @@ class ThemeRepository
             try {
                 $objYaml = new \Symfony\Component\Yaml\Yaml();
                 $objFile = new \Cx\Lib\FileSystem\File($filePath);
-                $themeInformation = $objYaml->load($objFile->getData());
+                $themeInformation = $objYaml->parse($objFile->getData());
                 $theme->setComponentData($themeInformation['DlcInfo']);
             } catch (\Exception $e) {
                 \DBG::log($e->getMessage());
