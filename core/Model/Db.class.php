@@ -188,7 +188,7 @@ namespace Cx\Core\Model {
                     \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET time_zone = \'' . $offsetString . '\'',
                 )
             );
-            $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
+            $this->pdo->setAttribute(\PDO::ATTR_STATEMENT_CLASS, array('Doctrine\DBAL\Driver\PDOStatement', array()));
 
             // disable ONLY_FULL_GROUP_BY, STRICT_TRANS_TABLES mode
             // this is a temporary fix to ensure MySQL 5.7 compatability
