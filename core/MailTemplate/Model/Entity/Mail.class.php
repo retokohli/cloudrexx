@@ -77,6 +77,11 @@ class Mail extends \PHPMailer
         $this->Host = $arrSmtp['hostname'];
         $this->Port = $arrSmtp['port'];
 
+        // abort in case no SMTP authentication is set
+        if (empty($arrSmtp['username'])) {
+            return;
+        }
+
         // set SMTP authentication
         $this->SMTPAuth = true;
         $this->Username = $arrSmtp['username'];
