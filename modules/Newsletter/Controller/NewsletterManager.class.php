@@ -2907,8 +2907,6 @@ class NewsletterManager extends NewsletterLib
     ) {
         global $objDatabase, $_ARRAYLANG, $_DBCONFIG;
 
-        require_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php';
-
         $newsletterValues = $this->getNewsletterValues($NewsletterID);
         if ($newsletterValues !== false) {
             $subject      = $newsletterValues['subject'];
@@ -2954,7 +2952,7 @@ class NewsletterManager extends NewsletterLib
         );
         \LinkGenerator::parseTemplate($NewsletterBody_TEXT, true);
 
-        $mail = new \phpmailer();
+        $mail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
         if ($smtpAccount > 0) {
             if (($arrSmtp = \SmtpSettings::getSmtpAccount($smtpAccount)) !== false) {
                 $mail->IsSMTP();
@@ -2965,7 +2963,6 @@ class NewsletterManager extends NewsletterLib
                 $mail->Password = $arrSmtp['password'];
             }
         }
-        $mail->CharSet  = CONTREXX_CHARSET;
         $mail->AddReplyTo($return_path);
         $mail->SetFrom($sender_email, $sender_name);
         $mail->Subject  = $subject;
