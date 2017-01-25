@@ -2400,6 +2400,9 @@ namespace Cx\Core\Core\Controller {
                         if (isset($this->commands[$command])) {
                             throw new \Exception('Command \'' . $command . '\' is already in index');
                         }
+                        if (!$component->hasAccessToExecuteCommand($command, array())) {
+                            continue;
+                        }
                         $this->commands[$command] = $component;
                     }
                 }

@@ -146,6 +146,19 @@
         ExpiresByType text/css "access plus 1 month"
         # JavaScript
         ExpiresByType application/javascript "access plus 1 year"
+
+        # Uncomment & install the following code into the virtual
+        # host configuration file.
+        #
+        ## disable expirations for livecam live image
+        #<LocationMatch "/images/Livecam/">
+        #    ExpiresActive Off
+        #</LocationMatch>
+
+        ## re-enable expirations for livecam archive images
+        #<LocationMatch "/images/Livecam/.*(archive|thumbs)/">
+        #    ExpiresActive On
+        #</LocationMatch>
     </IfModule>
 #  </core_modules_cache>
 # </contrexx>

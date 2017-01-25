@@ -61,6 +61,17 @@ class ContentManagerException extends \ModuleException
  */
 class ContentManager extends \Module
 {
+    /**
+     * Name of the cookie to be used by the jstree javascript
+     * library to save the loaded nodes
+     */
+    const JSTREE_COOKIE_LOAD = 'jstree_load_ContentManager_node';
+
+    /**
+     * Name of the cookie to be used by the jstree javascript
+     * library to save the opened nodes
+     */
+    const JSTREE_COOKIE_OPEN = 'jstree_open_ContentManager_node';
 
     //doctrine entity manager
     protected $em = null;
@@ -110,6 +121,10 @@ class ContentManager extends \Module
         \JS::registerJS('lib/javascript/lock.js');
         \JS::registerJS('lib/javascript/jquery/jquery.history.max.js');
 
+        $objCx = \ContrexxJavascript::getInstance();
+        $objCx->setVariable('save_loaded', static::JSTREE_COOKIE_LOAD, 'contentmanager/jstree');
+        $objCx->setVariable('save_opened', static::JSTREE_COOKIE_OPEN, 'contentmanager/jstree');
+
 // this can be used to debug the tree, just add &tree=verify or &tree=fix
         $tree = null;
         if (isset($_GET['tree'])) {
@@ -123,7 +138,6 @@ class ContentManager extends \Module
             // this should print "bool(true)"
             var_dump($this->nodeRepository->recover());
         }
-        $objCx    = \ContrexxJavascript::getInstance();
 
         $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
         $defaultTheme = $themeRepo->getDefaultTheme();
@@ -164,7 +178,7 @@ class ContentManager extends \Module
         }
 
         $this->template->setVariable(array(
-            'CORE_CM_METAIMAGE_BUTTON' => self::showMediaBrowserButton('Metaimage')
+            'CORE_CM_METAIMAGE_BUTTON' => static::showMediaBrowserButton('Metaimage')
         ));
 
         $mediaBrowser = new MediaBrowser();
