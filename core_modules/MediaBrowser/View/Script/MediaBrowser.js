@@ -853,7 +853,7 @@
                 bootbox.prompt(
                     {
                         className: "media-browser-modal-window",
-                        message: cx.variables.get('TXT_FILEBROWSER_DIRECTORY_NAME', 'mediabrowser'),
+                        title: cx.variables.get('TXT_FILEBROWSER_DIRECTORY_NAME', 'mediabrowser'),
                         callback: function (dirName) {
                             if (dirName === null) {
 
