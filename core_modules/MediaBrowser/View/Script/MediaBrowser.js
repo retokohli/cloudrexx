@@ -438,7 +438,13 @@
                     if (obj[path[0]] == undefined) {
                         obj[path[0]] = {};
                     }
-                    obj[path[0]] = Object.assign(obj[path[0]], value);
+                    try {
+                        obj[path[0]] = Object.assign(obj[path[0]], value);
+                    } catch(err) {
+                        // IE 11 and older does not support Object.assign.
+                        // Try it with jQuery instead:
+                        obj[path[0]] = jQuery.extend(true,{},obj[path[0]],value);
+                    }
                     return obj;
                 } else if (path.length == 0) {
                     return obj;
