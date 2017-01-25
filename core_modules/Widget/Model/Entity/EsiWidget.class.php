@@ -55,6 +55,90 @@ namespace Cx\Core_Modules\Widget\Model\Entity;
 class EsiWidget extends Widget {
 
     /**
+     * This will just make a most-of-the-time-working setup and should not
+     * be used on production without checking first.
+     * @const int Index for ESI auto-configuration
+     */
+    const ESI_VAR_ID_AUTOCONF = -1;
+
+    /**
+     * @const int Index for ESI variable for page
+     */
+    const ESI_VAR_ID_PAGE = 1;
+
+    /**
+     * @const string Name of ESI variable for page
+     */
+    const ESI_VAR_NAME_PAGE = 'page';
+
+    /**
+     * @const int Index for ESI variable for lang
+     */
+    const ESI_VAR_ID_LANG = 2;
+
+    /**
+     * @const string Name of ESI variable for lang
+     */
+    const ESI_VAR_NAME_LANG = 'lang';
+
+    /**
+     * @const int Index for ESI variable for theme
+     */
+    const ESI_VAR_ID_THEME = 4;
+
+    /**
+     * @const string Name of ESI variable for theme
+     */
+    const ESI_VAR_NAME_THEME = 'theme';
+
+    /**
+     * @const int Index for ESI variable for channel
+     */
+    const ESI_VAR_ID_CHANNEL = 8;
+
+    /**
+     * @const string Name of ESI variable for channel
+     */
+    const ESI_VAR_NAME_CHANNEL = 'channel';
+
+    /**
+     * @const int Index for ESI variable for user
+     */
+    const ESI_VAR_ID_USER = 16;
+
+    /**
+     * @const string Name of ESI variable for user
+     */
+    const ESI_VAR_NAME_USER = 'user';
+
+    /**
+     * @const int Index for ESI variable for currency
+     */
+    const ESI_VAR_ID_CURRENCY = 32;
+
+    /**
+     * @const string Name of ESI variable for currency
+     */
+    const ESI_VAR_NAME_CURRENCY = 'currency';
+
+    /**
+     * @const int Index for ESI variable for country
+     */
+    const ESI_VAR_ID_COUNTRY = 64;
+
+    /**
+     * @const string Name of ESI variable for country
+     */
+    const ESI_VAR_NAME_COUNTRY = 'country';
+
+    /**
+     * ESI variables configured to be sent for this Widget
+     *
+     * @var int Combination of the constants
+     */
+    protected $esiVariables = self::ESI_VAR_ID_AUTOCONF;
+
+    /**
      * Instanciates a new widget
      * @param \Cx\Core\Core\Model\Entity\SystemComponentController $component Component registering this widget
      * @param string $name Name of this widget
@@ -117,6 +201,61 @@ class EsiWidget extends Widget {
     }
 
     /**
+     * Returns the ESI variables configured to be send for this Widget
+     * Return value is a combination of othered constants
+     * @return int Bitwise-OR-combined values
+     */
+    public function getEsiVariables() {
+        if ($this->esiVariables == static::ESI_VAR_ID_AUTOCONF) {
+            $this->esiVariables = 0;
+            $this->esiVariables |= static::ESI_VAR_ID_PAGE;
+            $this->esiVariables |= static::ESI_VAR_ID_LANG;
+            if ($this->hasContent()) {
+                $this->esiVariables |= static::ESI_VAR_ID_THEME;
+                $this->esiVariables |= static::ESI_VAR_ID_CHANNEL;
+            }
+        }
+        return $this->esiVariables;
+    }
+
+    /**
+     * Sets the ESI variables configured to be sent for this widget
+     * Simple setter, see getEsiVariables() for format definition
+     * @param int $variables Bitwise-OR-combined values
+     */
+    public function setEsiVariables($variables) {
+        $this->esiVariables = $variables;
+    }
+
+    /**
+     * Sets the ESI variable as active
+     * @param int $variables Variable identifier
+     */
+    public function setEsiVariable($variableId) {
+        $this->setEsiVariables(
+            $this->getEsiVariables() | $variableId
+        );
+    }
+
+    /**
+     * Sets the ESI variable as inactive
+     * @param int $variables Variable identifier
+     */
+    public function unsetEsiVariable($variableId) {
+        $this->setEsiVariables(
+            $this->getEsiVariables() & ~$variableId
+        );
+    }
+
+    /**
+     * Tells wheter the given ESI variable is configured to be sent for this Widget
+     * @param int $variables Variable identifier
+     */
+    public function isEsiVariableActive($variableId) {
+        return ($this->getEsiVariables() & $variableId);
+    }
+
+    /**
      * Returns the params for the JsonAdapter call
      * @param string $targetComponent Parse target component name
      * @param string $targetEntity Parse target entity name
@@ -124,29 +263,70 @@ class EsiWidget extends Widget {
      * @return array List of params
      */
     protected function getEsiParams($targetComponent, $targetEntity, $targetId) {
-        if (empty($this->jsonParams)) {
-            if ($this->cx->getPage()) {
-                $pageId = $this->cx->getPage()->getId();
-                $langCode = \FWLanguage::getLanguageCodeById($this->cx->getPage()->getLang());
-                $themeId = \Env::get('init')->getCurrentThemeId();
-                $channel = \Env::get('init')->getCurrentChannel();
-            } else if ($_GET['page']) {
-                $pageId = contrexx_input2raw($_GET['page']);
-                $langCode = contrexx_input2raw($_GET['lang']);
-                $themeId = contrexx_input2raw($_GET['theme']);
-                $channel = contrexx_input2raw($_GET['channel']);
-            }
-            return array(
-                'name' => $this->getName(),
-                'theme' => $themeId,
-                'page' => $pageId,
-                'lang' => $langCode,
-                'targetComponent' => $targetComponent,
-                'targetEntity' => $targetEntity,
-                'targetId' => $targetId,
-                'channel' => $channel,
-            );
+        $esiParams = array();
+        $baseParams = array(
+            'name' => $this->getName(),
+            'targetComponent' => $targetComponent,
+            'targetEntity' => $targetEntity,
+            'targetId' => $targetId,
+        );
+        if ($targetComponent == 'View' && $targetEntity == 'Theme') {
+            $this->setEsiVariable(static::ESI_VAR_ID_THEME);
+            $this->setEsiVariable(static::ESI_VAR_ID_CHANNEL);
         }
-        return $this->jsonParams;
+        // This should be set at a central place (Cache?)
+        $esiVars = array(
+            static::ESI_VAR_ID_PAGE => static::ESI_VAR_NAME_PAGE,
+            static::ESI_VAR_ID_LANG => static::ESI_VAR_NAME_LANG,
+            static::ESI_VAR_ID_THEME => static::ESI_VAR_NAME_THEME,
+            static::ESI_VAR_ID_CHANNEL => static::ESI_VAR_NAME_CHANNEL,
+            static::ESI_VAR_ID_USER => static::ESI_VAR_NAME_USER,
+            static::ESI_VAR_ID_CURRENCY => static::ESI_VAR_NAME_CURRENCY,
+            static::ESI_VAR_ID_COUNTRY => static::ESI_VAR_NAME_COUNTRY,
+        );
+        foreach ($esiVars as $esiVarId=>$esiVarName) {
+            if (!$this->isEsiVariableActive($esiVarId)) {
+                continue;
+            }
+            $esiVarValue = '';
+            if (isset($_GET[$esiVarName])) {
+                $esiVarValue = contrexx_input2raw($_GET[$esiVarName]);
+            } else {
+                // These values should come from a central place (ESI var registry?)
+                switch ($esiVarName) {
+                    case static::ESI_VAR_NAME_PAGE:
+                        $esiVarValue = $this->cx->getPage()->getId();
+                        break;
+                    case static::ESI_VAR_NAME_LANG:
+                        $esiVarValue = \FWLanguage::getLanguageCodeById(
+                            $this->cx->getPage()->getLang()
+                        );
+                        break;
+                    case static::ESI_VAR_NAME_THEME:
+                        $esiVarValue = \Env::get('init')->getCurrentThemeId();
+                        break;
+                    case static::ESI_VAR_NAME_CHANNEL:
+                        $esiVarValue = \Env::get('init')->getCurrentChannel();
+                        break;
+                    case static::ESI_VAR_NAME_USER:
+                        $esiVarValue = '$(HTTP_COOKIE{\'PHPSESSID\'})';
+                        break;
+                    case static::ESI_VAR_NAME_CURRENCY:
+                        $esiVarValue = \Cx\Modules\Shop\Controller\Currency::getActiveCurrencySymbol();
+                        break;
+                    case static::ESI_VAR_NAME_COUNTRY:
+                        $esiVarValue = $this->getComponent(
+                            'GeoIp'
+                        )->getCountryCode(array());
+                        break;
+                }
+            }
+            if (empty($esiVarValue)) {
+                continue;
+            }
+            $esiParams[$esiVarName] = $esiVarValue;
+        }
+        $params = array_merge($this->jsonParams, $esiParams, $baseParams);
+        return $params;
     }
 }
