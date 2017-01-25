@@ -63,4 +63,7 @@ Cx\Core\ContentManager\Model\Entity\LogEntry:
       column: logged_at
     version:
       type: integer
+    action:
+      type: string
+      Length: 8
   lifecycleCallbacks: {  }
