@@ -59,14 +59,18 @@ function linkPages(toLangId) {
 
 function performLanguageAction(actionName, toLangId, action) {
     var defaultLangId = cx.jQuery(".localeDefault input:checked").parent("tr").children('.localeId').text();
-    var toLangRow = cx.jQuery(".localeId:contains(" + toLangId + ")").parent("tr");
+    var toLangRow = cx.jQuery(".localeId").filter(function() {
+        return cx.jQuery.trim(cx.jQuery(this).text()) == toLangId;
+    }).parent("tr");
     var fromLangId = toLangRow.children(".localeFallback").children("select").val();
     if (fromLangId === "") {
         return;
     } else if (fromLangId == 0) {
         fromLangId = defaultLangId;
     }
-    var fromLangRow = cx.jQuery(".localeId:contains(" + fromLangId + ")").parent("tr");
+    var fromLangRow = cx.jQuery(".localeId").filter(function() {
+        return cx.jQuery.trim(cx.jQuery(this).text()) == fromLangId;
+    }).parent("tr");
     var fromLangName = fromLangRow.children(".localeLabel").text();
     var toLangName = toLangRow.children(".localeLabel").text();
     showActionDialog(actionName, fromLangName, toLangName, function() {
