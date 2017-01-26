@@ -422,7 +422,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             return $copyLink . $linkLink;
                         },
                         'sorting' => true,
-                        'paging' => true,
+                        'paging' => false,
                         'filtering' => false,
                     ),
                     'order' => array(
