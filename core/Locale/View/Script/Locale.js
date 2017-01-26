@@ -13,6 +13,14 @@ cx.jQuery(document).ready(function() {
     cx.jQuery("#content form :input").change(function() {
        cx.jQuery("#content form input[name=\"updateLocales\"").show();
     });
+
+    cx.jQuery(".localeFallback select").change(function() {
+        if (cx.jQuery(this).val() == "NULL") {
+            cx.jQuery(this).parent().parent("tr").find(".functions").find(".copyLink, .linkLink").hide();
+        } else {
+            cx.jQuery(this).parent().parent("tr").find(".functions").find(".copyLink, .linkLink").show();
+        }
+    });
 });
 
 cx.jQuery(function() {
