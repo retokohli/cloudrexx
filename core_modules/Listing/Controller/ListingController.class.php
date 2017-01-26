@@ -117,7 +117,7 @@ class ListingController {
      * How many results are returned
      * @var int
      */
-    protected $count = 0;
+    protected $count = null;
 
     /**
      * Order by array($field=>asc/desc)
@@ -170,7 +170,10 @@ class ListingController {
         if (!empty($options['sorting'])) {
             $this->handlers[] = new SortingController();
         }
-        $this->handlers[] = new PagingController();
+
+        if ($this->paging) {
+            $this->handlers[] = new PagingController();
+        }
 
         if (is_callable($entities)) {
             \DBG::msg('Init ListingController using callback function');
@@ -243,6 +246,7 @@ class ListingController {
                 });
             }
 
+            // filter data
             if (!empty($this->filter)) {
                 $data->filter(function($entry) {
                     foreach ($entry as $field=>$data) {
@@ -254,10 +258,13 @@ class ListingController {
                 });
             }
 
+            // sort data
             $data = $data->sort($this->order);
 
-            // add sorting and filtering
-            $data = $data->limit($this->count, $this->offset);
+            // limit data
+            if ($this->count) {
+                $data = $data->limit($this->count, $this->offset);
+            }
             return $data;
         }
 
