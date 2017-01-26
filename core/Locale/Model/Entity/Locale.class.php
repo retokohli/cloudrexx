@@ -138,7 +138,7 @@ class Locale extends \Cx\Model\Base\EntityBase {
      *
      * @param integer $orderNo
      */
-    function setOrderNo($orderNo)
+    public function setOrderNo($orderNo)
     {
         $this->orderNo = $orderNo;
     }
@@ -148,7 +148,7 @@ class Locale extends \Cx\Model\Base\EntityBase {
      *
      * @return integer $orderNo
      */
-    function getOrderNo()
+    public function getOrderNo()
     {
         return $this->orderNo;
     }

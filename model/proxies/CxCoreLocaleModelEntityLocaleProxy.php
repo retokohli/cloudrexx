@@ -33,18 +33,6 @@ class CxCoreLocaleModelEntityLocaleProxy extends \Cx\Core\Locale\Model\Entity\Lo
         return parent::getId();
     }
 
-    public function setIso1($iso1)
-    {
-        $this->_load();
-        return parent::setIso1($iso1);
-    }
-
-    public function getIso1()
-    {
-        $this->_load();
-        return parent::getIso1();
-    }
-
     public function setLabel($label)
     {
         $this->_load();
@@ -57,28 +45,16 @@ class CxCoreLocaleModelEntityLocaleProxy extends \Cx\Core\Locale\Model\Entity\Lo
         return parent::getLabel();
     }
 
-    public function setFallback($fallback)
+    public function setOrderNo($orderNo)
     {
         $this->_load();
-        return parent::setFallback($fallback);
+        return parent::setOrderNo($orderNo);
     }
 
-    public function getFallback()
+    public function getOrderNo()
     {
         $this->_load();
-        return parent::getFallback();
-    }
-
-    public function setSourceLanguage($sourceLanguage)
-    {
-        $this->_load();
-        return parent::setSourceLanguage($sourceLanguage);
-    }
-
-    public function getSourceLanguage()
-    {
-        $this->_load();
-        return parent::getSourceLanguage();
+        return parent::getOrderNo();
     }
 
     public function addLocales(\Cx\Core\Locale\Model\Entity\Locale $locales)
@@ -93,16 +69,16 @@ class CxCoreLocaleModelEntityLocaleProxy extends \Cx\Core\Locale\Model\Entity\Lo
         return parent::getLocales();
     }
 
-    public function setLanguageRelatedByIso1(\Cx\Core\Locale\Model\Entity\Language $languageRelatedByIso1)
+    public function setIso1(\Cx\Core\Locale\Model\Entity\Language $iso1)
     {
         $this->_load();
-        return parent::setLanguageRelatedByIso1($languageRelatedByIso1);
+        return parent::setIso1($iso1);
     }
 
-    public function getLanguageRelatedByIso1()
+    public function getIso1()
     {
         $this->_load();
-        return parent::getLanguageRelatedByIso1();
+        return parent::getIso1();
     }
 
     public function setCountry(\Cx\Core\Country\Model\Entity\Country $country = NULL)
@@ -117,28 +93,52 @@ class CxCoreLocaleModelEntityLocaleProxy extends \Cx\Core\Locale\Model\Entity\Lo
         return parent::getCountry();
     }
 
-    public function setLocale(\Cx\Core\Locale\Model\Entity\Locale $locale)
+    public function setFallback(\Cx\Core\Locale\Model\Entity\Locale $fallback = NULL)
     {
         $this->_load();
-        return parent::setLocale($locale);
+        return parent::setFallback($fallback);
     }
 
-    public function getLocale()
+    public function getFallback()
     {
         $this->_load();
-        return parent::getLocale();
+        return parent::getFallback();
     }
 
-    public function setLanguageRelatedBySourceLanguage(\Cx\Core\Locale\Model\Entity\Language $languageRelatedBySourceLanguage)
+    public function setSourceLanguage(\Cx\Core\Locale\Model\Entity\Language $sourceLanguage)
     {
         $this->_load();
-        return parent::setLanguageRelatedBySourceLanguage($languageRelatedBySourceLanguage);
+        return parent::setSourceLanguage($sourceLanguage);
     }
 
-    public function getLanguageRelatedBySourceLanguage()
+    public function getSourceLanguage()
     {
         $this->_load();
-        return parent::getLanguageRelatedBySourceLanguage();
+        return parent::getSourceLanguage();
+    }
+
+    public function addFrontends(\Cx\Core\View\Model\Entity\Frontend $frontends)
+    {
+        $this->_load();
+        return parent::addFrontends($frontends);
+    }
+
+    public function getFrontends()
+    {
+        $this->_load();
+        return parent::getFrontends();
+    }
+
+    public function __toString()
+    {
+        $this->_load();
+        return parent::__toString();
+    }
+
+    public function getShortForm()
+    {
+        $this->_load();
+        return parent::getShortForm();
     }
 
     public function __get($name)
@@ -171,16 +171,16 @@ class CxCoreLocaleModelEntityLocaleProxy extends \Cx\Core\Locale\Model\Entity\Lo
         return parent::validate();
     }
 
-    public function __toString()
+    public function __call($methodName, $arguments)
     {
         $this->_load();
-        return parent::__toString();
+        return parent::__call($methodName, $arguments);
     }
 
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'iso1', 'label', 'fallback', 'sourceLanguage', 'locales', 'languageRelatedByIso1', 'country', 'locale', 'languageRelatedBySourceLanguage');
+        return array('__isInitialized__', 'id', 'label', 'orderNo', 'locales', 'frontends', 'iso1', 'country', 'fallback', 'sourceLanguage');
     }
 
     public function __clone()
