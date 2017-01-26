@@ -82,8 +82,8 @@ function performLanguageAction(actionName, toLangId, action) {
     var fromLangRow = cx.jQuery(".localeId").filter(function() {
         return cx.jQuery.trim(cx.jQuery(this).text()) == fromLangId;
     }).parent("tr");
-    var fromLangName = fromLangRow.children(".localeLabel").text();
-    var toLangName = toLangRow.children(".localeLabel").text();
+    var fromLangName = cx.jQuery.trim(fromLangRow.children(".localeLabel").text());
+    var toLangName = cx.jQuery.trim(toLangRow.children(".localeLabel").text());
     showActionDialog(actionName, fromLangName, toLangName, function() {
         var waitDialog = cx.ui.dialog({
             title: cx.variables.get("waitTitle", "Locale/Locale"),
@@ -130,7 +130,7 @@ function performLanguageAction(actionName, toLangId, action) {
         }
         waitDialog.close();
         action();
-    }, cx.variables.get("warningText", "Locale/Locale").replace("%1", fromLangName).replace("%2", toLangName));
+    }, cx.variables.get("warningText", "Locale/Locale").replace("%1",  "<b>" + fromLangName + "</b>").replace("%2",  "<b>" + toLangName + "</b>"));
 }
 
 /**
@@ -156,10 +156,11 @@ function showActionDialog(action, fromLang, toLang, yesAction, checkboxText) {
     };
     buttons[noOption] = function() {cx.jQuery(this).dialog("close");}
     var content = "<p>" + cx.variables.get(action + "Text", "Locale/Locale");
+    console.log(content);
     if (action == 'link') {
-        content = content.replace("%1", toLang).replace("%2", fromLang);
+        content = content.replace("%1",  "<b>" + toLang + "</b>").replace("%2", "<b>" + fromLang + "</b>");
     } else {
-        content = content.replace("%1", fromLang).replace("%2", toLang);
+        content = content.replace("%1",  "<b>" + fromLang + "</b>").replace("%2",  "<b>" + toLang + "</b>");
     }
     if (checkboxText) {
         content += "<br /><br /><input type=\"checkbox\" id=\"really\" class=\"really\" value=\"true\" /> <label for=\"really\" class=\"really\">" + checkboxText + "</label>";
