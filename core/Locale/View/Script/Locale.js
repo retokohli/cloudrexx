@@ -10,6 +10,9 @@ cx.jQuery(document).ready(function() {
     });
     cx.jQuery('.localeFallback select').width(maxFallbackSelectWidth);
 
+    //  hide delete function for default locale
+    cx.jQuery(".localeDefault input:checked").parent().parent("tr").find('.functions a.delete').hide();
+
     cx.jQuery("#content form :input").change(function() {
        cx.jQuery("#content form input[name=\"updateLocales\"").show();
     });
