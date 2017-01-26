@@ -246,7 +246,7 @@ CREATE TABLE `contrexx_core_country` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_core_country_country` (
-  `alpha2` char(2) NOT NULL COLLATE utf8_unicode_ci,
+  `alpha2` char(2) NOT NULL,
   `alpha3` char(3) NOT NULL DEFAULT '',
   `ord` int(5) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`alpha2`),
@@ -270,23 +270,23 @@ CREATE TABLE `contrexx_core_data_source` (
 ) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_locale_backend` (
   `id` int AUTO_INCREMENT NOT NULL,
-  `iso_1` char(2) COLLATE utf8_unicode_ci NOT NULL,
+  `iso_1` char(2) NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `contrexx_core_locale_backend_ibfk_iso_1` FOREIGN KEY (`iso_1`) REFERENCES `contrexx_core_locale_language` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_locale_language` (
-  `iso_1` char(2) COLLATE utf8_unicode_ci NOT NULL,
-  `iso_3` char(3) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `iso_1` char(2) NOT NULL,
+  `iso_3` char(3) DEFAULT NULL,
   `source` tinyint(1) NOT NULL,
   PRIMARY KEY (`iso_1`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_locale_locale` (
   `id` int AUTO_INCREMENT NOT NULL,
-  `iso_1` char(2) COLLATE utf8_unicode_ci NOT NULL,
-  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `country` char(2) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `fallback` int COLLATE utf8_unicode_ci DEFAULT NULL,
-  `source_language` char(2) COLLATE utf8_unicode_ci NOT NULL,
+  `iso_1` char(2) NOT NULL,
+  `label` varchar(255) DEFAULT NULL,
+  `country` char(2) DEFAULT NULL,
+  `fallback` int DEFAULT NULL,
+  `source_language` char(2) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `iso_1` (`iso_1`, `country`),
   CONSTRAINT `contrexx_core_locale_locale_ibfk_country` FOREIGN KEY (`country`) REFERENCES `contrexx_core_country_country` (`alpha2`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -481,7 +481,7 @@ CREATE TABLE `contrexx_core_text` (
 CREATE TABLE `contrexx_core_view_frontend` (
   `language` int NOT NULL,
   `theme` int(2) unsigned DEFAULT NULL,
-  `channel` enum('default','mobile','print','pdf','app') COLLATE utf8_unicode_ci DEFAULT NULL,
+  `channel` enum('default','mobile','print','pdf','app') DEFAULT NULL,
   PRIMARY KEY (`language`,`theme`,`channel`),
   CONSTRAINT `contrexx_core_view_frontend_ibfk_locale` FOREIGN KEY (`language`) REFERENCES `contrexx_core_locale_locale` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `contrexx_core_view_frontend_ibfk_theme` FOREIGN KEY (`theme`) REFERENCES `contrexx_skins` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
