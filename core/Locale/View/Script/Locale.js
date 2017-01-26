@@ -156,7 +156,6 @@ function showActionDialog(action, fromLang, toLang, yesAction, checkboxText) {
     };
     buttons[noOption] = function() {cx.jQuery(this).dialog("close");}
     var content = "<p>" + cx.variables.get(action + "Text", "Locale/Locale");
-    console.log(content);
     if (action == 'link') {
         content = content.replace("%1",  "<b>" + toLang + "</b>").replace("%2", "<b>" + fromLang + "</b>");
     } else {
