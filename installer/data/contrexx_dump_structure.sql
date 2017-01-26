@@ -480,8 +480,8 @@ CREATE TABLE `contrexx_core_text` (
 ) ENGINE=MyISAM;
 CREATE TABLE `contrexx_core_view_frontend` (
   `language` int NOT NULL,
-  `theme` int(2) unsigned DEFAULT NULL,
-  `channel` enum('default','mobile','print','pdf','app') DEFAULT NULL,
+  `theme` int(2) unsigned NOT NULL,
+  `channel` enum('default','mobile','print','pdf','app') NOT NULL,
   PRIMARY KEY (`language`,`theme`,`channel`),
   CONSTRAINT `contrexx_core_view_frontend_ibfk_locale` FOREIGN KEY (`language`) REFERENCES `contrexx_core_locale_locale` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `contrexx_core_view_frontend_ibfk_theme` FOREIGN KEY (`theme`) REFERENCES `contrexx_skins` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
