@@ -204,36 +204,21 @@ class MediaDirectoryMail extends MediaDirectoryLibrary
 
     function sendMail()
     {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_CONFIG;
 
-        if (\Env::get('ClassLoader')->loadFile(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseLibraryPath().'/phpmailer/class.phpmailer.php')) {
-            $objMail = new \phpmailer();
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-                if ($_CONFIG['coreSmtpServer'] > 0 && \Env::get('ClassLoader')->loadFile(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCorePath().'/SmtpSettings.class.php')) {
-                $arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
-                if ($arrSmtp !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
+        $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
+        $objMail->Subject = $this->strTitle;
+        $objMail->IsHTML(false);
+        $objMail->Body = $this->strTemplate;
+
+        foreach ($this->arrRecipients as $key => $strMailAdress) {
+            if(!empty($strMailAdress)) {
+                $objMail->AddAddress($strMailAdress);
+                $objMail->Send();
+                $objMail->ClearAddresses();
             }
-
-            $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
-            $objMail->Subject = $this->strTitle;
-            $objMail->IsHTML(false);
-            $objMail->Body = $this->strTemplate;
-
-            foreach ($this->arrRecipients as $key => $strMailAdress) {
-                if(!empty($strMailAdress)) {
-                    $objMail->AddAddress($strMailAdress);
-                    $objMail->Send();
-                    $objMail->ClearAddresses();
-                }
-            }
+        }
     }
-}
 }

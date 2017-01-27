@@ -429,7 +429,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'sortBy' => array(
                             'field' => array('orderNo' => SORT_ASC),
                         ),
-                        'paging' => true,
+                        'paging' => false,
                         'filtering' => false,
                     ),
                     'order' => array(

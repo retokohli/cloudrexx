@@ -569,7 +569,7 @@ class FWLanguage
     {
         if (empty(static::$arrFrontendLanguages)) static::init();
         foreach (static::$arrFrontendLanguages as $id => $arrLanguage) {
-            if ($arrLanguage['lang'] == $code) return $id;
+            if (strtolower($arrLanguage['lang']) == strtolower($code)) return $id;
         }
         return false;
     }

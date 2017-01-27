@@ -67,6 +67,7 @@ CREATE TABLE `contrexx_access_user_groups` (
   `is_active` tinyint(4) NOT NULL DEFAULT '1',
   `type` enum('frontend','backend') NOT NULL DEFAULT 'frontend',
   `homepage` varchar(255) NOT NULL DEFAULT '',
+  `toolbar` int(6) DEFAULT NULL,
   PRIMARY KEY (`group_id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_access_user_mail` (
@@ -236,6 +237,14 @@ CREATE TABLE `contrexx_content_page` (
   KEY `IDX_D8E86F54460D9FD7` (`node_id`),
   CONSTRAINT `contrexx_content_page_ibfk_3` FOREIGN KEY (`node_id`) REFERENCES `contrexx_content_node` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
 ) ENGINE=InnoDB ;
+CREATE TABLE `contrexx_core_country` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `alpha2` char(2) NOT NULL DEFAULT '',
+  `alpha3` char(3) NOT NULL DEFAULT '',
+  `ord` int(5) unsigned NOT NULL DEFAULT '0',
+  `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_core_country_country` (
   `alpha2` char(2) NOT NULL COLLATE utf8_unicode_ci,
   `alpha3` char(3) NOT NULL DEFAULT '',
@@ -487,6 +496,13 @@ CREATE TABLE `contrexx_core_wysiwyg_template` (
   `active` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_core_wysiwyg_toolbar` (
+  `id` int(6) NOT NULL AUTO_INCREMENT,
+  `available_functions` text NOT NULL,
+  `removed_buttons` text NOT NULL,
+  `is_default` int(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_module_pdf_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,

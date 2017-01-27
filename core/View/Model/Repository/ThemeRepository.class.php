@@ -295,15 +295,9 @@ class ThemeRepository
      *
      * @param \Cx\Core\View\Model\Entity\Theme $theme
      */
-    public function loadComponentData(\Cx\Core\View\Model\Entity\Theme &$theme) {
-        $websiteFilePath  = \Env::get('cx')->getWebsiteThemesPath() . '/' . $theme->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_COMPONENT_FILE;
-        $codeBaseFilePath = \Env::get('cx')->getCodeBaseThemesPath() . '/' . $theme->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_COMPONENT_FILE;
-        $filePath         = file_exists($websiteFilePath)
-                            ? $websiteFilePath
-                            : ( file_exists($codeBaseFilePath)
-                                ? $codeBaseFilePath
-                                : ''
-                              );
+    public function loadComponentData(\Cx\Core\View\Model\Entity\Theme &$theme)
+    {
+        $filePath = $theme->getFilePath('/' . $theme->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_COMPONENT_FILE);
         if ($filePath) {
             try {
                 $objYaml = new \Symfony\Component\Yaml\Yaml();
@@ -356,10 +350,7 @@ class ThemeRepository
             $theme->addDefault($channel);
         }
 
-        $themePath =  file_exists(\Env::get('cx')->getWebsiteThemesPath() . '/' . $foldername)
-                    ? \Env::get('cx')->getWebsiteThemesPath() . '/' . $foldername
-                    : \Env::get('cx')->getCodeBaseThemesPath() . '/'. $foldername;
-
+        $themePath = $theme->getFilePath('/'.$foldername);
         if (!file_exists($themePath)) {
             \DBG::log($foldername. ' :Theme folder not Exists');
             return $theme;
