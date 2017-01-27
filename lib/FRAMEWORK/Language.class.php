@@ -130,7 +130,6 @@ class FWLanguage
                         break;
                 }
             }
-            $alpha2 = $locale->getCountry() ? $locale->getCountry()->getAlpha2() : '';
             // check if locale is default
             $isFrontendDefault = $locale->getId() == $_CONFIG['defaultLocaleId'];
             static::$arrFrontendLanguages[$locale->getId()] = array(
@@ -138,7 +137,6 @@ class FWLanguage
                 'lang' => $locale->getShortForm(),
                 'name' => $locale->__toString(),
                 'iso1' => $locale->getIso1()->getIso1(),
-                'alpha2' => $alpha2,
                 'source_lang' => $locale->getSourceLanguage()->getIso1(),
                 'themesid'   => $themeId,
                 'print_themes_id' => $printThemeId,
