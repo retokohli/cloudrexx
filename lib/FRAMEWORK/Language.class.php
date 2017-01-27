@@ -592,14 +592,6 @@ class FWLanguage
         return false;
     }
 
-    public static function getLanguageIdByAlpha2($alpha2) {
-        if (empty(static::$arrFrontendLanguages)) static::init();
-        foreach (static::$arrFrontendLanguages as $id => $arrLanguage) {
-            if ($arrLanguage['alpha2'] == $alpha2) return $id;
-        }
-        return false;
-    }
-
     /**
      * Return the locale for the given Language ID
      *
