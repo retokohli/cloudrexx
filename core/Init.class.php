@@ -358,9 +358,11 @@ class InitCMS
 
         // check if combination of country code and browser lang exists
         $acceptedLanguages = array_keys($this->_getClientAcceptedLanguages());
-        foreach ($localesByCountry as $locale) {
-            if(in_array($locale->getIso1()->getIso1(), $acceptedLanguages)) {
-                return $locale->getId();
+        foreach($acceptedLanguages as $acceptedLanguage) {
+            foreach($localesByCountry as $locale) {
+                if ($locale->getIso1()->getIso1() == $acceptedLanguage) {
+                    return $locale->getId();
+                }
             }
         }
 
