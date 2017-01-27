@@ -67,4 +67,22 @@ class LocaleRepository extends EntityRepository
         $query = $qb->getQuery();
         return $query->getResult();
     }
+
+    /**
+     * Finds all locales according to the criteria
+     * and orders them by their orderNo
+     *
+     * @todo: After doctrine update, use second param of findBy for ordering
+     * @param array $criteria The criteria
+     * @return array The locales
+     */
+    public function findBy(array $criteria)
+    {
+        $locales = parent::findBy($criteria);
+        // order locales by orderNo
+        usort($locales, function($a, $b) {
+           return $a->getOrderNo() - $b->getOrderNo();
+        });
+        return $locales;
+    }
 }
