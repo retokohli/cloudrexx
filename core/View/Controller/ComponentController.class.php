@@ -58,6 +58,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     /**
      * Returns the channel for the given request
+     * @todo Replace Request and Page by Response once it's used in the system
      * @param \Cx\Core\Routing\Model\Entity\Request $request Cx request
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page for request
      * @return string Channel name (see Theme entity for constants)
@@ -110,6 +111,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     /**
      * Returns the theme for the given request
+     * @todo Replace Request and Page by Response once it's used in the system
      * @param \Cx\Core\Routing\Model\Entity\Request $request Cx request
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page for request
      * @return \Cx\Core\View\Model\Entity\Theme Theme for given request
@@ -137,6 +139,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     /**
      * Returns the content template file for the given request
+     * @todo Replace Request and Page by Response once it's used in the system
      * @param \Cx\Core\Routing\Model\Entity\Request $request Cx request
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page for request
      * @return \Cx\Core\ViewManager\Model\Entity\ViewManagerFile Content template file
