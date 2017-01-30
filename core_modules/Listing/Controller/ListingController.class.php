@@ -117,7 +117,7 @@ class ListingController {
      * How many results are returned
      * @var int
      */
-    protected $count = null;
+    protected $count = 0;
 
     /**
      * Order by array($field=>asc/desc)
@@ -288,7 +288,7 @@ class ListingController {
         // TODO: check if entity class is managed
          //$qb = new \Doctrine\ORM\QueryBuilder();
         $query->setFirstResult($this->offset);
-        $query->setMaxResults($this->count);
+        $query->setMaxResults($this->count ? $this->count : null);
         /*foreach ($this->order as $field=>$order) {
             $query->orderBy($field, $order);
         }
