@@ -102,7 +102,6 @@ class PageLogRepository extends LogEntryRepository
      * The log entries are filtered by the page object.
      *
      * @todo Known bug: Paging for action = 'deleted' is wrong
-     * @todo Action = 'unvalidated' does not work yet
      *
      * @param   string  $action
      * @param   int     $offset
@@ -113,6 +112,12 @@ class PageLogRepository extends LogEntryRepository
     public function getLogs($action = '', $offset, $limit, &$count = 0)
     {
         $result = array();
+        $secondAction = '';
+        switch ($action) {
+            case 'unvalidated':
+                $secondAction = ', :secondAction';
+                break;
+        }
         $query = '
             SELECT SQL_CALC_FOUND_ROWS
                 c0_.object_id AS objectId,
@@ -142,7 +147,7 @@ class PageLogRepository extends LogEntryRepository
                 c3_.id = c0_.object_id AND
                 c3_.editingStatus = :editingStatus
             WHERE
-                (c0_.action = :action) AND
+                (c0_.action IN(:action' . $secondAction . ')) AND
                 (c0_.object_class = :objectClass)
             ORDER BY
                 c0_.logged_at DESC
@@ -165,9 +170,8 @@ class PageLogRepository extends LogEntryRepository
                 break;
             case 'unvalidated':
                 $stmt->bindValue('editingStatus', 'hasDraftWaiting');
-                $qb->orWhere('l.action = :orAction')
-                   ->setParameter('action', 'create')
-                   ->setParameter('orAction', 'update');
+                $stmt->bindValue('action', 'create');
+                $stmt->bindValue('secondAction', 'update');
                 break;
             case 'updated':
                 $stmt->bindValue('editingStatus', '');
@@ -178,11 +182,14 @@ class PageLogRepository extends LogEntryRepository
                 $stmt->bindValue('action', 'create');
         }
 
+        $stmt->execute();
+        $logs = $stmt->fetchAll();
+        $stmt = $conn->prepare('SELECT FOUND_ROWS()');
+        $stmt->execute();
+        $count = current(current($stmt->fetchAll()));
+
         switch ($action) {
             case 'deleted':
-                $stmt->execute();
-                $logs = $stmt->fetchAll();
-
                 // Structure the logs by node id and language
                 foreach ($logs as $log) {
                     $page = new \Cx\Core\ContentManager\Model\Entity\Page();
@@ -193,12 +200,8 @@ class PageLogRepository extends LogEntryRepository
                 }
                 break;
             default: // create, update and unvalidated
-                $stmt->execute();
-                $result = $stmt->fetchAll();
-                $conn = $this->em->getConnection();
-                $stmt = $conn->prepare('SELECT FOUND_ROWS()');
-                $stmt->execute();
-                $count = current(current($stmt->fetchAll()));
+                $result = $logs;
+                break;
         }
 
         return $result;
