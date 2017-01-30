@@ -101,7 +101,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             return;
         }
 
-        if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_MINIMAL) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate()->getMode();
+        if ($cx == \Cx\Core\Core\Controller\Cx::MODE_MINIMAL) {
             $this->boolIsEnabled = false;
             return;
         }
@@ -119,10 +120,19 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         ksort($request);
         $currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
             $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        $country = '';
+        $geoIp = $cx->getComponent('GeoIp');
+        if ($geoIp) {
+            $countryInfo = $geoIp->getCountryCode(array());
+            if (!empty($countryInfo['content'])) {
+                $country = $countryInfo['content'];
+            }
+        }
         $this->arrPageContent = array(
             'url' => $currentUrl,
             'request' => $request,
             'isMobile' => $isMobile,
+            'country' => $country;
         );
         // since crawlers do not send accept language header, we make it optional
         // in order to keep the logs clean
