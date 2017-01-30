@@ -1685,8 +1685,12 @@ class ReflectionComponent {
         // fix namespaces in DB
         // at the moment, only log_entry stores namespaces so we can simply:
         $em = \Env::get('cx')->getDb()->getEntityManager();
-        $query = $em->createQuery('SELECT FROM Cx\Core\ContentManager\Model\Entity\LogEntry l WHERE l.object_class LIKE \'' . $ns . '%\'');
-        foreach ($query->getResult() as $log) {
+        $qb = $em->createQueryBuilder();
+        $qb->select('l')
+                ->from('Cx\Core\ContentManager\Model\Entity\LogEntry', 'l')
+                ->where('l.objectClass LIKE :objectClass')
+                ->setParameter('objectClass', $ns . '%');
+        foreach ($qb->getQuery()->getResult() as $log) {
             $object_class = $log->getObjectClass();
             $object_class = preg_replace(
                 '/' . preg_quote($oldNs . '\\', '/') . '/',
