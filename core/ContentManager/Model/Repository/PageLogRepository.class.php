@@ -118,6 +118,13 @@ class PageLogRepository extends LogEntryRepository
                 $secondAction = ', :secondAction';
                 break;
         }
+        $activeLangs = array_keys(
+            \FWLanguage::getActiveFrontendLanguages()
+        );
+        $activeLangSql = implode(
+            ',',
+            $activeLangs
+        );
         $query = '
             SELECT SQL_CALC_FOUND_ROWS
                 c0_.object_id AS objectId,
@@ -144,17 +151,18 @@ class PageLogRepository extends LogEntryRepository
             LEFT JOIN
                 contrexx_content_page AS c3_
             ON
-                c3_.id = c0_.object_id AND
-                c3_.editingStatus = :editingStatus
+                c3_.id = c0_.object_id
             WHERE
                 (c0_.action IN(:action' . $secondAction . ')) AND
-                (c0_.object_class = :objectClass)
+                (c0_.object_class = :objectClass) AND
+                (c3_.editingStatus IS NULL OR c3_.editingStatus = :editingStatus) AND
+                (c3_.lang IS NULL OR c3_.lang IN(' . $activeLangSql . '))
             ORDER BY
                 c0_.logged_at DESC
             LIMIT
-                ' . $limit . '
+                ' . contrexx_raw2db($limit) . '
             OFFSET
-                ' . $offset . '
+                ' . contrexx_raw2db($offset) . '
         ';
         $conn = $this->em->getConnection();
         $stmt = $conn->prepare($query);
@@ -195,6 +203,9 @@ class PageLogRepository extends LogEntryRepository
                     $page = new \Cx\Core\ContentManager\Model\Entity\Page();
                     $page->setId($log['objectId']);
                     $this->revert($page, $log['version'] - 1);
+                    if (!in_array($page->getLang(), $activeLangs)) {
+                        continue;
+                    }
 
                     $result[$page->getNodeIdShadowed()][$page->getLang()] = $log;
                 }
