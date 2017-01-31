@@ -142,6 +142,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param string $targetComponent Parse target component name
      * @param string $targetEntity Parse target entity name
      * @param string $targetId Parse target entity ID
+     * @param string $channel Channel identifier
      * @return \Cx\Core\Html\Sigma Widget content as template
      */
     public function getWidgetContent($widgetName, $themeId, $pageId, $targetComponent, $targetEntity, $targetId, $channel) {
