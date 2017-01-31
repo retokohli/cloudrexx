@@ -100,9 +100,13 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
             'targetId',
             'channel',
         );
-        $params['get'] = contrexx_input2raw($params['get']);
+        if (isset($params['get'])) {
+            $params['get'] = contrexx_input2raw($params['get']);
+        } else {
+            $params['get'] = array();
+        }
         foreach ($requiredParams as $requiredParam) {
-            if (!isset($params['get']) || !isset($params['get'][$requiredParam])) {
+            if (!isset($params['get'][$requiredParam])) {
                 throw new \InvalidArgumentException('Param "' . $requiredParam . '" not set');
             }
         }
