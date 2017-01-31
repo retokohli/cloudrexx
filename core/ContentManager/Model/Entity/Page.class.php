@@ -2156,45 +2156,4 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
     public function getWidgetContentAttributeName($widgetName) {
         return 'content';
     }
-
-    /**
-     * Returns the theme file used as CONTENT_FILE
-     * @param string $channel Channel ID
-     * @return Cx\Core\ViewManager\Model\Entity\ViewManagerFile Content ThemeFile
-     */
-    public function getContentFile($channel) {
-        $themeFolder = '';
-        $themeRepository   = new \Cx\Core\View\Model\Repository\ThemeRepository();
-        $theme = $themeRepository->getDefaultTheme($this->getLang());
-        if ($this->getUseCustomContentForAllChannels()) {
-            $theme = $themeRepository->findById($this->getSkin());
-            if (!$theme) {
-                $theme = $themeRepository->getDefaultTheme($this->getLang());
-            }
-            $themeFolder = $theme->getFoldername();
-        } elseif (!empty($_GET['custom_content'])) {
-            $themeFolder = $themeRepository->findById($channel)->getFoldername();
-        }
-        $filename = '';
-        if ($themeFolder) {
-            $filename = $themeFolder . $this->getCustomContent();
-        } else if (isset($_GET['custom_content'])) {
-            $filename = $theme->getFoldername() . contrexx_input2raw($_GET['custom_content']);
-        }
-        if (!file_exists($filename)) {
-            $contentFile = 'content';
-            if ($this->getModule() == 'Home') {
-                $contentFile = 'home';
-            }
-            $filename = $theme->getFoldername() . '/' . $contentFile . '.html';
-        }
-        
-        $fileSystem = $this->cx->getMediaSourceManager()->getMediaType(
-            'themes'
-        )->getFileSystem();
-        return new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile(
-            $filename,
-            $fileSystem
-        );
-    }
 }
