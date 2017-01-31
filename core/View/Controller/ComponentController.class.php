@@ -168,7 +168,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param string $channel Channel identifier
      * @param \Cx\Core\Viewg\Model\Entity\Theme $theme Theme
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page
-     * @return \Cx\Core\ViewManager\Model\Entity\ViewManagerFile Content template file
+     * @return string Absolute path to content template file
      */
     public function getContentTemplateFileFromChannel($channel, $theme, $page) {
         $contentFileName = 'content.html';
