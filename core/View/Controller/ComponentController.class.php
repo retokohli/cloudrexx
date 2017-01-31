@@ -98,11 +98,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $request->isMobilePhone() &&
             !$request->isTablet()
         ) {
-            /*
-             * @TODO: Nice replacement for:
-             * SELECT mobile_themes_id FROM languages WHERE id = $page->getLang()
-             */
-            if ($this->arrLang[$this->frontendLangId]['mobile_themes_id']/*mobile template configured*/) {
+            $em = $this->cx->getDb()->getEntityManager();
+            $themeRepo = $em->getRepository('Cx\Core\View\Model\Entity\Theme');
+            $theme = $themeRepo->getDefaultTheme(
+                \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE,
+                $page->getLang()
+            );
+            if ($theme) {
                 return \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE;
             }
         }
