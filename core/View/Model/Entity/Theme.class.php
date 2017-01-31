@@ -419,8 +419,12 @@ class Theme extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget
         $indexFile = $this->getFilePath($this->getFolderName() . '/index.html');
         $sidebarFile = $this->getFilePath($this->getFolderName() . '/sidebar.html');
         // get $contentFile of theme
-        $contentThemeFile = $page->getContentFile($channel);
-        $contentFile = $contentThemeFile->getFileSystem()->getFullPath($contentThemeFile);
+        $mainController = $this->getComponentController();
+        $contentFile = $mainController->getContentTemplateFileFromChannel(
+            $channel,
+            $mainController->getThemeFromChannel($channel, $page),
+            $page
+        );
 
         $template = new \Cx\Core\Html\Sigma();
         $template->loadTemplateFile($indexFile);
