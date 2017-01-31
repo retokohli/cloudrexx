@@ -119,22 +119,31 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return \Cx\Core\View\Model\Entity\Theme Theme for given request
      */
     public function getTheme($request, $page) {
-        $em = $this->cx->getDb()->getEntityManager();
-        $themeRepo = $em->getRepository('Cx\Core\View\Model\Entity\Theme');
+        return $this->getThemeFromChannel(
+            $this->getChannel($request, $page),
+            $page
+        );
+    }
+
+    /**
+     * Returns the theme for the given request
+     * @param string $channel Channel identifier
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page
+     * @return \Cx\Core\View\Model\Entity\Theme Theme for given request
+     */
+    public function getThemeFromChannel($channel, $page) {
+        $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
         if (
             $page->getSkin() &&
             (
-                $this->getChannel(
-                    $request,
-                    $page
-                ) == \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB ||
+                $channel == \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB ||
                 $page->getUseSkinForAllChannels()
             )
         ) {
             return $themeRepo->findById($page->getSkin());
         }
         return $themeRepo->getDefaultTheme(
-            $this->getChannel($request, $page),
+            $channel,
             $page->getLang()
         );
     }
@@ -147,11 +156,26 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return \Cx\Core\ViewManager\Model\Entity\ViewManagerFile Content template file
      */
     public function getContentTemplateFile($request, $page) {
+        return $this->getContentTemplateFileFromTheme(
+            $this->getTheme($request, $page),
+            $this->getChannel($request, $page),
+            $page
+        );
+    }
+
+    /**
+     * Returns the content template file for the given theme and channel
+     * @param string $channel Channel identifier
+     * @param \Cx\Core\Viewg\Model\Entity\Theme $theme Theme
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page
+     * @return \Cx\Core\ViewManager\Model\Entity\ViewManagerFile Content template file
+     */
+    public function getContentTemplateFileFromChannel($channel, $theme, $page) {
         $contentFileName = 'content.html';
         if ($page->getModule() == 'Home') {
             $contentFileName = 'home.html';
         }
-        $currentTheme = $this->getTheme($request, $page);
+        $currentTheme = $theme;
         if (empty($page->getCustomContent())) {
             return $currentTheme->getFilePath(
                 $currentTheme->getFoldername() . $contentFileName
@@ -160,7 +184,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $em = $this->cx->getDb()->getEntityManager();
         $themeRepo = $em->getRepository('Cx\Core\View\Model\Entity\Theme');
         $defaultTheme = $themeRepo->getDefaultTheme(
-            $this->getChannel($request, $page),
+            $channel,
             $page->getLang()
         );
         $fileInCurrentTheme = $currentTheme->getFilePath(
@@ -170,10 +194,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $defaultTheme->getFoldername() . $page->getCustomContent()
         );
         if (
-            $this->getChannel(
-                $request,
-                $page
-            ) == \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB ||
+            $channel == \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB ||
             $page->getUseCustomContentForAllChannels()
         ) {
             // get file from current theme
