@@ -2028,7 +2028,7 @@ class GalleryManager extends GalleryLibrary
             'TXT_SETTINGS_THUMB_PROZ_DESC'            =>    $_ARRAYLANG['TXT_SETTINGS_THUMB_PROZ_DESC'],
             'TXT_SETTINGS_QUALITY'                    =>    $_ARRAYLANG['TXT_SETTINGS_QUALITY'],
             'TXT_STANDARD_QUALITY_UPLOADED_PICS'    =>    $_ARRAYLANG['TXT_STANDARD_QUALITY_UPLOADED_PICS'],
-            'TXT_QUALITY'                            =>    $_ARRAYLANG['TXT_QUALITY'],
+            'TXT_GALLERY_QUALITY'                            =>    $_ARRAYLANG['TXT_GALLERY_QUALITY'],
             'TXT_BUTTON_SUBMIT'                        =>    $_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_SORT'],
             'TXT_GALLERY_SETTINGS_POPUP_ENABLED'    =>    $_ARRAYLANG['TXT_GALLERY_SETTINGS_POPUP_ENABLED'],
             'TXT_GALLERY_SETTINGS_IMAGE_WIDTH'        =>    $_ARRAYLANG['TXT_GALLERY_SETTINGS_IMAGE_WIDTH'],
