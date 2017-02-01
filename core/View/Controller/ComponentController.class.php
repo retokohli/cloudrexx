@@ -156,9 +156,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return \Cx\Core\ViewManager\Model\Entity\ViewManagerFile Content template file
      */
     public function getContentTemplateFile($request, $page) {
-        return $this->getContentTemplateFileFromTheme(
-            $this->getTheme($request, $page),
+        return $this->getContentTemplateFileFromChannel(
             $this->getChannel($request, $page),
+            $this->getTheme($request, $page),
             $page
         );
     }
