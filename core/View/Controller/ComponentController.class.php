@@ -140,7 +140,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $page->getUseSkinForAllChannels()
             )
         ) {
-            return $themeRepo->findById($page->getSkin());
+            $theme = $themeRepo->findById($page->getSkin());
+            if ($theme) {
+                return $theme;
+            }
         }
         return $themeRepo->getDefaultTheme(
             $channel,
