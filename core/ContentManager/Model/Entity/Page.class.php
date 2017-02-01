@@ -71,7 +71,7 @@ class PageException extends \Exception {
  * @package     cloudrexx
  * @subpackage  core_contentmanager
  */
-class Page extends \Cx\Model\Base\EntityBase implements \Serializable
+class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implements \Serializable
 {
     const TYPE_CONTENT = 'content';
     const TYPE_APPLICATION = 'application';
@@ -2147,5 +2147,13 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         $this->metadesc = $unserialized[34];
         $this->metakeys = $unserialized[35];
         $this->metaimage = $unserialized[36];
+    }
+
+    /**
+     * Returns the name of the attribute used to parse Widget named $widgetName
+     * @return string Attribute name used as getter name
+     */
+    public function getWidgetContentAttributeName($widgetName) {
+        return 'content';
     }
 }

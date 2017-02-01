@@ -106,7 +106,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             return;
         }
 
-        if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_MINIMAL) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_MINIMAL) {
             $this->boolIsEnabled = false;
             return;
         }
@@ -124,12 +125,25 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         ksort($request);
         $currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
             $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        $country = '';
+        $geoIp = $cx->getComponent('GeoIp');
+        if ($geoIp) {
+            $countryInfo = $geoIp->getCountryCode(array());
+            if (!empty($countryInfo['content'])) {
+                $country = $countryInfo['content'];
+            }
+        }
         $this->arrPageContent = array(
             'url' => $currentUrl,
             'request' => $request,
-            'accept_language' => $_SERVER['HTTP_ACCEPT_LANGUAGE'],
             'isMobile' => $isMobile,
+            'country' => $country,
         );
+        // since crawlers do not send accept language header, we make it optional
+        // in order to keep the logs clean
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $this->arrPageContent['accept_language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+        }
         $this->strCacheFilename = md5(serialize($this->arrPageContent));
     }
 
@@ -185,11 +199,24 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      */
     public function endContrexxCaching($page, $endcode)
     {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+
         // TODO: $dynVars needs to be built dynamically
         $this->dynVars = array(
             'GEO' => array(
-                'country_code' => \Cx\Core\Routing\Url::fromApi('Data', array('Plain', 'GeoIp', 'getCountryCode'))->toString(),
-            )
+                'country_code' => function() use ($cx) {
+                    return $cx->getComponent('GeoIp')->getCountryCode(array())['content'];
+                },
+            ),
+            'HTTP_COOKIE' => array(
+                'PHPSESSID' => function() {
+                    $sessId = 0;
+                    if (!empty($_COOKIE[session_name()])) {
+                        $sessId = $_COOKIE[session_name()];
+                    }
+                    return $sessId;
+                },
+            ),
         );
         
         // back-replace ESI variables that are url encoded
@@ -199,8 +226,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 $endcode = str_replace(urlencode($esiPlaceholder), $esiPlaceholder, $endcode);
             }
         }
-
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         
         $this->exceptions = array(
             // never cache errors
@@ -331,12 +356,12 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $settings = $this->getSettings();
         // apply ESI dynamic variables
         foreach ($this->dynVars as $groupName=>$vars) {
-            foreach ($vars as $varName=>$url) {
+            foreach ($vars as $varName=>$callback) {
                 $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
                 if (strpos($htmlCode, $esiPlaceholder) === false) {
                     continue;
                 }
-                $varValue = $this->getApiResponseForUrl($url);
+                $varValue = $callback();
                 $htmlCode = str_replace($esiPlaceholder, $varValue, $htmlCode);
             }
         }
@@ -367,11 +392,15 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 define('FRONTEND_LANG_ID', 1);
             }
 
-            $content = $this->getApiResponseForUrl($matches[1]);
+            try {
+                $content = $this->getApiResponseForUrl($matches[1]);
 
-            if ($settings['internalSsiCache'] == 'on') {
-                $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
-                $file->write($content);
+                if ($settings['internalSsiCache'] == 'on') {
+                    $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
+                    $file->write($content);
+                }
+            } catch (\Exception $e) {
+                $content = '';
             }
 
             return $content;
