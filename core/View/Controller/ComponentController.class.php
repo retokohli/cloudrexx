@@ -90,13 +90,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             (
                 $request->hasCookie('smallscreen') &&
                 $request->getCookie('smallscreen') >= 1
+            ) ||
+            (
+                $request->isMobilePhone() &&
+                !$request->isTablet()
             )
-        ) {
-            return \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE;
-        }
-        if (
-            $request->isMobilePhone() &&
-            !$request->isTablet()
         ) {
             $em = $this->cx->getDb()->getEntityManager();
             $themeRepo = $em->getRepository('Cx\Core\View\Model\Entity\Theme');
