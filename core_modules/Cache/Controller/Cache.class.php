@@ -60,6 +60,11 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      */
     protected $apiUrlString = '';
 
+    /**
+     * @var array List of exceptions which will not be cached
+     * For format see isException()
+     */
+    protected $exceptions = array();
 
     /**
      * Constructor
@@ -197,7 +202,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         
-        $exceptions = array(
+        $this->exceptions = array(
             // never cache errors
             'Error', 
 
