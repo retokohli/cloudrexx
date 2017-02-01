@@ -1129,7 +1129,7 @@ class InitCMS
 
     /**
      * Returns true if the user agent is a mobile device (smart phone, PDA etc.)
-     * @todo    Maybe put this in a separate class?
+     * @deprecated Use \Cx\Core\Routing\Model\Entity\Request::isMobilePhone() instead
      */
     public static function _is_mobile_phone()
     {
@@ -1190,6 +1190,7 @@ class InitCMS
 
     /**
      * Returns true if the user agent is a tablet
+     * @deprecated Use \Cx\Core\Routing\Model\Entity\Request::isTablet() instead
      */
     public static function _is_tablet()
     {

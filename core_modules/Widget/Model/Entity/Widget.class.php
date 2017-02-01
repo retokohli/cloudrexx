@@ -57,7 +57,8 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
     protected $name;
 
     /**
-     * Wheter this widget can has content or not
+     * Whether this widget has content (represents a template block)
+     * or not (represents a placeholder)
      * @var boolean
      */
     protected $hasContent;
@@ -66,7 +67,7 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
      * Instanciates a new widget
      * @param \Cx\Core\Core\Model\Entity\SystemComponentController $component Component registering this widget
      * @param string $name Name of this widget
-     * @param boolean $hasContent Wheter this widget has content or not
+     * @param boolean $hasContent Whether this widget has content or not
      */
     public function __construct($component, $name, $hasContent = false) {
         $this->component = $component;
@@ -91,8 +92,9 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Returns wheter this widget has content
-     * @return boolean True if this widget has content, false otherwise
+     * Returns whether this widget has content (represents a template block)
+     * @return boolean True if this widget has content (represents a template
+     *                 block), false otherwise (represents a placeholder)
      */
     public function hasContent() {
         return $this->hasContent;
