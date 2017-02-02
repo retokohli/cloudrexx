@@ -62,6 +62,12 @@ class ReCaptcha implements CaptchaInterface {
     private $error = '';
 
     /**
+     * Stores status of CAPTCHA has been successfully validated or not
+     * @var boolean
+     */
+    protected $securityCheck;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -118,10 +124,15 @@ JSCaptchaValidation;
      */
     public function check()
     {
+        if (isset($this->securityCheck)) {
+            return $this->securityCheck;
+        }
+
         $reCaptcha = new \ReCaptcha\ReCaptcha($this->secret_key, new \ReCaptcha\RequestMethod\CurlPost());
         $resp = $reCaptcha->verify($_POST['g-recaptcha-response'], $_SERVER['REMOTE_ADDR']);
 
         if ($resp->isSuccess()) {
+            $this->securityCheck = true;
             return true;
         }
 
@@ -129,6 +140,8 @@ JSCaptchaValidation;
         foreach ($resp->getErrorCodes() as $errorCode) {
             $this->error .= $errorCode;
         }
+
+        $this->securityCheck = false;
         return false;
     }
 }
