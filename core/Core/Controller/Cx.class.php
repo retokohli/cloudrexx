@@ -2336,7 +2336,7 @@ namespace Cx\Core\Core\Controller {
          * Returns the Response object
          * @return \Cx\Lib\Net\Model\Entit\Response Response object
          */
-        public function getReponse() {
+        public function getResponse() {
             return $this->response;
         }
 
