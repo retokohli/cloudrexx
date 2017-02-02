@@ -293,15 +293,16 @@ class ContentManager extends \Module
 
         // get initial tree data
         $objJsonData = new \Cx\Core\Json\JsonData();
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $response = new \Cx\Lib\Net\Model\Entity\Response(null);
         $treeData = $objJsonData->jsondata(
             'node',
             'getTree',
             array(
                 'get' => $_GET,
-                'response' => $cx->getResponse(),
+                'response' => $response,
             ),
-            false
+            false,
+            $response
         );
         $objCx->setVariable('tree-data', $treeData, 'contentmanager/tree');
 
@@ -384,30 +385,34 @@ class ContentManager extends \Module
 
         $cxjs = \ContrexxJavascript::getInstance();
         $cxjs->setVariable('confirmDeleteQuestion', $_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'], 'contentmanager/lang');
+        $response = new \Cx\Lib\Net\Model\Entity\Response(null);
         $cxjs->setVariable(
             'cleanAccessData',
             $objJsonData->jsondata(
                 'page',
                 'getAccessData',
                 array(
-                    'response' => $cx->getResponse(),
+                    'response' => $response,
                 ),
-                false
+                false,
+                $response
             ),
             'contentmanager'
         );
         $cxjs->setVariable('contentTemplates', $this->getCustomContentTemplates(), 'contentmanager');
         $cxjs->setVariable('defaultTemplates', $this->getDefaultTemplates(), 'contentmanager/themes');
         $cxjs->setVariable('templateFolders', $this->getTemplateFolders(), 'contentmanager/themes');
+        $response = new \Cx\Lib\Net\Model\Entity\Response(null);
         $cxjs->setVariable(
             'availableBlocks',
             $objJsonData->jsondata(
                 'Block',
                 'getBlocks',
                 array(
-                    'response' => $cx->getResponse(),
+                    'response' => $response,
                 ),
-                false
+                false,
+                $response
             ),
             'contentmanager'
         );
