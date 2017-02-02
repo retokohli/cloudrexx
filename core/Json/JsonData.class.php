@@ -208,7 +208,8 @@ class JsonData {
             $response->setContentType('application/json');
             return json_encode($response->getAbstractContent());
         });
-        
+
+        $parsedContent = $response->getParsedContent();
         if ($setContentType) {
             // Disabling CSRF protection. That's no problem as long as we
             // only return associative arrays or objects!
@@ -217,7 +218,7 @@ class JsonData {
             ini_set('url_rewriter.tags', '');
             header('Content-Type: ' . $response->getContentType());
         }
-        return $response->getParsedContent();
+        return $parsedContent;
     }
 
     /**
