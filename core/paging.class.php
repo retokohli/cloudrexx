@@ -85,6 +85,7 @@ class Paging
         global $_CONFIG, $_CORELANG;
 
         $headIncludes = array();
+        $csrf = '';
 
         if (empty($results_per_page)) $results_per_page = intval($_CONFIG['corePagingLimit']);
         if ($numof_rows <= $results_per_page && !$showeverytime) return '';
@@ -104,6 +105,15 @@ class Paging
             $corr_value = $numof_rows % $results_per_page;
         }
 
+        // Init CSRF token to be used in the paging-links.
+        // Note: the CSRF token has to be added to the urls manually as the
+        //       URL class does automatically remove the CSRF tokens as well
+        //       as the LinkSanitizer does not add the CSRF token to absolute
+        //       URLs.
+        if (\Cx\Core\Csrf\Controller\Csrf::param()) {
+            $csrf = '&' . \Cx\Core\Csrf\Controller\Csrf::param();
+        }
+
         // remove all parameters otherwise the url object has parameters like &act=add
         $requestUrl = clone \Env::get('Resolver')->getUrl();
         $currentParams = $requestUrl->getParamArray();
@@ -121,9 +131,9 @@ class Paging
         // Set up the base navigation entries
         $array_paging = array(
             'first' => '<a class="pagingFirst" href="'.
-                Cx\Core\Routing\Url::encode_amp($firstUrl->toString()).'" rel="nofollow">',
+                Cx\Core\Routing\Url::encode_amp($firstUrl->toString().$csrf).'" rel="nofollow">',
             'last'  => '<a class="pagingLast" href="'.
-                Cx\Core\Routing\Url::encode_amp($lastUrl->toString()).'" rel="nofollow">',
+                Cx\Core\Routing\Url::encode_amp($lastUrl->toString().$csrf).'" rel="nofollow">',
             'total' => $numof_rows,
             'lower' => ($numof_rows ? $position + 1 : 0),
             'upper' => $numof_rows,
@@ -136,7 +146,7 @@ class Paging
             $previousUrl = clone $requestUrl;
             $previousUrl->setParam($parameter_name, ($position - $results_per_page));
             $array_paging['previous_link'] =
-                '<a href="'.Cx\Core\Routing\Url::encode_amp($previousUrl).'">';
+                '<a href="'.Cx\Core\Routing\Url::encode_amp($previousUrl.$csrf).'">';
 
             $link = new \Cx\Core\Html\Model\Entity\HtmlElement('link');
             $link->setAttribute('href', $previousUrl->toString());
@@ -148,7 +158,7 @@ class Paging
             $nextUrl = clone $requestUrl;
             $nextUrl->setParam($parameter_name, $int_new_position);
             $array_paging['next_link'] =
-                '<a href="'.Cx\Core\Routing\Url::encode_amp($nextUrl).'">';
+                '<a href="'.Cx\Core\Routing\Url::encode_amp($nextUrl.$csrf).'">';
 
             $link = new \Cx\Core\Html\Model\Entity\HtmlElement('link');
             $link->setAttribute('href', $nextUrl->toString());
@@ -175,7 +185,7 @@ class Paging
                 $pageUrl->setParam($parameter_name, (($i-1) * $results_per_page));
                 $array_paging[$i] =
                     '<a class="pagingPage'.$i.'" href="'.
-                    Cx\Core\Routing\Url::encode_amp($pageUrl->toString()).'">'.$i.'</a>';
+                    Cx\Core\Routing\Url::encode_amp($pageUrl->toString().$csrf).'">'.$i.'</a>';
             }
         }
         $paging =
