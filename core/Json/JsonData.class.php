@@ -183,34 +183,41 @@ class JsonData {
      * @author Michael Ritter <michael.ritter@comvation.com>
      * @param String $adapter Adapter name
      * @param String $method Method name
-     * @param Array $arguments Arguments to pass
+     * @param Array $arguments Arguments to pass, first dimension indexes are "response", "get" (optional) and "post" (optional)
      * @param boolean $setContentType (optional) If true (default) the content type is set to application/json
      * @return String JSON data to return to client
      */
     public function jsondata($adapter, $method, $arguments = array(), $setContentType = true) {
-        return $this->json($this->data($adapter, $method, $arguments), $setContentType);
+        $data = $this->data($adapter, $method, $arguments);
+        $arguments['response']->setAbstractContent($data);
+        return $this->json($arguments['response'], $setContentType);
     }
 
     /**
      * Parses data into JSON
-     * @param array $data Data to JSONify
+     * @param \Cx\Lib\Net\Model\Entity\Response $response Data to JSONify
      * @param boolean $setContentType (optional) If true (NOT default) the content type is set to application/json
      * @return String JSON data to return to client
      */
-    public function json($data, $setContentType = false) {
-        if ($setContentType) {
-            // browsers will pass rendering of application/* MIMEs to other
-            // applications, usually.
-            // Skip the following line for debugging, if so desired
-            header('Content-Type: application/json');
+    public function json(\Cx\Lib\Net\Model\Entity\Response $response, $setContentType = false) {
+        if ($data['status'] != 'success' && $response->getCode() == 200) {
+            $response->setCode(500);
+        }
+        $response->setParser(function($response) {
+            $response->setContentType('application/json');
+            return json_encode($response->getAbstractContent());
+        });
 
+        $parsedContent = $response->getParsedContent();
+        if ($setContentType) {
             // Disabling CSRF protection. That's no problem as long as we
             // only return associative arrays or objects!
             // https://mycomvation.com/wiki/index.php/Contrexx_Security#CSRF
             // Search for a better way to disable CSRF!
             ini_set('url_rewriter.tags', '');
+            header('Content-Type: ' . $response->getContentType());
         }
-        return json_encode($data);
+        return $parsedContent;
     }
 
     /**
@@ -219,8 +226,8 @@ class JsonData {
      * @author Michael Ritter <michael.ritter@comvation.com>
      * @param String $adapter Adapter name
      * @param String $method Method name
-     * @param Array $arguments Arguments to pass
-     * @return String data to use for further processing
+     * @param Array $arguments Arguments to pass, first dimension indexes are "response", "get" (optional) and "post" (optional)
+     * @return array Data to use for further processing
      */
     public function data($adapter, $method, $arguments = array()) {
         global $_ARRAYLANG;
@@ -272,11 +279,10 @@ class JsonData {
         }
 
         try {
-            $output = call_user_func(array($adapter, $realMethod), $arguments);
-
+            $data = call_user_func(array($adapter, $realMethod), $arguments);
             return array(
                 'status'  => 'success',
-                'data'    => $output,
+                'data'    => $data,
                 'message' => $adapter->getMessagesAsString()
             );
         } catch (\Exception $e) {
@@ -378,12 +384,12 @@ class JsonData {
      * Returns the JSON code for a error message
      * @param String $message HTML encoded message
      * @author Michael Ritter <michael.ritter@comvation.com>
-     * @return String JSON code
+     * @return array Data for JSON response
      */
     public function getErrorData($message) {
         return array(
             'status' => 'error',
-            'message'   => $message
+            'message' => $message
         );
     }
 }

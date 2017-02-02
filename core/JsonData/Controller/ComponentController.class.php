@@ -146,7 +146,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $adapter = contrexx_input2raw($_GET['object']);
                 $method = contrexx_input2raw($_GET['act']);
                 // TODO: Replace arguments by something reasonable
-                $arguments = array('get' => $_GET, 'post' => $_POST);
+                $arguments = array(
+                    'get' => $_GET,
+                    'post' => $_POST,
+                    'response' => $this->cx->getResponse(),
+                );
                 echo $json->jsondata($adapter, $method, $arguments);
                 die();
                 break;
@@ -170,7 +174,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $adapter = contrexx_input2raw($_GET['object']);
                     $method = contrexx_input2raw($_GET['act']);
                     // TODO: Replace arguments by something reasonable
-                    $arguments = array('get' => $_GET, 'post' => $_POST);
+                    $arguments = array(
+                        'get' => $_GET,
+                        'post' => $_POST,
+                        'response' => $this->cx->getResponse(),
+                    );
                     echo $json->jsondata($adapter, $method, $arguments);
                     die();
                 }
