@@ -124,7 +124,7 @@ class JsonData {
         }
 
         // check if its an adapter!
-        if (!is_a($adapter, '\Cx\Core\Json\JsonAdapter', true)) {
+        if ($adapter instanceof \Cx\Core\Json\JsonAdapter) {
             throw new \Exception('Tried to load class as JsonAdapter, but interface is not implemented: "' . $adapter . '"');
         }
 

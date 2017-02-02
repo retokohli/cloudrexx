@@ -86,6 +86,18 @@ cx(.bat) uninstall [core|core_module|module|lib|theme] {component name}';
 
         switch ($command) {
             case 'help':
+                $commands = $this->cx->getCommands();
+                if (count($arguments)) {
+                    if (isset($commands[current($arguments)])) {
+                        echo $commands[current($arguments)]->getCommandDescription(
+                            current($arguments),
+                            false
+                        ) . "\n";
+                        return;
+                    } else {
+                        echo "No such command\n";
+                    }
+                }
                 echo 'Cloudrexx command mode help.
 
 ';
@@ -97,7 +109,6 @@ Use »cx(.bat) help <command>« for more info about a command
 Available commands:
 
 ';
-                $commands = $this->cx->getCommands();
                 $commandPerComponent = array();
                 foreach ($commands as $command=>$component) {
                     if (!isset($commandPerComponent[$component->getName()])) {

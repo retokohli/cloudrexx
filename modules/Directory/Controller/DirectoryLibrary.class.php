@@ -511,7 +511,8 @@ class DirectoryLibrary
             return 'error';
         }
 
-        $objSession = \cmsSession::getInstance();
+        $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objSession = $cx->getComponent('Session')->getSession();
         $tempPath   = $objSession->getTempPath() .'/' . $uploaderId . '/' . $fileName;
         //Check the uploaded file exists in /tmp folder
         if (!\Cx\Lib\FileSystem\FileSystem::exists($tempPath)) {
@@ -1106,31 +1107,20 @@ class DirectoryLibrary
         $subject = str_replace($array_1, $array_2, $subject);
         $message = str_replace($array_1, $array_2, $message);
         $sendTo = explode(';', $sendTo);
-        if (@\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') ) {
-            $objMail = new \phpmailer();
-            if ($_CONFIG['coreSmtpServer'] > 0 && @\Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/SmtpSettings.class.php') ) {
-                $arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
-                if ($arrSmtp !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
-            }
-            $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreAdminName']);
-            $objMail->Subject = $subject;
-            $objMail->IsHTML(false);
-            $objMail->Body = $message;
 
-            foreach($sendTo as $mailAdress) {
-                $objMail->ClearAddresses();
-                $objMail->AddAddress($mailAdress);
-                $objMail->Send();
-            }
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
+
+        $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreAdminName']);
+        $objMail->Subject = $subject;
+        $objMail->IsHTML(false);
+        $objMail->Body = $message;
+
+        foreach($sendTo as $mailAdress) {
+            $objMail->ClearAddresses();
+            $objMail->AddAddress($mailAdress);
+            $objMail->Send();
         }
+
         return true;
     }
 
@@ -1950,13 +1940,6 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                                                         'lon' =>$arrGoogleStartPoint[1],
                                                         'zoom' =>$arrGoogleStartPoint[2]);
                 }
-                $objResult->MoveNext();
-            }
-        }
-        $objResult = $objDatabase->Execute("SELECT setname, setvalue, settyp FROM ".DBPREFIX."module_directory_settings_google");
-        if ($objResult !== false) {
-            while(!$objResult->EOF) {
-                $settings['google'][$objResult->fields['setname']] = $objResult->fields['setvalue'];
                 $objResult->MoveNext();
             }
         }

@@ -49,8 +49,8 @@ class Captcha {
 
     private function __construct($config)
     {
-        global $sessionObj;
-        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $sessionObj = $cx->getComponent('Session')->getSession();
 
 // TODO: move to basic configuration screen (/cadmin/index.php?cmd=settings)
         $captchaConfig = array(

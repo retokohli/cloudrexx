@@ -81,12 +81,19 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
 
     function getHomeHeadlines($catId=0)
     {
-        global $_CORELANG, $objDatabase, $_LANGID;
+        global $_CORELANG, $_ARRAYLANG, $objDatabase, $_LANGID;
 
         $i = 0;
         $catId= intval($catId);
 
         $this->_objTemplate->setTemplate($this->_pageContent,true,true);
+
+        $this->_objTemplate->setGlobalVariable(array(
+            'TXT_MORE_NEWS'         => $_CORELANG['TXT_MORE_NEWS'],
+            'TXT_NEWS_MORE'         => $_ARRAYLANG['TXT_NEWS_MORE'],
+            'TXT_NEWS_MORE_INFO'    => $_ARRAYLANG['TXT_NEWS_MORE_INFO'],
+            'TXT_NEWS_HEADLINE'     => $_ARRAYLANG['TXT_NEWS_HEADLINE'],
+        ));
 
         $newsLimit = intval($this->arrSettings['news_headlines_limit']);
         if ($newsLimit>50) { //limit to a maximum of 50 news
@@ -212,7 +219,7 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
         } else {
             $this->_objTemplate->hideBlock('headlines_row');
         }
-        $this->_objTemplate->setVariable("TXT_MORE_NEWS", $_CORELANG['TXT_MORE_NEWS']);
+
         return $this->_objTemplate->get();
     }
 }

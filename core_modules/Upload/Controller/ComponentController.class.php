@@ -88,12 +88,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page The resolved page
      */
     public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $sessionObj;
         switch ($this->cx->getMode()) {
 
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 if (isset($_REQUEST['section']) && $_REQUEST['section'] == 'Upload') {
-                    if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = \cmsSession::getInstance(); // initialize session object
+                    $this->getComponent('Session')->getSession(); // initialize session object
                     $objUploadModule = new Upload();
                     $objUploadModule->getPage();
                     //execution never reaches this point

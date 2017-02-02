@@ -82,7 +82,7 @@ a:active {
     top: 14px;
     width: 145px;
     height: 25px;
-    background: url(../Media/login_contrexx_logo.png) no-repeat;
+    background: url(../Media/login_cloudrexx_logo.png) no-repeat;
     outline: 0;
 }
 
@@ -1453,12 +1453,12 @@ table.adminlist td.nowrap {
 }
 
 .warningbox, #warningbox {
-    background: #FEF0D0;
-    color: #DA7A0A;
+    background: #fcf8e3;
+    color: #8a6d3b;
 }
 
 .warningbox a, #warningbox a {
-    color: #DB7A0A;
+    color: #8a6d3b;
 }
 
 .news,

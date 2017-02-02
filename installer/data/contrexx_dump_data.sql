@@ -505,7 +505,6 @@ INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scop
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (36,6,'function','backend','TXT_ACCESS_CONTROL',1,'','_self',0,0,36);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (38,7,'function','backend','TXT_MODIFY_MEDIA_FILES',1,'','_self',0,0,38);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (39,7,'function','backend','TXT_UPLOAD_MEDIA_FILES',1,'','_self',0,0,39);
-INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (40,19,'function','backend','TXT_SETTINGS',1,'','_self',0,0,40);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (41,20,'function','backend','TXT_DBM_MAINTENANCE_TITLE',1,'','_self',0,0,41);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (46,21,'function','backend','TXT_ACTIVATE_SKINS',1,'','_self',0,0,46);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (47,21,'function','backend','TXT_EDIT_SKINS',1,'','_self',0,0,47);
@@ -564,7 +563,7 @@ INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scop
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (133,132,'function','backend','TXT_DOWNLOADS_ADMINISTER',1,'','_self',53,1,142);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (134,2,'navigation','backend','TXT_U2U_MODULE',1,'index.php?cmd=U2u','_self',54,0,149);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (135,2,'navigation','backend','TXT_KNOWLEDGE',1,'index.php?cmd=Knowledge','_self',56,0,129);
-INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (136,135,'function','backend','TXT_KNOWLEDGE_ACCESS_OVERVIEW',1,'index.php?cmd=Knowledge&section=articles','_self',56,1,130);
+INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (136,135,'function','backend','TXT_KNOWLEDGE_ACCESS_OVERVIEW',1,'index.php?cmd=Knowledge&act=articles','_self',56,1,130);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (137,135,'function','backend','TXT_KNOWLEDGE_ACCESS_EDIT_ARTICLES',1,'','_self',56,2,131);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (138,135,'function','backend','TXT_KNOWLEDGE_ACCESS_CATEGORIES',1,'','_self',56,3,132);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (139,135,'function','backend','TXT_KNOWLEDGE_ACCESS_EDIT_CATEGORIES',1,'','_self',56,4,133);
@@ -644,6 +643,8 @@ INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scop
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (226,211,'function','backend','TXT_CORE_MODULE_MULTISITE_COMMUNICATION_MANAGEMENT',1,'index.php?cmd=MultiSite','_self',89,1,198);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (227,211,'function','backend','TXT_CORE_MODULE_MULTISITE_SYSTEM_MANAGEMENT',1,'index.php?cmd=MultiSite','_self',89,2,199);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (228,3,'navigation','backend','TXT_CORE_MODULE_GEOIP',1,'index.php?cmd=GeoIp','_self',111,14,201);
+INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (229,17,'function','backend','TXT_CORE_MODULE_PDF',1,'index.php?cmd=Pdf','_self',117,17,193);
+INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (230,3,'navigation','backend','TXT_CORE_ROUTING',1,'index.php?cmd=Routing','_self',99,14,200);
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (2,'Stats','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (3,'Gallery','module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (4,'Newsletter','module');
@@ -739,6 +740,11 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (112,'DateTime','
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (113,'DataAccess','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (114,'DataSource','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (115,'Sync','core_module');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (116,'Model','core');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (117, 'Pdf','core_module');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (118, 'Setting','core');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (120, 'View','core');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (122, 'Widget','core_module');
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (1,NULL,1,336,0);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (2,1,2,3,1);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (3,34,11,12,2);
@@ -1699,6 +1705,7 @@ INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`
 INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','payrexx_active','config','checkbox','0','',15);
 INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','payrexx_instance_name','config','text','','',16);
 INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','payrexx_api_secret','config','text','','',17);
+INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','num_categories_per_row','config','text','4','',17);
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (1,1,'core','core_country_name','Afghanistan');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (1,1,'Shop','attribute_name','Zusatzleistungen');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (1,1,'Shop','core_mail_template_bcc','');
@@ -3216,6 +3223,7 @@ INSERT INTO `contrexx_module_calendar_settings` (`id`, `section_id`, `name`, `ti
 INSERT INTO `contrexx_module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES (20,19,'placeData','TXT_CALENDAR_PLACE_DATA','1','TXT_CALENDAR_PLACE_DATA_STATUS_INFO',3,'TXT_CALENDAR_PLACE_DATA_DEFAULT,TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR,TXT_CALENDAR_PLACE_DATA_FROM_BOTH','',7);
 INSERT INTO `contrexx_module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES (63,19,'placeDataHost','TXT_CALENDAR_PLACE_DATA_HOST','1','TXT_CALENDAR_PLACE_DATA_STATUS_INFO',3,'TXT_CALENDAR_PLACE_DATA_DEFAULT,TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR,TXT_CALENDAR_PLACE_DATA_FROM_BOTH','',9);
 INSERT INTO `contrexx_module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES (64,19,'placeDataHostForm','','0','',5,'','getPlaceDataDorpdown',10);
+INSERT INTO `contrexx_module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES (65,5,'frontendPastEvents','TXT_CALENDAR_FRONTEND_PAST_EVENTS','0','',5,'TXT_CALENDAR_FRONTEND_PAST_EVENTS_DAY,TXT_CALENDAR_FRONTEND_PAST_EVENTS_END','',15);
 INSERT INTO `contrexx_module_calendar_settings_section` (`id`, `parent`, `order`, `name`, `title`) VALUES (5,1,0,'global','TXT_CALENDAR_GLOBAL');
 INSERT INTO `contrexx_module_calendar_settings_section` (`id`, `parent`, `order`, `name`, `title`) VALUES (6,1,1,'headlines','TXT_CALENDAR_HEADLINES');
 INSERT INTO `contrexx_module_calendar_settings_section` (`id`, `parent`, `order`, `name`, `title`) VALUES (1,0,0,'global','');
@@ -3715,10 +3723,6 @@ INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`
 INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (42,'youtubeHeight','300',1);
 INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (43,'youtubeWidth','400',1);
 INSERT INTO `contrexx_module_directory_settings` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (44,'youtubeHeight','300',1);
-INSERT INTO `contrexx_module_directory_settings_google` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (1,'googleSeach','0',2);
-INSERT INTO `contrexx_module_directory_settings_google` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (2,'googleResults','',1);
-INSERT INTO `contrexx_module_directory_settings_google` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (26,'googleId','',1);
-INSERT INTO `contrexx_module_directory_settings_google` (`setid`, `setname`, `setvalue`, `settyp`) VALUES (27,'googleLang','',1);
 INSERT INTO `contrexx_module_directory_vote` (`id`, `feed_id`, `vote`, `count`, `client`, `time`) VALUES (8,30,12,2,'2fcd8694488a86ce475bf72aae0891fa','1291972976');
 INSERT INTO `contrexx_module_directory_vote` (`id`, `feed_id`, `vote`, `count`, `client`, `time`) VALUES (9,26,2,1,'fa54a587d9deb29e0ea679a53fdbf171','1342424017');
 INSERT INTO `contrexx_module_directory_vote` (`id`, `feed_id`, `vote`, `count`, `client`, `time`) VALUES (10,27,7,1,'fa54a587d9deb29e0ea679a53fdbf171','1342424866');
@@ -4122,11 +4126,18 @@ INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `descripti
 INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (9,'maxdayStatus','0','TXT_MARKET_SET_MAXDAYS_ON',2);
 INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (10,'searchPrice','100,200,500,1000,2000,5000','TXT_MARKET_SET_EXP_SEARCH_PRICE',3);
 INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (11,'codeMode','1','TXT_MARKET_SET_CODE_MODE',2);
+INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (12,'confirmFrontend','0','TXT_MARKET_SET_CONFIRM_IN_FRONTEND','2');
+INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (13,'useTerms','0','TXT_MARKET_SET_USE_TERMS','2');
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (1,'spez_field_1','',1,1,0);
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (2,'spez_field_2','',1,1,0);
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (3,'spez_field_3','',1,1,0);
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (4,'spez_field_4','',1,1,0);
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (5,'spez_field_5','',1,1,0);
+INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (6,'spez_field_6','',1,1,0);
+INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (7,'spez_field_7','',1,1,0);
+INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (8,'spez_field_8','',1,1,0);
+INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (9,'spez_field_9','',1,1,0);
+INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (10,'spez_field_10','',1,1,0);
 INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media1_frontend_changable','off');
 INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media2_frontend_changable','off');
 INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media3_frontend_changable','off');
@@ -4597,6 +4608,7 @@ INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (
 INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (47,'settingsActiveLanguages','2,1,3');
 INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (48,'settingsFrontendUseMultilang','0');
 INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (49,'settingsIndividualEntryOrder','0');
+INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (52,'legacyBehavior','0');
 INSERT INTO `contrexx_module_mediadir_settings_num_categories` (`group_id`, `num_categories`) VALUES (3,'n');
 INSERT INTO `contrexx_module_mediadir_settings_num_categories` (`group_id`, `num_categories`) VALUES (4,'n');
 INSERT INTO `contrexx_module_mediadir_settings_num_categories` (`group_id`, `num_categories`) VALUES (5,'n');
@@ -5667,6 +5679,11 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variab
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (113,'DataAccess','Cloudrexx AG','TXT_CORE_MODULE_DATAACCESS_DESCRIPTION','y',1,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (114,'DataSource','Cloudrexx AG','TXT_CORE_MODULE_DATASOURCE_DESCRIPTION','y',1,0,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (115,'Sync','Cloudrexx AG','TXT_CORE_MODULE_SYNC_DESCRIPTION','y',1,1,1,1,NULL);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (116,'Model','Cloudrexx AG','TXT_CORE_MODEL_DESCRIPTION','y',1,1,1,1,NULL);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (117,'Pdf','Cloudrexx AG','TXT_CORE_MODULES_PDF_DESCRIPTION','y',1,1,1,1,NULL);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (118,'Setting','Cloudrexx AG','TXT_CORE_SETTING_DESCRIPTION','n',1,1,1,1,NULL);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (120,'View','Cloudrexx AG','TXT_CORE_VIEW_DESCRIPTION','n',1,1,1,1,NULL);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (122,'Widget','Cloudrexx AG','TXT_CORE_MODULES_WIDGET_DESCRIPTION','n',1,1,1,1,NULL);
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (1,'image_cut_width','500');
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (2,'image_cut_height','500');
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (3,'image_scale_width','800');

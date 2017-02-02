@@ -507,10 +507,20 @@ class ComponentManager
                     'module' => $moduleName,
                     'lang' => $this->langId,
                 ));
+                $nodeIds = array();
                 foreach ($pages as $page) {
-                    $em->remove($page->getNode());
-                    $em->flush();
+                    $nodeIds[] = $page->getNode()->getId();
                 }
+                $jd = new \Cx\Core\Json\JsonData();
+                $jd->data(
+                    'node',
+                    'multipleDelete',
+                    array(
+                        'post' => array(
+                            'nodes' => array_unique($nodeIds),
+                        ),
+                    )
+                );
             }
             return true;
         } else {
