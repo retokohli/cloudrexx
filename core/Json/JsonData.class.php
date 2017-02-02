@@ -184,17 +184,13 @@ class JsonData {
      * @param String $adapter Adapter name
      * @param String $method Method name
      * @param Array $arguments Arguments to pass, first dimension indexes are "response", "get" (optional) and "post" (optional)
-     * @param \Cx\Lib\Net\Model\Entity\Response $response (deprecated) Response to use
      * @param boolean $setContentType (optional) If true (default) the content type is set to application/json
      * @return String JSON data to return to client
      */
-    public function jsondata($adapter, $method, $arguments = array(), $setContentType = true, $response = null) {
-        if (!$response) {
-            $response = \Cx\Core\Core\Controller\Cx::instanciate()->getResponse();
-        }
+    public function jsondata($adapter, $method, $arguments = array(), $setContentType = true) {
         $data = $this->data($adapter, $method, $arguments);
-        $response->setAbstractContent($data);
-        return $this->json($response, $setContentType);
+        $arguments['response']->setAbstractContent($data);
+        return $this->json($arguments['response'], $setContentType);
     }
 
     /**

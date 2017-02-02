@@ -293,16 +293,14 @@ class ContentManager extends \Module
 
         // get initial tree data
         $objJsonData = new \Cx\Core\Json\JsonData();
-        $response = new \Cx\Lib\Net\Model\Entity\Response(null);
         $treeData = $objJsonData->jsondata(
             'node',
             'getTree',
             array(
                 'get' => $_GET,
-                'response' => $response,
+                'response' => new \Cx\Lib\Net\Model\Entity\Response(null),
             ),
-            false,
-            $response
+            false
         );
         $objCx->setVariable('tree-data', $treeData, 'contentmanager/tree');
 
@@ -385,34 +383,30 @@ class ContentManager extends \Module
 
         $cxjs = \ContrexxJavascript::getInstance();
         $cxjs->setVariable('confirmDeleteQuestion', $_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'], 'contentmanager/lang');
-        $response = new \Cx\Lib\Net\Model\Entity\Response(null);
         $cxjs->setVariable(
             'cleanAccessData',
             $objJsonData->jsondata(
                 'page',
                 'getAccessData',
                 array(
-                    'response' => $response,
+                    'response' => new \Cx\Lib\Net\Model\Entity\Response(null),
                 ),
-                false,
-                $response
+                false
             ),
             'contentmanager'
         );
         $cxjs->setVariable('contentTemplates', $this->getCustomContentTemplates(), 'contentmanager');
         $cxjs->setVariable('defaultTemplates', $this->getDefaultTemplates(), 'contentmanager/themes');
         $cxjs->setVariable('templateFolders', $this->getTemplateFolders(), 'contentmanager/themes');
-        $response = new \Cx\Lib\Net\Model\Entity\Response(null);
         $cxjs->setVariable(
             'availableBlocks',
             $objJsonData->jsondata(
                 'Block',
                 'getBlocks',
                 array(
-                    'response' => $response,
+                    'response' => new \Cx\Lib\Net\Model\Entity\Response(null),
                 ),
-                false,
-                $response
+                false
             ),
             'contentmanager'
         );
