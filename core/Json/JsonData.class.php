@@ -201,8 +201,8 @@ class JsonData {
      * @return String JSON data to return to client
      */
     public function json(\Cx\Lib\Net\Model\Entity\Response $response, $setContentType = false) {
-        if ($data['status'] != 'success' && $response->getStatus() == 200) {
-            $response->setStatus(500);
+        if ($data['status'] != 'success' && $response->getCode() == 200) {
+            $response->setCode(500);
         }
         $response->setParser(function($response) {
             $response->setContentType('application/json');
