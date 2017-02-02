@@ -300,7 +300,7 @@ class JsonNews implements JsonAdapter {
      */
     protected function getThemeFromInput($params)
     {
-        $themeId  = !empty($params['get']['template']) ? contrexx_input2int($params['get']['template']) : 0;
+        $themeId  = !empty($params['get']['theme']) ? contrexx_input2int($params['get']['theme']) : 0;
         if (empty($themeId)) {
             throw new JsonNewsException('The theme id is empty in the request');
         }

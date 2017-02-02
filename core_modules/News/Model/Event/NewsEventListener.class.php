@@ -297,7 +297,7 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
         $params = array();
         if (null !== $themeId) {
-            $params['template'] = contrexx_input2int($themeId);
+            $params['theme'] = contrexx_input2int($themeId);
         }
         if (null !== $langId) {
             $params['langId'] = contrexx_input2int($langId);

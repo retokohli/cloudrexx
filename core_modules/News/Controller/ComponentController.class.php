@@ -169,7 +169,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                     'getHeadlines',
                                     array(
                                         'headline' => 'headlines'. $visibleI,
-                                        'template' => \Env::get('init')->getCurrentThemeId(),
+                                        'theme' => \Env::get('init')->getCurrentThemeId(),
                                         'langId'   => $_LANGID,
                                     )
                                 );
@@ -194,7 +194,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'News',
                             'getTopNews',
                             array(
-                                'template' => \Env::get('init')->getCurrentThemeId(),
+                                'theme' => \Env::get('init')->getCurrentThemeId(),
                                 'langId'   => $_LANGID,
                             )
                         );
@@ -262,7 +262,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'News',
                             'getRecentComments',
                             array(
-                                'template' => \Env::get('init')->getCurrentThemeId(),
+                                'theme' => \Env::get('init')->getCurrentThemeId(),
                                 'langId'   => $_LANGID,
                             )
                         );
