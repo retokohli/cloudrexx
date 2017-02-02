@@ -183,12 +183,15 @@ class JsonData {
      * @author Michael Ritter <michael.ritter@comvation.com>
      * @param String $adapter Adapter name
      * @param String $method Method name
-     * @param Array $arguments Arguments to pass
+     * @param Array $arguments Arguments to pass, first dimension indexes are "response", "get" (optional) and "post" (optional)
      * @param boolean $setContentType (optional) If true (default) the content type is set to application/json
      * @return String JSON data to return to client
      */
     public function jsondata($adapter, $method, $arguments = array(), $setContentType = true) {
-        return $this->json($this->data($adapter, $method, $arguments), $setContentType);
+        $response = \Cx\Core\Core\Controller\Cx::instanciate()->getResponse();
+        $data = $this->data($adapter, $method, $arguments);
+        $response->setAbstractContent($data);
+        return $this->json($response, $setContentType);
     }
 
     /**
@@ -197,7 +200,10 @@ class JsonData {
      * @param boolean $setContentType (optional) If true (NOT default) the content type is set to application/json
      * @return String JSON data to return to client
      */
-    public function json($response, $setContentType = false) {
+    public function json(\Cx\Lib\Net\Model\Entity\Response $response, $setContentType = false) {
+        if ($data['status'] != 'success' && $response->getStatus() == 200) {
+            $response->setStatus(500);
+        }
         $response->setParser(function($response) {
             $response->setContentType('application/json');
             return json_encode($response->getAbstractContent());
@@ -220,8 +226,8 @@ class JsonData {
      * @author Michael Ritter <michael.ritter@comvation.com>
      * @param String $adapter Adapter name
      * @param String $method Method name
-     * @param Array $arguments Arguments to pass
-     * @return \Cx\Lib\Net\Model\Entity\Response Data to use for further processing
+     * @param Array $arguments Arguments to pass, first dimension indexes are "response", "get" (optional) and "post" (optional)
+     * @return array Data to use for further processing
      */
     public function data($adapter, $method, $arguments = array()) {
         global $_ARRAYLANG;
@@ -273,13 +279,12 @@ class JsonData {
         }
 
         try {
-            $response = call_user_func(array($adapter, $realMethod), $arguments);
-            $response->setAbstractData(array(
+            $data = call_user_func(array($adapter, $realMethod), $arguments);
+            return array(
                 'status'  => 'success',
-                'data'    => $response->getAbstractData(),
+                'data'    => $data,
                 'message' => $adapter->getMessagesAsString()
-            ));
-            return $response;
+            );
         } catch (\Exception $e) {
             //die($e->getTraceAsString());
             return $this->getErrorData($e->getMessage());
@@ -379,15 +384,12 @@ class JsonData {
      * Returns the JSON code for a error message
      * @param String $message HTML encoded message
      * @author Michael Ritter <michael.ritter@comvation.com>
-     * @return String JSON code
+     * @return array Data for JSON response
      */
     public function getErrorData($message) {
-        return new \Cx\Lib\Net\Model\Entity\Response(
-            array(
-                'status' => 'error',
-                'message'   => $message
-            ),
-            500
+        return array(
+            'status' => 'error',
+            'message' => $message
         );
     }
 }
