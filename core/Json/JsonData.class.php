@@ -190,7 +190,7 @@ class JsonData {
     public function jsondata($adapter, $method, $arguments = array(), $setContentType = true) {
         $data = $this->data($adapter, $method, $arguments);
         $arguments['response']->setAbstractContent($data);
-        if ($data['status'] != 'success' && $arguments['response']getCode() == 200) {
+        if ($data['status'] != 'success' && $arguments['response']->getCode() == 200) {
             $arguments['response']->setCode(500);
         }
         return $this->json($arguments['response'], $setContentType);
