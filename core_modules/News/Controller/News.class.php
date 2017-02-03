@@ -53,6 +53,8 @@ namespace Cx\Core_Modules\News\Controller;
  */
 class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
     public $newsTitle;
+    public $newsText;
+    public $newsThumbnail;
     public $arrSettings = array();
     public $_objTpl;
     public $_submitMessage;
@@ -174,7 +176,6 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                         news.teaser_image_thumbnail_path AS newsThumbImg,
                                                         news.typeid             AS typeid,
                                                         news.allow_comments     AS commentactive,
-                                                        news.new_window         AS newWindow,
                                                         locale.text,
                                                         locale.title            AS title,
                                                         locale.teaser_text
@@ -241,6 +242,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         $this->newsTitle = $objResult->fields['title'];
         $newstitle = $this->newsTitle;
+        $this->newsText = $text;
+        $this->newsThumbnail = $objResult->fields['newsThumbImg'];
         $newsTeaser = nl2br($objResult->fields['teaser_text']);
         \LinkGenerator::parseTemplate($newsTeaser);
 
@@ -926,7 +929,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_TYPE'                      => ($this->arrSettings['news_use_types'] == 1 ? $_ARRAYLANG['TXT_TYPE'] : ''),
             'TXT_DATE'                      => $_ARRAYLANG['TXT_DATE'],
             'TXT_TITLE'                     => $_ARRAYLANG['TXT_TITLE'],
-            'TXT_NEWS_MESSAGE'              => $_ARRAYLANG['TXT_NEWS_MESSAGE']
+            'TXT_NEWS_MESSAGE'              => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
+            'TXT_NEWS_HEADLINE'             => $_ARRAYLANG['TXT_NEWS_HEADLINE'],
+        ));
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_NEWS_MORE'                 => $_ARRAYLANG['TXT_NEWS_MORE'],
+            'TXT_NEWS_MORE_INFO'            => $_ARRAYLANG['TXT_NEWS_MORE_INFO'],
         ));
 
         $query = '  SELECT      n.id                AS newsid,
@@ -1214,7 +1222,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $this->_objTpl->setVariable(array(
             'TXT_DATE'              => $_ARRAYLANG['TXT_DATE'],
             'TXT_TITLE'             => $_ARRAYLANG['TXT_TITLE'],
-            'TXT_NEWS_MESSAGE'      => $_ARRAYLANG['TXT_NEWS_MESSAGE']
+            'TXT_NEWS_MESSAGE'      => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
+            'TXT_NEWS_HEADLINE'     => $_ARRAYLANG['TXT_NEWS_HEADLINE'],
+        ));
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_NEWS_MORE'         => $_ARRAYLANG['TXT_NEWS_MORE'],
+            'TXT_NEWS_MORE_INFO'    => $_ARRAYLANG['TXT_NEWS_MORE_INFO'],
         ));
 
         $query = '  SELECT      n.id                AS newsid,
@@ -1440,29 +1453,16 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $msg .= "\n\n";
         $msg .= $_CONFIG['coreAdminName'];
 
-        if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-            $objMail = new \phpmailer();
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-            if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
-            }
+        $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreAdminName']);
+        $objMail->Subject = $_ARRAYLANG['TXT_NOTIFY_SUBJECT'];
+        $objMail->IsHTML(false);
+        $objMail->Body = $msg;
 
-            $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreAdminName']);
-            $objMail->Subject = $_ARRAYLANG['TXT_NOTIFY_SUBJECT'];
-            $objMail->IsHTML(false);
-            $objMail->Body = $msg;
+        $objMail->AddAddress($objUser->getEmail(), $name);
+        $objMail->Send();
 
-            $objMail->AddAddress($objUser->getEmail(), $name);
-            $objMail->Send();
-        }
         return true;
     }
 
@@ -1530,16 +1530,19 @@ cx.ready(function () {
         \$J('.newsTypeRedirect').change(function () {
             if (\$J(this).val() == 1) {
                 \$J('.newsRedirect').show();
+                \$J('.newsRedirectNewWindow').show();
                 \$J('.newsContent').hide();
             } else {
                 \$J('.newsContent').show();
                 \$J('.newsRedirect').hide();
+                \$J('.newsRedirectNewWindow').hide();
             }
         });
         if (\$J('input[type=reset]').length > 0) {
             \$J('input[type=reset]').click(function () {
                 \$J('.newsContent').show();
                 \$J('.newsRedirect').hide();
+                \$J('.newsRedirectNewWindow').hide();
             });
         }
     }
@@ -1554,6 +1557,7 @@ JSCODE;
         $this->_objTpl->setGlobalVariable(
             array(
                 'NEWS_STATUS_MESSAGE' => $msg,
+                'NEWS_STATUS_MESSAGE_CSS_CLASS' => $newsId ? 'text-success' : 'text-danger',
                 'TXT_CATEGORY_SELECT' => $_ARRAYLANG['TXT_CATEGORY_SELECT']
             )
         );
@@ -1600,9 +1604,7 @@ JSCODE;
         $data['newsTags'] = !empty($_POST['newsTags'])
             ? contrexx_input2raw($_POST['newsTags'])
             : array();
-        if (!empty(contrexx_input2raw($_POST['redirect_new_window']))) {
-            $data['redirectNewWindow'] = contrexx_input2raw($_POST['redirect_new_window']);
-        }
+        $data['redirectNewWindow'] = !empty($_POST['redirect_new_window']);
 
         return array(true, $data);
     }
@@ -1679,6 +1681,8 @@ EOF;
             'TXT_NEWS_TEASER_TEXT'      => $_ARRAYLANG['TXT_NEWS_TEASER_TEXT'],
             'TXT_SUBMIT_NEWS'           => $_ARRAYLANG['TXT_SUBMIT_NEWS'],
             'TXT_NEWS_REDIRECT'         => $_ARRAYLANG['TXT_NEWS_REDIRECT'],
+            'TXT_NEWS_REDIRECT_NEW_WINDOW'       => $_ARRAYLANG['TXT_NEWS_REDIRECT_NEW_WINDOW'],
+            'TXT_NEWS_REDIRECT_NEW_WINDOW_HELP'  => $_ARRAYLANG['TXT_NEWS_REDIRECT_NEW_WINDOW_HELP'],
             'TXT_NEWS_NEWS_URL'         => $_ARRAYLANG['TXT_NEWS_NEWS_URL'],
             'TXT_TYPE'                  => $_ARRAYLANG['TXT_TYPE'],
             'TXT_NEWS_INCLUDE_NEWS'              => $_ARRAYLANG['TXT_NEWS_INCLUDE_NEWS'],
@@ -1820,7 +1824,8 @@ EOF;
         }
 
         $date = time();
-        $userid = \FWUser::getFWUserObject()->objUser->getId();
+        $userId = \FWUser::getFWUserObject()->objUser->getId();
+        $userName = \FWUser::getFWUserObject()->objUser->getUsername();
 
         $enable = intval($this->arrSettings['news_activate_submitted_news']);
         $query = "INSERT INTO `".DBPREFIX."module_news`
@@ -1832,7 +1837,9 @@ EOF;
                 `typeid` = '".contrexx_raw2db($data['newsType'])."',
                 `status` = '$enable',
                 `validated` = '$enable',
-                `userid` = '$userid',
+                `userid` = $userId,
+                `author_id` = $userId,
+                `author` = '$userName',
                 `changelog` = '$date',
                 `enable_tags`='" . $data['enableTags'] . "',
                 `enable_related_news`=" . $data['enableRelatedNews'] . ",
@@ -2101,26 +2108,8 @@ RSS2JSCODE;
         }
 
         // Send a notification e-mail to administrator
-        if (!@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-            \DBG::msg('Unable to send e-mail notification to admin');
-            //DBG::stack();
-            return array(true, null);
-        }
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-        $objMail = new \phpmailer();
-
-        if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-            if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                $objMail->IsSMTP();
-                $objMail->Host = $arrSmtp['hostname'];
-                $objMail->Port = $arrSmtp['port'];
-                $objMail->SMTPAuth = true;
-                $objMail->Username = $arrSmtp['username'];
-                $objMail->Password = $arrSmtp['password'];
-            }
-        }
-
-        $objMail->CharSet   = CONTREXX_CHARSET;
         $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
         $objMail->IsHTML(false);
         $objMail->Subject   = sprintf($_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_SUBJECT'], $newsMessageTitle);

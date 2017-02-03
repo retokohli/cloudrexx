@@ -1239,6 +1239,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'    => $_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'],
             'TXT_NEWS_SEARCH_INFO'              => $_ARRAYLANG['TXT_NEWS_SEARCH_INFO'],
             'TXT_NEWS_SEARCH_PLACEHOLDER'       => $_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'],
+            'TXT_NEWS_REDIRECT_NEW_WINDOW'       => $_ARRAYLANG['TXT_NEWS_REDIRECT_NEW_WINDOW'],
+            'TXT_NEWS_REDIRECT_NEW_WINDOW_HELP'  => $_ARRAYLANG['TXT_NEWS_REDIRECT_NEW_WINDOW_HELP'],
 
             'TXT_NEWS_TAGS'             => $_ARRAYLANG['TXT_NEWS_TAGS'],
             'TXT_NEWS_TAGS_ENABLE'      => $_ARRAYLANG['TXT_NEWS_TAGS_ENABLE'],
@@ -1311,8 +1313,6 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 'TXT_SELECT_ALL'                => $_ARRAYLANG['TXT_SELECT_ALL'],
                 'TXT_DESELECT_ALL'              => $_ARRAYLANG['TXT_DESELECT_ALL'],
                 'TXT_ASSOCIATED_BOXES'          => $_ARRAYLANG['TXT_ASSOCIATED_BOXES'],
-                'TXT_NEWS_REDIRECT_NEW_WINDOW'       => $_ARRAYLANG['TXT_NEWS_REDIRECT_NEW_WINDOW'],
-                'TXT_NEWS_REDIRECT_NEW_WINDOW_HELP'  => $_ARRAYLANG['TXT_NEWS_REDIRECT_NEW_WINDOW_HELP'],
                 'NEWS_HEADLINES_TEASERS_TXT'    => $_ARRAYLANG['TXT_HEADLINES'].' / '.$_ARRAYLANG['TXT_TEASERS'],
                 'NEWS_USE_ONLY_TEASER_CHECKED'  => $newsTeaserOnly ? 'checked="checked"' : '',
                 'NEWS_TEASER_FRAMES'            => $frameIds,
@@ -1826,7 +1826,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                                                   ),'SetUrl'),
                 'NEWS_RELATED_NEWS_ENABLED_CHECKED' => !empty($objResult->fields['enable_related_news']) ? 'checked="checked"' : '',
                 'NEWS_TAGS_ENABLED_CHECKED' => !empty($objResult->fields['enable_tags']) ? 'checked="checked"' : '',
-                'NEWS_REDIRECT_NEW_WINDOW_CHECKED' => !empty($objResult->fields['redirect_new_window']) ? 'checked="checked"' : ''
+                'NEWS_REDIRECT_NEW_WINDOW_CHECKED' => $objResult->fields['redirect_new_window'] ? 'checked="checked"' : ''
             ));
 
             if ($this->arrSettings['news_message_protection'] == '1') {
@@ -2318,7 +2318,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $newsCategories         = !empty($_POST['newsCat']) ? contrexx_input2raw($_POST['newsCat']) : array();
             $typeId                 = !empty($_POST['newsType']) ? intval($_POST['newsType']) : 0;
             $newsScheduledActive    = !empty($_POST['newsScheduled']) ? intval($_POST['newsScheduled']) : 0;
-            $redirectNewWindow      = !empty($_POST['redirect_new_window']) ? intval($_POST['redirect_new_window']) : 0;
+            $redirectNewWindow      = !empty($_POST['redirect_new_window']);
 
             $status     = empty($_POST['status']) ? $status = 0 : intval($_POST['status']);
 

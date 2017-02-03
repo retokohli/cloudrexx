@@ -54,8 +54,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
      * @expectedException \Cx\Modules\Block\Controller\NoPermissionException
      */
     public function testGetBlockContentNoPermission() {
-        global $sessionObj;
-        $sessionObj = !$sessionObj ? \cmsSession::getInstance() : $sessionObj;
+        $sessionObj = self::$cx->getComponent('Session')->getSession();
         $jsonBlock = $this->getJsonBlockController();
         $jsonBlock->getBlockContent(array('get' => array('block' => 1, 'lang' => 'de')));
     }
@@ -65,8 +64,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
      * @expectedException \Cx\Modules\Block\Controller\NotEnoughArgumentsException
      */
     public function testGetBlockContentNotEnoughArguments() {
-        global $sessionObj;
-        $sessionObj = !$sessionObj ? \cmsSession::getInstance() : $sessionObj;
+        $sessionObj = self::$cx->getComponent('Session')->getSession();
         $user = \FWUser::getFWUserObject()->objUser->getUser(1);
         \FWUser::loginUser($user);
 
@@ -79,8 +77,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
      * @expectedException \Cx\Modules\Block\Controller\NoBlockFoundException
      */
     public function testGetBlockContentNoBlockFound() {
-        global $sessionObj;
-        $sessionObj = !$sessionObj ? \cmsSession::getInstance() : $sessionObj;
+        $sessionObj = self::$cx->getComponent('Session')->getSession();
         $user = \FWUser::getFWUserObject()->objUser->getUser(1);
         \FWUser::loginUser($user);
 
@@ -92,8 +89,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
      * @covers \Cx\Modules\Block\Controller\JsonBlockController::getBlockContent
      */
     public function testGetBlockContent() {
-        global $sessionObj;
-        $sessionObj = !$sessionObj ? \cmsSession::getInstance() : $sessionObj;
+        $sessionObj = self::$cx->getComponent('Session')->getSession();
         $user = \FWUser::getFWUserObject()->objUser->getUser(1);
         \FWUser::loginUser($user);
 
@@ -107,8 +103,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
      * @expectedException \Cx\Modules\Block\Controller\NotEnoughArgumentsException
      */
     public function testSaveBlockContentNotEnoughArguments() {
-        global $sessionObj;
-        $sessionObj = !$sessionObj ? \cmsSession::getInstance() : $sessionObj;
+        $sessionObj = self::$cx->getComponent('Session')->getSession();
         $user = \FWUser::getFWUserObject()->objUser->getUser(1);
         \FWUser::loginUser($user);
 
@@ -120,8 +115,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
      * @covers \Cx\Modules\Block\Controller\JsonBlockController::saveBlockContent
      */
     public function testSaveBlockContent() {
-        global $sessionObj;
-        $sessionObj = !$sessionObj ? \cmsSession::getInstance() : $sessionObj;
+        $sessionObj = self::$cx->getComponent('Session')->getSession();
         $user = \FWUser::getFWUserObject()->objUser->getUser(1);
         \FWUser::loginUser($user);
 
