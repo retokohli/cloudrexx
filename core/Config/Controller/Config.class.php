@@ -273,6 +273,9 @@ class Config
             case 'Settings':
                 $wysiwygBackendController->parsePage($objTpl, array('Settings'));
                 break;
+            case 'Functions':
+                $wysiwygBackendController->parsePage($objTpl, array('Functions'));
+                break;
             case '':
             default:
                 $objTpl->addBlockfile('WYSIWYG_CONFIG_TEMPLATE', 'wysiwyg_template', 'Default.html');
@@ -681,7 +684,7 @@ class Config
         }
 
         //get values from ymlsetting
-        \Cx\Core\Setting\Controller\Setting::init('Config', NULL,'Yaml');
+        \Cx\Core\Setting\Controller\Setting::init('Config', NULL,'Yaml', null, \Cx\Core\Setting\Controller\Setting::REPOPULATE);
         $ymlArray = \Cx\Core\Setting\Controller\Setting::getArray('Config', null);
         $intMaxLen = 0;
         $ymlArrayValues = array();

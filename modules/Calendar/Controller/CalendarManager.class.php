@@ -359,8 +359,7 @@ class CalendarManager extends CalendarLibrary
         \JS::registerJS("modules/{$this->moduleName}/View/Script/jquery.pagination.js");
 
         \ContrexxJavascript::getInstance()->setVariable(array(
-            'language_id' => \FWLanguage::getDefaultLangId(),
-            'active_lang' => implode(',', \FWLanguage::getIdArray()),
+            'language_id' => \FWLanguage::getDefaultLangId()
         ), 'calendar');
 
         $this->getSettings();
