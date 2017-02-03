@@ -197,17 +197,13 @@ class JsonData {
     }
 
     /**
-     * Parses data into JSON
+     * Parses a Response into JSON
      * @param \Cx\Lib\Net\Model\Entity\Response $response Data to JSONify
      * @param boolean $setContentType (optional) If true (NOT default) the content type is set to application/json
      * @return String JSON data to return to client
      */
     public function json(\Cx\Lib\Net\Model\Entity\Response $response, $setContentType = false) {
-        $response->setParser(function($response) {
-            $response->setContentType('application/json');
-            return json_encode($response->getAbstractContent());
-        });
-
+        $response->setParser($this->getParser());
         $parsedContent = $response->getParsedContent();
         if ($setContentType) {
             // Disabling CSRF protection. That's no problem as long as we
@@ -218,6 +214,31 @@ class JsonData {
             header('Content-Type: ' . $response->getContentType());
         }
         return $parsedContent;
+    }
+
+    /**
+     * Returns the parser used to parse JSON
+     * Parser is either a callback function which accepts an instance of
+     * \Cx\Lib\Net\Model\Entity\Response as first argument or an object with a
+     * parse(\Cx\Lib\Net\Model\Entity\Response $response) method.
+     * @return Object|callable Parser
+     */
+    public function getParser() {
+        return function($response) {
+            $response->setContentType('application/json');
+            return json_encode($response->getAbstractContent());
+        };
+    }
+
+    /**
+     * This method can be used to parse data to JSON format
+     * @param array $data Data to be parsed
+     * @return string JSON encoded data
+     */
+    public function parse(array $data) {
+        $response = new \Cx\Lib\Net\Model\Entity\Response($data);
+        $response->setParser($this->getParser());
+        return $response->getParsedContent();
     }
 
     /**
