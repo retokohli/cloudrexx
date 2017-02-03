@@ -190,6 +190,9 @@ class JsonData {
     public function jsondata($adapter, $method, $arguments = array(), $setContentType = true) {
         $data = $this->data($adapter, $method, $arguments);
         $arguments['response']->setAbstractContent($data);
+        if ($data['status'] != 'success' && $arguments['response']getCode() == 200) {
+            $arguments['response']->setCode(500);
+        }
         return $this->json($arguments['response'], $setContentType);
     }
 
@@ -200,9 +203,6 @@ class JsonData {
      * @return String JSON data to return to client
      */
     public function json(\Cx\Lib\Net\Model\Entity\Response $response, $setContentType = false) {
-        if ($data['status'] != 'success' && $response->getCode() == 200) {
-            $response->setCode(500);
-        }
         $response->setParser(function($response) {
             $response->setContentType('application/json');
             return json_encode($response->getAbstractContent());
