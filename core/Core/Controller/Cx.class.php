@@ -1522,6 +1522,12 @@ namespace Cx\Core\Core\Controller {
                         unset($params['__cap']);
                     }
                     $params = contrexx_input2raw($params);
+                    if (!defined('FRONTEND_LANG_ID') && isset($params['lang'])) {
+                        $langId = \FWLanguage::getLanguageIdByCode($params['lang']);
+                        if ($langId) {
+                            define('FRONTEND_LANG_ID', $langId);
+                        }
+                    }
 
                     // parse body arguments:
                     // todo: this does not work for form-data encoded body (boundary...)
