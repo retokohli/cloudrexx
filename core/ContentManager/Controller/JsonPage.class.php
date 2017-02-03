@@ -773,7 +773,10 @@ class JsonPage implements JsonAdapter {
     public function multipleSetShutdown() {
         if ($this->multipleSetState) {
             $this->multipleSetState['state'] = 'timeout';
-            echo \Cx\Core\Json\JsonData::json($this->multipleSetState, true);
+            $jd = new \Cx\Core\Json\JsonData();
+            echo $jd->json(
+                new \Cx\Lib\Net\Model\Entity\Response($this->multipleSetState)
+            );
         }
     }
 
