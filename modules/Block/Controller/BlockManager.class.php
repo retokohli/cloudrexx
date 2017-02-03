@@ -1107,8 +1107,8 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
      * @return array the content for the html select
      */
     private function getPageSelections($pageTitlesTree, $blockAssociatedPageIds) {
-        $strSelectedPages   = '';
-        $strUnselectedPages = '';
+        $strSelectedPages   = array();
+        $strUnselectedPages = array();
 
         foreach ($pageTitlesTree as $nodeId => $languages) {
             foreach ($languages as $langCode => $pageData) {
