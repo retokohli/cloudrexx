@@ -1522,10 +1522,18 @@ namespace Cx\Core\Core\Controller {
                         unset($params['__cap']);
                     }
                     $params = contrexx_input2raw($params);
-                    if (!defined('FRONTEND_LANG_ID') && isset($params['lang'])) {
+                    if (isset($params['lang'])) {
                         $langId = \FWLanguage::getLanguageIdByCode($params['lang']);
                         if ($langId) {
-                            define('FRONTEND_LANG_ID', $langId);
+                            if (!defined('FRONTEND_LANG_ID')) {
+                                define('FRONTEND_LANG_ID', $langId);
+                            }
+                            if (!defined('BACKEND_LANG_ID')) {
+                                define('BACKEND_LANG_ID', $langId);
+                            }
+                            if (!defined('LANG_ID')) {
+                                define('LANG_ID', $langId);
+                            }
                         }
                     }
 
