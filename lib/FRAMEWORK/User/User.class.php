@@ -1396,7 +1396,7 @@ class User extends User_Profile
         }
         if ($objUserId !== false) {
             while (!$objUserId->EOF) {
-                $arrUserIds[$objUserId->fields['id']] = '';
+                $arrUserIds[$objUserId->fields['id']] = array();
                 $objUserId->MoveNext();
             }
         }
