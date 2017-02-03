@@ -52,6 +52,7 @@ class Captcha {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $sessionObj = $cx->getComponent('Session')->getSession();
 
+        // explicitly load setting options from group 'security'
         \Cx\Core\Setting\Controller\Setting::init('Config', 'security');
         $captchaMethod = \Cx\Core\Setting\Controller\Setting::getValue('captchaMethod', 'Config');
         switch ($captchaMethod) {

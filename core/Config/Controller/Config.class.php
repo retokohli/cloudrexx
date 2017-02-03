@@ -444,7 +444,7 @@ class Config
                     );
         }
         $scriptPath = $cx->getCodeBaseCoreWebPath() . '/Config/View/Script/Backend.js';
-        if (file_exists(\Env::get('cx')->getClassLoader()->getFilePath($scriptPath))) {
+        if (\Env::get('cx')->getClassLoader()->getFilePath($scriptPath)) {
             \JS::registerJS(substr($scriptPath, 1));
         }
 
