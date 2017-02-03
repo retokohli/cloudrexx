@@ -190,24 +190,20 @@ class JsonData {
     public function jsondata($adapter, $method, $arguments = array(), $setContentType = true) {
         $data = $this->data($adapter, $method, $arguments);
         $arguments['response']->setAbstractContent($data);
+        if ($data['status'] != 'success' && $arguments['response']->getCode() == 200) {
+            $arguments['response']->setCode(500);
+        }
         return $this->json($arguments['response'], $setContentType);
     }
 
     /**
-     * Parses data into JSON
+     * Parses a Response into JSON
      * @param \Cx\Lib\Net\Model\Entity\Response $response Data to JSONify
      * @param boolean $setContentType (optional) If true (NOT default) the content type is set to application/json
      * @return String JSON data to return to client
      */
     public function json(\Cx\Lib\Net\Model\Entity\Response $response, $setContentType = false) {
-        if ($data['status'] != 'success' && $response->getCode() == 200) {
-            $response->setCode(500);
-        }
-        $response->setParser(function($response) {
-            $response->setContentType('application/json');
-            return json_encode($response->getAbstractContent());
-        });
-
+        $response->setParser($this->getParser());
         $parsedContent = $response->getParsedContent();
         if ($setContentType) {
             // Disabling CSRF protection. That's no problem as long as we
@@ -218,6 +214,31 @@ class JsonData {
             header('Content-Type: ' . $response->getContentType());
         }
         return $parsedContent;
+    }
+
+    /**
+     * Returns the parser used to parse JSON
+     * Parser is either a callback function which accepts an instance of
+     * \Cx\Lib\Net\Model\Entity\Response as first argument or an object with a
+     * parse(\Cx\Lib\Net\Model\Entity\Response $response) method.
+     * @return Object|callable Parser
+     */
+    public function getParser() {
+        return function($response) {
+            $response->setContentType('application/json');
+            return json_encode($response->getAbstractContent());
+        };
+    }
+
+    /**
+     * This method can be used to parse data to JSON format
+     * @param array $data Data to be parsed
+     * @return string JSON encoded data
+     */
+    public function parse(array $data) {
+        $response = new \Cx\Lib\Net\Model\Entity\Response($data);
+        $response->setParser($this->getParser());
+        return $response->getParsedContent();
     }
 
     /**
@@ -272,7 +293,9 @@ class JsonData {
             if (!$objPermission->hasAccess($arguments)) {
                 $backend = \Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND;
                 if (!\FWUser::getFWUserObject()->objUser->login($backend)) {
-                    die($this->json($this->getErrorData($_ARRAYLANG['TXT_LOGIN_NOAUTH_JSON']), true));
+                    return $this->getErrorData(
+                        $_ARRAYLANG['TXT_LOGIN_NOAUTH_JSON']
+                    );
                 }
                 return $this->getErrorData('JsonData-request to method ' . $realMethod . ' of adapter ' . $adapter->getName() . ' has been rejected by not complying to the permission requirements of the requested method.');
             }

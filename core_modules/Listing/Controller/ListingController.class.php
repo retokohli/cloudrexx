@@ -219,6 +219,8 @@ class ListingController {
         // handle ajax requests
         if (false /* ajax request for this listing */) {
             $jd = new \Cx\Core\Json\JsonData();
+            // TODO: This does not work yet
+            // TODO: JsonData->json() expects a Response object
             $jd->json(array(
                 'filtering' => $this->getAjaxFilteringData(),
                 'sorting' => $this->getAjaxSortingData(),
