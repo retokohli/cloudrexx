@@ -360,8 +360,6 @@ namespace Cx\Core\Model {
             $translatableDriverImpl = $config->newDefaultAnnotationDriver(
                 $cx->getCodeBaseLibraryPath() . '/doctrine/Gedmo/Translatable/Entity'
             );
-            $chainDriverImpl->addDriver($translatableDriverImpl,
-                'Gedmo\Translatable');
             // RK: Note:
             // In this Doctrine version, it is present as:
             $this->translationListener = new \Gedmo\Translatable\TranslatableListener();
@@ -373,7 +371,7 @@ namespace Cx\Core\Model {
             // Set the current locale (e.g. from the active language)
             // wherever that's required.
             //$translationListener->setTranslatableLocale('de_ch');
-            //$translationListener->setAnnotationReader($cachedAnnotationReader);
+            $this->translationListener->setAnnotationReader($translatableDriverImpl);
             $evm->addEventSubscriber($this->translationListener);
 
             // RK: Note:
