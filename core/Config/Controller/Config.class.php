@@ -447,9 +447,7 @@ class Config
                     );
         }
         $scriptPath = $cx->getCodeBaseCoreWebPath() . '/Config/View/Script/Backend.js';
-        if (\Env::get('cx')->getClassLoader()->getFilePath($scriptPath)) {
-            \JS::registerJS(substr($scriptPath, 1));
-        }
+        \JS::registerJS(substr($scriptPath, 1));
 
         $this->checkFtpAccess();
         $objTemplate->setVariable('SETTINGS_TABLE', $template->get());
