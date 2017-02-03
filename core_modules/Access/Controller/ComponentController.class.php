@@ -46,10 +46,29 @@ use Cx\Core_Modules\Access\Model\Event\AccessEventListener;
  * @subpackage  coremodule_access
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
+
+    /**
+     * Returns all Controller class names for this component (except this)
+     *
+     * Be sure to return all your controller classes if you add your own
+     * @return array List of Controller class names (without namespace)
+     */
     public function getControllerClasses() {
-        // Return an empty array here to let the component handler know that there
-        // does not exist a backend, nor a frontend controller of this component.
-        return array();
+        return array('EsiWidget');
+    }
+
+    /**
+     * Returns a list of JsonAdapter class names
+     *
+     * The array values might be a class name without namespace. In that case
+     * the namespace \Cx\{component_type}\{component_name}\Controller is used.
+     * If the array value starts with a backslash, no namespace is added.
+     *
+     * Avoid calculation of anything, just return an array!
+     * @return array List of ComponentController classes
+     */
+    public function getControllersAccessableByJson() {
+        return array('EsiWidgetController');
     }
 
      /**
@@ -82,25 +101,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Do something before content is loaded from DB
-     *
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
-     */
-    public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        switch ($this->cx->getMode()) {
-            case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-                $content = \Env::get('cx')->getPage()->getContent();
-                \FWUser::parseLoggedInOutBlocks($content);
-                \Env::get('cx')->getPage()->setContent($content);
-                break;
-
-            default:
-                break;
-        }
-    }
-
-
-    /**
      * Do something after content is loaded from DB
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
@@ -109,9 +109,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $objTemplate = $this->cx->getTemplate();
-
-                // ACCESS: parse access_logged_in[1-9] and access_logged_out[1-9] blocks
-                \FWUser::parseLoggedInOutBlocks($objTemplate);
 
                 // currently online users
                 $objAccessBlocks = false;
@@ -283,6 +280,41 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function registerEventListeners() {
         $eventListener = new AccessEventListener($this->cx);
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
+    }
+
+    /**
+     * Do something after system initialization
+     *
+     * This event must be registered in the postInit-Hook definition
+     * file config/postInitHooks.yml.
+     * @param \Cx\Core\Core\Controller\Cx   $cx The instance of \Cx\Core\Core\Controller\Cx
+     */
+    public function postInit() {
+        $widgetController = $this->getComponent('Widget');
+        foreach (
+            array(
+                'logged_in',
+                'logged_out',
+            ) as $widgetNamePrefix
+        ) {
+            for ($i = 0; $i <= 10; $i++) {
+                $widgetName = 'access_' . $widgetNamePrefix;
+                if ($i > 0) {
+                    $widgetName .= $i;
+                }
+                $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+                    $this,
+                    $widgetName,
+                    true
+                );
+                $widget->setEsiVariable(
+                    \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
+                );
+                $widgetController->registerWidget(
+                    $widget
+                );
+            }
+        }
     }
 
     /**

@@ -361,7 +361,6 @@ class FWUser extends User_Setting
         $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_THEMES_PATH);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->setTemplate($template[0]);
-        self::parseLoggedInOutBlocks($objTemplate);
         return $objTemplate->get();
     }
 
