@@ -155,6 +155,12 @@ namespace Cx\Core\Core\Controller {
         protected $request = null;
 
         /**
+         * Response object
+         * @var \Cx\Lib\Net\Model\Entity\Response
+         */
+        protected $response = null;
+
+        /**
          * Component handler
          * @var \Cx\Core\Core\Controller\ComponentHandler
          */
@@ -1453,6 +1459,11 @@ namespace Cx\Core\Core\Controller {
                         break;
                 }
             }
+            $this->response = new \Cx\Lib\Net\Model\Entity\Response(
+                null,
+                200,
+                $this->request
+            );
             //call post-init hooks
             $this->ch->callPostInitHooks();
         }
@@ -2322,6 +2333,14 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
+         * Returns the Response object
+         * @return \Cx\Lib\Net\Model\Entit\Response Response object
+         */
+        public function getResponse() {
+            return $this->response;
+        }
+
+        /**
          * Returns the main template
          * @return \Cx\Core\Html\Sigma Main template
          */
@@ -2404,6 +2423,9 @@ namespace Cx\Core\Core\Controller {
                         $command = ($cmdValue && $cmdValue instanceof \Cx\Core_Modules\Access\Model\Entity\Permission) ? $cmdKey : $cmdValue;
                         if (isset($this->commands[$command])) {
                             throw new \Exception('Command \'' . $command . '\' is already in index');
+                        }
+                        if (!$component->hasAccessToExecuteCommand($command, array())) {
+                            continue;
                         }
                         $this->commands[$command] = $component;
                     }
