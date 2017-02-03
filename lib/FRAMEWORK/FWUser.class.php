@@ -142,6 +142,14 @@ class FWUser extends User_Setting
 
         $_SESSION['auth']['loginLastAuthFailed'] = 1;
         User::registerFailedLogin($username);
+
+        // load core language data in case it has not yet been loaded
+        if (!is_array($_CORELANG) || !count($_CORELANG)) {
+            $objInit = \Env::get('init');
+            $objInit->_initBackendLanguage();
+            $_CORELANG = $objInit->loadLanguageData('core');
+        }
+
         $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
         $_SESSION->cmsSessionUserUpdate();
         $_SESSION->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
