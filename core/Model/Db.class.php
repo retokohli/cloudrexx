@@ -339,12 +339,8 @@ namespace Cx\Core\Model {
             $sluggableDriverImpl = $config->newDefaultAnnotationDriver(
                 $cx->getCodeBaseLibraryPath() . '/doctrine/Gedmo/Sluggable'
             );
-            $chainDriverImpl->addDriver($sluggableDriverImpl,
-                'Gedmo\Sluggable');
             $sluggableListener = new \Gedmo\Sluggable\SluggableListener();
-            // you should set the used annotation reader to listener,
-            // to avoid creating new one for mapping drivers
-            //$sluggableListener->setAnnotationReader($cachedAnnotationReader);
+            $sluggableListener->setAnnotationReader($sluggableDriverImpl);
             $evm->addEventSubscriber($sluggableListener);
 
             $timestampableDriverImpl = $config->newDefaultAnnotationDriver(
