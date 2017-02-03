@@ -117,7 +117,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         echo $data['data']['content'];
                         break;
                     case 'Json':
-                        echo $json->json($data, true);
+                        echo $json->parse($data, true);
                         break;
                     default:
                         throw new \Exception('No such output module: "' . $outputModule . '"');
