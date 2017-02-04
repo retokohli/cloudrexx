@@ -51,8 +51,68 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      * @param \Cx\Core\Html\Sigma Widget template
      * @param string $locale RFC 3066 locale identifier
      */
-    public function parseWidget($name, $template, $locale) {
-        $this->getComponent('Session')->getSession();
-        \FWUser::parseLoggedInOutBlocks($template);
+    public function parseWidget($name, $template, $locale)
+    {
+        if (preg_match('/^access_logged_(in|out)\d{0,2}/', $name)) {
+            $this->getComponent('Session')->getSession();
+            \FWUser::parseLoggedInOutBlocks($template);
+        }
+
+        $objAccessBlocks = new AccessBlocks($template);
+        if ($template->blockExists('access_currently_online_member_list')) {
+            if ($template->blockExists('access_currently_online_female_members')) {
+                $objAccessBlocks->setCurrentlyOnlineUsers('female');
+            }
+
+            if ($template->blockExists('access_currently_online_male_members')) {
+                $objAccessBlocks->setCurrentlyOnlineUsers('male');
+            }
+
+            if ($template->blockExists('access_currently_online_members')) {
+                $objAccessBlocks->setCurrentlyOnlineUsers();
+            }
+        }
+
+        if ($template->blockExists('access_last_active_member_list')) {
+            if ($template->blockExists('access_last_active_female_members')) {
+                $objAccessBlocks->setLastActiveUsers('female');
+            }
+
+            if ($template->blockExists('access_last_active_male_members')) {
+                $objAccessBlocks->setLastActiveUsers('male');
+            }
+
+            if ($template->blockExists('access_last_active_members')) {
+                $objAccessBlocks->setLastActiveUsers();
+            }
+        }
+
+        if ($template->blockExists('access_latest_registered_member_list')) {
+            if ($template->blockExists('access_latest_registered_female_members')) {
+                $objAccessBlocks->setLatestRegisteredUsers('female');
+            }
+
+            if ($template->blockExists('access_latest_registered_male_members')) {
+                $objAccessBlocks->setLatestRegisteredUsers('male');
+            }
+
+            if ($template->blockExists('access_latest_registered_members')) {
+                $objAccessBlocks->setLatestRegisteredUsers();
+            }
+        }
+
+        if ($template->blockExists('access_birthday_member_list')) {
+            if ($template->blockExists('access_birthday_female_members')) {
+                $objAccessBlocks->setBirthdayUsers('female');
+            }
+
+            if ($template->blockExists('access_birthday_male_members')) {
+                $objAccessBlocks->setBirthdayUsers('male');
+            }
+
+            if ($template->blockExists('access_birthday_members')) {
+                $objAccessBlocks->setBirthdayUsers();
+            }
+        }
     }
 }

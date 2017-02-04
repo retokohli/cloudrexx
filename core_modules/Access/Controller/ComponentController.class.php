@@ -101,92 +101,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Do something after content is loaded from DB
-     *
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
-     */
-    public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        switch ($this->cx->getMode()) {
-            case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-                $objTemplate = $this->cx->getTemplate();
-
-                // currently online users
-                $objAccessBlocks = false;
-                if ($objTemplate->blockExists('access_currently_online_member_list')) {
-                    if (\FWUser::showCurrentlyOnlineUsers() && ( $objTemplate->blockExists('access_currently_online_female_members') || $objTemplate->blockExists('access_currently_online_male_members') || $objTemplate->blockExists('access_currently_online_members'))) {
-                            $objAccessBlocks = new AccessBlocks();
-                        if ($objTemplate->blockExists('access_currently_online_female_members'))
-                            $objAccessBlocks->setCurrentlyOnlineUsers('female');
-                        if ($objTemplate->blockExists('access_currently_online_male_members'))
-                            $objAccessBlocks->setCurrentlyOnlineUsers('male');
-                        if ($objTemplate->blockExists('access_currently_online_members'))
-                            $objAccessBlocks->setCurrentlyOnlineUsers();
-                    } else {
-                        $objTemplate->hideBlock('access_currently_online_member_list');
-                    }
-                }
-
-                // last active users
-                if ($objTemplate->blockExists('access_last_active_member_list')) {
-                    if (\FWUser::showLastActivUsers() && ( $objTemplate->blockExists('access_last_active_female_members') || $objTemplate->blockExists('access_last_active_male_members') || $objTemplate->blockExists('access_last_active_members'))) {
-                        if (!$objAccessBlocks)
-                            $objAccessBlocks = new AccessBlocks();
-                        if ($objTemplate->blockExists('access_last_active_female_members'))
-                            $objAccessBlocks->setLastActiveUsers('female');
-                        if ($objTemplate->blockExists('access_last_active_male_members'))
-                            $objAccessBlocks->setLastActiveUsers('male');
-                        if ($objTemplate->blockExists('access_last_active_members'))
-                            $objAccessBlocks->setLastActiveUsers();
-                    } else {
-                        $objTemplate->hideBlock('access_last_active_member_list');
-                    }
-                }
-
-                // latest registered users
-                if ($objTemplate->blockExists('access_latest_registered_member_list')) {
-                    if (\FWUser::showLatestRegisteredUsers() && ( $objTemplate->blockExists('access_latest_registered_female_members') || $objTemplate->blockExists('access_latest_registered_male_members') || $objTemplate->blockExists('access_latest_registered_members'))) {
-                        if (!$objAccessBlocks)
-                            $objAccessBlocks = new AccessBlocks();
-                        if ($objTemplate->blockExists('access_latest_registered_female_members'))
-                            $objAccessBlocks->setLatestRegisteredUsers('female');
-                        if ($objTemplate->blockExists('access_latest_registered_male_members'))
-                            $objAccessBlocks->setLatestRegisteredUsers('male');
-                        if ($objTemplate->blockExists('access_latest_registered_members'))
-                            $objAccessBlocks->setLatestRegisteredUsers();
-                    } else {
-                        $objTemplate->hideBlock('access_latest_registered_member_list');
-                    }
-                }
-
-                // birthday users
-                if ($objTemplate->blockExists('access_birthday_member_list')) {
-                    if (\FWUser::showBirthdayUsers() && ( $objTemplate->blockExists('access_birthday_female_members') || $objTemplate->blockExists('access_birthday_male_members') || $objTemplate->blockExists('access_birthday_members'))) {
-                        if (!$objAccessBlocks)
-                            $objAccessBlocks = new AccessBlocks();
-                        if ($objAccessBlocks->isSomeonesBirthdayToday()) {
-                            if ($objTemplate->blockExists('access_birthday_female_members'))
-                                $objAccessBlocks->setBirthdayUsers('female');
-                            if ($objTemplate->blockExists('access_birthday_male_members'))
-                                $objAccessBlocks->setBirthdayUsers('male');
-                            if ($objTemplate->blockExists('access_birthday_members'))
-                                $objAccessBlocks->setBirthdayUsers();
-                            $objTemplate->touchBlock('access_birthday_member_list');
-                        } else {
-                            $objTemplate->hideBlock('access_birthday_member_list');
-                        }
-                    } else {
-                        $objTemplate->hideBlock('access_birthday_member_list');
-                    }
-                }
-                break;
-
-
-            default:
-                break;
-        }
-    }
-
-    /**
      * Do something after resolving is done
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
@@ -314,6 +228,33 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $widget
                 );
             }
+        }
+
+        $objAccessBlocks = new AccessBlocks();
+        $widgetNames     = array(
+            'access_currently_online_member_list' =>
+                \FWUser::showCurrentlyOnlineUsers(),
+            'access_last_active_member_list' =>
+                \FWUser::showLastActivUsers(),
+            'access_latest_registered_member_list' =>
+                \FWUser::showLatestRegisteredUsers(),
+            'access_birthday_member_list' =>
+                \FWUser::showBirthdayUsers() &&
+                $objAccessBlocks->isSomeonesBirthdayToday()
+        );
+        foreach ($widgetNames as $widgetName => $widgetStatus) {
+            if (!$widgetStatus) {
+                continue;
+            }
+
+            $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+                $this,
+                $widgetName,
+                true
+            );
+            $widgetController->registerWidget(
+                $widget
+            );
         }
     }
 
