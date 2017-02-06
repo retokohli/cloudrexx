@@ -67,6 +67,7 @@ CREATE TABLE `contrexx_access_user_groups` (
   `is_active` tinyint(4) NOT NULL DEFAULT '1',
   `type` enum('frontend','backend') NOT NULL DEFAULT 'frontend',
   `homepage` varchar(255) NOT NULL DEFAULT '',
+  `toolbar` int(6) DEFAULT NULL,
   PRIMARY KEY (`group_id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_access_user_mail` (
@@ -219,6 +220,7 @@ CREATE TABLE `contrexx_content_page` (
   `metadesc` text NOT NULL,
   `metakeys` text NOT NULL,
   `metarobots` varchar(7) DEFAULT NULL,
+  `metaimage` varchar(255) DEFAULT NULL,
   `start` timestamp NULL DEFAULT NULL,
   `end` timestamp NULL DEFAULT NULL,
   `editingStatus` varchar(16) NOT NULL,
@@ -420,7 +422,7 @@ CREATE TABLE `contrexx_core_rewrite_rule` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `regular_expression` varchar(255) NOT NULL,
   `continue_on_match` tinyint(1) NOT NULL,
-  `rewrite_status_code` int(11) NOT NULL,
+  `rewrite_status_code` enum('301','302','intern') NOT NULL,
   `order_no` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
@@ -452,6 +454,20 @@ CREATE TABLE `contrexx_core_wysiwyg_template` (
   `active` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_core_wysiwyg_toolbar` (
+  `id` int(6) NOT NULL AUTO_INCREMENT,
+  `available_functions` text NOT NULL,
+  `removed_buttons` text NOT NULL,
+  `is_default` int(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_core_module_pdf_template` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `html_content` longtext NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY(`id`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_ids` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `timestamp` int(14) DEFAULT NULL,
@@ -1499,14 +1515,6 @@ CREATE TABLE `contrexx_module_directory_settings` (
   PRIMARY KEY (`setid`),
   KEY `setname` (`setname`)
 ) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_directory_settings_google` (
-  `setid` int(6) unsigned NOT NULL AUTO_INCREMENT,
-  `setname` varchar(250) NOT NULL DEFAULT '',
-  `setvalue` text NOT NULL,
-  `settyp` int(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`setid`),
-  KEY `setname` (`setname`)
-) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_directory_vote` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
   `feed_id` int(7) NOT NULL DEFAULT '0',
@@ -2441,7 +2449,7 @@ CREATE TABLE `contrexx_module_mediadir_inputfields` (
   `required` int(10) NOT NULL,
   `order` int(10) NOT NULL,
   `show_in` int(10) NOT NULL,
-  `context_type` enum('none','title','content','address','zip','city','country') NOT NULL,
+  `context_type` enum('none','title','content','address','zip','city','country','image') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_mediadir_level_names` (
@@ -3161,7 +3169,7 @@ CREATE TABLE `contrexx_module_shop_order_attributes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `item_id` int(10) unsigned NOT NULL DEFAULT '0',
   `attribute_name` varchar(255) NOT NULL DEFAULT '',
-  `option_name` varchar(255) NOT NULL DEFAULT '',
+  `option_name` TEXT NOT NULL DEFAULT '',
   `price` decimal(9,2) NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`id`),
   KEY `item_id` (`item_id`)
@@ -3675,6 +3683,17 @@ CREATE TABLE `contrexx_syslog` (
   `data` text NOT NULL,
   `logger` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_translations` (
+  `id` int(10) UNSIGNED AUTO_INCREMENT,
+  `locale` varchar(8) NOT NULL,
+  `object_class` varchar(255) NOT NULL,
+  `field` varchar(32) NOT NULL,
+  `foreign_key` varchar(64) DEFAULT NULL,
+  `content` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `lookup_unique_idx` (`locale`,`object_class`,`foreign_key`,`field`),
+  KEY `content_lookup_idx` (`content`(255), `object_class`, `field`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_voting_additionaldata` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

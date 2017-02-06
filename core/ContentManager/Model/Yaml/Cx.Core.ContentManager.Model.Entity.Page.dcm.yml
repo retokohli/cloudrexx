@@ -154,6 +154,13 @@ Cx\Core\ContentManager\Model\Entity\Page:
       gedmo:
         - versioned
 
+    metaimage:
+      nullable: true
+      type: string
+      length: 255
+      gedmo:
+        - versioned
+
     #publishing
     start:
       nullable: true

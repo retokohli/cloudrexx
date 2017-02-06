@@ -339,18 +339,18 @@ class FileSystem
         } else {
             @unlink($path.$fileName);
             clearstatcache();
-            if (@file_exists($path.$fileName)) {
-                $filesys = eregi_replace('/', '\\', $path.$fileName);
-//                @system("del $filesys");
-//                clearstatcache();
-//                // Doesn't work in safe mode
-//                if (@file_exists($path.$fileName)) {
-                    @chmod ($path.$fileName, 0775);
-                    @unlink($path.$fileName);
-                    @system("del $filesys");
-//                }
-            }
-            clearstatcache();
+//            if (@file_exists($path.$fileName)) {
+//                $filesys = eregi_replace('/', '\\', $path.$fileName);
+////                @system("del $filesys");
+////                clearstatcache();
+////                // Doesn't work in safe mode
+////                if (@file_exists($path.$fileName)) {
+//                    @chmod ($path.$fileName, 0775);
+//                    @unlink($path.$fileName);
+//                    @system("del $filesys");
+////                }
+//            }
+//            clearstatcache();
             if (@file_exists($path.$fileName)) return 'error';
         }
         return $fileName;

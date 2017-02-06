@@ -109,14 +109,13 @@ abstract class Uploader
      */
     public function __construct($backend)
     {
-       $this->isBackendRequest = $backend;
+        $this->isBackendRequest = $backend;
 
-       //start session if it's not ready yet
-       global $sessionObj;
-       if(empty($sessionObj)) { //session hasn't been initialized so far
-           $sessionObj = \cmsSession::getInstance();
-       }
-        }
+        //start session if it's not ready yet
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $sessionObj = $cx->getComponent('Session')->getSession();
+    }
+
     /**
      * Set a callback to be called when uploading has finished.
      *

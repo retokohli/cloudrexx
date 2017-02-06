@@ -85,7 +85,7 @@
 </style>
 <script language="JavaScript" type="text/javascript">
     var defaultLang = cx.variables.get('language_id', 'calendar');
-    var activeLang = [cx.variables.get('active_lang', 'calendar')];
+    var activeLang = [];
     var blankExeception;
     var modifyEvent = {
         // elm => jquery object
@@ -520,7 +520,13 @@
                         tab1body.style.display = 'none';
                     }
                     cx.jQuery('.input_field_'+ langId).show();
+                    if (cx.jQuery.inArray(langId, activeLang) == -1) {
+                        activeLang.push(langId);
+                    }
                 } else {
+                    if (cx.jQuery.inArray(langId, activeLang) != -1) {
+                        activeLang.splice(cx.jQuery.inArray(langId, activeLang), 1);
+                    }
                     tab1.style.display = 'none';
                     tab1body.style.display = 'none';
                     cx.jQuery('.input_field_'+ langId).hide();

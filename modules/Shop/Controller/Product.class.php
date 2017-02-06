@@ -603,7 +603,10 @@ class Product
     {
         if (isset($date_start)) {
             $time_start = strtotime($date_start);
-            if ($time_start) {
+            // strtotime() will return unrecognized date when 0000-00-00 00:00:00
+            if (   $time_start
+                && $time_start != strtotime('0000-00-00 00:00:00')
+            ) {
                 $this->date_start =
                     date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME, $time_start);
             } else {
@@ -624,7 +627,10 @@ class Product
     {
         if (isset($date_end)) {
             $time_end = strtotime($date_end);
-            if ($time_end) {
+            // strtotime() will return unrecognized date when 0000-00-00 00:00:00
+            if (   $time_end
+                && $time_end != strtotime('0000-00-00 00:00:00')
+            ) {
                 $this->date_end =
                     date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME, $time_end);
             } else {
@@ -633,6 +639,41 @@ class Product
             }
         }
         return $this->date_end;
+    }
+
+    /**
+     * Get the status of the product based on the scheduled publishing
+     * Note: This function does not check whether the product is in scheduled publishing,
+     * So make sure the product is in scheduled before calling this method
+     *
+     * @return boolean TRUE|FALSE True when product is active by scheduled publishing
+     */
+    public function getActiveByScheduledPublishing()
+    {
+        $start = null;
+        if ($this->date_start() != '0000-00-00 00:00:00') {
+            $start = \DateTime::createFromFormat(
+                ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME,
+                $this->date_start()
+            );
+            $start->setTime(0, 0, 0);
+        }
+        $end = null;
+        if ($this->date_end() != '0000-00-00 00:00:00') {
+            $end = \DateTime::createFromFormat(
+                ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME,
+                $this->date_end()
+            );
+            $end->setTime(23, 59, 59);
+        }
+        if (   (!empty($start) && empty($end) && ($start->getTimestamp() > time()))
+            || (empty($start) && !empty($end) && ($end->getTimestamp() < time()))
+            || (!empty($start) && !empty($end) && !($start->getTimestamp() < time() && $end->getTimestamp() > time()))
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
