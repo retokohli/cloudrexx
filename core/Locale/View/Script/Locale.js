@@ -49,23 +49,11 @@ function updateCurrent(init) {
 }
 
 function copyPages(toLangId) {
-    performLanguageAction("copy", toLangId, function(json) {
-        cx.ui.dialog({
-            content: cx.variables.get("copySuccess", "Locale/Locale"),
-            modal: true,
-            autoOpen: true
-        });
-    });
+    performLanguageAction("copy", toLangId);
 }
 
 function linkPages(toLangId) {
-    performLanguageAction("link", toLangId, function(json) {
-        cx.ui.dialog({
-            content: cx.variables.get("linkSuccess", "Locale/Locale"),
-            modal: true,
-            autoOpen: true
-        });
-    });
+    performLanguageAction("link", toLangId);
 }
 
 function performLanguageAction(actionName, toLangId, action) {
@@ -94,43 +82,56 @@ function performLanguageAction(actionName, toLangId, action) {
                 cx.jQuery(".ui-dialog-titlebar-close").hide();
             }
         });
-        var offset = 0;
-        var count = 0;
-        while ((offset < count) || offset == 0) {
-            cx.ajax(
-                "cm",
-                actionName,
-                {
-                    data: {
-                        to: toLangId,
-                        offset: offset,
-                        limit: 1,
-                    },
-                    async: false,
-                    dataType: "json",
-                    type: "GET",
-                    success: function(json) {
-                        if (json.status != "success") {
-                            cx.ui.dialog({
-                                title: json.status,
-                                content: json.message,
-                                modal: true,
-                                autoOpen: true
-                            });
-                            return;
+        performLanguageRequest(actionName, toLangId, 0, waitDialog, function() {
+            waitDialog.close();
+            cx.ui.dialog({
+                content: cx.variables.get(actionName + "Success", "Locale/Locale"),
+                modal: true,
+                autoOpen: true,
+                buttons: [
+                    {
+                        text: "Ok",
+                        icons: {
+                            primary: "ui-icon-heart"
+                        },
+                        click: function() {
+                            cx.jQuery(this).dialog("close");
                         }
-                        offset = json.data.offset;
-                        count = json.data.count;
-                        var newText = cx.variables.get("waitText", "Locale/Locale") + "\n\n" + offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)";
-                        //console.log(offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)");
-                        waitDialog.getElement().html(newText);
                     }
-                }
-            );
-        }
-        waitDialog.close();
-        action();
+                ]
+            });
+        });
     }, cx.variables.get("warningText", "Locale/Locale").replace("%1",  "<b>" + fromLangName + "</b>").replace("%2",  "<b>" + toLangName + "</b>"));
+}
+
+function performLanguageRequest(actionName, toLangId, offset, dialog, doneFunc) {
+    var url = "index.php?cmd=JsonData&object=cm&act=" + actionName + "&to=" + toLangId + "&offset=" + offset + "&limit=1";
+    cx.jQuery.ajax({
+        url: url,
+        dataType: "json",
+        type: "GET",
+        success: function(json) {
+            if (json.status != "success") {
+                cx.ui.dialog({
+                    title: json.status,
+                    content: json.message,
+                    modal: true,
+                    autoOpen: true
+                });
+                return;
+            }
+            offset = json.data.offset;
+            count = json.data.count;
+            var newText = cx.variables.get("waitText", "Locale/Locale") + "<br /><br />" + offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)";
+            //console.log(offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)");
+            dialog.getElement().html(newText);
+            if (offset < count) {
+                performLanguageRequest(actionName, toLangId, offset, dialog, doneFunc);
+            } else {
+                doneFunc();
+            }
+        }
+    });
 }
 
 /**
@@ -161,6 +162,7 @@ function showActionDialog(action, fromLang, toLang, yesAction, checkboxText) {
     } else {
         content = content.replace("%1",  "<b>" + fromLang + "</b>").replace("%2",  "<b>" + toLang + "</b>");
     }
+    cx.jQuery("#really").remove();
     if (checkboxText) {
         content += "<br /><br /><input type=\"checkbox\" id=\"really\" class=\"really\" value=\"true\" /> <label for=\"really\" class=\"really\">" + checkboxText + "</label>";
     }
