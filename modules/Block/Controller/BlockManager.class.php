@@ -925,14 +925,14 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
         $blockDirectPageSelects   = $this->getPageSelections($pageTitlesTree, $blockDirectAssociatedPageIds);
         $blockCategoryPageSelects = $this->getPageSelections($pageTitlesTree, $blockCategoryAssociatedPageIds);
 
-        $objJs->setVariable('globalPagesUnselectedOptions', $jsonData->json($blockGlobalPageSelects[1]), 'block');
-        $objJs->setVariable('globalPagesSelectedOptions', $jsonData->json($blockGlobalPageSelects[0]), 'block');
+        $objJs->setVariable('globalPagesUnselectedOptions', $jsonData->parse($blockGlobalPageSelects[1]), 'block');
+        $objJs->setVariable('globalPagesSelectedOptions', $jsonData->parse($blockGlobalPageSelects[0]), 'block');
 
-        $objJs->setVariable('directPagesUnselectedOptions', $jsonData->json($blockDirectPageSelects[1]), 'block');
-        $objJs->setVariable('directPagesSelectedOptions', $jsonData->json($blockDirectPageSelects[0]), 'block');
+        $objJs->setVariable('directPagesUnselectedOptions', $jsonData->parse($blockDirectPageSelects[1]), 'block');
+        $objJs->setVariable('directPagesSelectedOptions', $jsonData->parse($blockDirectPageSelects[0]), 'block');
 
-        $objJs->setVariable('categoryPagesUnselectedOptions', $jsonData->json($blockCategoryPageSelects[1]), 'block');
-        $objJs->setVariable('categoryPagesSelectedOptions', $jsonData->json($blockCategoryPageSelects[0]), 'block');
+        $objJs->setVariable('categoryPagesUnselectedOptions', $jsonData->parse($blockCategoryPageSelects[1]), 'block');
+        $objJs->setVariable('categoryPagesSelectedOptions', $jsonData->parse($blockCategoryPageSelects[0]), 'block');
 
         $objJs->setVariable('ckeditorconfigpath', substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH.'/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT)+1), 'block');
 
@@ -1107,8 +1107,8 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
      * @return array the content for the html select
      */
     private function getPageSelections($pageTitlesTree, $blockAssociatedPageIds) {
-        $strSelectedPages   = '';
-        $strUnselectedPages = '';
+        $strSelectedPages   = array();
+        $strUnselectedPages = array();
 
         foreach ($pageTitlesTree as $nodeId => $languages) {
             foreach ($languages as $langCode => $pageData) {
