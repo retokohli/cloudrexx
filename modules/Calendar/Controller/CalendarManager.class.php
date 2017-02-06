@@ -359,8 +359,7 @@ class CalendarManager extends CalendarLibrary
         \JS::registerJS("modules/{$this->moduleName}/View/Script/jquery.pagination.js");
 
         \ContrexxJavascript::getInstance()->setVariable(array(
-            'language_id' => \FWLanguage::getDefaultLangId(),
-            'active_lang' => implode(',', \FWLanguage::getIdArray()),
+            'language_id' => \FWLanguage::getDefaultLangId()
         ), 'calendar');
 
         $this->getSettings();
@@ -1096,6 +1095,8 @@ class CalendarManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_DELETE' => "<input type='button' name='delete' value='{$_ARRAYLANG['TXT_CALENDAR_DELETE']}' onClick='if (confirm(\"{$_ARRAYLANG['TXT_CALENDAR_CONFIRM_DELETE_DATA']}\\n{$_ARRAYLANG['TXT_CALENDAR_ACTION_IS_IRREVERSIBLE']}\")) { window.location.href = \"index.php?cmd={$this->moduleName}&delete=$eventId&".\Cx\Core\Csrf\Controller\Csrf::param()."\"} return false;'>",
             ));
         }
+        
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
     }
 
 
@@ -1312,6 +1313,8 @@ class CalendarManager extends CalendarLibrary
         } else { */
             $this->_objTpl->hideBlock('hostSelector');
         /* } */
+        
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
     }
 
 
@@ -1758,6 +1761,8 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_DATE'                   => $objEvent->startDate->getTimestamp(),
             $this->moduleLangVar.'_USER_ID'                      => $userId,
         ));
+        
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
     }
 
     /**

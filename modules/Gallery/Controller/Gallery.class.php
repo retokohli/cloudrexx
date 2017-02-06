@@ -703,9 +703,9 @@ class Gallery
 
             if (isset($strCategory2)) { // this is a subcategory
                 $strOutput .= ' / <a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$intParentId.'" title="'.$strCategory2.'" target="_self">'.$strCategory2.'</a>';
-                $strOutput .= ' / <a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$intCatId.'" title="'.$strCategory1.'" target="_self">'.$strCategory1.'</a>';
+                $strOutput .= ' / <a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$intCatId.'" title="'.$strCategory1.'" target="_self" rel="nofollow">'.$strCategory1.'</a>';
             } else {
-                $strOutput .= ' / <a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$intCatId.'" title="'.$strCategory1.'" target="_self">'.$strCategory1.'</a>';
+                $strOutput .= ' / <a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$intCatId.'" title="'.$strCategory1.'" target="_self" rel="nofollow">'.$strCategory1.'</a>';
             }
         }
         return $strOutput;
@@ -1232,7 +1232,7 @@ END;
     */
     function addComment()
     {
-        global $objDatabase, $objCache;
+        global $objDatabase, $_ARRAYLANG;
 
         $intPicId    = intval($_POST['frmGalComAdd_PicId']);
         $categoryId = $this->getCategoryId($intPicId);
@@ -1274,7 +1274,7 @@ END;
                 'INSERT INTO '.DBPREFIX.'module_gallery_comments '.
                 'SET picid='.$intPicId.', date='.time().', ip="'.$_SERVER['REMOTE_ADDR'].'", '.
                 'name="'.$strName.'", email="'.$strEmail.'", www="'.$strWWW.'", comment="'.$strComment.'"');
-            $objCache->deleteAllFiles();
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteAllFiles();
         }
     }
 

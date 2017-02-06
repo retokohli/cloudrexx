@@ -76,12 +76,6 @@ namespace Cx\Core\Model {
     class Db {
 
         /**
-         * Cloudrexx instance
-         * @var \Cx\Core\Core\Controller\Cx
-         */
-        protected $cx = null;
-
-        /**
          * PDO instance
          * @var \PDO
          */
@@ -105,6 +99,11 @@ namespace Cx\Core\Model {
          */
         protected $loggableListener = null;
 
+        /**
+         * @var \Gedmo\Translatable\TranslationListener
+         */
+        protected $translationListener = null;
+
         /*
          * db instance
          * @var \Cx\Core\Model\Model\Entity/Db
@@ -118,13 +117,20 @@ namespace Cx\Core\Model {
         protected $dbUser;
 
         /**
+         * doctrine cache driver instance
+         * @var mixed
+         */
+        protected $cacheDriver;
+
+        /**
          * Creates a new instance of the database connection handler
          * @param \Cx\Core\Model\Model\Entity\Db $db Database connection details
          * @param \Cx\Core\Model\Model\Entity\DbUser $dbUser Database user details
          */
-        public function __construct(\Cx\Core\Model\Model\Entity\Db $db, \Cx\Core\Model\Model\Entity\DbUser $dbUser) {
+        public function __construct(\Cx\Core\Model\Model\Entity\Db $db, \Cx\Core\Model\Model\Entity\DbUser $dbUser, $cacheDriver) {
             $this->db = $db;
             $this->dbUser = $dbUser;
+            $this->cacheDriver = $cacheDriver;
         }
 
         /**
@@ -287,47 +293,11 @@ namespace Cx\Core\Model {
                 return $this->em;
             }
 
-            global $objCache;
-
             $config = new \Doctrine\ORM\Configuration();
 
-            $userCacheEngine = $objCache->getUserCacheEngine();
-            if (!$objCache->getUserCacheActive()) {
-                $userCacheEngine = \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_OFF;
-            }
-
-            $arrayCache = new \Doctrine\Common\Cache\ArrayCache();
-            switch ($userCacheEngine) {
-                case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_APC:
-                    $cache = new \Doctrine\Common\Cache\ApcCache();
-                    $cache->setNamespace($this->db->getName() . '.' . $this->db->getTablePrefix());
-                    break;
-                case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_MEMCACHE:
-                    $memcache = $objCache->getMemcache();
-                    if ($memcache instanceof \Memcache) {
-                        $cache = new \Doctrine\Common\Cache\MemcacheCache();
-                        $cache->setMemcache($memcache);
-                    } elseif ($memcache instanceof \Memcached) {
-                        $cache = new \Doctrine\Common\Cache\MemcachedCache();
-                        $cache->setMemcache($memcache);
-                    }
-                    $cache->setNamespace($this->db->getName() . '.' . $this->db->getTablePrefix());
-                    break;
-                case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_XCACHE:
-                    $cache = new \Doctrine\Common\Cache\XcacheCache();
-                    $cache->setNamespace($this->db->getName() . '.' . $this->db->getTablePrefix());
-                    break;
-                case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_FILESYSTEM:
-                    $cache = new \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver\FileSystemCache(ASCMS_CACHE_PATH);
-                    break;
-                default:
-                    $cache = $arrayCache;
-                    break;
-            }
-            \Env::set('cache', $cache);
-            //$config->setResultCacheImpl($cache);
-            $config->setMetadataCacheImpl($cache);
-            $config->setQueryCacheImpl($cache);
+            //$config->setResultCacheImpl($this->cacheDriver);
+            $config->setMetadataCacheImpl($this->cacheDriver);
+            $config->setQueryCacheImpl($this->cacheDriver);
 
             $config->setProxyDir(ASCMS_MODEL_PROXIES_PATH);
             $config->setProxyNamespace('Cx\Model\Proxies');
@@ -365,6 +335,59 @@ namespace Cx\Core\Model {
             // Session::getInstance()->read('user')->getUsername();
             $evm->addEventSubscriber($this->loggableListener);
 
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $sluggableDriverImpl = $config->newDefaultAnnotationDriver(
+                $cx->getCodeBaseLibraryPath() . '/doctrine/Gedmo/Sluggable'
+            );
+            $chainDriverImpl->addDriver($sluggableDriverImpl,
+                'Gedmo\Sluggable');
+            $sluggableListener = new \Gedmo\Sluggable\SluggableListener();
+            // you should set the used annotation reader to listener,
+            // to avoid creating new one for mapping drivers
+            //$sluggableListener->setAnnotationReader($cachedAnnotationReader);
+            $evm->addEventSubscriber($sluggableListener);
+
+            $timestampableDriverImpl = $config->newDefaultAnnotationDriver(
+                $cx->getCodeBaseLibraryPath() . '/doctrine/Gedmo/Timestampable'
+            );
+            $chainDriverImpl->addDriver($timestampableDriverImpl,
+                'Gedmo\Timestampable');
+            $timestampableListener = new \Gedmo\Timestampable\TimestampableListener();
+            //$timestampableListener->setAnnotationReader($cachedAnnotationReader);
+            $evm->addEventSubscriber($timestampableListener);
+
+            // Note that LANG_ID and other language constants/variables
+            // have not been set yet!
+            // $langCode = \FWLanguage::getLanguageCodeById(LANG_ID);
+            // \DBG::log("LANG_ID ".LANG_ID.", language code: $langCode");
+            // -> LOG: LANG_ID LANG_ID, language code:
+            $translatableDriverImpl = $config->newDefaultAnnotationDriver(
+                $cx->getCodeBaseLibraryPath() . '/doctrine/Gedmo/Translatable/Entity'
+            );
+            $chainDriverImpl->addDriver($translatableDriverImpl,
+                'Gedmo\Translatable');
+            // RK: Note:
+            // This might have been renamed in newer versions:
+            //$translationListener = new \Gedmo\Translatable\TranslatableListener();
+            // In this Doctrine version, it is present as:
+            $this->translationListener = new \Gedmo\Translatable\TranslationListener();
+            // current translation locale should be set from session
+            // or hook later into the listener,
+            // but *before the entity manager is flushed*
+// TODO: Set default locale from the default language?
+            //$this->translationListener->setDefaultLocale('de_ch');
+            // Set the current locale (e.g. from the active language)
+            // wherever that's required.
+            //$translationListener->setTranslatableLocale('de_ch');
+            //$translationListener->setAnnotationReader($cachedAnnotationReader);
+            $evm->addEventSubscriber($this->translationListener);
+
+            // RK: Note:
+            // This is apparently not yet present in this Doctrine version:
+            //$sortableListener = new \Gedmo\Sortable\SortableListener();
+            //$sortableListener->setAnnotationReader($cachedAnnotationReader);
+            //$evm->addEventSubscriber($sortableListener);
+
             //tree stuff
             $treeListener = new \Gedmo\Tree\TreeListener();
             $evm->addEventSubscriber($treeListener);
@@ -386,6 +409,16 @@ namespace Cx\Core\Model {
 
             $this->em = $em;
             return $this->em;
+        }
+
+        /**
+         * Return the TranslationListener
+         * @return \Gedmo\Translatable\TranslationListener
+         * @author  Reto Kohli <reto.kohli@comvation.com>
+         */
+        public function getTranslationListener()
+        {
+            return $this->translationListener;
         }
 
         /**
