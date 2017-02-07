@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Validator
  *
@@ -286,12 +286,12 @@ function contrexx_raw2db($raw)
         }
         return $arr;
     }
-    
+
     $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-    $db = $cx->getDb(); 
+    $db = $cx->getDb();
     if (!isset($db)) {
         throw new \Cx\Core\Model\DbException('Database not yet initialized!');
-    } 
+    }
     $pdo = $db->getPdoConnection();
     $rawQuoted = $pdo->quote($raw);
     //addslashes did not add quotes, but pdo:quote does
@@ -344,16 +344,27 @@ function contrexx_raw2encodedUrl($source, $encodeDash=false)
         return $arr;
     }
     $cutHttp = false;
+    $https = false;
     if (!$encodeDash && substr($source, 0, 7) == 'http://') {
         $source = substr($source, 7);
         $cutHttp = true;
+    } else if (!$encodeDash && substr($source, 0, 8) == 'https://') {
+        $source = substr($source, 8);
+        $cutHttp = true;
+        $https = true;
     }
     $source = array_map('rawurlencode', explode('/', $source));
     if ($encodeDash) {
         $source = str_replace('-', '%2D', $source);
     }
     $result = implode('/', $source);
-    if ($cutHttp) $result = 'http://'.$result;
+    if ($cutHttp) {
+        $protocol = 'http';
+        if ($https) {
+            $protocol .= 's';
+        }
+        $result = $protocol . '://' . $result;
+    }
     return $result;
 }
 
