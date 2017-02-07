@@ -329,4 +329,20 @@ class EsiWidget extends Widget {
         $params = array_merge($this->jsonParams, $esiParams, $baseParams);
         return $params;
     }
+
+    /**
+     * Clears all cache files for this Widget (if any)
+     */
+    public function clearCache() {
+        $this->getComponent('Cache')->clearSsiCachePage(
+            $this->getJsonAdapterName(),
+            $this->getJsonMethodName(),
+            array_merge(
+                $this->jsonParams,
+                array(
+                    'name' => $this->getName(),
+                )
+            )
+        );
+    }
 }
