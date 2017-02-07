@@ -122,7 +122,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     && (!isset($_GET['act']) || $_GET['act'] !== 'resetpw')
                 ) {
                     //not logged in already - do captcha and password checks
-                    $objFWUser->checkAuth();
+                    if ($objFWUser->checkAuth()) {
+                        //Clear cache
+                        \Cx\Core\Core\Controller\Cx::instanciate()
+                            ->getEvents()
+                            ->triggerEvent('clearEsiCache', array('Access'));
+                    }
                 }
 
                 // User only gets the backend if he's logged in.
@@ -194,6 +199,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function registerEventListeners() {
         $eventListener = new AccessEventListener($this->cx);
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
+        $this->cx->getEvents()->addEventListener('clearEsiCache', $eventListener);
     }
 
     /**
@@ -201,9 +207,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *
      * This event must be registered in the postInit-Hook definition
      * file config/postInitHooks.yml.
-     * @param \Cx\Core\Core\Controller\Cx   $cx The instance of \Cx\Core\Core\Controller\Cx
+     * @param \Cx\Core\Core\Controller\Cx $cx The instance of \Cx\Core\Core\Controller\Cx
      */
-    public function postInit() {
+    public function postInit()
+    {
         $widgetController = $this->getComponent('Widget');
         foreach (
             array(

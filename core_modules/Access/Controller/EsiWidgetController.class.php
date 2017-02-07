@@ -115,4 +115,26 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             }
         }
     }
+
+    /**
+     * Returns the content of a widget
+     *
+     * @param array $params JsonAdapter parameters
+     *
+     * @return array Content in an associative array
+     */
+    public function getWidget($params)
+    {
+        $widgetname = isset($params['get']['name'])
+            ? contrexx_input2raw($params['get']['name']) : '';
+        if ($widgetname == 'access_birthday_member_list') {
+            $dateTime = new \DateTime();
+            $dateTime->setTime(23, 59, 59);
+            $params['response'] = new \Cx\Lib\Net\Model\Entity\Response(
+                null, 200, null, $dateTime
+            );
+        }
+
+        return parent::getWidget($params);
+    }
 }

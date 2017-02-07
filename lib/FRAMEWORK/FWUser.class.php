@@ -206,7 +206,11 @@ class FWUser extends User_Setting
     function logout()
     {
 
-         $this->logoutAndDestroySession();
+        $this->logoutAndDestroySession();
+        //Clear cache
+        \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getEvents()
+            ->triggerEvent('clearEsiCache', array('Access'));
 
         if ($this->backendMode) {
             $pathOffset = ASCMS_PATH_OFFSET;

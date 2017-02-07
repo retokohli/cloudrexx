@@ -100,6 +100,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Register events
+     */
+    public function registerEvents()
+    {
+        $this->cx->getEvents()->addEvent('clearEsiCache');
+    }
+
+    /**
      * Registers event listeners
      */
     public function registerEventListeners() {
