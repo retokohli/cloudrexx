@@ -260,15 +260,9 @@ class EsiWidget extends Widget {
      * @param string $targetComponent Parse target component name
      * @param string $targetEntity Parse target entity name
      * @param string $targetId Parse target entity ID
-     * @param boolean $deleteMode (optional) Set to true to get the params to delete ESI cache files
      * @return array List of params
      */
-    protected function getEsiParams($targetComponent, $targetEntity, $targetId, $deleteMode = false) {
-        if ($deleteMode) {
-            return array_merge($this->jsonParams, array(
-                'name' => $this->getName(),
-            ));
-        }
+    protected function getEsiParams($targetComponent, $targetEntity, $targetId) {
         $esiParams = array();
         $baseParams = array(
             'name' => $this->getName(),
@@ -343,7 +337,12 @@ class EsiWidget extends Widget {
         $this->getComponent('Cache')->clearSsiCachePage(
             $this->getJsonAdapterName(),
             $this->getJsonMethodName(),
-            $this->getEsiParams($targetComponent, $targetEntity, $targetId, true)
+            array_merge(
+                $this->jsonParams,
+                array(
+                    'name' => $this->getName(),
+                )
+            )
         );
     }
 }
