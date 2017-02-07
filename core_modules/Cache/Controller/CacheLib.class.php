@@ -556,7 +556,17 @@ class CacheLib
         }
         $url = \Cx\Core\Routing\Url::fromApi('Data', array('Plain', $adapterName, $adapterMethod), $params);
         // make sure params are in correct order:
-        $correctIndexOrder = array('page', 'lang', 'user', 'theme', 'country', 'currency');
+        $correctIndexOrder = array(
+            'page',
+            'lang',
+            'user',
+            'theme',
+            'country',
+            'currency',
+            'targetComponent',
+            'targetEntity',
+            'targetId',
+        );
         $params = $url->getParamArray();
         uksort($params, function($a, $b) use ($correctIndexOrder) {
             return array_search($a, $correctIndexOrder) - array_search($b, $correctIndexOrder);
@@ -1003,6 +1013,9 @@ class CacheLib
             't' => 'theme',
             'g' => 'country',
             'c' => 'currency',
+            'tc' => 'targetComponent',
+            'te' => 'targetEntity',
+            'ti' => 'targetId',
         );
         $fileNameSearchParts = array();
         foreach ($searchParams as $short=>$long) {
@@ -1027,7 +1040,17 @@ class CacheLib
         $cacheInfoParts = $this->getCacheFileNameSearchPartsFromUrl($url);
         $url = new \Cx\Lib\Net\Model\Entity\Url($url);
         $params = $url->getParsedQuery();
-        $correctIndexOrder = array('page', 'lang', 'user', 'theme', 'country', 'currency');
+        $correctIndexOrder = array(
+            'page',
+            'lang',
+            'user',
+            'theme',
+            'country',
+            'currency',
+            'targetComponent',
+            'targetEntity',
+            'targetId',
+        );
         foreach ($correctIndexOrder as $paramName) {
             unset($params[$paramName]);
         }

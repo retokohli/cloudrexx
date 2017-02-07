@@ -147,4 +147,9 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
      * @return string Replacement for widgets without content, NULL otherwise
      */
     public abstract function internalParse($template, $response, $targetComponent, $targetEntity, $targetId);
+
+    /**
+     * Clears all cache files for this Widget (if any)
+     */
+    public abstract function clearCache();
 }
