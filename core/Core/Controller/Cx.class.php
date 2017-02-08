@@ -1536,6 +1536,19 @@ namespace Cx\Core\Core\Controller {
                             }
                         }
                     }
+                    if (!\Env::get('Resolver')) {
+                        $url = $this->getRequest()->getUrl();
+                        $url->removeAllParams();
+                        $url->setPath('/');
+                        $resolver = new \Cx\Core\Routing\Resolver(
+                            $url,
+                            null,
+                            $this->getDb()->getEntityManager(),
+                            null,
+                            null
+                        );
+                        \Env::set('Resolver', $resolver);
+                    }
 
                     // parse body arguments:
                     // todo: this does not work for form-data encoded body (boundary...)
