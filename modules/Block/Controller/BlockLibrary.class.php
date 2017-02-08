@@ -675,10 +675,6 @@ class BlockLibrary
     */
     function _setBlock($id, &$code, $pageId)
     {
-        if (!$this->checkTargetingOptions($id)) {
-            return;
-        }
-
         $now = time();
 
         $this->replaceBlocks(
@@ -929,16 +925,6 @@ class BlockLibrary
                 $query .= "AND tblBlock.random_4=1";
                 $blockNr        = "_4";
                 break;
-        }
-
-
-        if ($objBlockName === false || $objBlockName->RecordCount() <= 0) {
-            return;
-        }
-
-        while (!$objBlockName->EOF) {
-            $arrActiveBlocks[] = $objBlockName->fields['id'];
-            $objBlockName->MoveNext();
         }
 
         $this->replaceBlocks(
