@@ -93,4 +93,10 @@ class FinalStringWidget extends Widget {
     public function internalParse($template, $response, $targetComponent, $targetEntity, $targetId) {
         return $this->getString();
     }
+
+    /**
+     * Clears all cache files for this Widget (if any)
+     * Since FinalStringWidget is uncached, there's nothing to do here
+     */
+    public function clearCache() {}
 }
