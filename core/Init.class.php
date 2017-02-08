@@ -64,6 +64,10 @@ class InitCMS
 
     public $currentThemesId;
     public $channelThemeId;
+    /**
+     * ID of the theme that has been used for generating the response
+     */
+    public $pageThemeId;
     public $customContentTemplate = null;
     public $arrLang = array();
     public $arrLangNames = array();
@@ -367,6 +371,9 @@ class InitCMS
      */
     function getUserFrontendLangId()
     {
+        // check if session has been initialized yet
+        $session = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->isInitialized();
+
 // Mind: Changed from $_POST to $_REQUEST, so it can be changed by
 // clicking a link (used in the Shop, and for MailTemplates)
         if (!empty($_REQUEST['userFrontendLangId'])) {
@@ -377,7 +384,7 @@ class InitCMS
             }
         } elseif (!empty($_COOKIE['userFrontendLangId'])) {
             $id = FWLanguage::getLanguageIdByCode($_COOKIE['userFrontendLangId']);
-        } elseif (!empty($_SESSION['userFrontendLangId'])) {
+        } elseif ($session && !empty($_SESSION['userFrontendLangId'])) {
             $id = intval($_SESSION['userFrontendLangId']);
         } else {
             $id = $this->defaultFrontendLangId;
@@ -386,8 +393,13 @@ class InitCMS
             $id = $this->defaultFrontendLangId;
         }
         $this->userFrontendLangId = $id;
-        $_SESSION['userFrontendLangId'] = $id;
-        setcookie("userFrontendLangId", "", time() - 3600);
+
+        if ($session) {
+            $_SESSION['userFrontendLangId'] = $id;
+            // unset cookie as option is now stored in session
+            setcookie("userFrontendLangId", "", time() - 3600);
+        }
+
         return $this->userFrontendLangId;
     }
 
@@ -508,6 +520,7 @@ class InitCMS
 
         // get theme object so we get the configured libraries
         $theme = $this->getFrontendTemplate();
+        $this->pageThemeId = $this->currentThemesId;
         $themesPath = $theme->getFoldername();
         if ($theme && $theme->isComponent()) {
             $libraries = JS::getConfigurableLibraries();
@@ -633,13 +646,13 @@ class InitCMS
      */
     private function getThemeFileContent($themesPath, $file)
     {
-        $filePath = $themesPath.'/'.$file;
+        $filePath = '/' . $themesPath . '/' . $file;
         $content = '';
 
-        if (file_exists(\Env::get('cx')->getWebsiteThemesPath().'/'.$filePath)) {
-            $content = file_get_contents(\Env::get('cx')->getWebsiteThemesPath().'/'.$filePath);
-        } elseif (file_exists(\Env::get('cx')->getCodeBaseThemesPath().'/'.$filePath)) {
-            $content = file_get_contents(\Env::get('cx')->getCodeBaseThemesPath().'/'.$filePath);
+        $theme       = new \Cx\Core\View\Model\Entity\Theme();
+        $contentPath = $theme->getFilePath($filePath);
+        if (file_exists($contentPath)) {
+            $content = file_get_contents($contentPath);
         }
 
         return $content;
@@ -714,17 +727,18 @@ class InitCMS
         $result = array();
         $templateFiles = array();
         $folder = $customTemplateForTheme->getFoldername();
-        if (file_exists(\Env::get('cx')->getCodeBaseThemesPath().'/'.$folder)) {
-            $templateFiles = scandir(\Env::get('cx')->getCodeBaseThemesPath().'/'.$folder);
-        }
-        if (file_exists(\Env::get('cx')->getWebsiteThemesPath().'/'.$folder)) {
-            $templateFiles = array_unique(array_merge($templateFiles, scandir(\Env::get('cx')->getWebsiteThemesPath().'/'.$folder)));
-        }
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $templateFiles = $cx->getMediaSourceManager()->getMediaType('themes')->getFileSystem()->getFileList($folder);
 
-        foreach ($templateFiles as $f){
+        foreach ($templateFiles as $fileName => $fileInfo){
             $match = null;
-            if (preg_match('/^(content|home)_(.+).html$/', $f, $match)) {
-                array_push($result, $f);
+            // skip subdirectories
+            if ($fileInfo['datainfo']['type'] != 'file') {
+                continue;
+            }
+
+            if (preg_match('/^(content|home)_(.+).html$/', $fileName, $match)) {
+                array_push($result, $fileName);
             }
         }
 
@@ -1115,7 +1129,7 @@ class InitCMS
 
     /**
      * Returns true if the user agent is a mobile device (smart phone, PDA etc.)
-     * @todo    Maybe put this in a separate class?
+     * @deprecated Use \Cx\Core\Routing\Model\Entity\Request::isMobilePhone() instead
      */
     public static function _is_mobile_phone()
     {
@@ -1176,6 +1190,7 @@ class InitCMS
 
     /**
      * Returns true if the user agent is a tablet
+     * @deprecated Use \Cx\Core\Routing\Model\Entity\Request::isTablet() instead
      */
     public static function _is_tablet()
     {
@@ -1203,5 +1218,28 @@ class InitCMS
     public function hasCustomContent()
     {
         return !empty($this->customContentTemplate) && strlen($this->customContentTemplate) > 0 ? true : false;
+    }
+
+    /**
+     * Return the current theme id
+     * Note: This vaule is available only in frontend mode
+     *
+     * @return integer
+     */
+    public function getCurrentThemeId()
+    {
+        return $this->pageThemeId;
+    }
+
+    /**
+     * Returns the current channel
+     * @throws \Exception If channel is not yet set, call setFrontendLangId() to set it
+     * @return string Channel
+     */
+    public function getCurrentChannel() {
+        if (!$this->currentChannel) {
+            throw new \Exception('Channel not yet set');
+        }
+        return $this->currentChannel;
     }
 }

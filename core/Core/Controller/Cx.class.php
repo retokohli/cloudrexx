@@ -155,6 +155,12 @@ namespace Cx\Core\Core\Controller {
         protected $request = null;
 
         /**
+         * Response object
+         * @var \Cx\Lib\Net\Model\Entity\Response
+         */
+        protected $response = null;
+
+        /**
          * Component handler
          * @var \Cx\Core\Core\Controller\ComponentHandler
          */
@@ -1288,8 +1294,17 @@ namespace Cx\Core\Core\Controller {
             }
 
             // redirect to correct domain and protocol
+            $url = $protocol . '://' . $domain . $_SERVER['REQUEST_URI'];
+            $this->getComponent('Cache')->writeCacheFileForRequest(
+                null,
+                array(
+                    $_SERVER['SERVER_PROTOCOL'] . ' 301 Moved Permanently',
+                    'Location' => $url,
+                ),
+                ''
+            );
             \header($_SERVER['SERVER_PROTOCOL'] . ' 301 Moved Permanently');
-            \header('Location: ' . $protocol . '://' . $domain . $_SERVER['REQUEST_URI']);
+            \header('Location: ' . $url);
             exit;
         }
 
@@ -1444,6 +1459,11 @@ namespace Cx\Core\Core\Controller {
                         break;
                 }
             }
+            $this->response = new \Cx\Lib\Net\Model\Entity\Response(
+                null,
+                200,
+                $this->request
+            );
             //call post-init hooks
             $this->ch->callPostInitHooks();
         }
@@ -1502,6 +1522,20 @@ namespace Cx\Core\Core\Controller {
                         unset($params['__cap']);
                     }
                     $params = contrexx_input2raw($params);
+                    if (isset($params['lang'])) {
+                        $langId = \FWLanguage::getLanguageIdByCode($params['lang']);
+                        if ($langId) {
+                            if (!defined('FRONTEND_LANG_ID')) {
+                                define('FRONTEND_LANG_ID', $langId);
+                            }
+                            if (!defined('BACKEND_LANG_ID')) {
+                                define('BACKEND_LANG_ID', $langId);
+                            }
+                            if (!defined('LANG_ID')) {
+                                define('LANG_ID', $langId);
+                            }
+                        }
+                    }
 
                     // parse body arguments:
                     // todo: this does not work for form-data encoded body (boundary...)
@@ -1628,7 +1662,10 @@ namespace Cx\Core\Core\Controller {
                     // Resolver code
                     // @todo: move to resolver
                     //expose the virtual language directory to the rest of the cms
-                    $virtualLanguageDirectory = '/'.$url->getLangDir();
+                    $virtualLanguageDirectory = $url->getLangDir(true);
+                    if (!empty($virtualLanguageDirectory)) {
+                        $virtualLanguageDirectory = '/' . $virtualLanguageDirectory;
+                    }
                     \Env::set('virtualLanguageDirectory', $virtualLanguageDirectory);
                     // TODO: this constanst used to be located in config/set_constants.php, but needed to be relocated to this very place,
                     // because it depends on Env::get('virtualLanguageDirectory').
@@ -2129,11 +2166,11 @@ namespace Cx\Core\Core\Controller {
                     );
 
                 if (!$this->resolvedPage->getUseSkinForAllChannels() && isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
-                    $this->cl->loadFile($this->codeBaseCorePath . '/pdf.class.php');
-                    $pageTitle = $this->resolvedPage->getTitle();
-                    $objPDF          = new \PDF();
-                    $objPDF->title   = $pageTitle.(empty($pageTitle) ? null : '.pdf');
-                    $objPDF->content = $this->template->get();
+                    $pageTitle  = $this->resolvedPage->getTitle();
+                    $extenstion = empty($pageTitle) ? null : '.pdf';
+                    $objPDF     = new \Cx\Core_Modules\Pdf\Model\Entity\PdfDocument();
+                    $objPDF->SetTitle($pageTitle . $extenstion);
+                    $objPDF->setContent($this->template->get());
                     $objPDF->Create();
                     exit;
                 }
@@ -2310,6 +2347,14 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
+         * Returns the Response object
+         * @return \Cx\Lib\Net\Model\Entit\Response Response object
+         */
+        public function getResponse() {
+            return $this->response;
+        }
+
+        /**
          * Returns the main template
          * @return \Cx\Core\Html\Sigma Main template
          */
@@ -2392,6 +2437,9 @@ namespace Cx\Core\Core\Controller {
                         $command = ($cmdValue && $cmdValue instanceof \Cx\Core_Modules\Access\Model\Entity\Permission) ? $cmdKey : $cmdValue;
                         if (isset($this->commands[$command])) {
                             throw new \Exception('Command \'' . $command . '\' is already in index');
+                        }
+                        if (!$component->hasAccessToExecuteCommand($command, array())) {
+                            continue;
                         }
                         $this->commands[$command] = $component;
                     }

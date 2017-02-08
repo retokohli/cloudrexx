@@ -79,9 +79,6 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         parent::__construct(null, false, null, $name);
         parent::getSettings();
         parent::getFrontendLanguages();
-
-
-
     }
 
     function getEntries($intEntryId=null, $intLevelId=null, $intCatId=null, $strSearchTerm=null, $bolLatest=null, $bolUnconfirmed=null, $bolActive=null, $intLimitStart=null, $intLimitEnd='n', $intUserId=null, $bolPopular=null, $intCmdFormId=null, $bolReadyToConfirm=null, $intLimit=0, $intOffset=0)
@@ -315,6 +312,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             }
             $this->recordCount = $totalRecords->fields['found_rows'];
         }
+
+        $this->setCurrentFetchedEntryDataObject($this);
     }
 
     /**
@@ -337,7 +336,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         return $this->strBlockName;
     }
 
-    function listEntries($objTpl, $intView)
+    function listEntries($objTpl, $intView, $googleMapPlaceholder = null)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
@@ -485,14 +484,16 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                             $objForm = new MediaDirectoryForm($arrEntry['entryFormId'], $this->moduleName);
 
                             $objTpl->setVariable(array(
-                                    $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
+                                $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
                                 $this->moduleLangVar.'_ENTRY_ID' =>  $arrEntry['entryId'],
+                                $this->moduleLangVar.'_ENTRY_TITLE' => contrexx_raw2xhtml($arrEntry['entryFields'][0]),
+                                $this->moduleLangVar.'_ENTRY_TITLE_URL_ENCODED' => urlencode($arrEntry['entryFields'][0]),
                                 $this->moduleLangVar.'_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
                                 $this->moduleLangVar.'_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
                                 $this->moduleLangVar.'_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
                                 $this->moduleLangVar.'_ENTRY_CATEGORIES' =>  $this->getCategoriesLevels(1, $arrEntry['entryId'], $objForm->arrForms[$arrEntry['entryFormId']]['formCmd']),
-                                    $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId'], $objForm->arrForms[$arrEntry['entryFormId']]['formCmd']),
-                                    $this->moduleLangVar.'_ENTRY_HITS' =>  $arrEntry['entryHits'],
+                                $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId'], $objForm->arrForms[$arrEntry['entryFormId']]['formCmd']),
+                                $this->moduleLangVar.'_ENTRY_HITS' =>  $arrEntry['entryHits'],
                                 $this->moduleLangVar.'_ENTRY_POPULAR_HITS' =>  $arrEntry['entryPopularHits'],
                                 $this->moduleLangVar.'_ENTRY_DETAIL_URL' => $strDetailUrl,
                                 $this->moduleLangVar.'_ENTRY_EDIT_URL' =>  'index.php?section='.$this->moduleName.'&amp;cmd=edit&amp;eid='.$arrEntry['entryId'],
@@ -648,6 +649,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                 $objTpl->setVariable(array(
                                     $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
                                     $this->moduleLangVar.'_ENTRY_ID' =>  $arrEntry['entryId'],
+                                    $this->moduleLangVar.'_ENTRY_TITLE' => contrexx_raw2xhtml($arrEntry['entryFields'][0]),
+                                    $this->moduleLangVar.'_ENTRY_TITLE_URL_ENCODED' => urlencode($arrEntry['entryFields'][0]),
                                     $this->moduleLangVar.'_ENTRY_STATUS' => $strStatus,
                                     $this->moduleLangVar.'_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
                                     $this->moduleLangVar.'_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
@@ -724,6 +727,16 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 }
             case 4:
                 //Google Map
+
+                if (!isset($googleMapPlaceholder)) {
+                    $googleMapPlaceholder = $this->moduleLangVar.'_GOOGLE_MAP';
+                }
+
+                // abort in case the relevant placeholder is missing in the template
+                if (!$objTpl->placeholderExists($googleMapPlaceholder)) {
+                    break;
+                }
+
                 $objGoogleMap = new \googleMap();
                 $objGoogleMap->setMapId($this->moduleNameLC.'GoogleMap');
                 $objGoogleMap->setMapStyleClass('mapLarge');
@@ -813,7 +826,7 @@ JSCODE;
                 }
 
                 $objTpl->setVariable(array(
-                    $this->moduleLangVar.'_GOOGLE_MAP' => $objGoogleMap->getMap()
+                    $googleMapPlaceholder => $objGoogleMap->getMap()
                 ));
 
                 break;
