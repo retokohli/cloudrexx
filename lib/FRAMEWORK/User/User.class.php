@@ -1757,9 +1757,18 @@ class User extends User_Profile
         }
 
         //Clear cache
+        $eventArgs = array(
+            'Widget',
+            array(
+                'access_currently_online_member_list',
+                'access_last_active_member_list',
+                'access_latest_registered_member_list',
+                'access_birthday_member_list'
+            )
+        );
         \Cx\Core\Core\Controller\Cx::instanciate()
             ->getEvents()
-            ->triggerEvent('clearEsiCache', array('Access'));
+            ->triggerEvent('clearEsiCache', array($eventArgs));
 
         return true;
     }

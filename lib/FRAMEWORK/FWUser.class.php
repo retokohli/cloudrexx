@@ -208,9 +208,16 @@ class FWUser extends User_Setting
 
         $this->logoutAndDestroySession();
         //Clear cache
+        $eventArgs = array(
+            'Widget',
+            array(
+                'access_currently_online_member_list',
+                'access_last_active_member_list'
+            )
+        );
         \Cx\Core\Core\Controller\Cx::instanciate()
             ->getEvents()
-            ->triggerEvent('clearEsiCache', array('Access'));
+            ->triggerEvent('clearEsiCache', array($eventArgs));
 
         if ($this->backendMode) {
             $pathOffset = ASCMS_PATH_OFFSET;

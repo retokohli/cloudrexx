@@ -130,9 +130,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         if ($widgetname == 'access_birthday_member_list') {
             $dateTime = new \DateTime();
             $dateTime->setTime(23, 59, 59);
-            $params['response'] = new \Cx\Lib\Net\Model\Entity\Response(
-                null, 200, null, $dateTime
-            );
+            $params['response']->setExpirationDate($dateTime);
         }
 
         return parent::getWidget($params);
