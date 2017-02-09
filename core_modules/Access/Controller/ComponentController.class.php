@@ -124,16 +124,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     //not logged in already - do captcha and password checks
                     if ($objFWUser->checkAuth()) {
                         //Clear cache
-                        $eventArgs = array(
-                            'Widget',
+                        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                        $cx->getEvents()->triggerEvent(
+                            'clearEsiCache',
                             array(
-                                'access_currently_online_member_list',
-                                'access_last_active_member_list'
+                                'Widget',
+                                array(
+                                    'access_currently_online_member_list',
+                                    'access_last_active_member_list'
+                                )
                             )
                         );
-                        \Cx\Core\Core\Controller\Cx::instanciate()
-                            ->getEvents()
-                            ->triggerEvent('clearEsiCache', array($eventArgs));
                     }
                 }
 
