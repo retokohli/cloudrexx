@@ -557,7 +557,7 @@ class ViewGenerator {
         }
 
         // this case is used for the overview off all entities
-        if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+        if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet && !$isSingle) {
             if(!empty($this->options['order']['overview'])) {
                 $renderObject->sortColumns($this->options['order']['overview']);
             }
