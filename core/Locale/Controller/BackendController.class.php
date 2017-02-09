@@ -49,6 +49,10 @@ namespace Cx\Core\Locale\Controller;
  */
 class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController
 {
+    /**
+     * @var \Cx\Core\Locale\Model\Entity\LanguageFile
+     */
+    protected $languageFile;
 
     /**
      * Returns a list of available commands (?act=XY)
@@ -56,7 +60,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     public function getCommands()
     {
-        return array('Locale', 'Backend');
+        return array('Locale', 'Backend', 'LanguageFile');
     }
 
     /**
@@ -129,6 +133,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 if ($template->blockExists('form_actions')) {
                     $template->touchBlock('form_actions');
                 }
+                break;
+            case 'LanguageFile':
+                $entityClassName = 'Cx\Core\Locale\Model\Entity\LanguageFile';
+                // it's always single
+                $isSingle = true;
+                $this->parseEntityClassPage($template, $entityClassName, $cmd, array(), $isSingle);
                 break;
             default:
                 parent::parsePage($template, $cmd);
@@ -466,14 +476,26 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @return string|array|object An entity class name, entity, array of entities or DataSet
      */
     protected function getViewGeneratorParseObjectForEntityClass($entityClassName) {
-        if ($entityClassName == 'Cx\Core\Locale\Model\Entity\Locale') {
-            $em = $this->cx->getDb()->getEntityManager();
-            $localeRepo = $em->getRepository($entityClassName);
-            $parseObject = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($localeRepo->findAll());
-            foreach ($parseObject as $index => $value) {
-                $parseObject->add($index, array('default' => false));
-            }
-            return $parseObject;
+        switch ($entityClassName) {
+            case 'Cx\Core\Locale\Model\Entity\Locale':
+                $em = $this->cx->getDb()->getEntityManager();
+                $localeRepo = $em->getRepository($entityClassName);
+                $parseObject = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($localeRepo->findAll());
+                foreach ($parseObject as $index => $value) {
+                    $parseObject->add($index, array('default' => false));
+                }
+                return $parseObject;
+                break;
+            case 'Cx\Core\Locale\Model\Entity\LanguageFile':
+                // get user locale from init
+                $localeId = \Env::get('init')->userFrontendLangId;
+                $em = $this->cx->getDb()->getEntityManager();
+                $locale = $em->find('\Cx\Core\Locale\Model\Entity\Locale', $localeId);
+
+                // set language file by source language
+                $this->languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale->getSourceLanguage());
+                return $this->languageFile;
+            break;
         }
         return $entityClassName;
     }

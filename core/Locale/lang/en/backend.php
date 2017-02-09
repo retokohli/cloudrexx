@@ -47,6 +47,7 @@ $_ARRAYLANG['TXT_CORE_LOCALE_DESCRIPTION'] = 'Handles language versions by their
 $_ARRAYLANG['TXT_CORE_LOCALE_ACT_DEFAULT'] = 'Webiste';
 $_ARRAYLANG['TXT_CORE_LOCALE_ACT_LOCALE'] = 'Website';
 $_ARRAYLANG['TXT_CORE_LOCALE_ACT_BACKEND'] = 'Administration area';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACT_LANGUAGEFILE'] = 'Language placeholders';
 
 // Module fields
 $_ARRAYLANG['TXT_CORE_LOCALE_LOCALE_NAME'] = 'Locale';
