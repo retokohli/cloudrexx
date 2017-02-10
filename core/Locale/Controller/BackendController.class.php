@@ -458,8 +458,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             case 'Cx\Core_Modules\Listing\Model\Entity\DataSet':
                     return array(
                         $dataSetIdentifier => array(
-                            'header' => 'sheesh',
-                            'entityName' => 'test',
+                            'entityName' => $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_NAME'],
+                            'header' => $_ARRAYLANG['TXT_CORE_LOCALE_ACT_LANGUAGEFILE'],
                             'functions' => array(
                                 'add' => true,
                                 'edit' => true,
