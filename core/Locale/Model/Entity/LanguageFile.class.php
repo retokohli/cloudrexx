@@ -70,6 +70,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
      *
      */
     public function __construct(\Cx\Core\Locale\Model\Entity\Locale $locale, $componentName='Core', $mode='frontend') {
+        $this->setIdentifier('Cx\Core\Locale\Model\Entity\LanguageFile');
         $this->locale = $locale;
         // load component specific language data from init
         $frontend = $mode == 'frontend';

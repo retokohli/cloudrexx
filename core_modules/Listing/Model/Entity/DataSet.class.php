@@ -54,7 +54,7 @@ class DataSetException extends \Exception {}
  * @package     cloudrexx
  * @subpackage  coremodule_listing
  */
-class DataSet implements \Iterator {
+class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
     protected static $yamlInterface = null;
     protected $data = array();
     protected $dataType = 'array';

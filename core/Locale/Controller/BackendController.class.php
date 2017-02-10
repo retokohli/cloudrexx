@@ -255,9 +255,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @global $_ARRAYLANG
      * @global $_CONFIG
      * @param $entityClassName contains the FQCN from entity
+     * @param $dataSetIdentifier if $entityClassName is DataSet, this is used for better partition
      * @return array with options
      */
-    protected function getViewGeneratorOptions($entityClassName)
+    protected function getViewGeneratorOptions($entityClassName, $dataSetIdentifier='')
     {
         global $_ARRAYLANG;
 
@@ -454,6 +455,22 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     ),
                 );
                 break;
+            case 'Cx\Core_Modules\Listing\Model\Entity\DataSet':
+                    return array(
+                        $dataSetIdentifier => array(
+                            'header' => 'sheesh',
+                            'entityName' => 'test',
+                            'functions' => array(
+                                'add' => true,
+                                'edit' => true,
+                                'delete' => true,
+                                'sorting' => true,
+                                'paging' => true,
+                                'filtering' => false,
+                            ),
+                        ),
+                    );
+                break;
             default:
                 return array(
                     'header' => $header,
@@ -498,6 +515,18 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             break;
         }
         return $entityClassName;
+    }
+
+    /**
+     * Returns all entities of this component which can have an auto-generated view
+     *
+     * @access protected
+     * @return array
+     */
+    protected function getEntityClassesWithView() {
+        $entityClasses = parent::getEntityClassesWithView();
+        $entityClasses[] = 'Cx\Core_Modules\Listing\Model\Entity\DataSet';
+        return $entityClasses;
     }
 
     /**
