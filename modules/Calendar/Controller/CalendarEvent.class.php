@@ -2477,6 +2477,9 @@ class CalendarEvent extends CalendarLibrary
                     ->em
                     ->getRepository('Cx\Modules\Calendar\Model\Entity\RegistrationForm')
                     ->findOneById($columnValue);
+                if (!$columnValue) {
+                    continue;
+                }
                 $columnValue->setVirtual(true);
             }
             $methodName = 'set'.ucfirst($fieldName);
