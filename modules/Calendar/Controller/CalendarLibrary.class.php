@@ -893,7 +893,7 @@ EOF;
      */
     public function triggerEvent(
         $eventName,
-        $entity,
+        $entity = null,
         $relations = array(),
         $isDetach = false
     ) {
