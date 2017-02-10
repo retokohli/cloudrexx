@@ -1135,7 +1135,7 @@ class CalendarEvent extends CalendarLibrary
         $placeMediadir             = isset($data['placeMediadir']) ? intval($data['placeMediadir']) : 0;
         $hostMediadir              = isset($data['hostMediadir']) ? intval($data['hostMediadir']) : 0;
         $price                     = isset($data['price']) ? contrexx_addslashes(contrexx_strip_tags($data['price'])) : 0;
-        $link                      = isset($data['link']) ? contrexx_addslashes(contrexx_strip_tags($data['link'])) : '';
+        $link                      = isset($data['link']) ? contrexx_strip_tags($data['link']) : '';
         $pic                       = isset($data['picture']) ? contrexx_addslashes(contrexx_strip_tags($data['picture'])) : '';
         $attach                    = isset($data['attachment']) ? contrexx_addslashes(contrexx_strip_tags($data['attachment'])) : '';     
         $catId                     = isset($data['category']) ? intval($data['category']) : '';   
@@ -1143,14 +1143,14 @@ class CalendarEvent extends CalendarLibrary
         $invited_groups            = isset($data['selectedGroups']) ? join(',', $data['selectedGroups']) : ''; 
         $invited_mails             = isset($data['invitedMails']) ? contrexx_addslashes(contrexx_strip_tags($data['invitedMails'])) : '';   
         $send_invitation           = isset($data['sendInvitation']) ? intval($data['sendInvitation']) : 0;        
-        $invitationTemplate        = isset($data['invitationEmailTemplate']) ? contrexx_input2db($data['invitationEmailTemplate']) : 0;        
+        $invitationTemplate        = isset($data['invitationEmailTemplate']) ? contrexx_input2raw($data['invitationEmailTemplate']) : 0;        
         $registration              =   isset($data['registration']) && in_array($data['registration'], array(self::EVENT_REGISTRATION_NONE, self::EVENT_REGISTRATION_INTERNAL, self::EVENT_REGISTRATION_EXTERNAL))
                                      ? intval($data['registration']) : 0;
         $registration_form         = isset($data['registrationForm']) ? intval($data['registrationForm']) : 0;      
         $registration_num          = isset($data['numSubscriber']) ? intval($data['numSubscriber']) : 0;      
-        $registration_notification = isset($data['notificationTo']) ? contrexx_addslashes(contrexx_strip_tags($data['notificationTo'])) : '';
-        $email_template            = isset($data['emailTemplate']) ? contrexx_input2db($data['emailTemplate']) : 0;
-        $registrationExternalLink  = isset($data['registration_external_link']) ? contrexx_input2db($data['registration_external_link']) : '';
+        $registration_notification = isset($data['notificationTo']) ? contrexx_strip_tags($data['notificationTo']) : '';
+        $email_template            = isset($data['emailTemplate']) ? contrexx_input2raw($data['emailTemplate']) : 0;
+        $registrationExternalLink  = isset($data['registration_external_link']) ? contrexx_input2raw($data['registration_external_link']) : '';
         $registrationExternalFullyBooked = isset($data['registration_external_full_booked']) ? 1 : 0;
         $ticket_sales              = isset($data['ticketSales']) ? intval($data['ticketSales']) : 0;
         $num_seating               = isset($data['numSeating']) ? json_encode(explode(',', $data['numSeating'])) : '';
@@ -1504,7 +1504,7 @@ class CalendarEvent extends CalendarLibrary
                 'model/prePersist', $event,
                 array('relations' => array('oneToMany' => 'getEventFields')), true
             );
-            $query = \SQL::insert("module_{$this->moduleTablePrefix}_event", $formData);
+            $query = \SQL::insert("module_{$this->moduleTablePrefix}_event", $formData, array('escape' => true));
             $objResult = $objDatabase->Execute($query);
 
             if ($objResult !== false) {
