@@ -152,6 +152,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/LanguageFile.js', 1));
                 // register css
                 \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/LanguageFile.css', 1));
+                // check which language file is wanted (front- or backend)
+                $frontend = !in_array('Backend', $cmd);
                 // load the language file's locale
                 if (isset($_POST) && isset($_POST['localeId'])) { // try from post
                     $localeId = $_POST['localeId'];
@@ -160,7 +162,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 }
                 $locale = $this->getLocaleRepo()->find($localeId);
                 // set language file by source language
-                $this->languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale);
+                $this->languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale, 'Core', $frontend);
                 // parse locale select
                 $this->parseLocaleSelect($template);
                 // set entity class name (equal to identifier of LanguageFile)

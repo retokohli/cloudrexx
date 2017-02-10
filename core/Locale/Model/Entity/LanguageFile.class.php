@@ -69,13 +69,13 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
      * Creates new instance of \Cx\Core\Locale\Model\Entity\LanguageFile
      *
      */
-    public function __construct(\Cx\Core\Locale\Model\Entity\Locale $locale, $componentName='Core', $mode='frontend') {
+    public function __construct(\Cx\Core\Locale\Model\Entity\Locale $locale, $componentName='Core', $frontend=true) {
         $this->setIdentifier('Cx\Core\Locale\Model\Entity\LanguageFile');
         $this->locale = $locale;
         // load component specific language data from init
-        $frontend = $mode == 'frontend';
         $this->data = \Env::get('init')->getComponentSpecificLanguageData($componentName, $frontend, $locale->getId());
         // set path to yaml file
+        $mode = $frontend ? 'frontend' : 'backend';
         $this->path = ASCMS_CUSTOMIZING_PATH . '/lang/' . $locale->getSourceLanguage()->getIso1() . '/' . $mode . '.yaml';
         $this->placeholders = array();
     }
