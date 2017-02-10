@@ -493,7 +493,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 $locale = $em->find('\Cx\Core\Locale\Model\Entity\Locale', $localeId);
 
                 // set language file by source language
-                $this->languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale->getSourceLanguage());
+                $this->languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale);
                 return $this->languageFile;
             break;
         }

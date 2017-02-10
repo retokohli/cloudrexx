@@ -49,9 +49,9 @@ namespace Cx\Core\Locale\Model\Entity;
 class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
 
     /**
-     * @var \Cx\Core\Locale\Model\Entity\Language
+     * @var \Cx\Core\Locale\Model\Entity\Locale
      */
-    protected $language;
+    protected $locale;
 
     /**
      * @var \Cx\Core\Locale\Model\Entity\Placeholder[]
@@ -69,29 +69,30 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
      * Creates new instance of \Cx\Core\Locale\Model\Entity\LanguageFile
      *
      */
-    public function __construct(\Cx\Core\Locale\Model\Entity\Language $language, $componentName='Core', $mode='frontend') {
-        $this->language = $language;
-        // set current language data
-        $this->data = \Env::get('init')->loadLanguageData($componentName);
+    public function __construct(\Cx\Core\Locale\Model\Entity\Locale $locale, $componentName='Core', $mode='frontend') {
+        $this->locale = $locale;
+        // load component specific language data from init
+        $frontend = $mode == 'frontend';
+        $this->data = \Env::get('init')->getComponentSpecificLanguageData($componentName, $frontend, $locale->getId());
         // set path to yaml file
-        $this->path = ASCMS_CUSTOMIZING_PATH . '/lang/' . $this->language->getIso1() . '/' . $mode . '.yaml';
+        $this->path = ASCMS_CUSTOMIZING_PATH . '/lang/' . $locale->getSourceLanguage()->getIso1() . '/' . $mode . '.yaml';
         $this->placeholders = array();
     }
 
     /**
-     * @return Language
+     * @return Locale
      */
-    public function getLanguage()
+    public function Locale()
     {
-        return $this->language;
+        return $this->locale;
     }
 
     /**
-     * @param Language $language
+     * @param Locale $locale
      */
-    public function setLanguage($language)
+    public function setLocale($locale)
     {
-        $this->language = $language;
+        $this->locale = $locale;
     }
 
     /**
@@ -124,21 +125,5 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     public function setPath($path)
     {
         $this->path = $path;
-    }
-
-    /**
-     * @return array
-     */
-    public function getLanguageData()
-    {
-        return $this->languageData;
-    }
-
-    /**
-     * @param array $languageData
-     */
-    public function setLanguageData($languageData)
-    {
-        $this->languageData = $languageData;
     }
 }
