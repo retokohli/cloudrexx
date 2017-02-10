@@ -1536,6 +1536,19 @@ namespace Cx\Core\Core\Controller {
                             }
                         }
                     }
+                    if (!\Env::get('Resolver')) {
+                        $url = $this->getRequest()->getUrl();
+                        $url->removeAllParams();
+                        $url->setPath('/');
+                        $resolver = new \Cx\Core\Routing\Resolver(
+                            $url,
+                            null,
+                            $this->getDb()->getEntityManager(),
+                            null,
+                            null
+                        );
+                        \Env::set('Resolver', $resolver);
+                    }
 
                     // parse body arguments:
                     // todo: this does not work for form-data encoded body (boundary...)
@@ -1815,15 +1828,6 @@ namespace Cx\Core\Core\Controller {
             $content = str_replace('{PDF_URL}',             contrexx_raw2xhtml(\Env::get('init')->getUriBy('pdfview', 1)),         $content);
             $content = str_replace('{APP_URL}',             contrexx_raw2xhtml(\Env::get('init')->getUriBy('appview', 1)),         $content);
             $content = str_replace('{LOGOUT_URL}',          contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'logout')),  $content);
-            $content = str_replace('{CONTACT_EMAIL}',       isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $content);
-            $content = str_replace('{CONTACT_COMPANY}',     isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $content);
-            $content = str_replace('{CONTACT_ADDRESS}',     isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '', $content);
-            $content = str_replace('{CONTACT_ZIP}',         isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '', $content);
-            $content = str_replace('{CONTACT_PLACE}',       isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '', $content);
-            $content = str_replace('{CONTACT_COUNTRY}',     isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '', $content);
-            $content = str_replace('{CONTACT_PHONE}',       isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '', $content);
-            $content = str_replace('{CONTACT_FAX}',         isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '', $content);
-            $content = str_replace('{CONTACT_NAME}',        isset($_CONFIG['coreAdminName'])    ? contrexx_raw2xhtml($_CONFIG['coreAdminName'])    : '', $content);
             $content = str_replace('{GOOGLE_MAPS_API_KEY}', isset($_CONFIG['googleMapsAPIKey']) ? contrexx_raw2xhtml($_CONFIG['googleMapsAPIKey']) : '', $content);
         }
 
@@ -2057,15 +2061,6 @@ namespace Cx\Core\Core\Controller {
                 'LOGIN_URL'                      => '<a href="' . contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'Login')) . '" class="start-frontend-editing">' . $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'] . '</a>',
                 'TXT_CORE_LAST_MODIFIED_PAGE'    => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
                 'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_FORMAT_DATE, $this->resolvedPage->getUpdatedAt()->getTimestamp()),
-                'CONTACT_EMAIL'                  => isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '',
-                'CONTACT_NAME'                   => isset($_CONFIG['coreAdminName'])    ? contrexx_raw2xhtml($_CONFIG['coreAdminName'])    : '',
-                'CONTACT_COMPANY'                => isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '',
-                'CONTACT_ADDRESS'                => isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '',
-                'CONTACT_ZIP'                    => isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '',
-                'CONTACT_PLACE'                  => isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '',
-                'CONTACT_COUNTRY'                => isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '',
-                'CONTACT_PHONE'                  => isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '',
-                'CONTACT_FAX'                    => isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '',
                 'GOOGLE_MAPS_API_KEY'            => isset($_CONFIG['googleMapsAPIKey']) ? contrexx_raw2xhtml($_CONFIG['googleMapsAPIKey']) : '',
                 'FACEBOOK_LIKE_IFRAME'           => '<div id="fb-root"></div>
                                                     <script type="text/javascript">
