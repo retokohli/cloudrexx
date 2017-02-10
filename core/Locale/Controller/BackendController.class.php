@@ -150,24 +150,36 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 // activate cx and load neccessary js files
                 \JS::activate('cx');
                 \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/LanguageFile.js', 1));
+
                 // register css
                 \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/LanguageFile.css', 1));
+
                 // check which language file is wanted (front- or backend)
                 $frontend = !in_array('Backend', $cmd);
+
                 // load the language file's locale
-                if (isset($_POST) && isset($_POST['localeId'])) { // try from post
+                if (isset($_POST) && isset($_POST['localeId'])) {
+                    // use locale selected by user
                     $localeId = $_POST['localeId'];
-                } else { // get user locale from init
+                } elseif (isset(\Env::get('init')->userFrontendLangId)) {
+                    // use user's default locale from init
                     $localeId = \Env::get('init')->userFrontendLangId;
+                } else {
+                    // use system's default locale
+                    $localeId = \Cx\Core\Setting\Controller\Setting::getValue('defaultLocaleId');
                 }
                 $locale = $this->getLocaleRepo()->find($localeId);
+
                 // set language file by source language
                 $this->languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale, 'Core', $frontend);
+
                 // parse locale select
                 $this->parseLocaleSelect($template);
+
                 // set entity class name (equal to identifier of LanguageFile)
                 $entityClassName = 'Cx\Core\Locale\Model\Entity\LanguageFile';
-                // it's always single
+
+                // parse view for language file (always single)
                 $isSingle = true;
                 $this->parseEntityClassPage($template, $entityClassName, $cmd, array(), $isSingle);
                 break;
