@@ -516,9 +516,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     }
 
     /**
-     * Returns the object to parse a wiew with
+     * Returns the object to parse a view with
      *
-     * If you overwrite this and return anything else than string, filter will not work
+     * Returns a LanguageFile object for language file view
+     *
      * @return string|array|object An entity class name, entity, array of entities or DataSet
      */
     protected function getViewGeneratorParseObjectForEntityClass($entityClassName) {
@@ -656,28 +657,42 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     /**
      * Parses the select with the locales to choose language file
      *
-     * @param $template
+     * @param \Cx\Core\Html\Sigma $template The template to parse the view with
      */
     protected function parseLocaleSelect($template) {
+        // check if template block exists
         if ($template->blockExists('locale_dropdown')) {
+
+            // load all locales
             $locales = $this->getLocaleRepo()->findAll();
-            // build select for fallbacks
+
+            // build html select
             $select = new \Cx\Core\Html\Model\Entity\DataElement(
                 'localeId',
                 '',
                 \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
             );
+
+            // set locales as options
             foreach($locales as $locale) {
                 $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
+
+                // set id as value
                 $option->setAttribute('value', $locale->getId());
+
+                // set label as option content
                 $option->addChild(new \Cx\Core\Html\Model\Entity\TextElement($locale->getLabel()));
+
                 if (
+                    // mark option of selected locale as selected
                     $locale->getId() == $this->languageFile->getLocale()->getId()
                 ) {
                     $option->setAttribute('selected');
                 }
+
                 $select->addChild($option);
             }
+
             $template->setVariable('LOCALE_SELECT', $select);
             $template->touchBlock('locale_dropdown');
         }
@@ -689,9 +704,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @return \Cx\Core\Locale\Model\Repository\LocaleRepository
      */
     protected function getLocaleRepo() {
+        // return directly if locale repo is already set
         if (isset($this->localeRepo)) {
             return $this->localeRepo;
         }
+        // load locale repo from entity manager
         $em = $this->cx->getDb()->getEntityManager();
         $this->localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
         return $this->localeRepo;
