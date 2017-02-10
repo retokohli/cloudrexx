@@ -40,6 +40,11 @@ namespace Cx\Core\Locale\Model\Entity;
 /**
  * LanguageFile
  *
+ * Loads the language data of a specific component in a specific language
+ * of either front- or backend
+ *
+ * Saves/Loads customized language placeholder to/from a yaml file
+ *
  * @copyright   Cloudrexx AG
  * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
  * @package     cloudrexx
@@ -49,16 +54,19 @@ namespace Cx\Core\Locale\Model\Entity;
 class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
 
     /**
+     * The locale which defines the language of the language file
      * @var \Cx\Core\Locale\Model\Entity\Locale
      */
     protected $locale;
 
     /**
+     * An Array containing the overwritten placeholders
      * @var \Cx\Core\Locale\Model\Entity\Placeholder[]
      */
     protected $placeholders;
 
     /**
+     * The path to the yaml file containing the customized placeholder data
      * @var string
      */
     protected $path;
@@ -67,20 +75,31 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
      * LanguageFile constructor.
      *
      * Creates new instance of \Cx\Core\Locale\Model\Entity\LanguageFile
+     * Loads component specific language data according to params
+     *
+     * @param \Cx\Core\Locale\Model\Entity\Locale $locale Defines the language
+     * @param string $componentName Defines the component
+     * @param boolean $frontend Defines wether to open the frontend or the backend specific file
      *
      */
     public function __construct(\Cx\Core\Locale\Model\Entity\Locale $locale, $componentName='Core', $frontend=true) {
+        // set identifier to parse entity view correctly
         $this->setIdentifier('Cx\Core\Locale\Model\Entity\LanguageFile');
-        $this->locale = $locale;
+
         // load component specific language data from init
+        $this->locale = $locale;
         $this->data = \Env::get('init')->getComponentSpecificLanguageData($componentName, $frontend, $locale->getId());
+
         // set path to yaml file
         $mode = $frontend ? 'frontend' : 'backend';
         $this->path = ASCMS_CUSTOMIZING_PATH . '/lang/' . $locale->getSourceLanguage()->getIso1() . '/' . $mode . '.yaml';
+
         $this->placeholders = array();
     }
 
     /**
+     * Return's the locale
+     *
      * @return Locale
      */
     public function getLocale()
@@ -89,6 +108,8 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     }
 
     /**
+     * Sets the locale
+     *
      * @param Locale $locale
      */
     public function setLocale($locale)
@@ -97,6 +118,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     }
 
     /**
+     * Returns an array containing the overwritten placeholders
      * @return Placeholder[]
      */
     public function getPlaceholders()
@@ -105,6 +127,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     }
 
     /**
+     * Sets the array containing the overwritten placeholders
      * @param Placeholder[] $placeholders
      */
     public function setPlaceholders($placeholders)
@@ -113,6 +136,8 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     }
 
     /**
+     * Returns the path of the customized yaml file
+     *
      * @return string
      */
     public function getPath()
@@ -121,6 +146,8 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     }
 
     /**
+     * Sets the path of the customized yaml file
+     *
      * @param string $path
      */
     public function setPath($path)
