@@ -55,6 +55,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     protected $languageFile;
 
     /**
+     * @var \Cx\Core\Locale\Model\Repository\LocaleRepository
+     */
+    protected $localeRepo;
+
+    /**
      * Returns a list of available commands (?act=XY)
      * @return array List of acts
      */
@@ -340,9 +345,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 'parse' => function ($value, $rowData) {
                                     global $_ARRAYLANG;
                                     $selectedVal = is_object($value) ? $value->getId() : 'NULL';
-                                    $em = $this->cx->getDb()->getEntityManager();
-                                    $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
-                                    $locales = $localeRepo->findAll();
+                                    $locales = $this->getLocaleRepo()->findAll();
                                     // build select for fallbacks
                                     $select = new \Cx\Core\Html\Model\Entity\DataElement(
                                         'fallback[' . $rowData['id'] . ']',
@@ -504,8 +507,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         switch ($entityClassName) {
             case 'Cx\Core\Locale\Model\Entity\Locale':
                 $em = $this->cx->getDb()->getEntityManager();
-                $localeRepo = $em->getRepository($entityClassName);
-                $parseObject = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($localeRepo->findAll());
+                $parseObject = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($this->getLocaleRepo()->findAll());
                 foreach ($parseObject as $index => $value) {
                     $parseObject->add($index, array('default' => false));
                 }
@@ -518,8 +520,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     // get user locale from init
                     $localeId = \Env::get('init')->userFrontendLangId;
                 }
-                $em = $this->cx->getDb()->getEntityManager();
-                $locale = $em->find('\Cx\Core\Locale\Model\Entity\Locale', $localeId);
+                $locale = $this->getLocaleRepo()->find($localeId);
 
                 // set language file by source language
                 $this->languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale);
@@ -565,7 +566,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             return;
         }
         $em = $this->cx->getDb()->getEntityManager();
-        $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
+        $localeRepo = $this->getLocaleRepo();
         foreach ($post['fallback'] as $localeId => $fallbackId) {
             $locale = $localeRepo->find($localeId);
             $fallback = $localeRepo->find($fallbackId);
@@ -653,8 +654,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         if ($template->blockExists('locale_dropdown')) {
             $selectedVal = isset($_POST) && isset($_POST['localeId']) ? $_POST['localeId'] : 0;
             $em = $this->cx->getDb()->getEntityManager();
-            $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
-            $locales = $localeRepo->findAll();
+            $locales = $this->getLocaleRepo()->findAll();
             // build select for fallbacks
             $select = new \Cx\Core\Html\Model\Entity\DataElement(
                 'localeId',
@@ -673,5 +673,19 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             $template->setVariable('LOCALE_SELECT', $select);
             $template->touchBlock('locale_dropdown');
         }
+    }
+
+    /**
+     * Gets the locale repository from the entity manager
+     *
+     * @return \Cx\Core\Locale\Model\Repository\LocaleRepository
+     */
+    protected function getLocaleRepo() {
+        if (isset($this->localeRepo)) {
+            return $this->localeRepo;
+        }
+        $em = $this->cx->getDb()->getEntityManager();
+        $this->localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
+        return $this->localeRepo;
     }
 }
