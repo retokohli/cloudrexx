@@ -145,6 +145,15 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/LanguageFile.js', 1));
                 // register css
                 \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/LanguageFile.css', 1));
+                // load the language file's locale
+                if (isset($_POST) && isset($_POST['localeId'])) { // try from post
+                    $localeId = $_POST['localeId'];
+                } else { // get user locale from init
+                    $localeId = \Env::get('init')->userFrontendLangId;
+                }
+                $locale = $this->getLocaleRepo()->find($localeId);
+                // set language file by source language
+                $this->languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale);
                 // parse locale select
                 $this->parseLocaleSelect($template);
                 // set entity class name (equal to identifier of LanguageFile)
@@ -514,16 +523,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 return $parseObject;
                 break;
             case 'Cx\Core\Locale\Model\Entity\LanguageFile':
-                if (isset($_POST) && isset($_POST['localeId'])) {
-                    $localeId = $_POST['localeId'];
-                } else {
-                    // get user locale from init
-                    $localeId = \Env::get('init')->userFrontendLangId;
-                }
-                $locale = $this->getLocaleRepo()->find($localeId);
-
-                // set language file by source language
-                $this->languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale);
                 return $this->languageFile;
             break;
         }
@@ -652,8 +651,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     protected function parseLocaleSelect($template) {
         if ($template->blockExists('locale_dropdown')) {
-            $selectedVal = isset($_POST) && isset($_POST['localeId']) ? $_POST['localeId'] : 0;
-            $em = $this->cx->getDb()->getEntityManager();
             $locales = $this->getLocaleRepo()->findAll();
             // build select for fallbacks
             $select = new \Cx\Core\Html\Model\Entity\DataElement(
@@ -665,7 +662,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
                 $option->setAttribute('value', $locale->getId());
                 $option->addChild(new \Cx\Core\Html\Model\Entity\TextElement($locale->getLabel()));
-                if ($locale->getId() == $selectedVal) {
+                if (
+                    $locale->getId() == $this->languageFile->getLocale()->getId()
+                ) {
                     $option->setAttribute('selected');
                 }
                 $select->addChild($option);

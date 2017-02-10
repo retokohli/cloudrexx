@@ -83,7 +83,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     /**
      * @return Locale
      */
-    public function Locale()
+    public function getLocale()
     {
         return $this->locale;
     }
