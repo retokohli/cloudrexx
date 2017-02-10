@@ -319,8 +319,7 @@ class CalendarRegistration extends CalendarLibrary
         
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
 
-        if (   $objInit->mode == \Cx\Core\Core\Controller\Cx::MODE_BACKEND
-            && $objEvent->seriesStatus
+        if (   $objEvent->seriesStatus
             && $objEvent->independentSeries
         ) {
             $eventDate = isset($data['registrationEventDate']) ? contrexx_input2int($data['registrationEventDate']) : $eventDate;
