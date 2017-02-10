@@ -65,7 +65,14 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     public function getCommands()
     {
-        return array('Locale', 'Backend', 'LanguageFile');
+        return array(
+            'Locale',
+            'Backend',
+            // Default is frontend
+            'LanguageFile' => array(
+                'Backend',
+            ),
+        );
     }
 
     /**
