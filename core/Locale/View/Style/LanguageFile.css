@@ -1,0 +1,7 @@
+form#form-locale-select {
+    margin-bottom: 15px;
+}
+#form-0 .group > label {
+    width: auto;
+    padding-right: 8px;
+}

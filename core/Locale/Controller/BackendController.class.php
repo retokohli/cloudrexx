@@ -138,6 +138,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 // activate cx and load neccessary js files
                 \JS::activate('cx');
                 \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/LanguageFile.js', 1));
+                // register css
+                \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/LanguageFile.css', 1));
                 // parse locale select
                 $this->parseLocaleSelect($template);
                 // set entity class name (equal to identifier of LanguageFile)
