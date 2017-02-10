@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Initialize the CMS
  *
@@ -64,6 +64,10 @@ class InitCMS
 
     public $currentThemesId;
     public $channelThemeId;
+    /**
+     * ID of the theme that has been used for generating the response
+     */
+    public $pageThemeId;
     public $customContentTemplate = null;
     public $arrLang = array();
     public $arrLangNames = array();
@@ -99,9 +103,9 @@ class InitCMS
      * @var   string
      */
     public $mode;
-    
+
     protected $themeRepository;
-    
+
     /**
      * @var array Language var cache
      */
@@ -243,22 +247,22 @@ class InitCMS
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['pdf_themes_id'];
             $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PDF;
         }
-        // Load mobile template
-        elseif ($this->isMobileDevice and $this->arrLang[$this->frontendLangId]['mobile_themes_id']) {
-            $this->currentThemesId = $this->arrLang[$this->frontendLangId]['mobile_themes_id'];
-            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE;
-        }
         // Load app template
         elseif (isset($_GET['appview']) && $_GET['appview'] == 1) {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['app_themes_id'];
             $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_APP;
+        }
+        // Load mobile template
+        elseif ($this->isMobileDevice and $this->arrLang[$this->frontendLangId]['mobile_themes_id']) {
+            $this->currentThemesId = $this->arrLang[$this->frontendLangId]['mobile_themes_id'];
+            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE;
         }
         // Load regular content template
         else {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['themesid'];
             $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB;
         }
-        
+
         $this->channelThemeId = $this->currentThemesId;
         // Set charset of frontend language
         $this->frontendLangCharset = $this->arrLang[$this->frontendLangId]['charset'];
@@ -354,7 +358,7 @@ class InitCMS
             $arrAcceptedLanguages[$language] = (float) $quality;
         }
         arsort($arrAcceptedLanguages, SORT_NUMERIC);
-        
+
         return $arrAcceptedLanguages;
     }
 
@@ -367,6 +371,9 @@ class InitCMS
      */
     function getUserFrontendLangId()
     {
+        // check if session has been initialized yet
+        $session = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Session')->isInitialized();
+
 // Mind: Changed from $_POST to $_REQUEST, so it can be changed by
 // clicking a link (used in the Shop, and for MailTemplates)
         if (!empty($_REQUEST['userFrontendLangId'])) {
@@ -377,7 +384,7 @@ class InitCMS
             }
         } elseif (!empty($_COOKIE['userFrontendLangId'])) {
             $id = FWLanguage::getLanguageIdByCode($_COOKIE['userFrontendLangId']);
-        } elseif (!empty($_SESSION['userFrontendLangId'])) {
+        } elseif ($session && !empty($_SESSION['userFrontendLangId'])) {
             $id = intval($_SESSION['userFrontendLangId']);
         } else {
             $id = $this->defaultFrontendLangId;
@@ -386,8 +393,13 @@ class InitCMS
             $id = $this->defaultFrontendLangId;
         }
         $this->userFrontendLangId = $id;
-        $_SESSION['userFrontendLangId'] = $id;
-        setcookie("userFrontendLangId", "", time() - 3600);
+
+        if ($session) {
+            $_SESSION['userFrontendLangId'] = $id;
+            // unset cookie as option is now stored in session
+            setcookie("userFrontendLangId", "", time() - 3600);
+        }
+
         return $this->userFrontendLangId;
     }
 
@@ -508,6 +520,7 @@ class InitCMS
 
         // get theme object so we get the configured libraries
         $theme = $this->getFrontendTemplate();
+        $this->pageThemeId = $this->currentThemesId;
         $themesPath = $theme->getFoldername();
         if ($theme && $theme->isComponent()) {
             $libraries = JS::getConfigurableLibraries();
@@ -541,17 +554,32 @@ class InitCMS
         $this->templates['sidebar']                 = $this->getThemeFileContent($themesPath, 'sidebar.html');
         $this->templates['top_news']                = $this->getThemeFileContent($themesPath, 'top_news.html');
         $this->templates['shopnavbar']              = $this->getThemeFileContent($themesPath, 'shopnavbar.html');
-        $this->templates['shopnavbar2']              = $this->getThemeFileContent($themesPath, 'shopnavbar2.html');
-        $this->templates['shopnavbar3']              = $this->getThemeFileContent($themesPath, 'shopnavbar3.html');
+        $this->templates['shopnavbar2']             = $this->getThemeFileContent($themesPath, 'shopnavbar2.html');
+        $this->templates['shopnavbar3']             = $this->getThemeFileContent($themesPath, 'shopnavbar3.html');
         $this->templates['headlines']               = $this->getThemeFileContent($themesPath, 'headlines.html');
         $this->templates['headlines2']              = $this->getThemeFileContent($themesPath, 'headlines2.html');
         $this->templates['headlines3']              = $this->getThemeFileContent($themesPath, 'headlines3.html');
         $this->templates['headlines4']              = $this->getThemeFileContent($themesPath, 'headlines4.html');
+        $this->templates['headlines5']              = $this->getThemeFileContent($themesPath, 'headlines5.html');
+        $this->templates['headlines6']              = $this->getThemeFileContent($themesPath, 'headlines6.html');
+        $this->templates['headlines7']              = $this->getThemeFileContent($themesPath, 'headlines7.html');
+        $this->templates['headlines8']              = $this->getThemeFileContent($themesPath, 'headlines8.html');
+        $this->templates['headlines9']              = $this->getThemeFileContent($themesPath, 'headlines9.html');
+        $this->templates['headlines10']             = $this->getThemeFileContent($themesPath, 'headlines10.html');
         $this->templates['news_recent_comments']    = $this->getThemeFileContent($themesPath, 'news_recent_comments.html');
         $this->templates['javascript']              = $this->getThemeFileContent($themesPath, 'javascript.js');
         //$this->templates['style']                 = $this->getThemeFileContent($themesPath, 'style.css');
         $this->templates['buildin_style']           = $this->getThemeFileContent($themesPath, 'buildin_style.css');
         $this->templates['calendar_headlines']      = $this->getThemeFileContent($themesPath, 'events.html');
+        $this->templates['calendar_headlines2']     = $this->getThemeFileContent($themesPath, 'events2.html');
+        $this->templates['calendar_headlines3']     = $this->getThemeFileContent($themesPath, 'events3.html');
+        $this->templates['calendar_headlines4']     = $this->getThemeFileContent($themesPath, 'events4.html');
+        $this->templates['calendar_headlines5']     = $this->getThemeFileContent($themesPath, 'events5.html');
+        $this->templates['calendar_headlines6']     = $this->getThemeFileContent($themesPath, 'events6.html');
+        $this->templates['calendar_headlines7']     = $this->getThemeFileContent($themesPath, 'events7.html');
+        $this->templates['calendar_headlines8']     = $this->getThemeFileContent($themesPath, 'events8.html');
+        $this->templates['calendar_headlines9']     = $this->getThemeFileContent($themesPath, 'events9.html');
+        $this->templates['calendar_headlines10']    = $this->getThemeFileContent($themesPath, 'events10.html');
         $this->templates['directory_content']       = $this->getThemeFileContent($themesPath, 'directory.html');
         $this->templates['forum_content']           = $this->getThemeFileContent($themesPath, 'forum.html');
         $this->templates['podcast_content']         = $this->getThemeFileContent($themesPath, 'podcast.html');
@@ -618,13 +646,13 @@ class InitCMS
      */
     private function getThemeFileContent($themesPath, $file)
     {
-        $filePath = $themesPath.'/'.$file;
+        $filePath = '/' . $themesPath . '/' . $file;
         $content = '';
-        
-        if (file_exists(\Env::get('cx')->getWebsiteThemesPath().'/'.$filePath)) {
-            $content = file_get_contents(\Env::get('cx')->getWebsiteThemesPath().'/'.$filePath);
-        } elseif (file_exists(\Env::get('cx')->getCodeBaseThemesPath().'/'.$filePath)) {
-            $content = file_get_contents(\Env::get('cx')->getCodeBaseThemesPath().'/'.$filePath);
+
+        $theme       = new \Cx\Core\View\Model\Entity\Theme();
+        $contentPath = $theme->getFilePath($filePath);
+        if (file_exists($contentPath)) {
+            $content = file_get_contents($contentPath);
         }
 
         return $content;
@@ -636,7 +664,7 @@ class InitCMS
 
         // OPTION USE FOR OUTPUT CHANNEL
         $themeFolder = '';
-        $themeRepository   = new \Cx\Core\View\Model\Repository\ThemeRepository();        
+        $themeRepository   = new \Cx\Core\View\Model\Repository\ThemeRepository();
         if ($page->getUseCustomContentForAllChannels()) {
             $theme = $themeRepository->findById($page->getSkin());
             if (!$theme) {
@@ -653,14 +681,14 @@ class InitCMS
                 return true;
             }
         }
-        
+
         //only include the custom template if it really exists.
         //if the user selected custom_x.html as a page's custom template, a print-view request will
         //try to get the file "themes/<printtheme>/custom_x.html" - we do not know if this file
         //exists. trying to read a non-existant file would lead to an empty content-template.
         //to omit this, we read the standard print content template instead.
         //another possible behaviour would be to read the standard theme's custom content template instead.
-        //this is not done, because customcontent files are mostly used for sidebars etc. - 
+        //this is not done, because customcontent files are mostly used for sidebars etc. -
         //stuff that should not change the print representation of the content.
         $content = $this->getThemeFileContent($this->themesPath, $this->customContentTemplate);
         if ($content) {
@@ -699,17 +727,18 @@ class InitCMS
         $result = array();
         $templateFiles = array();
         $folder = $customTemplateForTheme->getFoldername();
-        if (file_exists(\Env::get('cx')->getCodeBaseThemesPath().'/'.$folder)) {
-            $templateFiles = scandir(\Env::get('cx')->getCodeBaseThemesPath().'/'.$folder);
-        }
-        if (file_exists(\Env::get('cx')->getWebsiteThemesPath().'/'.$folder)) {
-            $templateFiles = array_unique(array_merge($templateFiles, scandir(\Env::get('cx')->getWebsiteThemesPath().'/'.$folder)));
-        }
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $templateFiles = $cx->getMediaSourceManager()->getMediaType('themes')->getFileSystem()->getFileList($folder);
 
-        foreach ($templateFiles as $f){
+        foreach ($templateFiles as $fileName => $fileInfo){
             $match = null;
-            if (preg_match('/^(content|home)_(.+).html$/', $f, $match)) {
-                array_push($result, $f);
+            // skip subdirectories
+            if ($fileInfo['datainfo']['type'] != 'file') {
+                continue;
+            }
+
+            if (preg_match('/^(content|home)_(.+).html$/', $fileName, $match)) {
+                array_push($result, $fileName);
             }
         }
 
@@ -748,8 +777,8 @@ class InitCMS
                         case 'ComponentManager':
                         case 'ViewManager':
                         case 'LanguageManager':
-                        case 'ContentWorkflow':    
-                        case 'Config':    
+                        case 'ContentWorkflow':
+                        case 'Config':
                         case 'SystemLog':
                         case 'NetManager':
                         case 'Wysiwyg':
@@ -830,7 +859,7 @@ class InitCMS
         }
         return $_CORELANG;
     }
-    
+
     /**
      * Get component specific language data
      * State of the init will be backedup and restored while loading the language
@@ -845,7 +874,7 @@ class InitCMS
         global $_ARRAYLANG;
 
         $mode = $frontend ? 'frontend' : 'backend';
-        
+
         if (!$languageId) {
             if ($frontend) {
                 $languageId = $this->frontendLangId;
@@ -857,14 +886,14 @@ class InitCMS
         if ($componentName == 'Core') {
             $componentName = lcfirst($componentName);
         }
-        
+
         if (!isset($this->moduleSpecificLanguageData[$languageId])) {
             $this->moduleSpecificLanguageData[$languageId] = array();
         }
         if (!isset($this->moduleSpecificLanguageData[$languageId][$frontend])) {
             $this->moduleSpecificLanguageData[$languageId][$frontend] = array();
         }
-        
+
         if (isset($this->moduleSpecificLanguageData[$languageId][$frontend][$componentName])) {
             return $this->moduleSpecificLanguageData[$languageId][$frontend][$componentName];
         }
@@ -906,7 +935,7 @@ class InitCMS
         if ($path) {
             return $path;
         }
-        
+
         // file path of default language (if not yet requested)
         if ($langId == $defaultLangId) {
             return '';
@@ -924,7 +953,7 @@ class InitCMS
     protected function loadLangFile($path)
     {
         global $_ARRAYLANG;
-        
+
         $isCustomized = false;
         $customizedPath = \Env::get('ClassLoader')->getFilePath($path, $isCustomized);
         if (file_exists($path) || !file_exists($customizedPath)) {
@@ -933,7 +962,7 @@ class InitCMS
         if ($isCustomized) {
             require_once $customizedPath;
         }
-        
+
         return $_ARRAYLANG;
     }
 
@@ -952,7 +981,7 @@ class InitCMS
 
         // set custom content template
         $this->customContentTemplate = $customContent;
-        
+
         //only set customized theme if not in printview AND no mobile devic
         if ($useThemeForAllChannels || (!isset($_GET['printview']) && !$this->isInMobileView())) {
             $themesId=intval($themesId);
@@ -1081,7 +1110,7 @@ class InitCMS
         $url = \Env::get('Resolver')->getUrl();
         $myUrl = clone $url;
         $myUrl->setParam($key, $value);
-        
+
         return $myUrl;
     }
 
@@ -1100,7 +1129,7 @@ class InitCMS
 
     /**
      * Returns true if the user agent is a mobile device (smart phone, PDA etc.)
-     * @todo    Maybe put this in a separate class?
+     * @deprecated Use \Cx\Core\Routing\Model\Entity\Request::isMobilePhone() instead
      */
     public static function _is_mobile_phone()
     {
@@ -1161,6 +1190,7 @@ class InitCMS
 
     /**
      * Returns true if the user agent is a tablet
+     * @deprecated Use \Cx\Core\Routing\Model\Entity\Request::isTablet() instead
      */
     public static function _is_tablet()
     {
@@ -1188,5 +1218,28 @@ class InitCMS
     public function hasCustomContent()
     {
         return !empty($this->customContentTemplate) && strlen($this->customContentTemplate) > 0 ? true : false;
+    }
+
+    /**
+     * Return the current theme id
+     * Note: This vaule is available only in frontend mode
+     *
+     * @return integer
+     */
+    public function getCurrentThemeId()
+    {
+        return $this->pageThemeId;
+    }
+
+    /**
+     * Returns the current channel
+     * @throws \Exception If channel is not yet set, call setFrontendLangId() to set it
+     * @return string Channel
+     */
+    public function getCurrentChannel() {
+        if (!$this->currentChannel) {
+            throw new \Exception('Channel not yet set');
+        }
+        return $this->currentChannel;
     }
 }

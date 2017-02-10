@@ -145,7 +145,7 @@ class CalendarLibrary
      * @var array 
      */
     public $arrCommunityGroups = array();    
-
+        
     /**
      * @var \Cx\Core\Core\Controller\Cx
      */

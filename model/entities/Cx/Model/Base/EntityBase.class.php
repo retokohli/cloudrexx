@@ -94,7 +94,7 @@ class EntityBase {
      * @var boolean
      */
     protected $virtual = false;
-    
+
     /**
      * This is an ugly solution to allow $this->cx to be available in all entity classes
      * Since the entity's constructor is not called when an entity is loaded from DB this
@@ -105,7 +105,7 @@ class EntityBase {
             return \Cx\Core\Core\Controller\Cx::instanciate();
         }
     }
-    
+
     /**
      * Returns the component controller for this component
      * @return \Cx\Core\Core\Model\Entity\SystemComponent
@@ -129,10 +129,10 @@ class EntityBase {
         }
         return $myComponent;
     }
-    
+
     /**
      * Set the virtuality of the entity
-     * @param   boolean $virtual    TRUE to set the entity as virtual or otherwise to FALSE 
+     * @param   boolean $virtual    TRUE to set the entity as virtual or otherwise to FALSE
      */
     public function setVirtual($virtual) {
         $this->virtual = $virtual;
@@ -145,7 +145,7 @@ class EntityBase {
     public function isVirtual() {
         return $this->virtual;
     }
-    
+
     /**
      * @throws ValidationException
      * @prePersist
@@ -166,6 +166,16 @@ class EntityBase {
         }
         if(count($errors) > 0)
             throw new ValidationException($errors);
+    }
+
+    /**
+     * Route methods like getName(), getType(), getDirectory(), etc.
+     * @param string $methodName Name of method to call
+     * @param array $arguments List of arguments for the method to call
+     * @return mixed Return value of the method to call
+     */
+    public function __call($methodName, $arguments) {
+        return call_user_func_array(array($this->getComponentController(), $methodName), $arguments);
     }
 
     public function __toString() {

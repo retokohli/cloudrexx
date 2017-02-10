@@ -567,19 +567,27 @@ class CalendarEventManager extends CalendarLibrary
     /**
      * Get the event using calendar event class and assign it into $this->eventList
      * 
-     * @param integer $eventId        Event id
+     * @param mixed   $event         \Cx\Modules\Calendar\Controller\CalendarEvent
+     *                                or Event id
      * @param integer $eventStartDate Unix timestamp of start date
+     * @param boolean $forceCalculateSeries  Whether or not to calculate the event's next serie's occurrence. Default to FALSE to only perform the calculation in FRONTEND-Mode
      * 
      * @return null
      */
-    function getEvent($eventId, $eventStartDate) {
+    function getEvent($event, $eventStartDate, $forceCalculateSeries = false) {
         global $objInit;
         
-        $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($eventId));
+        if ($event instanceof \Cx\Modules\Calendar\Controller\CalendarEvent) {
+            $objEvent = $event;
+        } else {
+            $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($event));
+        }
         
         $this->eventList[] = $objEvent;
         
-        if($objEvent->seriesStatus == 1 && $objInit->mode == 'frontend') {
+        if (   $objEvent->seriesStatus == 1
+            && ($forceCalculateSeries || $objInit->mode == 'frontend')
+        ) {
             self::_setNextSeriesElement($objEvent); 
         }
         foreach ($this->eventList as $tmpKey => $tmpObjEvent) {
@@ -727,6 +735,15 @@ class CalendarEventManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_ACCESS'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_ACCESS_'.$objEvent->access],
                 $this->moduleLangVar.'_REGISTRATIONS_SUBSCRIBER'=> $objEvent->numSubscriber,
             ));
+
+            // hide attachment template block in case no attachment is set
+            if ($objTpl->blockExists('calendarAttachment')) {
+                if (empty($objEvent->attach)) {
+                    $objTpl->hideBlock('calendarAttachment');
+                } else {
+                    $objTpl->parse('calendarAttachment');
+                }
+            }
 
             //show date and time by user settings
             if($objTpl->blockExists('calendarDateDetail')) {
@@ -1284,6 +1301,15 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_ACCESS'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_ACCESS_'.$objEvent->access],
                 ));
           
+                // hide attachment template block in case no attachment is set
+                if ($objTpl->blockExists('calendarAttachment')) {
+                    if (empty($objEvent->attach)) {
+                        $objTpl->hideBlock('calendarAttachment');
+                    } else {
+                        $objTpl->parse('calendarAttachment');
+                    }
+                }
+
                 if ($objEvent->showDetailView) {
                     $objTpl->setVariable(array(
                         $this->moduleLangVar.'_EVENT_DETAIL_LINK'    => $objEvent->type==0 ? self::_getDetailLink($objEvent) : $objEvent->arrData['redirect'][$_LANGID],
@@ -1744,6 +1770,12 @@ class CalendarEventManager extends CalendarLibrary
                 }
                 break;
         }
+
+        $objCloneEvent->registrationExternalLink = str_replace(
+            '[[SERIES_ELEMENT_STARTDATE]]',
+            $objCloneEvent->startDate->getTimestamp(),
+            $objCloneEvent->registrationExternalLink
+        );
         
         if (   $isAllowedEvent
             && !$this->isDateExists($objCloneEvent->startDate, $objCloneEvent->seriesData['seriesPatternExceptions'])

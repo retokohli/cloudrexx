@@ -66,6 +66,14 @@ class CalendarRegistration extends CalendarLibrary
     public $eventId;  
     
     /**
+     * Submission date
+     *
+     * @access public
+     * @var integer Timestamp of Registration submission date
+     */
+    public $submissionDate;
+    
+    /**
      * Event date
      *
      * @access public
@@ -200,6 +208,7 @@ class CalendarRegistration extends CalendarLibrary
         
         $query = 'SELECT registration.`id` AS `id`,
                          registration.`event_id` AS `event_id`,
+                         registration.`submission_date` AS `submission_date`,
                          registration.`date` AS `date`,
                          registration.`host_name` AS `host_name`,
                          registration.`ip_address` AS `ip_address`,
@@ -230,6 +239,12 @@ class CalendarRegistration extends CalendarLibrary
             $this->paymentMethod = intval($objResult->fields['payment_method']);
             $this->paid = intval($objResult->fields['paid']);
             
+            $this->submissionDate = '';
+            if ($objResult->fields['submission_date'] !== '0000-00-00 00:00:00') {
+                $this->submissionDate = $this->getInternDateTimeFromDb(
+                    $objResult->fields['submission_date']
+                );
+            }
             foreach ($this->form->inputfields as $key => $arrInputfield) {         
                 $name = $arrInputfield['name'][$_LANGID];
                 $default = $arrInputfield['default_value'][$_LANGID];
@@ -309,6 +324,16 @@ class CalendarRegistration extends CalendarLibrary
             && $objEvent->independentSeries
         ) {
             $eventDate = isset($data['registrationEventDate']) ? contrexx_input2int($data['registrationEventDate']) : $eventDate;
+
+            $endDate   = new \DateTime();
+            $endDate->modify('+10 years');
+
+            $eventManager = new CalendarEventManager(null, $endDate);
+            $eventManager->getEvent($objEvent, $eventDate, true);
+            $objEvent = $eventManager->eventList[0];
+            if (empty($objEvent)) {
+                return false;
+            }
         }
 
         $query = '
@@ -354,6 +379,7 @@ class CalendarRegistration extends CalendarLibrary
         );
         $registration = $this->getRegistrationEntity($regId, $formData);
         if ($regId == 0) {
+            $submissionDate = $this->getDbDateTimeFromIntern($this->getInternDateTimeFromUser());
             $registration->setExport(0);
             //Trigger prePersist event for Registration Entity
             $this->triggerEvent(
@@ -373,8 +399,8 @@ class CalendarRegistration extends CalendarLibrary
                 ), true
             );
             $query = 'INSERT INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration
-                                  (`event_id`,`date`,`host_name`,`ip_address`,`type`,`key`,`user_id`,`lang_id`,`export`,`payment_method`,`paid`)
-                           VALUES ("'.$eventId.'","'.$eventDate.'","'.$hostName.'","'.$ipAddress.'","'.$type.'","'.$key.'","'.$userId.'","'.$_LANGID.'",0,"'.$paymentMethod.'","'.$paid.'")';
+                                  (`event_id`, `submission_date`,`date`,`host_name`,`ip_address`,`type`,`key`,`user_id`,`lang_id`,`export`,`payment_method`,`paid`)
+                           VALUES ("'.$eventId.'", "' . $submissionDate->format('Y-m-d H:i:s') .'","'.$eventDate.'","'.$hostName.'","'.$ipAddress.'","'.$type.'","'.$key.'","'.$userId.'","'.$_LANGID.'",0,"'.$paymentMethod.'","'.$paid.'")';
             
             $objResult = $objDatabase->Execute($query);
             

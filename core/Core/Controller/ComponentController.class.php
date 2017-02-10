@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -84,9 +84,21 @@ cx(.bat) uninstall [core|core_module|module|lib|theme] {component name}';
 
     public function executeCommand($command, $arguments, $dataArguments = array())
     {
-        
+
         switch ($command) {
             case 'help':
+                $commands = $this->cx->getCommands();
+                if (count($arguments)) {
+                    if (isset($commands[current($arguments)])) {
+                        echo $commands[current($arguments)]->getCommandDescription(
+                            current($arguments),
+                            false
+                        ) . "\n";
+                        return;
+                    } else {
+                        echo "No such command\n";
+                    }
+                }
                 echo 'Cloudrexx command mode help.
 
 ';
@@ -98,7 +110,6 @@ Use »cx(.bat) help <command>« for more info about a command
 Available commands:
 
 ';
-                $commands = $this->cx->getCommands();
                 $commandPerComponent = array();
                 foreach ($commands as $command=>$component) {
                     if (!isset($commandPerComponent[$component->getName()])) {
@@ -222,4 +233,3 @@ Available commands:
         exec($command);
     }
 }
-

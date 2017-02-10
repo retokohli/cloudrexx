@@ -252,16 +252,16 @@ class CalendarCategory extends CalendarLibrary
     function save($data)
     {
         global $objDatabase, $_LANGID;
-
+    	
     	$arrHosts = array();
     	$arrHosts = $data['selectedHosts'];
     	$arrNames = array();
         $arrNames = $data['name'];
-
+        
         $id       = $this->id;
         $formData = array('categoryNames' => $arrNames);
         $category = $this->getCategoryEntity($this->id, $formData);
-	if (intval($this->id) == 0) {
+    	if(intval($this->id) == 0) {
             //Trigger event prePersist for Category Entity
             $this->triggerEvent(
                 'model/prePersist', $category,
@@ -269,16 +269,16 @@ class CalendarCategory extends CalendarLibrary
                     'relations' => array('oneToMany' => 'getCategoryNames')
                 ), true
             );
-            $query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_category
-                                  (`pos`,`status`)
-                       VALUES ('0','0')";
-
-            $objResult = $objDatabase->Execute($query);
-
-            if ($objResult === false) {
+    		$query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_category
+    		                      (`pos`,`status`)
+                           VALUES ('0','0')";
+    		
+	        $objResult = $objDatabase->Execute($query);
+	        
+    		if($objResult === false) {
                 return false;
             }
-
+            
             $this->id = intval($objDatabase->Insert_ID());
 	} else {
             //Trigger event preUpdate for Category Entity
@@ -288,8 +288,8 @@ class CalendarCategory extends CalendarLibrary
                     'relations' => array('oneToMany' => 'getCategoryNames')
                 ), true
             );
-        }
-
+    	}
+    	
         $categoryNames = $category->getCategoryNames();
         foreach ($categoryNames as $categoryName) {
             //Trigger event preRemove for CategoryName Entity
@@ -298,21 +298,21 @@ class CalendarCategory extends CalendarLibrary
     	//names
     	$query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_category_name
                         WHERE cat_id = '".intval($this->id)."'";
-
+            
         $objResult = $objDatabase->Execute($query);
-
+        
         if ($objResult !== false) {
             foreach ($categoryNames as $categoryName) {
                 //Trigger event postRemove for CategoryName Entity
                 $this->triggerEvent('model/postRemove', $categoryName);
             }
             $category = $this->getCategoryEntity($this->id);
-            foreach ($arrNames as $langId => $categoryName) {
-                if ($langId != 0) {
+        	foreach ($arrNames as $langId => $categoryName) {
+        		if($langId != 0) {
                     $categoryName = ($categoryName == '') ? $arrNames[0] : $categoryName;
-                    if ($_LANGID == $langId) {
-                        $categoryName = $arrNames[0] != $this->name ? $arrNames[0] : $categoryName;
-                    }
+	        		if($_LANGID == $langId) {
+	        			$categoryName = $arrNames[0] != $this->name ? $arrNames[0] : $categoryName;
+	        		}
 
                     $formData = array(
                         'catId'  => intval($this->id),
@@ -329,21 +329,21 @@ class CalendarCategory extends CalendarLibrary
                             'relations' => array('manyToOne' => 'getCategory')
                         ), true
                     );
-
-                    $query = "INSERT INTO " . DBPREFIX . "module_" . $this->moduleTablePrefix . "_category_name
-                                          (`cat_id`,`lang_id`,`name`)
+	        		
+	        		$query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_category_name
+	                                      (`cat_id`,`lang_id`,`name`)
                                    VALUES ('" . intval($this->id) . "','" . $formData['langId'] . "','" . $formData['name'] . "')";
-
-                    $objResult = $objDatabase->Execute($query);
+	            
+	                $objResult = $objDatabase->Execute($query);
                     if ($objResult !== false) {
                         //Trigger event postPersist for CategoryName Entity
                         $this->triggerEvent('model/postPersist', $categoryNameEntity);
-                    }
-                }
+        		}
+        	}
             }
             $this->triggerEvent('model/postFlush');
-
-            if ($objResult !== false) {
+        	
+	        if ($objResult !== false) {
                 if ($id == 0) {
                     //Trigger event postPersist for Category Entity
                     $this->triggerEvent('model/postPersist', $category, null, true);
@@ -354,27 +354,27 @@ class CalendarCategory extends CalendarLibrary
                 $this->triggerEvent('model/postFlush');
 
                 //hosts
-                foreach ($arrHosts as $key => $hostId) {
-                    $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_host
-                                 SET cat_id = '".intval($this->id)."'
-                               WHERE id = '".intval($hostId)."'";
-
-                    $objResult = $objDatabase->Execute($query);
-                }
-
-                if ($objResult !== false) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
+		        foreach ($arrHosts as $key => $hostId) {
+			        $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_host
+			                     SET cat_id = '".intval($this->id)."'          
+			                   WHERE id = '".intval($hostId)."'";
+			            
+			        $objResult = $objDatabase->Execute($query);
+		        }
+		        
+		        if ($objResult !== false) {
+		            return true;
+		        } else {
+		            return false;
+		        }
+	        } else {
+	            return false;
+	        }
         } else {
-            return false;
+        	return false;
         }
     }
-
+    
     /**
      * Delete the category
      *     
@@ -392,24 +392,24 @@ class CalendarCategory extends CalendarLibrary
                 'relations' => array('oneToMany' => 'getCategoryNames')
             ), true
         );
-
+        
         $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_category
                         WHERE id = '".intval($this->id)."'";
-
+        
         $objResult = $objDatabase->Execute($query);
-
+        
         if ($objResult !== false) {
             $categoryNames = $category->getCategoryNames();
             foreach ($categoryNames as $categoryName) {
                 //Trigger preRemove event for CategoryName Entity
                 $this->triggerEvent('model/preRemove', $categoryName);
             }
-            $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_category_name
-                            WHERE cat_id = '".intval($this->id)."'";
-
-            $objResult = $objDatabase->Execute($query);
-
-            if ($objResult !== false) {
+        	$query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_category_name
+	                        WHERE cat_id = '".intval($this->id)."'";
+	        
+	        $objResult = $objDatabase->Execute($query);
+	        
+	        if ($objResult !== false) {
                 foreach ($categoryNames as $categoryName) {
                     //Trigger postRemove event for CategoryName Entity
                     $this->triggerEvent('model/postRemove', $categoryName);
@@ -417,24 +417,24 @@ class CalendarCategory extends CalendarLibrary
                 //Trigger postRemove event for Category Entity
                 $this->triggerEvent('model/postRemove', $category);
                 $this->triggerEvent('model/postFlush');
-                $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_host
-                             SET cat_id = '0'
-                       WHERE cat_id = '".intval($this->id)."'";
-
-                $objResult = $objDatabase->Execute($query);
-                if ($objResult !== false) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
+	        	$query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_host
+	        	             SET cat_id = '0'          
+	                       WHERE cat_id = '".intval($this->id)."'";
+	            
+	            $objResult = $objDatabase->Execute($query);
+	            if ($objResult !== false) {
+	            	return true;
+	            } else {
+	            	return false;
+	            }
+	        } else {
                 return false;
-            }
+	        }
         } else {
             return false;
         }
     }
-
+    
     /**
      * Count the number of entries in the category
      *      
