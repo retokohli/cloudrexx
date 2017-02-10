@@ -379,7 +379,6 @@ class CalendarRegistration extends CalendarLibrary
         );
         $registration = $this->getRegistrationEntity($regId, $formData);
         if ($regId == 0) {
-            $submissionDate = $this->getDbDateTimeFromIntern($this->getInternDateTimeFromUser());
             $registration->setExport(0);
             //Trigger prePersist event for Registration Entity
             $this->triggerEvent(
@@ -398,10 +397,20 @@ class CalendarRegistration extends CalendarLibrary
                     )
                 ), true
             );
+            $submissionDate = $this->getDbDateTimeFromIntern($this->getInternDateTimeFromUser());
             $query = 'INSERT INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration
-                                  (`event_id`, `submission_date`,`date`,`host_name`,`ip_address`,`type`,`key`,`user_id`,`lang_id`,`export`,`payment_method`,`paid`)
-                           VALUES ("'.$eventId.'", "' . $submissionDate->format('Y-m-d H:i:s') .'","'.$eventDate.'","'.$hostName.'","'.$ipAddress.'","'.$type.'","'.$key.'","'.$userId.'","'.$_LANGID.'",0,"'.$paymentMethod.'","'.$paid.'")';
-            
+                        SET `event_id`         = ' . $eventId . ',
+                            `submission_date`  = "' . $submissionDate->format('Y-m-d H:i:s') .'",
+                            `date`             = ' . $eventDate . ',
+                            `host_name`        = "' . $hostName . '",
+                            `ip_address`       = "' . $ipAddress . '",
+                            `type`             = ' . $type . ',
+                            `key`              = "' . $key . '",
+                            `user_id`          = ' . $userId . ',
+                            `lang_id`          = ' . $_LANGID . ',
+                            `export`           = 0,
+                            `payment_method`   = ' . $paymentMethod . ',
+                            `paid`             = ' . $paid . ' ';
             $objResult = $objDatabase->Execute($query);
             
             if ($objResult !== false) {
@@ -521,9 +530,9 @@ class CalendarRegistration extends CalendarLibrary
             $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();
             
             $templateId     = $objEvent->emailTemplate[FRONTEND_LANG_ID];
-            $objMailManager->sendMail(intval($_REQUEST['id']), \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_CONFIRM_REG, $this->id, $templateId);
+            $objMailManager->sendMail($objEvent, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_CONFIRM_REG, $this->id, $templateId);
             
-            $objMailManager->sendMail(intval($_REQUEST['id']), \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_ALERT_REG, $this->id);
+            $objMailManager->sendMail($objEvent, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_ALERT_REG, $this->id);
         }
         
         return true;
