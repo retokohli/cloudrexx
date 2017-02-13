@@ -13,4 +13,13 @@ cx.jQuery(document).ready(function() {
         }
     });
     formLabels.width(equalWidth);
+
+    // wrap names of placeholder inputs properly
+    // to get all values in subarray of post when submitting the form
+    var placeHolderInputs = cx.jQuery("#form-0 input[type='text']");
+    placeHolderInputs.each(function() {
+        var placeHolderName = cx.jQuery(this).attr('name');
+        var wrappedName = "placeholders['" + placeHolderName + "']";
+        cx.jQuery(this).attr('name', wrappedName);
+    });
 });
