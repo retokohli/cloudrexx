@@ -54,7 +54,7 @@ class LanguageFileTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase {
      */
     public function testConstructor() {
         // Arrange
-        $exptectedPath = ASCMS_CUSTOMIZING_PATH . '/lang/de/frontend.yaml';
+        $expectedPath = ASCMS_CUSTOMIZING_PATH . '/lang/de/frontend.yaml';
         $expectedIdentifier = 'Cx\Core\Locale\Model\Entity\LanguageFile';
 
         // mock source language
@@ -77,7 +77,7 @@ class LanguageFileTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase {
 
         // Assert
         // check path
-        $this->assertEquals($exptectedPath, $languageFile->getPath());
+        $this->assertEquals($expectedPath, $languageFile->getPath());
         // check locale
         $this->assertEquals($localeMock, $languageFile->getLocale());
         // check identifier
