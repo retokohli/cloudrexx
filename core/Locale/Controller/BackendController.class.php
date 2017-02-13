@@ -161,9 +161,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 if (isset($_POST) && isset($_POST['localeId'])) {
                     // use locale selected by user
                     $localeId = $_POST['localeId'];
-                } elseif (isset(\Env::get('init')->userFrontendLangId)) {
+                } elseif (
+                    $userLocaleId = \FWUser::getFWUserObject()->objUser->getFrontendLanguage()
+                ) {
                     // use user's default locale from init
-                    $localeId = \Env::get('init')->userFrontendLangId;
+                    $localeId = $userLocaleId;
                 } else {
                     // use system's default locale
                     $localeId = \Cx\Core\Setting\Controller\Setting::getValue('defaultLocaleId');
