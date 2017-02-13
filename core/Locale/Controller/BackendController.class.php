@@ -164,7 +164,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 } elseif (
                     $userLocaleId = \FWUser::getFWUserObject()->objUser->getFrontendLanguage()
                 ) {
-                    // use user's default locale from init
+                    // use user's default locale
                     $localeId = $userLocaleId;
                 } else {
                     // use system's default locale
