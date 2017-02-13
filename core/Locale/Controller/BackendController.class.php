@@ -693,6 +693,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             $placeholder = new \Cx\Core\Locale\Model\Entity\Placeholder($name, $value);
             $this->languageFile->addPlaceholder($placeholder);
         }
+        if ($this->languageFile->getPlaceholders()) {
+            $this->languageFile->save();
+        }
     }
 
     /**

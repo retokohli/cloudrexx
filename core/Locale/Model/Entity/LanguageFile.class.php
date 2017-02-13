@@ -98,6 +98,43 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     }
 
     /**
+     * Saves the overwritten placeholders to yaml
+     *
+     * If the folder for the frontend.yaml doesn't exist yet, it's created.
+     * If the frontend.yaml doesn't exist yet it's created
+     *
+     * @param string $filename Is ignored since $this->path is used
+     * @throws \Cx\Lib\FileSystem\FileSystemException
+     */
+    public function save($filename='') {
+        // check if folder of frontend.yaml already exists
+        if (!\Cx\Lib\FileSystem\FileSystem::exists(dirname($this->getPath()))) {
+            // folder doesn't exist, create it (recursively)
+            \Cx\Lib\FileSystem\FileSystem::make_folder(dirname($this->getPath()), true);
+        }
+        // export placeholders to yaml file
+        $this->exportToFile(
+            $this->getYamlInterface(),
+            $this->getPath()
+        );
+    }
+
+    /**
+     * Exports the overwritten placeholders, called by save method
+     *
+     * @param \Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface
+     * @return mixed
+     */
+    public function export(\Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface) {
+        try {
+            return $exportInterface->export($this->getPlaceholders());
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+            throw new DataSetException('Exporting overwritten placeholders to frontend.yaml failed!');
+        }
+    }
+
+    /**
      * Return's the locale
      *
      * @return Locale
