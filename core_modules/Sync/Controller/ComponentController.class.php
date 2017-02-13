@@ -205,7 +205,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
     
-    public function postFinalize() {
+    public function postFinalize(&$endcode) {
         // persist spooler
         if ($this->unspooling || !isset($this->spooler)) {
             return;
