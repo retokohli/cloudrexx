@@ -163,7 +163,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     /**
      * Updates the language data with the placeholders from the yaml file
      */
-    protected function updateLanguageData() {
+    public function updateLanguageData() {
         // update language data
         foreach ($this->placeholders as $placeholder) {
             $this->data[$placeholder->getName()] = $placeholder->getValue();
