@@ -60,75 +60,107 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
 
         $objAccessBlocks = new AccessBlocks($template);
         //Parse the currently online users
-        if (
-            $template->blockExists('access_currently_online_member_list') &&
-            \FWUser::showCurrentlyOnlineUsers()
-        ) {
-            if ($template->blockExists('access_currently_online_female_members')) {
-                $objAccessBlocks->setCurrentlyOnlineUsers('female');
-            }
+        if ($name == 'access_currently_online_member_list') {
+            if (
+                \FWUser::showCurrentlyOnlineUsers() &&
+                (
+                    $template->blockExists('access_currently_online_female_members') ||
+                    $template->blockExists('access_currently_online_male_members') ||
+                    $template->blockExists('access_currently_online_members')
+                )
+            ) {
+                if ($template->blockExists('access_currently_online_female_members')) {
+                    $objAccessBlocks->setCurrentlyOnlineUsers('female');
+                }
 
-            if ($template->blockExists('access_currently_online_male_members')) {
-                $objAccessBlocks->setCurrentlyOnlineUsers('male');
-            }
+                if ($template->blockExists('access_currently_online_male_members')) {
+                    $objAccessBlocks->setCurrentlyOnlineUsers('male');
+                }
 
-            if ($template->blockExists('access_currently_online_members')) {
-                $objAccessBlocks->setCurrentlyOnlineUsers();
+                if ($template->blockExists('access_currently_online_members')) {
+                    $objAccessBlocks->setCurrentlyOnlineUsers();
+                }
+            } else {
+                $template->hideBlock($name);
             }
         }
 
         //Parse the last active users
-        if (
-            $template->blockExists('access_last_active_member_list') &&
-            \FWUser::showLastActivUsers()
-        ) {
-            if ($template->blockExists('access_last_active_female_members')) {
-                $objAccessBlocks->setLastActiveUsers('female');
-            }
+        if ($name == 'access_last_active_member_list') {
+            if (
+                \FWUser::showLastActivUsers() &&
+                (
+                    $template->blockExists('access_last_active_female_members') ||
+                    $template->blockExists('access_last_active_male_members') ||
+                    $template->blockExists('access_last_active_members')
+                )
+            ) {
+                if ($template->blockExists('access_last_active_female_members')) {
+                    $objAccessBlocks->setLastActiveUsers('female');
+                }
 
-            if ($template->blockExists('access_last_active_male_members')) {
-                $objAccessBlocks->setLastActiveUsers('male');
-            }
+                if ($template->blockExists('access_last_active_male_members')) {
+                    $objAccessBlocks->setLastActiveUsers('male');
+                }
 
-            if ($template->blockExists('access_last_active_members')) {
-                $objAccessBlocks->setLastActiveUsers();
+                if ($template->blockExists('access_last_active_members')) {
+                    $objAccessBlocks->setLastActiveUsers();
+                }
+            } else {
+                $template->hideBlock($name);
             }
         }
 
         //Parse the latest registered users
-        if (
-            $template->blockExists('access_latest_registered_member_list') &&
-            \FWUser::showLatestRegisteredUsers()
-        ) {
-            if ($template->blockExists('access_latest_registered_female_members')) {
-                $objAccessBlocks->setLatestRegisteredUsers('female');
-            }
+        if ($name == 'access_latest_registered_member_list') {
+            if (
+                \FWUser::showLatestRegisteredUsers() &&
+                (
+                    $template->blockExists('access_latest_registered_female_members') ||
+                    $template->blockExists('access_latest_registered_male_members') ||
+                    $template->blockExists('access_latest_registered_members')
+                )
+            ) {
+                if ($template->blockExists('access_latest_registered_female_members')) {
+                    $objAccessBlocks->setLatestRegisteredUsers('female');
+                }
 
-            if ($template->blockExists('access_latest_registered_male_members')) {
-                $objAccessBlocks->setLatestRegisteredUsers('male');
-            }
+                if ($template->blockExists('access_latest_registered_male_members')) {
+                    $objAccessBlocks->setLatestRegisteredUsers('male');
+                }
 
-            if ($template->blockExists('access_latest_registered_members')) {
-                $objAccessBlocks->setLatestRegisteredUsers();
+                if ($template->blockExists('access_latest_registered_members')) {
+                    $objAccessBlocks->setLatestRegisteredUsers();
+                }
+            } else {
+                $template->hideBlock($name);
             }
         }
 
         //Parse the birthday users
-        if (
-            $template->blockExists('access_birthday_member_list') &&
-            \FWUser::showBirthdayUsers() &&
-            $objAccessBlocks->isSomeonesBirthdayToday()
-        ) {
-            if ($template->blockExists('access_birthday_female_members')) {
-                $objAccessBlocks->setBirthdayUsers('female');
-            }
+        if ($name == 'access_birthday_member_list') {
+            if (
+                \FWUser::showBirthdayUsers() &&
+                $objAccessBlocks->isSomeonesBirthdayToday() &&
+                (
+                    $template->blockExists('access_birthday_female_members') ||
+                    $template->blockExists('access_birthday_male_members') ||
+                    $template->blockExists('access_birthday_members')
+                )
+            ) {
+                if ($template->blockExists('access_birthday_female_members')) {
+                    $objAccessBlocks->setBirthdayUsers('female');
+                }
 
-            if ($template->blockExists('access_birthday_male_members')) {
-                $objAccessBlocks->setBirthdayUsers('male');
-            }
+                if ($template->blockExists('access_birthday_male_members')) {
+                    $objAccessBlocks->setBirthdayUsers('male');
+                }
 
-            if ($template->blockExists('access_birthday_members')) {
-                $objAccessBlocks->setBirthdayUsers();
+                if ($template->blockExists('access_birthday_members')) {
+                    $objAccessBlocks->setBirthdayUsers();
+                }
+            } else {
+                $template->hideBlock($name);
             }
         }
     }
