@@ -244,23 +244,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
         }
 
-        $objAccessBlocks = new AccessBlocks();
-        $widgetNames     = array(
-            'access_currently_online_member_list' =>
-                \FWUser::showCurrentlyOnlineUsers(),
-            'access_last_active_member_list' =>
-                \FWUser::showLastActivUsers(),
-            'access_latest_registered_member_list' =>
-                \FWUser::showLatestRegisteredUsers(),
-            'access_birthday_member_list' =>
-                \FWUser::showBirthdayUsers() &&
-                $objAccessBlocks->isSomeonesBirthdayToday()
+        $widgetNames = array(
+            'access_currently_online_member_list',
+            'access_last_active_member_list',
+            'access_latest_registered_member_list',
+            'access_birthday_member_list'
         );
-        foreach ($widgetNames as $widgetName => $widgetStatus) {
-            if (!$widgetStatus) {
-                continue;
-            }
-
+        foreach ($widgetNames as $widgetName) {
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
                 $widgetName,

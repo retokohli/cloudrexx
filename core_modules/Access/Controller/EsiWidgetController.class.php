@@ -59,7 +59,11 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         }
 
         $objAccessBlocks = new AccessBlocks($template);
-        if ($template->blockExists('access_currently_online_member_list')) {
+        //Parse the currently online users
+        if (
+            $template->blockExists('access_currently_online_member_list') &&
+            \FWUser::showCurrentlyOnlineUsers()
+        ) {
             if ($template->blockExists('access_currently_online_female_members')) {
                 $objAccessBlocks->setCurrentlyOnlineUsers('female');
             }
@@ -73,7 +77,11 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             }
         }
 
-        if ($template->blockExists('access_last_active_member_list')) {
+        //Parse the last active users
+        if (
+            $template->blockExists('access_last_active_member_list') &&
+            \FWUser::showLastActivUsers()
+        ) {
             if ($template->blockExists('access_last_active_female_members')) {
                 $objAccessBlocks->setLastActiveUsers('female');
             }
@@ -87,7 +95,11 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             }
         }
 
-        if ($template->blockExists('access_latest_registered_member_list')) {
+        //Parse the latest registered users
+        if (
+            $template->blockExists('access_latest_registered_member_list') &&
+            \FWUser::showLatestRegisteredUsers()
+        ) {
             if ($template->blockExists('access_latest_registered_female_members')) {
                 $objAccessBlocks->setLatestRegisteredUsers('female');
             }
@@ -101,7 +113,12 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             }
         }
 
-        if ($template->blockExists('access_birthday_member_list')) {
+        //Parse the birthday users
+        if (
+            $template->blockExists('access_birthday_member_list') &&
+            \FWUser::showBirthdayUsers() &&
+            $objAccessBlocks->isSomeonesBirthdayToday()
+        ) {
             if ($template->blockExists('access_birthday_female_members')) {
                 $objAccessBlocks->setBirthdayUsers('female');
             }
