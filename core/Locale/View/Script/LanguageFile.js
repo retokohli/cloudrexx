@@ -19,7 +19,7 @@ cx.jQuery(document).ready(function() {
     var placeholderInputs = cx.jQuery("#form-0 input[type='text']");
     placeholderInputs.each(function() {
         var placeholderName = cx.jQuery(this).attr('name');
-        var wrappedName = "placeholders['" + placeholderName + "']";
+        var wrappedName = "placeholders[" + placeholderName + "]";
         cx.jQuery(this).attr('name', wrappedName);
     });
 });

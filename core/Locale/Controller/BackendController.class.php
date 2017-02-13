@@ -173,6 +173,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 // set language file by source language
                 $this->languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale, 'Core', $frontend);
 
+                // check if user changed placeholders
+                if (isset($_POST['placeholders'])) {
+                    $this->updateLanguageFile($_POST['placeholders']);
+                }
                 // parse locale select
                 $this->parseLocaleSelect($template);
 
@@ -663,6 +667,31 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             )
         ) {
             \Cx\Core\Setting\Controller\Setting::update('defaultLanguageId');
+        }
+    }
+
+    /**
+     * Compares the placeholders from post to the current set placeholders
+     * and stores the effectively changed ones
+     *
+     * @param array $placeholders The placeholders from post
+     */
+    protected function updateLanguageFile($placeholders) {
+        // get old placeholder values
+        $oldPlaceholders = $this->languageFile->getData();
+
+        // check for changed values
+        foreach ($placeholders as $name => $value) {
+            // ignore line breaks
+            $oldValue = str_replace(array("\r", "\n"), '', $oldPlaceholders[$name]);
+            $newValue = str_replace(array("\r", "\n"), '', $value);
+            if ($oldValue == $newValue) {
+                // not changed, skip this one
+                continue;
+            }
+            // add changed placeholders to language file
+            $placeholder = new \Cx\Core\Locale\Model\Entity\Placeholder($name, $value);
+            $this->languageFile->addPlaceholder($placeholder);
         }
     }
 

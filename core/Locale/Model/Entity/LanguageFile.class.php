@@ -135,6 +135,10 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
         $this->placeholders = $placeholders;
     }
 
+    public function addPlaceholder($placeholder) {
+        $this->placeholders[] = $placeholder;
+    }
+
     /**
      * Returns the path of the customized yaml file
      *
@@ -153,5 +157,13 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     public function setPath($path)
     {
         $this->path = $path;
+    }
+
+    /**
+     * Returns an array containing the placeholders before the overwrite
+     * @return array The placeholders before overwrite
+     */
+    public function getData() {
+        return $this->data;
     }
 }
