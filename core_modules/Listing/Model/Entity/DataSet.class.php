@@ -182,14 +182,14 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
     }
 
     protected static function getYamlInterface() {
-        if (empty(self::$yamlInterface)) {
-            self::$yamlInterface = new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface();
+        if (empty(static::$yamlInterface)) {
+            static::$yamlInterface = new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface();
         }
-        return self::$yamlInterface;
+        return static::$yamlInterface;
     }
 
     public function toYaml() {
-        return $this->export(self::getYamlInterface());
+        return $this->export(static::getYamlInterface());
     }
 
     public static function import(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $content) {
@@ -226,7 +226,7 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
         }
         try {
             $objFile = new \Cx\Lib\FileSystem\File($filename);
-            $objImport = self::import($importInterface, $objFile->getData());
+            $objImport = static::import($importInterface, $objFile->getData());
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
             throw new DataSetException("Failed to load data from file $filename!");
@@ -284,7 +284,7 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
     }
 
     public static function fromYaml($data) {
-        return self::import(self::getYamlInterface(), $data);
+        return static::import(static::getYamlInterface(), $data);
     }
 
     /**
@@ -295,7 +295,7 @@ class DataSet extends \Cx\Model\Base\EntityBase implements \Iterator {
      * @return type
      */
     public static function load($filename, $useCache = true) {
-        return self::importFromFile(self::getYamlInterface(), $filename, $useCache);
+        return static::importFromFile(static::getYamlInterface(), $filename, $useCache);
     }
 
     public function getDataType() {
