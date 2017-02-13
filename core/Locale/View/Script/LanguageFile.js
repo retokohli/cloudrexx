@@ -16,10 +16,10 @@ cx.jQuery(document).ready(function() {
 
     // wrap names of placeholder inputs properly
     // to get all values in subarray of post when submitting the form
-    var placeHolderInputs = cx.jQuery("#form-0 input[type='text']");
-    placeHolderInputs.each(function() {
-        var placeHolderName = cx.jQuery(this).attr('name');
-        var wrappedName = "placeholders['" + placeHolderName + "']";
+    var placeholderInputs = cx.jQuery("#form-0 input[type='text']");
+    placeholderInputs.each(function() {
+        var placeholderName = cx.jQuery(this).attr('name');
+        var wrappedName = "placeholders['" + placeholderName + "']";
         cx.jQuery(this).attr('name', wrappedName);
     });
 });
