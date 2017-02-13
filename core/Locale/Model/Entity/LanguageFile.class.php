@@ -83,6 +83,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
      *
      */
     public function __construct(\Cx\Core\Locale\Model\Entity\Locale $locale, $componentName='Core', $frontend=true) {
+
         // set identifier to parse entity view correctly
         $this->setIdentifier('Cx\Core\Locale\Model\Entity\LanguageFile');
 
@@ -94,7 +95,14 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
         $mode = $frontend ? 'frontend' : 'backend';
         $this->path = ASCMS_CUSTOMIZING_PATH . '/lang/' . $locale->getSourceLanguage()->getIso1() . '/' . $mode . '.yaml';
 
-        $this->placeholders = array();
+        // check if yaml with customized placeholders exists
+        if (\Cx\Lib\FileSystem\FileSystem::exists($this->getPath())) {
+            // load placeholders from yaml
+            $this->placeholders = $this->load($this->getPath());
+        }
+
+        // update the language data
+        $this->updateLanguageData();
     }
 
     /**
@@ -117,6 +125,9 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
             $this->getYamlInterface(),
             $this->getPath()
         );
+
+        // update the language data
+        $this->updateLanguageData();
     }
 
     /**
@@ -131,6 +142,31 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
             throw new DataSetException('Exporting overwritten placeholders to frontend.yaml failed!');
+        }
+    }
+
+    /**
+     * Imports the placeholders stored in the yaml file
+     * @param \Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface
+     * @param $content
+     * @return mixed The array containing the placeholders
+     */
+    public static function import(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $content) {
+        try {
+            return $importInterface->import($content);
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+            throw new DataSetException('Importing placeholders from yaml failed!');
+        }
+    }
+
+    /**
+     * Updates the language data with the placeholders from the yaml file
+     */
+    protected function updateLanguageData() {
+        // update language data
+        foreach ($this->placeholders as $placeholder) {
+            $this->data[$placeholder->getName()] = $placeholder->getValue();
         }
     }
 
@@ -173,6 +209,13 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     }
 
     public function addPlaceholder($placeholder) {
+        foreach ($this->getPlaceholders() as $key => $existingPlaceholders) {
+            if ($existingPlaceholders->getName() == $placeholder->getName()) {
+                // overwrite existing placeholder
+                $this->placeholders[$key] = $placeholder;
+                return;
+            }
+        }
         $this->placeholders[] = $placeholder;
     }
 
