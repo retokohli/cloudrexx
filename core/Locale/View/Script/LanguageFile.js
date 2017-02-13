@@ -1,7 +1,18 @@
 cx.jQuery(document).ready(function() {
+
+    var localeSelectForm = cx.jQuery('#form-locale-select');
     // reload page automatically when changing locale
-    cx.jQuery('#form-locale-select').change(function() {
+    localeSelectForm.change(function() {
         cx.jQuery(this).submit();
+    });
+
+    // add hidden field for selected language to placeholder form
+    cx.jQuery('#form-0').append(function() {
+        var hiddenInput = cx.jQuery("<input type='hidden' />");
+        var localeSelect = localeSelectForm.find('select');
+        hiddenInput.attr('name', localeSelect.attr('name'));
+        hiddenInput.val(localeSelect.val());
+        return hiddenInput;
     });
 
     // set width of form labels according to the longest content equally
