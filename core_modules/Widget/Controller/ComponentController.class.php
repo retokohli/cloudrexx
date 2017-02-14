@@ -209,4 +209,35 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $eventListener = new \Cx\Core_Modules\Widget\Model\Event\WidgetEventListener($this->cx);
         $this->cx->getEvents()->addEventListener('clearEsiCache', $eventListener);
     }
+
+    /**
+     * Create a new widget
+     *
+     * @param \Cx\Core\Core\Model\Entity\SystemComponentController $component   Component registering this widget
+     * @param string  $name              Name of the widget
+     * @param boolean $hasContent        (optional) Wheter this widget has content or not
+     * @param string  $adapterName       (optional) Name of the JsonAdapter to call. If not specified, $component->getName() is used
+     * @param string  $adapterMethodName (optional) Name of the JsonAdapter method to call. If not specified, "getWidget" is used
+     * @param array   $adapterParams     (optional) Params to pass on JsonAdapter call. If not specified, a default list is used, see getEsiParams()
+     */
+    public function createWidget(
+        $component,
+        $name,
+        $hasContent = false,
+        $adapterName = '',
+        $adapterMethodName = '',
+        $adapterParams = array()
+    ) {
+        $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+            $component,
+            $name,
+            $hasContent,
+            $adapterName,
+            $adapterMethodName,
+            $adapterParams
+        );
+        $this->registerWidget(
+            $widget
+        );
+    }
 }
