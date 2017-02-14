@@ -71,11 +71,11 @@ class ShopManager extends ShopLibrary
         global $_ARRAYLANG, $objTemplate;
 
         \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
-        
+
         $this->checkProfileAttributes();
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        self::$defaultImage = file_exists($cx->getWebsiteImagesShopPath() . '/' . ShopLibrary::noPictureName) ? 
-                                $cx->getWebsiteImagesShopWebPath() . '/' . ShopLibrary::noPictureName : 
+        self::$defaultImage = file_exists($cx->getWebsiteImagesShopPath() . '/' . ShopLibrary::noPictureName) ?
+                                $cx->getWebsiteImagesShopWebPath() . '/' . ShopLibrary::noPictureName :
                                 $cx->getCodeBaseOffsetPath(). '/images/Shop/' . ShopLibrary::noPictureName;
         self::$objTemplate = new \Cx\Core\Html\Sigma($cx->getCodeBaseModulePath() . '/Shop/View/Template/Backend');
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
@@ -119,7 +119,7 @@ class ShopManager extends ShopLibrary
                 throw new \Cx\Lib\Update_DatabaseException(
                     "Failed to create User_Profile_Attribute 'notes'");
             }
-            
+
             //Re initialize shop setting
             \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
 //DBG::log("Customer::errorHandler(): Stored notes attribute, ID ".$objProfileAttribute->getId());
@@ -156,7 +156,7 @@ class ShopManager extends ShopLibrary
                 throw new \Cx\Lib\Update_DatabaseException(
                     "Failed to create User_Profile_Attribute 'notes'");
             }
-            
+
             //Re initialize shop setting
             \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
             if (!(\Cx\Core\Setting\Controller\Setting::set('user_profile_attribute_customer_group_id', $objProfileAttribute->getId())
@@ -440,24 +440,22 @@ class ShopManager extends ShopLibrary
             }
         }
         $objCSVimport->initTemplateArray();
-        // When there is an uploaded file, check its extension and type.
-        // Displays one of two warnings on mismatch.
-        if (!empty($_FILES)) {
-            $file = current($_FILES);
-            if (!preg_match('/\.csv$/i', $file['name'])) {
-                \Message::warning($_ARRAYLANG['TXT_SHOP_IMPORT_WARNING_EXTENSION_MISMATCH']);
-            } else {
-                if (!preg_match('
-                    /application\\/vnd\.ms-excel
-                    |text\\/(?:plain|csv|comma-separated-values)
-                    /x', $file['type'])) {
-                    \Message::warning($_ARRAYLANG['TXT_SHOP_IMPORT_WARNING_TYPE_MISMATCH']);
-                }
-            }
+        $fileExists = false;
+        $fileName   = isset($_POST['csvFile'])
+                        ? contrexx_input2raw($_POST['csvFile'])
+                        : '';
+        $uploaderId = isset($_POST['importCsvUploaderId'])
+                        ? contrexx_input2raw($_POST['importCsvUploaderId'])
+                        : '';
+        if (!empty($fileName) && !empty($uploaderId)) {
+            $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+            $objSession = $cx->getComponent('Session')->getSession();
+            $tmpFile    = $objSession->getTempPath() . '/' . $uploaderId . '/' . $fileName;
+            $fileExists = \Cx\Lib\FileSystem\FileSystem::exists($tmpFile);
         }
         // Import Categories
         // This is not subject to change, so it's hardcoded
-        if (isset($_REQUEST['ImportCategories'])) {
+        if (isset($_REQUEST['ImportCategories']) && $fileExists) {
             // delete existing categories on request only!
             // mind that this necessarily also clears all products and
             // their associated attributes!
@@ -467,7 +465,7 @@ class ShopManager extends ShopLibrary
 // NOTE: Removing Attributes is now disabled.  Optionally enable this.
 //                Attributes::deleteAll();
             }
-            $objCsv = new CsvBv($_FILES['importFileCategories']['tmp_name']);
+            $objCsv = new CsvBv($tmpFile);
             $importedLines = 0;
             $arrCategoryLevel = array(0,0,0,0,0,0,0,0,0,0);
             $line = $objCsv->NextLine();
@@ -490,7 +488,7 @@ class ShopManager extends ShopLibrary
                 ': '.$importedLines);
         }
         // Import
-        if (isset($_REQUEST['importFileProducts'])) {
+        if (isset($_REQUEST['importFileProducts']) && $fileExists) {
             if (isset($_POST['clearProducts']) && $_POST['clearProducts']) {
                 Products::deleteByShopCategory(0, false, true);
                 // The categories need not be removed, but it is done by design!
@@ -498,7 +496,7 @@ class ShopManager extends ShopLibrary
 // NOTE: Removing Attributes is now disabled.  Optionally enable this.
 //                Attributes::deleteAll();
             }
-            $arrFileContent = $objCSVimport->GetFileContent();
+            $arrFileContent = $objCSVimport->GetFileContent($tmpFile);
             $query = '
                 SELECT img_id, img_name, img_cats, img_fields_file, img_fields_db
                   FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_importimg
@@ -613,14 +611,16 @@ class ShopManager extends ShopLibrary
             if (!isset($_REQUEST['SelectFields'])) {
                 $jsnofiles = "selectTab('import1');";
             } else {
-                if ($_FILES['CSVfile']['name'] == '') {
+                if (isset($_POST['mode']) && $_POST['csvFile'] == '') {
                     $jsnofiles = "selectTab('import4');";
                 } else {
                     $jsnofiles = "selectTab('import2');";
-                    $fileFields = '
-                        <select name="FileFields" id="file_field" style="width: 200px;" size="10">
-                            '.$objCSVimport->getFilefieldMenuOptions().'
-                        </select>'."\n";
+                    if ($fileExists) {
+                        $fileFields = '
+                            <select name="FileFields" id="file_field" style="width: 200px;" size="10">
+                                '.$objCSVimport->getFilefieldMenuOptions($tmpFile).'
+                            </select>'."\n";
+                    }
                     $dblist = '
                         <select name="DbFields" id="given_field" style="width: 200px;" size="10">
                             '.$objCSVimport->getAvailableNamesMenuOptions().'
@@ -651,11 +651,23 @@ class ShopManager extends ShopLibrary
             ));
             self::$objTemplate->parse('imgRow');
         }
+        //initialize the uploader
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader(); //create an uploader
+        $uploader->setCallback('importUploaderCallback');
+        $uploader->setOptions(array(
+                    'id'                 => 'importCsvUploader',
+                    'allowed-extensions' => array('csv', 'xls'),
+                    'data-upload-limit'  => 1,
+                    'style' => 'display:none'
+        ));
+
         self::$objTemplate->setVariable(array(
             'SELECT_LAYER_ONLOAD' => $jsSelectLayer,
             'NO_FILES' => (isset($jsnofiles)  ? $jsnofiles  : ''),
             'FILE_FIELDS_LIST' => (isset($fileFields) ? $fileFields : ''),
             'DB_FIELDS_LIST' => (isset($dblist) ? $dblist : ''),
+            'SHOP_IMPORT_CSV_UPLOADER_CODE' => $uploader->getXHtml(),
+            'SHOP_IMPORT_CSV_UPLOADER_ID' => $uploader->getId(),
             // Export: instructions added
 //            'SHOP_EXPORT_TIPS' => $tipText,
         ));
@@ -1596,6 +1608,8 @@ if ($test === NULL) {
                 \Cx\Core\Setting\Controller\Setting::getValue('numof_coupon_per_page_backend','Shop'),
             'SHOP_SETTING_NUMOF_PRODUCTS_PER_PAGE_FRONTEND' =>
                 \Cx\Core\Setting\Controller\Setting::getValue('numof_products_per_page_frontend','Shop'),
+            'SHOP_SETTING_NUM_CATEGORIES_PER_ROW' =>
+                \Cx\Core\Setting\Controller\Setting::getValue('num_categories_per_row','Shop'),
 
 // TODO: Use \Cx\Core\Setting\Controller\Setting::show(), and add a proper setting type!
             'SHOP_SETTING_USERGROUP_ID_CUSTOMER' =>
@@ -1663,7 +1677,7 @@ if ($test === NULL) {
         $virtual = false;
         $pictureFilename = NULL;
         $picturePath = $thumbPath = self::$defaultImage;
-        if ($category_id) {            
+        if ($category_id) {
             // Edit the selected category:  Flip view to the edit tab
             $flagEditTabActive = true;
             $objCategory = ShopCategory::getById($category_id);
@@ -1676,8 +1690,7 @@ if ($test === NULL) {
                 $pictureFilename = $objCategory->picture();
                 if ($pictureFilename != '') {
                     $picturePath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.$pictureFilename;
-                    $thumbPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.
-                        \ImageManager::getThumbnailFilename($pictureFilename);
+                    $thumbPath = \ImageManager::getThumbnailFilename(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.$pictureFilename);
                 }
             }
         }
@@ -1731,7 +1744,7 @@ if ($test === NULL) {
         self::$objTemplate->setGlobalVariable(array(
             'MEDIABROWSER_BUTTON' => self::getMediaBrowserButton($mediaBrowserOptions, 'setSelectedImage')
         ));
-        
+
         self::$objTemplate->parse('category_edit');
 // TODO: Add controls to fold parent categories
 //        $level_prev = null;
@@ -2077,27 +2090,6 @@ if ($test === NULL) {
         return $result;
     }
 
-
-    function delFile($file)
-    {
-        @unlink($file);
-        clearstatcache();
-        if (@file_exists($file)) {
-            $filesys = eregi_replace('/', '\\', $file);
-            @system('del '.$filesys);
-            clearstatcache();
-            // don't work in safemode
-            if (@file_exists($file)) {
-                @chmod ($file, 0775);
-                @unlink($file);
-            }
-        }
-        clearstatcache();
-        if (@file_exists($file)) return false;
-        return true;
-    }
-
-
     /**
      * Manage products
      *
@@ -2116,8 +2108,9 @@ if ($test === NULL) {
         self::$objTemplate->addBlockfile('SHOP_PRODUCTS_FILE',
             'shop_products_block', 'module_shop_product_manage.html');
         self::$objTemplate->setGlobalVariable($_ARRAYLANG);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         self::$objTemplate->setVariable(array(
-            'SHOP_DELETE_ICON' => \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCoreWebPath() . '/Core/View/Media/icons/delete.gif',
+            'SHOP_DELETE_ICON' => $cx->getCodeBaseCoreWebPath() . '/Core/View/Media/icons/delete.gif',
             'SHOP_NO_PICTURE_ICON' => self::$defaultImage
         ));
         if ($product_id > 0) {
@@ -2137,7 +2130,7 @@ if ($test === NULL) {
 //            self::$objTemplate->setVariable(
 //                'SHOP_FLAGS_SELECTION', $flagsSelection);
 //        }
-//        
+//
         // media browser
         $mediaBrowserOptions = array(
             'type'                      => 'button',
@@ -2146,7 +2139,7 @@ if ($test === NULL) {
             'id'                        => 'media_browser_shop',
             'style'                     => 'display:none'
         );
-        
+
         self::$objTemplate->setVariable(array(
             'MEDIABROWSER_BUTTON' => self::getMediaBrowserButton($mediaBrowserOptions, 'setSelectedImage')
         ));
@@ -2192,6 +2185,8 @@ if ($test === NULL) {
         $end_time = strtotime($objProduct->date_end());
         if ($end_time > 0) $end_date = date(ASCMS_DATE_FORMAT_DATE, $end_time);
 //DBG::log("Dates from ".$objProduct->date_start()." ($start_time, $start_date) to ".$objProduct->date_start()." ($end_time, $end_date)");
+        $websiteImagesShopPath    = $cx->getWebsiteImagesShopPath() . '/';
+        $websiteImagesShopWebPath = $cx->getWebsiteImagesShopWebPath() . '/';
         self::$objTemplate->setVariable(array(
             'SHOP_PRODUCT_ID' => (isset($_REQUEST['new']) ? 0 : $objProduct->id()),
             'SHOP_PRODUCT_CODE' => contrexx_raw2xhtml($objProduct->code()),
@@ -2232,39 +2227,33 @@ if ($test === NULL) {
                 Manufacturer::getMenuoptions($objProduct->manufacturer_id()),
             'SHOP_PICTURE1_IMG_SRC' =>
                 (   !empty($arrImages[1]['img'])
-                 && is_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/'.
-                        \ImageManager::getThumbnailFilename($arrImages[1]['img']))
-                    ? contrexx_raw2encodedUrl(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.
-                          \ImageManager::getThumbnailFilename($arrImages[1]['img']))
+                 && is_file(\ImageManager::getThumbnailFilename($websiteImagesShopPath . $arrImages[1]['img']))
+                        ? contrexx_raw2encodedUrl(\ImageManager::getThumbnailFilename($websiteImagesShopWebPath . $arrImages[1]['img']))
                     : self::$defaultImage),
             'SHOP_PICTURE2_IMG_SRC' =>
                 (   !empty($arrImages[2]['img'])
-                 && is_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/'.
-                        \ImageManager::getThumbnailFilename($arrImages[2]['img']))
-                    ? contrexx_raw2encodedUrl(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.
-                      \ImageManager::getThumbnailFilename($arrImages[2]['img']))
+                 && is_file(\ImageManager::getThumbnailFilename($websiteImagesShopPath . $arrImages[2]['img']))
+                        ? contrexx_raw2encodedUrl(\ImageManager::getThumbnailFilename($websiteImagesShopWebPath . $arrImages[2]['img']))
                     : self::$defaultImage),
             'SHOP_PICTURE3_IMG_SRC' =>
                 (   !empty($arrImages[3]['img'])
-                 && is_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/'.
-                        \ImageManager::getThumbnailFilename($arrImages[3]['img']))
-                    ? contrexx_raw2encodedUrl(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.
-                      \ImageManager::getThumbnailFilename($arrImages[3]['img']))
+                 && is_file(\ImageManager::getThumbnailFilename($websiteImagesShopPath . $arrImages[3]['img']))
+                    ? contrexx_raw2encodedUrl(\ImageManager::getThumbnailFilename($websiteImagesShopWebPath . $arrImages[3]['img']))
                     : self::$defaultImage),
             'SHOP_PICTURE1_IMG_SRC_NO_THUMB' =>
                 (   !empty($arrImages[1]['img'])
-                 && is_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/'.$arrImages[1]['img'])
-                    ? \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.$arrImages[1]['img']
+                 && is_file($websiteImagesShopPath . $arrImages[1]['img'])
+                    ? $websiteImagesShopWebPath . $arrImages[1]['img']
                     : self::$defaultImage),
             'SHOP_PICTURE2_IMG_SRC_NO_THUMB' =>
                 (   !empty($arrImages[2]['img'])
-                 && is_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/'.$arrImages[2]['img'])
-                    ? \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.$arrImages[2]['img']
+                 && is_file($websiteImagesShopPath . $arrImages[2]['img'])
+                    ? $websiteImagesShopWebPath . $arrImages[2]['img']
                     : self::$defaultImage),
             'SHOP_PICTURE3_IMG_SRC_NO_THUMB' =>
                 (   !empty($arrImages[3]['img'])
-                 && is_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/'.$arrImages[3]['img'])
-                    ? \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.$arrImages[3]['img']
+                 && is_file($websiteImagesShopPath . $arrImages[3]['img'])
+                    ? $websiteImagesShopWebPath . $arrImages[3]['img']
                     : self::$defaultImage),
             'SHOP_PICTURE1_IMG_WIDTH' => $arrImages[1]['width'],
             'SHOP_PICTURE1_IMG_HEIGHT' => $arrImages[1]['height'],
@@ -2352,6 +2341,7 @@ if ($test === NULL) {
         $discount_group_article_id = $_POST['discount_group_article_id'];
 //DBG::log("ShopManager::store_product(): Set \$discount_group_article_id to $discount_group_article_id");
         $keywords = contrexx_input2raw($_POST['keywords']);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
         for ($i = 1; $i <= 3; ++$i) {
             // Images outside the above directory are copied to the shop image folder.
@@ -2369,7 +2359,24 @@ if ($test === NULL) {
             }
             // Update the posted path (used below)
             $_POST['productImage'.$i] = $picture;
+
+            //Set the image width and height If empty
+            if (   !empty($_POST['productImage' . $i . '_width'])
+                && !empty($_POST['productImage' . $i . '_height'])
+            ) {
+                continue;
+            }
+
+            $picturePath = $cx->getWebsiteImagesShopPath(). '/' . $picture;
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($picturePath)) {
+                continue;
+            }
+
+            $pictureSize = getimagesize($picturePath);
+            $_POST['productImage' . $i . '_width']  = $pictureSize[0];
+            $_POST['productImage' . $i . '_height'] = $pictureSize[1];
         }
+
         // add all to pictures DBstring
         $imageName =
                  base64_encode($_POST['productImage1'])
@@ -2596,9 +2603,10 @@ if ($test === NULL) {
             array_push($arrOrderId, $order_id);
         }
         if (empty($arrOrderId)) return null;
+        $stockUpdate = !empty($_GET['stock_update']);
         $result = true;
         foreach ($arrOrderId as $oId) {
-            $result &= Order::deleteById($oId);
+            $result &= Order::deleteById($oId, $stockUpdate);
         }
         if ($result) {
             \Message::ok($_ARRAYLANG['TXT_ORDER_DELETED']);
@@ -3247,15 +3255,20 @@ if ($test === NULL) {
         // However, the design doesn't like it.  Limit to the current one.
         $arrLanguages = array(FRONTEND_LANG_ID => $arrLanguages[FRONTEND_LANG_ID]);
         $i = 0;
+
+        \JS::activate('schedule-publish-tooltip', array());
         foreach ($arrProducts as $objProduct) {
-            $productStatus = '';
-            $productStatusValue = '';
-            $productStatusPicture = 'status_red.gif';
+            $productStatus = 'inactive';
             if ($objProduct->active()) {
-                $productStatus = \Html::ATTRIBUTE_CHECKED;
-                $productStatusValue = 1;
-                $productStatusPicture = 'status_green.gif';
+                $hasScheduledPublishing =   $objProduct->date_start() != '0000-00-00 00:00:00'
+                                         || $objProduct->date_end() != '0000-00-00 00:00:00';
+                $productStatus = 'active';
+                if ($hasScheduledPublishing) {
+                    $productStatus =  $objProduct->getActiveByScheduledPublishing()
+                                    ? 'scheduled active' : 'scheduled inactive';
+                }
             }
+
             $discount_active = '';
             $specialOfferValue = '';
             if ($objProduct->discount_active()) {
@@ -3280,9 +3293,7 @@ if ($test === NULL) {
                 'SHOP_PRODUCT_DISTRIBUTION' => $objProduct->distribution(),
                 'SHOP_PRODUCT_STOCK' => $objProduct->stock(),
                 'SHOP_PRODUCT_SHORT_DESC' => $objProduct->short(),
-                'SHOP_PRODUCT_STATUS' => $productStatus,
-                'SHOP_PRODUCT_STATUS_PICTURE' => $productStatusPicture,
-                'SHOP_ACTIVE_VALUE_OLD' => $productStatusValue,
+                'SHOP_PRODUCT_STATUS_CLASS' => $productStatus,
                 'SHOP_SORT_ORDER' => $objProduct->ord(),
 //                'SHOP_DISTRIBUTION_MENU' => Distribution::getDistributionMenu($objProduct->distribution(), "distribution[".$objProduct->id()."]"),
 //                'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($objProduct->weight()),
@@ -4041,30 +4052,30 @@ die("Shopmanager::delete_article_group(): Obsolete method called");
 
     /**
      * Get Media Browser
-     * 
-     * @param object $objTpl            Template object 
+     *
+     * @param object $objTpl            Template object
      * @param string $placeholderKey    Place holder name
      * @param string $placeholderValue  Display name
      * @param array  $options           options Ex:type, id.. etc
      * @param string $callback          callback function name
-     * 
+     *
      * @return null
      */
     public static function getMediaBrowserButton($options = array(), $callback = '')
     {
         global $_ARRAYLANG;
-        
+
         if (empty($options)) {
             return;
         }
-        
+
         // Mediabrowser
         $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions($options);
         if ($callback) {
             $mediaBrowser->setCallback($callback);
         }
-        
+
         return $mediaBrowser->getXHtml($_ARRAYLANG['TXT_SHOP_EDIT_OR_ADD_IMAGE']);
     }
 }

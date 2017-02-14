@@ -66,7 +66,6 @@ Cx\Modules\Pim\Model\Entity\Product:
   manyToMany:
     upgrades:
       targetEntity: Cx\Modules\Pim\Model\Entity\Product
-      inversedBy: upgrades
       joinTable:
         name: module_pim_product_upgrade
         joinColumns:

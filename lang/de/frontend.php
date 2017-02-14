@@ -54,6 +54,8 @@ $_ARRAYLANG['TXT_PASSWORD'] = "Passwort";
 $_ARRAYLANG['TXT_PAGE'] = "Seite";
 $_ARRAYLANG['TXT_BROWSERLANGUAGE'] = "Sprache";
 $_ARRAYLANG['TXT_FROM'] = "von";
+$_ARRAYLANG['TXT_PAGING_OUT_OF'] = "von";
+$_ARRAYLANG['TXT_PAGING_TO'] = "bis";
 $_ARRAYLANG['TXT_PASSWORD_FIELD_EMPTY'] = "Wenn das Passwortfeld leer bleibt, wird das aktuelle Passwort beibehalten! ";
 $_ARRAYLANG['TXT_SIZE'] = "Dateigrösse";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Fehler beim Ausführen der Datenbankabfrage!";
@@ -213,6 +215,7 @@ $_ARRAYLANG['TXT_ACCESS_USERNAME_ALREADY_USED'] = "Der gewählte Benutzername wi
 $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = "Webseite besuchen";
 $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Webseite";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "PLZ";
+$_ARRAYLANG['TXT_ACCESS_USER_CHOOSE_FILE'] = 'Datei wählen';
 $_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partner";
 $_ARRAYLANG['TXT_U2U_MODULE'] = "User to User Nachrichten";
 $_ARRAYLANG['TXT_ACCESS_ADD_NEW_ENTRY'] = "Neuen Eintrag hinzufügen";
@@ -318,3 +321,6 @@ $_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Einige Datei(en) konnte(n) nicht h
 $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "Die Dateiendung ist nicht erlaubt.";
 
 $_ARRAYLANG['TXT_LOGIN_WELCOME_PAGE'] = 'Weiter zur <a href="%s" title="Website">Website</a>';
+$_ARRAYLANG['TXT_BROWSE'] = 'Durchsuchen';
+
+$_ARRAYLANG['TXT_CORE_SIGN_UP'] = "Haben Sie noch kein Konto? Jetzt registrieren";

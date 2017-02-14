@@ -41,10 +41,6 @@
 namespace Cx\Modules\Ecard\Controller;
 
 /**
- * @ignore
- */
-\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php');
-/**
  * E-Card
  *
  * Send electronic postcards to your friends
@@ -260,10 +256,14 @@ class Ecard
 
         // Initialize variables
         $code = substr(md5(rand()), 1, 10);
-        $url = ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].
-            ($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT'])).
-            CONTREXX_SCRIPT_PATH.
-            '?section=Ecard&cmd=show&code='.$code;
+        $url = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'Ecard',
+            'show',
+            '',
+            array(
+                'code' => $code,
+            )
+        )->toString();
 
         // Initialize POST variables
         $id = intval($_POST['selectedEcard']);
@@ -341,29 +341,13 @@ class Ecard
             // Copy motive to new file with $code as filename
             $fileExtension = preg_replace('/^.+(\.[^\.]+)$/', '$1', $objResult->fields['setting_value']);
             $fileName = $objResult->fields['setting_value'];
-            
+
             $objFile = new \File();
             if ($objFile->copyFile(ASCMS_ECARD_OPTIMIZED_PATH.'/', $fileName, ASCMS_ECARD_SEND_ECARDS_PATH.'/', $code.$fileExtension)) {
-                $objMail = new \phpmailer();
-
-                // Check e-mail settings
-                if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                    $objSmtpSettings = new \SmtpSettings();
-                    if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                        $objMail->IsSMTP();
-                        $objMail->Host = $arrSmtp['hostname'];
-                        $objMail->Port = $arrSmtp['port'];
-                        $objMail->SMTPAuth = true;
-                        $objMail->Username = $arrSmtp['username'];
-                        $objMail->Password = $arrSmtp['password'];
-                    }
-                }
+                $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
                 // Send notification mail to ecard-recipient
-                $objMail->CharSet = CONTREXX_CHARSET;
-                $objMail->From = $senderEmail;
-                $objMail->FromName = $senderName;
-                $objMail->AddReplyTo($senderEmail);
+                $objMail->SetFrom($senderEmail, $senderName);
                 $objMail->Subject = $subject;
                 $objMail->IsHTML(false);
                 $objMail->Body = $body;

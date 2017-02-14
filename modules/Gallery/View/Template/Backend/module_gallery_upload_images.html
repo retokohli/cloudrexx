@@ -14,24 +14,29 @@
 {COMBO_UPLOADER_CODE}
 <h3>{TXT_GALLERY_UPLOAD_IMAGES}</h3>
 <div class="imagesContainer">
-
+    <!-- BEGIN uploadedImages -->
+    {GALLERY_UPLOADED_IMAGE}
+    <!-- END uploadedImages -->
 </div>
 <br/>
-<a href="index.php?cmd=Gallery&amp;act=validate_form&amp;type=all" class="button confirmImages">{TXT_GALLERY_UPLOAD_CONFIRM_IMAGES}</a>
+<a href="index.php?cmd=Gallery&amp;act=validate_form&amp;type=all" class="button {GALLERY_ALREADY_UPLOADED_IMAGES}">{TXT_GALLERY_UPLOAD_CONFIRM_IMAGES}</a>
 <script type="text/javascript">
     function finishedGalleryUpload(response) {
+        if (response.length < 1) return;
         cx.jQuery('.confirmImages').show();
-        for (var i in response) {
+        var count = response.length-1;
+        while (count >= 0) {
             var image = cx.jQuery(new Image());
-            image.attr('src', response[i]);
+            image.attr('src', response[count]);
             image.appendTo('.imagesContainer');
             setTimeout(
                     (function (image) {
                         return function () { // what to do when item is selected
                             image.addClass('galleryImageVisible');
                         }
-                    }(image)), i*100
+                    }(image)), 100
             );
+            count--;
         }
     }
 </script>

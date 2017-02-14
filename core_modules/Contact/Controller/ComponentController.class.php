@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,10 +24,10 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Main controller for Contact
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
@@ -38,7 +38,7 @@ namespace Cx\Core_Modules\Contact\Controller;
 
 /**
  * Main controller for Contact
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
@@ -51,9 +51,48 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array();
     }
 
-     /**
+    /**
+     * Do something after system initialization
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * This event must be registered in the postInit-Hook definition
+     * file config/postInitHooks.yml.
+     * @param \Cx\Core\Core\Controller\Cx   $cx The instance of \Cx\Core\Core\Controller\Cx
+     */
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx) {
+        $globalPlaceholders = array(
+            'contactFormEmail' => 'Email',
+            'Company',
+            'Address',
+            'Zip',
+            'Place',
+            'Country',
+            'Phone',
+            'Fax',
+            'coreAdminName' => 'Name',
+        );
+        $widgetController = $this->getComponent('Widget');
+        foreach ($globalPlaceholders as $configIndex=>$placeholder) {
+            if (is_int($configIndex)) {
+                $configIndex = 'contact' . $placeholder;
+            }
+            $widgetController->registerWidget(
+                new \Cx\Core_Modules\Widget\Model\Entity\FinalStringWidget(
+                    $this,
+                    'CONTACT_' . strtoupper($placeholder),
+                    \Cx\Core\Setting\Controller\Setting::getValue(
+                        $configIndex,
+                        'Config'
+                    )
+                )
+            );
+        }
+    }
+
+    /**
      * Load your component.
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -79,7 +118,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 break;
         }
     }
-    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+
+    /**
+     * Register your event listeners here
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * Keep in mind, that you can also register your events later.
+     * Do not do anything else here than initializing your event listeners and
+     * list statements like
+     * $this->cx->getEvents()->addEventListener($eventName, $listener);
+     */
+    public function registerEventListeners() {
         $this->cx->getEvents()->addEventListener('mediasource.load', new \Cx\Core_Modules\Contact\Model\Event\ContactEventListener($this->cx));
     }
 }

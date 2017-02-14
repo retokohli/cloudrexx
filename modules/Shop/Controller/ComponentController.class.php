@@ -100,17 +100,36 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         Shop::init();
                         Shop::setNavbar();
                     }
+
+                    // replace global product blocks
+                    $page->setContent(
+                        preg_replace_callback(
+                            '/<!--\s+BEGIN\s+(block_shop_products_category_(?:\d+)\s+-->).*<!--\s+END\s+\1/s',
+                            function ($matches) {
+                                $blockTemplate = new \Cx\Core\Html\Sigma();
+                                $blockTemplate->setTemplate($matches[0]);
+                                Shop::parse_products_blocks($blockTemplate);
+                                return $blockTemplate->get();
+                            },
+                            $page->getContent()
+                        )
+                    );
                 }
                 break;
         }
     }
 
     /**
-     * Do something for search the content
+     * Register your event listeners here
      *
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * Keep in mind, that you can also register your events later.
+     * Do not do anything else here than initializing your event listeners and
+     * list statements like
+     * $this->cx->getEvents()->addEventListener($eventName, $listener);
      */
-    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+    public function registerEventListeners() {
         $eventListener = new \Cx\Modules\Shop\Model\Event\ShopEventListener($this->cx);
         $this->cx->getEvents()->addEventListener('SearchFindContent',$eventListener);
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);

@@ -65,7 +65,7 @@ $cx->getClassLoader()->loadFile($cx->getCoreModuleFolderName().'/Stats/Data/refe
 $cx->getClassLoader()->loadFile($cx->getCoreModuleFolderName().'/Stats/Data/banned.inc.php');
 
 
-$counter = new \Cx\Core_Modules\Stats\Controller\Counter($arrRobots, $arrBannedWords);
+$counter = new \Cx\Core_Modules\Stats\Controller\Counter($arrRobots, $arrBannedWords, $cx);
 
 /**
  * Counter
@@ -111,6 +111,8 @@ class Counter
     public $searchTerm = "";
     public $mobilePhone = "";
 
+    protected $cx;
+
     /**
     * Constructor
     *
@@ -119,13 +121,12 @@ class Counter
      * @param array $arrRobots
      * @param array $arrBannedWords
     */
-    public function __construct($arrRobots,$arrBannedWords)
+    public function __construct($arrRobots, $arrBannedWords, $cx)
     {
         global $_GET;
 
+        $this->cx = $cx;
         $this->_initConfiguration();
-
-
 
         // make statistics only if they were activated
         if ($this->arrConfig['make_statistics']['status']) {
@@ -277,7 +278,7 @@ class Counter
             foreach ($arrUriGets AS $elem) {
                 //avoid multiple entries for same request:
                 //check if Session-ID is traced by url (cookies are disabled)
-                //also skip the csrf and caching parameter (they are appended by the backend's preview link) 
+                //also skip the csrf and caching parameter (they are appended by the backend's preview link)
                 if (!preg_match("/(PHPSESSID|csrf|caching)/",$elem)) {
                     if ($elem != "") {
                         $uriString .="&".$elem;
@@ -339,14 +340,14 @@ class Counter
         $this->_getReferer();
         $this->_checkForSpider();
         $this->_checkMobilePhone();
-		
-		// Anonymize if necessary
-		if ($this->arrConfig['exclude_identifying_info']['status']) {
-			// Exclude the least significant part from the hostname or ip address
-			$this->arrClient['ip'] = preg_replace('/[0-9a-fA-F]+$/', '*', $this->arrClient['ip']);
-			$this->arrClient['host'] = preg_replace('/^[a-zA-Z0-9-_]+\./', '*.', $this->arrClient['host']);
-		}
-		
+
+        // Anonymize if necessary
+        if ($this->arrConfig['exclude_identifying_info']['status']) {
+            // Exclude the least significant part from the hostname or ip address
+            $this->arrClient['ip'] = preg_replace('/[0-9a-fA-F]+$/', '*', $this->arrClient['ip']);
+            $this->arrClient['host'] = preg_replace('/^[a-zA-Z0-9-_]+\./', '*.', $this->arrClient['host']);
+        }
+
         $this->md5Id = md5($this->arrClient['ip'].$this->arrClient['useragent'].$this->arrClient['language'].$this->arrProxy['ip'].$this->arrProxy['host']);
     }
 
@@ -539,8 +540,8 @@ class Counter
         // check for mobilephone
         /*$fp = fopen('Data/mobile-useragents.inc',"r");
         while (true) {
-        	$line = fgets($fp);
-        	if ($line === false) break;
+            $line = fgets($fp);
+            if ($line === false) break;
             $arrUserAgent = explode("\t",$line);
             if (!strcasecmp(trim($this->arrClient['useragent']),trim($arrUserAgent[2]))) {
                 $this->mobilePhone = $arrUserAgent[0].' '.$arrUserAgent[1];
@@ -580,14 +581,13 @@ class Counter
     function _getBrowser()
     {
         global $arrBrowserRegExps, $arrBrowserNames;
-        
+
         $userAgent = $this->arrClient['useragent'];
         $arrBrowserRegExps = array();
         $arrBrowserNames = array();
         $arrBrowser = array();
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $cx->getClassLoader()->loadFile($cx->getCoreModuleFolderName().'/Stats/Data/useragents.inc.php');        
-        
+        $this->cx->getClassLoader()->loadFile($this->cx->getCoreModuleFolderName().'/Stats/Data/useragents.inc.php');
+
         if (!empty($arrBrowserRegExps)) {
             foreach ($arrBrowserRegExps as $browserRegExp) {
                 if (preg_match($browserRegExp, $userAgent, $arrBrowser)) {
@@ -631,13 +631,12 @@ class Counter
     function _getOperatingSystem()
     {
         global $arrOperatingSystems;
-        
+
         $operationgSystem = '';
-        $userAgent = $this->arrClient['useragent'];        
+        $userAgent = $this->arrClient['useragent'];
         $arrOperatingSystems = array();
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $cx->getClassLoader()->loadFile($cx->getCoreModuleFolderName().'/Stats/Data/operatingsystems.inc.php');
-        
+        $this->cx->getClassLoader()->loadFile($this->cx->getCoreModuleFolderName().'/Stats/Data/operatingsystems.inc.php');
+
         if (!empty($arrOperatingSystems)) {
             foreach ($arrOperatingSystems as $arrOperatingSystem) {
                 if (preg_match($arrOperatingSystem['regExp'], $userAgent)) {
@@ -765,8 +764,8 @@ class Counter
         $result = $objDb->Execute($query);
         if ($result) {
             while (true) {
-            	$arrResult = $result->FetchRow();
-            	if (empty($arrResult)) break;
+                $arrResult = $result->FetchRow();
+                if (empty($arrResult)) break;
                 $arrStats[$arrResult['type']]['id'] = $arrResult['id'];
             }
         }
@@ -840,4 +839,3 @@ class Counter
         }
     }
 }
-

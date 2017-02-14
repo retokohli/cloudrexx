@@ -81,10 +81,12 @@ class PayrexxProcessor
         $invoice->setReferenceId('Shop-' . $order->id());
         $invoice->setTitle($_CONFIG['coreGlobalPageTitle']);
         $invoice->setDescription('&nbsp;');
-        $invoice->setPsp(999); // prevent to use default psp
+        // We have to set all known PSPs to support all PSPs.
+        // Known PSP are listed on https://payrexx.readme.io/docs/miscellaneous
+        $invoice->setPsp(array(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20,21,22,23));
         $invoice->setName('Contrexx Shop Order: #' . $_SESSION['shop']['order_id']);
         $invoice->setPurpose('Shop Order #' . $_SESSION['shop']['order_id']);
-        $invoice->setAmount(intval($_SESSION['shop']['grand_total_price']*100));
+        $invoice->setAmount(intval(bcmul($_SESSION['shop']['grand_total_price'], 100, 0)));
         $invoice->setCurrency(\Cx\Modules\Shop\Controller\Currency::getCodeById($order->currency_id()));
         $invoice->addField('email', false, $order->billing_email());
         $invoice->addField('company', false, $order->billing_company());
@@ -208,4 +210,3 @@ EOF;
         return $orderId[1];
     }
 }
-
