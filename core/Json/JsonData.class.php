@@ -226,7 +226,7 @@ class JsonData {
     public function getParser() {
         return function($response) {
             $response->setContentType('application/json');
-            return json_encode($response->getAbstractContent(), JSON_FORCE_OBJECT);
+            return json_encode($response->getAbstractContent());
         };
     }
 
