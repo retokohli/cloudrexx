@@ -118,7 +118,8 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                    tblL.teaser_text
               FROM ".DBPREFIX."module_news AS tblN
              INNER JOIN ".DBPREFIX."module_news_locale AS tblL ON tblL.news_id=tblN.id
-             WHERE tblL.lang_id=".FRONTEND_LANG_ID.
+             WHERE tblL.lang_id=".FRONTEND_LANG_ID."
+               AND tblN.teaser_frames != '' ".
               ($this->administrate == false
                 ? " AND tblN.validated='1'
                     AND tblN.status='1'
