@@ -150,7 +150,7 @@ class EgovManager extends EgovLibrary
         if (!isset($_REQUEST['id'])) {
             return false;
         }
-        $product_id = $_REQUEST['id'];
+        $product_id = intval($_REQUEST['id']);
         $product_autostatus =
             EgovLibrary::GetProduktValue("product_autostatus", $product_id);
         $product_name =
@@ -205,7 +205,7 @@ class EgovManager extends EgovLibrary
         ")) {
             $_REQUEST['id'] = $objDatabase->Insert_ID();
             foreach ($arrFields as $arrField) {
-                $this->_addFormField($_REQUEST['id'], $arrField['name'],
+                $this->_addFormField(intval($_REQUEST['id']), $arrField['name'],
                     $arrField['type'], $arrField['attributes'],
                     $arrField['order_id'], $arrField['is_required'],
                     $arrField['check_type']);
@@ -508,50 +508,31 @@ class EgovManager extends EgovLibrary
         $NewPosition = 0;
         if (isset($_REQUEST['Direction'])) {
             $query = "
-                SELECT count(*) AS anzahl
-                  FROM ".DBPREFIX."module_egov_products";
-            $objResult = $objDatabase->Execute($query);
-            $anzahl = $objResult->fields['anzahl'];
-            if ($_REQUEST['Direction'] == 'up') {
-                $NewPosition = EgovLibrary::GetProduktValue(
-                    'product_orderby', $_REQUEST['id'])-1;
-            }
-            if ($_REQUEST['Direction'] == 'down') {
-                $NewPosition = EgovLibrary::GetProduktValue(
-                    'product_orderby', $_REQUEST['id'])+1;
-            }
-            if ($NewPosition < 0) {
-                $NewPosition = 0;
-            }
-            if ($NewPosition > $anzahl) {
-                $NewPosition = $anzahl;
-            }
-            $query = "
                 SELECT product_id
                   FROM ".DBPREFIX."module_egov_products
-                 WHERE product_orderby=$NewPosition";
+                 ORDER BY product_orderby";
             $objResult = $objDatabase->Execute($query);
-            $TauschID = $objResult->fields['product_id'];
-            $query = "
-                SELECT product_orderby
-                  FROM ".DBPREFIX."module_egov_products
-                 WHERE product_id=".$_REQUEST['id'];
-            $objResult = $objDatabase->Execute($query);
-            $TauschPosition = $objResult->fields['product_orderby'];
-            $query = "
-                UPDATE ".DBPREFIX."module_egov_products
-                   SET product_orderby=".$TauschPosition."
-                 WHERE product_id=$TauschID";
-            if ($objDatabase->Execute($query)) {
-                $this->_strOkMessage = $_ARRAYLANG['TXT_EGOV_PRODUCT_SUCCESSFULLY_SAVED'];
+            $arrProducts = array();
+            while (!$objResult->EOF) {
+                $arrProducts[] = $objResult->fields['product_id'];
+                $objResult->MoveNext();
             }
-            $query = "
-                UPDATE ".DBPREFIX."module_egov_products
-                   SET product_orderby=$NewPosition
-                 WHERE product_id=".$_REQUEST['id'];
-            if ($objDatabase->Execute($query)) {
-                $this->_strOkMessage = $_ARRAYLANG['TXT_EGOV_PRODUCT_SUCCESSFULLY_SAVED'];
+            $productId = intval($_REQUEST['id']);
+            $productIdx = array_search($productId, $arrProducts);
+            $idxOffset = $_REQUEST['Direction'] == 'up' ? -1 : 1;
+            $productSwitchIdx = $productIdx + $idxOffset;
+            if (isset($arrProducts[$productSwitchIdx])) {
+                $arrProducts[$productIdx] = $arrProducts[$productSwitchIdx];
+                $arrProducts[$productSwitchIdx] = $productId;
             }
+
+            $orderIdx = 0;
+            foreach ($arrProducts as $productId) {
+                $query = 'UPDATE `'.DBPREFIX.'module_egov_products` SET `product_orderby`='.$orderIdx++.' WHERE `product_id`='.$productId;
+                $objDatabase->Execute($query);
+            }
+            // TODO: implement proper status message
+            $this->_strOkMessage = $_ARRAYLANG['TXT_EGOV_PRODUCT_SUCCESSFULLY_SAVED'];
         }
         $this->objTemplate->setVariable(array(
             'TXT_PRODUCTS' => $_ARRAYLANG['TXT_PRODUCTS'],
@@ -748,28 +729,16 @@ class EgovManager extends EgovLibrary
                     $TargetMail = EgovLibrary::GetEmailAdress($order_id);
                 }
                 if ($TargetMail != '') {
-                    if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-                        $objMail = new \phpmailer();
-                        if ($_CONFIG['coreSmtpServer'] > 0) {
-                            if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                                $objMail->IsSMTP();
-                                $objMail->Host = $arrSmtp['hostname'];
-                                $objMail->Port = $arrSmtp['port'];
-                                $objMail->SMTPAuth = true;
-                                $objMail->Username = $arrSmtp['username'];
-                                $objMail->Password = $arrSmtp['password'];
-                            }
-                        }
-                        $objMail->CharSet = CONTREXX_CHARSET;
-                        $objMail->SetFrom($FromEmail, $FromName);
-                        $objMail->Subject = $SubjectText;
-                        $objMail->Priority = 3;
-                        $objMail->IsHTML(false);
-                        $objMail->Body = $BodyText;
-                        $objMail->AddAddress($TargetMail);
+                    $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
+
+                    $objMail->SetFrom($FromEmail, $FromName);
+                    $objMail->Subject = $SubjectText;
+                    $objMail->Priority = 3;
+                    $objMail->IsHTML(false);
+                    $objMail->Body = $BodyText;
+                    $objMail->AddAddress($TargetMail);
 // TODO: Verify the result and show an error if sending the mail fails!
-                        $objMail->Send();
-                    }
+                    $objMail->Send();
                 }
             }
         }
@@ -1623,30 +1592,19 @@ class EgovManager extends EgovLibrary
             if (empty($replyAddress)) {
                 $replyAddress = EgovLibrary::GetSettings('set_orderentry_sender');
             }
-            if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-                $objMail = new \phpmailer();
-                if (!empty($_CONFIG['coreSmtpServer'])) {
-                    if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                        $objMail->IsSMTP();
-                        $objMail->Host = $arrSmtp['hostname'];
-                        $objMail->Port = $arrSmtp['port'];
-                        $objMail->SMTPAuth = true;
-                        $objMail->Username = $arrSmtp['username'];
-                        $objMail->Password = $arrSmtp['password'];
-                    }
-                }
-                $objMail->CharSet = CONTREXX_CHARSET;
-                $from = EgovLibrary::GetSettings('set_orderentry_sender');
-                $fromName = EgovLibrary::GetSettings('set_orderentry_name');
-                $objMail->AddReplyTo($replyAddress);
-                $objMail->SetFrom($from, $fromName);
-                $objMail->Subject = $SubjectText;
-                $objMail->Priority = 3;
-                $objMail->IsHTML(false);
-                $objMail->Body = $BodyText;
-                $objMail->AddAddress($recipient);
-                $objMail->Send();
-            }
+
+            $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
+
+            $from = EgovLibrary::GetSettings('set_orderentry_sender');
+            $fromName = EgovLibrary::GetSettings('set_orderentry_name');
+            $objMail->AddReplyTo($replyAddress);
+            $objMail->SetFrom($from, $fromName);
+            $objMail->Subject = $SubjectText;
+            $objMail->Priority = 3;
+            $objMail->IsHTML(false);
+            $objMail->Body = $BodyText;
+            $objMail->AddAddress($recipient);
+            $objMail->Send();
         }
 
         // Update 29.10.2006 Statusmail automatisch abschicken || Produktdatei
@@ -1677,30 +1635,19 @@ class EgovManager extends EgovLibrary
                 $BodyText = str_replace('[[ORDER_VALUE]]', $FormValue4Mail, $BodyDB);
                 $BodyText = str_replace('[[PRODUCT_NAME]]', html_entity_decode(EgovLibrary::GetProduktValue('product_name', $product_id)), $BodyText);
                 $BodyText = html_entity_decode($BodyText);
-                if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-                    $objMail = new \phpmailer();
-                    if ($_CONFIG['coreSmtpServer'] > 0) {
-                        if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                            $objMail->IsSMTP();
-                            $objMail->Host = $arrSmtp['hostname'];
-                            $objMail->Port = $arrSmtp['port'];
-                            $objMail->SMTPAuth = true;
-                            $objMail->Username = $arrSmtp['username'];
-                            $objMail->Password = $arrSmtp['password'];
-                        }
-                    }
-                    $objMail->CharSet = CONTREXX_CHARSET;
-                    $objMail->SetFrom($FromEmail, $FromName);
-                    $objMail->Subject = $SubjectText;
-                    $objMail->Priority = 3;
-                    $objMail->IsHTML(false);
-                    $objMail->Body = $BodyText;
-                    $objMail->AddAddress($TargetMail);
-                    if (EgovLibrary::GetProduktValue('product_electro', $product_id) == 1) {
-                        $objMail->AddAttachment(ASCMS_PATH.EgovLibrary::GetProduktValue('product_file', $product_id));
-                    }
-                    $objMail->Send();
+
+                $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
+
+                $objMail->SetFrom($FromEmail, $FromName);
+                $objMail->Subject = $SubjectText;
+                $objMail->Priority = 3;
+                $objMail->IsHTML(false);
+                $objMail->Body = $BodyText;
+                $objMail->AddAddress($TargetMail);
+                if (EgovLibrary::GetProduktValue('product_electro', $product_id) == 1) {
+                    $objMail->AddAttachment(ASCMS_PATH.EgovLibrary::GetProduktValue('product_file', $product_id));
                 }
+                $objMail->Send();
             }
         }
         return '';
