@@ -179,7 +179,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $currentTheme = $theme;
         if (empty($page->getCustomContent())) {
             return $currentTheme->getFilePath(
-                $currentTheme->getFoldername() . $contentFileName
+                $currentTheme->getFoldername() . '/' . $contentFileName
             );
         }
         $em = $this->cx->getDb()->getEntityManager();
