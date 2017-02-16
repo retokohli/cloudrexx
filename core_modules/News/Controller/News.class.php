@@ -678,18 +678,23 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         //Filter by tag
         if (!empty($_REQUEST['tag'])) {
-            $parameters['filterTag'] = $searchTag = contrexx_input2raw($_REQUEST['tag']);
+            $searchTag = is_array($_REQUEST['tag'])
+                    ? contrexx_input2raw($_REQUEST['tag'])
+                    : contrexx_input2raw(array($_REQUEST['tag']));
+            $parameters['filterTag[]'] = implode('&filterTag[]=', $searchTag);
             $searchedTag   = $this->getNewsTags(null, $searchTag);
-            $searchedTagId = current(array_keys($searchedTag['tagList']));
             if (!empty($searchedTag['newsIds'])) {
-                $this->incrementViewingCount($searchedTagId);
+                $this->incrementViewingCount(array_keys($searchedTag['tagList']));
                 $newsfilter .= ' AND n.`id` IN ('
-                    . implode(',', contrexx_raw2db($searchedTag['newsIds']))
+                    . implode(',', $searchedTag['newsIds'])
                     . ')';
-                $this->_objTpl->setVariable(array(
-                   'NEWS_TAG_FILTER_ID'   => contrexx_raw2xhtml($searchedTagId),
-                   'NEWS_TAG_FILTER_NAME' => contrexx_raw2xhtml(ucfirst(current($searchedTag['tagList'])))
-                ));
+                foreach ($searchedTag['tagList'] as $tagId => $tagName) {
+                    $this->_objTpl->setVariable(array(
+                       'NEWS_TAG_FILTER_ID'   => contrexx_raw2xhtml($tagId),
+                       'NEWS_TAG_FILTER_NAME' => ucfirst(contrexx_raw2xhtml($tagName))
+                    ));
+                    break;
+                }
                 if ($this->_objTpl->blockExists('news_tag_filter_container')) {
                     $this->_objTpl->parse('news_tag_filter_container');
                 }
@@ -1332,24 +1337,26 @@ JSCODE;
         }
 
         $newsTagId = 'newsTags';
-        if (!empty($this->arrSettings['news_use_tags'])) {
-            \JS::registerJS('lib/javascript/tag-it/js/tag-it.min.js');
-            \JS::registerCss('lib/javascript/tag-it/css/tag-it.css');
-            \JS::registerCss('core_modules/News/View/Style/Tags.css');
-            $this->registerTagJsCode();
-            if (    $this->_objTpl->blockExists('news_tags')
-                &&  !empty($data['newsTags'])
-            ) {
-                foreach ($data['newsTags'] as $newsTag) {
-                    $this->_objTpl->setVariable(array(
-                        'NEWS_TAGS' => contrexx_raw2xhtml($newsTag)
-                    ));
-                    $this->_objTpl->parse('news_tags');
+        if ($this->_objTpl->blockExists('news_tags_container')) {
+            if (!empty($this->arrSettings['news_use_tags'])) {
+                \JS::registerJS('lib/javascript/tag-it/js/tag-it.min.js');
+                \JS::registerCss('lib/javascript/tag-it/css/tag-it.css');
+                \JS::registerCss('core_modules/News/View/Style/Tags.css');
+                $this->registerTagJsCode();
+                if (    $this->_objTpl->blockExists('news_tags')
+                    &&  !empty($data['newsTags'])
+                ) {
+                    foreach ($data['newsTags'] as $newsTag) {
+                        $this->_objTpl->setVariable(array(
+                            'NEWS_TAGS' => contrexx_raw2xhtml($newsTag)
+                        ));
+                        $this->_objTpl->parse('news_tags');
+                    }
                 }
+                $this->_objTpl->touchBlock('news_tags_container');
+            } else {
+                $this->_objTpl->hideBlock('news_tags_container');
             }
-            $this->_objTpl->touchBlock('news_tags_container');
-        } else {
-            $this->_objTpl->hideBlock('news_tags_container');
         }
 
         \JS::activate('chosen');
@@ -1556,7 +1563,7 @@ EOF;
                 `author_id` = $userId,
                 `author` = '" . contrexx_raw2db($userName) . "',
                 `changelog` = '$date',
-                `enable_tags`='" . $data['enableTags'] . "',
+                `enable_tags`='" . contrexx_raw2db($data['enableTags']) . "',
                 `enable_related_news`=" . $data['enableRelatedNews'] . ",
                 `redirect_new_window` = '" . $data['redirectNewWindow'] . "',
                 # the following are empty defaults for the text fields.

@@ -1572,9 +1572,8 @@ class NewsLibrary
         //Filter by tag
         if (isset($params['filterTag']) && !empty($params['filterTag'])) {
             $searchedTag = $this->getNewsTags(null, contrexx_input2raw($params['filterTag']));
-            $searchedTagId = current(array_keys($searchedTag['tagList']));
             if (!empty($searchedTag['newsIds'])) {
-                $this->incrementViewingCount($searchedTagId);
+                $this->incrementViewingCount(array_keys($searchedTag['tagList']));
                 $newsFilter['id'] = $searchedTag['newsIds'];
             }
         }
@@ -2175,10 +2174,10 @@ class NewsLibrary
      *
      * @return boolean|array Array List of News Related tags
      */
-    public function getNewsTags($newsId = null, $tag = null)
+    public function getNewsTags($newsId = null, $tags = array())
     {
         global $objDatabase;
-        if (empty($newsId) && empty($tag)) {
+        if (empty($newsId) && empty($tags)) {
             return array();
         }
         $query = 'SELECT
@@ -2198,8 +2197,8 @@ class NewsLibrary
         }
 
         //Search the given tag
-        if (!empty($tag)) {
-            $where[] = ' t.`tag` = "' . contrexx_raw2db($tag) . '"';
+        if (!empty($tags) && is_array($tags)) {
+            $where[] = ' (t.`tag` = "' . implode('" OR t.`tag` =  "', contrexx_raw2db($tags)) . '")';
         }
 
         $sqlWhere = !empty($where) ? ' WHERE '. implode(' AND ', $where) : '';
@@ -2401,11 +2400,11 @@ class NewsLibrary
      * @global object $objDatabase
      * @param integer $tagId Tag id
      */
-    public function incrementViewingCount($tagId = null)
+    public function incrementViewingCount($tagIds = array())
     {
         global $objDatabase;
 
-        if (empty($tagId)) {
+        if (empty($tagIds) || !is_array($tagIds)) {
             return;
         }
         //Update the tag using count
@@ -2413,7 +2412,7 @@ class NewsLibrary
             'UPDATE `'
             . DBPREFIX . 'module_news_tags`
             SET `viewed_count` = `viewed_count`+1
-            WHERE `id`=' . contrexx_input2int($tagId)
+            WHERE `id` IN (' . implode(', ', $tagIds) . ')'
         );
     }
     /**
