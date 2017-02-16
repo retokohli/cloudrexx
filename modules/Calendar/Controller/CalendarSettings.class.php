@@ -76,8 +76,10 @@ class CalendarSettings extends CalendarLibrary
      *
      * @see getFrontendLanguages();
      */
-    function __construct(){
+    function __construct()
+    {
         $this->getFrontendLanguages();
+        parent::__construct();
     }
 
     /**
@@ -689,6 +691,8 @@ class CalendarSettings extends CalendarLibrary
         }
 
         if ($objResult !== false) {
+            //Clear cache
+            $this->triggerEvent('clearEsiCache');
             $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_SETTINGS_SUCCESSFULLY_EDITED'];
         } else {
             $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_SETTINGS_CORRUPT_EDITED'];

@@ -901,6 +901,14 @@ EOF;
             return null;
         }
 
+        if ($eventName == 'clearEsiCache') {
+            $this->cx->getEvents()->triggerEvent(
+                'clearEsiCache',
+                array('Widget', $this->getHeadlinePlaceholders())
+            );
+            return;
+        }
+
         if ($eventName == 'model/postFlush') {
             $this->cx->getEvents()->triggerEvent(
                 $eventName,
@@ -1016,5 +1024,25 @@ EOF;
                 );
             }
         }
+    }
+
+    /**
+     * Get the list of calendar headline placeholders
+     *
+     * @return array
+     */
+    public function getHeadlinePlaceholders()
+    {
+        $placeholders = array();
+        for ($i = 1; $i <= 10; $i++) {
+            $id = '';
+            if ($i > 1) {
+                $id = $i;
+            }
+
+            $placeholders[] = 'EVENTS' . $id . '_FILE';
+        }
+
+        return $placeholders;
     }
 }

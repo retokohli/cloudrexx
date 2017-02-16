@@ -203,6 +203,8 @@ class CalendarCategory extends CalendarLibrary
             //Trigger postUpdate event for Category Entity
             $this->triggerEvent('model/postUpdate', $category);
             $this->triggerEvent('model/postFlush');
+            //Clear cache
+            $this->triggerEvent('clearEsiCache');
             return true;
         } else {
             return false;
@@ -236,6 +238,8 @@ class CalendarCategory extends CalendarLibrary
             //Trigger postUpdate event for Category Entity
             $this->triggerEvent('model/postUpdate', $category);
             $this->triggerEvent('model/postFlush');
+            //Clear cache
+            $this->triggerEvent('clearEsiCache');
             return true;
         } else {
             return false;
@@ -363,6 +367,8 @@ class CalendarCategory extends CalendarLibrary
 		        }
 		        
 		        if ($objResult !== false) {
+                            //Clear cache
+                            $this->triggerEvent('clearEsiCache');
 		            return true;
 		        } else {
 		            return false;
@@ -423,6 +429,8 @@ class CalendarCategory extends CalendarLibrary
 	            
 	            $objResult = $objDatabase->Execute($query);
 	            if ($objResult !== false) {
+                        //clear Cache
+                        $this->triggerEvent('clearEsiCache');
 	            	return true;
 	            } else {
 	            	return false;
