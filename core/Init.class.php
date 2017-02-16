@@ -763,10 +763,13 @@ class InitCMS
 
     /**
      * Initializes the language array
+     *
+     * @param string $module The component to load the language data from
+     * @param boolean $loadFromYaml Wether to load customized placeholders from yaml or not
      * @return    array         The language array, either local $_ARRAYLANG or
      *                          the global $_CORELANG
      */
-    function loadLanguageData($module='')
+    function loadLanguageData($module='', $loadFromYaml=true)
     {
 // NOTE: This method is called on the (global) Init object, so
 // there's no need to "global" that!
@@ -802,14 +805,14 @@ class InitCMS
             //load english language file first...
             $path = $this->getLangFilePath($module, 2);
             if (!empty($path)) {
-                $this->loadLangFile($path);
+                $this->loadLangFile($path, $loadFromYaml);
             }
             //...and overwrite with actual language where translated.
             //...but only if $langId is set (otherwise it will overwrite English by the default language
             if($langId && $langId != 2) { //don't do it for english, already loaded.
                 $path = $this->getLangFilePath($module, $langId);
                 if (!empty($path)) {
-                    $this->loadLangFile($path);
+                    $this->loadLangFile($path, $loadFromYaml);
                 }
             }
             return $_ARRAYLANG;
@@ -830,9 +833,10 @@ class InitCMS
      * @param string $componentName Name of the desired component
      * @param bool|true $frontend true if desired mode is frontend false otherwise
      * @param integer $languageId Id of the desired language i.e. 1 for german
+     * @param boolean $loadFromYaml Wether to load customized placeholders from yaml or not
      * @return array The language data which has been loaded
      */
-    public function getComponentSpecificLanguageData($componentName, $frontend = true, $languageId = 0) {
+    public function getComponentSpecificLanguageData($componentName, $frontend = true, $languageId = 0, $loadFromYaml=true) {
         global $_ARRAYLANG;
 
         $mode = $frontend ? 'frontend' : 'backend';
@@ -873,7 +877,7 @@ class InitCMS
         $this->backendLangId = $languageId;
 
         // load language data
-        $this->moduleSpecificLanguageData[$languageId][$frontend][$componentName] = $this->loadLanguageData($componentName);
+        $this->moduleSpecificLanguageData[$languageId][$frontend][$componentName] = $this->loadLanguageData($componentName, $loadFromYaml);
 
         // restore init state
         $_ARRAYLANG = $langBackup;
@@ -920,8 +924,11 @@ class InitCMS
      *
      * Note that no replacements are made to the entries' contents.
      * If your strings don't work as expected, fix *them*.
+     *
+     * @param string $path The path of the language file
+     * @param boolean $loadFromYaml Wether to load customized placeholders from yaml or not
      */
-    protected function loadLangFile($path)
+    protected function loadLangFile($path, $loadFromYaml=true)
     {
         global $_ARRAYLANG;
 
@@ -933,6 +940,27 @@ class InitCMS
         if ($isCustomized) {
             require_once $customizedPath;
         }
+
+        // if mode isn't frontend or we don't want to load from yaml
+        // return language data already
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (
+            $cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND ||
+            !$loadFromYaml
+        ) {
+            return $_ARRAYLANG;
+        }
+
+        // load customized language placeholders from yaml
+        // get locale by frontend locale id
+        $locale = $cx->getDb()->getEntityManager()->find(
+            'Cx\Core\Locale\Model\Entity\Locale',
+            $this->frontendLangId
+        );
+        // get the language file of the locale
+        $languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale);
+        // merge customized placeholders into $_ARRAYLANG
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $languageFile->getData());
 
         return $_ARRAYLANG;
     }

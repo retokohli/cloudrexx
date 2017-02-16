@@ -80,16 +80,20 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
      * @param \Cx\Core\Locale\Model\Entity\Locale $locale Defines the language
      * @param string $componentName Defines the component
      * @param boolean $frontend Defines wether to open the frontend or the backend specific file
-     *
+     * @param boolean $onlyCustomized Defines wether to load only the customized language placeholders or all
      */
-    public function __construct(\Cx\Core\Locale\Model\Entity\Locale $locale, $componentName='Core', $frontend=true) {
+    public function __construct(\Cx\Core\Locale\Model\Entity\Locale $locale, $componentName='Core', $frontend=true, $onlyCustomized=true) {
 
         // set identifier to parse entity view correctly
         $this->setIdentifier('Cx\Core\Locale\Model\Entity\LanguageFile');
 
-        // load component specific language data from init
+        // set the locale
         $this->locale = $locale;
-        $this->data = \Env::get('init')->getComponentSpecificLanguageData($componentName, $frontend, $locale->getId());
+
+        // load component specific language data from init
+        if (!$onlyCustomized) {
+            $this->data = \Env::get('init')->getComponentSpecificLanguageData($componentName, $frontend, $locale->getId(), false);
+        }
 
         // set path to yaml file
         $mode = $frontend ? 'frontend' : 'backend';
