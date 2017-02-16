@@ -257,12 +257,12 @@ class Login
     *
     * @access private
     * @global array
-    * @see cmsSession::cmsSessionStatusUpdate(), contrexx_strip_tags, \Cx\Core\Html\Sigma::get()
+    * @see \Cx\Core\Session\Model\Entity\Session::cmsSessionStatusUpdate(), contrexx_strip_tags, \Cx\Core\Html\Sigma::get()
     * @return string \Cx\Core\Html\Sigma::get()
     */
     function _login()
     {
-        global $_CORELANG, $sessionObj;
+        global $_CORELANG;
 
         $objFWUser = \FWUser::getFWUserObject();
 
@@ -289,12 +289,25 @@ class Login
             ) {
                 $objFWUser->objUser->reset();
                 $objFWUser->logoutAndDestroySession();
-                $sessionObj = \cmsSession::getInstance();
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                $sessionObj = $cx->getComponent('Session')->getSession();
             } elseif (isset($_POST['login'])) {
                 $_GET['relogin'] = 'true';
             }
         }
         if ((!isset($_GET['relogin']) || $_GET['relogin'] != 'true') && $objFWUser->objUser->login() || $objFWUser->checkAuth()) {
+            //Clear cache
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getEvents()->triggerEvent(
+                'clearEsiCache',
+                array(
+                    'Widget',
+                    array(
+                        'access_currently_online_member_list',
+                        'access_last_active_member_list'
+                    )
+                )
+            );
             $groupRedirect = ($objGroup = $objFWUser->objGroup->getGroup($objFWUser->objUser->getPrimaryGroupId())) && $objGroup->getHomepage() ? preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $objGroup->getHomepage()) : CONTREXX_SCRIPT_PATH;
             \LinkGenerator::parseTemplate($groupRedirect);
             if (isset($_SESSION['redirect'])) {

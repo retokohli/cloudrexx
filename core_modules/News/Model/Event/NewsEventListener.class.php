@@ -68,29 +68,30 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $search = current($eventArgs);
         $term_db = contrexx_raw2db($search->getTerm());
         $newsLib = new \Cx\Core_Modules\News\Controller\NewsLibrary();
+        $newsLib->getSettings();
         $query = '
             SELECT
                 `id`,
-                `text` AS `content`,
+                `text` AS "content",
                 `title`,
                 `date`,
                 `redirect`,
-                `MATCH` (
+                MATCH (
                     `text`,`title`,`teaser_text`
-                ) `AGAINST` (
-                    "%`' . $term_db . '`%"
+                ) AGAINST (
+                    "%' . $term_db . '%"
                 ) AS `score`
             FROM
                 `' . DBPREFIX  . 'module_news` AS `tblN`
             INNER JOIN
-                `' . DBPREFIX  . 'module_news_locale` AS `tblL`
+                `' . DBPREFIX  . 'module_news_locale` AS `nl`
             ON
-                `tblL`.`news_id` = `tblN`.`id`
+                `nl`.`news_id` = `tblN`.`id`
             WHERE
                 (
-                   `text` `LIKE` ("%`' . $term_db . '`%")
-                    OR `title` `LIKE` ("%`' . $term_db . '`%")
-                    OR `teaser_text` `LIKE` ("%`' . $term_db . '`%")
+                   `text` LIKE ("%' . $term_db . '%")
+                    OR `title` LIKE ("%' . $term_db . '%")
+                    OR `teaser_text` LIKE ("%' . $term_db . '%")
                 )' .
             $newsLib->getNewsFilterQuery('tblN', '', '');
 

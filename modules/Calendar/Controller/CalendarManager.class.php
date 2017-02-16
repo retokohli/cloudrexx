@@ -359,8 +359,7 @@ class CalendarManager extends CalendarLibrary
         \JS::registerJS("modules/{$this->moduleName}/View/Script/jquery.pagination.js");
 
         \ContrexxJavascript::getInstance()->setVariable(array(
-            'language_id' => \FWLanguage::getDefaultLangId(),
-            'active_lang' => implode(',', \FWLanguage::getIdArray()),
+            'language_id' => \FWLanguage::getDefaultLangId()
         ), 'calendar');
 
         $this->getSettings();
@@ -1096,6 +1095,8 @@ class CalendarManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_DELETE' => "<input type='button' name='delete' value='{$_ARRAYLANG['TXT_CALENDAR_DELETE']}' onClick='if (confirm(\"{$_ARRAYLANG['TXT_CALENDAR_CONFIRM_DELETE_DATA']}\\n{$_ARRAYLANG['TXT_CALENDAR_ACTION_IS_IRREVERSIBLE']}\")) { window.location.href = \"index.php?cmd={$this->moduleName}&delete=$eventId&".\Cx\Core\Csrf\Controller\Csrf::param()."\"} return false;'>",
             ));
         }
+        
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
     }
 
 
@@ -1312,6 +1313,8 @@ class CalendarManager extends CalendarLibrary
         } else { */
             $this->_objTpl->hideBlock('hostSelector');
         /* } */
+        
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
     }
 
 
@@ -1375,6 +1378,22 @@ class CalendarManager extends CalendarLibrary
     }
 
     /**
+     * Parse the CSV data
+     *
+     * @param string $data
+     * @param string $format
+     *
+     * @return string
+     */
+    function parseCsvData($data, $format) {
+        $data = html_entity_decode($data, ENT_QUOTES);
+        if ($format === 'export_csv_excel') {
+            $data = utf8_decode($data);
+        }
+        return $data;
+    }
+
+    /**
      * Export the registered userd of the given event
      *
      * @param integer $eventId          Event id
@@ -1418,7 +1437,7 @@ class CalendarManager extends CalendarLibrary
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
 
         $filename = urlencode($objEvent->title).".csv";
-
+        $fileFormat = isset($_GET['format']) ? contrexx_input2raw($_GET['format']) : '';
         $objRegistrationManager = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($objEvent, $getRegistrations, $getDeregistrations, $getWaitlist);
         $objRegistrationManager->getRegistrationList();
 
@@ -1427,6 +1446,7 @@ class CalendarManager extends CalendarLibrary
             header("Content-Disposition: attachment; filename=\"$filename\"", true);
 
             print ($_ARRAYLANG['TXT_CALENDAR_FIRST_EXPORT'].$this->csvSeparator);
+            print ($_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTRATION_SUBMISSION'].$this->csvSeparator);
             print ($_ARRAYLANG['TXT_CALENDAR_TYPE'].$this->csvSeparator);
             print ($_ARRAYLANG['TXT_CALENDAR_EVENT'].$this->csvSeparator);
             print ($_ARRAYLANG['TXT_CALENDAR_LANG'].$this->csvSeparator);
@@ -1435,7 +1455,7 @@ class CalendarManager extends CalendarLibrary
 
             foreach ($objRegistrationManager->registrationList[$firstKey]->fields as $id => $arrField) {
                 if ($arrField['type'] != 'fieldset') {
-                    print (self::escapeCsvValue(html_entity_decode($arrField['name'], ENT_QUOTES)).$this->csvSeparator);
+                    print (self::escapeCsvValue($this->parseCsvData($arrField['name'], $fileFormat)).$this->csvSeparator);
                 }
             }
 
@@ -1449,8 +1469,14 @@ class CalendarManager extends CalendarLibrary
 
                 // $objRegistration->eventDate is a UTC unix timestamp
                 $exportDate = new \DateTime();
+                $submissionDate =
+                    (($objRegistration->submissionDate instanceof \DateTime)
+                        ? $this->format2userDateTime($objRegistration->submissionDate)
+                        : ''
+                    );
                 $exportDate->setTimestamp($objRegistration->firstExport);
                 print ($this->format2userDate($exportDate).$this->csvSeparator);
+                print ($submissionDate.$this->csvSeparator);
 
                 if($objRegistration->type == '1') {
                     print ($_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'].$this->csvSeparator);
@@ -1463,7 +1489,7 @@ class CalendarManager extends CalendarLibrary
                 // $objRegistration->eventDate is a UTC unix timestamp
                 $registrationDate = new \DateTime();
                 $registrationDate->setTimestamp($objRegistration->eventDate);
-                print (html_entity_decode($objEvent->title, ENT_QUOTES)." - ". $this->format2userDate($registrationDate).$this->csvSeparator);
+                print ($this->parseCsvData($objEvent->title, $fileFormat)." - ". $this->format2userDate($registrationDate).$this->csvSeparator);
 
                 if($objRegistration->langId == null) {
                     print ($this->arrFrontendLanguages[$_LANGID]['name'].$this->csvSeparator);
@@ -1480,7 +1506,7 @@ class CalendarManager extends CalendarLibrary
                         case 'seating':
                         case 'firstname':
                         case 'lastname':
-                            print (self::escapeCsvValue(html_entity_decode($arrField['value'], ENT_QUOTES)).$this->csvSeparator);
+                            print (self::escapeCsvValue($this->parseCsvData($arrField['value'], $fileFormat)).$this->csvSeparator);
                             break ;
                         case 'salutation':
                         case 'select':
@@ -1505,7 +1531,7 @@ class CalendarManager extends CalendarLibrary
                                 }
                             }
 
-                            print (html_entity_decode(self::escapeCsvValue(join(", ", $output)), ENT_QUOTES).$this->csvSeparator);
+                            print ($this->parseCsvData(self::escapeCsvValue(join(", ", $output)), $fileFormat).$this->csvSeparator);
 
                             break;
                         case 'agb':
@@ -1536,6 +1562,7 @@ class CalendarManager extends CalendarLibrary
     {
         global $_ARRAYLANG;
 
+        \JS::activate('jquery-cookie');
         $this->_objTpl->loadTemplateFile('module_calendar_registrations.html');
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($eventId));
 
@@ -1599,6 +1626,12 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_ID'                      => $eventId,
             $this->moduleLangVar.'_REGISTRATION_ID'               => $regId,
             $this->moduleLangVar.'_REGISTRATION_'. strtoupper($getTpl) .'_CONTAINER_CLASS'  => 'active',
+            'TXT_'.$this->moduleLangVar.'_EXPORT_TITLE'           => $_ARRAYLANG['TXT_CALENDAR_EXPORT_TITLE'],
+            'TXT_'.$this->moduleLangVar.'_EXPORT_CANCEL'          => $_ARRAYLANG['TXT_CALENDAR_CANCEL'],
+            'TXT_'.$this->moduleLangVar.'_EXPORT_EXPORT'          => $_ARRAYLANG['TXT_CALENDAR_EXPORT'],
+            'TXT_'.$this->moduleLangVar.'_EXPORT_SUB_TITLE'       => $_ARRAYLANG['TXT_CALENDAR_EXPORT_SUB_TITLE'],
+            'TXT_'.$this->moduleLangVar.'_EXPORT_CSV'             => $_ARRAYLANG['TXT_CALENDAR_EXPORT_CSV'],
+            'TXT_'.$this->moduleLangVar.'_EXPORT_CSV_FOR_MS_EXCEL' => $_ARRAYLANG['TXT_CALENDAR_EXPORT_CSV_FOR_MS_EXCEL']
         ));
 
         $tplArr = array('r', 'd', 'w');
@@ -1751,6 +1784,8 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_DATE'                   => $objEvent->startDate->getTimestamp(),
             $this->moduleLangVar.'_USER_ID'                      => $userId,
         ));
+        
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
     }
 
     /**

@@ -212,7 +212,7 @@ class CalendarRegistrationManager extends CalendarLibrary
         global $objDatabase, $_LANGID, $_ARRAYLANG;
 
         $objResult = $objDatabase->Execute('SELECT count(DISTINCT `field_id`) AS `count_form_fields` FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name` WHERE `form_id` = '.$this->formId);
-        $objTpl->setVariable($this->moduleLangVar.'_COUNT_FORM_FIELDS', $objResult->fields['count_form_fields'] + 3);
+        $objTpl->setVariable($this->moduleLangVar.'_COUNT_FORM_FIELDS', $objResult->fields['count_form_fields'] + 4);
 
         $query = '
             SELECT
@@ -258,6 +258,10 @@ class CalendarRegistrationManager extends CalendarLibrary
             $this->parseEventRegistrationStats($dateFilterTpl, $eventStats, $selectedDateFilter);
 
             $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_NAME', $dateFilterTpl->get());
+            $objTpl->parse('eventRegistrationName');
+            
+            //display the registration submission date header
+            $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_NAME', $_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTRATION_SUBMISSION']);
             $objTpl->parse('eventRegistrationName');
 
             $arrFieldColumns = array();
@@ -357,6 +361,16 @@ class CalendarRegistrationManager extends CalendarLibrary
             $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', date("d.m.Y", $objRegistration->eventDate));
             $objTpl->parse('eventRegistrationValue');
 
+            //display the registration submission date value
+            $objTpl->setVariable(
+                $this->moduleLangVar.'_REGISTRATION_VALUE',
+                (($objRegistration->submissionDate instanceof \DateTime)
+                    ? $this->format2userDateTime($objRegistration->submissionDate)
+                    : ''
+                )
+            );
+            $objTpl->parse('eventRegistrationValue');
+
             foreach ($arrFieldColumns as $fieldId) {
                 $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', isset($arrValues[$objRegistration->id][$fieldId]) ? contrexx_raw2xhtml($arrValues[$objRegistration->id][$fieldId]) : '');
                 $objTpl->parse('eventRegistrationValue');
@@ -380,7 +394,7 @@ class CalendarRegistrationManager extends CalendarLibrary
 
             $links = '
                 <a style="float: right;" class="delete_registration" href="index.php?cmd='. $this->moduleName .'&amp;act=event_registrations&amp;tpl='.$tpl.'&amp;id='.$this->eventId.'&amp;delete='.$objRegistration->id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_DELETE'].'"><img src="../core/Core/View/Media/icons/delete.gif" width="17" height="17" border="0" alt="'.$_ARRAYLANG['TXT_CALENDAR_DELETE'].'" /></a>
-                <a style="float: right;" href="index.php?cmd='.$this->moduleName.'&amp;act=modify_registration&amp;tpl='.$tpl.'&amp;event_id='.$this->eventId.'&amp;reg_id='.$objRegistration->id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EDIT'].'"><img src="../core/Core/View/Media/icons/edit.gif" width="16" height="16" border="0" alt="'.$_ARRAYLANG['TXT_CALENDAR_EDIT'].'" /></a>
+                <a style="float: right;" href="index.php?cmd='.$this->moduleName.'&amp;act=modify_registration&amp;tpl='.$tpl.'&amp;event_id='.$this->eventId.'&amp;amp;reg_id='.$objRegistration->id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EDIT'].'"><img src="../core/Core/View/Media/icons/edit.gif" width="16" height="16" border="0" alt="'.$_ARRAYLANG['TXT_CALENDAR_EDIT'].'" /></a>
             ';
             $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', $links);
             $objTpl->parse('eventRegistrationValue');

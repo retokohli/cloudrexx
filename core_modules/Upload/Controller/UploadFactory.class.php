@@ -96,10 +96,8 @@ class UploadFactory
     }
 
     protected function initSession() {
-        global $sessionObj;
-        if(empty($sessionObj)) { //session hasn't been initialized so far
-            $sessionObj = \cmsSession::getInstance();
-        }
+        $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getComponent('Session')->getSession();
         if (!isset($_SESSION['upload'])) {
             $_SESSION['upload'] = array();
             $_SESSION['upload']['handlers'] = array();

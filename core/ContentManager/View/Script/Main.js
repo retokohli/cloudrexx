@@ -1186,7 +1186,10 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             }
         },
         "cookies" : {
-            'save_selected' : false
+            'save_loaded' : cx.variables.get('save_loaded', 'contentmanager/jstree'),
+            'save_opened' : cx.variables.get('save_opened', 'contentmanager/jstree'),
+            'save_selected' : false,
+            'cookie_options': {path: cx.variables.get('basePath')}
         }
     })
     .bind("before.jstree", function(e, data) {
@@ -2383,6 +2386,7 @@ cx.cm.getCurrentLang = function() {
  */
 cx.cm.setCurrentLang = function(newLang) {
     cx.cm.getTree().jstree("set_lang", newLang);
+    cx.jQuery('.chzn-select').trigger("chosen:updated");
 }
 
 /**
@@ -2800,6 +2804,7 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     cx.jQuery('#page input[name="page[metatitle]"]').val(page.metatitle);
     cx.jQuery('#page textarea[name="page[metadesc]"]').val(page.metadesc);
     cx.jQuery('#page textarea[name="page[metakeys]"]').val(page.metakeys);
+    cx.jQuery('#page input[name="page[metaimage]"]').val(page.metaimage);
 
     // tab access protection
     cx.jQuery('#page input[name="page[protection_frontend]"]').prop('checked', page.frontend_protection);
@@ -3118,13 +3123,13 @@ cx.cm.updateHistoryTableHighlighting = function() {
 }
 
 cx.cm.slugify = function(string) {
+    // replace international characters
+    cx.jQuery.each(cx.variables.get("charReplaceList"), function(search, replace) {
+        string = string.replace(search, replace);
+    });
+    // replace spaces
     string = string.replace(/\s+/g, '-');
-    string = string.replace(/ä/g, 'ae');
-    string = string.replace(/ö/g, 'oe');
-    string = string.replace(/ü/g, 'ue');
-    string = string.replace(/Ä/g, 'Ae');
-    string = string.replace(/Ö/g, 'Oe');
-    string = string.replace(/Ü/g, 'Ue');
+    // replace all non-url characters
     string = string.replace(/[^a-zA-Z0-9-_]/g, '');
     return string;
 }
@@ -3175,4 +3180,15 @@ cx.cm.getPagePath = function(pageId) {
         pageId = cx.cm.getParentPageId(pageId);
     }
     return path;
+}
+
+/**
+ * Sets new meta image from media browser callback
+ * @param data
+ */
+cx.cm.setSelectedMetaimage = function (data) {
+    if (data.type == 'file') {
+        var url = data.data[0].datainfo;
+        document.getElementById('page_metaimage').value = url.filepath;
+    }
 }

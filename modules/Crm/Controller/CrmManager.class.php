@@ -5716,77 +5716,62 @@ END;
      */
     public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG, $objInit;
 
-        $arrFiles = array();
-        //get allowed file types
-        $arrAllowedFileTypes = array();
-        $arrAllowedFileTypes[] = 'csv';
-        $depositionTarget = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteMediaCrmPath().'/'; //target folder
-        $fileName = $_POST['name'];
+        //target folder
+        $depositionTarget = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteMediaCrmPath() . '/';
         $h = opendir($tempPath);
-        if ($h) {
-
-            while (false != ($file = readdir($h))) {
-
-                $info = pathinfo($file);
-
-                //skip . and ..
-                if ($file == '.' || $file == '..') {
-                    continue;
-                }
-
-                //delete unwanted files
-                $sizeLimit = 10485760;
-                $size = filesize($tempPath.'/'.$file);
-                if ($size > $sizeLimit) {
-                    $response->addMessage(
-                        \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
-                        "Server error. Increase post_max_size and upload_max_filesize to $size."
-                    );
-                    \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
-                    continue;
-                }
-
-                if (!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
-                    $response->addMessage(
-                        \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
-                        'Please choose a csv to upload'
-                    );
-                    \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
-                    continue;
-                }
-
-                if ($file != '..' && $file != '.') {
-                    //do not overwrite existing files.
-                    $prefix = '';
-                    while (file_exists($depositionTarget.$prefix.$file)) {
-                        if (empty($prefix)) {
-                            $prefix = 0;
-                        }
-                        $prefix ++;
-                    }
-
-                    // move file
-                    try {
-                        $objFile = new \Cx\Lib\FileSystem\File($tempPath.'/'.$file);
-                        $objFile->copy($depositionTarget.$prefix.$file, false);
-                        $fileName = $prefix.$file;
-                        if (!empty ($fileName)) {
-                            list($file, $ext) = split('[.]', $fileName);
-                            if ($ext == 'csv') {
-                                $_SESSION['importFilename'] = $fileName;
-                            }
-                        }
-                    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                        \DBG::msg($e->getMessage());
-                    }
-                }
-
-                $arrFiles[] = $file;
-            }
-            closedir($h);
+        if (!$h) {
+            return array($tempPath, $tempWebPath);
         }
+
+        while (false != ($file = readdir($h))) {
+
+            //skip . and ..
+            if ($file == '.' || $file == '..') {
+                continue;
+            }
+
+            //delete unwanted files
+            $sizeLimit = 10485760;
+            $size = filesize($tempPath . '/' . $file);
+            if ($size > $sizeLimit) {
+                $response->addMessage(
+                    \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
+                    "Server error. Increase post_max_size and upload_max_filesize to $size."
+                );
+                \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath . '/' . $file);
+                continue;
+            }
+
+            $info = pathinfo($file);
+            if (!in_array(strtolower($info['extension']), array('csv'))) {
+                $response->addMessage(
+                    \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
+                    'Please choose a csv to upload'
+                );
+                \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath . '/' . $file);
+                continue;
+            }
+
+            //do not overwrite existing files.
+            $prefix = '';
+            while (file_exists($depositionTarget . $prefix . $file)) {
+                if (empty($prefix)) {
+                    $prefix = 0;
+                }
+                $prefix++;
+            }
+
+            // move file
+            try {
+                $objFile = new \Cx\Lib\FileSystem\File($tempPath . '/' . $file);
+                $objFile->copy($depositionTarget . $prefix . $file, false);
+                $_SESSION['importFilename'] = $prefix . $file;
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::msg($e->getMessage());
+            }
+        }
+        closedir($h);
 
         return array($tempPath, $tempWebPath);
     }

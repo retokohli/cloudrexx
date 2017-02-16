@@ -79,9 +79,6 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         parent::__construct(null, false, null, $name);
         parent::getSettings();
         parent::getFrontendLanguages();
-
-
-
     }
 
     function getEntries($intEntryId=null, $intLevelId=null, $intCatId=null, $strSearchTerm=null, $bolLatest=null, $bolUnconfirmed=null, $bolActive=null, $intLimitStart=null, $intLimitEnd='n', $intUserId=null, $bolPopular=null, $intCmdFormId=null, $bolReadyToConfirm=null, $intLimit=0, $intOffset=0)
@@ -315,6 +312,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             }
             $this->recordCount = $totalRecords->fields['found_rows'];
         }
+
+        $this->setCurrentFetchedEntryDataObject($this);
     }
 
     /**
@@ -337,7 +336,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         return $this->strBlockName;
     }
 
-    function listEntries($objTpl, $intView)
+    function listEntries($objTpl, $intView, $googleMapPlaceholder = null)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
@@ -485,14 +484,16 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                             $objForm = new MediaDirectoryForm($arrEntry['entryFormId'], $this->moduleName);
 
                             $objTpl->setVariable(array(
-                                    $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
+                                $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
                                 $this->moduleLangVar.'_ENTRY_ID' =>  $arrEntry['entryId'],
+                                $this->moduleLangVar.'_ENTRY_TITLE' => contrexx_raw2xhtml($arrEntry['entryFields'][0]),
+                                $this->moduleLangVar.'_ENTRY_TITLE_URL_ENCODED' => urlencode($arrEntry['entryFields'][0]),
                                 $this->moduleLangVar.'_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
                                 $this->moduleLangVar.'_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
                                 $this->moduleLangVar.'_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
                                 $this->moduleLangVar.'_ENTRY_CATEGORIES' =>  $this->getCategoriesLevels(1, $arrEntry['entryId'], $objForm->arrForms[$arrEntry['entryFormId']]['formCmd']),
-                                    $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId'], $objForm->arrForms[$arrEntry['entryFormId']]['formCmd']),
-                                    $this->moduleLangVar.'_ENTRY_HITS' =>  $arrEntry['entryHits'],
+                                $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId'], $objForm->arrForms[$arrEntry['entryFormId']]['formCmd']),
+                                $this->moduleLangVar.'_ENTRY_HITS' =>  $arrEntry['entryHits'],
                                 $this->moduleLangVar.'_ENTRY_POPULAR_HITS' =>  $arrEntry['entryPopularHits'],
                                 $this->moduleLangVar.'_ENTRY_DETAIL_URL' => $strDetailUrl,
                                 $this->moduleLangVar.'_ENTRY_EDIT_URL' =>  'index.php?section='.$this->moduleName.'&amp;cmd=edit&amp;eid='.$arrEntry['entryId'],
@@ -648,6 +649,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                 $objTpl->setVariable(array(
                                     $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
                                     $this->moduleLangVar.'_ENTRY_ID' =>  $arrEntry['entryId'],
+                                    $this->moduleLangVar.'_ENTRY_TITLE' => contrexx_raw2xhtml($arrEntry['entryFields'][0]),
+                                    $this->moduleLangVar.'_ENTRY_TITLE_URL_ENCODED' => urlencode($arrEntry['entryFields'][0]),
                                     $this->moduleLangVar.'_ENTRY_STATUS' => $strStatus,
                                     $this->moduleLangVar.'_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
                                     $this->moduleLangVar.'_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
@@ -724,6 +727,16 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 }
             case 4:
                 //Google Map
+
+                if (!isset($googleMapPlaceholder)) {
+                    $googleMapPlaceholder = $this->moduleLangVar.'_GOOGLE_MAP';
+                }
+
+                // abort in case the relevant placeholder is missing in the template
+                if (!$objTpl->placeholderExists($googleMapPlaceholder)) {
+                    break;
+                }
+
                 $objGoogleMap = new \googleMap();
                 $objGoogleMap->setMapId($this->moduleNameLC.'GoogleMap');
                 $objGoogleMap->setMapStyleClass('mapLarge');
@@ -734,17 +747,13 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 $objGoogleMap->setMapCenter($arrValues[1], $arrValues[0]);
 
                 foreach ($this->arrEntries as $key => $arrEntry) {
-                    if(($arrEntry['entryDurationStart'] < $intToday && $arrEntry['entryDurationEnd'] > $intToday) || $arrEntry['entryDurationType'] == 1) {
-                        $arrValues = array();
-
-                        if($this->checkPageCmd('detail'.intval($arrEntry['entryFormId']))) {
-                            $strDetailCmd = 'detail'.intval($arrEntry['entryFormId']);
-                        } else {
-                            $strDetailCmd = 'detail';
-                        }
-
-                        $strEntryLink = '<a href="index.php?section='.$this->moduleName.'&amp;cmd='.$strDetailCmd.'&amp;eid='.$arrEntry['entryId'].'">'.$_ARRAYLANG['TXT_MEDIADIR_DETAIL'].'</a>';
-                        $strEntryTitle = '<b>'.contrexx_raw2xhtml($arrEntry['entryFields']['0']).'</b>';
+                    if (
+                        (
+                            $arrEntry['entryDurationStart'] < $intToday &&
+                            $arrEntry['entryDurationEnd'] > $intToday
+                        ) ||
+                        $arrEntry['entryDurationType'] == 1
+                    ) {
                         $intEntryId = intval($arrEntry['entryId']);
                         $intEntryFormId = intval($arrEntry['entryFormId']);
 
@@ -768,23 +777,56 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
                         $objRSMapKoordinates = $objDatabase->Execute($query);
 
-                        if($objRSMapKoordinates !== false) {
-                            $arrValues = explode(',', $objRSMapKoordinates->fields['value']);
+                        if (
+                            $objRSMapKoordinates === false ||
+                            empty($objRSMapKoordinates->fields['value'])
+                        ) {
+                            continue;
+                        }
+                        $arrValues = explode(',', $objRSMapKoordinates->fields['value']);
+                        $strValueLon = empty($arrValues[1]) ? 0 : $arrValues[1];
+                        $strValueLat = empty($arrValues[0]) ? 0 : $arrValues[0];
+
+                        if (empty($strValueLon) && empty($strValueLat)) {
+                            continue;
                         }
 
-                        $strValueLon = empty($arrValues[1]) ? 0 : $arrValues[1];
-                            $strValueLat = empty($arrValues[0]) ? 0 : $arrValues[0];
+                        if ($this->checkPageCmd('detail'.intval($arrEntry['entryFormId']))) {
+                            $strDetailCmd = 'detail'.intval($arrEntry['entryFormId']);
+                        } else {
+                            $strDetailCmd = 'detail';
+                        }
 
-                            $mapIndex      = $objGoogleMap->getMapIndex();
-                            $clickFunction = "if (infowindow_$mapIndex) { infowindow_$mapIndex.close(); }
-                                infowindow_$mapIndex.setContent(info$intEntryId);
-                                infowindow_$mapIndex.open(map_$mapIndex, marker$intEntryId)";
-                        $objGoogleMap->addMapMarker($intEntryId, $strValueLon, $strValueLat, $strEntryTitle."<br />".$strEntryLink, true, $clickFunction);
+                        $strEntryLink  = '<a href="index.php?section='
+                            . $this->moduleName . '&amp;cmd=' . $strDetailCmd
+                            . '&amp;eid=' . $arrEntry['entryId'] . '">'
+                            . $_ARRAYLANG['TXT_MEDIADIR_DETAIL'] .'</a>';
+                        $strEntryTitle = '<b>'.contrexx_raw2xhtml($arrEntry['entryFields']['0']).'</b>';
+                        $mapIndex      = $objGoogleMap->getMapIndex();
+
+                        $clickFunction = <<<JSCODE
+infoWindow = cx.variables.get('map_{$mapIndex}_infoWindow', '{$objGoogleMap->getMapId()}');
+if (infoWindow) {
+    infoWindow.close();
+}
+mapMarker = cx.variables.get('map_{$mapIndex}_markers', '{$objGoogleMap->getMapId()}')[$intEntryId];
+infoWindow.setContent(mapMarker.info);
+infoWindow.open(map_$mapIndex, mapMarker.marker);
+JSCODE;
+
+                        $objGoogleMap->addMapMarker(
+                            $intEntryId,
+                            $strValueLon,
+                            $strValueLat,
+                            $strEntryTitle . "<br />" . $strEntryLink,
+                            true,
+                            $clickFunction
+                        );
                     }
                 }
 
                 $objTpl->setVariable(array(
-                    $this->moduleLangVar.'_GOOGLE_MAP' => $objGoogleMap->getMap()
+                    $googleMapPlaceholder => $objGoogleMap->getMap()
                 ));
 
                 break;
@@ -1074,30 +1116,6 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 continue;
             }
 
-            // attribute is non-i18n
-            if ($arrInputfield['type_multi_lang'] == 0) {
-                try {
-                    $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']]);
-                    $objResult = $objDatabase->Execute("
-                        INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
-                           SET `entry_id`='".intval($intId)."',
-                               `lang_id`='".intval($_LANGID)."',
-                               `form_id`='".intval($intFormId)."',
-                               `field_id`='".intval($arrInputfield['id'])."',
-                               `value`='".contrexx_raw2db($strInputfieldValue)."'
-              ON DUPLICATE KEY
-                        UPDATE `value`='".contrexx_raw2db($strInputfieldValue)."'");
-                    if (!$objResult) {
-                        throw new \Exception($objDatabase->ErrorMsg());
-                    }
-                } catch (Exception $e) {
-                    \Message::error($e->getMessage());
-                    $error = true;
-                }
-
-                continue;
-            }
-
             // delete attribute's data of languages that are no longer in use
             $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE entry_id='".$intId."' AND field_id = '".intval($arrInputfield['id'])."' AND lang_id NOT IN (".join(",", array_keys($this->arrFrontendLanguages)).")");
 
@@ -1105,6 +1123,25 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             foreach ($this->arrFrontendLanguages as $arrLang) {
                 try {
                     $intLangId = $arrLang['id'];
+
+                    // attribute is non-i18n
+                    if ($arrInputfield['type_multi_lang'] == 0) {
+                        $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']]);
+                        $objResult = $objDatabase->Execute("
+                            INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+                               SET `entry_id`='".intval($intId)."',
+                                   `lang_id`='".intval($intLangId)."',
+                                   `form_id`='".intval($intFormId)."',
+                                   `field_id`='".intval($arrInputfield['id'])."',
+                                   `value`='".contrexx_raw2db($strInputfieldValue)."'
+                            ON DUPLICATE KEY
+                                UPDATE `value`='".contrexx_raw2db($strInputfieldValue)."'");
+                        if (!$objResult) {
+                            throw new \Exception($objDatabase->ErrorMsg());
+                        }
+
+                        continue;
+                    }
 
                     // if the attribute is of type dynamic (meaning it can have an unlimited set of childs (references))
                     if ($arrInputfield['type_dynamic'] == 1) {
@@ -1141,21 +1178,21 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                         // or the process is parsing the user's current interface language
                         || $intLangId == $_LANGID
                     ) {
-                            $strMaster =
-                                (isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0])
-                                  ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0]
-                                  : null);
-                            $strNewDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID])
-                                                ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID]
-                                                : '';
-                            if ($strNewDefault != $strMaster) {
-                                $strDefault = $strMaster;
-                            } else {
-                                $strDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId])
-                                                ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId]
-                                                : '';
-                            }
-                            $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault, $intLangId);
+                        $strMaster =
+                            (isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0])
+                              ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0]
+                              : null);
+                        $strNewDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID])
+                                            ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID]
+                                            : '';
+                        if ($strNewDefault != $strMaster) {
+                            $strDefault = $strMaster;
+                        } else {
+                            $strDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId])
+                                            ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId]
+                                            : '';
+                        }
+                        $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault, $intLangId);
                     } else {
                         // regular attribute get parsed
                         $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId], $intLangId);
@@ -1168,8 +1205,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                `form_id`='".intval($intFormId)."',
                                `field_id`='".intval($arrInputfield['id'])."',
                                `value`='".contrexx_raw2db($strInputfieldValue)."'
-              ON DUPLICATE KEY
-                        UPDATE `value`='".contrexx_raw2db($strInputfieldValue)."'");
+                        ON DUPLICATE KEY
+                            UPDATE `value`='".contrexx_raw2db($strInputfieldValue)."'");
                     if (!$objResult) {
                         throw new \Exception($objDatabase->ErrorMsg());
                     }
