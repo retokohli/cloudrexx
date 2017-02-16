@@ -562,8 +562,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             case 'Cx\Core\Locale\Model\Entity\LanguageFile':
                 return $this->languageFile;
             break;
+            default:
+                return $entityClassName;
+            break;
         }
-        return $entityClassName;
     }
 
     /**
