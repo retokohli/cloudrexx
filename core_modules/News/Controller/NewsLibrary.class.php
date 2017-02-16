@@ -445,9 +445,9 @@ class NewsLibrary
 
         if (!empty($langIds)) {
             if (is_array($langIds)) {
-                $where[] = "`lang_id` IN ('"
+                $where[] = '`lang_id` IN ('
                         . implode(',', $langIds)
-                        . "')";
+                        . ')';
             } else {
                 $where[] = "`lang_id` ='"
                         . $langIds
