@@ -127,16 +127,16 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     }
 
     /**
-     * Saves the overwritten placeholders to yaml
+     * Saves the overwritten placeholders to the YAML file
      *
-     * If the folder for the frontend.yaml doesn't exist yet, it's created.
-     * If the frontend.yaml doesn't exist yet it's created
+     * If the folder for the YAML file doesn't exist yet, it's created.
+     * If the YAML file doesn't exist yet it's created
      *
      * @param string $filename Is ignored since $this->path is used
      * @throws \Cx\Lib\FileSystem\FileSystemException
      */
     public function save($filename='') {
-        // check if folder of frontend.yaml already exists
+        // check if folder of yaml file already exists
         if (!\Cx\Lib\FileSystem\FileSystem::exists(dirname($this->getPath()))) {
             // folder doesn't exist, create it (recursively)
             \Cx\Lib\FileSystem\FileSystem::make_folder(dirname($this->getPath()), true);
@@ -162,7 +162,9 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
             return $exportInterface->export($this->getPlaceholders());
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
-            throw new \Cx\Core_Modules\Listing\Model\Entity\DataSetException('Exporting overwritten placeholders to frontend.yaml failed!');
+            throw new \Cx\Core_Modules\Listing\Model\Entity\DataSetException(
+                'Exporting overwritten placeholders to YAML file failed!'
+            );
         }
     }
 
@@ -177,7 +179,9 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
             return $importInterface->import($content);
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
-            throw new \Cx\Core_Modules\Listing\Model\Entity\DataSetException('Importing placeholders from yaml failed!');
+            throw new \Cx\Core_Modules\Listing\Model\Entity\DataSetException(
+                'Importing placeholders from YAML file failed!'
+            );
         }
     }
 
