@@ -116,6 +116,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $page->setTitle($newsObj->newsTitle);
                     $page->setContentTitle($newsObj->newsTitle);
                     $page->setMetaTitle($newsObj->newsTitle);
+                    $page->setMetakeys($newsObj->newsMetaKeys);
 
                     // Set the meta page description to the teaser text if displaying news details
                     $teaser = $newsObj->getTeaser();
@@ -154,12 +155,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $themesPages, $page_template, $objCache, $_LANGID;
+        global $themesPages, $page_template, $objCache, $_LANGID, $objInit;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 // Get Headlines
                 $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsHeadlines.class.php';
                 if (file_exists($modulespath)) {
+                    $first = true;
                     for ($i = 0; $i <= 10; $i++) {
                         $visibleI = '';
                         if ($i > 0) {
@@ -172,6 +174,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             || strpos($themesPages['sidebar'], $headlinesNewsPlaceholder) !== false
                             || strpos($page_template, $headlinesNewsPlaceholder) !== false
                            ) {
+                                if ($first) {
+                                    $first = false;
+                                    $objInit->loadLanguageData('News');
+                                }
                                 $homeHeadlines = $objCache->getEsiContent(
                                     'News',
                                     'getHeadlines',
@@ -228,6 +234,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 'langId' => $_LANGID,
                             )
                         );
+
                         $page->setContent(str_replace($newsCategoriesPlaceholder, $newsCategories, $page->getContent()));
                         $themesPages['index']   = str_replace($newsCategoriesPlaceholder, $newsCategories, $themesPages['index']);
                         $themesPages['sidebar'] = str_replace($newsCategoriesPlaceholder, $newsCategories, $themesPages['sidebar']);
@@ -250,6 +257,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 'langId' => $_LANGID,
                             )
                         );
+
                         $page->setContent(str_replace($newsArchivePlaceholder, $newsArchive, $page->getContent()));
                         $themesPages['index']   = str_replace($newsArchivePlaceholder, $newsArchive, $themesPages['index']);
                         $themesPages['sidebar'] = str_replace($newsArchivePlaceholder, $newsArchive, $themesPages['sidebar']);
@@ -274,6 +282,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 'langId'   => $_LANGID,
                             )
                         );
+
                         $page->setContent(str_replace($newsCommentsPlaceholder, $newsComments, $page->getContent()));
                         $themesPages['index']   = str_replace($newsCommentsPlaceholder, $newsComments, $themesPages['index']);
                         $themesPages['sidebar'] = str_replace($newsCommentsPlaceholder, $newsComments, $themesPages['sidebar']);
