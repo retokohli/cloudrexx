@@ -2229,7 +2229,7 @@ RSS2JSCODE;
                                             : \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($newsCategories), $categories)), FRONTEND_LANG_ID, array('newsid' => $newsid)))
                                         : $news['newsredirect'];
 
-                    $redirectNewWindow = !empty($news['redirect']) && !empty($news['redirectNewWindow']);
+                    $redirectNewWindow = !empty($news['newsredirect']) && !empty($news['redirectNewWindow']);
                     $htmlLink = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('[' . $_ARRAYLANG['TXT_NEWS_MORE'] . '...]'), $redirectNewWindow);
                     $linkTarget = $redirectNewWindow ? '_blank' : '_self';
 
