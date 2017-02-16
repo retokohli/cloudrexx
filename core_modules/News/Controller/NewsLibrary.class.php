@@ -2667,6 +2667,7 @@ EOF;
             'TXT_NEWS_TITLE'        => $_ARRAYLANG['TXT_NEWS_TITLE'],
             'TXT_NEWS_COMMENT'      => $_ARRAYLANG['TXT_NEWS_COMMENT'],
             'TXT_NEWS_ADD'          => $_ARRAYLANG['TXT_NEWS_ADD'],
+            'TXT_NEWS_WRITE_COMMENT'=> $_ARRAYLANG['TXT_NEWS_WRITE_COMMENT'],
         ));
 
         $objTpl->parse('news_add_comment');
