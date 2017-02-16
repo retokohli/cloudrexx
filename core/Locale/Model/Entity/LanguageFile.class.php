@@ -95,12 +95,13 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
      * @throws \Cx\Core\Locale\Model\Entity\LanguageFileException
      */
     public function __construct(\Cx\Core\Locale\Model\Entity\Locale $locale, $componentName='Core', $frontend=true, $onlyCustomized=true) {
+        global $_ARRAYLANG;
 
         // set the locale
         $this->locale = $locale;
         if (!isset($this->locale)) {
             throw new LanguageFileException(
-                'Locale not set, cannot load language file'
+                $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_LOCALE_NOT_SET']
             );
         }
 
@@ -158,12 +159,15 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
      * @return mixed
      */
     public function export(\Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface) {
+        global $_ARRAYLANG;
+
         try {
+            // export the placeholders to the yaml file
             return $exportInterface->export($this->getPlaceholders());
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
             throw new \Cx\Core_Modules\Listing\Model\Entity\DataSetException(
-                'Exporting overwritten placeholders to YAML file failed!'
+                $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_EXPORT_FAILED']
             );
         }
     }
@@ -175,12 +179,14 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
      * @return mixed The array containing the placeholders
      */
     public static function import(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $content) {
+        global $_ARRAYLANG;
+
         try {
             return $importInterface->import($content);
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
             throw new \Cx\Core_Modules\Listing\Model\Entity\DataSetException(
-                'Importing placeholders from YAML file failed!'
+                $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_IMPORT_FAILED']
             );
         }
     }
