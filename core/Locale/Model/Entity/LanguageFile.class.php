@@ -154,7 +154,6 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
 
     /**
      * Exports the overwritten placeholders, called by save method
-     *
      * @param \Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface
      * @return mixed
      */
@@ -175,8 +174,8 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     /**
      * Imports the placeholders stored in the yaml file
      * @param \Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface
-     * @param $content
-     * @return mixed The array containing the placeholders
+     * @param $content The file's content
+     * @return array The array containing the placeholders
      */
     public static function import(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $content) {
         global $_ARRAYLANG;
@@ -202,9 +201,8 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     }
 
     /**
-     * Return's the locale
-     *
-     * @return Locale
+     * Returns the locale
+     * @return Locale The locale object
      */
     public function getLocale()
     {
@@ -213,8 +211,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
 
     /**
      * Sets the locale
-     *
-     * @param Locale $locale
+     * @param Locale $locale The locale object
      */
     public function setLocale($locale)
     {
@@ -223,7 +220,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
 
     /**
      * Returns an array containing the overwritten placeholders
-     * @return Placeholder[]
+     * @return Placeholder[] The array containing the placeholders
      */
     public function getPlaceholders()
     {
@@ -232,13 +229,17 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
 
     /**
      * Sets the array containing the overwritten placeholders
-     * @param Placeholder[] $placeholders
+     * @param Placeholder[] $placeholders The array containing the placeholders
      */
     public function setPlaceholders($placeholders)
     {
         $this->placeholders = $placeholders;
     }
 
+    /**
+     * Adds a placeholder to the placeholder array
+     * @param Placeholder $placeholder The placeholder to add
+     */
     public function addPlaceholder($placeholder) {
         foreach ($this->getPlaceholders() as $key => $existingPlaceholders) {
             if ($existingPlaceholders->getName() == $placeholder->getName()) {
@@ -251,9 +252,8 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     }
 
     /**
-     * Returns the path of the customized yaml file
-     *
-     * @return string
+     * Returns the path of the customized YAML file
+     * @return string The path to the YAML file
      */
     public function getPath()
     {
@@ -261,9 +261,8 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     }
 
     /**
-     * Sets the path of the customized yaml file
-     *
-     * @param string $path
+     * Sets the path of the customized YAML file
+     * @param string $path The path to the YAML file
      */
     public function setPath($path)
     {

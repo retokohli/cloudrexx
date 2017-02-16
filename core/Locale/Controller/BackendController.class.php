@@ -50,11 +50,13 @@ namespace Cx\Core\Locale\Controller;
 class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController
 {
     /**
+     * The language file which is used to parse the placeholder list
      * @var \Cx\Core\Locale\Model\Entity\LanguageFile
      */
     protected $languageFile;
 
     /**
+     * The doctrine repository of the locale entities
      * @var \Cx\Core\Locale\Model\Repository\LocaleRepository
      */
     protected $localeRepo;
@@ -689,8 +691,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     /**
      * Compares the placeholders from post to the current set placeholders
      * and stores the effectively changed ones
-     *
-     * @param array $placeholders The placeholders from post
+     * @param array $placeholders The placeholders submitted by the user
      */
     protected function updateLanguageFile($placeholders) {
         global $_ARRAYLANG;
@@ -730,7 +731,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
     /**
      * Parses the select with the locales to choose language file
-     *
      * @param \Cx\Core\Html\Sigma $template The template to parse the view with
      */
     protected function parseLocaleSelect($template) {
@@ -774,7 +774,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
     /**
      * Gets the locale repository from the entity manager
-     *
      * @return \Cx\Core\Locale\Model\Repository\LocaleRepository
      */
     protected function getLocaleRepo() {

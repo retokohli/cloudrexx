@@ -63,6 +63,8 @@ class Placeholder extends \Cx\Model\Base\EntityBase {
 
     /**
      * Creates a new placeholder instance by setting the given name and value
+     * @param string $name The placeholder's name
+     * @param string $value The placeholder's value
      */
     public function __construct($name, $value) {
         $this->name = $name;
@@ -70,7 +72,8 @@ class Placeholder extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * @return string
+     * Returns the placeholder's name
+     * @return string The placeholder's name
      */
     public function getName()
     {
@@ -78,7 +81,8 @@ class Placeholder extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * @param string $name
+     * Sets the placeholder's name
+     * @param string $name The placeholder's name
      */
     public function setName($name)
     {
@@ -86,7 +90,8 @@ class Placeholder extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * @return string
+     * Returns the placeholder's value
+     * @return string The placeholder's value
      */
     public function getValue()
     {
@@ -94,7 +99,8 @@ class Placeholder extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * @param string $value
+     * Sets the placeholder's value
+     * @param string $value Returns the placeholder's value
      */
     public function setValue($value)
     {
