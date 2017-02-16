@@ -571,6 +571,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     /**
      * Returns all entities of this component which can have an auto-generated view
      *
+     * Adds DataSet to the entity classes with view, which is neccessary
+     * to auto-generate the language file view
+     *
      * @access protected
      * @return array
      */
