@@ -172,8 +172,17 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 }
                 $locale = $this->getLocaleRepo()->find($localeId);
 
-                // set language file by source language
-                $this->languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale, 'Core', $frontend, false);
+                try {
+                    // set language file by source language
+                    $this->languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile(
+                        $locale,
+                        'Core',
+                        $frontend,
+                        false
+                    );
+                } catch (\Cx\Core\Locale\Model\Entity\LanguageFileException $e) {
+                    \Message::add($e->getMessage(), \Message::CLASS_ERROR);
+                }
 
                 // check if user changed placeholders
                 if (isset($_POST['placeholders'])) {

@@ -92,19 +92,16 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
      * @param string $componentName Defines the component
      * @param boolean $frontend Defines wether to open the frontend or the backend specific file
      * @param boolean $onlyCustomized Defines wether to load only the customized language placeholders or all
+     * @throws \Cx\Core\Locale\Model\Entity\LanguageFileException
      */
     public function __construct(\Cx\Core\Locale\Model\Entity\Locale $locale, $componentName='Core', $frontend=true, $onlyCustomized=true) {
 
-        try {
-            // set the locale
-            $this->locale = $locale;
-            if (!isset($this->locale)) {
-                throw new LanguageFileException(
-                    'Locale not set, cannot load language file'
-                );
-            }
-        } catch (LanguageFileException $e) {
-            \Message::add($e->getMessage(), \Message::CLASS_ERROR);
+        // set the locale
+        $this->locale = $locale;
+        if (!isset($this->locale)) {
+            throw new LanguageFileException(
+                'Locale not set, cannot load language file'
+            );
         }
 
         // set identifier to parse entity view correctly

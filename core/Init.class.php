@@ -37,17 +37,6 @@
  */
 
 /**
- * InitCMSException
- *
- * @copyright   Cloudrexx AG
- * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
- * @package     cloudrexx
- * @subpackage  core
- * @version     5.0.0
- */
-class InitCMSException extends \Exception {}
-
-/**
  * Initialize the CMS
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
@@ -963,21 +952,20 @@ class InitCMS
         }
 
         // load customized language placeholders from yaml
+        // get locale by frontend locale id
+        $locale = $cx->getDb()->getEntityManager()->find(
+            'Cx\Core\Locale\Model\Entity\Locale',
+            $this->frontendLangId
+        );
+
         try {
-            // get locale by frontend locale id
-            $locale = $cx->getDb()->getEntityManager()->find(
-                'Cx\Core\Locale\Model\Entity\Locale',
-                $this->frontendLangId
-            );
-            if (!isset($locale)) {
-                throw new \InitCMSException('Locale not set, cannot load language file');
-            }
-        } catch (\InitCMSException $e) {
+            // get the language file of the locale
+            $languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale);
+
+        } catch (\Cx\Core\Locale\Model\Entity\LanguageFileException $e) {
             \Message::add($e->getMessage(), \Message::CLASS_ERROR);
         }
 
-        // get the language file of the locale
-        $languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale);
         // merge customized placeholders into $_ARRAYLANG
         $_ARRAYLANG = array_merge($_ARRAYLANG, $languageFile->getData());
 
