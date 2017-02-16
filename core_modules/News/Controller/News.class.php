@@ -1655,26 +1655,29 @@ JSCODE;
 });
 EOF;
         \JS::registerCode($jsCodeCategoryChosen);
-        if (!empty($this->arrSettings['use_related_news'])) {
-            $objCx = \ContrexxJavascript::getInstance();
-            $objCx->setVariable(
-                array(
-                    'noResultsMsg' => $_ARRAYLANG['TXT_NEWS_NOT_FOUND'],
-                    'langId' => FRONTEND_LANG_ID,
-                ),
-                'news/news-live-search'
-            );
-            \JS::registerJS('core_modules/News/View/Script/news-live-search.js');
-            if (!empty($data['relatedNews'])) {
-                $this->parseRelatedNewsTags(
-                    $this->_objTpl,
-                    $data['relatedNews'],
-                    FRONTEND_LANG_ID
+        // TODO: this block must be renamed to news_related_container
+        if ($this->_objTpl->blockExists('relatedNewsBlock')) {
+            if (!empty($this->arrSettings['use_related_news'])) {
+                $objCx = \ContrexxJavascript::getInstance();
+                $objCx->setVariable(
+                    array(
+                        'noResultsMsg' => $_ARRAYLANG['TXT_NEWS_NOT_FOUND'],
+                        'langId' => FRONTEND_LANG_ID,
+                    ),
+                    'news/news-live-search'
                 );
+                \JS::registerJS('core_modules/News/View/Script/news-live-search.js');
+                if (!empty($data['relatedNews'])) {
+                    $this->parseRelatedNewsTags(
+                        $this->_objTpl,
+                        $data['relatedNews'],
+                        FRONTEND_LANG_ID
+                    );
+                }
+                $this->_objTpl->touchBlock('relatedNewsBlock');
+            } else {
+                $this->_objTpl->hideBlock('relatedNewsBlock');
             }
-            $this->_objTpl->touchBlock('relatedNewsBlock');
-        } else {
-            $this->_objTpl->hideBlock('relatedNewsBlock');
         }
         $this->_objTpl->setVariable(array(
             'TXT_NEWS_MESSAGE'          => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
