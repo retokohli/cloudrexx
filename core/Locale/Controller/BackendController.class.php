@@ -693,6 +693,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @param array $placeholders The placeholders from post
      */
     protected function updateLanguageFile($placeholders) {
+        global $_ARRAYLANG;
+
         // get old placeholder values
         $oldPlaceholders = $this->languageFile->getData();
 
@@ -713,6 +715,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         // store changed values to the yaml file
         if ($this->languageFile->getPlaceholders()) {
             $this->languageFile->save();
+            //inform user about success
+            \Message::add(
+                $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_SUCCESSFULLY_UPDATED'],
+                \Message::CLASS_OK
+            );
         }
     }
 
