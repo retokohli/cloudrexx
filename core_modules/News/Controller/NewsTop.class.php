@@ -154,7 +154,6 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 $newsUrl    = empty($objResult->fields['redirect'])
                                 ? \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($newsCategories), array($catId))), $langId, array('newsid' => $newsid))
                                 : $objResult->fields['redirect'];
-
                 $redirectNewWindow = !empty($objResult->fields['redirect']) && !empty($objResult->fields['redirectNewWindow']);
                 $htmlLink = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle), $redirectNewWindow);
                 $htmlLinkTitle = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle), $redirectNewWindow);
@@ -216,3 +215,4 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
         return $this->_objTemplate->get();
     }
 }
+

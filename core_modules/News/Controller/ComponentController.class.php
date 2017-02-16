@@ -155,7 +155,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $themesPages, $page_template, $objCache, $_LANGID, $objInit;
+        global $themesPages, $page_template, $_LANGID, $objInit;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 // Get Headlines
@@ -178,7 +178,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                     $first = false;
                                     $objInit->loadLanguageData('News');
                                 }
-                                $homeHeadlines = $objCache->getEsiContent(
+                                $homeHeadlines = $this->getComponent('Cache')->getEsiContent(
                                     'News',
                                     'getHeadlines',
                                     array(
@@ -204,7 +204,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             || strpos($themesPages['sidebar'], $topNewsPlaceholder) !== false
                             || strpos($page_template, $topNewsPlaceholder) !== false)
                    ) {
-                        $homeTopNews = $objCache->getEsiContent(
+                        $homeTopNews = $this->getComponent('Cache')->getEsiContent(
                             'News',
                             'getTopNews',
                             array(
@@ -227,7 +227,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             || strpos($themesPages['sidebar'], $newsCategoriesPlaceholder) !== false
                             || strpos($page_template, $newsCategoriesPlaceholder) !== false)
                    ) {
-                        $newsCategories = $objCache->getEsiContent(
+                        $newsCategories = $this->getComponent('Cache')->getEsiContent(
                             'News',
                             'getNewsCategories',
                             array(
@@ -250,7 +250,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                            || strpos($themesPages['sidebar'], $newsArchivePlaceholder) !== false
                            || strpos($page_template, $newsArchivePlaceholder) !== false)
                    ) {
-                        $newsArchive = $objCache->getEsiContent(
+                        $newsArchive = $this->getComponent('Cache')->getEsiContent(
                             'News',
                             'getNewsArchiveList',
                             array(
@@ -274,7 +274,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                            || strpos($themesPages['sidebar'], $newsCommentsPlaceholder) !== false
                            || strpos($page_template, $newsCommentsPlaceholder) !== false)
                    ) {
-                        $newsComments = $objCache->getEsiContent(
+                        $newsComments = $this->getComponent('Cache')->getEsiContent(
                             'News',
                             'getRecentComments',
                             array(

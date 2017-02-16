@@ -81,7 +81,7 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
 
     function getHomeHeadlines($catId = 0, $langId = 0)
     {
-        global $_CORELANG, $objDatabase;
+        global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
         $i = 0;
         $catId= intval($catId);
@@ -176,3 +176,4 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
         return $this->_objTemplate->get();
     }
 }
+

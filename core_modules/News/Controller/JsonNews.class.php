@@ -169,7 +169,17 @@ class JsonNews implements JsonAdapter {
         $newsLib = new NewsLibrary();
 
         $langId   = !empty($params['get']['langId']) ? contrexx_input2int($params['get']['langId']) : 0;
-        return array('content' => $newsLib->getNewsCategories($langId));
+        $content = $newsLib->getNewsCategories($langId);
+        $content = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $content);
+        \Env::get('cx')->parseGlobalPlaceholders($content);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        \LinkGenerator::parseTemplate($content);
+        $ls = new \LinkSanitizer(
+            $cx,
+            $cx->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
+            $content
+        );
+        return array('content' => $ls->replace());
     }
 
     /**
@@ -184,7 +194,17 @@ class JsonNews implements JsonAdapter {
         $newsLib = new NewsLibrary();
 
         $langId   = !empty($params['get']['langId']) ? contrexx_input2int($params['get']['langId']) : 0;
-        return array('content' => $newsLib->getNewsArchiveList($langId));
+        $content = $newsLib->getNewsArchiveList($langId);
+        $content = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $content);
+        \Env::get('cx')->parseGlobalPlaceholders($content);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        \LinkGenerator::parseTemplate($content);
+        $ls = new \LinkSanitizer(
+            $cx,
+            $cx->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
+            $content
+        );
+        return array('content' => $ls->replace());
     }
 
     /**
@@ -213,7 +233,17 @@ class JsonNews implements JsonAdapter {
         $id         = $frameId[0];
         $templateId = $newsTeaser->arrTeaserFrames[$id]['frame_template_id'];
 
-        return array('content' => $newsTeaser->_getTeaserFrame($id, $templateId));
+        $content = $newsTeaser->_getTeaserFrame($id, $templateId);
+        $content = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $content);
+        \Env::get('cx')->parseGlobalPlaceholders($content);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        \LinkGenerator::parseTemplate($content);
+        $ls = new \LinkSanitizer(
+            $cx,
+            $cx->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
+            $content
+        );
+        return array('content' => $ls->replace());
     }
 
     /**
@@ -225,6 +255,8 @@ class JsonNews implements JsonAdapter {
      */
     public function getHeadlines($params)
     {
+        global $objInit;
+
         $headline = !empty($params['get']['headline']) ? contrexx_input2raw($params['get']['headline']) : '';
         if (empty($headline)) {
             \DBG::log(__METHOD___ . ': The headline can not be empty');
@@ -244,8 +276,37 @@ class JsonNews implements JsonAdapter {
         }
         $langId   = !empty($params['get']['langId']) ? contrexx_input2int($params['get']['langId']) : 0;
 
+        global $_ARRAYLANG;
+        $mode = $objInit->mode;
+        $orilangId = $objInit->frontendLangId;
+        $objInit->mode='frontend';
+        $objInit->frontendLangId=$langId;
+        $langData = $objInit->loadLanguageData($this->getName());
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        $objInit->mode=$mode;
+        $objInit->frontendLangId=$orilangId;
+
+        // we need to parse $content before passing it to NewsHeadlines
+        // as NewsHeadlines does transform it into a template object
+        // which will cause all placeholders to be removed from $content
+        \LinkGenerator::parseTemplate($content);
+
         $newsHeadlines = new NewsHeadlines($content);
-        return array('content' => $newsHeadlines->getHomeHeadlines($category, $langId));
+        $content = $newsHeadlines->getHomeHeadlines($category, $langId);
+        $content = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $content);
+        \Env::get('cx')->parseGlobalPlaceholders($content);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+
+        // we need to parse $content a second time here as parsed headlines file
+        // might have inserted some additional placeholders
+        \LinkGenerator::parseTemplate($content);
+
+        $ls = new \LinkSanitizer(
+            $cx,
+            $cx->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
+            $content
+        );
+        return array('content' => $ls->replace());
     }
 
     /**
@@ -266,7 +327,17 @@ class JsonNews implements JsonAdapter {
         }
         $langId = !empty($params['get']['langId']) ? contrexx_input2int($params['get']['langId']) : 0;
         $newsTopNews = new NewsTop($content);
-        return array('content' => $newsTopNews->getHomeTopNews(0, $langId));
+        $content = $newsTopNews->getHomeTopNews(0, $langId);
+        $content = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $content);
+        \Env::get('cx')->parseGlobalPlaceholders($content);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        \LinkGenerator::parseTemplate($content);
+        $ls = new \LinkSanitizer(
+            $cx,
+            $cx->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
+            $content
+        );
+        return array('content' => $ls->replace());
     }
 
     /**
@@ -288,7 +359,17 @@ class JsonNews implements JsonAdapter {
 
         $langId         = !empty($params['get']['langId']) ? contrexx_input2int($params['get']['langId']) : 0;
         $recentComments = new NewsRecentComments($content);
-        return array('content' => $recentComments->getRecentNewsComments($langId));
+        $content = $recentComments->getRecentNewsComments($langId);
+        $content = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $content);
+        \Env::get('cx')->parseGlobalPlaceholders($content);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        \LinkGenerator::parseTemplate($content);
+        $ls = new \LinkSanitizer(
+            $cx,
+            $cx->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
+            $content
+        );
+        return array('content' => $ls->replace());
     }
 
     /**
@@ -322,7 +403,7 @@ class JsonNews implements JsonAdapter {
      */
     protected function getContentFromThemeFile(\Cx\Core\View\Model\Entity\Theme $theme, $file)
     {
-        $filePath = $theme->getFilePath($file);
+        $filePath = $theme->getFilePath('/' . $theme->getFoldername() . '/' . $file);
         if (empty($filePath)) {
             throw new JsonNewsException('The file => '. $file .' not exists in Theme => ' . $theme->getThemesname());
         }

@@ -86,8 +86,11 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
     {
         parent::__construct();
         $this->administrate = $administrate;
-        $this->langId       = null !== $langId ? $langId : FRONTEND_LANG_ID;
 
+        $this->langId = $langId;
+        if (null === $langId) {
+            $this->langId = FRONTEND_LANG_ID;
+        }
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -271,17 +274,15 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
 
     function setTeaserFrames($arrTeaserFrames, &$code)
     {
-        global $objCache;
-
         $arrTeaserFramesNames = array_flip($this->arrTeaserFrameNames);
 
         foreach ($arrTeaserFrames as $teaserFrameName) {
             $arrMatches = preg_grep('/^'.$teaserFrameName.'$/i', $arrTeaserFramesNames);
             if (empty($arrMatches)) {
                 continue;
-
             }
-            $content = $objCache->getEsiContent(
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $content = $cx->getComponent('Cache')->getEsiContent(
                 'News',
                 'getTeaserFrame',
                 array(

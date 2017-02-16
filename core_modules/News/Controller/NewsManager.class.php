@@ -331,6 +331,50 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 break;
         }
 
+        // drop cache after any modification
+        if (
+            (
+                in_array(
+                    $_GET['act'],
+                    array(
+                        'add',
+                        'edit',
+                        'comments_delete',
+                        'comment_edit',
+                        'comment_status',
+                        'change_comment_status',
+                        'copy',
+                        'delete',
+                        'update',
+                        'modifycat',
+                        'delcat',
+                        'deltype',
+                        'changeStatus',
+                        'invertStatus',
+                    )
+                )
+            ) ||
+            (
+                $_GET['act'] == 'newstype' &&
+                (
+                    (
+                        isset($_POST['addType']) &&
+                        $_POST['addType']
+                    ) ||
+                    (
+                        isset($_POST['modType']) &&
+                        $_POST['modType']
+                    )
+                )
+            ) ||
+            (
+                $_GET['act'] == 'settings' &&
+                isset($_POST['store'])
+            )
+        ) {
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('News');
+        }
+
         $objTemplate->setVariable(array(
             'CONTENT_TITLE'             => $this->pageTitle,
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
@@ -2711,6 +2755,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                         LIMIT   1
                                     ');
                 $this->createRSS();
+
                 \Cx\Core\Core\Controller\Cx::instanciate()
                    ->getEvents()
                    ->triggerEvent('newsClearSsiCache');
@@ -4348,9 +4393,6 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $result = $this->_objTeaser->deleteTeaserFrameTeamplte($templateId);
         if ($result !== false && $result !== true) {
             $this->strOkMessage .= $result;
-            \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getEvents()
-                ->triggerEvent('newsClearSsiCache');
         }
 
         $this->_objTeaser = new \Cx\Core_Modules\News\Controller\Teasers(true);
@@ -4479,9 +4521,6 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             } else {
                 $this->_objTeaser->addTeaserFrameTemplate($templateDescription, $templateHtml, $sourceCodeMode);
             }
-            \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getEvents()
-                ->triggerEvent('newsClearSsiCache');
             $this->_objTeaser->initializeTeaserFrameTemplates($templateId);
             $this->_showTeaserFrameTemplates();
         } elseif (isset($_POST['cancel'])) {
@@ -4498,9 +4537,6 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         $frameId = intval($_GET['id']);
         if ($this->_objTeaser->deleteTeaserFrame($frameId)) {
-            \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getEvents()
-                ->triggerEvent('newsClearSsiCache');
             $this->_objTeaser->initializeTeaserFrames();
             $this->strOkMessage .= $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
         } else {

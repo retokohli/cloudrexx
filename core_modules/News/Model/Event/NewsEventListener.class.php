@@ -228,7 +228,7 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 $params = array(
                     'headline' => $headline,
                 );
-                $this->clearSsiCache('getHeadlines', $themeId, $langId, $params);
+                $this->clearSsiCache('getHeadlines', null, $langId, $params);
             }
             // clear teaser cache
             $teaser = new \Cx\Core_Modules\News\Controller\Teasers(false, $langId);
@@ -294,19 +294,14 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         if (empty($adaptor)) {
             return;
         }
-        global $objCache;
 
-        $params = array();
         if (null !== $themeId) {
-            $params['theme'] = contrexx_input2int($themeId);
+            $additionalParams['theme'] = contrexx_input2int($themeId);
         }
         if (null !== $langId) {
-            $params['langId'] = contrexx_input2int($langId);
+            $additionalParams['langId'] = contrexx_input2int($langId);
         }
-        if (!empty($additionalParams)) {
-            $params = array_merge($params, $additionalParams);
-        }
-
-        $objCache->clearSsiCachePage('News', $adaptor, $params);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getComponent('Cache')->clearSsiCachePage('News', $adaptor, $additionalParams);
     }
 }
