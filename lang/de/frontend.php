@@ -324,3 +324,4 @@ $_ARRAYLANG['TXT_LOGIN_WELCOME_PAGE'] = 'Weiter zur <a href="%s" title="Website"
 $_ARRAYLANG['TXT_BROWSE'] = 'Durchsuchen';
 
 $_ARRAYLANG['TXT_CORE_SIGN_UP'] = "Haben Sie noch kein Konto? Jetzt registrieren";
+$_ARRAYLANG['TXT_READ_MORE'] = "Weiterlesen";
