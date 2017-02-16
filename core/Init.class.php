@@ -941,29 +941,29 @@ class InitCMS
      */
     protected function loadLangFile($path, $loadFromYaml=true)
     {
+        global $_ARRAYLANG;
+
+        $isCustomized = false;
+        $customizedPath = \Env::get('ClassLoader')->getFilePath($path, $isCustomized);
+        if (file_exists($path) || !file_exists($customizedPath)) {
+            require_once $path;
+        }
+        if ($isCustomized) {
+            require_once $customizedPath;
+        }
+
+        // if mode isn't frontend or we don't want to load from yaml
+        // return language data already
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (
+            $cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND ||
+            !$loadFromYaml
+        ) {
+            return $_ARRAYLANG;
+        }
+
+        // load customized language placeholders from yaml
         try {
-            global $_ARRAYLANG;
-
-            $isCustomized = false;
-            $customizedPath = \Env::get('ClassLoader')->getFilePath($path, $isCustomized);
-            if (file_exists($path) || !file_exists($customizedPath)) {
-                require_once $path;
-            }
-            if ($isCustomized) {
-                require_once $customizedPath;
-            }
-
-            // if mode isn't frontend or we don't want to load from yaml
-            // return language data already
-            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-            if (
-                $cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND ||
-                !$loadFromYaml
-            ) {
-                return $_ARRAYLANG;
-            }
-
-            // load customized language placeholders from yaml
             // get locale by frontend locale id
             $locale = $cx->getDb()->getEntityManager()->find(
                 'Cx\Core\Locale\Model\Entity\Locale',
@@ -972,15 +972,16 @@ class InitCMS
             if (!isset($locale)) {
                 throw new \InitCMSException('Locale not set, cannot load language file');
             }
-            // get the language file of the locale
-            $languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale);
-            // merge customized placeholders into $_ARRAYLANG
-            $_ARRAYLANG = array_merge($_ARRAYLANG, $languageFile->getData());
-
-            return $_ARRAYLANG;
         } catch (\InitCMSException $e) {
             \Message::add($e->getMessage(), \Message::CLASS_ERROR);
         }
+
+        // get the language file of the locale
+        $languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale);
+        // merge customized placeholders into $_ARRAYLANG
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $languageFile->getData());
+
+        return $_ARRAYLANG;
     }
 
 

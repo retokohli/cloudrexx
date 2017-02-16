@@ -97,36 +97,36 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
 
         try {
             // set the locale
-            if (!isset($locale)) {
+            $this->locale = $locale;
+            if (!isset($this->locale)) {
                 throw new LanguageFileException(
                     'Locale not set, cannot load language file'
                 );
             }
-            $this->locale = $locale;
-
-            // set identifier to parse entity view correctly
-            $this->setIdentifier('Cx\Core\Locale\Model\Entity\LanguageFile');
-
-            // load component specific language data from init
-            if (!$onlyCustomized) {
-                $this->data = \Env::get('init')->getComponentSpecificLanguageData($componentName, $frontend, $locale->getId(), false);
-            }
-
-            // set path to yaml file
-            $mode = $frontend ? 'frontend' : 'backend';
-            $this->path = ASCMS_CUSTOMIZING_PATH . '/lang/' . $locale->getSourceLanguage()->getIso1() . '/' . $mode . '.yaml';
-
-            // check if yaml with customized placeholders exists
-            if (\Cx\Lib\FileSystem\FileSystem::exists($this->getPath())) {
-                // load placeholders from yaml
-                $this->placeholders = $this->load($this->getPath());
-            }
-
-            // update the language data
-            $this->updateLanguageData();
         } catch (LanguageFileException $e) {
             \Message::add($e->getMessage(), \Message::CLASS_ERROR);
         }
+
+        // set identifier to parse entity view correctly
+        $this->setIdentifier('Cx\Core\Locale\Model\Entity\LanguageFile');
+
+        // load component specific language data from init
+        if (!$onlyCustomized) {
+            $this->data = \Env::get('init')->getComponentSpecificLanguageData($componentName, $frontend, $locale->getId(), false);
+        }
+
+        // set path to yaml file
+        $mode = $frontend ? 'frontend' : 'backend';
+        $this->path = ASCMS_CUSTOMIZING_PATH . '/lang/' . $locale->getSourceLanguage()->getIso1() . '/' . $mode . '.yaml';
+
+        // check if yaml with customized placeholders exists
+        if (\Cx\Lib\FileSystem\FileSystem::exists($this->getPath())) {
+            // load placeholders from yaml
+            $this->placeholders = $this->load($this->getPath());
+        }
+
+        // update the language data
+        $this->updateLanguageData();
     }
 
     /**
