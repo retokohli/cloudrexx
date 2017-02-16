@@ -91,3 +91,4 @@ $_ARRAYLANG['TXT_CORE_LOCALE_SAVE'] = 'Änderungen übernehmen';
 
 // Messages
 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_SUCCESSFULLY_UPDATED'] = 'Die Sprachplatzhalter wurden erfolgreich aktualisiert.';
+$_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_NOTHING_CHANGED'] = 'Es wurde kein Sprachplatzhalter bearbeitet.';

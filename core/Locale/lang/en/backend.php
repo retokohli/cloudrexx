@@ -91,3 +91,4 @@ $_ARRAYLANG['TXT_CORE_LOCALE_SAVE'] = 'Apply changes';
 
 // Messages
 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_SUCCESSFULLY_UPDATED'] = 'The language placeholders were succesfully updated.';
+$_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_NOTHING_CHANGED'] = 'No language placeholder was edited.';
