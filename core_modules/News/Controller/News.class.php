@@ -1655,26 +1655,29 @@ JSCODE;
 });
 EOF;
         \JS::registerCode($jsCodeCategoryChosen);
-        if (!empty($this->arrSettings['use_related_news'])) {
-            $objCx = \ContrexxJavascript::getInstance();
-            $objCx->setVariable(
-                array(
-                    'noResultsMsg' => $_ARRAYLANG['TXT_NEWS_NOT_FOUND'],
-                    'langId' => FRONTEND_LANG_ID,
-                ),
-                'news/news-live-search'
-            );
-            \JS::registerJS('core_modules/News/View/Script/news-live-search.js');
-            if (!empty($data['relatedNews'])) {
-                $this->parseRelatedNewsTags(
-                    $this->_objTpl,
-                    $data['relatedNews'],
-                    FRONTEND_LANG_ID
+        // TODO: this block must be renamed to news_related_container
+        if ($this->_objTpl->blockExists('relatedNewsBlock')) {
+            if (!empty($this->arrSettings['use_related_news'])) {
+                $objCx = \ContrexxJavascript::getInstance();
+                $objCx->setVariable(
+                    array(
+                        'noResultsMsg' => $_ARRAYLANG['TXT_NEWS_NOT_FOUND'],
+                        'langId' => FRONTEND_LANG_ID,
+                    ),
+                    'news/news-live-search'
                 );
+                \JS::registerJS('core_modules/News/View/Script/news-live-search.js');
+                if (!empty($data['relatedNews'])) {
+                    $this->parseRelatedNewsTags(
+                        $this->_objTpl,
+                        $data['relatedNews'],
+                        FRONTEND_LANG_ID
+                    );
+                }
+                $this->_objTpl->touchBlock('relatedNewsBlock');
+            } else {
+                $this->_objTpl->hideBlock('relatedNewsBlock');
             }
-            $this->_objTpl->touchBlock('relatedNewsBlock');
-        } else {
-            $this->_objTpl->hideBlock('relatedNewsBlock');
         }
         $this->_objTpl->setVariable(array(
             'TXT_NEWS_MESSAGE'          => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
@@ -1847,7 +1850,7 @@ EOF;
                 `validated` = '$enable',
                 `userid` = $userId,
                 `author_id` = $userId,
-                `author` = '$userName',
+                `author` = '" . contrexx_raw2db($userName) . "',
                 `changelog` = '$date',
                 `enable_tags`='" . $data['enableTags'] . "',
                 `enable_related_news`=" . $data['enableRelatedNews'] . ",
@@ -2229,7 +2232,7 @@ RSS2JSCODE;
                                             : \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($newsCategories), $categories)), FRONTEND_LANG_ID, array('newsid' => $newsid)))
                                         : $news['newsredirect'];
 
-                    $redirectNewWindow = !empty($news['redirect']) && !empty($news['redirectNewWindow']);
+                    $redirectNewWindow = !empty($news['newsredirect']) && !empty($news['redirectNewWindow']);
                     $htmlLink = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('[' . $_ARRAYLANG['TXT_NEWS_MORE'] . '...]'), $redirectNewWindow);
                     $linkTarget = $redirectNewWindow ? '_blank' : '_self';
 

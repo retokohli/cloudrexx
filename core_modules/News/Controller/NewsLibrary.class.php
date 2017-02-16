@@ -445,9 +445,9 @@ class NewsLibrary
 
         if (!empty($langIds)) {
             if (is_array($langIds)) {
-                $where[] = "`lang_id` IN ('"
+                $where[] = '`lang_id` IN ('
                         . implode(',', $langIds)
-                        . "')";
+                        . ')';
             } else {
                 $where[] = "`lang_id` ='"
                         . $langIds
@@ -1225,7 +1225,7 @@ class NewsLibrary
 
         $targetAttribute = '';
         if ($target == 1) {
-            $targetAttribute = 'target=\'_blank\'';
+            $targetAttribute = 'target="_blank"';
         }
         $htmlLinkTag = '<a href="%1$s" title="%2$s" ' . $targetAttribute . '>%3$s</a>';
 
@@ -2009,8 +2009,18 @@ class NewsLibrary
 
                 $newstitle = $currentRelatedDetails['title'];
                 $redirectNewWindow = !empty($currentRelatedDetails['redirect']) && !empty($currentRelatedDetails['redirectNewWindow']);
-                $htmlLink = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('[' . $_ARRAYLANG['TXT_NEWS_MORE'] . '...]'), $redirectNewWindow);
-                $htmlLinkTitle = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle), $redirectNewWindow);
+                $htmlLink = self::parseLink(
+                    $newsUrl,
+                    $newstitle,
+                    contrexx_raw2xhtml('[' . $_ARRAYLANG['TXT_NEWS_MORE'] . '...]'),
+                    $redirectNewWindow
+                );
+                $htmlLinkTitle = self::parseLink(
+                    $newsUrl,
+                    $newstitle,
+                    contrexx_raw2xhtml($newstitle),
+                    $redirectNewWindow
+                );
                 $linkTarget = $redirectNewWindow ? '_blank' : '_self';
                 // in case that the message is a stub,
                 // we shall just display the news title instead of a html-a-tag
