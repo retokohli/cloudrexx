@@ -1551,7 +1551,7 @@ EOF;
                 `validated` = '$enable',
                 `userid` = $userId,
                 `author_id` = $userId,
-                `author` = '$userName',
+                `author` = '" . contrexx_raw2db($userName) . "',
                 `changelog` = '$date',
                 `enable_tags`='" . $data['enableTags'] . "',
                 `enable_related_news`=" . $data['enableRelatedNews'] . ",
