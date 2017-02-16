@@ -2673,6 +2673,7 @@ EOF;
             'TXT_NEWS_TITLE'        => $_ARRAYLANG['TXT_NEWS_TITLE'],
             'TXT_NEWS_COMMENT'      => $_ARRAYLANG['TXT_NEWS_COMMENT'],
             'TXT_NEWS_ADD'          => $_ARRAYLANG['TXT_NEWS_ADD'],
+            'TXT_NEWS_WRITE_COMMENT'=> $_ARRAYLANG['TXT_NEWS_WRITE_COMMENT'],
         ));
 
         $objTpl->parse('news_add_comment');
@@ -2932,10 +2933,13 @@ EOF;
         $newsLastUpdate       = !empty($objResult->fields['changelog'])
                                     ? $_ARRAYLANG['TXT_LAST_UPDATE'].'<br />' . date(ASCMS_DATE_FORMAT, $objResult->fields['changelog'])
                                     : '';
+        $newsTeaser           = '';
         $arrNewsCategories = $this->getCategoriesByNewsId($newsid);
 
-        $newsTeaser = nl2br($objResult->fields['teaser_text']);
-        \LinkGenerator::parseTemplate($newsTeaser);
+        if ($this->arrSettings['news_use_teaser_text']) {
+            $newsTeaser = nl2br($objResult->fields['teaser_text']);
+            \LinkGenerator::parseTemplate($newsTeaser);
+        }
 
         $newsUrlLink          = '';
         if (!empty($url1)) {
@@ -2995,7 +2999,7 @@ EOF;
            // Backward compatibility for templates pre 3.0
            'HEADLINE_ID'       => $newsid,
            'HEADLINE_DATE'     => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['newsdate']),
-           'HEADLINE_TEXT'     => $this->arrSettings['news_use_teaser_text'] ? $newsTeaser : '',
+           'HEADLINE_TEXT'     => $newsTeaser,
            'HEADLINE_LINK'     => $htmlLinkTitle,
            'HEADLINE_AUTHOR'   => contrexx_raw2xhtml($author),
         ));
@@ -3085,7 +3089,7 @@ EOF;
 
             $objTpl->setVariable(array(
                 'TXT_NEWS_REDIRECT_INSTRUCTION' => $_ARRAYLANG['TXT_NEWS_REDIRECT_INSTRUCTION'],
-                'NEWS_REDIRECT_URL'             => contrexx_raw2encodedUrl($redirect),
+                'NEWS_REDIRECT_URL'             => $redirect,
                 'NEWS_REDIRECT_NAME'            => contrexx_raw2xhtml($redirectName),
             ));
             if ($objTpl->blockExists('news_redirect')) {

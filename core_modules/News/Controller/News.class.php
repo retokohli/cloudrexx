@@ -205,7 +205,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $lastUpdate         = $objResult->fields['changelog'];
         $text               = $objResult->fields['text'];
         $newsTeaser         = '';
-        $redirect           = contrexx_raw2xhtml($objResult->fields['redirect']);
+        $redirect           = $objResult->fields['redirect'];
         $source             = contrexx_raw2xhtml($objResult->fields['source']);
         $url1               = contrexx_raw2xhtml($objResult->fields['url1']);
         $url2               = contrexx_raw2xhtml($objResult->fields['url2']);

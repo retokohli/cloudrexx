@@ -107,7 +107,7 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
                        tblN.teaser_image_path,
                        tblN.teaser_image_thumbnail_path,
                        tblN.redirect,
-                       tblN.redirectNewWindow,
+                       tblN.redirect_new_window AS redirectNewWindow,
                        tblN.publisher,
                        tblN.publisher_id,
                        tblN.author,
