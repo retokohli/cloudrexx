@@ -1572,9 +1572,8 @@ class NewsLibrary
         //Filter by tag
         if (isset($params['filterTag']) && !empty($params['filterTag'])) {
             $searchedTag = $this->getNewsTags(null, contrexx_input2raw($params['filterTag']));
-            $searchedTagId = current(array_keys($searchedTag['tagList']));
             if (!empty($searchedTag['newsIds'])) {
-                $this->incrementViewingCount($searchedTagId);
+                $this->incrementViewingCount(array_keys($searchedTag['tagList']));
                 $newsFilter['id'] = $searchedTag['newsIds'];
             }
         }
@@ -2166,19 +2165,20 @@ class NewsLibrary
         }
         return $tagList;
     }
+
     /**
-     * Get the news id's and tags using news id (and|or) tag
+     * Get the news IDs and tags using news id (and|or) tag
      *
      * @global object $objDatabase
      * @param integer $newsId News id to get the corresponding related tags
-     * @param string  $tag    Tag string to search the corresponding tags
+     * @param array   $tags   Tag string to search the corresponding tags
      *
      * @return boolean|array Array List of News Related tags
      */
-    public function getNewsTags($newsId = null, $tag = null)
+    public function getNewsTags($newsId = null, $tags = array())
     {
         global $objDatabase;
-        if (empty($newsId) && empty($tag)) {
+        if (empty($newsId) && empty($tags)) {
             return array();
         }
         $query = 'SELECT
@@ -2198,8 +2198,8 @@ class NewsLibrary
         }
 
         //Search the given tag
-        if (!empty($tag)) {
-            $where[] = ' t.`tag` = "' . contrexx_raw2db($tag) . '"';
+        if (!empty($tags) && is_array($tags)) {
+            $where[] = ' (t.`tag` = "' . implode('" OR t.`tag` =  "', contrexx_raw2db($tags)) . '")';
         }
 
         $sqlWhere = !empty($where) ? ' WHERE '. implode(' AND ', $where) : '';
@@ -2223,6 +2223,7 @@ class NewsLibrary
             'newsIds' => $newsIdList
         );
     }
+
     /**
      * Save new tag into database
      *
@@ -2249,6 +2250,7 @@ class NewsLibrary
         $this->errMsg[] = $_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG'];
         return false;
     }
+
     /**
      * Manipulating the submitted tags from the news Entry form.
      * i)   Adding the new tag if the tag is not availbale already.
@@ -2329,6 +2331,7 @@ class NewsLibrary
         }
         return true;
     }
+
     /**
      * Parsing the News tags.
      *
@@ -2395,17 +2398,19 @@ class NewsLibrary
             }
         }
     }
+
     /**
      * Increment the tags viewing count
      *
      * @global object $objDatabase
-     * @param integer $tagId Tag id
+     * @param array $tagIds tag ids
+     * @return null
      */
-    public function incrementViewingCount($tagId = null)
+    public function incrementViewingCount($tagIds = array())
     {
         global $objDatabase;
 
-        if (empty($tagId)) {
+        if (empty($tagIds) || !is_array($tagIds)) {
             return;
         }
         //Update the tag using count
@@ -2413,9 +2418,10 @@ class NewsLibrary
             'UPDATE `'
             . DBPREFIX . 'module_news_tags`
             SET `viewed_count` = `viewed_count`+1
-            WHERE `id`=' . contrexx_input2int($tagId)
+            WHERE `id` IN (' . implode(', ', contrexx_input2int($tagIds)) . ')'
         );
     }
+
     /**
      * Retruns most Frequent(Searched|Viewed) tag details.
      *
