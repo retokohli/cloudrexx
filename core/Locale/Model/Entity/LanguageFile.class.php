@@ -38,6 +38,17 @@
 namespace Cx\Core\Locale\Model\Entity;
 
 /**
+ * LanguageFileException
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
+ * @package     cloudrexx
+ * @subpackage  core_locale
+ * @version     5.0.0
+ */
+class LanguageFileException extends \Exception {}
+
+/**
  * LanguageFile
  *
  * Loads the language data of a specific component in a specific language
@@ -84,29 +95,38 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
      */
     public function __construct(\Cx\Core\Locale\Model\Entity\Locale $locale, $componentName='Core', $frontend=true, $onlyCustomized=true) {
 
-        // set identifier to parse entity view correctly
-        $this->setIdentifier('Cx\Core\Locale\Model\Entity\LanguageFile');
+        try {
+            // set the locale
+            if (!isset($locale)) {
+                throw new LanguageFileException(
+                    'Locale not set, cannot load language file'
+                );
+            }
+            $this->locale = $locale;
 
-        // set the locale
-        $this->locale = $locale;
+            // set identifier to parse entity view correctly
+            $this->setIdentifier('Cx\Core\Locale\Model\Entity\LanguageFile');
 
-        // load component specific language data from init
-        if (!$onlyCustomized) {
-            $this->data = \Env::get('init')->getComponentSpecificLanguageData($componentName, $frontend, $locale->getId(), false);
+            // load component specific language data from init
+            if (!$onlyCustomized) {
+                $this->data = \Env::get('init')->getComponentSpecificLanguageData($componentName, $frontend, $locale->getId(), false);
+            }
+
+            // set path to yaml file
+            $mode = $frontend ? 'frontend' : 'backend';
+            $this->path = ASCMS_CUSTOMIZING_PATH . '/lang/' . $locale->getSourceLanguage()->getIso1() . '/' . $mode . '.yaml';
+
+            // check if yaml with customized placeholders exists
+            if (\Cx\Lib\FileSystem\FileSystem::exists($this->getPath())) {
+                // load placeholders from yaml
+                $this->placeholders = $this->load($this->getPath());
+            }
+
+            // update the language data
+            $this->updateLanguageData();
+        } catch (LanguageFileException $e) {
+            \Message::add($e->getMessage(), \Message::CLASS_ERROR);
         }
-
-        // set path to yaml file
-        $mode = $frontend ? 'frontend' : 'backend';
-        $this->path = ASCMS_CUSTOMIZING_PATH . '/lang/' . $locale->getSourceLanguage()->getIso1() . '/' . $mode . '.yaml';
-
-        // check if yaml with customized placeholders exists
-        if (\Cx\Lib\FileSystem\FileSystem::exists($this->getPath())) {
-            // load placeholders from yaml
-            $this->placeholders = $this->load($this->getPath());
-        }
-
-        // update the language data
-        $this->updateLanguageData();
     }
 
     /**
@@ -145,7 +165,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
             return $exportInterface->export($this->getPlaceholders());
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
-            throw new DataSetException('Exporting overwritten placeholders to frontend.yaml failed!');
+            throw new \Cx\Core_Modules\Listing\Model\Entity\DataSetException('Exporting overwritten placeholders to frontend.yaml failed!');
         }
     }
 
@@ -160,7 +180,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
             return $importInterface->import($content);
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
-            throw new DataSetException('Importing placeholders from yaml failed!');
+            throw new \Cx\Core_Modules\Listing\Model\Entity\DataSetException('Importing placeholders from yaml failed!');
         }
     }
 
