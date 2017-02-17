@@ -138,7 +138,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
         \LinkGenerator::parseTemplate($content);
         $ls = new \LinkSanitizer(
             $this->cx,
-            $this->cx->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
+            $this->cx->getWebsiteOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
             $content
         );
         return array(
