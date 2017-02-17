@@ -206,7 +206,19 @@ class FWUser extends User_Setting
     function logout()
     {
 
-         $this->logoutAndDestroySession();
+        $this->logoutAndDestroySession();
+        //Clear cache
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getEvents()->triggerEvent(
+            'clearEsiCache',
+            array(
+                'Widget',
+                array(
+                    'access_currently_online_member_list',
+                    'access_last_active_member_list'
+                )
+            )
+        );
 
         if ($this->backendMode) {
             $pathOffset = ASCMS_PATH_OFFSET;
@@ -361,7 +373,6 @@ class FWUser extends User_Setting
         $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_THEMES_PATH);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->setTemplate($template[0]);
-        self::parseLoggedInOutBlocks($objTemplate);
         return $objTemplate->get();
     }
 
