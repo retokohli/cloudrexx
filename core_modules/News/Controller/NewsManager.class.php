@@ -4393,6 +4393,9 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $result = $this->_objTeaser->deleteTeaserFrameTeamplte($templateId);
         if ($result !== false && $result !== true) {
             $this->strOkMessage .= $result;
+            \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getEvents()
+                ->triggerEvent('newsClearSsiCache');
         }
 
         $this->_objTeaser = new \Cx\Core_Modules\News\Controller\Teasers(true);
@@ -4521,6 +4524,9 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             } else {
                 $this->_objTeaser->addTeaserFrameTemplate($templateDescription, $templateHtml, $sourceCodeMode);
             }
+            \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getEvents()
+                ->triggerEvent('newsClearSsiCache');
             $this->_objTeaser->initializeTeaserFrameTemplates($templateId);
             $this->_showTeaserFrameTemplates();
         } elseif (isset($_POST['cancel'])) {
@@ -4537,6 +4543,9 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         $frameId = intval($_GET['id']);
         if ($this->_objTeaser->deleteTeaserFrame($frameId)) {
+            \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getEvents()
+                ->triggerEvent('newsClearSsiCache');
             $this->_objTeaser->initializeTeaserFrames();
             $this->strOkMessage .= $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
         } else {
