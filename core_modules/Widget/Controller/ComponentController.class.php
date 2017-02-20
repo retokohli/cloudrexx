@@ -226,7 +226,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $hasContent = false,
         $adapterName = '',
         $adapterMethodName = '',
-        $adapterParams = array()
+        $adapterParams = array(),
+        $esiVariableId = null
     ) {
         $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
             $component,
@@ -236,6 +237,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $adapterMethodName,
             $adapterParams
         );
+        if ($esiVariableId) {
+            $widget->setEsiVariable($esiVariableId);
+        }
         $this->registerWidget(
             $widget
         );

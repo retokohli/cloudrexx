@@ -272,6 +272,12 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
     }
 
 
+    /**
+     * Set teaser frames
+     *
+     * @param array  $arrTeaserFrames array of teaser frame names
+     * @param string $code            code
+     */
     function setTeaserFrames($arrTeaserFrames, &$code)
     {
         $arrTeaserFramesNames = array_flip($this->arrTeaserFrameNames);
@@ -281,16 +287,16 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
             if (empty($arrMatches)) {
                 continue;
             }
-            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-            $content = $cx->getComponent('Cache')->getEsiContent(
-                'News',
-                'getTeaserFrame',
-                array(
-                    'langId'      => FRONTEND_LANG_ID,
-                    'teaserFrame' => $teaserFrameName,
-                )
-            );
-            $code = str_replace("{TEASERS_" . $teaserFrameName . "}", $content, $code);
+            if (count($arrMatches) > 0) {
+                $frameId    = array_keys($arrMatches);
+                $id         = $frameId[0];
+                $templateId = $this->arrTeaserFrames[$id]['frame_template_id'];
+                $code       = str_replace(
+                    "{TEASERS_" . $teaserFrameName . "}",
+                    $this->_getTeaserFrame($id, $templateId),
+                    $code
+                );
+            }
         }
     }
 
