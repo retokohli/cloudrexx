@@ -112,15 +112,28 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
         }
 
         // resolve widget template
-        $widgetTemplate = $this->getComponent('Widget')->getWidgetContent(
-            $params['get']['name'],
-            $params['get']['theme'],
-            $params['get']['page'],
-            $params['get']['targetComponent'],
-            $params['get']['targetEntity'],
-            $params['get']['targetId'],
-            $params['get']['channel']
-        );
+        $widgetContent = '';
+        $widget = $this->getComponent('Widget')->getWidget($params['get']['name']);
+        if (!$widget->hasContent()) {
+            $widgetContent = '{' . $params['get']['name'] . '}';
+        } else {
+            $widgetTemplate = $this->getComponent('Widget')->getWidgetContent(
+                $params['get']['name'],
+                $params['get']['theme'],
+                $params['get']['page'],
+                $params['get']['targetComponent'],
+                $params['get']['targetEntity'],
+                $params['get']['targetId'],
+                $params['get']['channel']
+            );
+            if ($widgetTemplate->blockExists($params['get']['name'])) {
+                $widgetContent = '<!-- BEGIN ' . $params['get']['name'] . ' -->' .
+                    $widgetTemplate->_blocks[$params['get']['name']] .
+                    '<!-- END ' . $params['get']['name'] . ' -->';
+            }
+        }
+        $widgetTemplate = new \Cx\Core\Html\Sigma();
+        $widgetTemplate->setTemplate($widgetContent);
         
         $this->parseWidget(
             $params['get']['name'],
