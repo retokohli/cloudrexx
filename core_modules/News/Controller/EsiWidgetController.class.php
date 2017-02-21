@@ -147,8 +147,8 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             return;
         }
 
-        if (preg_match('/{TEASERS_([0-9A-Z_-]+)}/', $name, $matches)) {
-            $teasers = new Teasers();
+        if (preg_match('/TEASERS_([0-9a-zA-Z_-]+)/', $name, $matches)) {
+            $teasers = new Teasers(false, $langId);
             $code    = '{' . $name . '}';
             $teasers->setTeaserFrames(array($matches[1]), $code);
             $template->setVariable($name, $code);
@@ -180,10 +180,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      */
     protected function getFileContent($theme, $fileName)
     {
-        if (
-            !($theme instanceof \Cx\Core\View\Model\Entity\Theme) ||
-            empty($fileName)
-        ) {
+        if (!($theme instanceof \Cx\Core\View\Model\Entity\Theme)) {
             return;
         }
 
