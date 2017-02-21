@@ -226,7 +226,7 @@ class Newsletter extends NewsletterLib
 
     function _profile()
     {
-        global $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $this->_objTpl->setTemplate($this->pageContent);
 
@@ -303,6 +303,16 @@ class Newsletter extends NewsletterLib
 
         $recipientAttributeStatus = json_decode($objInterface->fields['setvalue'], true);
 
+        $captchaOk = true;
+        if (
+            isset($recipientAttributeStatus['captcha']) &&
+            $recipientAttributeStatus['captcha']['active']
+        ) {
+            if (!\Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->check()) {
+                $captchaOk = false;
+                array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_FAILED_CAPTCHA']);
+            }
+        }
         if (isset($_POST['recipient_save'])) {
             if (isset($_POST['email'])) {
                 $recipientEmail = $_POST['email'];
@@ -423,7 +433,7 @@ class Newsletter extends NewsletterLib
                             $showForm = false;
                         } else {
                             if ($this->_validateRecipientAttributes($recipientAttributeStatus, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientBirthday)) {
-                                if ($this->_isUniqueRecipientEmail($recipientEmail, $recipientId)) {
+                                if ($captchaOk && $this->_isUniqueRecipientEmail($recipientEmail, $recipientId)) {
                                     if (!empty($arrAssociatedInactiveLists) || !empty($arrAssociatedLists) && ($objList = $objDatabase->SelectLimit('SELECT id FROM '.DBPREFIX.'module_newsletter_category WHERE status=1 AND (id='.implode(' OR id=', $arrAssociatedLists).')' , 1)) && $objList->RecordCount() > 0) {
                                         if ($recipientId > 0) {
                                             if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, 1, $arrAssociatedLists, $recipientLanguage)) {
@@ -453,7 +463,7 @@ class Newsletter extends NewsletterLib
                                         }
                                         array_push($arrStatusMessage['error'], sprintf($_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE_IF_ONLY_ONE_LIST_ACTIVE'], $unsub));
                                     }
-                                } elseif (empty($recipientId)) {
+                                } elseif ($captchaOk && empty($recipientId)) {
                                     // We must send a new confirmation e-mail here
                                     // otherwise someone could reactivate someone else's e-mail address
 
@@ -496,7 +506,7 @@ class Newsletter extends NewsletterLib
                                             $showForm = false;
                                         }
                                     }
-                                } else {
+                                } else if ($captchaOk) {
                                     array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBER_ALREADY_INSERTED']);
                                 }
                             } else {
@@ -506,7 +516,7 @@ class Newsletter extends NewsletterLib
                     } else {
                         array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NOT_VALID_EMAIL']);
                     }
-            } else {
+            } else if ($captchaOk) {
                 // update subscribed lists of access user
                 $arrAssociatedLists = array_unique($arrAssociatedLists);
                 $objUser->setSubscribedNewsletterListIDs($arrAssociatedLists);
@@ -606,7 +616,8 @@ class Newsletter extends NewsletterLib
                     'recipient_mobile',
                     'recipient_fax',
                     'recipient_birthday',
-                    'recipient_website'
+                    'recipient_website',
+                    'captcha',
                 );
                 foreach ($recipientAttributesArray as $attribute) {
                     if ($this->_objTpl->blockExists($attribute)) {
@@ -622,6 +633,8 @@ class Newsletter extends NewsletterLib
                 }
 
                 $this->_objTpl->setVariable(array(
+                    'TXT_MODULE_CAPTCHA'   => $_CORELANG['TXT_CORE_CAPTCHA'],
+                    'MODULE_CAPTCHA_CODE'  => \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getCode(),
                     'NEWSLETTER_EMAIL'        => htmlentities($recipientEmail, ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_WEBSITE'          => htmlentities($recipientUri, ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_SEX_F'        => $recipientSex == 'f' ? 'checked="checked"' : '',

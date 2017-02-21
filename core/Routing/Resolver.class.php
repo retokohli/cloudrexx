@@ -399,14 +399,16 @@ class Resolver {
 
         // check for further URL parts to resolve
         if (
-            $this->page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION &&
-            $this->page->getPath() != '/' . $this->url->getSuggestedTargetPath()
+            $this->page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION
         ) {
             // does this work for fallback(/aliases)?
             $additionalPath = substr('/' . $this->url->getSuggestedTargetPath(), strlen($this->page->getPath()));
             $componentController = $this->em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent')->findOneBy(array('name'=>$this->page->getModule()));
             if ($componentController) {
-                $parts = explode('/', substr($additionalPath, 1));
+                $parts = array();
+                if (!empty($additionalPath)) {
+                    $parts = explode('/', substr($additionalPath, 1));
+                }
                 $componentController->resolve($parts, $this->page);
             }
         }
@@ -516,7 +518,10 @@ class Resolver {
 
     public function redirectToCorrectLanguageDir() {
         $this->url->setLangDir(\FWLanguage::getLanguageCodeById($this->lang));
-
+        $this->headers['Location'] = (string) $this->url;
+        $emptyString = '';
+        \Env::set('Resolver', $this);
+        \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
         \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$this->url);
         exit;
     }
@@ -682,7 +687,12 @@ class Resolver {
                 $this->resolvePage(true);
             } else { //external target - redirect via HTTP 302
                 if (\FWValidator::isUri($target)) {
-                    header('Location: '.$target);
+                    $this->headers['Location'] = $target;
+                    $emptyString = '';
+                    \Env::set('Resolver', $this);
+                    \Env::set('Page', $this->page);
+                    \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
+                    header('Location: ' . $target);
                     exit;
                 } else {
                     if ($target[0] == '/') {
@@ -699,7 +709,13 @@ class Resolver {
                         }
                     }
 
-                    header('Location: ' . ASCMS_INSTANCE_OFFSET . $langDir . '/' . $target);
+                    $target = ASCMS_INSTANCE_OFFSET . $langDir . '/' . $target;
+                    $this->headers['Location'] = $target;
+                    $emptyString = '';
+                    \Env::set('Resolver', $this);
+                    \Env::set('Page', $this->page);
+                    \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
+                    header('Location: ' . $target);
                     exit;
                 }
             }
@@ -708,7 +724,14 @@ class Resolver {
         //if we followed one or more redirections, the user shall be redirected by 302.
         if ($this->isRedirection && !$this->forceInternalRedirection) {
             $params = $this->url->getSuggestedParams();
-            header('Location: '.$this->page->getURL($this->pathOffset, $params));
+            $target = $this->page->getURL($this->pathOffset, array());
+            $target->setParams($params);
+            $this->headers['Location'] = $target;
+            $emptyString = '';
+            \Env::set('Resolver', $this);
+            \Env::set('Page', $this->page);
+            \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
+            header('Location: ' . $target);
             exit;
         }
 

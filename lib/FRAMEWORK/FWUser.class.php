@@ -142,6 +142,14 @@ class FWUser extends User_Setting
 
         $_SESSION['auth']['loginLastAuthFailed'] = 1;
         User::registerFailedLogin($username);
+
+        // load core language data in case it has not yet been loaded
+        if (!is_array($_CORELANG) || !count($_CORELANG)) {
+            $objInit = \Env::get('init');
+            $objInit->_initBackendLanguage();
+            $_CORELANG = $objInit->loadLanguageData('core');
+        }
+
         $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
         $_SESSION->cmsSessionUserUpdate();
         $_SESSION->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
@@ -198,7 +206,19 @@ class FWUser extends User_Setting
     function logout()
     {
 
-         $this->logoutAndDestroySession();
+        $this->logoutAndDestroySession();
+        //Clear cache
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getEvents()->triggerEvent(
+            'clearEsiCache',
+            array(
+                'Widget',
+                array(
+                    'access_currently_online_member_list',
+                    'access_last_active_member_list'
+                )
+            )
+        );
 
         if ($this->backendMode) {
             $pathOffset = ASCMS_PATH_OFFSET;
@@ -353,7 +373,6 @@ class FWUser extends User_Setting
         $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_THEMES_PATH);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->setTemplate($template[0]);
-        self::parseLoggedInOutBlocks($objTemplate);
         return $objTemplate->get();
     }
 
@@ -527,23 +546,11 @@ class FWUser extends User_Setting
         ) {
             return false;
         }
-        $objMail = new PHPMailer();
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
         if (!$objMail) {
             return false;
         }
 
-        if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-            if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                $objMail->IsSMTP();
-                $objMail->Host = $arrSmtp['hostname'];
-                $objMail->Port = $arrSmtp['port'];
-                $objMail->SMTPAuth = true;
-                $objMail->Username = $arrSmtp['username'];
-                $objMail->Password = $arrSmtp['password'];
-            }
-        }
-
-        $objMail->CharSet = CONTREXX_CHARSET;
         $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
         $objMail->Subject = $objUserMail->getSubject();
 

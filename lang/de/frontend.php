@@ -54,6 +54,8 @@ $_ARRAYLANG['TXT_PASSWORD'] = "Passwort";
 $_ARRAYLANG['TXT_PAGE'] = "Seite";
 $_ARRAYLANG['TXT_BROWSERLANGUAGE'] = "Sprache";
 $_ARRAYLANG['TXT_FROM'] = "von";
+$_ARRAYLANG['TXT_PAGING_OUT_OF'] = "von";
+$_ARRAYLANG['TXT_PAGING_TO'] = "bis";
 $_ARRAYLANG['TXT_PASSWORD_FIELD_EMPTY'] = "Wenn das Passwortfeld leer bleibt, wird das aktuelle Passwort beibehalten! ";
 $_ARRAYLANG['TXT_SIZE'] = "Dateigrösse";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Fehler beim Ausführen der Datenbankabfrage!";
@@ -322,3 +324,4 @@ $_ARRAYLANG['TXT_LOGIN_WELCOME_PAGE'] = 'Weiter zur <a href="%s" title="Website"
 $_ARRAYLANG['TXT_BROWSE'] = 'Durchsuchen';
 
 $_ARRAYLANG['TXT_CORE_SIGN_UP'] = "Haben Sie noch kein Konto? Jetzt registrieren";
+$_ARRAYLANG['TXT_READ_MORE'] = "Weiterlesen";
