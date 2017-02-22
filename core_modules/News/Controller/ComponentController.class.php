@@ -168,50 +168,39 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             if ($i > 1) {
                 $id = $i;
             }
-            $widgetController->createWidget(
+            $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
-                'HEADLINES' . $id . '_FILE',
-                false,
-                '',
-                '',
-                array(),
+                'HEADLINES' . $id . '_FILE'
+            );
+            $widget->setEsiVariable(
                 \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
+            );
+            $widgetController->registerWidget(
+                $widget
             );
         }
 
-        // Get Top news
-        $widgetController->createWidget(
-            $this,
-            'TOP_NEWS_FILE',
-            false,
-            '',
-            '',
-            array(),
-            \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
+        // Get Top news, News categories, News Archives, recent News Comments
+        $widgetNames = array(
+            'TOP_NEWS_FILE'   => true,
+            'NEWS_CATEGORIES' => false,
+            'NEWS_ARCHIVES'   => true,
+            'NEWS_RECENT_COMMENTS_FILE' => false
         );
-
-        // Get News categories
-        $widgetController->createWidget(
-            $this,
-            'NEWS_CATEGORIES'
-        );
-
-        // Get News Archives
-        $widgetController->createWidget(
-            $this,
-            'NEWS_ARCHIVES',
-            false,
-            '',
-            '',
-            array(),
-            \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
-        );
-
-        // Get recent News Comments
-        $widgetController->createWidget(
-            $this,
-            'NEWS_RECENT_COMMENTS_FILE'
-        );
+        foreach ($widgetNames as $widgetName => $esiVariable) {
+            $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+                $this,
+                $widgetName
+            );
+            if ($esiVariable) {
+                $widget->setEsiVariable(
+                    \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
+                );
+            }
+            $widgetController->registerWidget(
+                $widget
+            );
+        }
 
         // Set news teasers
         $teaser      = new Teasers();
@@ -220,14 +209,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
         foreach ($teaserNames as $teaserName) {
-            $widgetController->createWidget(
+            $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
-                'TEASERS_' . $teaserName,
-                false,
-                '',
-                '',
-                array(),
+                'TEASERS_' . $teaserName
+            );
+            $widget->setEsiVariable(
                 \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
+            );
+            $widgetController->registerWidget(
+                $widget
             );
         }
     }
