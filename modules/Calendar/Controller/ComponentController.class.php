@@ -122,10 +122,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $widgetController = $this->getComponent('Widget');
         $calendarLib      = new CalendarLibrary();
         foreach ($calendarLib->getHeadlinePlaceholders() as $widgetName) {
-            $widgetController->createWidget(
+            $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
-                $widgetName,
-                false
+                $widgetName
+            );
+            $widgetController->registerWidget(
+                $widget
             );
         }
     }
