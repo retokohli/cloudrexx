@@ -445,9 +445,9 @@ class NewsLibrary
 
         if (!empty($langIds)) {
             if (is_array($langIds)) {
-                $where[] = "`lang_id` IN ('"
+                $where[] = '`lang_id` IN ('
                         . implode(',', $langIds)
-                        . "')";
+                        . ')';
             } else {
                 $where[] = "`lang_id` ='"
                         . $langIds
@@ -1222,7 +1222,7 @@ class NewsLibrary
 
         $targetAttribute = '';
         if ($target == 1) {
-            $targetAttribute = 'target=\'_blank\'';
+            $targetAttribute = 'target="_blank"';
         }
         $htmlLinkTag = '<a href="%1$s" title="%2$s" ' . $targetAttribute . '>%3$s</a>';
 
@@ -1580,9 +1580,8 @@ class NewsLibrary
         //Filter by tag
         if (isset($params['filterTag']) && !empty($params['filterTag'])) {
             $searchedTag = $this->getNewsTags(null, contrexx_input2raw($params['filterTag']));
-            $searchedTagId = current(array_keys($searchedTag['tagList']));
             if (!empty($searchedTag['newsIds'])) {
-                $this->incrementViewingCount($searchedTagId);
+                $this->incrementViewingCount(array_keys($searchedTag['tagList']));
                 $newsFilter['id'] = $searchedTag['newsIds'];
             }
         }
@@ -2007,8 +2006,18 @@ class NewsLibrary
 
                 $newstitle = $currentRelatedDetails['title'];
                 $redirectNewWindow = !empty($currentRelatedDetails['redirect']) && !empty($currentRelatedDetails['redirectNewWindow']);
-                $htmlLink = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('[' . $_ARRAYLANG['TXT_NEWS_MORE'] . '...]'), $redirectNewWindow);
-                $htmlLinkTitle = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle), $redirectNewWindow);
+                $htmlLink = self::parseLink(
+                    $newsUrl,
+                    $newstitle,
+                    contrexx_raw2xhtml('[' . $_ARRAYLANG['TXT_NEWS_MORE'] . '...]'),
+                    $redirectNewWindow
+                );
+                $htmlLinkTitle = self::parseLink(
+                    $newsUrl,
+                    $newstitle,
+                    contrexx_raw2xhtml($newstitle),
+                    $redirectNewWindow
+                );
                 $linkTarget = $redirectNewWindow ? '_blank' : '_self';
                 // in case that the message is a stub,
                 // we shall just display the news title instead of a html-a-tag
@@ -2076,7 +2085,7 @@ class NewsLibrary
                                 ? substr(strip_tags($currentRelatedDetails['text']), 0, 247) . '...'
                                 : strip_tags($currentRelatedDetails['text']),
 
-                        'NEWS_RELATED_NEWS_TEASER_TEXT'    => nl2br($currentRelatedDetails['teaser_text']),
+                        'NEWS_RELATED_NEWS_TEASER_TEXT'    => $this->arrSettings['news_use_teaser_text'] ? nl2br($currentRelatedDetails['teaser_text']) : '',
 
                         'NEWS_RELATED_NEWS_AUTHOR'         => contrexx_raw2xhtml($author),
                         'NEWS_RELATED_NEWS_PUBLISHER'      => contrexx_raw2xhtml($publisher),
@@ -2158,20 +2167,21 @@ class NewsLibrary
         }
         return $tagList;
     }
+
     /**
      * Getting the related news tags with given news id (and|or) tag
      *
      * @global object $objDatabase
      *
-     * @param type $newsId News id to get the corresponding related tags
-     * @param type $tag    Tag string to search the corresponding tags
+     * @param integer $newsId News id to get the corresponding related tags
+     * @param array   $tags   Tag string to search the corresponding tags
      *
      * @return boolean|array Array List of News Related tags
      */
-    public function getNewsTags($newsId = null, $tag = null)
+    public function getNewsTags($newsId = null, $tags = array())
     {
         global $objDatabase;
-        if (empty($newsId) && empty($tag)) {
+        if (empty($newsId) && empty($tags)) {
             return array();
         }
         $query = 'SELECT
@@ -2189,9 +2199,9 @@ class NewsLibrary
         }
 
         //Search the given tag
-        if (!empty($tag)) {
+        if (is_array($tags) && !empty($tags)) {
             $where .= (empty($where)) ? ' WHERE ' : ' AND ';
-            $where .= 't.`tag` = "' . contrexx_raw2db($tag) . '"';
+            $where .= ' (t.`tag` = "' . implode('" OR t.`tag` =  "', contrexx_raw2db($tags)) . '")';
         }
 
 
@@ -2215,6 +2225,7 @@ class NewsLibrary
             'newsIds' => $newsIdList
         );
     }
+
     /**
      * Add the new tag
      *
@@ -2378,18 +2389,19 @@ class NewsLibrary
             }
         }
     }
+
     /**
      * Increment the viewing count
      *
-     * @global object $objDatabase
-     * @param type $tagId
-     * @return type
+     * @param array $tagIds tag ids
+     *
+     * @return null
      */
-    public function incrementViewingCount($tagId = null)
+    public function incrementViewingCount($tagIds = array())
     {
         global $objDatabase;
 
-        if (empty($tagId)) {
+        if (empty($tagIds) || !is_array($tagIds)) {
             return;
         }
         //Update the tag using count
@@ -2397,9 +2409,10 @@ class NewsLibrary
             'UPDATE `'
             . DBPREFIX . 'module_news_tags`
             SET `viewed_count` = `viewed_count`+1
-            WHERE `id`=' . $tagId
+            WHERE `id` IN (' . implode(', ', $tagIds) . ')'
         );
     }
+
     /**
      * Retruns most Frequent(Searched|Viewed) tag details.
      *

@@ -792,6 +792,10 @@ namespace Cx\Core\Core\Controller {
                  * Command mode is different ;-)
                  */
                 if ($this->mode == self::MODE_MINIMAL) {
+                    // Legacy:
+                    if (!defined('MODULE_INDEX')) {
+                        define('MODULE_INDEX', '');
+                    }
                     return;
                 }
                 $this->loadContrexx();
@@ -1498,6 +1502,11 @@ namespace Cx\Core\Core\Controller {
             // command mode is different
             if ($this->getMode() == static::MODE_COMMAND) {
                 global $argv;
+                
+                // Legacy:
+                if (!defined('MODULE_INDEX')) {
+                    define('MODULE_INDEX', '');
+                }
 
                 try {
                     // cleanup params
