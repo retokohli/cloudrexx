@@ -368,6 +368,9 @@ INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('assig
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('block_birthday_users','10',0);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('block_birthday_users_only_with_p','',0);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('block_birthday_users_pic','',0);
+INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('block_next_birthday_users_days','1',0);
+INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('block_next_birthday_users_with_p','',0);
+INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('block_next_birthday_users_pic','',0);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('block_currently_online_users','10',0);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('block_currently_online_users_onl','',0);
 INSERT INTO `contrexx_access_settings` (`key`, `value`, `status`) VALUES ('block_currently_online_users_pic','',0);

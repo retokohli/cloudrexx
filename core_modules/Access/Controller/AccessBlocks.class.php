@@ -248,6 +248,58 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
     }
 
 
+    function setNextBirthdayUsers($gender = null)
+    {
+        $arrSettings = \User_Setting::getSettings();
+
+        $filter = array(
+            'active' => true
+        );
+        if ($arrSettings['block_next_birthday_users_pic']['status']) {
+            $filter['picture'] = array('!=' => '');
+        }
+
+        if ($arrSettings['block_next_birthday_users_days']['value'] > 0) {
+            $filter['birthday_day'] = date('j');
+            $filter['birthday_month'] = date('n');
+        }
+
+        if (!empty($gender)) {
+            $filter['gender'] = 'gender_' . $gender;
+        }
+
+        $objFWUser = \FWUser::getFWUserObject();
+        $objUser = $objFWUser->objUser->getUsers(
+            $filter,
+            null,
+            array(
+                'regdate' => 'desc',
+                'username' => 'asc'
+            )
+        );
+        if ($objUser) {
+            while (!$objUser->EOF) {
+                $this->_objTpl->setVariable(array(
+                    'ACCESS_USER_ID' => $objUser->getId(),
+                    'ACCESS_USER_USERNAME' => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
+                ));
+
+                $objUser->objAttribute->first();
+                while (!$objUser->objAttribute->EOF) {
+                    $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
+                    $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
+                    $objUser->objAttribute->next();
+                }
+
+                $this->_objTpl->parse('access_next_birthday_' . (!empty($gender) ? $gender . '_' : '') . 'members');
+
+                $objUser->next();
+            }
+        } else {
+            $this->_objTpl->hideBlock('access_next_birthday_' . (!empty($gender) ? $gender . '_' : '') . 'members');
+        }
+    }
+
     function isSomeonesBirthdayToday()
     {
         $arrSettings = \User_Setting::getSettings();
