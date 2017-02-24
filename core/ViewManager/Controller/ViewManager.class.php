@@ -953,7 +953,7 @@ CODE;
                 $themeInfoContent = $archive->extract(PCLZIP_OPT_BY_NAME, $themeDirectoryFromArchive .  \Cx\Core\View\Model\Entity\Theme::THEME_COMPONENT_FILE, PCLZIP_OPT_EXTRACT_AS_STRING);
                 if (!empty($themeInfoContent)) {
                     $yaml      = new \Symfony\Component\Yaml\Yaml();
-                    $themeInfo = $yaml->load($themeInfoContent[0]['content']);
+                    $themeInfo = $yaml->parse($themeInfoContent[0]['content']);
                     $themeName = isset($themeInfo['DlcInfo']['name']) ? $themeInfo['DlcInfo']['name'] : $themeName;
                 }
 
@@ -987,7 +987,7 @@ CODE;
                 if ($yamlFile) {
                     $objFile = new \Cx\Lib\FileSystem\File($yamlFile);
                     $yaml = new \Symfony\Component\Yaml\Yaml();
-                    $themeInformation = $yaml->load($objFile->getData());
+                    $themeInformation = $yaml->parse($objFile->getData());
                     $themeName = $themeInformation['DlcInfo']['name'];
                 }
 

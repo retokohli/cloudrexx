@@ -1100,7 +1100,7 @@ class InitCMS
 
     /**
      * Returns true if the user agent is a mobile device (smart phone, PDA etc.)
-     * @todo    Maybe put this in a separate class?
+     * @deprecated Use \Cx\Core\Routing\Model\Entity\Request::isMobilePhone() instead
      */
     public static function _is_mobile_phone()
     {
@@ -1161,6 +1161,7 @@ class InitCMS
 
     /**
      * Returns true if the user agent is a tablet
+     * @deprecated Use \Cx\Core\Routing\Model\Entity\Request::isTablet() instead
      */
     public static function _is_tablet()
     {
@@ -1199,5 +1200,17 @@ class InitCMS
     public function getCurrentThemeId()
     {
         return $this->pageThemeId;
+    }
+
+    /**
+     * Returns the current channel
+     * @throws \Exception If channel is not yet set, call setFrontendLangId() to set it
+     * @return string Channel
+     */
+    public function getCurrentChannel() {
+        if (!$this->currentChannel) {
+            throw new \Exception('Channel not yet set');
+        }
+        return $this->currentChannel;
     }
 }

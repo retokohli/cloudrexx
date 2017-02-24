@@ -226,6 +226,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     // This mask has its own template handling.
                     // So we don't need to load any templates in the index.php.
                     $isRegularPageRequest = false;
+
+                    // abort further processing
+                    break;
                 } else {
                     $userData = array(
                         'id' => \FWUser::getFWUserObject()->objUser->getId(),
