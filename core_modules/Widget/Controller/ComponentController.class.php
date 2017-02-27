@@ -70,7 +70,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        $template = new \Cx\Core\Html\Sigma();
+        $template = new \Cx\Core_Modules\Widget\Model\Entity\Sigma();
         $template->setTemplate($page->getContent());
         $this->parseWidgets($template, 'ContentManager', 'Page', $page->getId());
         $page->setContent($template->get());
