@@ -111,6 +111,9 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
             }
         }
 
+        // ensure that the params can be fetched during internal parsing
+        $_GET = $params['get'];
+
         // resolve widget template
         $widgetContent = '';
         $widget = $this->getComponent('Widget')->getWidget($params['get']['name']);
