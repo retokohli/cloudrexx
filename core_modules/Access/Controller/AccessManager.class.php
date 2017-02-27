@@ -1290,7 +1290,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                                 'access_currently_online_member_list',
                                 'access_last_active_member_list',
                                 'access_latest_registered_member_list',
-                                'access_birthday_member_list'
+                                'access_birthday_member_list',
+                                'access_next_birthday_member_list',
                             )
                         )
                     );
@@ -1349,7 +1350,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         'access_currently_online_member_list',
                         'access_last_active_member_list',
                         'access_latest_registered_member_list',
-                        'access_birthday_member_list'
+                        'access_birthday_member_list',
+                        'access_next_birthday_member_list',
                     )
                 )
             );
@@ -2244,7 +2246,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             if (!empty($_POST['access_blocks_next_birthday_users'])) {
                 $arrSettings['block_next_birthday_users']['status'] = 1;
                 $arrSettings['block_next_birthday_users_days']['value'] = !empty($_POST['access_blocks_next_birthday_users_day_count']) ? intval($_POST['access_blocks_next_birthday_users_day_count']) : 0;
-                $arrSettings['block_next_birthday_users_with_p']['status'] = !empty($_POST['access_blocks_next_birthday_users_only_with_photo']) && intval($_POST['access_blocks_next_birthday_users_only_with_photo']);
+                $arrSettings['block_next_birthday_users_pic']['status'] = !empty($_POST['access_blocks_next_birthday_users_pic']) && intval($_POST['access_blocks_next_birthday_users_pic']);
             } else {
                 $arrSettings['block_next_birthday_users']['status'] = 0;
             }
@@ -2346,7 +2348,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                                 'access_currently_online_member_list',
                                 'access_last_active_member_list',
                                 'access_latest_registered_member_list',
-                                'access_birthday_member_list'
+                                'access_birthday_member_list',
+                                'access_next_birthday_member_list',
                             )
                         )
                     );
@@ -2462,7 +2465,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'ACCESS_BLOCKS_NEXT_BIRTHDAY_USERS'                     => $arrSettings['block_next_birthday_users']['status'] ? 'checked="checked"' : '',
             'ACCESS_BLOCKS_NEXT_BIRTHDAY_USERS_DISPLAY'             => $arrSettings['block_next_birthday_users']['status'] ? '' : 'none',
             'ACCESS_BLOCKS_NEXT_BIRTHDAY_USERS_DAY_COUNT'           => $arrSettings['block_next_birthday_users_days']['value'],
-            'ACCESS_BLOCKS_NEXT_BIRTHDAY_USERS_ONLY_WITH_PHOTO'     => $arrSettings['block_next_birthday_users_pic']['status'] ? 'checked="checked"' : '',
+            'ACCESS_BLOCKS_NEXT_BIRTHDAY_USERS_PIC'                 => $arrSettings['block_next_birthday_users_pic']['status'] ? 'checked="checked"' : '',
             'ACCESS_MAX_PROFILE_PIC_WIDTH'                          => $arrSettings['max_profile_pic_width']['value'],
             'ACCESS_MAX_PROFILE_PIC_HEIGHT'                         => $arrSettings['max_profile_pic_height']['value'],
             'ACCESS_PROFILE_THUMBNAIL_PIC_WIDTH'                    => $arrSettings['profile_thumbnail_pic_width']['value'],

@@ -251,33 +251,67 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
     function setNextBirthdayUsers($gender = null)
     {
         $arrSettings = \User_Setting::getSettings();
+        $dayOffset = $arrSettings['block_next_birthday_users_days']['value'];
 
         $filter = array(
-            'active' => true
+            'active' => true,
         );
-        if ($arrSettings['block_next_birthday_users_pic']['status']) {
+        if ($arrSettings['block_birthday_users_pic']['status']) {
             $filter['picture'] = array('!=' => '');
         }
-
-        if ($arrSettings['block_next_birthday_users_days']['value'] > 0) {
-            $filter['birthday_day'] = date('j');
-            $filter['birthday_month'] = date('n');
-        }
-
         if (!empty($gender)) {
             $filter['gender'] = 'gender_' . $gender;
         }
 
-        $objFWUser = \FWUser::getFWUserObject();
-        $objUser = $objFWUser->objUser->getUsers(
-            $filter,
-            null,
-            array(
-                'regdate' => 'desc',
-                'username' => 'asc'
-            )
-        );
-        if ($objUser) {
+        $objUser = array();
+        if ($dayOffset > 0) {
+            $date = new \DateTime();
+
+            $days = array();
+            for ($i = 0; $i < $dayOffset; $i++) {
+                $date->modify('+1 day');
+                $day = array(
+                    'day' => $date->format('j'),
+                    'month' => $date->format('n'),
+                );
+                array_push($days, $day);
+            }
+
+            $objFWUser = \FWUser::getFWUserObject();
+            foreach ($days as $day) {
+                $filter['birthday_day'] = $day['day'];
+                $filter['birthday_month'] = $day['month'];
+
+                array_push(
+                    $objUser,
+                    $objFWUser->objUser->getUsers(
+                        $filter,
+                        null,
+                        array(
+                            'regdate' => 'desc',
+                            'username' => 'asc'
+                        )
+                    )
+                );
+            }
+        } else {
+            $filter['birthday_day'] = date('j');
+            $filter['birthday_month'] = date('n');
+
+            $objFWUser = \FWUser::getFWUserObject();
+            $objUser = $objFWUser->objUser->getUsers(
+                $filter,
+                null,
+                array(
+                    'regdate' => 'desc',
+                    'username' => 'asc'
+                ),
+                null,
+                $arrSettings['block_birthday_users']['value']
+            );
+        }
+
+        if (!empty($objUser)) {
             while (!$objUser->EOF) {
                 $this->_objTpl->setVariable(array(
                     'ACCESS_USER_ID' => $objUser->getId(),

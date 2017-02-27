@@ -858,6 +858,12 @@ class FWUser extends User_Setting
         return $arrSettings['block_birthday_users']['status'];
     }
 
+    public static function showNextBirthdayUsers()
+    {
+        $arrSettings = User_Setting::getSettings();
+        return $arrSettings['block_next_birthday_users']['status'];
+    }
+
 
     /**
      * Returns the static FWUser object

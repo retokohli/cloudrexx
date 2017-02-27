@@ -164,7 +164,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             }
         }
 
-        //Parse the birthday users
+        //Parse the next birthday users
         if ($name == 'access_next_birthday_member_list') {
             if (
                 \FWUser::showNextBirthdayUsers() &&
