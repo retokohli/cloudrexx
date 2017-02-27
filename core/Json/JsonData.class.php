@@ -301,6 +301,10 @@ class JsonData {
             }
         }
 
+        if (!isset($arguments['response'])) {
+            $arguments['response'] = \Cx\Core\Core\Controller\Cx::instanciate()->getResponse();
+        }
+
         try {
             $data = call_user_func(array($adapter, $realMethod), $arguments);
             return array(
