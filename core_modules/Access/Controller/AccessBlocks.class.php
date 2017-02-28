@@ -257,11 +257,13 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
             FROM `' . DBPREFIX . 'access_users` AS tblU
             INNER JOIN `' . DBPREFIX . 'access_user_profile` AS tblP ON tblP.`user_id` = tblU.`id`
             WHERE tblU.`active` = true';
-        if ($arrSettings['block_birthday_users_pic']['status']) {
-            $query .= ' AND tblP.`picture` != ""';
-        }
+
         if (!empty($gender)) {
-            $query .= ' AND tblP.`gender` = "gender_"' . $gender;
+            $query .= ' AND tblP.`gender` = "gender_' . $gender . '"';
+        }
+
+        if ($arrSettings['block_next_birthday_users_pic']['status']) {
+            $query .= ' AND tblP.`picture` != ""';
         }
 
         $dayOffset = $arrSettings['block_next_birthday_users']['value'];
