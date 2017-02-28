@@ -75,6 +75,7 @@ $_ARRAYLANG['TXT_ACCESS_BACK'] = "back";
 $_ARRAYLANG['TXT_ACCESS_BACKEND_DESC'] = "Administration console (backend)";
 $_ARRAYLANG['TXT_ACCESS_BIRTHDAYS'] = "Current birthdays";
 $_ARRAYLANG['TXT_ACCESS_NEXT_BIRTHDAYS'] = "Next birthdays";
+$_ARRAYLANG['TXT_ACCESS_NEXT_BIRTHDAYS_DAYS'] = "Number of days";
 $_ARRAYLANG['TXT_ACCESS_CANCEL'] = "Cancel";
 $_ARRAYLANG['TXT_ACCESS_CHANGE_PROFILE_PIC'] = "Change profile picture";
 $_ARRAYLANG['TXT_ACCESS_CHANGE_SORT_DIRECTION'] = "Change sort order";

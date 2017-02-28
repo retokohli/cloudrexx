@@ -2144,7 +2144,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'TXT_ACCESS_LATEST_REGISTERED_USERS'                => $_ARRAYLANG['TXT_ACCESS_LATEST_REGISTERED_USERS'],
             'TXT_ACCESS_BIRTHDAYS'                              => $_ARRAYLANG['TXT_ACCESS_BIRTHDAYS'],
             'TXT_ACCESS_NEXT_BIRTHDAYS'                         => $_ARRAYLANG['TXT_ACCESS_NEXT_BIRTHDAYS'],
-            'TXT_CORE_DAYS'                                     => $_CORELANG['TXT_CORE_DAYS'],
+            'TXT_ACCESS_NEXT_BIRTHDAYS_DAYS'                    => $_ARRAYLANG['TXT_ACCESS_NEXT_BIRTHDAYS_DAYS'],
             'TXT_ACCESS_ACTIVATE_BLOCK_FUNCTION'                => $_ARRAYLANG['TXT_ACCESS_ACTIVATE_BLOCK_FUNCTION'],
             'TXT_ACCESS_SHOW_USERS_ONLY_WITH_PHOTO'             => $_ARRAYLANG['TXT_ACCESS_SHOW_USERS_ONLY_WITH_PHOTO'],
             'TXT_ACCESS_MAX_USER_COUNT'                         => $_ARRAYLANG['TXT_ACCESS_MAX_USER_COUNT'],
