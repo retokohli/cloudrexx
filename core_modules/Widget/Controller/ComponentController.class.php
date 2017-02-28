@@ -98,7 +98,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core_Modules\Widget\Model\Entity\Widget $widget Widget to add
      */
     public function registerWidget($widget) {
-        $this->widgets[] = $widget;
+        $this->widgets[$widget->getName()] = $widget;
     }
 
     /**
@@ -132,6 +132,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function getWidgets() {
         return $this->widgets;
+    }
+
+    /**
+     * Returns a Widget by name
+     * @throws \Exception If the requested Widget is not registered
+     * @return \Cx\Core_Modules\Widget\Model\Entity\Widget Requested Widget
+     */
+    public function getWidget($name) {
+        if (!isset($this->widgets[$name])) {
+            throw new \Exception('No such widget');
+        }
+        return $this->widgets[$name];
     }
 
     /**

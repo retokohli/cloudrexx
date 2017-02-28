@@ -185,4 +185,27 @@ class Sigma extends \HTML_Template_Sigma {
         }
         return parent::parse($block, $flagRecursion, $fakeParse);
     }
+
+    /**
+     * Returns an unparsed block (/as it was delivered)
+     * This is useful for "reflection". This is used by ESI parsing.
+     * @author Michael Ritter <michael.ritter@cloudrexx.com>
+     * @param string $blockName Name of block to return
+     * @throws \Exception Thrown if the block does not exist within this template
+     * @return string Template content
+     */
+    function getUnparsedBlock($blockName) {
+        if (!isset($this->_blocks[$blockName])) {
+            throw new \Exception('Reverse parsing of block failed');
+        }
+        return '<!-- BEGIN ' . $blockName . ' -->' .
+            preg_replace_callback(
+                '/\{__(' . $this->blocknameRegExp . ')__\}/',
+                function(array $matches) {
+                    return $this->getUnparsedBlock($matches[1]);
+                },
+                $this->_blocks[$blockName]
+            ) .
+            '<!-- END ' . $blockName . ' -->';
+    }
 }
