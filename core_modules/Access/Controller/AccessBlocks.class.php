@@ -250,72 +250,75 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
 
     function setNextBirthdayUsers($gender = null)
     {
+        global $objDatabase;
         $arrSettings = \User_Setting::getSettings();
 
-        $filter = array(
-            'active' => true,
-        );
+        $query = 'SELECT tblU.`id`
+            FROM `' . DBPREFIX . 'access_users` AS tblU
+            INNER JOIN `' . DBPREFIX . 'access_user_profile` AS tblP ON tblP.`user_id` = tblU.`id`
+            WHERE tblU.`active` = true';
         if ($arrSettings['block_birthday_users_pic']['status']) {
-            $filter['picture'] = array('!=' => '');
+            $query .= ' AND tblP.`picture` != ""';
         }
         if (!empty($gender)) {
-            $filter['gender'] = 'gender_' . $gender;
+            $query .= ' AND tblP.`gender` = "gender_"' . $gender;
         }
 
         $dayOffset = $arrSettings['block_next_birthday_users']['value'];
-        $objFWUser = \FWUser::getFWUserObject();
 
-        if ($dayOffset > 0) {
-            $date = new \DateTime();
-            $search = array();
-            for ($i = 0; $i < $dayOffset + 1; $i++) {
-                $birthday = array(
-                    'birthday_day' => $date->format('j'),
-                    'birthday_month' => $date->format('n'),
-                );
-                array_push($search, $birthday);
+        $date = new \DateTime();
+        $days = array();
+        for ($i = 0; $i < $dayOffset + 1; $i++) {
+            $day = array(
+                'birthday_day' => $date->format('j'),
+                'birthday_month' => $date->format('n'),
+            );
+            array_push($days, $day);
+            if ($dayOffset > 0) {
                 $date->modify('+1 day');
             }
-
-            $objUser = $objFWUser->objUser->getUsers(
-                $filter,
-                $search,
-                array(
-                    'regdate' => 'desc',
-                    'username' => 'asc'
-                )
-            );
-        } else {
-            $filter['birthday_day'] = date('j');
-            $filter['birthday_month'] = date('n');
-
-            $objUser = $objFWUser->objUser->getUsers(
-                $filter,
-                null,
-                array(
-                    'regdate' => 'desc',
-                    'username' => 'asc'
-                )
-            );
         }
 
-        if (!empty($objUser)) {
-            while (!$objUser->EOF) {
+        $arrConditions = array();
+        $birthdayQuery = ' AND (';
+        foreach ($days as $day) {
+            $arrConditions[] = '(DATE_FORMAT(DATE_ADD(FROM_UNIXTIME(0), interval `tblP`.`birthday` second), "%e") = "' . intval($day['birthday_day']) . '")
+             AND (DATE_FORMAT(DATE_ADD(FROM_UNIXTIME(0), interval `tblP`.`birthday` second), "%c") = "' . intval($day['birthday_month']) . '")';
+        }
+        $birthdayQuery .= implode(' OR ', $arrConditions) . ')';
+        $query .= $birthdayQuery;
+        $objResult = $objDatabase->Execute($query);
+
+        $userIds = array();
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
+                array_push($userIds, $objResult->fields['id']);
+                $objResult->MoveNext();
+            }
+        }
+
+        $users = array();
+        $objFWUser = \FWUser::getFWUserObject();
+        foreach ($userIds as $userId) {
+            $user = $objFWUser->objUser->getUser($userId);
+            array_push($users, $user);
+        }
+
+        if (!empty($users)) {
+            foreach ($users as $user) {
                 $this->_objTpl->setVariable(array(
-                    'ACCESS_USER_ID' => $objUser->getId(),
-                    'ACCESS_USER_USERNAME' => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
+                    'ACCESS_USER_ID' => $user->getId(),
+                    'ACCESS_USER_USERNAME' => htmlentities($user->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
                 ));
 
-                $objUser->objAttribute->first();
-                while (!$objUser->objAttribute->EOF) {
-                    $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-                    $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
-                    $objUser->objAttribute->next();
+                $user->objAttribute->first();
+                while (!$user->objAttribute->EOF) {
+                    $objAttribute = $user->objAttribute->getById($user->objAttribute->getId());
+                    $this->parseAttribute($user, $objAttribute->getId(), 0, false, false, false, false, false);
+                    $user->objAttribute->next();
                 }
 
                 $this->_objTpl->parse('access_next_birthday_' . (!empty($gender) ? $gender . '_' : '') . 'members');
-
-                $objUser->next();
             }
         } else {
             $this->_objTpl->hideBlock('access_next_birthday_' . (!empty($gender) ? $gender . '_' : '') . 'members');
