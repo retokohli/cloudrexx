@@ -8,11 +8,6 @@ namespace Cx\Core\ContentManager\Model\Entity;
 class Translation extends \Gedmo\Translatable\Entity\AbstractTranslation
 {
     /**
-     * @var integer $id
-     */
-    protected $id;
-
-    /**
      * All required columns are mapped through inherited superclass
      */
 }
