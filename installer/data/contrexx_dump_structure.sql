@@ -731,6 +731,7 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `series_pattern_end_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `series_pattern_begin` int(11) NOT NULL DEFAULT '0',
   `series_pattern_exceptions` longtext NOT NULL,
+  `series_additional_recurrences` longtext NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `confirmed` tinyint(1) NOT NULL DEFAULT '1',
   `show_detail_view` tinyint(1) NOT NULL DEFAULT '1',
