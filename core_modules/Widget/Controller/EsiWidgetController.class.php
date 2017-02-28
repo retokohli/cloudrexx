@@ -112,6 +112,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
         }
 
         // ensure that the params can be fetched during internal parsing
+        $backupGetParams = $_GET;
         $_GET = $params['get'];
 
         // resolve widget template
@@ -149,6 +150,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
             $widgetTemplate,
             $params['get']['lang']
         );
+        $_GET = $backupGetParams;
         $content = $widgetTemplate->get();
         \LinkGenerator::parseTemplate($content);
         $ls = new \LinkSanitizer(
