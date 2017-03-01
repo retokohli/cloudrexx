@@ -1597,7 +1597,7 @@ EOF;
                 'clearEsiCache',
                 array(
                     'Widget',
-                    array('NEWS_CATEGORIES', 'NEWS_RECENT_COMMENTS_FILE')
+                    $this->getNewsGlobalPlaceholderNames()
                 )
             );
         }

@@ -1118,7 +1118,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                             'clearEsiCache',
                             array(
                                 'Widget',
-                                array('NEWS_CATEGORIES', 'NEWS_RECENT_COMMENTS_FILE')
+                                $this->getNewsGlobalPlaceholderNames()
                             )
                         );
                         unset($_POST);
@@ -1455,7 +1455,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     'clearEsiCache',
                     array(
                         'Widget',
-                        array('NEWS_CATEGORIES', 'NEWS_RECENT_COMMENTS_FILE')
+                        $this->getNewsGlobalPlaceholderNames()
                     )
                 );
             } else {
@@ -1493,7 +1493,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                             'clearEsiCache',
                             array(
                                 'Widget',
-                                array('NEWS_CATEGORIES', 'NEWS_RECENT_COMMENTS_FILE')
+                                $this->getNewsGlobalPlaceholderNames()
                             )
                         );
                     } else {
@@ -1531,7 +1531,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                             'clearEsiCache',
                             array(
                                 'Widget',
-                                array('NEWS_CATEGORIES', 'NEWS_RECENT_COMMENTS_FILE')
+                                $this->getNewsGlobalPlaceholderNames()
                             )
                         );
                     } else {
@@ -2645,7 +2645,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     'clearEsiCache',
                     array(
                         'Widget',
-                        array('NEWS_CATEGORIES', 'NEWS_RECENT_COMMENTS_FILE')
+                        $this->getNewsGlobalPlaceholderNames()
                     )
                 );
                $this->createRSS();
@@ -2695,7 +2695,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                             'clearEsiCache',
                             array(
                                 'Widget',
-                                array('NEWS_CATEGORIES', 'NEWS_RECENT_COMMENTS_FILE')
+                                $this->getNewsGlobalPlaceholderNames()
                             )
                         );
                     }
@@ -2714,7 +2714,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 'clearEsiCache',
                 array(
                     'Widget',
-                    array('NEWS_CATEGORIES', 'NEWS_RECENT_COMMENTS_FILE')
+                    $this->getNewsGlobalPlaceholderNames()
                 )
             );
         }
@@ -2796,7 +2796,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     'clearEsiCache',
                     array(
                         'Widget',
-                        array('NEWS_CATEGORIES', 'NEWS_RECENT_COMMENTS_FILE')
+                        $this->getNewsGlobalPlaceholderNames()
                     )
                 );
                  $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
@@ -4438,7 +4438,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 'clearEsiCache',
                 array(
                     'Widget',
-                    array('NEWS_CATEGORIES', 'NEWS_RECENT_COMMENTS_FILE')
+                    $this->getNewsGlobalPlaceholderNames()
                 )
             );
         }
@@ -4574,7 +4574,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 'clearEsiCache',
                 array(
                     'Widget',
-                    array('NEWS_CATEGORIES', 'NEWS_RECENT_COMMENTS_FILE')
+                    $this->getNewsGlobalPlaceholderNames()
                 )
             );
             $this->_objTeaser->initializeTeaserFrameTemplates($templateId);
@@ -4598,7 +4598,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 'clearEsiCache',
                 array(
                     'Widget',
-                    array('NEWS_CATEGORIES', 'NEWS_RECENT_COMMENTS_FILE')
+                    $this->getNewsGlobalPlaceholderNames()
                 )
             );
             $this->_objTeaser->initializeTeaserFrames();
@@ -4691,7 +4691,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 'clearEsiCache',
                 array(
                     'Widget',
-                    array('NEWS_CATEGORIES', 'NEWS_RECENT_COMMENTS_FILE')
+                    $this->getNewsGlobalPlaceholderNames()
                 )
             );
             $this->_objTeaser->initializeTeaserFrames($id);

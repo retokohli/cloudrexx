@@ -3159,4 +3159,41 @@ EOF;
             }
         }
     }
+
+    /**
+     * Get all the News global placeholder names
+     *
+     * @return array
+     */
+    public function getNewsGlobalPlaceholderNames()
+    {
+        $placeholders = array(
+            'TOP_NEWS_FILE',
+            'NEWS_CATEGORIES',
+            'NEWS_ARCHIVES',
+            'NEWS_RECENT_COMMENTS_FILE'
+        );
+
+        // Get Headlines placeholders
+        for ($i = 1; $i <= 10; $i++) {
+            $id = '';
+            if ($i > 1) {
+                $id = $i;
+            }
+            $placeholders[] = 'HEADLINES' . $id . '_FILE';
+        }
+
+        // Set news teasers
+        $teaser      = new Teasers();
+        $teaserNames = array_flip($teaser->arrTeaserFrameNames);
+        if (empty($teaserNames)) {
+            return $placeholders;
+        }
+
+        foreach ($teaserNames as $teaserName) {
+            $placeholders[] = 'TEASERS_' . $teaserName;
+        }
+
+        return $placeholders;
+    }
 }
