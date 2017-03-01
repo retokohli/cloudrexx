@@ -3351,8 +3351,9 @@ class NewsletterManager extends NewsletterLib
             } else {
                 $ReplaceWith = $URLforReplace;
             }
-
-            $content_text = str_replace('"'.$URLforReplace.'"', '"'.$ReplaceWith.'"', $content_text);
+            $replaceWithPart = explode('/', $ReplaceWith);
+            $replaceWithPart[count($replaceWithPart) - 1] = rawurlencode($replaceWithPart[count($replaceWithPart) - 1]);
+            $content_text = str_replace('"'.$URLforReplace.'"', '"'. implode('/', $replaceWithPart) .'"', $content_text);
             $i++;
         }
 
