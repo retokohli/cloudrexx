@@ -334,8 +334,8 @@ class CalendarEventManager extends CalendarLibrary
                     }
 
                     if ($checkFutureEvents && $objEvent->seriesStatus == 1 && $_GET['cmd'] != 'my_events') {
-                        self::_setNextSeriesElement($objEvent);
-                        $this->addAdditionalRecurrences($objEvent);
+                        $additionalRecurrences = $objEvent->seriesData['seriesAdditionalRecurrences'];
+                        self::_setNextSeriesElement($objEvent, $additionalRecurrences);
                     }
                 } else {
                     $this->eventList[] = $objEvent;
@@ -361,74 +361,6 @@ class CalendarEventManager extends CalendarLibrary
 
         if ($this->numEvents != 'n' && $this->numEvents != 0) {
             $this->eventList = array_slice($this->eventList, $this->startPos, $this->numEvents);
-        }
-    }
-
-    /**
-     * Add Additional Event to EventList
-     *
-     * @param object $objEvent Instance of \Cx\Modules\Calendar\Controller\CalendarEvent
-     *
-     * @return null
-     */
-    public function addAdditionalRecurrences($objEvent)
-    {
-        $additionalRecurrences = $objEvent->seriesData['seriesAdditionalRecurrences'];
-        $diffDays = $objEvent->startDate->diff($objEvent->endDate)->days;
-        foreach ($additionalRecurrences as $additionalRecurrence) {
-            $newEvent = clone $objEvent;
-            $newEvent->startDate->setTime(
-                $objEvent->startDate->format('H'),
-                $objEvent->startDate->format('i'),
-                $objEvent->startDate->format('s')
-            );
-            $newEvent->endDate->setTime(
-                $objEvent->endDate->format('H'),
-                $objEvent->endDate->format('i'),
-                $objEvent->endDate->format('s')
-            );
-            $newEvent->startDate->setDate(
-                    $additionalRecurrence->format('Y'),
-                    $additionalRecurrence->format('m'),
-                    $additionalRecurrence->format('d')
-            );
-            $newEvent->endDate->setDate(
-                    $additionalRecurrence->format('Y'),
-                    $additionalRecurrence->format('m'),
-                    $additionalRecurrence->format('d')
-            );
-            $newEvent->endDate->modify('+' . $diffDays . ' days');
-
-            $isAllowedEvent = true;
-            switch($newEvent->seriesData['seriesPatternDouranceType']) {
-                case 2:
-                    $newEvent->seriesData['seriesPatternEnd'] = $newEvent->seriesData['seriesPatternEnd']-1;
-                    // If pattern end count is true, then a event will be allowed to add in event list
-                    $isAllowedEvent = (boolean) $newEvent->seriesData['seriesPatternEnd'];
-                    break;
-                case 3:
-                    if (!($newEvent->startDate <= $newEvent->seriesData['seriesPatternEndDate'])) {
-                        $isAllowedEvent = false;
-                    }
-                    break;
-            }
-
-            $newEvent->registrationExternalLink = str_replace(
-                '[[SERIES_ELEMENT_STARTDATE]]',
-                $newEvent->startDate->getTimestamp(),
-                $newEvent->registrationExternalLink
-            );
-
-            if (
-                $isAllowedEvent &&
-                !$this->isDateExists(
-                    $newEvent->startDate,
-                    $newEvent->seriesData['seriesPatternExceptions']
-                ) &&
-                self::_addToEventList($newEvent)
-            ) {
-                $this->eventList[] = $newEvent;
-            }
         }
     }
 
@@ -505,8 +437,8 @@ class CalendarEventManager extends CalendarLibrary
                                     $objExternalEvent->endDate   = $this->getInternDateTimeFromDb($objExternalEvent->endDate);
 
                                     if($objExternalEvent->seriesStatus == 1 && $_GET['cmd'] != 'my_events') {
-                                        self::_setNextSeriesElement($objExternalEvent);
-                                        $this->addAdditionalRecurrences($objExternalEvent);
+                                        $additionalRecurrences = $objExternalEvent->seriesData['seriesAdditionalRecurrences'];
+                                        self::_setNextSeriesElement($objExternalEvent, $additionalRecurrences);
                                     }
 
                                     $this->eventList[] = $objExternalEvent;
@@ -625,8 +557,8 @@ class CalendarEventManager extends CalendarLibrary
         if (   $objEvent->seriesStatus == 1
             && ($forceCalculateSeries || $objInit->mode == 'frontend')
         ) {
-            self::_setNextSeriesElement($objEvent);
-            $this->addAdditionalRecurrences($objEvent);
+            $additionalRecurrences = $objEvent->seriesData['seriesAdditionalRecurrences'];
+            self::_setNextSeriesElement($objEvent, $additionalRecurrences);
         }
         foreach ($this->eventList as $tmpKey => $tmpObjEvent) {
             if (!$tmpObjEvent->startDate || $tmpObjEvent->startDate->getTimestamp() != $eventStartDate) {
@@ -1125,8 +1057,8 @@ class CalendarEventManager extends CalendarLibrary
             if ($eventManager->_addToEventList($objEvent)) {
                 $eventManager->eventList[] = $objEvent;
             }
-            $eventManager->_setNextSeriesElement($objEvent);
-            $eventManager->addAdditionalRecurrences($objEvent);
+            $additionalRecurrences = $objEvent->seriesData['seriesAdditionalRecurrences'];
+            $eventManager->_setNextSeriesElement($objEvent, $additionalRecurrences);
             $eventList = $eventManager->eventList;
         }
 
@@ -1647,10 +1579,26 @@ class CalendarEventManager extends CalendarLibrary
      *
      * @return null
      */
-    function _setNextSeriesElement($objEvent) {
+    /**
+     * _setNextSeriesElement
+     *
+     * @param object  $objEvent                event object
+     * @param array   $additionalRecurrences   array of additional recurrence dateTime objects
+     * @param boolean $addAdditionalRecurrence If this true then it will add additional recurrence
+     *
+     * @return type
+     */
+    function _setNextSeriesElement(
+        $objEvent,
+        &$additionalRecurrences,
+        $addAdditionalRecurrence = false
+    ) {
         $objCloneEvent = clone $objEvent;
 
         $this->getSettings();
+        if ($addAdditionalRecurrence) {
+            goto addAdditionalRecurrence;
+        }
         switch ($objCloneEvent->seriesData['seriesType']){
             case 1:
                 //daily
@@ -1768,6 +1716,7 @@ class CalendarEventManager extends CalendarLibrary
             break;
         }
 
+        addAdditionalRecurrence:
         $isAllowedEvent = true;
         switch($objCloneEvent->seriesData['seriesPatternDouranceType']) {
             case 1:
@@ -1827,8 +1776,35 @@ class CalendarEventManager extends CalendarLibrary
             }
         }
 
+        if ($addAdditionalRecurrence) {
+            return;
+        }
+
+        $diffDays = $objEvent->startDate->diff($objEvent->endDate)->days;
+        foreach ($additionalRecurrences as $key => $additionalRecurrence) {
+            if (
+                $objEvent->startDate < $additionalRecurrence &&
+                $objCloneEvent->startDate > $additionalRecurrence
+            ) {
+                $newEvent = clone $objCloneEvent;
+                $newEvent->startDate->setDate(
+                        $additionalRecurrence->format('Y'),
+                        $additionalRecurrence->format('m'),
+                        $additionalRecurrence->format('d')
+                );
+                $newEvent->endDate->setDate(
+                        $additionalRecurrence->format('Y'),
+                        $additionalRecurrence->format('m'),
+                        $additionalRecurrence->format('d')
+                );
+                $newEvent->endDate->modify('+' . $diffDays . ' days');
+                self::_setNextSeriesElement($newEvent, $additionalRecurrences, true);
+                unset($additionalRecurrences[$key]);
+            }
+        }
+
         if ($getNextEvent) {
-            self::_setNextSeriesElement($objCloneEvent);
+            self::_setNextSeriesElement($objCloneEvent, $additionalRecurrences);
         }
     }
 
