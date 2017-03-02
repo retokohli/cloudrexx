@@ -259,11 +259,11 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
             WHERE tblU.`active` = true';
 
         if (!empty($gender)) {
-            $query .= ' AND tblP.`gender` = "gender_' . $gender . '"';
+            $query .= ' AND tblP.`gender` = \'gender_' . $gender . '\'';
         }
 
         if ($arrSettings['block_next_birthday_users_pic']['status']) {
-            $query .= ' AND tblP.`picture` != ""';
+            $query .= ' AND tblP.`picture` != \'\'';
         }
 
         $dayOffset = $arrSettings['block_next_birthday_users']['value'];
@@ -284,8 +284,21 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
         $arrConditions = array();
         $birthdayQuery = ' AND (';
         foreach ($days as $day) {
-            $arrConditions[] = '(DATE_FORMAT(DATE_ADD(FROM_UNIXTIME(0), interval `tblP`.`birthday` second), "%e") = "' . intval($day['birthday_day']) . '")
-             AND (DATE_FORMAT(DATE_ADD(FROM_UNIXTIME(0), interval `tblP`.`birthday` second), "%c") = "' . intval($day['birthday_month']) . '")';
+            $arrConditions[] = '
+                (DATE_FORMAT(
+                    DATE_ADD(
+                        FROM_UNIXTIME(0), interval `tblP`.`birthday` second
+                    ),
+                    \'%e\'
+                ) = \'' . intval($day['birthday_day']) . '\')
+                AND
+                (DATE_FORMAT(
+                    DATE_ADD(
+                        FROM_UNIXTIME(0), interval `tblP`.`birthday` second
+                    ),
+                    \'%c\'
+                ) = \'' . intval($day['birthday_month']) . '\')
+            ';
         }
         $birthdayQuery .= implode(' OR ', $arrConditions) . ')';
         $query .= $birthdayQuery;
@@ -306,24 +319,24 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
             array_push($users, $user);
         }
 
-        if (!empty($users)) {
-            foreach ($users as $user) {
-                $this->_objTpl->setVariable(array(
-                    'ACCESS_USER_ID' => $user->getId(),
-                    'ACCESS_USER_USERNAME' => htmlentities($user->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
-                ));
-
-                $user->objAttribute->first();
-                while (!$user->objAttribute->EOF) {
-                    $objAttribute = $user->objAttribute->getById($user->objAttribute->getId());
-                    $this->parseAttribute($user, $objAttribute->getId(), 0, false, false, false, false, false);
-                    $user->objAttribute->next();
-                }
-
-                $this->_objTpl->parse('access_next_birthday_' . (!empty($gender) ? $gender . '_' : '') . 'members');
-            }
-        } else {
+        if (empty($users)) {
             $this->_objTpl->hideBlock('access_next_birthday_' . (!empty($gender) ? $gender . '_' : '') . 'members');
+            return;
+        }
+        foreach ($users as $user) {
+            $this->_objTpl->setVariable(array(
+                'ACCESS_USER_ID' => $user->getId(),
+                'ACCESS_USER_USERNAME' => htmlentities($user->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
+            ));
+
+            $user->objAttribute->first();
+            while (!$user->objAttribute->EOF) {
+                $objAttribute = $user->objAttribute->getById($user->objAttribute->getId());
+                $this->parseAttribute($user, $objAttribute->getId(), 0, false, false, false, false, false);
+                $user->objAttribute->next();
+            }
+
+            $this->_objTpl->parse('access_next_birthday_' . (!empty($gender) ? $gender . '_' : '') . 'members');
         }
     }
 
