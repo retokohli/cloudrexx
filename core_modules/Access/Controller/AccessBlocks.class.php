@@ -306,24 +306,24 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
             array_push($users, $user);
         }
 
-        if (!empty($users)) {
-            foreach ($users as $user) {
-                $this->_objTpl->setVariable(array(
-                    'ACCESS_USER_ID' => $user->getId(),
-                    'ACCESS_USER_USERNAME' => htmlentities($user->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
-                ));
-
-                $user->objAttribute->first();
-                while (!$user->objAttribute->EOF) {
-                    $objAttribute = $user->objAttribute->getById($user->objAttribute->getId());
-                    $this->parseAttribute($user, $objAttribute->getId(), 0, false, false, false, false, false);
-                    $user->objAttribute->next();
-                }
-
-                $this->_objTpl->parse('access_next_birthday_' . (!empty($gender) ? $gender . '_' : '') . 'members');
-            }
-        } else {
+        if (empty($users)) {
             $this->_objTpl->hideBlock('access_next_birthday_' . (!empty($gender) ? $gender . '_' : '') . 'members');
+            return;
+        }
+        foreach ($users as $user) {
+            $this->_objTpl->setVariable(array(
+                'ACCESS_USER_ID' => $user->getId(),
+                'ACCESS_USER_USERNAME' => htmlentities($user->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
+            ));
+
+            $user->objAttribute->first();
+            while (!$user->objAttribute->EOF) {
+                $objAttribute = $user->objAttribute->getById($user->objAttribute->getId());
+                $this->parseAttribute($user, $objAttribute->getId(), 0, false, false, false, false, false);
+                $user->objAttribute->next();
+            }
+
+            $this->_objTpl->parse('access_next_birthday_' . (!empty($gender) ? $gender . '_' : '') . 'members');
         }
     }
 

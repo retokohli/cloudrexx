@@ -858,10 +858,19 @@ class FWUser extends User_Setting
         return $arrSettings['block_birthday_users']['status'];
     }
 
+    /**
+     * Returns status of next birthday users from user setting
+     *
+     * @return  bool    returns true if function is active
+     */
     public static function showNextBirthdayUsers()
     {
         $arrSettings = User_Setting::getSettings();
-        return $arrSettings['block_next_birthday_users']['status'];
+        $status = intval($arrSettings['block_next_birthday_users']['status']);
+        if ($status == 1) {
+            return true;
+        }
+        return false;
     }
 
 
