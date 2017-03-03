@@ -48,14 +48,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
-        return array();
+        return array('EsiWidget');
     }
 
      /**
      * {@inheritdoc}
      */
     public function getControllersAccessableByJson() {
-        return array('JsonNews');
+        return array('JsonNews', 'EsiWidgetController');
     }
 
     /**
@@ -150,182 +150,85 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Do something before content is loaded from DB
+     * Do something after system initialization
      *
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * This event must be registered in the postInit-Hook definition
+     * file config/postInitHooks.yml.
+     *
+     * @param \Cx\Core\Core\Controller\Cx   $cx The instance of \Cx\Core\Core\Controller\Cx
      */
-    public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $themesPages, $page_template, $_LANGID, $objInit;
-        switch ($this->cx->getMode()) {
-            case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-                // Get Headlines
-                $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsHeadlines.class.php';
-                if (file_exists($modulespath)) {
-                    $first = true;
-                    for ($i = 0; $i <= 10; $i++) {
-                        $visibleI = '';
-                        if ($i > 0) {
-                            $visibleI = (string) $i;
-                        }
-                        $headlinesNewsPlaceholder = '{HEADLINES' . $visibleI . '_FILE}';
-                        if (
-                            strpos($page->getContent(), $headlinesNewsPlaceholder) !== false
-                            || strpos($themesPages['index'], $headlinesNewsPlaceholder) !== false
-                            || strpos($themesPages['sidebar'], $headlinesNewsPlaceholder) !== false
-                            || strpos($page_template, $headlinesNewsPlaceholder) !== false
-                           ) {
-                                if ($first) {
-                                    $first = false;
-                                    $objInit->loadLanguageData('News');
-                                }
-                                $homeHeadlines = $this->getComponent('Cache')->getEsiContent(
-                                    'News',
-                                    'getHeadlines',
-                                    array(
-                                        'headline' => 'headlines'. $visibleI,
-                                        'theme' => \Env::get('init')->getCurrentThemeId(),
-                                        'langId'   => $_LANGID,
-                                    )
-                                );
-                                $page->setContent(str_replace($headlinesNewsPlaceholder, $homeHeadlines, $page->getContent()));
-                                $themesPages['index']   = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['index']);
-                                $themesPages['sidebar'] = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['sidebar']);
-                                $page_template          = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $page_template);
-                        }
-                    }
-                }
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx)
+    {
+        $widgetController = $this->getComponent('Widget');
+        // Get Headlines
+        for ($i = 1; $i <= 10; $i++) {
+            $id = '';
+            if ($i > 1) {
+                $id = $i;
+            }
+            $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+                $this,
+                'HEADLINES' . $id . '_FILE'
+            );
+            $widget->setEsiVariable(
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER |
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_THEME |
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_CHANNEL
+            );
+            $widgetController->registerWidget(
+                $widget
+            );
+        }
 
-                // Get Top news
-                $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsTop.class.php';
-                $topNewsPlaceholder = '{TOP_NEWS_FILE}';
-                if ( file_exists($modulespath)
-                     && (   strpos($page->getContent(), $topNewsPlaceholder) !== false
-                            || strpos($themesPages['index'], $topNewsPlaceholder) !== false
-                            || strpos($themesPages['sidebar'], $topNewsPlaceholder) !== false
-                            || strpos($page_template, $topNewsPlaceholder) !== false)
-                   ) {
-                        $homeTopNews = $this->getComponent('Cache')->getEsiContent(
-                            'News',
-                            'getTopNews',
-                            array(
-                                'theme' => \Env::get('init')->getCurrentThemeId(),
-                                'langId'   => $_LANGID,
-                            )
-                        );
-                        $page->setContent(str_replace($topNewsPlaceholder, $homeTopNews, $page->getContent()));
-                        $themesPages['index']   = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['index']);
-                        $themesPages['sidebar'] = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['sidebar']);
-                        $page_template          = str_replace($topNewsPlaceholder, $homeTopNews, $page_template);
-                }
+        // Get Top news, News categories, News Archives, recent News Comments
+        $widgetNames = array(
+            'TOP_NEWS_FILE'   => true,
+            'NEWS_CATEGORIES' => false,
+            'NEWS_ARCHIVES'   => true,
+            'NEWS_RECENT_COMMENTS_FILE' => false
+        );
+        foreach ($widgetNames as $widgetName => $esiVariable) {
+            $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+                $this,
+                $widgetName
+            );
+            $widget->setEsiVariable(
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_THEME |
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_CHANNEL
+            );
+            if ($esiVariable) {
+                $widget->setEsiVariable(
+                    \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
+                );
+            }
+            $widgetController->registerWidget(
+                $widget
+            );
+        }
 
-                // Get News categories
-                $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsLibrary.class.php';
-                $newsCategoriesPlaceholder = '{NEWS_CATEGORIES}';
-                if ( file_exists($modulespath)
-                     && (   strpos($page->getContent(), $newsCategoriesPlaceholder) !== false
-                            || strpos($themesPages['index'], $newsCategoriesPlaceholder) !== false
-                            || strpos($themesPages['sidebar'], $newsCategoriesPlaceholder) !== false
-                            || strpos($page_template, $newsCategoriesPlaceholder) !== false)
-                   ) {
-                        $newsCategories = $this->getComponent('Cache')->getEsiContent(
-                            'News',
-                            'getNewsCategories',
-                            array(
-                                'langId' => $_LANGID,
-                            )
-                        );
-
-                        $page->setContent(str_replace($newsCategoriesPlaceholder, $newsCategories, $page->getContent()));
-                        $themesPages['index']   = str_replace($newsCategoriesPlaceholder, $newsCategories, $themesPages['index']);
-                        $themesPages['sidebar'] = str_replace($newsCategoriesPlaceholder, $newsCategories, $themesPages['sidebar']);
-                        $page_template          = str_replace($newsCategoriesPlaceholder, $newsCategories, $page_template);
-                }
-
-                // Get News Archives
-                $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsLibrary.class.php';
-                $newsArchivePlaceholder = '{NEWS_ARCHIVES}';
-                if ( file_exists($modulespath)
-                     && (  strpos($page->getContent(), $newsArchivePlaceholder) !== false
-                           || strpos($themesPages['index'], $newsArchivePlaceholder) !== false
-                           || strpos($themesPages['sidebar'], $newsArchivePlaceholder) !== false
-                           || strpos($page_template, $newsArchivePlaceholder) !== false)
-                   ) {
-                        $newsArchive = $this->getComponent('Cache')->getEsiContent(
-                            'News',
-                            'getNewsArchiveList',
-                            array(
-                                'langId' => $_LANGID,
-                            )
-                        );
-
-                        $page->setContent(str_replace($newsArchivePlaceholder, $newsArchive, $page->getContent()));
-                        $themesPages['index']   = str_replace($newsArchivePlaceholder, $newsArchive, $themesPages['index']);
-                        $themesPages['sidebar'] = str_replace($newsArchivePlaceholder, $newsArchive, $themesPages['sidebar']);
-                        $page_template          = str_replace($newsArchivePlaceholder, $newsArchive, $page_template);
-                }
-
-                // Get recent News Comments
-                $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsRecentComments.class.php';
-                $newsCommentsPlaceholder = '{NEWS_RECENT_COMMENTS_FILE}';
-
-                if ( file_exists($modulespath)
-                     && (  strpos($page->getContent(), $newsCommentsPlaceholder) !== false
-                           || strpos($themesPages['index'], $newsCommentsPlaceholder) !== false
-                           || strpos($themesPages['sidebar'], $newsCommentsPlaceholder) !== false
-                           || strpos($page_template, $newsCommentsPlaceholder) !== false)
-                   ) {
-                        $newsComments = $this->getComponent('Cache')->getEsiContent(
-                            'News',
-                            'getRecentComments',
-                            array(
-                                'theme' => \Env::get('init')->getCurrentThemeId(),
-                                'langId'   => $_LANGID,
-                            )
-                        );
-
-                        $page->setContent(str_replace($newsCommentsPlaceholder, $newsComments, $page->getContent()));
-                        $themesPages['index']   = str_replace($newsCommentsPlaceholder, $newsComments, $themesPages['index']);
-                        $themesPages['sidebar'] = str_replace($newsCommentsPlaceholder, $newsComments, $themesPages['sidebar']);
-                        $page_template          = str_replace($newsCommentsPlaceholder, $newsComments, $page_template);
-                }
-
-                //Teasers
-                 $arrMatches = array();
-                // Set news teasers
-                 $config = \Env::get('config');
-                if ($config['newsTeasersStatus'] == '1') {
-                    $objTeasers = null;
-                    // set news teasers in the content
-                    if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $page->getContent(), $arrMatches)) {
-                        if (!$objTeasers) {
-                            $objTeasers = new Teasers();
-                        }
-                        $content = $page->getContent();
-                        $objTeasers->setTeaserFrames($arrMatches[1], $content);
-                        $page->setContent($content);
-                    }
-                    // set news teasers in the page design
-                    if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $page_template, $arrMatches)) {
-                        if (!$objTeasers) {
-                            $objTeasers = new Teasers();
-                        }
-                        $objTeasers->setTeaserFrames($arrMatches[1], $page_template);
-                    }
-                    // set news teasers in the website design
-                    if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $themesPages['index'], $arrMatches)) {
-                        if (!$objTeasers) {
-                            $objTeasers = new Teasers();
-                        }
-                        $objTeasers->setTeaserFrames($arrMatches[1], $themesPages['index']);
-                    }
-                }
-                break;
-
-            default:
-                break;
+        // Set news teasers
+        $teaser      = new Teasers();
+        $teaserNames = array_flip($teaser->arrTeaserFrameNames);
+        if (empty($teaserNames)) {
+            return;
+        }
+        foreach ($teaserNames as $teaserName) {
+            $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+                $this,
+                'TEASERS_' . $teaserName
+            );
+            $widget->setEsiVariable(
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER |
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_THEME |
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_CHANNEL
+            );
+            $widgetController->registerWidget(
+                $widget
+            );
         }
     }
-
 
     /**
      * Do something for search the content
@@ -337,19 +240,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Register the events
-     */
-    public function registerEvents()
-    {
-        $this->cx->getEvents()->addEvent('newsClearSsiCache');
-    }
-
-    /**
      * Register the Event listeners
      */
     public function registerEventListeners() {
         $newsEventListener = new \Cx\Core_Modules\News\Model\Event\NewsEventListener();
         $this->cx->getEvents()->addEventListener('languageStatusUpdate', $newsEventListener);
-        $this->cx->getEvents()->addEventListener('newsClearSsiCache', $newsEventListener);
     }
 }

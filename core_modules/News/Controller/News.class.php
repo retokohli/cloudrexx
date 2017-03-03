@@ -1592,9 +1592,14 @@ EOF;
             return array(false, $errorMessage . '<br /><br />');
         }
         if ($enable) {
-            \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getEvents()
-                ->triggerEvent('newsClearSsiCache');
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getEvents()->triggerEvent(
+                'clearEsiCache',
+                array(
+                    'Widget',
+                    $this->getNewsGlobalPlaceholderNames()
+                )
+            );
         }
 
         return array($ins_id, $_ARRAYLANG['TXT_NEWS_SUCCESSFULLY_SUBMITED'].'<br /><br />');

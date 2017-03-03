@@ -1113,9 +1113,14 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     } else {
                         $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
                         $this->createRSS();
-                        \Cx\Core\Core\Controller\Cx::instanciate()
-                            ->getEvents()
-                            ->triggerEvent('newsClearSsiCache');
+                        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                        $cx->getEvents()->triggerEvent(
+                            'clearEsiCache',
+                            array(
+                                'Widget',
+                                $this->getNewsGlobalPlaceholderNames()
+                            )
+                        );
                         unset($_POST);
                         return $this->overview();
                     }
@@ -1445,9 +1450,14 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             ) {
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                 $this->createRSS();
-                \Cx\Core\Core\Controller\Cx::instanciate()
-                    ->getEvents()
-                    ->triggerEvent('newsClearSsiCache');
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                $cx->getEvents()->triggerEvent(
+                    'clearEsiCache',
+                    array(
+                        'Widget',
+                        $this->getNewsGlobalPlaceholderNames()
+                    )
+                );
             } else {
                 $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
             }
@@ -1478,9 +1488,14 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     ) {
                         $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                         $this->createRSS();
-                        \Cx\Core\Core\Controller\Cx::instanciate()
-                            ->getEvents()
-                            ->triggerEvent('newsClearSsiCache');
+                        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                        $cx->getEvents()->triggerEvent(
+                            'clearEsiCache',
+                            array(
+                                'Widget',
+                                $this->getNewsGlobalPlaceholderNames()
+                            )
+                        );
                     } else {
                         $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
                     }
@@ -1511,9 +1526,14 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     ) {
                         $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                         $this->createRSS();
-                        \Cx\Core\Core\Controller\Cx::instanciate()
-                            ->getEvents()
-                            ->triggerEvent('newsClearSsiCache');
+                        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                        $cx->getEvents()->triggerEvent(
+                            'clearEsiCache',
+                            array(
+                                'Widget',
+                                $this->getNewsGlobalPlaceholderNames()
+                            )
+                        );
                     } else {
                         $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
                     }
@@ -2620,9 +2640,14 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     ? $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']
                     : implode('<br>', $this->errMsg);
            } else {
-                \Cx\Core\Core\Controller\Cx::instanciate()
-                    ->getEvents()
-                    ->triggerEvent('newsClearSsiCache');
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                $cx->getEvents()->triggerEvent(
+                    'clearEsiCache',
+                    array(
+                        'Widget',
+                        $this->getNewsGlobalPlaceholderNames()
+                    )
+                );
                $this->createRSS();
                $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
            }
@@ -2665,9 +2690,14 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
                     } else {
                         $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
-                        \Cx\Core\Core\Controller\Cx::instanciate()
-                            ->getEvents()
-                            ->triggerEvent('newsClearSsiCache');
+                        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                        $cx->getEvents()->triggerEvent(
+                            'clearEsiCache',
+                            array(
+                                'Widget',
+                                $this->getNewsGlobalPlaceholderNames()
+                            )
+                        );
                     }
                 }
             }
@@ -2679,9 +2709,14 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $objDatabase->Execute("UPDATE ".DBPREFIX."module_news SET status=1, validated='1' WHERE id=".intval($value));
                 $entryModified = true;
             }
-            \Cx\Core\Core\Controller\Cx::instanciate()
-                   ->getEvents()
-                   ->triggerEvent('newsClearSsiCache');
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getEvents()->triggerEvent(
+                'clearEsiCache',
+                array(
+                    'Widget',
+                    $this->getNewsGlobalPlaceholderNames()
+                )
+            );
         }
 
         if(!$entryModified)
@@ -2756,9 +2791,14 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                     ');
                 $this->createRSS();
 
-                \Cx\Core\Core\Controller\Cx::instanciate()
-                   ->getEvents()
-                   ->triggerEvent('newsClearSsiCache');
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                $cx->getEvents()->triggerEvent(
+                    'clearEsiCache',
+                    array(
+                        'Widget',
+                        $this->getNewsGlobalPlaceholderNames()
+                    )
+                );
                  $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             }
         }
@@ -4393,9 +4433,14 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $result = $this->_objTeaser->deleteTeaserFrameTeamplte($templateId);
         if ($result !== false && $result !== true) {
             $this->strOkMessage .= $result;
-            \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getEvents()
-                ->triggerEvent('newsClearSsiCache');
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getEvents()->triggerEvent(
+                'clearEsiCache',
+                array(
+                    'Widget',
+                    $this->getNewsGlobalPlaceholderNames()
+                )
+            );
         }
 
         $this->_objTeaser = new \Cx\Core_Modules\News\Controller\Teasers(true);
@@ -4524,9 +4569,14 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             } else {
                 $this->_objTeaser->addTeaserFrameTemplate($templateDescription, $templateHtml, $sourceCodeMode);
             }
-            \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getEvents()
-                ->triggerEvent('newsClearSsiCache');
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getEvents()->triggerEvent(
+                'clearEsiCache',
+                array(
+                    'Widget',
+                    $this->getNewsGlobalPlaceholderNames()
+                )
+            );
             $this->_objTeaser->initializeTeaserFrameTemplates($templateId);
             $this->_showTeaserFrameTemplates();
         } elseif (isset($_POST['cancel'])) {
@@ -4543,9 +4593,14 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         $frameId = intval($_GET['id']);
         if ($this->_objTeaser->deleteTeaserFrame($frameId)) {
-            \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getEvents()
-                ->triggerEvent('newsClearSsiCache');
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getEvents()->triggerEvent(
+                'clearEsiCache',
+                array(
+                    'Widget',
+                    $this->getNewsGlobalPlaceholderNames()
+                )
+            );
             $this->_objTeaser->initializeTeaserFrames();
             $this->strOkMessage .= $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
         } else {
@@ -4631,9 +4686,14 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $this->_objTeaser->addTeaserFrame($id, $templateId, $name);
                 $this->strOkMessage = $_ARRAYLANG['TXT_NEWS_TEASER_BOX_ADDED'];
             }
-            \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getEvents()
-                ->triggerEvent('newsClearSsiCache');
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getEvents()->triggerEvent(
+                'clearEsiCache',
+                array(
+                    'Widget',
+                    $this->getNewsGlobalPlaceholderNames()
+                )
+            );
             $this->_objTeaser->initializeTeaserFrames($id);
             $this->_showTeaserFrames();
         } elseif (isset($_POST['cancel']) && isset($_GET['frameId']) && ($_GET['frameId'] == 0)) {
