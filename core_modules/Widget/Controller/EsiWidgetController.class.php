@@ -52,7 +52,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
      * @return string Name of this adapter
      */
     public function getName() {
-        return parent::getName();
+        return parent::getName() . 'Widget';
     }
 
     /**
