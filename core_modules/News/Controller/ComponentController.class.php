@@ -159,7 +159,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *
      * @param \Cx\Core\Core\Controller\Cx   $cx The instance of \Cx\Core\Core\Controller\Cx
      */
-    public function postInit()
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx)
     {
         $widgetController = $this->getComponent('Widget');
         // Get Headlines
