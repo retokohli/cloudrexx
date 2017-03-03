@@ -173,7 +173,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'HEADLINES' . $id . '_FILE'
             );
             $widget->setEsiVariable(
-                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER |
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_THEME |
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_CHANNEL
             );
             $widgetController->registerWidget(
                 $widget
@@ -191,6 +193,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
                 $widgetName
+            );
+            $widget->setEsiVariable(
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_THEME |
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_CHANNEL
             );
             if ($esiVariable) {
                 $widget->setEsiVariable(
@@ -214,7 +220,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'TEASERS_' . $teaserName
             );
             $widget->setEsiVariable(
-                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER |
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_THEME |
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_CHANNEL
             );
             $widgetController->registerWidget(
                 $widget
