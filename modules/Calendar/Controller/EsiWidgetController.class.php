@@ -126,8 +126,8 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      */
     public function getWidget($params)
     {
-        if (isset($params['get']) && isset($params['get']['targetId'])) {
-            $this->currentThemeId = $params['get']['targetId'];
+        if (isset($params['get']) && isset($params['get']['theme'])) {
+            $this->currentThemeId = $params['get']['theme'];
         }
         return parent::getWidget($params);
     }

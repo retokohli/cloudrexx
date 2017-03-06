@@ -116,7 +116,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * file config/postInitHooks.yml.
      * @param \Cx\Core\Core\Controller\Cx   $cx The instance of \Cx\Core\Core\Controller\Cx
      */
-    public function postInit()
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx)
     {
         // Get Calendar Events
         $widgetController = $this->getComponent('Widget');
@@ -125,6 +125,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
                 $widgetName
+            );
+            $widget->setEsiVariable(
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_THEME |
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_CHANNEL
             );
             $widgetController->registerWidget(
                 $widget
