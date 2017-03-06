@@ -333,9 +333,9 @@ class InitCMS
      * Finds all locales by a country, detected with GeoIp,
      * and then checks if one of them matches any of the browser languages
      * If no browser language matches, the first found locale is returned.
-     * If no locale is found, false is returned.
+     * If no locale is found, 0 is returned.
      *
-     * @return int|false The found locale's id, otherwise false
+     * @return int The found locale's id, otherwise 0
      */
     public function selectLocaleByGeoIp() {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
@@ -343,7 +343,7 @@ class InitCMS
         // get country code
         $country = $cx->getComponent('GeoIp')->getCountryCode(null);
         if (!$country || !$countryCode = $country['content']) {
-            return false;
+            return 0;
         }
 
         // find locales with found country code
@@ -353,7 +353,7 @@ class InitCMS
             array('country' => $countryCode)
         );
         if (!$localesByCountry) {
-            return false;
+            return 0;
         }
 
         // check if combination of country code and browser lang exists
@@ -378,7 +378,7 @@ class InitCMS
      * For full locales with language and country (e.g "en-US")
      * it strips it and tries to find a locale with the lang code only
      *
-     * @return bool|int The found locale's id, otherwise false
+     * @return int The found locale's id, otherwise 0
      */
     public function selectLocaleByHttp() {
         $arrAcceptedLanguages = $this->_getClientAcceptedLanguages();
@@ -408,7 +408,7 @@ class InitCMS
         if ($strippedMatch) {
             return $strippedMatch;
         }
-        return false;
+        return 0;
     }
 
 
