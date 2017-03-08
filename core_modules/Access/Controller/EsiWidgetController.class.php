@@ -174,12 +174,44 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      */
     public function getWidget($params)
     {
-        $widgetname = isset($params['get']['name'])
-            ? contrexx_input2raw($params['get']['name']) : '';
-        if ($widgetname == 'access_birthday_member_list') {
-            $dateTime = new \DateTime();
-            $dateTime->setTime(23, 59, 59);
-            $params['response']->setExpirationDate($dateTime);
+        if (!isset($params['get']['name'])) {
+            return parent::getWidget($params);
+        }
+
+        switch ($params['get']['name']) {
+            case 'access_birthday_member_list':
+                $dateTime = new \DateTime();
+                $dateTime->setTime(23, 59, 59);
+                $params['response']->setExpirationDate($dateTime);
+                break;
+            case 'access_currently_online_member_list':
+                // of the users who's last activity was within 3600s
+                // take the one with the lowest last_activity
+                $objFWUser = \FWUser::getFWUserObject();
+                $filter = array(
+                    'active'    => true,
+                    'last_activity' => array(
+                        '>' => (time()-3600)
+                    )
+                );
+                $objUser = $objFWUser->objUser->getUsers(
+                    $filter,
+                    null,
+                    array(
+                        'last_activity'    => 'asc',
+                    ),
+                    null,
+                    1
+                );
+                if (!$objUser) {
+                    break;
+                }
+
+                // and user_from_above.last_activity + 3600s = cache timeout
+                $cacheTimeout = $objUser->getLastActivityTime() + 3600;
+                $dateTime = new \DateTime('@' . $cacheTimeout);
+                $params['response']->setExpirationDate($dateTime);
+                break; 
         }
 
         return parent::getWidget($params);
