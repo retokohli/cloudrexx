@@ -119,6 +119,11 @@ class CacheLib
     protected $ssiProxy;
 
     /**
+     * @var \Cx\Core\Json\JsonData
+     */
+    protected $jsonData = null;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -516,9 +521,11 @@ class CacheLib
         unset($params['object']);
         unset($params['act']);
         $arguments = array('get' => contrexx_input2raw($params));
-        
-        $json = new \Cx\Core\Json\JsonData();
-        $response = $json->data($adapter, $method, $arguments);
+
+        if (!$this->jsonData) {
+            $this->jsonData = new \Cx\Core\Json\JsonData();
+        }
+        $response = $this->jsonData->data($adapter, $method, $arguments);
         if (
             !isset($response['status']) ||
             $response['status'] != 'success' ||
