@@ -1751,25 +1751,41 @@ class User extends User_Profile
             // only trigger postUpdate event in case an actual change on the user object has been flushed to the database
             if ($userChangeStatus) {
                 \Env::get('cx')->getEvents()->triggerEvent('model/postUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
+
+                // Clear cache
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                $cx->getEvents()->triggerEvent(
+                    'clearEsiCache',
+                    array(
+                        'Widget',
+                        array(
+                            'access_currently_online_member_list',
+                            'access_last_active_member_list',
+                            'access_latest_registered_member_list',
+                            'access_birthday_member_list',
+                        ),
+                    )
+                );
             }
         } else {
             \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
+
+            // Clear cache
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getEvents()->triggerEvent(
+                'clearEsiCache',
+                array(
+                    'Widget',
+                    array(
+                        'access_currently_online_member_list',
+                        'access_last_active_member_list',
+                        'access_latest_registered_member_list',
+                        'access_birthday_member_list',
+                    ),
+                )
+            );
         }
 
-        //Clear cache
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $cx->getEvents()->triggerEvent(
-            'clearEsiCache',
-            array(
-                'Widget',
-                array(
-                    'access_currently_online_member_list',
-                    'access_last_active_member_list',
-                    'access_latest_registered_member_list',
-                    'access_birthday_member_list'
-                )
-            )
-        );
 
         return true;
     }
