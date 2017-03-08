@@ -137,6 +137,8 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
             }
         }
         $widgetTemplate = new \Cx\Core\Html\Sigma();
+        \LinkGenerator::parseTemplate($widgetContent);
+        $this->cx->parseGlobalPlaceholders($widgetContent);
         $widgetTemplate->setTemplate($widgetContent);
         $this->getComponent('Widget')->parseWidgets(
             $widgetTemplate,
@@ -152,7 +154,6 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
         );
         $_GET = $backupGetParams;
         $content = $widgetTemplate->get();
-        \LinkGenerator::parseTemplate($content);
         $ls = new \LinkSanitizer(
             $this->cx,
             $this->cx->getWebsiteOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',

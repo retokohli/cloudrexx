@@ -106,6 +106,12 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             return;
         }
 
+        // Since FE does not yet support caching, we disable it when FE is active
+        if (isset($_COOKIE['fe_toolbar']) && $_COOKIE['fe_toolbar'] == 'true') {
+            $this->boolIsEnabled = false;
+            return;
+        }
+
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_MINIMAL) {
             $this->boolIsEnabled = false;
@@ -151,8 +157,26 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
     /**
      * Start caching functions. If this page is already cached, load it, otherwise create new file
      */
-    public function startContrexxCaching()
+    public function startContrexxCaching($cx)
     {
+        // TODO: $dynVars needs to be built dynamically (via event handler)
+        $this->dynVars = array(
+            'GEO' => array(
+                'country_code' => function() use ($cx) {
+                    return $cx->getComponent('GeoIp')->getCountryCode(array())['content'];
+                },
+            ),
+            'HTTP_COOKIE' => array(
+                'PHPSESSID' => function() {
+                    $sessId = 0;
+                    if (!empty($_COOKIE[session_name()])) {
+                        $sessId = $_COOKIE[session_name()];
+                    }
+                    return $sessId;
+                },
+            ),
+        );
+
         if (!$this->boolIsEnabled) {
             return null;
         }
@@ -161,7 +185,11 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $matches = array();
         foreach ($files as $file) {
             // sort out false-positives (header and ESI cache files)
-            if (!preg_match('/([0-9a-f]{32})_([0-9]+)?$/', $file, $matches)) {
+            $userQuery = '';
+            if (isset($_COOKIE[session_name()])) {
+                $userQuery = '(?:_u' . preg_quote($_COOKIE[session_name()]) . ')?';
+            }
+            if (!preg_match('/([0-9a-f]{32})_([0-9]+' . $userQuery . ')?$/', $file, $matches)) {
                 continue;
             }
             if (filemtime($file) > (time() - $this->intCachingTime)) {
@@ -199,26 +227,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      */
     public function endContrexxCaching($page, $endcode)
     {
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-
-        // TODO: $dynVars needs to be built dynamically
-        $this->dynVars = array(
-            'GEO' => array(
-                'country_code' => function() use ($cx) {
-                    return $cx->getComponent('GeoIp')->getCountryCode(array())['content'];
-                },
-            ),
-            'HTTP_COOKIE' => array(
-                'PHPSESSID' => function() {
-                    $sessId = 0;
-                    if (!empty($_COOKIE[session_name()])) {
-                        $sessId = $_COOKIE[session_name()];
-                    }
-                    return $sessId;
-                },
-            ),
-        );
-        
         // back-replace ESI variables that are url encoded
         foreach ($this->dynVars as $groupName=>$vars) {
             foreach ($vars as $varName=>$url) {
@@ -226,6 +234,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 $endcode = str_replace(urlencode($esiPlaceholder), $esiPlaceholder, $endcode);
             }
         }
+        
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         
         $this->exceptions = array(
             // never cache errors
@@ -329,6 +339,13 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $pageId = '';
         if ($page) {
             $pageId = $page->getId();
+            if ($page->isFrontendProtected()) {
+                // if no session, abort
+                if (empty($_COOKIE[session_name()])) {
+                    return;
+                }
+                $pageId .= '_u' . $_COOKIE[session_name()];
+            }
         }
         if (count($headers)) {
             $handleFile = $this->strCachePath . $this->strCacheFilename . '_h' . $pageId;

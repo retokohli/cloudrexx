@@ -561,6 +561,7 @@ class CacheLib
             'lang',
             'user',
             'theme',
+            'channel',
             'country',
             'currency',
             'targetComponent',
@@ -579,7 +580,10 @@ class CacheLib
     /**
      * Drops all cached ESI/SSI elements
      */
-    public function clearSsiCache() {
+    public function clearSsiCache($urlPattern = '') {
+        if (!empty($urlPattern)) {
+            $this->getSsiProxy()->clearCachePage($urlPattern, $this->getDomainsAndPorts());
+        }
         $this->getSsiProxy()->clearCache($this->getDomainsAndPorts());
     }
 
@@ -1004,13 +1008,18 @@ class CacheLib
      * @return array <fileNamePrefix>=><parsedValue> type array
      */
     public function getCacheFileNameSearchPartsFromUrl($url) {
-        $url = new \Cx\Lib\Net\Model\Entity\Url($url);
-        $params = $url->getParsedQuery();
+        try {
+            $url = new \Cx\Lib\Net\Model\Entity\Url($url);
+            $params = $url->getParsedQuery();
+        } catch (\Cx\Lib\Net\Model\Entity\UrlException $e) {
+            parse_str(substr($url, 1), $params);
+        }
         $searchParams = array(
             'p' => 'page',
             'l' => 'lang',
             'u' => 'user',
             't' => 'theme',
+            'ch' => 'channel',
             'g' => 'country',
             'c' => 'currency',
             'tc' => 'targetComponent',
@@ -1038,13 +1047,18 @@ class CacheLib
      */
     public function getCacheFileNameFromUrl($url, $withCacheInfoPart = true) {
         $cacheInfoParts = $this->getCacheFileNameSearchPartsFromUrl($url);
-        $url = new \Cx\Lib\Net\Model\Entity\Url($url);
-        $params = $url->getParsedQuery();
+        try {
+            $url = new \Cx\Lib\Net\Model\Entity\Url($url);
+            $params = $url->getParsedQuery();
+        } catch (\Cx\Lib\Net\Model\Entity\UrlException $e) {
+            parse_str(substr($url, 1), $params);
+        }
         $correctIndexOrder = array(
             'page',
             'lang',
             'user',
             'theme',
+            'channel',
             'country',
             'currency',
             'targetComponent',
@@ -1054,9 +1068,14 @@ class CacheLib
         foreach ($correctIndexOrder as $paramName) {
             unset($params[$paramName]);
         }
-        $url->setParsedQuery($params);
-        $url = $url->toString();
-        $fileName = md5($url);
+        $fileName = '';
+        if (is_object($url)) {
+            $url->setParsedQuery($params);
+            $url = $url->toString();
+            $fileName = md5($url);
+        } else {
+            $url = http_build_query($params);
+        }
         if ($withCacheInfoPart) {
             $fileName .= implode('', $cacheInfoParts);
         }
