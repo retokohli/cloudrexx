@@ -180,8 +180,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Wrapper to drop all cached ESI/SSI elements
      */
-    public function clearSsiCache() {
-        $this->cache->clearSsiCache();
+    public function clearSsiCache($urlPattern = '') {
+        $this->cache->clearSsiCache($urlPattern);
     }
 
     /**

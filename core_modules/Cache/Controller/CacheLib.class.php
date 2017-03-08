@@ -579,7 +579,10 @@ class CacheLib
     /**
      * Drops all cached ESI/SSI elements
      */
-    public function clearSsiCache() {
+    public function clearSsiCache($urlPattern = '') {
+        if (!empty($urlPattern)) {
+            $this->getSsiProxy()->clearCachePage($urlPattern, $this->getDomainsAndPorts());
+        }
         $this->getSsiProxy()->clearCache($this->getDomainsAndPorts());
     }
 
