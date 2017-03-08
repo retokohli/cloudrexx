@@ -1007,8 +1007,12 @@ class CacheLib
      * @return array <fileNamePrefix>=><parsedValue> type array
      */
     public function getCacheFileNameSearchPartsFromUrl($url) {
-        $url = new \Cx\Lib\Net\Model\Entity\Url($url);
-        $params = $url->getParsedQuery();
+        try {
+            $url = new \Cx\Lib\Net\Model\Entity\Url($url);
+            $params = $url->getParsedQuery();
+        } catch (\Cx\Lib\Net\Model\Entity\UrlException $e) {
+            parse_str(substr($url, 1), $params);
+        }
         $searchParams = array(
             'p' => 'page',
             'l' => 'lang',
@@ -1041,8 +1045,12 @@ class CacheLib
      */
     public function getCacheFileNameFromUrl($url, $withCacheInfoPart = true) {
         $cacheInfoParts = $this->getCacheFileNameSearchPartsFromUrl($url);
-        $url = new \Cx\Lib\Net\Model\Entity\Url($url);
-        $params = $url->getParsedQuery();
+        try {
+            $url = new \Cx\Lib\Net\Model\Entity\Url($url);
+            $params = $url->getParsedQuery();
+        } catch (\Cx\Lib\Net\Model\Entity\UrlException $e) {
+            parse_str(substr($url, 1), $params);
+        }
         $correctIndexOrder = array(
             'page',
             'lang',
@@ -1057,9 +1065,14 @@ class CacheLib
         foreach ($correctIndexOrder as $paramName) {
             unset($params[$paramName]);
         }
-        $url->setParsedQuery($params);
-        $url = $url->toString();
-        $fileName = md5($url);
+        $fileName = '';
+        if (is_object($url)) {
+            $url->setParsedQuery($params);
+            $url = $url->toString();
+            $fileName = md5($url);
+        } else {
+            $url = http_build_query($params);
+        }
         if ($withCacheInfoPart) {
             $fileName .= implode('', $cacheInfoParts);
         }
