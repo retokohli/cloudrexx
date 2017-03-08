@@ -293,6 +293,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param string $endcode Current response
      */
     public function writeCacheFileForRequest($page, $headers, $endcode) {
+        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
         $this->cache->writeCacheFileForRequest($page, $headers, $endcode);
     }
 

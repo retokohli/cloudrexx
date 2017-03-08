@@ -185,7 +185,11 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $matches = array();
         foreach ($files as $file) {
             // sort out false-positives (header and ESI cache files)
-            if (!preg_match('/([0-9a-f]{32})_([0-9]+)?$/', $file, $matches)) {
+            $userQuery = '';
+            if (isset($_COOKIE[session_name()])) {
+                $userQuery = '(?:_u' . preg_quote($_COOKIE[session_name()]) . ')?';
+            }
+            if (!preg_match('/([0-9a-f]{32})_([0-9]+' . $userQuery . ')?$/', $file, $matches)) {
                 continue;
             }
             if (filemtime($file) > (time() - $this->intCachingTime)) {
@@ -335,6 +339,13 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $pageId = '';
         if ($page) {
             $pageId = $page->getId();
+            if ($page->isFrontendProtected()) {
+                // if no session, abort
+                if (empty($_COOKIE[session_name()])) {
+                    return;
+                }
+                $pageId .= '_u' . $_COOKIE[session_name()];
+            }
         }
         if (count($headers)) {
             $handleFile = $this->strCachePath . $this->strCacheFilename . '_h' . $pageId;
