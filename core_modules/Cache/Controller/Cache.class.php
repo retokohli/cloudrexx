@@ -106,6 +106,12 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             return;
         }
 
+        // Since FE does not yet support caching, we disable it when FE is active
+        if (isset($_COOKIE['fe_toolbar']) && $_COOKIE['fe_toolbar'] == 'true') {
+            $this->boolIsEnabled = false;
+            return;
+        }
+
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_MINIMAL) {
             $this->boolIsEnabled = false;
