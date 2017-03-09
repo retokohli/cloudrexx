@@ -79,11 +79,11 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
 
         $category   = null;
         $catMatches = null;
+        $_LANGID    = \FWLanguage::getLangIdByIso639_1($locale);
         $_ARRAYLANG = array_merge(
             $_ARRAYLANG,
             \Env::get('init')->loadLanguageData('Calendar')
         );
-        $_LANGID         = \FWLanguage::getLangIdByIso639_1($locale);
         $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
         $theme           = $themeRepository->findById($this->currentThemeId);
         if (!$theme) {
