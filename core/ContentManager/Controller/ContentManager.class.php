@@ -449,10 +449,22 @@ class ContentManager extends \Module
 
     protected function getLangOptions()
     {
+        // @Todo: get those from cookie
+        $lastUsed = array(9, 3, 2);
         $output = '';
         $language=\FWLanguage::getActiveFrontendLanguages();
         if (count($language)>1) {
             $output .='<select id="language" class="chzn-select">';
+            if (isset($lastUsed)) {
+                // move last used to top of select
+                for (end($lastUsed); key($lastUsed)!==null; prev($lastUsed)) {
+                    $new = $language[current($lastUsed)];
+                    if (isset($new)) {
+                        unset($language[current($lastUsed)]);
+                        array_unshift($language, $new);
+                    }
+                }
+            }
             foreach ($language as $lang) {
                 $selected = $lang['id'] == FRONTEND_LANG_ID ? ' selected="selected"' : '';
                 $output .= '<option value="' . \FWLanguage::getLanguageCodeById($lang['id']) . '"' . $selected . '>' . $lang['name'] . '</option>';
