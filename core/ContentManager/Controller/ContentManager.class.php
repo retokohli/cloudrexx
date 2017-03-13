@@ -215,6 +215,7 @@ class ContentManager extends \Module
         $objCx->setVariable('TXT_CORE_CM_VIEW', $_CORELANG['TXT_CORE_CM_VIEW'], 'contentmanager/lang');
         $objCx->setVariable('TXT_CORE_CM_ACTIONS', $_CORELANG['TXT_CORE_CM_ACTIONS'], 'contentmanager/lang');
         $objCx->setVariable('TXT_CORE_CM_TRANSLATIONS', $_CORELANG['TXT_CORE_CM_TRANSLATIONS'], 'contentmanager/lang');
+        $objCx->setVariable('TXT_CORE_CM_LOCALE_DOESNT_EXIST', $_CORELANG['TXT_CORE_CM_LOCALE_DOESNT_EXIST'], 'contentmanager/lang');
         $objCx->setVariable('TXT_CORE_CM_VALIDATION_FAIL', $_CORELANG['TXT_CORE_CM_VALIDATION_FAIL'], 'contentmanager/lang');
         $objCx->setVariable('TXT_CORE_CM_HOME_FAIL', $_CORELANG['TXT_CORE_CM_HOME_FAIL'], 'contentmanager/lang');
 
