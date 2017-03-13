@@ -122,15 +122,32 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
             if (!$template->blockExists($this->getName())) {
                 return;
             }
-            $this->internalParse($template, $response, $targetComponent, $targetEntity, $targetId);
+            // get widget template
+            $widgetHtml = $template->getUnparsedBlock($this->getName());
+            \LinkGenerator::parseTemplate($widgetHtml);
+            $widgetTemplate = new \Cx\Core_Modules\Widget\Model\Entity\Sigma();
+            $widgetTemplate->setTemplate($widgetHtml);
+
+            // parse this widget
+            $this->internalParse($widgetTemplate, $response, $targetComponent, $targetEntity, $targetId);
+
             // recurse:
             $excludedWidgets[] = $this->getName();
             $this->getSystemComponentController()->parseWidgets(
-                $template,
+                $widgetTemplate,
                 $targetComponent,
                 $targetEntity,
                 $targetId,
                 $excludedWidgets
+            );
+
+            // parse blocktemplate in main template
+            $parsedContent = $widgetTemplate->get();
+            $template->replaceBlock(
+                $this->getName(),
+                $parsedContent,
+                false,
+                true
             );
         }
     }
