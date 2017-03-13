@@ -126,9 +126,65 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      */
     public function getWidget($params)
     {
+        if (!isset($params['get']['name'])) {
+            return parent::getWidget($params);
+        }
+
         if (isset($params['get']) && isset($params['get']['theme'])) {
             $this->currentThemeId = $params['get']['theme'];
         }
+
+        $matches = null;
+        if (
+            !preg_match('/^EVENTS(\d{1,2}|)_FILE/', $params['get']['name'], $matches) ||
+            MODULE_INDEX >= 2 ||
+            !\Cx\Core\Setting\Controller\Setting::getValue('calendarheadlines', 'Config')
+        ) {
+            return parent::getWidget($params);
+        }
+
+        // get next event
+        $calendarLib = new \Cx\Modules\Calendar\Controller\CalendarLibrary('.');
+        $calendarLib->getSettings();
+
+        $startDate = new \DateTime();
+        //if ($calendarLib->arrSettings['frontendPastEvents'] == 0) {
+            // get next ending event starting from today 0:01
+            // the event's day on midnight is our expiration date
+            $startDate->setTime(0, 0, 0);
+        /*} else {
+            // get next ending event starting NOW
+            // the event's ending time is our expiration date
+            $offsetSeconds = abs($calendarLib->getInternDateTimeFromUser()->getOffset());
+            $startDate->sub(new \DateInterval('PT' . $offsetSeconds . 'S'));
+        }*/
+        $eventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager(
+            $startDate,
+            null,
+            null,
+            null,
+            true,
+            false,
+            true,
+            0,
+            1
+        );
+        $eventManager->getEventList();
+        $cacheExpirationDate = null;
+        if (isset($eventManager->eventList[0])) {
+            $cacheExpirationDate = $eventManager->eventList[0]->endDate;
+            $cacheExpirationDate->setTime(23, 59, 59);
+        }
+        if (!$cacheExpirationDate) {
+            $cacheExpirationDate = new \DateTime();
+            $additionalYears = intval(
+                $calendarLib->arrSettings['maxSeriesEndsYear']
+            ) + 1;
+            $cacheExpirationDate->modify(
+                '+' . $additionalYears . ' years'
+            );
+        }
+        $params['response']->setExpirationDate($cacheExpirationDate);
         return parent::getWidget($params);
     }
 }
