@@ -2361,6 +2361,8 @@ class User extends User_Profile
     public function registerSuccessfulLogin()
     {
         global $objDatabase;
+        
+        $this->updateLastAuthTime();
 
         return $objDatabase->Execute("
             UPDATE `".DBPREFIX."access_users`
