@@ -333,7 +333,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 cx.jQuery(document).ready(function() {
                     if(cx.jQuery(".chzn-select").length > 0) {
                         cx.jQuery(".chzn-select").chosen({
-                            disable_search: true
+                            disable_search: false,
                         });
                     }
                 });'

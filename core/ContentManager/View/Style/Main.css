@@ -109,6 +109,10 @@ h1{ font-size: 20px }
     visibility: hidden;
 }
 
+#site-language .chosen-results li:nth-child(n+10) {
+    display: none !important;
+}
+
 #content-manager.edit_view .chzn-container {
     position: relative;
     float: left;
