@@ -2978,6 +2978,19 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     }
     cx.jQuery("#node_" + page.node).children(".jstree-wrapper").addClass("active");
     cx.jQuery('html, body').animate({scrollTop:0}, 'slow');
+
+    // store page's locale in last used locales
+    var lastUsedLocales = '';
+    if (cx.jQuery.cookie('lastUsedLocales').length) {
+        lastUsedLocales = cx.jQuery.cookie('lastUsedLocales');
+    }
+    lastUsedLocales = lastUsedLocales.split(",");
+    lastUsedLocales.unshift(page.lang);
+    lastUsedLocales = lastUsedLocales.filter(function(el, index, arr) {
+        return index === arr.indexOf(el);
+    });
+    lastUsedLocales = lastUsedLocales.join(",");
+    cx.jQuery.cookie('lastUsedLocales', lastUsedLocales);
 };
 
 cx.cm.setPageTarget = function(pageTarget, pageTargetPath) {
