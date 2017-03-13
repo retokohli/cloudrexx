@@ -105,6 +105,7 @@ class CalendarHeadlines extends CalendarLibrary
     {
         global $_CONFIG;
 
+        \LinkGenerator::parseTemplate($this->pageContent);
         $this->_objTpl->setTemplate($this->pageContent,true,true);
 
         if($this->arrSettings['headlinesStatus'] == 1) {
