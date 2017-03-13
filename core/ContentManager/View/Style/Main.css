@@ -261,7 +261,7 @@ h1{ font-size: 20px }
 
 #site-tree .translations .translation {
     float: left;
-    width: 21px;
+    width: auto;
     height: 18px;
     background: #9dcb3b;
     margin: 6px 7px 6px 0;
@@ -271,6 +271,7 @@ h1{ font-size: 20px }
     font-size: 10px;
     color: #ffffff;
     opacity: 0.8;
+    padding: 0 5px;
 }
 
 #site-tree .translations .translation:hover,
