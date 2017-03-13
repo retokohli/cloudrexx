@@ -1423,21 +1423,49 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     nodeIds[lang] = node.attr("id").substr(5);
                 }
             });
-            cx.jQuery.each(cx.jQuery("select.chzn-select option"), function(index, el) {
-                var lang = cx.jQuery(el).val();
-                var langEl = cx.jQuery("<div class=\"translation " + lang + "\" />");
-                langEl.text(lang);
-                langEl.click(function() {
-                    var page = cx.cm.getPageStatus(nodeIds[lang], lang);
-                    if (page.existing) {
-                        cx.cm.loadPage(page.id, null, null, "content");
-                    } else {
-                        cx.cm.setCurrentLang(lang);
-                        cx.cm.loadPage(undefined, nodeIds[lang], null, "content");
-                    }
+            // show dropdown for more than 4 locales
+            var languages = cx.jQuery("select.chzn-select option");
+            if (languages.size() <= 4) { // tags
+                cx.jQuery.each(languages, function(index, el) {
+                    var lang = cx.jQuery(el).val();
+                    var langEl = cx.jQuery("<div class=\"translation " + lang + "\" />");
+                    langEl.text(lang);
+                    langEl.click(function() {
+                        var page = cx.cm.getPageStatus(nodeIds[lang], lang);
+                        if (page.existing) {
+                            cx.cm.loadPage(page.id, null, null, "content");
+                        } else {
+                            cx.cm.setCurrentLang(lang);
+                            cx.cm.loadPage(undefined, nodeIds[lang], null, "content");
+                        }
+                    });
+                    translations.append(langEl);
                 });
-                translations.append(langEl);
-            });
+            } else { // dropdown
+                translations.addClass("dropdown");
+                translations
+                    .append('<div class="label">' + cx.variables.get('TXT_CORE_CM_TRANSLATIONS', 'contentmanager/lang') + '</div><div class="arrow" /></div>')
+                    .append("<div class=\"translations-expanded\" style=\"display: none;\"><ul></ul></div>")
+                    .click(function() {
+                        cx.jQuery(this).children(".translations-expanded").toggle();
+                    });
+                var translationDropdown = translations.find(".translations-expanded ul");
+                cx.jQuery.each(languages, function(index, el) {
+                    var lang = cx.jQuery(el).val();
+                    var langEl = cx.jQuery("<li class=\"translation " + lang + "\" />");
+                    langEl.text(lang);
+                    langEl.click(function() {
+                        var page = cx.cm.getPageStatus(nodeIds[lang], lang);
+                        if (page.existing) {
+                            cx.cm.loadPage(page.id, null, null, "content");
+                        } else {
+                            cx.cm.setCurrentLang(lang);
+                            cx.cm.loadPage(undefined, nodeIds[lang], null, "content");
+                        }
+                    });
+                    translationDropdown.append(langEl);
+                });
+            }
             var actions = cx.jQuery('<div class="actions"><div class="label">' + cx.variables.get('TXT_CORE_CM_ACTIONS', 'contentmanager/lang') + '</div><div class="arrow" /></div>')
                             .append("<div class=\"actions-expanded\" style=\"display: none;\"><ul></ul></div>")
                             .click(function() {
@@ -1447,7 +1475,10 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             wrapper.prepend(translations);
             cx.jQuery(node).before(wrapper);
         });
-        if (cx.jQuery(".translations").first().children(".translation").length <= 1) {
+        if (
+            !cx.jQuery(".translations").hasClass("dropdown") &&
+            cx.jQuery(".translations").first().children(".translation").length <= 1
+        ) {
             cx.jQuery(".translations").hide();
             cx.jQuery(".translation").html("");
         }
@@ -1509,6 +1540,17 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             var pageId = cx.jQuery(this).parent().parent().children("a." + cx.cm.getCurrentLang()).attr("id");
             var path = "../" + cx.cm.getCurrentLang() + cx.cm.getPagePath(pageId) + "?pagePreview=1";
             cx.jQuery(this).attr("href", path);
+        });
+
+        cx.jQuery('.translations-expanded').live('mouseleave', function(event) {
+            if (!cx.jQuery(event.target).is('li.translation-item') &&
+                cx.jQuery('.translations-expanded').length > 0
+            ) {
+                cx.jQuery('.translations-expanded').each(function() {
+                    cx.jQuery(this).parent().parent().children().css('z-index', 'auto');
+                    cx.jQuery(this).hide();
+                });
+            }
         });
 
         cx.jQuery('.jstree li, .actions-expanded').live('mouseleave', function(event) {
@@ -1981,7 +2023,7 @@ cx.cm.updatePagesIcons = function(args) {
 cx.cm.updateTranslationIcons = function(args) {
     var node = cx.jQuery("#node_" + args.page.nodeId);
     var page = node.children("a." + args.page.lang);
-    var translationIcon = page.siblings(".jstree-wrapper").children(".translations").children(".translation." + args.page.lang);
+    var translationIcon = page.siblings(".jstree-wrapper").children(".translations").find(".translation." + args.page.lang);
 
     // reset classes
     translationIcon.attr("class", "translation " + args.page.lang);

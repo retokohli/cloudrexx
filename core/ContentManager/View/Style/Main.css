@@ -327,22 +327,30 @@ h1{ font-size: 20px }
 
 #site-tree .actions {
     left: 77.6%;
+}
+
+#site-tree .actions, #site-tree .translations.dropdown {
     background: url(../Media/ActionPlus.png) no-repeat left center;
     padding: 0 0 0 16px;
 }
 
 #site-tree .actions:hover,
 #site-tree .actions:focus,
-#site-tree .actions:active {
+#site-tree .actions:active,
+#site-tree .translations.dropdown:hover,
+#site-tree .translations.dropdown:focus,
+#site-tree .translations.dropdown:active {
     cursor: pointer;
 }
 
-#site-tree .actions .label {
+#site-tree .actions .label,
+#site-tree .translations.dropdown .label {
     float: left;
     width: auto;
 }
 
-#site-tree .actions .arrow {
+#site-tree .actions .arrow,
+#site-tree .translations.dropdown .arrow {
     float: left;
     width: 13px;
     height: 100%;
@@ -372,7 +380,8 @@ h1{ font-size: 20px }
     display: none;
 }
 
-#site-tree .actions-expanded {
+#site-tree .actions-expanded,
+#site-tree .translations-expanded {
     display: block;
     position: absolute;
     top: 23px;
@@ -385,10 +394,19 @@ h1{ font-size: 20px }
     right: 3px;
 }
 
+#site-tree .translations-expanded,
+#site-tree .translations-expanded ul {
+    width: 100%;
+}
+
 #site-tree .actions-expanded ul {
+    padding: 12px 15px;
+}
+
+#site-tree .actions-expanded ul,
+#site-tree .translations-expanded ul {
     float: left;
     background: #ffffff;
-    padding: 12px 15px;
     border:  1px solid #d3d3d3;
     margin: 0;
     -moz-box-shadow: 2px 4px 5px rgba(153,153,153,0.5),-2px 4px 5px rgba(153,153,153,0.5);
@@ -398,19 +416,40 @@ h1{ font-size: 20px }
     -ms-filter: progid:DXImageTransform.Microsoft.Shadow(Strength=3,Direction=135,Color='#999999');
 }
 
-#site-tree .actions-expanded ul li {
+#site-tree .actions-expanded ul li,
+#site-tree .translations-expanded ul li {
     float: left;
     clear: both;
     line-height: 16px;
-    padding: 0 0 0 21px;
     background-repeat: no-repeat;
     background-position: 2px center;
     margin: 3px 0 3px 0;
     display: block !important;
 }
 
+#site-tree .actions-expanded ul li {
+    padding: 0 0 0 21px;
+}
+
+#site-tree .translations-expanded ul li.translation {
+    width: 100%;
+    height: auto;
+    margin: 0;
+    box-sizing: border-box;
+    padding: 5px;
+    border-bottom: 1px solid #ffffff;
+}
+
+#site-tree .translations-expanded ul li:last-child.translation {
+    border-bottom: none;
+}
+
 #site-tree .actions-expanded ul li::-moz-selection {
     background: none;
+}
+
+#site-tree .translations-expanded ul li {
+    background-image: none;
 }
 
 #site-tree .actions-expanded ul li.new {
