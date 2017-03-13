@@ -154,6 +154,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
         );
         $_GET = $backupGetParams;
         $content = $widgetTemplate->get();
+        \LinkGenerator::parseTemplate($content);
         $ls = new \LinkSanitizer(
             $this->cx,
             $this->cx->getWebsiteOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
