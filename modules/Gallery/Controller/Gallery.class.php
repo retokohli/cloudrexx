@@ -747,46 +747,6 @@ class Gallery
 
 
     /**
-     * Returns the name of the currently visible top level gallery
-     * @return  string          The gallery name, or '' if not applicable
-     */
-    function getTopGalleryName()
-    {
-        global $objDatabase;
-
-        if (isset($_GET['cid'])) {
-            $intCatId = intval($_GET['cid']);
-
-            $running = true;
-            while ($running) {
-                $query = "SELECT pid FROM ".DBPREFIX."module_gallery_categories ".
-                    "WHERE id=$intCatId";
-                $objResult = $objDatabase->Execute($query);
-                if ($objResult) {
-                    if ($objResult->fields['pid'] != 0) {
-                        $intCatId = $objResult->fields['pid'];
-                    } else {
-                        $running = false;
-                    }
-                }
-            }
-
-            $query = "SELECT value FROM ".DBPREFIX."module_gallery_language ".
-                "WHERE gallery_id=$intCatId AND lang_id=$this->langId ".
-                "AND name='name' LIMIT 1";
-            $objResult = $objDatabase->Execute($query);
-            if ($objResult) {
-                $galleryName = $objResult->fields['value'];
-                return $galleryName;
-            }
-        }
-        // category is not set
-        // we're not inside a subgallery nor showing a picture yet.
-        return '';
-    }
-
-
-    /**
      * Shows the Overview of categories
      *
      * @global  ADONewConnection
@@ -943,10 +903,30 @@ class Gallery
             'GALLERY_JAVASCRIPT'    =>    $this->getJavascript()
             ));
 
+        // name of requested category
+        $objResult = $objDatabase->Execute(
+            "SELECT value FROM ".DBPREFIX."module_gallery_language ".
+            "WHERE gallery_id=$intParentId AND lang_id=$this->langId AND name='name'");
+        $name = $objResult->fields['value'];
+
+        // description of requested category
         $objResult = $objDatabase->Execute(
             "SELECT value FROM ".DBPREFIX."module_gallery_language ".
             "WHERE gallery_id=$intParentId AND lang_id=$this->langId AND name='desc'");
-        $strCategoryComment = nl2br($objResult->fields['value']);
+        $description = $objResult->fields['value'];
+        $strCategoryComment = nl2br($description);
+
+        if ($description) {
+            $metaDescription = $description;
+        } else {
+            $metaDescription = $title;
+        }
+
+        $page = \Cx\Core\Core\Controller\Cx::instanciate()->getPage();
+        $page->setTitle($title);
+        $page->setContentTitle($title);
+        $page->setMetaTitle($title);
+        $page->setMetadesc($metaDescription);
 
         $objResult = $objDatabase->Execute(
             "SELECT comment,voting FROM ".DBPREFIX."module_gallery_categories ".
