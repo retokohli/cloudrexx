@@ -160,9 +160,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 $frontend = !in_array('Backend', $cmd);
 
                 // load the language file's locale
-                if (isset($_POST) && isset($_POST['localeId'])) {
+                if (isset($_GET) && isset($_GET['localeId'])) {
                     // use locale selected by user
-                    $localeId = $_POST['localeId'];
+                    $localeId = $_GET['localeId'];
                 } elseif (
                     $userLocaleId = \FWUser::getFWUserObject()->objUser->getFrontendLanguage()
                 ) {
