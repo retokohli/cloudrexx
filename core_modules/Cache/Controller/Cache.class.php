@@ -178,7 +178,9 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             'QUERY_STRING' => function () {
                 $parameters = array();
                 parse_str($_SERVER['QUERY_STRING'], $parameters);
-                unset($parameters['__cap']);
+                if (isset($parameters['__cap'])) {
+                    unset($parameters['__cap']);
+                }
                 $queryString = http_build_query($parameters);
                 if (!empty($queryString)) {
                     return '?' . $queryString;
