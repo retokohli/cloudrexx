@@ -213,6 +213,21 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                                 header($value);
                                 continue;
                             }
+                            // If expire header is set, check if the cache
+                            // is still valid
+                            if ($name == 'Expires') {
+                                $expireDate = new \DateTime($value);
+                                if ($expireDate < new \DateTime()) {
+                                    // cache is no longer valid
+                                    $headerFile = new \Cx\Lib\FileSystem\File(
+                                        $headerFile
+                                    );
+                                    $headerFile->delete();
+                                    $file = new \Cx\Lib\FileSystem\File($file);
+                                    $file->delete();
+                                    return;
+                                }
+                            }
                             header($name . ': ' . $value);
                         }
                     }
@@ -224,8 +239,10 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 echo $this->internalEsiParsing($endcode, true);
                 exit;
             } else {
-                $File = new \Cx\Lib\FileSystem\File($file);
-                $File->delete();
+                $headerFile = new \Cx\Lib\FileSystem\File($headerFile);
+                $headerFile->delete();
+                $file = new \Cx\Lib\FileSystem\File($file);
+                $file->delete();
             }
         }
     }
