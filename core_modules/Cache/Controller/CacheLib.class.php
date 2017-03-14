@@ -516,6 +516,9 @@ class CacheLib
         unset($params['object']);
         unset($params['act']);
         $arguments = array('get' => contrexx_input2raw($params));
+        if ($response) {
+            $arguments['response'] = $response;
+        }
         
         $json = new \Cx\Core\Json\JsonData();
         $response = $json->data($adapter, $method, $arguments);
