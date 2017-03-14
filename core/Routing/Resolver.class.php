@@ -1015,6 +1015,10 @@ class Resolver {
      * @return array key=>value style array
      */
     public function getHeaders() {
+        $response = \Cx\Core\Core\Controller\Cx::instanciate()->getResponse();
+        if ($response->getExpirationDate()) {
+            $this->headers['Expires'] = $response->getExpirationDate()->format('r');
+        }
         return $this->headers;
     }
 }
