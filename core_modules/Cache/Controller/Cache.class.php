@@ -451,7 +451,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         do {
             // Random include tags
             $htmlCode = preg_replace_callback(
-                '#<!-- ESI_RANDOM_START -->[\s\S]*<esi:assign name="content_list">\s*\[([^\]]+)\]\s*</esi:assign>[\s\S]*<!-- ESI_RANDOM_END -->#',
+                '#<!-- ESI_RANDOM_START -->[\s\S]*<esi:assign name="content_list">\s*\[([^\]]+)\]\s*</esi:assign>[\s\S]*<!-- ESI_RANDOM_END -->#U',
                 function($matches) {
                     $uris = explode('\',\'', substr($matches[1], 1, -1));
                     $randomNumber = rand(0, count($uris) - 1);
