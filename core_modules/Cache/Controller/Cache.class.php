@@ -176,10 +176,13 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 },
             ),
             'QUERY_STRING' => function () {
-                $queryString = $_SERVER['QUERY_STRING'];
-                $pos1 = strpos($queryString, '&');
-                $pos2 = strpos($queryString, '&', $pos1 + strlen('&')) + 1;
-                return '?' . substr($queryString, $pos2);
+                $parameters = array();
+                parse_str($_SERVER['QUERY_STRING'], $parameters);
+                unset($parameters['__cap']);
+                $queryString = http_build_query($parameters);
+                if (!empty($queryString)) {
+                    return '?' . $queryString;
+                }
             },
         );
 
