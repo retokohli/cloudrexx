@@ -630,7 +630,7 @@ class CalendarEventManager extends CalendarLibrary
      * 
      * @return null
      */
-    function showEvent($objTpl, $eventId, $eventStartDate) {   
+    function showEvent($objTpl, $eventId, $eventStartDate, &$start = null) {
         global $objInit, $_ARRAYLANG, $_LANGID, $_CONFIG;
         
         $this->getSettings();
@@ -706,6 +706,7 @@ class CalendarEventManager extends CalendarLibrary
                 $freeSeats = $_ARRAYLANG['TXT_CALENDAR_NOT_SPECIFIED'];
             }
 
+            $start = $objEvent->startDate;
             $objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_ID'                => $objEvent->id,
                 $this->moduleLangVar.'_EVENT_START'             => $this->format2userDateTime($startDate),
@@ -1157,7 +1158,7 @@ class CalendarEventManager extends CalendarLibrary
      * 
      * @return null
      */
-    function showEventList($objTpl, $type='') {
+    function showEventList($objTpl, $type='', &$firstEndDate = null) {
         global $objInit, $_ARRAYLANG, $_LANGID;
         
         $this->getFrontendLanguages();
@@ -1254,6 +1255,9 @@ class CalendarEventManager extends CalendarLibrary
 
                 $startDate = $objEvent->startDate;
                 $endDate   = $objEvent->endDate;
+                if (!$firstEndDate || $endDate < $firstEndDate) {
+                    $firstEndDate = $endDate;
+                }
 
                 if ($objEvent->numSubscriber) {
                     $freeSeats = \FWValidator::isEmpty($objEvent->getFreePlaces()) ? '0 ('.$_ARRAYLANG['TXT_CALENDAR_SAVE_IN_WAITLIST'].')' : $objEvent->getFreePlaces();

@@ -195,20 +195,33 @@ class Calendar extends CalendarLibrary
             $cmd = 'category';
         }
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         switch ($cmd) {
             case 'detail':
                 if( $id!= null && $_GET['date'] != null) {
-                    self::showEvent($page);
+                    // cache timeout: this event's start date (registrations!)
+                    $start = null;
+                    self::showEvent($page, $start);
+                    $response = $cx->getResponse();
+                    $response->setExpireDate($start);
                 } else {
-                    \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName));
+                    \Cx\Core\Csrf\Controller\Csrf::redirect(
+                        \Cx\Core\Routing\Url::fromModuleAndCmd(
+                            $this->moduleName
+                        )
+                    );
                     exit();
                 }
                 break;
             case 'register':
             case 'sign':
+                // cache timeout: no timeout
                 self::showRegistrationForm();
                 break;
             case 'boxes':
+                // cache timeout: end of day
+                $response = $cx->getResponse();
+                $response->setExpireDate(new \DateTime('today midnight'));
                 if (isset($_GET['act']) && $_GET['act'] == "list") {
                     self::boxesEventList();
                 } else {
@@ -216,28 +229,43 @@ class Calendar extends CalendarLibrary
                 }
                 break;
             case 'category':
-                self::showCategoryView();
+                // cache timeout: next expiring event end (of this category)
+                $firstEndDate = null;
+                self::showCategoryView($firstEndDate);
+                $response = $cx->getResponse();
+                $response->setExpireDate($firstEndDate);
                 break;
             case 'add':
+                // cache timeout: no timeout
                 $this->checkAccess('add_event');
                 self::modifyEvent();
                 break;
             case 'edit':
+                // cache timeout: no timeout
                 $this->checkAccess('edit_event');
                 self::modifyEvent(intval($id));
                 break;
             case 'my_events':
+                // cache timeout: next expiring event end (of my events)
                 $this->checkAccess('my_events');
-                self::myEvents();
+                $firstEndDate = null;
+                self::myEvents($firstEndDate);
+                $response = $cx->getResponse();
+                $response->setExpireDate($firstEndDate);
                 break;
             case 'success':
+                // cache timeout: no timeout
                 self::showSuccessPage();
                 break;
             case 'list':
             case 'eventlist':
             case 'archive':
             default:
-                self::overview();
+                // cache timeout: next expiring event end (of all events)
+                $firstEndDate = null;
+                self::overview($firstEndDate);
+                $response = $cx->getResponse();
+                $response->setExpireDate($firstEndDate);
                 break;
         }
 
@@ -419,7 +447,7 @@ class Calendar extends CalendarLibrary
      *
      * @return null
      */
-    function overview()
+    function overview(&$firstEndDate = null)
     {
         global $_ARRAYLANG, $_CORELANG;
 
@@ -485,7 +513,11 @@ EOF;
             ));
         }
 
-        $this->objEventManager->showEventList($this->_objTpl);
+        $this->objEventManager->showEventList(
+            $this->_objTpl,
+            '',
+            $firstEndDate
+        );
     }
 
     /**
@@ -493,7 +525,7 @@ EOF;
      *
      * @return null
      */
-    function myEvents()
+    function myEvents(&$firstEndDate = null)
     {
         global $_ARRAYLANG, $_CORELANG;
 
@@ -514,7 +546,11 @@ EOF;
             ));
         }
 
-        $this->objEventManager->showEventList($this->_objTpl);
+        $this->objEventManager->showEventList(
+            $this->_objTpl,
+            '',
+            $firstEndDate
+        );
     }
 
     /**
@@ -895,7 +931,7 @@ UPLOADER;
      *
      * @return null
      */
-    function showEvent($page)
+    function showEvent($page, &$start = null)
     {
         global $_ARRAYLANG, $_CORELANG, $_LANGID;
 
@@ -954,7 +990,12 @@ UPLOADER;
             'TXT_'.$this->moduleLangVar.'_REGISTRATION_INFO' =>  $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_INFO']
         ));
 
-        $this->objEventManager->showEvent($this->_objTpl, intval($_GET['id']), intval($_GET['date']));
+        $this->objEventManager->showEvent(
+            $this->_objTpl,
+            intval($_GET['id']),
+            intval($_GET['date']),
+            $start
+        );
     }
 
     /**
@@ -1119,7 +1160,7 @@ UPLOADER;
      *
      * @return null
      */
-    function showCategoryView()
+    function showCategoryView(&$firstEndDate = null)
     {
         global $_ARRAYLANG, $_CORELANG;
 
@@ -1159,7 +1200,11 @@ UPLOADER;
                 $this->moduleLangVar.'_CATEGORY_NAME' =>  $objCategory->name,
             ));
 
-            $this->objEventManager->showEventList($this->_objTpl);
+            $this->objEventManager->showEventList(
+                $this->_objTpl,
+                '',
+                $firstEndDate
+            );
 
             $this->_objTpl->parse('categoryList');
         } else {
@@ -1167,7 +1212,11 @@ UPLOADER;
                 $objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($this->startDate,$this->endDate,$objCategory->id,$this->searchTerm,true,$this->needAuth,true,$this->startPos,$this->numEvents);
                 $objEventManager->getEventList();
 
-                $objEventManager->showEventList($this->_objTpl);
+                $objEventManager->showEventList(
+                    $this->_objTpl,
+                    '',
+                    $firstEndDate
+                );
 
                 $this->_objTpl->setGlobalVariable(array(
                     $this->moduleLangVar.'_CATEGORY_NAME' =>  $objCategory->name,
