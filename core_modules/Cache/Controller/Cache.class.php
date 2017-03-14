@@ -106,6 +106,12 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             return;
         }
 
+        // Since FE does not yet support caching, we disable it when FE is active
+        if (isset($_COOKIE['fe_toolbar']) && $_COOKIE['fe_toolbar'] == 'true') {
+            $this->boolIsEnabled = false;
+            return;
+        }
+
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_MINIMAL) {
             $this->boolIsEnabled = false;
@@ -151,57 +157,9 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
     /**
      * Start caching functions. If this page is already cached, load it, otherwise create new file
      */
-    public function startContrexxCaching()
+    public function startContrexxCaching($cx)
     {
-        if (!$this->boolIsEnabled) {
-            return null;
-        }
-        $files = glob($this->strCachePath . $this->strCacheFilename . "*");
-
-        $matches = array();
-        foreach ($files as $file) {
-            // sort out false-positives (header and ESI cache files)
-            if (!preg_match('/([0-9a-f]{32})_([0-9]+)?$/', $file, $matches)) {
-                continue;
-            }
-            if (filemtime($file) > (time() - $this->intCachingTime)) {
-                // load headers
-                $headerFile = $this->strCachePath . $matches[1] . '_h' . $matches[2];
-                if (file_exists($headerFile)) {
-                    $headers = unserialize(file_get_contents($headerFile));
-                    if (is_array($headers)) {
-                        foreach ($headers as $name=>$value) {
-                            if (is_numeric($name)) {
-                                // This allows headers without a ':'
-                                header($value);
-                                continue;
-                            }
-                            header($name . ': ' . $value);
-                        }
-                    }
-                }
-
-                //file was cached before, load it
-                $endcode = file_get_contents($file);
-
-                echo $this->internalEsiParsing($endcode, true);
-                exit;
-            } else {
-                $File = new \Cx\Lib\FileSystem\File($file);
-                $File->delete();
-            }
-        }
-    }
-
-
-    /**
-     * End caching functions. Check for a sessionId: if not set, write pagecontent to a file.
-     */
-    public function endContrexxCaching($page, $endcode)
-    {
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-
-        // TODO: $dynVars needs to be built dynamically
+        // TODO: $dynVars needs to be built dynamically (via event handler)
         $this->dynVars = array(
             'GEO' => array(
                 'country_code' => function() use ($cx) {
@@ -218,7 +176,74 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 },
             ),
         );
-        
+
+        if (!$this->boolIsEnabled) {
+            return null;
+        }
+        $files = glob($this->strCachePath . $this->strCacheFilename . "*");
+
+        $matches = array();
+        foreach ($files as $file) {
+            // sort out false-positives (header and ESI cache files)
+            $userQuery = '';
+            if (isset($_COOKIE[session_name()])) {
+                $userQuery = '(?:_u' . preg_quote($_COOKIE[session_name()]) . ')?';
+            }
+            if (!preg_match('/([0-9a-f]{32})_([0-9]+' . $userQuery . ')?$/', $file, $matches)) {
+                continue;
+            }
+            if (filemtime($file) > (time() - $this->intCachingTime)) {
+                // load headers
+                $headerFile = $this->strCachePath . $matches[1] . '_h' . $matches[2];
+                if (file_exists($headerFile)) {
+                    $headers = unserialize(file_get_contents($headerFile));
+                    if (is_array($headers)) {
+                        foreach ($headers as $name=>$value) {
+                            if (is_numeric($name)) {
+                                // This allows headers without a ':'
+                                header($value);
+                                continue;
+                            }
+                            // If expire header is set, check if the cache
+                            // is still valid
+                            if ($name == 'Expires') {
+                                $expireDate = new \DateTime($value);
+                                if ($expireDate < new \DateTime()) {
+                                    // cache is no longer valid
+                                    $headerFile = new \Cx\Lib\FileSystem\File(
+                                        $headerFile
+                                    );
+                                    $headerFile->delete();
+                                    $file = new \Cx\Lib\FileSystem\File($file);
+                                    $file->delete();
+                                    return;
+                                }
+                            }
+                            header($name . ': ' . $value);
+                        }
+                    }
+                }
+
+                //file was cached before, load it
+                $endcode = file_get_contents($file);
+
+                echo $this->internalEsiParsing($endcode, true);
+                exit;
+            } else {
+                $headerFile = new \Cx\Lib\FileSystem\File($headerFile);
+                $headerFile->delete();
+                $file = new \Cx\Lib\FileSystem\File($file);
+                $file->delete();
+            }
+        }
+    }
+
+
+    /**
+     * End caching functions. Check for a sessionId: if not set, write pagecontent to a file.
+     */
+    public function endContrexxCaching($page, $endcode)
+    {
         // back-replace ESI variables that are url encoded
         foreach ($this->dynVars as $groupName=>$vars) {
             foreach ($vars as $varName=>$url) {
@@ -226,6 +251,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 $endcode = str_replace(urlencode($esiPlaceholder), $esiPlaceholder, $endcode);
             }
         }
+        
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         
         $this->exceptions = array(
             // never cache errors
@@ -329,6 +356,13 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $pageId = '';
         if ($page) {
             $pageId = $page->getId();
+            if ($page->isFrontendProtected()) {
+                // if no session, abort
+                if (empty($_COOKIE[session_name()])) {
+                    return;
+                }
+                $pageId .= '_u' . $_COOKIE[session_name()];
+            }
         }
         if (count($headers)) {
             $handleFile = $this->strCachePath . $this->strCacheFilename . '_h' . $pageId;

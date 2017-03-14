@@ -160,7 +160,7 @@ class EsiWidget extends Widget {
      */
     public function getJsonAdapterName() {
         if (empty($this->jsonAdapterName)) {
-            return $this->getRegisteringComponent()->getName();
+            return $this->getRegisteringComponent()->getName() . 'Widget';
         }
         return $this->jsonAdapterName;
     }

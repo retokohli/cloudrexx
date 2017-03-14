@@ -206,7 +206,19 @@ class FWUser extends User_Setting
     function logout()
     {
 
-         $this->logoutAndDestroySession();
+        $this->logoutAndDestroySession();
+        //Clear cache
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getEvents()->triggerEvent(
+            'clearEsiCache',
+            array(
+                'Widget',
+                array(
+                    'access_currently_online_member_list',
+                    'access_last_active_member_list'
+                )
+            )
+        );
 
         if ($this->backendMode) {
             $pathOffset = ASCMS_PATH_OFFSET;
@@ -258,10 +270,11 @@ class FWUser extends User_Setting
      */
     public static function hostFromUri($uri)
     {
+        $scheme = null;
+        $host = null;
+        $path = null;
         extract(parse_url($uri));
 
-// TODO: $scheme is not defined
-// TODO: $host is not defined
         return str_ireplace('www.', '', $scheme.'://'.$host);
     }
 
@@ -272,6 +285,10 @@ class FWUser extends User_Setting
      */
     public static function getRawUrL($url, $baseUrl)
     {
+        $scheme = null;
+        $host = null;
+        $path = null;
+
         /* return if already absolute URL */
         if (parse_url($url, PHP_URL_SCHEME) != '') return $url;
 
@@ -289,7 +306,6 @@ class FWUser extends User_Setting
         if ($url[0] == '/') $path = '';
 
         /* dirty absolute URL // with port number if exists */
-// TODO: $host is not defined
         if (parse_url($baseUrl, PHP_URL_PORT) != ''){
             $abs = "$host:".parse_url($baseUrl, PHP_URL_PORT)."$path/$url";
         }else{
@@ -299,7 +315,6 @@ class FWUser extends User_Setting
         $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#');
         for($n=1; $n>0; $abs=preg_replace($re, '/', $abs, -1, $n)) {}
 
-// TODO: $scheme is not defined
         /* absolute URL is ready! */
         return $scheme.'://'.$abs;
 
@@ -361,7 +376,6 @@ class FWUser extends User_Setting
         $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_THEMES_PATH);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->setTemplate($template[0]);
-        self::parseLoggedInOutBlocks($objTemplate);
         return $objTemplate->get();
     }
 

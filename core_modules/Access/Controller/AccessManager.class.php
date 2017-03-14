@@ -1280,6 +1280,20 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         $this->notifyUserAboutAccountStatusChange($objUser);
                     }
                     self::$arrStatusMsg['ok'][] = sprintf($objUser->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_USER_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_ACCESS_USER_DEACTIVATED_SUCCESSFULLY'], $objUser->getUsername());
+                    //Clear cache
+                    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                    $cx->getEvents()->triggerEvent(
+                        'clearEsiCache',
+                        array(
+                            'Widget',
+                            array(
+                                'access_currently_online_member_list',
+                                'access_last_active_member_list',
+                                'access_latest_registered_member_list',
+                                'access_birthday_member_list'
+                            )
+                        )
+                    );
                 } else {
                     self::$arrStatusMsg['error'] = array_merge(self::$arrStatusMsg['error'], $objUser->getErrorMsg());
                 }
@@ -1307,12 +1321,14 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         $arrIds = !empty($_REQUEST['id']) ? is_array($_REQUEST['id']) ? $_REQUEST['id'] : array($_REQUEST['id']) : array();
         $objFWUser = \FWUser::getFWUserObject();
 
+        $clearCache = false;
         if (count($arrIds) > 0) {
             foreach ($arrIds as $id) {
                 $objUser = $objFWUser->objUser->getUser($id);
                 if ($objUser) {
                     if ($objUser->delete()) {
                         self::$arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_ACCESS_USER_SUCCESSFULLY_DELETED'], contrexx_raw2xhtml($objUser->getUsername()));
+                        $clearCache = true;
                     } else {
                         self::$arrStatusMsg['error'] = array_merge(self::$arrStatusMsg['error'], $objUser->getErrorMsg());
                     }
@@ -1321,6 +1337,24 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 }
             }
         }
+
+        //Clear cache
+        if ($clearCache) {
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getEvents()->triggerEvent(
+                'clearEsiCache',
+                array(
+                    'Widget',
+                    array(
+                        'access_currently_online_member_list',
+                        'access_last_active_member_list',
+                        'access_latest_registered_member_list',
+                        'access_birthday_member_list'
+                    )
+                )
+            );
+        }
+
         return $this->userList();
     }
 
@@ -2293,7 +2327,20 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                             self::$arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_SET_DEFAULT_EMAIL_ACCESS_FAILED'];
                         }
                     }
-
+                    //Clear cache
+                    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                    $cx->getEvents()->triggerEvent(
+                        'clearEsiCache',
+                        array(
+                            'Widget',
+                            array(
+                                'access_currently_online_member_list',
+                                'access_last_active_member_list',
+                                'access_latest_registered_member_list',
+                                'access_birthday_member_list'
+                            )
+                        )
+                    );
                 } else {
                     self::$arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_CONFIG_FAILED_SAVED'];
                     self::$arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_TRY_TO_REPEAT_OPERATION'];
