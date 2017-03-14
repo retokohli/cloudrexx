@@ -1175,6 +1175,19 @@ class LanguageManager
                                         WHERE id=".$id);
             }
             $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+            //clear cache
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getEvents()->triggerEvent(
+                'clearEsiCache',
+                array(
+                    'Widget',
+                    array(
+                        'LANGUAGE_NAVBAR', 
+                        'LANGUAGE_NAVBAR_SHORT',
+                        'ACTIVE_LANGUAGE_NAME'
+                    )
+                )
+            );
             \FWLanguage::init();
             return true;
         }

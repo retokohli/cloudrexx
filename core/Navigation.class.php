@@ -178,12 +178,14 @@ class Navigation
 
 
     /**
-     * getFrontendLangNavigation()
-     * @param \Cx\Core\Routing\Url $pageUrl
-     * @param boolean $langNameContraction
+     * Get frontend language navigation
+     *
+     * @param Cx\Core\ContentManager\Model\Entity\Page $page                page object
+     * @param boolean                                  $langNameContraction If true, display short lang name
+     *
      * @return string
      */
-    public function getFrontendLangNavigation($page, $pageUrl, $langNameContraction = false)
+    public function getFrontendLangNavigation($page, $langNameContraction = false)
     {
         $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
         $node = $page->getNode();
@@ -192,14 +194,15 @@ class Navigation
         foreach ($activeLanguages as $langId => $langData) {
             $targetPage = $node->getPage($langId);
             if ($targetPage && $targetPage->isActive()) {
-                $url = clone $pageUrl;
-                $url->setLangDir($langData['lang']);
-                $url->setPath(substr($targetPage->getPath(), 1));
-
                 $name  = contrexx_raw2xhtml($langNameContraction ? strtoupper($langData['lang']) : $langData['name']);
-                $class = $langId == FRONTEND_LANG_ID ? $langData['lang'].' active' : $langData['lang'];
-
-                $langNavigation[] = '<a class="'.$class.'" href="'.$url.'" title="'.$name.'">'.$name.'</a>';
+                $class = ($langId == FRONTEND_LANG_ID) ? $langData['lang'].' active' : $langData['lang'];
+                $nodePlaceholder = \Cx\Core\Routing\NodePlaceholder::fromPage($targetPage);
+                $langNavigation[] = \Html::getLink(
+                    $nodePlaceholder . '$(QUERY_STRING)',
+                    $name,
+                    null,
+                    "class='" . $class ."' title='". $name ."'"
+                );
             }
         }
 
