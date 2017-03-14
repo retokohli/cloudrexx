@@ -175,6 +175,12 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                     return $sessId;
                 },
             ),
+            'QUERY_STRING' => function () {
+                $queryString = $_SERVER['QUERY_STRING'];
+                $pos1 = strpos($queryString, '&');
+                $pos2 = strpos($queryString, '&', $pos1 + strlen('&')) + 1;
+                return '?' . substr($queryString, $pos2);
+            },
         );
 
         if (!$this->boolIsEnabled) {
@@ -372,14 +378,23 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         // Replace include tags
         $settings = $this->getSettings();
         // apply ESI dynamic variables
-        foreach ($this->dynVars as $groupName=>$vars) {
-            foreach ($vars as $varName=>$callback) {
-                $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
+        foreach ($this->dynVars as $groupName => $var) {
+            if (is_callable($var)) {
+                $esiPlaceholder = '$(' . $groupName . ')';
                 if (strpos($htmlCode, $esiPlaceholder) === false) {
                     continue;
                 }
-                $varValue = $callback();
+                $varValue = $var();
                 $htmlCode = str_replace($esiPlaceholder, $varValue, $htmlCode);
+            } else {
+                foreach ($var as $varName => $callback) {
+                    $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
+                    if (strpos($htmlCode, $esiPlaceholder) === false) {
+                        continue;
+                    }
+                    $varValue = $callback();
+                    $htmlCode = str_replace($esiPlaceholder, $varValue, $htmlCode);
+                }
             }
         }
         $replaceEsiFn = function($matches) use (&$cxNotYetInitialized, $settings) {
