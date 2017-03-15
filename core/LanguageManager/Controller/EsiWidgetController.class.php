@@ -74,15 +74,14 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         }
 
         if ($name == 'ACTIVE_LANGUAGE_NAME') {
-            $template->setVariable($name, \Env::get('init')->getFrontendLangName());
+            $template->setVariable($name, $locale);
             return;
         }
 
         $matches = null;
         if (preg_match('/^LANG_SELECTED_([A-Z]{2})$/', $name, $matches)) {
-            $activeLang = \Env::get('init')->getFrontendLangName();
             $selected   = '';
-            if (strtolower($matches[1]) === $activeLang) {
+            if (strtolower($matches[1]) === $locale) {
                 $selected = 'selected';
             }
             $template->setVariable($name, $selected);
