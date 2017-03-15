@@ -237,10 +237,9 @@ class Navigation
 
         $node       = $page->getNode();
         $targetPage = $node->getPage($langId);
-        $link       = Cx\Core\Routing\Url::fromModuleAndCmd('Error', '', $langId);
-        if ($targetPage && $targetPage->isActive()) {
-            $link = Cx\Core\Routing\NodePlaceholder::fromPage($targetPage) . '$(QUERY_STRING)';
+        if (!$targetPage || !$targetPage->isActive()) {
+            return \Cx\Core\Routing\Url::fromModuleAndCmd('Error', '', $langId);
         }
-        return $link;
+        return \Cx\Core\Routing\NodePlaceholder::fromPage($targetPage) . '$(QUERY_STRING)';
     }
 }
