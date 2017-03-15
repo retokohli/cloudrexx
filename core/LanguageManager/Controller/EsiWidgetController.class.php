@@ -78,6 +78,17 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             return;
         }
 
+        $matches = null;
+        if (preg_match('/^LANG_SELECTED_([A-Z]{2})$/', $name, $matches)) {
+            $activeLang = \Env::get('init')->getFrontendLangName();
+            $selected   = '';
+            if (strtolower($matches[1]) === $activeLang) {
+                $selected = 'selected';
+            }
+            $template->setVariable($name, $selected);
+            return;
+        }
+
         $em       = $this->cx->getDb()->getEntityManager();
         $pageRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
         $page     = $pageRepo->find($this->currentPageId);
@@ -93,6 +104,16 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
 
         if ($name === 'LANGUAGE_NAVBAR_SHORT') {
             $template->setVariable($name, $navbar->getFrontendLangNavigation($page, true));
+            return;
+        }
+
+        $langMatches = null;
+        if (preg_match('/^LANG_CHANGE_([A-Z]{2})$/', $name, $langMatches)) {
+            $langId = \FWLanguage::getLangIdByIso639_1($langMatches[1]);
+            $template->setVariable(
+                $name,
+                $navbar->getLanguageLinkById($page, $langId)
+            );
         }
     }
 

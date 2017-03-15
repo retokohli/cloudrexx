@@ -2020,7 +2020,6 @@ namespace Cx\Core\Core\Controller {
             // set global template variables
             $boolShop = \Cx\Modules\Shop\Controller\Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
-            $objNavbar->setLanguagePlaceholders($this->resolvedPage, $this->request->getUrl(), $this->template);
             $metarobots = $this->resolvedPage->getMetarobots();
             $this->template->setVariable(array(
                 'TITLE'                          => contrexx_raw2xhtml($this->resolvedPage->getTitle()),

@@ -350,12 +350,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function postInit(\Cx\Core\Core\Controller\Cx $cx)
     {
         $widgetController = $this->getComponent('Widget');
+        $langManager      = new LanguageManager();
+        $widgetNames      = array(
+            'CHARSET',
+            'LANGUAGE_NAVBAR',
+            'LANGUAGE_NAVBAR_SHORT',
+            'ACTIVE_LANGUAGE_NAME'
+        );
+
         foreach (
-            array(
-                'CHARSET',
-                'LANGUAGE_NAVBAR',
-                'LANGUAGE_NAVBAR_SHORT',
-                'ACTIVE_LANGUAGE_NAME'
+            array_merge(
+                $widgetNames,
+                $langManager->getLanguagePlaceholderNames()
             ) as $widgetName
         ) {
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
@@ -371,5 +377,4 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             );
         }
     }
-
 }
