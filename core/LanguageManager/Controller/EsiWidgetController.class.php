@@ -68,6 +68,16 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      */
     public function parseWidget($name, $template, $locale)
     {
+        if ($name === 'CHARSET') {
+            $template->setVariable($name, \Env::get('init')->getFrontendLangCharset());
+            return;
+        }
+
+        if ($name == 'ACTIVE_LANGUAGE_NAME') {
+            $template->setVariable($name, \Env::get('init')->getFrontendLangName());
+            return;
+        }
+
         $em       = $this->cx->getDb()->getEntityManager();
         $pageRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
         $page     = $pageRepo->find($this->currentPageId);
@@ -76,11 +86,6 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         }
 
         $navbar = new \Navigation($page->getId(), $page);
-        if ($name === 'CHARSET') {
-            $template->setVariable($name,\Env::get('init')->getFrontendLangCharset());
-            return;
-        }
-
         if ($name === 'LANGUAGE_NAVBAR') {
             $template->setVariable($name, $navbar->getFrontendLangNavigation($page));
             return;
@@ -88,11 +93,6 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
 
         if ($name === 'LANGUAGE_NAVBAR_SHORT') {
             $template->setVariable($name, $navbar->getFrontendLangNavigation($page, true));
-            return;
-        }
-
-        if ($name == 'ACTIVE_LANGUAGE_NAME') {
-            $template->setVariable($name, \Env::get('init')->getFrontendLangName());
         }
     }
 

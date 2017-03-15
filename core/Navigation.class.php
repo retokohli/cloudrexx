@@ -193,17 +193,26 @@ class Navigation
         $langNavigation = array();
         foreach ($activeLanguages as $langId => $langData) {
             $targetPage = $node->getPage($langId);
-            if ($targetPage && $targetPage->isActive()) {
-                $name  = contrexx_raw2xhtml($langNameContraction ? strtoupper($langData['lang']) : $langData['name']);
-                $class = ($langId == FRONTEND_LANG_ID) ? $langData['lang'].' active' : $langData['lang'];
-                $nodePlaceholder = \Cx\Core\Routing\NodePlaceholder::fromPage($targetPage);
-                $langNavigation[] = \Html::getLink(
-                    $nodePlaceholder . '$(QUERY_STRING)',
-                    $name,
-                    null,
-                    "class='" . $class ."' title='". $name ."'"
-                );
+            if (!$targetPage || !$targetPage->isActive()) {
+                continue;
             }
+            $name = $langData['name'];
+            if ($langNameContraction) {
+                $name = strtoupper($langData['lang']);
+            }
+
+            $class = $langData['lang'];
+            if ($langId == FRONTEND_LANG_ID) {
+                $class = $langData['lang'] . ' active';
+            }
+
+            $nodePlaceholder  = \Cx\Core\Routing\NodePlaceholder::fromPage($targetPage);
+            $langNavigation[] = \Html::getLink(
+                $nodePlaceholder . '$(QUERY_STRING)',
+                contrexx_raw2xhtml($name),
+                null,
+                'class="' . $class . '" title="' . contrexx_raw2xhtml($name) . '" '
+            );
         }
 
         return implode('', $langNavigation);
