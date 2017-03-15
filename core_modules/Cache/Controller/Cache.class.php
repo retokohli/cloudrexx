@@ -404,7 +404,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
         // cleanup any existing files. This is important in order to
         // differ userbased and non-userbased cache when reading from cache
-        $this->cleanupCacheFiles($this->strCacheFilename, $pageId);
+        $this->cleanupCacheFiles($this->strCacheFilename, $pageId, $userbased);
 
         if (count($headers)) {
             $handleFile = $this->strCachePath . $this->strCacheFilename . '_h' . $pageId . $user;
@@ -421,15 +421,21 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      * Removes all page cache files for a request
      * @param string $filename Request hash (as in $this->strCacheFilename
      * @param int $pageId Page ID
+     * @param boolean $userbased True if the current request is userbased, false otherwise
      */
-    protected function cleanupCacheFiles($filename, $pageId) {
-        $cacheFileSuffixes = array(
-            '', // no session, not userbased
-            '_u', // session, not userbased
-            '_u0', // no session, userbased
-        );
-        if (isset($_COOKIE[session_name()])) {
-            $cacheFileSuffixes[] = '_u' . $_COOKIE[session_name()]; // session, userbased
+    protected function cleanupCacheFiles($filename, $pageId, $userbased) {
+        if ($userbased) {
+            $cacheFileSuffixes = array(
+                '', // no session, not userbased
+                '_u', // session, not userbased
+            );
+        } else {
+            $cacheFileSuffixes = array(
+                '_u0', // no session, userbased
+            );
+            if (isset($_COOKIE[session_name()])) {
+                $cacheFileSuffixes[] = '_u' . $_COOKIE[session_name()]; // session, userbased
+            }
         }
         $cacheFileNames = array();
         foreach ($cacheFileSuffixes as $cacheFileSuffix) {
