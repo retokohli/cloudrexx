@@ -1706,7 +1706,6 @@ RSS2JSCODE;
         return $this->_teaser;
     }
 
-
     /**
      * Get a list of all news messages sorted by year and month.
      *

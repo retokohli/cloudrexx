@@ -1354,6 +1354,7 @@ class NewsLibrary
         if (!empty($categories)) {
            $categoryFilter .= ' AND nc.category_id IN ('. implode(', ', contrexx_input2int($categories)) .')';
         }
+
         if ($langId === null) {
             $langId = FRONTEND_LANG_ID;
         }
@@ -1535,6 +1536,7 @@ class NewsLibrary
     public function parseNextAndPreviousLinks(\Cx\Core\Html\Sigma $objTpl)
     {
         global $objDatabase, $_ARRAYLANG;
+
         $parentBlock    = 'news_details_previous_next_links';
         $previousLink   = 'news_details_previous_link';
         $nextLink       = 'news_details_next_link';
@@ -2452,6 +2454,7 @@ class NewsLibrary
             ORDER BY `viewed_count` DESC LIMIT 1';
         return $objDatabase->GetRow($query);
     }
+
     /**
      * Retruns most used tag details
      *
@@ -2477,6 +2480,7 @@ class NewsLibrary
             'maxUsedCount' => $maxUsedTag['maxUsedCount']
         );
     }
+
     /**
      * Register the JS code for the given input field ID
      *
