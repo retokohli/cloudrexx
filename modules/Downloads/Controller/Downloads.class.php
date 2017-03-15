@@ -68,22 +68,27 @@ class Downloads extends DownloadsLibrary
     * Constructor
     *
     * Calls the parent constructor and creates a local template object
-    * @param $strPageContent string The content of the page as string.
+    * @param mixed $pageContent The content of the page as string or
+    *                           \Cx\Core\Html\Sigma template
     * @param $queryParams array The constructor accepts an array parameter $queryParams, which will
     *                           override the request parameters cmd and/or category, if given
     * override the request parameters cmd and/or category
     */
-    function __construct($strPageContent, array $queryParams = array())
+    function __construct($pageContent, array $queryParams = array())
     {
         parent::__construct();
 
         $objFWUser = \FWUser::getFWUserObject();
         $this->userId = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
         $this->parseURLModifiers($queryParams);
-        $this->objTemplate = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->objTemplate);
-        $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-        $this->objTemplate->setTemplate($strPageContent);
+        if ($pageContent instanceof \Cx\Core\Html\Sigma) {
+            $this->objTemplate = $pageContent;
+        } else {
+            $this->objTemplate = new \Cx\Core\Html\Sigma('.');
+            $this->objTemplate->setTemplate($pageContent);
+            \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->objTemplate);
+            $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+        }
     }
 
     private function parseURLModifiers($queryParams)

@@ -162,6 +162,9 @@ class Group
             LEFT JOIN `'.DBPREFIX.'module_downloads_rel_group_category` AS tblR ON tblR.`group_id` = tblG.`id`
             WHERE tblG.`id` = '.$this->id) !== false
         ) {
+            //clear Esi Cache
+            $downloadsLibrary = new DownloadsLibrary();
+            $downloadsLibrary->clearEsiCache();
             return true;
         } else {
             $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_GROUP_DELETE_FAILED'], '<strong>'.htmlentities($this->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'</strong>');
@@ -774,6 +777,9 @@ class Group
             return false;
         }
 
+        //clear Esi Cache
+        $downloadsLibrary = new DownloadsLibrary();
+        $downloadsLibrary->clearEsiCache();
         return true;
     }
 
@@ -921,5 +927,19 @@ class Group
     public function getErrorMsg()
     {
         return $this->error_msg;
+    }
+
+    /**
+     * Get Groups placeholders
+     *
+     * @return array
+     */
+    public function getGroupsPlaceholders()
+    {
+        return preg_filter(
+            '/^/',
+            'DOWNLOADS_GROUP_',
+            array_keys($this->arrLoadedGroups)
+        );
     }
 }

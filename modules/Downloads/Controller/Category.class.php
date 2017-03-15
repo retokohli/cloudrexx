@@ -277,6 +277,9 @@ class Category
             LEFT JOIN `'.DBPREFIX.'module_downloads_rel_download_category` AS tblR ON tblR.`category_id` = tblC.`id`
             WHERE tblC.`id` = '.$this->id) !== false
         ) {
+            //clear Esi Cache
+            $downloadsLibrary = new DownloadsLibrary();
+            $downloadsLibrary->clearEsiCache();
             return true;
         } else {
             $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_DELETE_FAILED'], '<strong>'.htmlentities($this->name, ENT_QUOTES, CONTREXX_CHARSET).'</strong>');
@@ -1061,6 +1064,9 @@ class Category
         $objFWUser = \FWUser::getFWUserObject();
         $objFWUser->objUser->getDynamicPermissionIds(true);
 
+        //clear Esi Cache
+        $downloadsLibrary = new DownloadsLibrary();
+        $downloadsLibrary->clearEsiCache();
         return true;
     }
 
@@ -1464,6 +1470,9 @@ class Category
             $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_ORDER_SET_FAILED'], implode(', ', $arrFailedDownloads));
             return false;
         } else {
+            //clear Esi Cache
+            $downloadsLibrary = new DownloadsLibrary();
+            $downloadsLibrary->clearEsiCache();
             return true;
         }
     }
@@ -1493,4 +1502,17 @@ class Category
         return $this->manage_files_access_id;
     }
 
+    /**
+     * Get Categories template blocks
+     *
+     * @return array
+     */
+    public function getCategoriesBlocks()
+    {
+         return preg_replace(
+            '/\d+/',
+            'downloads_category_$0_list',
+            array_keys($this->arrLoadedCategories)
+        );
+    }
 }

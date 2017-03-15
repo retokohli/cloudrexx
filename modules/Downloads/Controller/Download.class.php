@@ -372,6 +372,9 @@ class Download {
             LEFT JOIN `'.DBPREFIX.'module_downloads_rel_download_download` AS tblR ON (tblR.`id1` = tblD.`id` OR tblR.`id2` = tblD.`id`)
             WHERE tblD.`id` = '.$this->id) !== false
         ) {
+            //clear Esi Cache
+            $downloadsLibrary = new DownloadsLibrary();
+            $downloadsLibrary->clearEsiCache();
             return true;
         } else {
             $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_DELETE_FAILED'], htmlentities($this->name, ENT_QUOTES, CONTREXX_CHARSET));
@@ -1233,6 +1236,9 @@ class Download {
         $objFWUser = \FWUser::getFWUserObject();
         $objFWUser->objUser->getDynamicPermissionIds(true);
 
+        //clear Esi Cache
+        $downloadsLibrary = new DownloadsLibrary();
+        $downloadsLibrary->clearEsiCache();
         return true;
     }
 

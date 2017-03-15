@@ -1218,6 +1218,8 @@ class DownloadsManager extends DownloadsLibrary
         $objCategory->setDownloads(array_diff($arrDownloadIds, $arrUnlinkDownloadIds));
 
         if ($objCategory->storeDownloadAssociations()) {
+            //clear Esi Cache
+            $this->clearEsiCache();
             return true;
         } else {
             $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objCategory->getErrorMsg());
@@ -1249,6 +1251,8 @@ class DownloadsManager extends DownloadsLibrary
             $objCategory->setDownloads(isset($_POST['downloads_category_associated_downloads']) ? array_map('intval', $_POST['downloads_category_associated_downloads']) : array());
 
             if ($objCategory->storeDownloadAssociations()) {
+                //clear Esi Cache
+                $this->clearEsiCache();
                 return true;
             } else {
                 $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objCategory->getErrorMsg());
