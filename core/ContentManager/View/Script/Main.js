@@ -3269,6 +3269,9 @@ cx.cm.updateLocaleSelect = function() {
         for (var i = lastUsedLocales.length - 1; i >= 0; --i) {
             // place option on top of select
             cx.jQuery(".chzn-select").prepend(cx.jQuery(".chzn-select option[value="+ lastUsedLocales[i] + "]"));
+            cx.jQuery(".translations-expanded ul").each(function() {
+               jQuery(this).prepend(cx.jQuery(this).find("li." + lastUsedLocales[i]));
+            });
         }
         cx.jQuery(".chzn-select").trigger("chosen:updated");
     }
