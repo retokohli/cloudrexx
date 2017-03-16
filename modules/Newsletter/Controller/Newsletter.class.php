@@ -81,14 +81,8 @@ class Newsletter extends NewsletterLib
         }
 
         switch($_REQUEST['cmd']) {
-            case 'profile':
-                $this->_profile();
-                break;
             case 'unsubscribe':
                 $this->_unsubscribe();
-                break;
-             case 'subscribe':
-                $this->_profile();
                 break;
             case 'confirm':
                 $this->_confirm();
@@ -96,6 +90,8 @@ class Newsletter extends NewsletterLib
             case 'displayInBrowser':
                 $this->displayInBrowser();
                 break;
+            case 'subscribe':
+            case 'profile':
             default:
                 $this->_profile();
                 break;
