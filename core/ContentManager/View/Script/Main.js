@@ -455,6 +455,7 @@ cx.ready(function() {
         });
     });
     cx.jQuery(".chzn-select").trigger('change');
+    cx.cm.updateLocaleSelect();
 
     cx.jQuery('div.actions-expanded li.action-item').live('click', function(event) {
         var classes =  cx.jQuery(event.target).attr("class").split(/\s+/);
@@ -2981,16 +2982,25 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
 
     // store page's locale in last used locales
     var lastUsedLocales = '';
-    if (cx.jQuery.cookie('lastUsedLocales').length) {
+    if (!!cx.jQuery.cookie('lastUsedLocales')) {
         lastUsedLocales = cx.jQuery.cookie('lastUsedLocales');
     }
-    lastUsedLocales = lastUsedLocales.split(",");
+    if (lastUsedLocales.length) {
+        lastUsedLocales = lastUsedLocales.split(",");
+    } else {
+        lastUsedLocales = [];
+    }
+    // push used lang to begin of array
     lastUsedLocales.unshift(page.lang);
+    // drop dublicate entries
     lastUsedLocales = lastUsedLocales.filter(function(el, index, arr) {
         return index === arr.indexOf(el);
     });
+    // convert to string and store last used locales in cookie
     lastUsedLocales = lastUsedLocales.join(",");
     cx.jQuery.cookie('lastUsedLocales', lastUsedLocales);
+
+    cx.cm.updateLocaleSelect();
 };
 
 cx.cm.setPageTarget = function(pageTarget, pageTargetPath) {
@@ -3245,5 +3255,21 @@ cx.cm.setSelectedMetaimage = function (data) {
     if (data.type == 'file') {
         var url = data.data[0].datainfo;
         document.getElementById('page_metaimage').value = url.filepath;
+    }
+}
+
+/**
+ * Places the last used locales (stored in cookie) on top of the select
+ */
+cx.cm.updateLocaleSelect = function() {
+    // place last used locales on top of select
+    if (!!cx.jQuery.cookie("lastUsedLocales")) {
+        var lastUsedLocales = cx.jQuery.cookie("lastUsedLocales").split(",");
+        // loop over last used locales backwards
+        for (var i = lastUsedLocales.length - 1; i >= 0; --i) {
+            // place option on top of select
+            cx.jQuery(".chzn-select").prepend(cx.jQuery(".chzn-select option[value="+ lastUsedLocales[i] + "]"));
+        }
+        cx.jQuery(".chzn-select").trigger("chosen:updated");
     }
 }
