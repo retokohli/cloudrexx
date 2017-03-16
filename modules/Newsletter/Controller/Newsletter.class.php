@@ -235,6 +235,7 @@ class Newsletter extends NewsletterLib
 
         $isNewsletterRecipient = false;
         $isAccessRecipient = false;
+        $isAuthenticatedUser = false;
         $recipientId = 0;
         $recipientEmail = '';
         $recipientUri = '';
@@ -296,6 +297,12 @@ class Newsletter extends NewsletterLib
             }
         }
 
+        // Check if the user is verified.
+        // It the user is verified, we won't have to use the CAPTCHA protection.
+        if ($isAccessRecipient || $isNewsletterRecipient) {
+            $isAuthenticatedUser = true;
+        }
+
         // Get interface settings
         $objInterface = $objDatabase->Execute('SELECT `setvalue`
                                                 FROM `'.DBPREFIX.'module_newsletter_settings`
@@ -305,6 +312,7 @@ class Newsletter extends NewsletterLib
 
         $captchaOk = true;
         if (
+            !$isAuthenticatedUser &&
             isset($recipientAttributeStatus['captcha']) &&
             $recipientAttributeStatus['captcha']['active']
         ) {
@@ -617,7 +625,6 @@ class Newsletter extends NewsletterLib
                     'recipient_fax',
                     'recipient_birthday',
                     'recipient_website',
-                    'captcha',
                 );
                 foreach ($recipientAttributesArray as $attribute) {
                     if ($this->_objTpl->blockExists($attribute)) {
@@ -632,9 +639,23 @@ class Newsletter extends NewsletterLib
                     }
                 }
 
+                // use CAPTCHA if it has been activated and the user is not authenticated
+                if (!$isAuthenticatedUser &&
+                    $recipientAttributeStatus['captcha']['active']
+                ) {
+                    $this->_objTpl->setVariable(array(
+                        'TXT_MODULE_CAPTCHA'   => $_CORELANG['TXT_CORE_CAPTCHA'],
+                        'MODULE_CAPTCHA_CODE'  => \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getCode(),
+
+                        // this is a legacy placeholder
+                        'NEWSLETTER_CAPTCHA_MANDATORY' => $recipientAttributeStatus['captcha']['required'] ? '*' : '',
+                    ));
+                    $this->_objTpl->touchBlock('captcha');
+                } else {
+                    $this->_objTpl->hideBlock('captcha');
+                }
+
                 $this->_objTpl->setVariable(array(
-                    'TXT_MODULE_CAPTCHA'   => $_CORELANG['TXT_CORE_CAPTCHA'],
-                    'MODULE_CAPTCHA_CODE'  => \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getCode(),
                     'NEWSLETTER_EMAIL'        => htmlentities($recipientEmail, ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_WEBSITE'          => htmlentities($recipientUri, ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_SEX_F'        => $recipientSex == 'f' ? 'checked="checked"' : '',
