@@ -27,7 +27,7 @@
 
 /**
  * Main controller for Gallery
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
@@ -38,7 +38,7 @@ namespace Cx\Modules\Gallery\Controller;
 
 /**
  * Main controller for Gallery
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
@@ -53,7 +53,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
      /**
      * Load your component.
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -68,8 +68,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     \Env::get('cx')->getPage()->setTitle($topGalleryName);
                     \Env::get('cx')->getPage()->setContentTitle($topGalleryName);
                     \Env::get('cx')->getPage()->setMetaTitle($topGalleryName);
+                    \Env::get('cx')->getPage()->setMetadesc($topGalleryName);
                 }
-               
+
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
@@ -87,7 +88,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
     /**
      * Do something before content is loaded from DB
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -128,15 +129,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             default:
                 break;
         }
-        
+
     }
-    
+
     /**
-     * Do something for search the content
-     * 
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
+     * Register your event listeners here
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * Keep in mind, that you can also register your events later.
+     * Do not do anything else here than initializing your event listeners and
+     * list statements like
+     * $this->cx->getEvents()->addEventListener($eventName, $listener);
      */
-    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+    public function registerEventListeners() {
         $eventListener = new \Cx\Modules\Gallery\Model\Event\GalleryEventListener($this->cx);
         $this->cx->getEvents()->addEventListener('SearchFindContent', $eventListener);
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);

@@ -155,6 +155,8 @@ function addProductToCart(objForm,quantity) {
                 objProduct.title = formElement.value;
             if (formElement.name == 'productQuantity')
                 objProduct.quantity = formElement.value;
+            if (formElement.name == 'productOptionsUploaderId')
+                objProduct.productOptionsUploaderId = formElement.value;
             arrUpdateProduct = updateProductRe.exec(formElement.name);
             if (arrUpdateProduct != null)
                 updateProduct = '&updateProduct=' + arrUpdateProduct[1];
@@ -187,6 +189,7 @@ function addProductToCart(objForm,quantity) {
                     }
                     break;
                 case 'text':
+                case 'textarea':
                     if (formElement.value != '') {
                         objProduct.options[optionId] = formElement.value;
                     }
@@ -284,3 +287,68 @@ function centerY(height) {
     }
     return parseInt((y - height) / 2);
 }
+
+var inputId, uploaderInputBox;
+function getUploader(e) { // e => jQuery element
+    inputId = e.data('inputId');
+    uploaderInputBox = cx.jQuery('#' + inputId);
+    cx.jQuery('#productOptionsUploader').trigger('click');
+}
+function productOptionsUploaderCallback(data) {
+    if (typeof data[0] !== 'undefined') {
+        var data       = data[0].split('/'),
+            fileName   = data.pop();
+        uploaderInputBox.val(fileName);
+    }
+}
+
+!(function ($jq) {
+    function updateProductPrice($form)
+    {
+        if (!$form.find('.price .shop-product-price').length) {
+            return;
+        }
+        var productPrice = parseFloat($form.find('.price .shop-product-price').data('price'));
+        if (isNaN(productPrice)) {
+            return;
+        }
+        var optionsPrice = 0;
+        $form.find('.product-option-field').each(function () {
+            switch ($jq(this).prop('tagName')) {
+                case 'SELECT':
+                    $jq(this).find('option:selected').each(function () {
+                        var price     = parseFloat($jq(this).data('price'));
+                        optionsPrice += !isNaN(price) ? price : 0;
+                    });
+                    break;
+                case 'INPUT':
+                    if ($jq(this).is(':checked')) {
+                        var price     = parseFloat($jq(this).data('price'));
+                        optionsPrice += !isNaN(price) ? price : 0;
+                    }
+                    break;
+            }
+        });
+        var newPrice = productPrice + optionsPrice;
+        if ($form.find('.price .shop-product-price s').length) {
+            $form.find('.price .shop-product-price s').html(newPrice.toFixed(2));
+        } else {
+            $form.find('.price .shop-product-price').html(newPrice.toFixed(2));
+        }
+        if (!$form.find('.price .discount').length || !$form.find('.price .discount .shop-product-discount-price').length) {
+            return;
+        }
+        var productDiscountPrice = parseFloat($form.find('.price .discount .shop-product-discount-price').data('price'));
+        var newDiscountPrice     = productDiscountPrice + optionsPrice;
+        $form.find('.price .discount .shop-product-discount-price').html(newDiscountPrice.toFixed(2));
+    }
+    $jq(function () {
+        $jq('.product-option-field').change(function () {
+            updateProductPrice($jq(this).closest('form'));
+        });
+        // hack: shop product price might be wrapped with <s>
+        $jq('.shop-product-price, .shop-product-discount-price').each(function () {
+           $jq(this).data( 'price', $jq(this).text() );
+        });
+    });
+})(cx.jQuery);

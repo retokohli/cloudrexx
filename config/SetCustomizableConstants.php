@@ -62,8 +62,11 @@ define('ASCMS_CONTENT_IMAGE_PATH',          ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_O
 define('ASCMS_CONTENT_IMAGE_WEB_PATH',      ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/content');
 // Cx::getWebsiteFeedPath()
 define('ASCMS_FEED_PATH',                   ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/feed');
+// Cx::getWebsiteFeedWebPath()
 define('ASCMS_FEED_WEB_PATH',               ASCMS_INSTANCE_OFFSET.'/feed');
+// Cx::getWebsiteMediaForumUploadPath()
 define('ASCMS_FORUM_UPLOAD_PATH',           ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/Forum/upload');
+// Cx::getWebsiteMediaForumUploadWebPath()
 define('ASCMS_FORUM_UPLOAD_WEB_PATH',       ASCMS_INSTANCE_OFFSET.'/media/Forum/upload');
 define('ASCMS_GALLERY_THUMBNAIL_WEB_PATH',  ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/gallery_thumbs');
 define('ASCMS_GALLERY_THUMBNAIL_PATH',      ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/gallery_thumbs');
@@ -135,9 +138,13 @@ define('ASCMS_DIR_PATH',                    ASCMS_DOCUMENT_ROOT.ASCMS_MODULE_FOL
 define('ASCMS_DIR_WEB_PATH',                ASCMS_PATH_OFFSET.ASCMS_MODULE_FOLDER.'/Directory');
 define('ASCMS_DIRECTORY_FEED_PATH',         ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/Directory/feeds');
 define('ASCMS_DIRECTORY_FEED_WEB_PATH',     ASCMS_INSTANCE_OFFSET.'/media/Directory/feeds');
+// Cx::getWebsiteMediaDirectoryPath()
 define('ASCMS_MODULE_MEDIA_PATH',           ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/Directory');
+// Cx::getWebsiteMediaDirectoryWebPath()
 define('ASCMS_MODULE_MEDIA_WEB_PATH',       ASCMS_INSTANCE_OFFSET.'/media/Directory');
+// Cx::getWebsiteMediaMarketPath()
 define('ASCMS_MARKET_MEDIA_PATH',           ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/Market');
+// Cx::getWebsiteMediaMarketWebPath()
 define('ASCMS_MARKET_MEDIA_WEB_PATH',       ASCMS_INSTANCE_OFFSET.'/media/Market');
 define('ASCMS_CACHE_PATH',                  ASCMS_TEMP_PATH.'/cache');
 define('ASCMS_ECARD_OPTIMIZED_PATH',        ASCMS_MEDIA_PATH.'/Ecard/ecards_optimized');
@@ -197,9 +204,3 @@ define('ASCMS_CURRENCY_SEPARATOR_THOUSANDS', '\'');
 define('ASCMS_CURRENCY_SEPARATOR_DECIMALS', '.');
 define('ASCMS_NUMBER_SEPARATOR_THOUSANDS', '\'');
 define('ASCMS_NUMBER_SEPARATOR_DECIMALS', '.');
-
-// LinkManager constants
-define('ASCMS_LINKMANAGER_CONTENT_HREF_QUERY','div#home-page a, div#page a, div#content a');
-define('ASCMS_LINKMANAGER_CONTENT_IMG_QUERY','div#home-page img, div#page img, div#content img');
-define('ASCMS_LINKMANAGER_CONTENT_PAGE_QUERY','div#home-page, div#page, div#content');
-define('ASCMS_LINKMANAGER_NAVIGATION_QUERY','ul#navigation, ul.navigation');

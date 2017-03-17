@@ -77,9 +77,9 @@ class MediaDirectoryInputfieldFile extends \Cx\Modules\MediaDir\Controller\Media
                 $arrValue = array();
                 if(!empty($intEntryId)) {
                     $objInputfieldValue = $objDatabase->Execute("
-                        SELECT 
+                        SELECT
                             `value`,
-                            `lang_id`                            
+                            `lang_id`
                           FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields
                          WHERE field_id=$intId
                            AND entry_id=$intEntryId");
@@ -93,15 +93,15 @@ class MediaDirectoryInputfieldFile extends \Cx\Modules\MediaDir\Controller\Media
                 } else {
                     $arrValue = null;
                 }
-                
+
                 $countFrontendLang = count($this->arrFrontendLanguages);
-                
+
                 $minimize  = '';
                 if ($objInit->mode == 'backend' || $this->arrSettings['settingsFrontendUseMultilang']) {
                     $minimize  = "<a href=\"javascript:ExpandMinimize('$intId');\">{$_ARRAYLANG['TXT_MEDIADIR_MORE']}&nbsp;&raquo;</a>";
                 }
-                
-                $strDefaultValue = isset($arrValue[0]) ? $arrValue[0] : '';                    
+
+                $strDefaultValue = isset($arrValue[0]) ? $arrValue[0] : '';
                 $strDefaultInput = $this->getInput($intId, $strDefaultValue, 0, $arrInputfield);
                 $strInputfield   = <<<INPUT
                         <div id="{$this->moduleNameLC}Inputfield_{$intId}_Minimized" class="{$this->moduleNameLC}GroupMultilang" style="display: block; float:left;">
@@ -110,7 +110,7 @@ class MediaDirectoryInputfieldFile extends \Cx\Modules\MediaDir\Controller\Media
                         </div>
 INPUT;
                 if ($objInit->mode == 'backend' || $this->arrSettings['settingsFrontendUseMultilang']) {
-                    
+
                     $strInputfield .= '<div id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_Expanded" class="'. $this->moduleNameLC.'GroupMultilang" style="display: none; float:left;">';
 
                     foreach ($this->arrFrontendLanguages as $key => $arrLang) {
@@ -131,7 +131,7 @@ INPUT;
                     }
                     $strInputfield .= '</div>';
                 }
-                return $strInputfield;                
+                return $strInputfield;
                 break;
             case 2:
                 //search View
@@ -142,22 +142,22 @@ INPUT;
 
     /**
      * Get input field based on language id and value
-     *      
+     *
      * @param integer $id            Input field id
      * @param string  $value         Input field value
      * @param integer $langId        Language id
      * @param array   $arrInputfield Language id
-     * 
+     *
      * @return string Return input field based on language id and value
      */
     private function getInput($id = 0, $value = '', $langId = 0, $arrInputfield = array())
     {
         global $_ARRAYLANG;
-        
+
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        
+
         $arrValue = explode(",", $value);
-        
+
         $filePath    = $arrValue[0];
         $displayName = null;
 
@@ -172,16 +172,16 @@ INPUT;
                 $displayName = strip_tags(htmlspecialchars($arrValue[1], ENT_QUOTES, CONTREXX_CHARSET));
             }
             $strFilePreview = '<a href="'.urldecode($filePath).'" target="_blank">'.$strFileName.'</a>&nbsp;
-                                <input 
+                                <input
                                     data-id="'.$id.'"
-                                    type="checkbox" 
+                                    type="checkbox"
                                     class="'. (!$langId ? 'mediadirInputfieldDefaultDeleteFile' : '') .'"
-                                    id="mediadirInputfield_delete_'.$id.'_'.$langId.'"    
-                                    value="1" 
+                                    id="mediadirInputfield_delete_'.$id.'_'.$langId.'"
+                                    value="1"
                                     name="deleteMedia['.$id.']['.$langId.']"
                                 />'.$_ARRAYLANG['TXT_MEDIADIR_DELETE'].'<br />';
         }
-        
+
         $flagPath   = $cx->getCodeBaseOffsetPath() . $cx->getCoreFolderName().'/Country/View/Media/Flag';
         $inputStyle =   !empty($langId)
                       ? 'background: #ffffff url(\''. $flagPath .'/flag_'. \FWLanguage::getLanguageCodeById($langId) .'.gif\') no-repeat 3px 3px;'
@@ -190,37 +190,33 @@ INPUT;
 
         $mode = $cx->getMode();
         if ($mode == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
-            $mediaBrowseBtn = $this->getMediaBrowserButton(
-                $_ARRAYLANG['TXT_BROWSE'],
-                array(
-                    'data-cx-mb-views' => 'filebrowser',
-                    'data-cx-mb-startmediatype' => $this->moduleNameLC,
-                    'type' => 'button',
-                    'data-input-id' => $this->moduleNameLC . 'Inputfield_'. $id .'_'. $langId
-                ),
-                'mediaBrowserCallback'
-            );
             $strInputfield = <<<INPUT
             $strFilePreview
             <input type="text" name="{$this->moduleNameLC}Inputfield[$id][file][$langId]"
-                value="$filePath" 
+                value="$filePath"
                 data-id="$id"
                 class="$inputDefaultClass"
                 id="{$this->moduleNameLC}Inputfield_{$id}_$langId"
-                style="$inputStyle" 
+                style="$inputStyle"
                 autocomplete="off"
                 onfocus="this.select();" />
             &nbsp;
-            $mediaBrowseBtn
+            <input type="button"
+                onClick="getMediaBrowser(\$J(this));"
+                data-input-id="{$this->moduleNameLC}Inputfield_{$id}_$langId"
+                data-views="filebrowser"
+                data-startmediatype="{$this->moduleNameLC}"
+                value="{$_ARRAYLANG['TXT_BROWSE']}"
+            />
             <br />
-            <input type="text" name="{$this->moduleNameLC}Inputfield[{$id}][name][$langId]" 
-                value="$displayName" 
+            <input type="text" name="{$this->moduleNameLC}Inputfield[{$id}][name][$langId]"
+                value="$displayName"
                 data-id="$id"
                 data-related-field-prefix="{$this->moduleNameLC}InputfieldFileDisplayName"
                 class="{$this->moduleNameLC}InputfieldFileDisplayName $inputDefaultClass"
-                id="{$this->moduleNameLC}InputfieldFileDisplayName_{$id}_$langId" 
+                id="{$this->moduleNameLC}InputfieldFileDisplayName_{$id}_$langId"
                 onfocus="this.select();" />
-            &nbsp;<i>{$_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME']}</i>            
+            &nbsp;<i>{$_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME']}</i>
 INPUT;
         } else {
             if (empty($filePath) || $filePath == "new_image") {
@@ -231,8 +227,8 @@ INPUT;
             }
 
             $strInfoValue = $strInfoClass = '';
-            $strInfo =  !empty($arrInputfield['info'][$langId]) 
-                      ? $arrInputfield['info'][$langId] 
+            $strInfo =  !empty($arrInputfield['info'][$langId])
+                      ? $arrInputfield['info'][$langId]
                       : (  !empty($arrInputfield['info'][0])
                          ? $arrInputfield['info'][0]
                          : '');
@@ -242,18 +238,27 @@ INPUT;
             }
             $strInputfield = <<<INPUT
             $strFilePreview
-            <input type="file" name="fileUpload_{$id}[$langId]"                
+            <input type="text" name="{$this->moduleNameLC}InputfieldSource[$id][$langId]"
+                value="$value"
+                data-id="$id"
+                class="$inputDefaultClass"
                 id="{$this->moduleNameLC}Inputfield_{$id}_$langId"
-                class="{$this->moduleNameLC}InputfieldFile $strInfoClass"                        
-                value="{$filePath}"
-                $strInfoValue
+                style="$inputStyle"
+                autocomplete="off"
                 onfocus="this.select();" />
+            &nbsp;
+            <input type="button"
+                onClick="getUploader(\$J(this));"
+                data-input-id="{$this->moduleNameLC}Inputfield_{$id}_$langId"
+                value="{$_ARRAYLANG['TXT_BROWSE']}"
+            />
+            <br />
             <input id="{$this->moduleNameLC}Inputfield_{$id}_{$langId}_hidden"
                 name="{$this->moduleNameLC}Inputfield[$id][file][$langId]"
                 value="{$strValueHidden}" type="hidden" />
             <br />
-            <input type="text" name="{$this->moduleNameLC}Inputfield[$id][name][$langId]" 
-                value="$displayName" 
+            <input type="text" name="{$this->moduleNameLC}Inputfield[$id][name][$langId]"
+                value="$displayName"
                 data-id="$id"
                 data-related-field-prefix="{$this->moduleNameLC}InputfieldFileDisplayName"
                 class="{$this->moduleNameLC}InputfieldFileDisplayName $inputDefaultClass"
@@ -268,14 +273,14 @@ INPUT;
     function saveInputfield($intInputfieldId, $strValue, $langId = 0)
     {
         global $objInit;
-        static $strNewDefault = null;        
-        
+        static $strNewDefault = null;
+
         $strValue = contrexx_input2raw($_POST[$this->moduleNameLC.'Inputfield'][$intInputfieldId]['file'][$langId]);
         $strName =  !empty($_POST[$this->moduleNameLC.'Inputfield'][$intInputfieldId]['name'][$langId])
                         ? ",".contrexx_input2raw($_POST[$this->moduleNameLC.'Inputfield'][$intInputfieldId]['name'][$langId])
                         : '';
         $deleteMedia = !empty($_POST["deleteMedia"]) && !empty($_POST["deleteMedia"][$intInputfieldId]);
-        
+
         if($objInit->mode == 'backend') {
             if (   $deleteMedia
                 && $_POST["deleteMedia"][$intInputfieldId][$langId] == 1
@@ -283,24 +288,31 @@ INPUT;
                 $strValue = null;
             }
         } else {
-            $inputFiles  = !empty($_FILES['fileUpload_'.$intInputfieldId]) ? $_FILES['fileUpload_'.$intInputfieldId] : array();
-            
+            $inputFiles  = !empty($_POST['mediadirInputfieldSource'][$intInputfieldId]) ? $_POST['mediadirInputfieldSource'][$intInputfieldId] : array();
+
             if ($deleteMedia && $_POST["deleteMedia"][$intInputfieldId][$langId] == 1) {
                 //delete file
                 $this->deleteFile($strValue);
                 $strValue = null;
-            } elseif (!empty($inputFiles) && !empty($inputFiles['name'][$langId])) {                
-                //delete file
-                $this->deleteFile($strValue);
-                $strValue = $this->uploadMedia($intInputfieldId, $langId);                
+            } elseif (!empty($inputFiles) && !empty($inputFiles[$langId])) {
+                $uploaderId = !empty($_POST['uploaderId']) ? $_POST['uploaderId'] : '';
+                $filePath   = $this->getUploadedFilePath($uploaderId, $inputFiles[$langId]);
+
+                if ($filePath) {
+                    //delete file
+                    $this->deleteFile($strValue);
+                    $strValue = $this->uploadMedia($filePath);
+                } else {
+                    $strValue = null;
+                }
             } else {
                 if (!$strNewDefault && !empty($langId)) {
                     $strNewDefault = $this->saveInputfield($intInputfieldId, '');
                 }
-                $strValue = $strNewDefault;                
+                $strValue = $strNewDefault;
             }
         }
-        
+
         return $strValue.$strName;
     }
 
@@ -320,46 +332,43 @@ INPUT;
         }
     }
 
-
-    function uploadMedia($intInputfieldId, $langId)
+    /**
+     * Copy the Upload the image to the path
+     * Note: validation should be done before calling this function
+     *
+     * @param string $filePath Temp path of the uploaded media
+     *
+     * @return boolean|string relative path of the uploaded file, false otherwise
+     */
+    function uploadMedia($filePath)
     {
-        global $objDatabase;
+        if ($filePath == '' || !\FWValidator::is_file_ending_harmless($filePath)) {
+            return false;
+        }
 
-        if (isset($_FILES)) {            
-            $tmpFile   = $_FILES['fileUpload_'.$intInputfieldId]['tmp_name'][$langId];
-            $fileName  = $_FILES['fileUpload_'.$intInputfieldId]['name'][$langId];
-            $fileType  = $_FILES['fileUpload_'.$intInputfieldId]['type'][$langId];
-            $fileSize  = $_FILES['fileUpload_'.$intInputfieldId]['size'][$langId];
+        $fileName      = basename($filePath);
+        //get extension
+        $arrFileInfo   = pathinfo($fileName);
+        $fileExtension = !empty($arrFileInfo['extension']) ? '.'.$arrFileInfo['extension'] : '';
+        $fileBasename  = $arrFileInfo['filename'];
+        $randomSum     = rand(10, 99);
 
-            if ($fileName != "") {
-                //get extension
-                $arrFileInfo   = pathinfo($fileName);
-                $fileExtension = !empty($arrFileInfo['extension']) ? '.'.$arrFileInfo['extension'] : '';
-                $fileBasename  = $arrFileInfo['filename'];
-                $randomSum      = rand(10, 99);
+        //encode filename
+        if ($this->arrSettings['settingsEncryptFilenames'] == 1) {
+            $fileName = md5($randomSum.$fileBasename).$fileExtension;
+        }
 
-                //encode filename
-                if ($this->arrSettings['settingsEncryptFilenames'] == 1) {
-                    $fileName = md5($randomSum.$fileBasename).$fileExtension;
-                }
+        //check filename
+        if (file_exists($this->imagePath.'uploads/'.$fileName)) {
+            $fileName = $fileBasename.'_'.time().$fileExtension;
+        }
 
-                //check filename
-                if (file_exists($this->imagePath.'uploads/'.$fileName)) {
-                    $fileName = $fileBasename.'_'.time().$fileExtension;
-                }
+        //upload file
+        if (\Cx\Lib\FileSystem\FileSystem::copy_file($filePath, $this->imagePath . 'uploads/' . $fileName) !== false) {
+            $objFile = new \File();
+            $objFile->setChmod($this->imagePath, $this->imageWebPath, 'uploads/'. $fileName);
 
-                //upload file
-                if (move_uploaded_file($tmpFile, $this->imagePath.'uploads/'.$fileName)) {
-                    $objFile = new \File();
-                    $objFile->setChmod($this->imagePath, $this->imageWebPath, 'uploads/'.$fileName);
-
-                    return $this->imageWebPath.'uploads/'.$fileName;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
+            return $this->imageWebPath.'uploads/'.$fileName;
         } else {
             return false;
         }
@@ -393,7 +402,7 @@ INPUT;
         global $objDatabase, $_LANGID;
 
         $intId = intval($arrInputfield['id']);
-        $intEntryDefaultLang = $objDatabase->getOne("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");        
+        $intEntryDefaultLang = $objDatabase->getOne("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");
 
         if($this->arrSettings['settingsTranslationStatus'] == 1) {
             $intLangId = in_array($_LANGID, $arrTranslationStatus) ? $_LANGID : contrexx_input2int($intEntryDefaultLang);
@@ -407,7 +416,7 @@ INPUT;
                AND entry_id=$intEntryId
                AND lang_id=$intLangId
              LIMIT 1 ");
-        
+
         if(empty($objResult->fields['value'])) {
             $objResult = $objDatabase->Execute("
                 SELECT `value`
@@ -416,7 +425,7 @@ INPUT;
                    AND entry_id=$intEntryId
                    AND lang_id=$intEntryDefaultLang
                  LIMIT 1 ");
-        }        
+        }
 
         $arrValue = explode(",", $objResult->fields['value']);
         $strValue = strip_tags(htmlspecialchars($arrValue[0], ENT_QUOTES, CONTREXX_CHARSET));
@@ -425,7 +434,7 @@ INPUT;
             $arrFileInfo    = pathinfo($strValue);
             $strFileName    = htmlspecialchars($arrFileInfo['basename'], ENT_QUOTES, CONTREXX_CHARSET);
             if(empty($arrValue[1])) {
-            	$strName = $strFileName;
+                $strName = $strFileName;
             } else {
                 $strName = strip_tags(htmlspecialchars($arrValue[1], ENT_QUOTES, CONTREXX_CHARSET));
             }
@@ -446,13 +455,13 @@ INPUT;
     function getJavascriptCheck()
     {
         $fieldName = $this->moduleNameLC."Inputfield_";
-        
+
         if(\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
             $hiddenField = "value_hidden = false";
         } else {
             $hiddenField = "value_hidden = document.getElementById('".$fieldName."' + field + '_0_hidden').value;";
         }
-        
+
         $strJavascriptCheck = <<<EOF
 
             case 'file':
@@ -469,8 +478,8 @@ INPUT;
 EOF;
         return $strJavascriptCheck;
     }
-    
-    
+
+
     function getFormOnSubmit($intInputfieldId)
     {
         return null;

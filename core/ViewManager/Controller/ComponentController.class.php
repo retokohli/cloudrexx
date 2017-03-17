@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,10 +24,10 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Main controller for View Manager
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
@@ -35,10 +35,12 @@
  */
 
 namespace Cx\Core\ViewManager\Controller;
+use Cx\Core\ContentManager\Model\Entity\Page;
+use Cx\Core\ViewManager\Model\Event\ViewManagerEventListener;
 
 /**
  * Main controller for View Manager
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
@@ -51,12 +53,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array();
     }
 
-    public function getControllersAccessableByJson() { 
+    public function getControllersAccessableByJson() {
         return array('JsonViewManager');
     }
+
      /**
      * Load your component.
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -70,7 +73,23 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         \Permission::checkAccess(21, 'static');
         $objViewManager = new \Cx\Core\ViewManager\Controller\ViewManager();
         $objViewManager->getPage();
-                
-        $this->cx->getTemplate()->setRoot($cachedRoot);        
+
+        $this->cx->getTemplate()->setRoot($cachedRoot);
+    }
+
+    /**
+     * Register your event listeners here
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * Keep in mind, that you can also register your events later.
+     * Do not do anything else here than initializing your event listeners and
+     * list statements like
+     * $this->cx->getEvents()->addEventListener($eventName, $listener);
+     */
+    public function registerEventListeners() {
+        $this->cx->getEvents()->addEventListener(
+            'mediasource.load', new ViewManagerEventListener($this->cx)
+        );
     }
 }

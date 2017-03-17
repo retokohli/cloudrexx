@@ -22,7 +22,7 @@ folderWidgetApp.factory('mediabrowserFiles', function ($http, $q) {
   return {
       get: function (type) {
           var deferred = $q.defer();
-          $http.get(cx.variables.get("cadminPath", "contrexx") + 'index.php?cmd=jsondata&object=MediaBrowser&act=' + type + '&csrf=' + cx.variables.get('csrf')).success(function (jsonadapter) {
+          $http.get(cx.variables.get("cadminPath", "contrexx") + 'index.php?cmd=JsonData&object=MediaBrowser&act=' + type + '&csrf=' + cx.variables.get('csrf')).success(function (jsonadapter) {
               if (jsonadapter.data instanceof Object) {
                   deferred.resolve(jsonadapter.data);
               }
@@ -43,8 +43,8 @@ folderWidgetApp.factory('mediabrowserFiles', function ($http, $q) {
   };
 });
 
-folderWidgetApp.controller('MediaBrowserFolderWidgetCtrl', ['$scope', 'mediabrowserFiles', 'folderWidgetConfig', 
-  function($scope, mediabrowserFiles, folderWidgetConfig){   
+folderWidgetApp.controller('MediaBrowserFolderWidgetCtrl', ['$scope', 'mediabrowserFiles', 'folderWidgetConfig',
+  function($scope, mediabrowserFiles, folderWidgetConfig){
   $scope.files = [];
   $scope.isEditable = false;
   $scope.refreshBrowser = function () {
@@ -53,26 +53,29 @@ folderWidgetApp.controller('MediaBrowserFolderWidgetCtrl', ['$scope', 'mediabrow
             $scope.files = data;
         }
     );
-  };  
+  };
   $scope.removeFile = function (file) {
     mediabrowserFiles.removeMedia(file, folderWidgetConfig.get('widgetId')).then(
         function loadFiles(data) {
             $scope.refreshBrowser();
         }
     );
-  };  
+  };
+  $scope.isEmpty = function () {
+      return $scope.files.length === 0;
+  };
 }]);
 
 jQuery(function () {
   jQuery('.mediaBrowserfolderWidget').each(function(){
     angular.bootstrap(jQuery(this), ['FolderWidget']);
     var scope = angular.element(jQuery(this)).injector();
-    
+
     var folderWidgetConfig = scope.get('folderWidgetConfig');
     var attrs = jQuery(this).data();
     folderWidgetConfig.set('widgetId', attrs.widgetId);
     folderWidgetConfig.set('isEditable', attrs.isEditable);
-    
+
     var controllerScope = angular.element(jQuery(this)).scope();
     controllerScope.$apply(function() {
       controllerScope.isEditable = folderWidgetConfig.get('isEditable');

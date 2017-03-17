@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * @copyright   Cloudrexx AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
@@ -34,15 +34,19 @@
 namespace Cx\Core\MediaSource\Model\Entity;
 
 
-class LocalFileSystem implements FileSystem
+use Cx\Model\Base\EntityBase;
+
+class LocalFileSystem extends EntityBase implements FileSystem
 {
 
-    private $cx;
-
+    /**
+     * The path of the file system.
+     * Without ending directory separator.
+     */
     private $rootPath;
+    protected $fileListCache;
 
     function __construct($path) {
-        $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if (!$path) {
             throw new \InvalidArgumentException(
                 "Path shouldn't be empty: Given: " . $path
@@ -60,12 +64,22 @@ class LocalFileSystem implements FileSystem
         return new self($path);
     }
 
-    public function getFileList($directory, $recursive = false) {
+    /**
+     * @todo    Option $recursive does not work. It always acts as recursive is set to TRUE
+     */
+    public function getFileList($directory, $recursive = false, $readonly = false) {
+        if (isset($this->fileListCache[$directory][$recursive][$readonly])) {
+            return $this->fileListCache[$directory][$recursive][$readonly];
+        }
+
+        $dirPath = rtrim($this->rootPath . '/' . $directory,'/');
+        if (!file_exists($dirPath)) {
+            return array();
+        }
+
         $recursiveIteratorIterator = new \RegexIterator(
             new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator(
-                    rtrim($this->rootPath . '/' . $directory,'/')
-                ),
+                new \RecursiveDirectoryIterator($dirPath),
                 \RecursiveIteratorIterator::SELF_FIRST
             ), '/^((?!thumb(_[a-z]+)?).)*$/'
         );
@@ -113,6 +127,7 @@ class LocalFileSystem implements FileSystem
                 }
             }
 
+            $size = \FWSystem::getLiteralSizeFormat($file->getSize());
             $fileInfos = array(
                 'filepath' => mb_strcut(
                     $file->getPath() . '/' . $file->getFilename(),
@@ -120,7 +135,7 @@ class LocalFileSystem implements FileSystem
                 ),
                 // preselect in mediabrowser or mark a folder
                 'name' => $file->getFilename(),
-                'size' => \FWSystem::getLiteralSizeFormat($file->getSize()),
+                'size' => $size ? $size : '0 B',
                 'cleansize' => $file->getSize(),
                 'extension' => ucfirst(mb_strtolower($extension)),
                 'preview' => $preview,
@@ -129,6 +144,10 @@ class LocalFileSystem implements FileSystem
                 'type' => $file->getType(),
                 'thumbnail' => $thumbnails
             );
+
+            if ($readonly){
+                $fileInfos['readonly'] = true;
+            }
 
             // filters
             if (
@@ -155,9 +174,56 @@ class LocalFileSystem implements FileSystem
                     )->getFilename() => $path
                 );
             }
-            $jsonFileArray = array_merge_recursive($jsonFileArray, $path);
+            $jsonFileArray = $this->array_merge_recursive($jsonFileArray, $path);
         }
+        $jsonFileArray = $this->utf8EncodeArray($jsonFileArray);
+        $this->fileListCache[$directory][$recursive][$readonly] = $jsonFileArray;
         return $jsonFileArray;
+    }
+
+    /**
+     * Applies utf8_encode() to keys and values of an array
+     * From: http://stackoverflow.com/questions/7490105/array-walk-recursive-modify-both-keys-and-values
+     * @param array $array Array to encode
+     * @return array UTF8 encoded array
+     */
+    public function utf8EncodeArray($array) {
+        $helper = array();
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $value = $this->utf8EncodeArray($value);
+            } else {
+                $value = utf8_encode($value);
+            }
+            $helper[utf8_encode($key)] = $value;
+        }
+        return $helper;
+    }
+
+    /**
+     * \array_merge_recursive() behaves unexpected with numerical indexes
+     * Fix from http://php.net/array_merge_recursive (array_merge_recursive_new)
+     *
+     * This method behaves differently than the original since it overwrites
+     * already present keys
+     * @return array Recursively merged array
+     */
+    protected function array_merge_recursive() {
+        $arrays = func_get_args();
+        $base = array_shift($arrays);
+
+        foreach ($arrays as $array) {
+            reset($base); //important
+            while (list($key, $value) = each($array)) {
+                if (is_array($value) && isset($base[$key]) && is_array($base[$key])) {
+                    $base[$key] = $this->array_merge_recursive($base[$key], $value);
+                } else {
+                    $base[$key] = $value;
+                }
+            }
+        }
+
+        return $base;
     }
 
     /**
@@ -189,7 +255,7 @@ class LocalFileSystem implements FileSystem
             $thumbnails[$thumbnail['size']] = preg_replace(
                 '/\.' . lcfirst($extension) . '$/',
                 $thumbnail['value'] . '.' . lcfirst($extension),
-                $this->cx->getWebsiteOffsetPath() . str_replace(
+                 str_replace(
                     $this->cx->getWebsitePath(), '',
                     $file->getRealPath()
                 )
@@ -413,5 +479,35 @@ class LocalFileSystem implements FileSystem
                 $thumbnail
             );
         }
+    }
+
+    /**
+     * Get Root path of the filesystem
+     *
+     * @return string
+     */
+    public function getRootPath()
+    {
+        return $this->rootPath;
+    }
+
+    /**
+     * Set root path of the filesystem
+     *
+     * @param string $rootPath
+     */
+    public function setRootPath($rootPath)
+    {
+        $this->rootPath = $rootPath;
+    }
+
+    public function getFileFromPath($filepath) {
+        $fileinfo = pathinfo($filepath);
+        $path = dirname($filepath);
+        $files = $this->getFileList($fileinfo['dirname']);
+        if (!isset($files[$fileinfo['basename']])) {
+            return false;
+        }
+        return new LocalFile($filepath, $this);
     }
 }

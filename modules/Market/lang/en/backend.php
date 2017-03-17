@@ -118,4 +118,7 @@ $_ARRAYLANG['TXT_MARKET_LOCATION_SORTING_UPDATED'] = "Sort sequence has been upd
 $_ARRAYLANG['TXT_COPY_ADVERTISEMENT'] = "Copy entry";
 $_ARRAYLANG['TXT_MARKET_COLOR'] = "Color";
 $_ARRAYLANG['TXT_SAVE'] = "Save";
+$_ARRAYLANG['TXT_MARKET_CHOOSE_FILE'] = 'Choose file';
+$_ARRAYLANG['TXT_MARKET_SET_CONFIRM_IN_FRONTEND'] = 'Confirm entries in Frontend';
+$_ARRAYLANG['TXT_MARKET_SET_USE_TERMS'] = 'Require to accept the Terms and Conditions';
 ?>

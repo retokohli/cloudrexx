@@ -906,10 +906,7 @@ class Attributes
                     $path = Order::UPLOAD_FOLDER.$option_id;
                     if (   $option_name != $option_id
                         && file_exists($path)) {
-                        $option_name =
-                            '<a href="'.$path.
-                            '" target="uploadimage">'.
-                            $option_name.'</a>';
+                        $option_name = \Html::getLink('/' . $path, $option_name, 'uploadimage');
                     }
                 }
                 $options_long[] =

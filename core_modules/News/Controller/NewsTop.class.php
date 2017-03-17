@@ -78,14 +78,24 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
         }
     }
 
-
-    function getHomeTopNews($catId=0)
+    /**
+     * Get top news
+     *
+     * @param integer $catId    Category id
+     * @param integer $langId   Language id
+     *
+     * @return string
+     */
+    function getHomeTopNews($catId = 0, $langId = null)
     {
         global $_CORELANG, $objDatabase;
 
         $catId= intval($catId);
         $i = 0;
 
+        if (null === $langId) {
+            $langId = FRONTEND_LANG_ID;
+        }
         $this->_objTemplate->setTemplate($this->_pageContent,true,true);
         if ($this->_objTemplate->blockExists('newsrow')) {
             $this->_objTemplate->setCurrentBlock('newsrow');
@@ -103,15 +113,16 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
         } else {//fetch news
             $objResult = $objDatabase->SelectLimit("
                 SELECT DISTINCT(tblN.id) AS id,
-                       tblN.`date`, 
+                       tblN.`date`,
                        tblN.teaser_image_path,
                        tblN.teaser_image_thumbnail_path,
                        tblN.redirect,
+                       tblN.redirect_new_window AS redirectNewWindow,
                        tblN.publisher,
                        tblN.publisher_id,
                        tblN.author,
                        tblN.author_id,
-                       tblL.title AS title, 
+                       tblL.title AS title,
                        tblL.teaser_text
                   FROM ".DBPREFIX."module_news AS tblN
             INNER JOIN ".DBPREFIX."module_news_locale AS tblL ON tblL.news_id=tblN.id
@@ -119,7 +130,7 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
                   WHERE tblN.status=1".
                    ($catId > 0 ? " AND tblC.category_id=$catId" : '')."
                    AND tblN.teaser_only='0'
-                   AND tblL.lang_id=".FRONTEND_LANG_ID."
+                   AND tblL.lang_id=". contrexx_input2int($langId) ."
                    AND (startdate<='".date('Y-m-d H:i:s')."' OR startdate='0000-00-00 00:00:00')
                    AND (enddate>='".date('Y-m-d H:i:s')."' OR enddate='0000-00-00 00:00:00')".
                    ($this->arrSettings['news_message_protection'] == '1' && !\Permission::hasAllAccess()
@@ -141,9 +152,16 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 $publisher  = \FWUser::getParsedUserTitle($objResult->fields['publisher_id'], $objResult->fields['publisher']);
                 $newsCategories  = $this->getCategoriesByNewsId($newsid);
                 $newsUrl    = empty($objResult->fields['redirect'])
-                                ? \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($newsCategories), array($catId))), FRONTEND_LANG_ID, array('newsid' => $newsid))
+                                ? \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($newsCategories), array($catId))), $langId, array('newsid' => $newsid))
                                 : $objResult->fields['redirect'];
-                $htmlLink   = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle));
+                $redirectNewWindow = !empty($objResult->fields['redirect']) && !empty($objResult->fields['redirectNewWindow']);
+                $htmlLink = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle), $redirectNewWindow);
+                $htmlLinkTitle = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle), $redirectNewWindow);
+                $linkTarget = $redirectNewWindow ? '_blank' : '_self';
+                // in case that the message is a stub, we shall just display the news title instead of a html-a-tag with no href target
+                if (empty($htmlLinkTitle)) {
+                    $htmlLinkTitle = contrexx_raw2xhtml($newstitle);
+                }
 
                 list($image, $htmlLinkImage, $imageSource) = self::parseImageThumbnail($objResult->fields['teaser_image_path'],
                                                                                        $objResult->fields['teaser_image_thumbnail_path'],
@@ -157,8 +175,10 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
                     'NEWS_DATE'         => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date']),
                     'NEWS_TIME'         => date(ASCMS_DATE_FORMAT_TIME, $objResult->fields['date']),
                     'NEWS_TITLE'        => contrexx_raw2xhtml($newstitle),
-                    'NEWS_TEASER'       => nl2br($objResult->fields['teaser_text']),
+                    'NEWS_TEASER'       => $this->arrSettings['news_use_teaser_text'] ? nl2br($objResult->fields['teaser_text']) : '',
+                    'NEWS_LINK_TITLE'   => $htmlLinkTitle,
                     'NEWS_LINK'         => $htmlLink,
+                    'NEWS_LINK_TARGET'  => $linkTarget,
                     'NEWS_LINK_URL'     => contrexx_raw2xhtml($newsUrl),
                     'NEWS_AUTHOR'       => contrexx_raw2xhtml($author),
                     'NEWS_PUBLISHER'    => contrexx_raw2xhtml($publisher),
@@ -180,10 +200,10 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
                         $this->_objTemplate->hideBlock('news_image');
                     }
                 }
-                
+
                 self::parseImageBlock($this->_objTemplate, $objResult->fields['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'image_thumbnail');
                 self::parseImageBlock($this->_objTemplate, $objResult->fields['teaser_image_path'], $newstitle, $newsUrl, 'image_detail');
-               
+
                 $this->_objTemplate->parseCurrentBlock();
                 $i++;
                 $objResult->MoveNext();

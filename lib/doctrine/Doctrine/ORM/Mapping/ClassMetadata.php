@@ -369,13 +369,7 @@ class ClassMetadata extends ClassMetadataInfo
     public function newInstance()
     {
         if ($this->_prototype === null) {
-            $prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
-            // fix: see https://github.com/doctrine/doctrine2/pull/1045
-            if (!is_object($prototype)) {
-                $prototype = $this->reflClass->newInstanceWithoutConstructor();
-            }
-            $this->_prototype = $prototype;
-
+            $this->_prototype = $this->reflClass->newInstanceWithoutConstructor();
         }
         return clone $this->_prototype;
     }
