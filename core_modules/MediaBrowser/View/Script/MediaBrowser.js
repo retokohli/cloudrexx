@@ -71,10 +71,18 @@
     });
 
     mediaBrowserApp.factory('mediabrowserConfig', function () {
-        var config = {};
+        var cookieConfig = getCookie('mediabrowser_config');
+        if (!cookieConfig) {
+            var config = {};
+            setCookie(config);
+        } else {
+            var config = angular.fromJson(cookieConfig);
+        }
+
         return {
             set: function (key, value) {
                 config[key] = value;
+                setCookie(config);
             },
             get: function (key) {
                 return config[key];
@@ -83,6 +91,14 @@
                 return key in config;
             }
         };
+
+        function setCookie(objData) {
+            cx.jQuery.cookie('mediabrowser_config', angular.toJson(objData), {path: '/cadmin'});
+        }
+
+        function getCookie(name) {
+            return cx.jQuery.cookie(name);
+        }
     });
 
     /* CONTROLLERS */
