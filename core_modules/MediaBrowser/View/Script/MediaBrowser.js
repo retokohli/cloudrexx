@@ -850,6 +850,10 @@
             };
 
             $scope.createFolder = function () {
+                var path = encodeURI($scope.getPathAsString());
+                if (path == '') {
+                    path = '/';
+                }
                 bootbox.prompt(
                     {
                         className: "media-browser-modal-window",
@@ -860,7 +864,7 @@
                             } else {
                                 $http({
                                     method: 'POST',
-                                    url: 'cadmin/index.php?cmd=jsondata&object=MediaBrowser&act=createDir&path=' + encodeURI($scope.getPathAsString()) + '&csrf=' + cx.variables.get('csrf'),
+                                    url: 'cadmin/index.php?cmd=jsondata&object=MediaBrowser&act=createDir&path=' + path + '&mediatype=' + $scope.selectedSource.value + '&csrf=' + cx.variables.get('csrf'),
                                     data: $.param({dir: dirName}),
                                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                                 }).success(function (jsonadapter) {
