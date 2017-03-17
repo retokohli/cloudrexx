@@ -178,12 +178,21 @@ h1{ font-size: 20px }
     background-repeat: no-repeat;
 }
 
-#flip-menu .jstree-action.open {
+#flip-menu .jstree-action.open,
+th.translation .expand-translations.close  {
     background-image: url('../Media/Expand.png');
 }
 
-#flip-menu .jstree-action.close {
+#flip-menu .jstree-action.close,
+th.translation .expand-translations.open {
     background-image: url('../Media/Close.png');
+}
+
+th.translation .expand-translations {
+    height: 16px;
+    width: 16px;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 #multiple-actions {
@@ -707,6 +716,10 @@ li.jstree-closed, li.jstree-leaf {
 #content-manager.edit_view #site-structure .user,
 #content-manager.edit_view #site-structure .lastupdate {
     display: none;
+}
+
+#content-manager.edit_view #site-structure .translations.dropdown {
+    display: none !important;
 }
 
 #content-manager.edit_view #site-structure th.page {

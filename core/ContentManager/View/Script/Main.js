@@ -1543,6 +1543,39 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             cx.jQuery(this).attr("href", path);
         });
 
+        cx.jQuery(".expand-translations").unbind("click").bind("click", function(e) {
+            e.preventDefault();
+            cx.jQuery(this).toggleClass("open");
+            // hide/show translation dropdown
+            cx.jQuery(".translations.dropdown").toggle();
+            if (cx.jQuery(".expanded-tags").length) {
+                // hide/show expanded tags
+                cx.jQuery(".expanded-tags").toggle();
+                return;
+            } else { // generate expanded tags
+                cx.jQuery(".translations.dropdown").after('<div class="expanded-tags translations"></div>');
+                cx.jQuery(".translations.dropdown").each(function() {
+                    // generate tags
+                    cx.jQuery(this).find(".translation").each(function() {
+                        // create div and adopt classes
+                        var translationTag = cx.jQuery("<div></div>").attr("class", cx.jQuery(this).attr("class"));
+                        // adopt text
+                        translationTag.text(cx.jQuery(this).text());
+                        // adopt click event
+                        translationTag.click(function() {
+                            cx.jQuery(this)
+                                .parent()
+                                .prev(".translations.dropdown")
+                                .find(".translations-expanded ." + cx.jQuery(this).text()).trigger("click");
+                        });
+                        // add tag
+                        cx.jQuery(this).parent().parent().parent().next(".expanded-tags").append(translationTag);
+                    });
+                    // todo: expand column
+                });
+            }
+        });
+
         cx.jQuery('.translations-expanded').live('mouseleave', function(event) {
             if (!cx.jQuery(event.target).is('li.translation-item') &&
                 cx.jQuery('.translations-expanded').length > 0
