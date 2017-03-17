@@ -30,6 +30,40 @@ namespace Cx\Core\Core\Controller;
 
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
 
+    /**
+     * {@inheritdoc}
+     */
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx)
+    {
+        $widgetController = $this->getComponent('Widget');
+        foreach (array('PATH_OFFSET', 'BASE_URL', 'VERSION') as $widgetName) {
+            switch ($widgetName) {
+                case 'PATH_OFFSET':
+                    $widgetValue = $this->cx->getCodeBaseOffsetPath();
+                    break;
+                case 'BASE_URL':
+                    $url = \Cx\Core\Routing\Url::fromDocumentRoot();
+                    $url->setMode('backend');
+                    $widgetValue = $url;
+                    break;
+                case 'VERSION':
+                    \Cx\Core\Setting\Controller\Setting::init('Config', 'release');
+                    $widgetValue = \Cx\Core\Setting\Controller\Setting::getValue(
+                        'coreCmsName',
+                        'Config'
+                    );
+                    break;
+            }
+            $widgetController->registerWidget(
+                new \Cx\Core_Modules\Widget\Model\Entity\FinalStringWidget(
+                    $this,
+                    $widgetName,
+                    $widgetValue
+                )
+            );
+        }
+    }
+
     public function getCommandsForCommandMode() {
         return array('help', 'status', 'diff', 'version', 'info', 'install', 'uninstall');
     }
