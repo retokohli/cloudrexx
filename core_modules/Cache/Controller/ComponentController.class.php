@@ -96,7 +96,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             return;
         }
-        $this->cache->startContrexxCaching();
+        $this->cache->startContrexxCaching($this->cx);
+    }
+
+    /**
+     * Register events
+     */
+    public function registerEvents()
+    {
+        $this->cx->getEvents()->addEvent('clearEsiCache');
     }
 
     /**
@@ -172,8 +180,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Wrapper to drop all cached ESI/SSI elements
      */
-    public function clearSsiCache() {
-        $this->cache->clearSsiCache();
+    public function clearSsiCache($urlPattern = '') {
+        $this->cache->clearSsiCache($urlPattern);
     }
 
     /**
@@ -285,6 +293,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param string $endcode Current response
      */
     public function writeCacheFileForRequest($page, $headers, $endcode) {
+        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
         $this->cache->writeCacheFileForRequest($page, $headers, $endcode);
     }
 

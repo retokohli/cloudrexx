@@ -60,6 +60,11 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      */
     protected $apiUrlString = '';
 
+    /**
+     * @var array List of exceptions which will not be cached
+     * For format see isException()
+     */
+    protected $exceptions = array();
 
     /**
      * Constructor
@@ -101,7 +106,14 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             return;
         }
 
-        if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_MINIMAL) {
+        // Since FE does not yet support caching, we disable it when FE is active
+        if (isset($_COOKIE['fe_toolbar']) && $_COOKIE['fe_toolbar'] == 'true') {
+            $this->boolIsEnabled = false;
+            return;
+        }
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_MINIMAL) {
             $this->boolIsEnabled = false;
             return;
         }
@@ -119,10 +131,19 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         ksort($request);
         $currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
             $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        $country = '';
+        $geoIp = $cx->getComponent('GeoIp');
+        if ($geoIp) {
+            $countryInfo = $geoIp->getCountryCode(array());
+            if (!empty($countryInfo['content'])) {
+                $country = $countryInfo['content'];
+            }
+        }
         $this->arrPageContent = array(
             'url' => $currentUrl,
             'request' => $request,
             'isMobile' => $isMobile,
+            'country' => $country,
         );
         // since crawlers do not send accept language header, we make it optional
         // in order to keep the logs clean
@@ -136,8 +157,26 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
     /**
      * Start caching functions. If this page is already cached, load it, otherwise create new file
      */
-    public function startContrexxCaching()
+    public function startContrexxCaching($cx)
     {
+        // TODO: $dynVars needs to be built dynamically (via event handler)
+        $this->dynVars = array(
+            'GEO' => array(
+                'country_code' => function() use ($cx) {
+                    return $cx->getComponent('GeoIp')->getCountryCode(array())['content'];
+                },
+            ),
+            'HTTP_COOKIE' => array(
+                'PHPSESSID' => function() {
+                    $sessId = 0;
+                    if (!empty($_COOKIE[session_name()])) {
+                        $sessId = $_COOKIE[session_name()];
+                    }
+                    return $sessId;
+                },
+            ),
+        );
+
         if (!$this->boolIsEnabled) {
             return null;
         }
@@ -146,7 +185,11 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $matches = array();
         foreach ($files as $file) {
             // sort out false-positives (header and ESI cache files)
-            if (!preg_match('/([0-9a-f]{32})_([0-9]+)?$/', $file, $matches)) {
+            $userQuery = '';
+            if (isset($_COOKIE[session_name()])) {
+                $userQuery = '(?:_u' . preg_quote($_COOKIE[session_name()]) . ')?';
+            }
+            if (!preg_match('/([0-9a-f]{32})_([0-9]+' . $userQuery . ')?$/', $file, $matches)) {
                 continue;
             }
             if (filemtime($file) > (time() - $this->intCachingTime)) {
@@ -161,6 +204,21 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                                 header($value);
                                 continue;
                             }
+                            // If expire header is set, check if the cache
+                            // is still valid
+                            if ($name == 'Expires') {
+                                $expireDate = new \DateTime($value);
+                                if ($expireDate < new \DateTime()) {
+                                    // cache is no longer valid
+                                    $headerFile = new \Cx\Lib\FileSystem\File(
+                                        $headerFile
+                                    );
+                                    $headerFile->delete();
+                                    $file = new \Cx\Lib\FileSystem\File($file);
+                                    $file->delete();
+                                    return;
+                                }
+                            }
                             header($name . ': ' . $value);
                         }
                     }
@@ -172,8 +230,10 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 echo $this->internalEsiParsing($endcode, true);
                 exit;
             } else {
-                $File = new \Cx\Lib\FileSystem\File($file);
-                $File->delete();
+                $headerFile = new \Cx\Lib\FileSystem\File($headerFile);
+                $headerFile->delete();
+                $file = new \Cx\Lib\FileSystem\File($file);
+                $file->delete();
             }
         }
     }
@@ -184,13 +244,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
      */
     public function endContrexxCaching($page, $endcode)
     {
-        // TODO: $dynVars needs to be built dynamically
-        $this->dynVars = array(
-            'GEO' => array(
-                'country_code' => \Cx\Core\Routing\Url::fromApi('Data', array('Plain', 'GeoIp', 'getCountryCode'))->toString(),
-            )
-        );
-        
         // back-replace ESI variables that are url encoded
         foreach ($this->dynVars as $groupName=>$vars) {
             foreach ($vars as $varName=>$url) {
@@ -198,10 +251,10 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 $endcode = str_replace(urlencode($esiPlaceholder), $esiPlaceholder, $endcode);
             }
         }
-
+        
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         
-        $exceptions = array(
+        $this->exceptions = array(
             // never cache errors
             'Error', 
 
@@ -303,6 +356,13 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $pageId = '';
         if ($page) {
             $pageId = $page->getId();
+            if ($page->isFrontendProtected()) {
+                // if no session, abort
+                if (empty($_COOKIE[session_name()])) {
+                    return;
+                }
+                $pageId .= '_u' . $_COOKIE[session_name()];
+            }
         }
         if (count($headers)) {
             $handleFile = $this->strCachePath . $this->strCacheFilename . '_h' . $pageId;
@@ -330,16 +390,12 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $settings = $this->getSettings();
         // apply ESI dynamic variables
         foreach ($this->dynVars as $groupName=>$vars) {
-            foreach ($vars as $varName=>$url) {
+            foreach ($vars as $varName=>$callback) {
                 $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
                 if (strpos($htmlCode, $esiPlaceholder) === false) {
                     continue;
                 }
-                try {
-                    $varValue = $this->getApiResponseForUrl($url);
-                } catch (\Exception $e) {
-                    $varValue = '';
-                }
+                $varValue = $callback();
                 $htmlCode = str_replace($esiPlaceholder, $varValue, $htmlCode);
             }
         }
@@ -366,8 +422,16 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             }
 
             // TODO: Somehow FRONTEND_LANG_ID is sometimes undefined here...
+            $esiUrl = new \Cx\Lib\Net\Model\Entity\Url($matches[1]);
+            $langId = \FWLanguage::getLanguageIdByCode($esiUrl->getParam('lang'));
             if (!defined('FRONTEND_LANG_ID')) {
-                define('FRONTEND_LANG_ID', 1);
+                define('FRONTEND_LANG_ID', $langId);
+            }
+            if (!defined('BACKEND_LANG_ID')) {
+                define('BACKEND_LANG_ID', $langId);
+            }
+            if (!defined('LANG_ID')) {
+                define('LANG_ID', $langId);
             }
 
             try {

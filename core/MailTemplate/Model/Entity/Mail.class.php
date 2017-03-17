@@ -52,22 +52,39 @@ class Mail extends \PHPMailer
 
         parent::__construct($exceptions);
 
-        if (   !empty($_CONFIG['coreSmtpServer'])
-            && \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/SmtpSettings.class.php')) {
-            $arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
-            if ($arrSmtp) {
-                $this->isSMTP();
-                $this->SMTPAuth = true;
-                $this->Host     = $arrSmtp['hostname'];
-                $this->Port     = $arrSmtp['port'];
-                $this->Username = $arrSmtp['username'];
-                $this->Password = $arrSmtp['password'];
-            }
-        }
+        // set charset to be used for emails
         $this->CharSet = CONTREXX_CHARSET;
 
+        // use email validation algorithm of cloudrexx
+        // to validate email addresses
         self::$validator = function ($address) {
             return \FWValidator::isEmail($address);
         };
+
+        // abort in case no custom SMTP server is set
+        if (empty($_CONFIG['coreSmtpServer'])) {
+            return;
+        }
+
+        // abort in case custom SMTP server is non-existant
+        $arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
+        if (!$arrSmtp) {
+            return;
+        }
+
+        // set custom SMTP server
+        $this->isSMTP();
+        $this->Host = $arrSmtp['hostname'];
+        $this->Port = $arrSmtp['port'];
+
+        // abort in case no SMTP authentication is set
+        if (empty($arrSmtp['username'])) {
+            return;
+        }
+
+        // set SMTP authentication
+        $this->SMTPAuth = true;
+        $this->Username = $arrSmtp['username'];
+        $this->Password = $arrSmtp['password'];
     }
 }

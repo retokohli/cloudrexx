@@ -293,7 +293,15 @@ class ContentManager extends \Module
 
         // get initial tree data
         $objJsonData = new \Cx\Core\Json\JsonData();
-        $treeData    = $objJsonData->jsondata('node', 'getTree', array('get' => $_GET), false);
+        $treeData = $objJsonData->jsondata(
+            'node',
+            'getTree',
+            array(
+                'get' => $_GET,
+                'response' => new \Cx\Lib\Net\Model\Entity\Response(null),
+            ),
+            false
+        );
         $objCx->setVariable('tree-data', $treeData, 'contentmanager/tree');
 
         if (!empty($_GET['act']) && ($_GET['act'] == 'new')) {
@@ -375,11 +383,33 @@ class ContentManager extends \Module
 
         $cxjs = \ContrexxJavascript::getInstance();
         $cxjs->setVariable('confirmDeleteQuestion', $_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'], 'contentmanager/lang');
-        $cxjs->setVariable('cleanAccessData', $objJsonData->jsondata('page', 'getAccessData', array(), false), 'contentmanager');
+        $cxjs->setVariable(
+            'cleanAccessData',
+            $objJsonData->jsondata(
+                'page',
+                'getAccessData',
+                array(
+                    'response' => new \Cx\Lib\Net\Model\Entity\Response(null),
+                ),
+                false
+            ),
+            'contentmanager'
+        );
         $cxjs->setVariable('contentTemplates', $this->getCustomContentTemplates(), 'contentmanager');
         $cxjs->setVariable('defaultTemplates', $this->getDefaultTemplates(), 'contentmanager/themes');
         $cxjs->setVariable('templateFolders', $this->getTemplateFolders(), 'contentmanager/themes');
-        $cxjs->setVariable('availableBlocks', $objJsonData->jsondata('Block', 'getBlocks', array(), false), 'contentmanager');
+        $cxjs->setVariable(
+            'availableBlocks',
+            $objJsonData->jsondata(
+                'Block',
+                'getBlocks',
+                array(
+                    'response' => new \Cx\Lib\Net\Model\Entity\Response(null),
+                ),
+                false
+            ),
+            'contentmanager'
+        );
 
         // TODO: move including of add'l JS dependencies to cx obj from /cadmin/index.html
         $getLangOptions=$this->getLangOptions();
