@@ -449,4 +449,14 @@ Cache clear all';
         }
         echo 'Cache cleared' . "\n";
     }
+
+    /**
+     * Forces page cache to be stored per user
+     */
+    public function forceUserbasedPageCache() {
+        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
+        $this->cache->forceUserbasedPageCache();
+    }
 }
