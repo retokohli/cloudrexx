@@ -71,12 +71,13 @@
     });
 
     mediaBrowserApp.factory('mediabrowserConfig', function () {
-        var cookieConfig = getCookie('mediabrowser_config');
+        var cookieConfig = Cookies.get('mediabrowser_config');
         if (!cookieConfig) {
             var config = {};
             setCookie(config);
         } else {
             var config = angular.fromJson(cookieConfig);
+            config['isOpen'] = false;
         }
 
         return {
@@ -93,11 +94,7 @@
         };
 
         function setCookie(objData) {
-            cx.jQuery.cookie('mediabrowser_config', angular.toJson(objData), {path: '/cadmin'});
-        }
-
-        function getCookie(name) {
-            return cx.jQuery.cookie(name);
+            Cookies.set('mediabrowser_config', angular.toJson(objData), {path: '/cadmin'});
         }
     });
 
