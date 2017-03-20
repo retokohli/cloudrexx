@@ -194,8 +194,9 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         } else {
             $cacheFileUserRegex = '(?:_u0|)';
         }
+        $cacheFileRegex = '/([0-9a-f]{32})_([0-9]+' . $cacheFileUserRegex . ')?$/';
         $files = preg_grep(
-            '/([0-9a-f]{32})_([0-9]+' . $cacheFileUserRegex . ')?$/',
+            $cacheFileRegex,
             $files
         );
         if (!count($files)) {
@@ -213,6 +214,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
         if (filemtime($file) > (time() - $this->intCachingTime)) {
             // load headers
+            $matches = array();
+            preg_match($cacheFileRegex, $file, $matches);
             $headerFile = $this->strCachePath . $matches[1] . '_h' . $matches[2];
             if (file_exists($headerFile)) {
                 $headers = unserialize(file_get_contents($headerFile));
@@ -527,7 +530,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         do {
             // Random include tags
             $htmlCode = preg_replace_callback(
-                '#<!-- ESI_RANDOM_START -->[\s\S]*<esi:assign name="content_list">\s*\[([^\]]+)\]\s*</esi:assign>[\s\S]*<!-- ESI_RANDOM_END -->#',
+                '#<!-- ESI_RANDOM_START -->[\s\S]*<esi:assign name="content_list">\s*\[([^\]]+)\]\s*</esi:assign>[\s\S]*<!-- ESI_RANDOM_END -->#U',
                 function($matches) {
                     $uris = explode('\',\'', substr($matches[1], 1, -1));
                     $randomNumber = rand(0, count($uris) - 1);
