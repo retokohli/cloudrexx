@@ -467,17 +467,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         
         // Replace include tags
         $settings = $this->getSettings();
-        // apply ESI dynamic variables
-        foreach ($this->dynVars as $groupName=>$vars) {
-            foreach ($vars as $varName=>$callback) {
-                $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
-                if (strpos($htmlCode, $esiPlaceholder) === false) {
-                    continue;
-                }
-                $varValue = $callback();
-                $htmlCode = str_replace($esiPlaceholder, $varValue, $htmlCode);
-            }
-        }
         $replaceEsiFn = function($matches) use (&$cxNotYetInitialized, $settings) {
             // return cached content if available
             $cacheFile = $this->getCacheFileNameFromUrl($matches[1]);
@@ -528,6 +517,27 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         };
 
         do {
+            // apply ESI dynamic variables
+            foreach ($this->dynVars as $groupName => $var) {
+                if (is_callable($var)) {
+                    $esiPlaceholder = '$(' . $groupName . ')';
+                    if (strpos($htmlCode, $esiPlaceholder) === false) {
+                        continue;
+                    }
+                    $varValue = $var();
+                    $htmlCode = str_replace($esiPlaceholder, $varValue, $htmlCode);
+                } else {
+                    foreach ($var as $varName => $callback) {
+                        $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
+                        if (strpos($htmlCode, $esiPlaceholder) === false) {
+                            continue;
+                        }
+                        $varValue = $callback();
+                        $htmlCode = str_replace($esiPlaceholder, $varValue, $htmlCode);
+                    }
+                }
+            }
+
             // Random include tags
             $htmlCode = preg_replace_callback(
                 '#<!-- ESI_RANDOM_START -->[\s\S]*<esi:assign name="content_list">\s*\[([^\]]+)\]\s*</esi:assign>[\s\S]*<!-- ESI_RANDOM_END -->#U',
