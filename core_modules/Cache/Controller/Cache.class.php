@@ -181,7 +181,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 if (isset($parameters['__cap'])) {
                     unset($parameters['__cap']);
                 }
-                $queryString = http_build_query($parameters);
+                $queryString = http_build_query($parameters, null, '&');
                 if (!empty($queryString)) {
                     return '?' . $queryString;
                 }
