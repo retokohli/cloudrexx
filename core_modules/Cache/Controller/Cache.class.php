@@ -175,6 +175,17 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                     return $sessId;
                 },
             ),
+            'QUERY_STRING' => function () {
+                $parameters = array();
+                parse_str($_SERVER['QUERY_STRING'], $parameters);
+                if (isset($parameters['__cap'])) {
+                    unset($parameters['__cap']);
+                }
+                $queryString = http_build_query($parameters, null, '&');
+                if (!empty($queryString)) {
+                    return '?' . $queryString;
+                }
+            },
         );
 
         if (!$this->boolIsEnabled) {
@@ -389,14 +400,23 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         // Replace include tags
         $settings = $this->getSettings();
         // apply ESI dynamic variables
-        foreach ($this->dynVars as $groupName=>$vars) {
-            foreach ($vars as $varName=>$callback) {
-                $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
+        foreach ($this->dynVars as $groupName => $var) {
+            if (is_callable($var)) {
+                $esiPlaceholder = '$(' . $groupName . ')';
                 if (strpos($htmlCode, $esiPlaceholder) === false) {
                     continue;
                 }
-                $varValue = $callback();
+                $varValue = $var();
                 $htmlCode = str_replace($esiPlaceholder, $varValue, $htmlCode);
+            } else {
+                foreach ($var as $varName => $callback) {
+                    $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
+                    if (strpos($htmlCode, $esiPlaceholder) === false) {
+                        continue;
+                    }
+                    $varValue = $callback();
+                    $htmlCode = str_replace($esiPlaceholder, $varValue, $htmlCode);
+                }
             }
         }
         $replaceEsiFn = function($matches) use (&$cxNotYetInitialized, $settings) {
