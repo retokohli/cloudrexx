@@ -63,13 +63,38 @@ class MediaBrowser extends EntityBase
     protected $options = array();
 
     /**
+     * @var SystemComponentController $systemComponentController
+     */
+    protected $systemComponentController;
+
+    /**
+     * @var string $entity
+     */
+    protected $entity;
+
+    /**
      * Create new instance of mediabrowser and register in componentcontroller.
      *
-     * @throws \Cx\Core\Core\Model\Entity\SystemComponentException
      * @throws \Exception
      */
-    function __construct()
+    function __construct(SystemComponentController $systemComponentController = null, $entity = '')
     {
+        if (!empty($systemComponentController)) {
+            $this->systemComponentController = $systemComponentController;
+        } else {
+            $traces = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
+            $trace = end($traces);
+            if (!empty($trace['class'])) {
+                $matches = array();
+                preg_match('/Cx\\\\(?:Core|Core_Modules|Modules)\\\\([^\\\\]*)\\\\/', $trace['class'], $matches);
+                $this->systemComponentController = $matches[0];
+            } else {
+                throw new \Exception('No class found in backtrace');
+            }
+        }
+
+        $this->entity = $entity;
+
         $this->getComponentController()->addMediaBrowser($this);
 
         $this->options = array(
