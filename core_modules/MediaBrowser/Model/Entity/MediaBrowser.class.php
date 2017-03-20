@@ -84,13 +84,16 @@ class MediaBrowser extends EntityBase
         } else {
             $traces = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
             $trace = end($traces);
-            if (!empty($trace['class'])) {
-                $matches = array();
-                preg_match('/Cx\\\\(?:Core|Core_Modules|Modules)\\\\([^\\\\]*)\\\\/', $trace['class'], $matches);
-                $this->systemComponentController = $matches[0];
-            } else {
+            if (empty($trace['class'])) {
                 throw new \Exception('No class found in backtrace');
             }
+            $matches = array();
+            preg_match(
+                '/Cx\\\\(?:Core|Core_Modules|Modules)\\\\([^\\\\]*)\\\\/',
+                $trace['class'],
+                $matches
+            );
+            $this->systemComponentController = $matches[0];
         }
 
         $this->entity = $entity;
