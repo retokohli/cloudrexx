@@ -457,6 +457,6 @@ Cache clear all';
         if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             return;
         }
-        $this->cache->forceUserbased = true;
+        $this->cache->forceUserbasedPageCache();
     }
 }
