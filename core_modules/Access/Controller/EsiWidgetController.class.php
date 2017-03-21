@@ -53,6 +53,11 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      */
     public function parseWidget($name, $template, $locale)
     {
+
+        $langId = \FWLanguage::getLangIdByIso639_1($locale);
+        $template->setVariable(\Env::get('init')->getComponentSpecificLanguageData('Access', true, $langId));
+        $template->setVariable(\Env::get('init')->getComponentSpecificLanguageData('Core', true, $langId));
+
         if (preg_match('/^access_logged_(in|out)\d{0,2}/', $name)) {
             $this->getComponent('Session')->getSession();
             \FWUser::parseLoggedInOutBlocks($template);

@@ -491,7 +491,7 @@ class CacheLib
      * @throws \Exception If JsonAdapter request did not succeed
      * @return string API content or empty string
      */
-    protected function getApiResponseForUrl($url) {
+    protected function getApiResponseForUrl($url, $response = null) {
         // Initialize only when needed, we need DB for this!
         if (empty($this->apiUrlString)) {
             $this->apiUrlString = substr(\Cx\Core\Routing\Url::fromApi('', array(), array()), 0, -1);
@@ -516,6 +516,9 @@ class CacheLib
         unset($params['object']);
         unset($params['act']);
         $arguments = array('get' => contrexx_input2raw($params));
+        if ($response) {
+            $arguments['response'] = $response;
+        }
         
         $json = new \Cx\Core\Json\JsonData();
         $response = $json->data($adapter, $method, $arguments);
