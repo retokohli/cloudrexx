@@ -2020,17 +2020,13 @@ namespace Cx\Core\Core\Controller {
             // set global template variables
             $boolShop = \Cx\Modules\Shop\Controller\Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
-            $objNavbar->setLanguagePlaceholders($this->resolvedPage, $this->request->getUrl(), $this->template);
             $metarobots = $this->resolvedPage->getMetarobots();
             $this->template->setVariable(array(
-                'CHARSET'                        => \Env::get('init')->getFrontendLangCharset(),
                 'TITLE'                          => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
                 'METATITLE'                      => contrexx_raw2xhtml($this->resolvedPage->getMetatitle()),
                 'NAVTITLE'                       => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
                 'GLOBAL_TITLE'                   => $_CONFIG['coreGlobalPageTitle'],
                 'DOMAIN_URL'                     => $_CONFIG['domainUrl'],
-                'PATH_OFFSET'                    => $this->codeBaseOffsetPath,
-                'BASE_URL'                       => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'] . $this->codeBaseOffsetPath,
                 'METAKEYS'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetakeys()) : '',
                 'METADESC'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetadesc()) : '',
                 'METAROBOTS'                     => $metarobots ? 'all' : 'none',
@@ -2060,10 +2056,6 @@ namespace Cx\Core\Core\Controller {
                 'VISITOR_NUMBER'                 => $objCounter ? $objCounter->getVisitorNumber() : '',
                 'COUNTER'                        => $objCounter ? $objCounter->getCounterTag() : '',
                 'BANNER'                         => isset($objBanner) ? $objBanner->getBannerJS() : '',
-                'VERSION'                        => contrexx_raw2xhtml($_CONFIG['coreCmsName']),
-                'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl()),
-                'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl(), true),
-                'ACTIVE_LANGUAGE_NAME'           => \Env::get('init')->getFrontendLangName(),
                 'RANDOM'                         => md5(microtime()),
                 'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
                 'MODULE_INDEX'                   => MODULE_INDEX,
