@@ -95,7 +95,7 @@ class MediaBrowser extends EntityBase
             $this->systemComponentController = $systemComponentController;
             return;
         }
-        $traces = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
+        $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
         $trace = end($traces);
         if (empty($trace['class'])) {
             throw new \Exception('No class found in backtrace');
