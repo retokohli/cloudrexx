@@ -64,7 +64,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         if ($name === 'BASE_URL') {
             $baseUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
             $baseUrl->setMode('backend');
-            $template->setVariable($name, $baseUrl);
+            $template->setVariable($name, substr($baseUrl->toString(), 0, -1));
             return;
         }
 
