@@ -127,6 +127,21 @@ class YamlSettingEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventL
                         // drop esi/ssi cache
                         \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->clearSsiCache();
                     }
+
+                case 'googleMapsAPIKey':
+                case 'coreGlobalPageTitle':
+                    $settings = array(
+                        'googleMapsAPIKey'    => 'GOOGLE_MAPS_API_KEY',
+                        'coreGlobalPageTitle' => 'GLOBAL_TITLE'
+                    );
+                    $settingName = $objSetting->getName();
+                    if ($value !== $_CONFIG[$settingName]) {
+                        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                        $cx->getEvents()->triggerEvent(
+                            'clearEsiCache',
+                            array('Widget', $settings[$settingName])
+                        );
+                    }
                     break;
             }
         } catch (YamlSettingEventListenerException $e) {

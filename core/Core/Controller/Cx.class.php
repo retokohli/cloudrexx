@@ -2027,8 +2027,6 @@ namespace Cx\Core\Core\Controller {
                 'TITLE'                          => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
                 'METATITLE'                      => contrexx_raw2xhtml($this->resolvedPage->getMetatitle()),
                 'NAVTITLE'                       => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
-                'GLOBAL_TITLE'                   => $_CONFIG['coreGlobalPageTitle'],
-                'DOMAIN_URL'                     => $_CONFIG['domainUrl'],
                 'PATH_OFFSET'                    => $this->codeBaseOffsetPath,
                 'BASE_URL'                       => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'] . $this->codeBaseOffsetPath,
                 'METAKEYS'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetakeys()) : '',
@@ -2070,7 +2068,6 @@ namespace Cx\Core\Core\Controller {
                 'LOGIN_URL'                      => '<a href="' . contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'Login')) . '" class="start-frontend-editing">' . $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'] . '</a>',
                 'TXT_CORE_LAST_MODIFIED_PAGE'    => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
                 'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_FORMAT_DATE, $this->resolvedPage->getUpdatedAt()->getTimestamp()),
-                'GOOGLE_MAPS_API_KEY'            => isset($_CONFIG['googleMapsAPIKey']) ? contrexx_raw2xhtml($_CONFIG['googleMapsAPIKey']) : '',
                 'FACEBOOK_LIKE_IFRAME'           => '<div id="fb-root"></div>
                                                     <script type="text/javascript">
                                                         (function(d, s, id) {

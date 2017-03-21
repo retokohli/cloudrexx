@@ -61,7 +61,55 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         \Cx\Core\Setting\Controller\Setting::init('Config', null, 'Yaml', null, \Cx\Core\Setting\Controller\Setting::REPOPULATE);
     }
 
-     /**
+    /**
+     * {@inheritdoc}
+     */
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx)
+    {
+        $widgetController = $this->getComponent('Widget');
+        foreach (
+            array(
+                'GLOBAL_TITLE',
+                'DOMAIN_URL',
+                'GOOGLE_MAPS_API_KEY'
+            ) as $widgetName) {
+
+            switch ($widgetName) {
+                case 'GLOBAL_TITLE':
+                    \Cx\Core\Setting\Controller\Setting::init('Config', 'site');
+                    $widgetValue = \Cx\Core\Setting\Controller\Setting::getValue(
+                        'coreGlobalPageTitle',
+                        'Config'
+                    );
+                    break;
+
+                case 'DOMAIN_URL':
+                    $url = \Cx\Core\Routing\Url::fromDocumentRoot();
+                    $widgetValue = $url->getDomain();
+                    break;
+
+                case 'GOOGLE_MAPS_API_KEY':
+                    \Cx\Core\Setting\Controller\Setting::init(
+                        'Config',
+                        'otherConfigurations'
+                    );
+                    $widgetValue = \Cx\Core\Setting\Controller\Setting::getValue(
+                        'googleMapsAPIKey',
+                        'Config'
+                    );
+                    break;
+            }
+            $widgetController->registerWidget(
+                new \Cx\Core_Modules\Widget\Model\Entity\FinalStringWidget(
+                    $this,
+                    $widgetName,
+                    $widgetValue
+                )
+            );
+        }
+    }
+
+    /**
      * Load your component.
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
