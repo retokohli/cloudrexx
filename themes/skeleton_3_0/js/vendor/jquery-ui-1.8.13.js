@@ -10948,7 +10948,7 @@ $.widget( "ui.tabs", {
 	_cookie: function() {
 		var cookie = this.cookie ||
 			( this.cookie = this.options.cookie.name || "ui-tabs-" + getNextListId() );
-		return $.cookie.apply( null, [ cookie ].concat( $.makeArray( arguments ) ) );
+		return Cookies.set.apply( null, [ cookie ].concat( $.makeArray( arguments ) ) );
 	},
 
 	_ui: function( tab, panel ) {
