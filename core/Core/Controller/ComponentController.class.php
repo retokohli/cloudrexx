@@ -33,32 +33,38 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * {@inheritdoc}
      */
+    public function getControllerClasses()
+    {
+        return array('EsiWidget');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getControllersAccessableByJson()
+    {
+        return array('EsiWidgetController');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function postInit(\Cx\Core\Core\Controller\Cx $cx)
     {
         $widgetController = $this->getComponent('Widget');
-        foreach (array('PATH_OFFSET', 'BASE_URL', 'VERSION') as $widgetName) {
-            switch ($widgetName) {
-                case 'PATH_OFFSET':
-                    $widgetValue = $this->cx->getCodeBaseOffsetPath();
-                    break;
-                case 'BASE_URL':
-                    $url = \Cx\Core\Routing\Url::fromDocumentRoot();
-                    $url->setMode('backend');
-                    $widgetValue = $url;
-                    break;
-                case 'VERSION':
-                    \Cx\Core\Setting\Controller\Setting::init('Config', 'release');
-                    $widgetValue = \Cx\Core\Setting\Controller\Setting::getValue(
-                        'coreCmsName',
-                        'Config'
-                    );
-                    break;
-            }
+        $widgetController->registerWidget(
+            new \Cx\Core_Modules\Widget\Model\Entity\FinalStringWidget(
+                $this,
+                'PATH_OFFSET',
+                $this->cx->getCodeBaseOffsetPath()
+            )
+        );
+
+        foreach (array('BASE_URL', 'VERSION') as $widgetName) {
             $widgetController->registerWidget(
-                new \Cx\Core_Modules\Widget\Model\Entity\FinalStringWidget(
+                new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                     $this,
-                    $widgetName,
-                    $widgetValue
+                    $widgetName
                 )
             );
         }
