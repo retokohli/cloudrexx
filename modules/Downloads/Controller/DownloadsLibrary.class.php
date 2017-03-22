@@ -379,7 +379,7 @@ class DownloadsLibrary
      /**
      * Get Group content by group id
      *
-     * @param integer $id group id
+     * @param integer $id     group id
      * @param integer $langId Language id
      *
      * @return string
