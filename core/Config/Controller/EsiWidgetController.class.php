@@ -60,29 +60,26 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
     {
         switch ($name) {
             case 'GLOBAL_TITLE':
-                \Cx\Core\Setting\Controller\Setting::init('Config', 'site');
                 $widgetValue = \Cx\Core\Setting\Controller\Setting::getValue(
                     'coreGlobalPageTitle',
                     'Config'
                 );
+                $template->setVariable($name, contrexx_raw2xhtml($widgetValue));
                 break;
 
             case 'DOMAIN_URL':
                 $url = \Cx\Core\Routing\Url::fromDocumentRoot();
                 $widgetValue = $url->getDomain();
+                $template->setVariable($name, contrexx_raw2xhtml($widgetValue));
                 break;
 
             case 'GOOGLE_MAPS_API_KEY':
-                \Cx\Core\Setting\Controller\Setting::init(
-                    'Config',
-                    'otherConfigurations'
-                );
                 $widgetValue = \Cx\Core\Setting\Controller\Setting::getValue(
                     'googleMapsAPIKey',
                     'Config'
                 );
+                $template->setVariable($name, $widgetValue);
                 break;
         }
-        $template->setVariable($name, contrexx_raw2xhtml($widgetValue));
     }
 }

@@ -83,7 +83,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'GLOBAL_TITLE',
                 'DOMAIN_URL',
                 'GOOGLE_MAPS_API_KEY'
-            ) as $widgetName) {
+            ) as $widgetName
+        ) {
             $widgetController->registerWidget(
                 new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                     $this,
