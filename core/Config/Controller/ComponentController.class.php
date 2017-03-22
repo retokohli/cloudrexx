@@ -45,10 +45,21 @@ namespace Cx\Core\Config\Controller;
  * @subpackage  core_config
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
-    public function getControllerClasses() {
-        // Return an empty array here to let the component handler know that there
-        // does not exist a backend, nor a frontend controller of this component.
-        return array();
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getControllerClasses()
+    {
+        return array('EsiWidget');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getControllersAccessableByJson()
+    {
+        return array('EsiWidgetController');
     }
 
     /**
@@ -73,37 +84,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'DOMAIN_URL',
                 'GOOGLE_MAPS_API_KEY'
             ) as $widgetName) {
-
-            switch ($widgetName) {
-                case 'GLOBAL_TITLE':
-                    \Cx\Core\Setting\Controller\Setting::init('Config', 'site');
-                    $widgetValue = \Cx\Core\Setting\Controller\Setting::getValue(
-                        'coreGlobalPageTitle',
-                        'Config'
-                    );
-                    break;
-
-                case 'DOMAIN_URL':
-                    $url = \Cx\Core\Routing\Url::fromDocumentRoot();
-                    $widgetValue = $url->getDomain();
-                    break;
-
-                case 'GOOGLE_MAPS_API_KEY':
-                    \Cx\Core\Setting\Controller\Setting::init(
-                        'Config',
-                        'otherConfigurations'
-                    );
-                    $widgetValue = \Cx\Core\Setting\Controller\Setting::getValue(
-                        'googleMapsAPIKey',
-                        'Config'
-                    );
-                    break;
-            }
             $widgetController->registerWidget(
-                new \Cx\Core_Modules\Widget\Model\Entity\FinalStringWidget(
+                new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                     $this,
-                    $widgetName,
-                    $widgetValue
+                    $widgetName
                 )
             );
         }
