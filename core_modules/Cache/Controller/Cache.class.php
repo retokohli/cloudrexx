@@ -190,7 +190,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 if (!isset($_SERVER['HTTP_REFERER'])) {
                     return '';
                 }
-                return $_SERVER['HTTP_REFERER';
+                return $_SERVER['HTTP_REFERER'];
             },
             'QUERY_STRING' => function () {
                 // This is not according to W3C specifications since it
