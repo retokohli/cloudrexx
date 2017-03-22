@@ -78,7 +78,7 @@ class LinkSanitizer {
             (?=[^\/])
 
             # ..and neither start with a SSI-tag
-            (?!<!--\#(?:config|set|if|elif|else|endif|include)+\s+)
+            (?!<!--\#[a-z]+\s+)
 
             # ..and neither start with a ESI-tag
             (?!<esi:)
