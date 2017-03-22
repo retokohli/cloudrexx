@@ -119,6 +119,11 @@ class CacheLib
     protected $ssiProxy;
 
     /**
+     * @var \Cx\Core\Json\JsonData
+     */
+    protected $jsonData = null;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -491,7 +496,7 @@ class CacheLib
      * @throws \Exception If JsonAdapter request did not succeed
      * @return string API content or empty string
      */
-    protected function getApiResponseForUrl($url) {
+    protected function getApiResponseForUrl($url, $response = null) {
         // Initialize only when needed, we need DB for this!
         if (empty($this->apiUrlString)) {
             $this->apiUrlString = substr(\Cx\Core\Routing\Url::fromApi('', array(), array()), 0, -1);
@@ -516,9 +521,14 @@ class CacheLib
         unset($params['object']);
         unset($params['act']);
         $arguments = array('get' => contrexx_input2raw($params));
-        
-        $json = new \Cx\Core\Json\JsonData();
-        $response = $json->data($adapter, $method, $arguments);
+        if ($response) {
+            $arguments['response'] = $response;
+        }
+
+        if (!$this->jsonData) {
+            $this->jsonData = new \Cx\Core\Json\JsonData();
+        }
+        $response = $this->jsonData->data($adapter, $method, $arguments);
         if (
             !isset($response['status']) ||
             $response['status'] != 'success' ||
@@ -1088,7 +1098,7 @@ class CacheLib
     function deleteSingleFile($intPageId) {
         $intPageId = intval($intPageId);
         if ( 0 < $intPageId ) {
-            $files = glob($this->strCachePath . '*_{,h}' . $intPageId, GLOB_BRACE);
+            $files = glob($this->strCachePath . '*_{,h}' . $intPageId . '*', GLOB_BRACE);
             if ( count( $files ) ) {
                 foreach ( $files as $file ) {
                     @unlink( $file );

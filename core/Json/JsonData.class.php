@@ -71,7 +71,7 @@ class JsonData {
      * List of adapters to use (they have to implement the JsonAdapter interface)
      * @var Array List of JsonAdapters
      */
-    protected $adapters = array();
+    protected static $adapters = array();
     /**
      * Session id for request which we got from the login request
      * @var string $sessionId
@@ -83,6 +83,10 @@ class JsonData {
      * @author Michael Ritter <michael.ritter@comvation.com>
      */
     public function __construct() {
+        if (count(static::$adapters)) {
+            return;
+        }
+
         foreach (self::$adapter_classes as $ns=>$adapters) {
             foreach ($adapters as $adapter) {
                 $this->loadAdapter($adapter, $ns);
@@ -158,7 +162,7 @@ class JsonData {
             return;
             //throw new \Exception('JsonAdapter controller could not be found: "' . $adapter . '"');
         }
-        $this->adapters[$object->getName()] = $object;
+        static::$adapters[$object->getName()] = $object;
     }
 
     /**
@@ -172,7 +176,7 @@ class JsonData {
             $object = new $adapter();
         }
         \Env::get('init')->loadLanguageData($object->getName());
-        $this->adapters[$object->getName()] = $object;
+        static::$adapters[$object->getName()] = $object;
     }
 
     /**
@@ -253,10 +257,10 @@ class JsonData {
     public function data($adapter, $method, $arguments = array()) {
         global $_ARRAYLANG;
 
-        if (!isset($this->adapters[$adapter])) {
+        if (!isset(static::$adapters[$adapter])) {
             return $this->getErrorData('No such adapter');
         }
-        $adapter = $this->adapters[$adapter];
+        $adapter = static::$adapters[$adapter];
         $methods = $adapter->getAccessableMethods();
         $realMethod = '';
 

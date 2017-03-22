@@ -114,9 +114,17 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
             if (!$template->placeholderExists($this->getName())) {
                 return;
             }
+            $content = $this->internalParse(
+                $template,
+                $response,
+                $targetComponent,
+                $targetEntity,
+                $targetId
+            );
+            \LinkGenerator::parseTemplate($content);
             $template->setVariable(
                 $this->getName(),
-                $this->internalParse($template, $response, $targetComponent, $targetEntity, $targetId)
+                $content
             );
         } else {
             if (!$template->blockExists($this->getName())) {
