@@ -2025,8 +2025,6 @@ namespace Cx\Core\Core\Controller {
                 'TITLE'                          => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
                 'METATITLE'                      => contrexx_raw2xhtml($this->resolvedPage->getMetatitle()),
                 'NAVTITLE'                       => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
-                'PATH_OFFSET'                    => $this->codeBaseOffsetPath,
-                'BASE_URL'                       => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'] . $this->codeBaseOffsetPath,
                 'METAKEYS'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetakeys()) : '',
                 'METADESC'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetadesc()) : '',
                 'METAROBOTS'                     => $metarobots ? 'all' : 'none',
