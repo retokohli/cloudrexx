@@ -216,6 +216,10 @@ class Downloads extends DownloadsLibrary
         $objDownload = new Download();
         $objCategory = Category::getCategory($this->categoryId);
 
+        if (!$objCategory->getActiveStatus()) {
+            return;
+        }
+
         if ($objCategory->getId()) {
             // check access permissions to selected category
             if (!\Permission::checkAccess(143, 'static', true)

@@ -1509,10 +1509,13 @@ class Category
      */
     public function getCategoriesBlocks()
     {
-         return preg_replace(
+        $categoryIds = array_keys($this->arrLoadedCategories);
+        array_push($categoryIds, 0);
+
+        return preg_replace(
             '/\d+/',
             'downloads_category_$0_list',
-            array_keys($this->arrLoadedCategories)
+            $categoryIds
         );
     }
 }

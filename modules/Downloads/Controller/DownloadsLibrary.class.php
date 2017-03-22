@@ -380,17 +380,20 @@ class DownloadsLibrary
      * Get Group content by group id
      *
      * @param integer $id group id
+     * @param integer $langId Language id
      *
      * @return string
      */
-    public function getGroupById($id)
+    public function getGroupById($id, $langId)
     {
-        global $_LANGID;
-
         if (empty($id)) {
             return;
         }
-        $group = Group::getGroups(array('id' => $id));
+        $group = Group::getGroup($id);
+
+        if (!$group->getActiveStatus()) {
+            return;
+        }
 
         $sortOrder = $this->categoriesSortingOptions[$this->arrConfig['categories_sorting_order']];
         $ulTag     = new \Cx\Core\Html\Model\Entity\HtmlElement('ul');
@@ -406,7 +409,7 @@ class DownloadsLibrary
                 '',
                 array('category' => $category->getId())
             )->toString();
-            $linkText = contrexx_raw2xhtml($category->getName($_LANGID));
+            $linkText = contrexx_raw2xhtml($category->getName($langId));
             //Generate anchor tag
             $linkTag     = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
             $linkTag->setAttributes(array(

@@ -101,12 +101,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function postInit(\Cx\Core\Core\Controller\Cx $cx)
     {
         // downloads group
-        $groups            = Group::getGroups(array('is_active' => true));
+        $groups            = Group::getGroups();
         $groupsPlaceholders = $groups->getGroupsPlaceholders();
         $this->registerDownloadsWidgets($groupsPlaceholders);
 
         // downloads category list
-        $categories       = Category::getCategories(array('is_active' => true));
+        $categories       = Category::getCategories();
         $categoriesBlocks = $categories->getCategoriesBlocks();
         $this->registerDownloadsWidgets($categoriesBlocks, true);
     }

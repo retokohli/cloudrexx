@@ -61,19 +61,24 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         global $_LANGID, $_ARRAYLANG;
 
         $this->getComponent('Session')->getSession();
+        //The $_LANGID is required in the Downloads::overview()
         $_LANGID    = \FWLanguage::getLangIdByIso639_1($locale);
         $_ARRAYLANG = array_merge(
             $_ARRAYLANG,
-            \Env::get('init')->loadLanguageData('Downloads')
+            \Env::get('init')->getComponentSpecificLanguageData(
+                'Downloads',
+                true,
+                $_LANGID
+            )
         );
-        
+
         $matches = NULL;
         if (preg_match('/^DOWNLOADS_GROUP_([0-9]+)$/', $name, $matches)) {
             $downloads    = new DownloadsLibrary();
-            $groupContent = $downloads->getGroupById($matches[1]);
+            $groupContent = $downloads->getGroupById($matches[1], $_LANGID);
             $template->setVariable($name, $groupContent);
         }
-        
+
         $catMatches = NULL;
         if (preg_match('/^downloads_category_(\d+)_list$/', $name, $catMatches)) {
             $downloads = new Downloads($template, array('category' => $catMatches[1]));
