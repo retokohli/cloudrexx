@@ -90,10 +90,9 @@ class MediaBrowser extends EntityBase
      */
     function __construct(SystemComponentController $systemComponentController = null, $entity = '')
     {
-        if (!empty($systemComponentController)) {
-            // Sets SystemComponentController if one is provided
-            $this->systemComponentController = $systemComponentController;
-        } else {
+        // Sets provided SystemComponentController
+        $this->systemComponentController = $systemComponentController;
+        if (!$systemComponentController) {
             // Searches a SystemComponentController intelligently by RegEx on backtrace stack frame
             $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
             $trace = end($traces);
