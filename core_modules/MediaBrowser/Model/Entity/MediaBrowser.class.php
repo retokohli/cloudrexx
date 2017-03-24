@@ -92,7 +92,7 @@ class MediaBrowser extends EntityBase
     {
         // Sets provided SystemComponentController
         $this->systemComponentController = $systemComponentController;
-        if (!$systemComponentController) {
+        if (!$this->systemComponentController) {
             // Searches a SystemComponentController intelligently by RegEx on backtrace stack frame
             $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
             $trace = end($traces);
