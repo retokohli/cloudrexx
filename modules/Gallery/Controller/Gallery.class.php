@@ -877,7 +877,7 @@ class Gallery
                                                     status="1"
                                         ');
         $this->_objTpl->setVariable(array(
-            'GALLERY_CATEGORY_PAGING'     => getPaging($objResult->fields['countValue'], $intPos, '&section=Gallery&cid='.$intParentId.$this->strCmd, '<b>'.$_ARRAYLANG['TXT_GALLERY'].'</b>',false,intval($_CONFIG['corePagingLimit']))
+            'GALLERY_CATEGORY_PAGING'     => getPaging($objResult->fields['countValue'], $intPos, '&cid='.$intParentId.$this->strCmd, '<b>'.$_ARRAYLANG['TXT_GALLERY'].'</b>',false,intval($_CONFIG['corePagingLimit']))
             ));
         //end category-paging
 
@@ -962,7 +962,7 @@ class Gallery
             "ORDER BY sorting");
         $intCount = $objResult->RecordCount();
         $this->_objTpl->setVariable(array(
-            'GALLERY_PAGING'     => getPaging($intCount, $intPos, '&section=Gallery&cid='.$intParentId.$this->strCmd, '<b>'.$_ARRAYLANG['TXT_IMAGES'].'</b>', false, intval($this->arrSettings["paging"]))
+            'GALLERY_PAGING'     => getPaging($intCount, $intPos, '&cid='.$intParentId.$this->strCmd, '<b>'.$_ARRAYLANG['TXT_IMAGES'].'</b>', false, intval($this->arrSettings["paging"]))
         ));
         // end paging
 
