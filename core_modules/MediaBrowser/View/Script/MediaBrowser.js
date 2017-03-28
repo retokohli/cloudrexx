@@ -94,7 +94,14 @@
         };
 
         function setCookie(objData) {
-            Cookies.set('mediabrowser_config', angular.toJson(objData), {path: '/cadmin'});
+            var component = cx.variables.get('component', 'mediabrowser');
+            Cookies.set(
+                'mediabrowser_config',
+                angular.toJson(objData),
+                {
+                    path: '/cadmin/' + component
+                }
+            );
         }
     });
 
