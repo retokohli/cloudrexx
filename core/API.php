@@ -148,13 +148,18 @@ function getPaging($numof_rows, $pos, $uri_parameter, $paging_text,
 function showFormattedDate($unixtimestamp='')
 {
     global $_CORELANG;
-    $months = explode(",",$_CORELANG['TXT_MONTH_ARRAY']);
+    $months  = explode(",",$_CORELANG['TXT_MONTH_ARRAY']);
     $weekday = explode(",",$_CORELANG['TXT_DAY_ARRAY']);
 
+    $cx = Cx\Core\Core\Controller\Cx::instanciate();
+    $dateTimeController = $cx->getComponent('DateTime');
+    $dateTime = $dateTimeController->createDateTimeForUser('now');
+
     if (empty($unixtimestamp)) {
-        $date = date("w j n Y");
+        $date = $dateTime->format('w j n Y');
     } else {
-        $date = date("w j n Y", $unixtimestamp);
+        $dateTime->setTimestamp($unixtimestamp);
+        $date = $dateTime->format('w j n Y');
     }
     list ($wday, $mday, $month, $year) = explode(' ', $date);
     $month -= 1;

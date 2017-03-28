@@ -48,11 +48,19 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     protected $internalTimezone;
 
     /**
-     * Returns the controller class names for this component
-     * @return array List of controller names
+     * {@inheritdoc}
      */
-    public function getControllerClasses() {
-        return array();
+    public function getControllerClasses()
+    {
+        return array('EsiWidget');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getControllersAccessableByJson()
+    {
+        return array('EsiWidgetController');
     }
 
     /**
@@ -151,5 +159,71 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function createDateTimeForDb($time) {
         return new \DateTime($time, $this->databaseTimezone);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx)
+    {
+        $widgetController = $this->getComponent('Widget');
+
+        //EsiWidget
+        $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+            $this,
+            'DATE'
+        );
+        $widget->setEsiVariable(
+            \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_LANG |
+            \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_THEME |
+            \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_CHANNEL
+        );
+        $widgetController->registerWidget($widget);
+
+        //FinalStringWidget
+        $widgets = array(
+            'TIME',
+            'DATE_YEAR',
+            'DATE_MONTH',
+            'DATE_DAY',
+            'DATE_TIME',
+        );
+
+        foreach ($widgets as $widgetName) {
+            $widgetValue = '';
+
+            if ($widgetName === 'TIME') {
+                $date = $this->createDateTimeForUser('now');
+                $widgetValue = $date->format('H:i');
+            }
+
+            if ($widgetName === 'DATE_YEAR') {
+                $date = $this->createDateTimeForUser('now');
+                $widgetValue = $date->format('Y');
+            }
+
+            if ($widgetName === 'DATE_MONTH') {
+                $date = $this->createDateTimeForUser('now');
+                $widgetValue = $date->format('m');
+            }
+
+            if ($widgetName === 'DATE_DAY') {
+                $date = $this->createDateTimeForUser('now');
+                $widgetValue = $date->format('d');
+            }
+
+            if ($widgetName === 'DATE_TIME') {
+                $date = $this->createDateTimeForUser('now');
+                $widgetValue = $date->format('H:i');
+            }
+
+            $widgetController->registerWidget(
+                new \Cx\Core_Modules\Widget\Model\Entity\FinalStringWidget(
+                    $this,
+                    $widgetName,
+                    $widgetValue
+                )
+            );
+        }
     }
 }
