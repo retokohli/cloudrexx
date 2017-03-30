@@ -89,16 +89,6 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             return;
         }
 
-        if ($name === 'LAST_MODIFIED_PAGE') {
-            $dateTimeController = $this->cx->getComponent('DateTime');
-            $dateTime = $dateTimeController->db2user($page->getUpdatedAt());
-            $template->setVariable(
-                $name,
-                $dateTime->format(ASCMS_DATE_FORMAT_DATE)
-            );
-            return;
-        }
-
         switch ($name) {
             case 'TITLE':
             case 'NAVTITLE':
@@ -116,9 +106,11 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                 $methodName  = 'get' . ucfirst(strtolower($name));
                 $widgetValue = contrexx_raw2xhtml($page->$methodName());
                 if ($name === 'METAIMAGE' && empty($widgetValue)) {
-                    $widgetValue = \Cx\Core\Setting\Controller\Setting::getValue(
-                        'defaultMetaimage',
-                        'Config'
+                    $widgetValue = contrexx_raw2xhtml(
+                        \Cx\Core\Setting\Controller\Setting::getValue(
+                            'defaultMetaimage',
+                            'Config'
+                        )
                     );
                 }
                 break;
@@ -140,6 +132,12 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
 
             case 'CSS_NAME':
                 $widgetValue = contrexx_raw2xhtml($page->getCssName());
+                break;
+
+            case 'LAST_MODIFIED_PAGE':
+                $dateTime     = $this->cx->getComponent('DateTime');
+                $modifiedDate = $dateTime->db2user($page->getUpdatedAt());
+                $widgetValue  = $modifiedDate->format(ASCMS_DATE_FORMAT_DATE);
                 break;
         }
         $template->setVariable($name, $widgetValue);
