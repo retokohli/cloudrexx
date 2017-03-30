@@ -71,19 +71,34 @@
     });
 
     mediaBrowserApp.factory('mediabrowserConfig', function () {
+        var config = {};
+        var component = cx.variables.get('component', 'mediabrowser');
+
         var cookieConfig = Cookies.get('mediabrowser_config');
         if (!cookieConfig) {
-            var config = {};
-            setCookie(config);
+            cookieConfig = {};
+            setCookie(null, cookieConfig);
+        }
+        var newCookieConfig = angular.fromJson(cookieConfig);
+        if (newCookieConfig && newCookieConfig[component]) {
+            config['lastPath'] = newCookieConfig[component]['lastPath'];
+            config['startMedia'] = newCookieConfig[component]['startMedia'];
         } else {
-            var config = angular.fromJson(cookieConfig);
-            config['isOpen'] = false;
+            config['lastPath'] = [];
+            config['startMedia'] = [];
+            newCookieConfig[component] = {
+                lastPath: config['lastPath'],
+                startMedia: config['startMedia']
+            };
+            setCookie(null, newCookieConfig);
         }
 
         return {
             set: function (key, value) {
                 config[key] = value;
-                setCookie(config);
+                if (key == 'lastPath' || key == 'startMedia') {
+                    setCookie(key, value);
+                }
             },
             get: function (key) {
                 return config[key];
@@ -93,13 +108,20 @@
             }
         };
 
-        function setCookie(objData) {
-            var component = cx.variables.get('component', 'mediabrowser');
+        function setCookie(attribute, data) {
+            if (!data) {
+                return;
+            }
+            if (attribute) {
+                newCookieConfig[component][attribute] = data;
+            } else {
+                newCookieConfig = data;
+            }
             Cookies.set(
                 'mediabrowser_config',
-                angular.toJson(objData),
+                angular.toJson(newCookieConfig),
                 {
-                    path: '/cadmin/' + component
+                    path: '/cadmin'
                 }
             );
         }
@@ -344,6 +366,7 @@
                         standard: true
                     }
                 ];
+                mediabrowserConfig.set('startMedia', $scope.selectedSource.value);
                 $scope.loadingSources = true;
                 mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, '', recursive).then(
                     function getFiles(data) {
@@ -1163,9 +1186,11 @@
                     mediabrowserConfig.set('views', attrs.cxMbViews.trim().split(","));
                 }
 
-                mediabrowserConfig.set('startMedia', 'files');
-                if (attrs.cxMbStartmediatype) {
-                    mediabrowserConfig.set('startMedia', attrs.cxMbStartmediatype);
+                if (!mediabrowserConfig.isset('startMedia')) {
+                    mediabrowserConfig.set('startMedia', 'files');
+                    if (attrs.cxMbStartmediatype) {
+                        mediabrowserConfig.set('startMedia', attrs.cxMbStartmediatype);
+                    }
                 }
 
                 mediabrowserConfig.set('mediatypes', 'all');
