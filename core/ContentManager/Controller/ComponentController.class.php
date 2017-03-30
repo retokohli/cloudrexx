@@ -81,6 +81,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function postInit(\Cx\Core\Core\Controller\Cx $cx)
     {
+        //Do not create ESI placeholder for the backend placeholder(CONTENT_TITLE)
         if($this->cx->getMode() === \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
             return;
         }
