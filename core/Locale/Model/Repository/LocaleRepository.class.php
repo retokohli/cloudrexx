@@ -76,8 +76,9 @@ class LocaleRepository extends EntityRepository
      * @param array $criteria The criteria
      * @return array The locales
      */
-    public function findBy(array $criteria)
-    {
+    public function findBy(
+        array $criteria, array $orderBy = NULL, $limit = NULL, $offset = NULL
+    ) {
         $locales = parent::findBy($criteria);
         // order locales by orderNo
         usort($locales, function($a, $b) {
