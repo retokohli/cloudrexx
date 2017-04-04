@@ -140,7 +140,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         // fetch canonical-link
         $headers = \Env::get('Resolver')->getHeaders();
-        if (isset($headers['Link']) &&
+        if (
+            isset($headers['Link']) &&
             preg_match('/^<([^>]+)>;\s+rel="canonical"/', $headers['Link'], $matches)
         ) {
             $canonicalLink = $matches[1];
@@ -152,12 +153,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         // TODO: Once each componet will have implemented a proper resolve hook
         //       the CANONICAL_LINK widget shall be converted into an EsiWidget.
-        $widgetController = $this->getComponent('Widget');
-        $widgetController->registerWidget(
+        $this->getComponent('Widget')->registerWidget(
             new \Cx\Core_Modules\Widget\Model\Entity\FinalStringWidget(
                 $this,
                 'CANONICAL_LINK',
-                $link
+                (string) $link
             )
         );
 
