@@ -373,8 +373,7 @@ class Download {
             WHERE tblD.`id` = '.$this->id) !== false
         ) {
             //clear Esi Cache
-            $downloadsLibrary = new DownloadsLibrary();
-            $downloadsLibrary->clearEsiCache();
+            DownloadsLibrary::clearEsiCache();
             return true;
         } else {
             $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_DELETE_FAILED'], htmlentities($this->name, ENT_QUOTES, CONTREXX_CHARSET));
@@ -1237,8 +1236,7 @@ class Download {
         $objFWUser->objUser->getDynamicPermissionIds(true);
 
         //clear Esi Cache
-        $downloadsLibrary = new DownloadsLibrary();
-        $downloadsLibrary->clearEsiCache();
+        DownloadsLibrary::clearEsiCache();
         return true;
     }
 

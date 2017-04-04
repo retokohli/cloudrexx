@@ -168,7 +168,7 @@ class DownloadsLibrary
             $objDatabase->Execute("UPDATE `".DBPREFIX."module_downloads_settings` SET `value` = '".addslashes($value)."' WHERE `name` = '".$key."'");
         }
         //clear Esi Cache
-        $this->clearEsiCache();
+        self::clearEsiCache();
     }
 
     public function getSettings()
@@ -462,7 +462,7 @@ class DownloadsLibrary
     /**
      * Clear Esi Cache content
      */
-    public function clearEsiCache()
+    public static function clearEsiCache()
     {
         $groups       = Group::getGroups();
         $categories   = Category::getCategories();

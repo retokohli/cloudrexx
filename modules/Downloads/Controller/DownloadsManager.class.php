@@ -1219,7 +1219,7 @@ class DownloadsManager extends DownloadsLibrary
 
         if ($objCategory->storeDownloadAssociations()) {
             //clear Esi Cache
-            $this->clearEsiCache();
+            self::clearEsiCache();
             return true;
         } else {
             $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objCategory->getErrorMsg());
@@ -1252,7 +1252,7 @@ class DownloadsManager extends DownloadsLibrary
 
             if ($objCategory->storeDownloadAssociations()) {
                 //clear Esi Cache
-                $this->clearEsiCache();
+                self::clearEsiCache();
                 return true;
             } else {
                 $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objCategory->getErrorMsg());

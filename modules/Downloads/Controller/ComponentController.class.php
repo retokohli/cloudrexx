@@ -103,12 +103,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // downloads group
         $groups            = Group::getGroups();
         $groupsPlaceholders = $groups->getGroupsPlaceholders();
-        $this->registerDownloadsWidgets($groupsPlaceholders);
+        $this->registerWidgets($groupsPlaceholders);
 
         // downloads category list
         $categories       = Category::getCategories();
         $categoriesBlocks = $categories->getCategoriesBlocks();
-        $this->registerDownloadsWidgets($categoriesBlocks, true);
+        $this->registerWidgets($categoriesBlocks, true);
     }
 
     /**
@@ -119,7 +119,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *
      * @return null
      */
-    public function registerDownloadsWidgets($widgets, $isBlock = false) {
+    protected function registerWidgets($widgets, $isBlock = false) {
 
         $widgetController = $this->getComponent('Widget');
         foreach ($widgets as $widgetName) {

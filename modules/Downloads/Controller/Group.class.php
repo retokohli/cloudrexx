@@ -163,8 +163,7 @@ class Group
             WHERE tblG.`id` = '.$this->id) !== false
         ) {
             //clear Esi Cache
-            $downloadsLibrary = new DownloadsLibrary();
-            $downloadsLibrary->clearEsiCache();
+            DownloadsLibrary::clearEsiCache();
             return true;
         } else {
             $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_GROUP_DELETE_FAILED'], '<strong>'.htmlentities($this->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'</strong>');
@@ -778,8 +777,7 @@ class Group
         }
 
         //clear Esi Cache
-        $downloadsLibrary = new DownloadsLibrary();
-        $downloadsLibrary->clearEsiCache();
+        DownloadsLibrary::clearEsiCache();
         return true;
     }
 

@@ -278,8 +278,7 @@ class Category
             WHERE tblC.`id` = '.$this->id) !== false
         ) {
             //clear Esi Cache
-            $downloadsLibrary = new DownloadsLibrary();
-            $downloadsLibrary->clearEsiCache();
+            DownloadsLibrary::clearEsiCache();
             return true;
         } else {
             $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_DELETE_FAILED'], '<strong>'.htmlentities($this->name, ENT_QUOTES, CONTREXX_CHARSET).'</strong>');
@@ -1065,8 +1064,7 @@ class Category
         $objFWUser->objUser->getDynamicPermissionIds(true);
 
         //clear Esi Cache
-        $downloadsLibrary = new DownloadsLibrary();
-        $downloadsLibrary->clearEsiCache();
+        DownloadsLibrary::clearEsiCache();
         return true;
     }
 
@@ -1471,8 +1469,7 @@ class Category
             return false;
         } else {
             //clear Esi Cache
-            $downloadsLibrary = new DownloadsLibrary();
-            $downloadsLibrary->clearEsiCache();
+            DownloadsLibrary::clearEsiCache();
             return true;
         }
     }
