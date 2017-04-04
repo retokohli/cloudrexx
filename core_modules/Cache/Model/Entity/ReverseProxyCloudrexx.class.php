@@ -70,30 +70,60 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
         $strCachePath = $cx->getWebsiteCachePath() . '/';
 
         $glob = null;
+        $glob2 = null;
         if ($urlPattern == '*') {
             $glob = $strCachePath . '*';
         }
-        
-        $searchParts = \Env::get('cache')->getCacheFileNameSearchPartsFromUrl($urlPattern);
-        if (count($searchParts)) {
-            $glob = $strCachePath . '*' . implode('*', $searchParts) . '*';
+
+        if (!$glob) {
+            $searchParts = $cx->getComponent('Cache')->getCacheFileNameSearchPartsFromUrl($urlPattern);
+            $glob = $strCachePath . $cx->getComponent('Cache')->getCacheFileNameFromUrl($urlPattern, false) . '*' . implode('', $searchParts) . '*';
+            $this->toggleHttps($urlPattern);
+            $glob2 = $strCachePath . $cx->getComponent('Cache')->getCacheFileNameFromUrl($urlPattern, false) . '*' . implode('', $searchParts) . '*';
         }
         
         if ($glob !== null) {
-            $fileNames = glob($glob);
-            foreach ($fileNames as $fileName) {
-                if (!preg_match('#/[0-9a-f]{32}((_[plutgc][a-z0-9]+)+)?$#', $fileName)) {
-                    continue;
-                }
-                $file = new \Cx\Lib\FileSystem\File($fileName);
-                $file->delete();
+            $this->globDrop($glob);
+            if ($glob2 !== null && $glob2 != $glob) {
+                $this->globDrop($glob2);
             }
             return;
         }
+
+        $cacheFile = $cx->getComponent('Cache')->getCacheFileNameFromUrl($urlPattern);
+        try {
+            $file = new \Cx\Lib\FileSystem\File($strCachePath . $cacheFile);
+            $file->delete();
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {}
         
-        $cacheFile = \Env::get('cache')->getCacheFileNameFromUrl($urlPattern);
-        $file = new \Cx\Lib\FileSystem\File($strCachePath . $cacheFile);
-        $file->delete();
+        // make sure HTTP and HTTPS files are dropped
+        $this->toggleHttps($urlPattern);
+        $cacheFile = $cx->getComponent('Cache')->getCacheFileNameFromUrl($urlPattern);
+        try {
+            $file = new \Cx\Lib\FileSystem\File($strCachePath . $cacheFile);
+            $file->delete();
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {}
+    }
+    
+    protected function toggleHttps(&$url) {
+        if (substr($url, 0, 5) == 'https') {
+            $url = 'http' . substr($url, 5);
+        } else if (substr($url, 0, 4) == 'http') {
+            $url = 'https' . substr($url, 4);
+        }
+    }
+    
+    protected function globDrop($glob) {
+        $fileNames = glob($glob);
+        foreach ($fileNames as $fileName) {
+            if (!preg_match('#/[0-9a-f]{32}((_[plutgc][a-zA-Z0-9]+)+)?$#', $fileName)) {
+                continue;
+            }
+            try {
+                $file = new \Cx\Lib\FileSystem\File($fileName);
+                $file->delete();
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {}
+        }
     }
 }
 

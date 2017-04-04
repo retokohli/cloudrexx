@@ -129,6 +129,12 @@ class Resolver {
     protected $path;
 
     /**
+     * List of headers set by resolver
+     * @var array
+     */
+    protected $headers = array();
+
+    /**
      * @param Url $url the url to resolve
      * @param integer $lang the language Id
      * @param $entityManager
@@ -177,12 +183,29 @@ class Resolver {
             $aliaspage = clone $aliaspage;
             $aliaspage->setVirtual(true);
         } else {
+            // if the current URL points to a file:
+            if (
+                empty($this->url->getLangDir()) &&
+                preg_match('/^[^?]*\.[a-z0-9]{2,4}$/', $this->url->toString())
+            ) {
+                global $url;
+                $_GET['id'] = 404;
+                $this->url = \Cx\Core\Routing\Url::fromModuleAndCmd('Error', '', \FWLanguage::getDefaultLangId());
+                $url = $this->url;
+            }
+
             $this->lang = \Env::get('init')->getFallbackFrontendLangId();
 
             //try to find the language in the url
             $extractedLanguage = \FWLanguage::getLanguageIdByCode($this->url->getLangDir());
             $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
-            if (!$extractedLanguage) {
+            if (
+                (
+                    !\Cx\Core\Routing\Url::isVirtualLanguageDirsActive() &&
+                    !empty($this->url->getLangDir(true))
+                ) ||
+                !$extractedLanguage
+            ) {
                 $this->redirectToCorrectLanguageDir();
             }
             if (!in_array($extractedLanguage, array_keys($activeLanguages))) {
@@ -376,14 +399,16 @@ class Resolver {
 
         // check for further URL parts to resolve
         if (
-            $this->page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION &&
-            $this->page->getPath() != '/' . $this->url->getSuggestedTargetPath()
+            $this->page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION
         ) {
             // does this work for fallback(/aliases)?
             $additionalPath = substr('/' . $this->url->getSuggestedTargetPath(), strlen($this->page->getPath()));
             $componentController = $this->em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent')->findOneBy(array('name'=>$this->page->getModule()));
             if ($componentController) {
-                $parts = explode('/', substr($additionalPath, 1));
+                $parts = array();
+                if (!empty($additionalPath)) {
+                    $parts = explode('/', substr($additionalPath, 1));
+                }
                 $componentController->resolve($parts, $this->page);
             }
         }
@@ -393,6 +418,15 @@ class Resolver {
             $this->urlPage->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_SYMLINK
         ) {
             $canonicalPage = $this->pageRepo->getTargetPage($this->urlPage);
+        }
+
+        // set canonical page only in case it hasn't been set already
+        $linkHeader = preg_grep('/^Link:.*canonical["\']$/', headers_list());
+        if ($linkHeader) {
+            $linkHeader = current($linkHeader);
+            $linkHeaderParts = explode(':', $linkHeader, 2);
+            $link = trim($linkHeaderParts[1]);
+            $this->headers['Link'] = $link;
         }
 
         // don't set canonical page when replying with an application page
@@ -405,9 +439,10 @@ class Resolver {
             return $this->page;
         }
 
-        // set canonical page only in case it hasen't been set already
-        if (!preg_grep('/^Link:.*canonical["\']$/', headers_list())) {
-            header('Link: <' . \Cx\Core\Routing\Url::fromPage($canonicalPage)->toString() . '>; rel="canonical"');
+        if (!$linkHeader) {
+            $link = '<' . \Cx\Core\Routing\Url::fromPage($canonicalPage)->toString() . '>; rel="canonical"';
+            header('Link: ' . $link);
+            $this->headers['Link'] = $link;
         }
 
         return $this->page;
@@ -477,7 +512,10 @@ class Resolver {
 
     public function redirectToCorrectLanguageDir() {
         $this->url->setLangDir(\FWLanguage::getLanguageCodeById($this->lang));
-
+        $this->headers['Location'] = (string) $this->url;
+        $emptyString = '';
+        \Env::set('Resolver', $this);
+        \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
         \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$this->url);
         exit;
     }
@@ -643,7 +681,12 @@ class Resolver {
                 $this->resolvePage(true);
             } else { //external target - redirect via HTTP 302
                 if (\FWValidator::isUri($target)) {
-                    header('Location: '.$target);
+                    $this->headers['Location'] = $target;
+                    $emptyString = '';
+                    \Env::set('Resolver', $this);
+                    \Env::set('Page', $this->page);
+                    \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
+                    header('Location: ' . $target);
                     exit;
                 } else {
                     if ($target[0] == '/') {
@@ -651,13 +694,22 @@ class Resolver {
                     }
                     $langDir = '';
                     if (!file_exists(ASCMS_INSTANCE_PATH . ASCMS_INSTANCE_OFFSET . '/' . $target)) {
-                        $langCode = \FWLanguage::getLanguageCodeById($this->lang);
+                        $langCode = '';
+                        if (\Cx\Core\Routing\Url::isVirtualLanguageDirsActive()) {
+                            $langCode = \FWLanguage::getLanguageCodeById($this->lang);
+                        }
                         if (!empty($langCode)) {
                             $langDir = '/' . $langCode;
                         }
                     }
 
-                    header('Location: ' . ASCMS_INSTANCE_OFFSET . $langDir . '/' . $target);
+                    $target = ASCMS_INSTANCE_OFFSET . $langDir . '/' . $target;
+                    $this->headers['Location'] = $target;
+                    $emptyString = '';
+                    \Env::set('Resolver', $this);
+                    \Env::set('Page', $this->page);
+                    \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
+                    header('Location: ' . $target);
                     exit;
                 }
             }
@@ -666,7 +718,14 @@ class Resolver {
         //if we followed one or more redirections, the user shall be redirected by 302.
         if ($this->isRedirection && !$this->forceInternalRedirection) {
             $params = $this->url->getSuggestedParams();
-            header('Location: '.$this->page->getURL($this->pathOffset, $params));
+            $target = $this->page->getURL($this->pathOffset, array());
+            $target->setParams($params);
+            $this->headers['Location'] = $target;
+            $emptyString = '';
+            \Env::set('Resolver', $this);
+            \Env::set('Page', $this->page);
+            \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
+            header('Location: ' . $target);
             exit;
         }
 
@@ -943,5 +1002,17 @@ class Resolver {
     public function setSection($section, $command = '') {
         $this->section = $section;
         $this->command = $command;
+    }
+
+    /**
+     * Returns the headers set by this class
+     * @return array key=>value style array
+     */
+    public function getHeaders() {
+        $response = \Cx\Core\Core\Controller\Cx::instanciate()->getResponse();
+        if ($response->getExpirationDate()) {
+            $this->headers['Expires'] = $response->getExpirationDate()->format('r');
+        }
+        return $this->headers;
     }
 }
