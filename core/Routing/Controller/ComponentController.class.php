@@ -148,7 +148,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             
             $link = new \Cx\Core\Html\Model\Entity\HtmlElement('link');
             $link->setAttribute('rel', 'canonical');
-            $link->setAttribute('href', contrexx_raw2xhtml($canonicalLink));
+            $link->setAttribute('href', $canonicalLink);
         }
 
         // TODO: Once each componet will have implemented a proper resolve hook
