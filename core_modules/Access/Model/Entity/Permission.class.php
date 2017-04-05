@@ -381,6 +381,7 @@ class Permission extends \Cx\Model\Base\EntityBase {
         }
 
         //check user logged in or not
+        $this->cx->getComponent('Session')->getSession();
         if (!\FWUser::getFWUserObject()->objUser->login()) {
             return false;
         }

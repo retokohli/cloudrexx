@@ -41,7 +41,6 @@ namespace Cx\Modules\Directory\Controller;
  * Includes
  */
 \Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH . '/PEAR/XML/RSS.class.php');
-\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH . '/soap/googlesearch/GoogleSearch.php');
 
 /**
  * RSS Directory
@@ -1939,23 +1938,13 @@ $this->arrRows[2] = '';
                 }
             }
 
-            //Google Search
-            //Googlesearch needs to be tested again. Don't work 100%.
-            $this->settings['google']['googleSeach'] = 0;
-            if ($this->settings['google']['googleSeach'] == "1") {
-                if ($count < 10) {
-                    $results = $this->settings['google']['googleResults']-$count;
-                    $this->googleSearch($searchTermGoogle, $results);
-                }
-            } else {
-                if ($count == 0) {
-                    $this->_objTpl->hideBlock('showResults');
-                    // set variables
-                    $this->_objTpl->setVariable(
-                        'DIRECTORY_NO_FEEDS_FOUND', $_ARRAYLANG['DIRECTORY_NO_FEEDS_FOUND']
-                    );
-                    $this->_objTpl->parse('noResults');
-                }
+            if ($count == 0) {
+                $this->_objTpl->hideBlock('showResults');
+                // set variables
+                $this->_objTpl->setVariable(
+                    'DIRECTORY_NO_FEEDS_FOUND', $_ARRAYLANG['DIRECTORY_NO_FEEDS_FOUND']
+                );
+                $this->_objTpl->parse('noResults');
             }
 /*
         } else {
@@ -2015,62 +2004,6 @@ $this->arrRows[2] = '';
             }
         }
     }
-
-
-    /**
-     * google search
-     * @access   public
-     * @param    string        $term
-     */
-    function googleSearch($term, $results)
-    {
-        global $_ARRAYLANG;
-        /*
-        * Example to access Google cached pages through GoogleSearch for PHP.
-        */
-        $objGoogleSearch = new \GoogleSearch();
-
-        //set Google licensing key
-        $key = $this->settings['google']['googleId'];
-        $objGoogleSearch->setKey($key);
-        //set query string to search.
-        $objGoogleSearch->setQueryString($term);    //set query string to search.
-        //set few other parameters (optional)
-        $objGoogleSearch->setMaxResults($results);    //set max. number of results to be returned.
-        $objGoogleSearch->setSafeSearch(true);    //set Google "SafeSearch" feature.
-        //call search method on GoogleSearch object
-        $search_result = $objGoogleSearch->doSearch();
-        //check for errors
-        if (!$search_result) {
-            $err = $objGoogleSearch->getError();
-            if ($err) {
-                \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Directory&cmd=search");
-                exit;
-            }
-        }
-        //output individual components of each result
-        $re = $search_result->getResultElements();
-        if (!empty($re)) {
-            foreach ($re as $element) {
-                $title = "<a href='".$element->getURL()."' target='_blank'>".$element->getTitle()."</a>";
-                $url = "<a href='".$element->getURL()."' target='_blank'>".substr($element->getURL(), 0, 80)."</a>";
-                $description = $element->getSnippet();
-                // set variables
-                $this->_objTpl->setVariable(array(
-                    'DIRECTORY_FEED_DESCRIPTION' => strip_tags(substr($description, 0, 600)),
-                    'DIRECTORY_FEED_TITLE' => $title,
-                    'DIRECTORY_FEED_URL' => $url,
-                    'DIRECTORY_FEED_DETAIL' => $_ARRAYLANG['TXT_DIRECTORY_DETAIL'],
-                    'DIRECTORY_FEED_DETAIL_LINK' => $element->getURL(),
-                    'DIRECTORY_FEED_VOTE' => $_ARRAYLANG['TXT_DIRECTORY_YOUR_VOTE'],
-                    'DIRECTORY_FEED_VOTE_LINK' => $element->getURL(),
-                    'DIRECTORY_FEED_AVERAGE_VOTE' => $url,
-                ));
-                $this->_objTpl->parse('showResults');
-            }
-        }
-    }
-
 
     /**
      * redirect feed

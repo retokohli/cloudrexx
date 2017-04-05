@@ -253,9 +253,9 @@ class LanguageManager
         if (empty($_POST['name']) || empty($_POST['shortName']) || empty($_POST['charset'])) {
             return false;
         }
-        $shortName = mysql_escape_string($_POST['shortName']);
-        $name = mysql_escape_string($_POST['name']);
-        $charset = mysql_escape_string($_POST['charset']);
+        $shortName = contrexx_input2db($_POST['shortName']);
+        $name      = contrexx_input2db($_POST['name']);
+        $charset   = contrexx_input2db($_POST['charset']);
 
         $objResult = $objDatabase->Execute("
             SELECT lang
@@ -274,9 +274,9 @@ class LanguageManager
         }
         $objDatabase->Execute("
             INSERT INTO ".DBPREFIX."languages
-               SET lang='".contrexx_addslashes($shortName)."',
-                   name='".contrexx_addslashes($name)."',
-                   charset='".contrexx_addslashes($charset)."',
+               SET lang='".$shortName."',
+                   name='".$name."',
+                   charset='".$charset."',
                    is_default='false'
         ");
         $newLanguageId = $objDatabase->Insert_ID();
@@ -1175,6 +1175,23 @@ class LanguageManager
                                         WHERE id=".$id);
             }
             $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+            //clear cache
+            $widgetNames = array(
+                'LANGUAGE_NAVBAR',
+                'LANGUAGE_NAVBAR_SHORT',
+                'ACTIVE_LANGUAGE_NAME'
+            );
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getEvents()->triggerEvent(
+                'clearEsiCache',
+                array(
+                    'Widget',
+                    array_merge(
+                        $widgetNames,
+                        $this->getLanguagePlaceholderNames()
+                    )
+                )
+            );
             \FWLanguage::init();
             return true;
         }
@@ -1386,5 +1403,20 @@ class LanguageManager
         } else {
             $this->strOkMessage .= "<br />".$_ARRAYLANG['TXT_SUCCESSFULLY_EXPORTED_TO_FILES'];
         }
+    }
+
+    /**
+     * Get language placeholder names
+     *
+     * @return array
+     */
+    function getLanguagePlaceholderNames()
+    {
+        $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
+        foreach ($activeLanguages as $langData) {
+            $placeholders[] = 'LANG_CHANGE_' . strtoupper($langData['lang']);
+            $placeholders[] = 'LANG_SELECTED_' . strtoupper($langData['lang']);
+        }
+        return $placeholders;
     }
 }

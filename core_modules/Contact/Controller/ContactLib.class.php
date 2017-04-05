@@ -1407,7 +1407,7 @@ class ContactLib
      */
     function _getJsSourceCode($id, $formFields, $preview = false, $show = false)
     {
-        global $objInit;
+        global $objInit, $_ARRAYLANG;
         $this->initCheckTypes();
 
         \JS::activate('jqueryui');
@@ -1430,10 +1430,12 @@ class ContactLib
             $code .= "\t".(!empty($this->arrCheckTypes[$field['check_type']]['regex']) ? '/'.($this->arrCheckTypes[$field['check_type']]['regex']).'/'.$modifiers : "''").",\n";
             $code .= "\t'". (($field['type'] != 'special') ? $field['type'] : $field['special_type']) ."');\n";
         }
-
+        $captchaValidationCode = \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getJSValidationFn();
+        $captchaErrorMsg = addslashes($_ARRAYLANG['TXT_CONTACT_RECAPTCHA_ERROR']);
         $code .= <<<JS_checkAllFields
 function checkAllFields() {
-    var isOk = true;
+    var isOk = true, isCaptchaOk = true;
+    var captchaError = '$captchaErrorMsg';
 
     for (var field in fields) {
         var type = fields[field][3];
@@ -1485,9 +1487,22 @@ function checkAllFields() {
         }
     }
     }
-
+    $captchaValidationCode
+    document.getElementById('contactFormError').style.display = "none";
     if (!isOk) {
         document.getElementById('contactFormError').style.display = "block";
+    }
+
+    if (\$J('#contactFormCaptchaError').length) {
+        \$J('#contactFormCaptchaError').remove();
+    }
+    if (!isCaptchaOk) {
+        \$J('<div />')
+        .addClass('text-danger')
+        .attr('id', 'contactFormCaptchaError')
+        .text(captchaError)
+        .prependTo('#captcha');
+        return false;
     }
     return isOk;
 }

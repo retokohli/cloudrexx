@@ -1168,9 +1168,15 @@ class BasicEntityPersister
                 } else {
                     $conditionSql .= $this->_getSQLTableAlias($this->_class->name) . '.';
                 }
-                
-                // bugfix http://www.doctrine-project.org/jira/browse/DDC-2808
-                $conditionSql .= $this->_class->associationMappings[$field]['joinTable']['joinColumns'][0]['name'];
+
+                // only apply fix for *-to-many associations, since *-to-one
+                // associations don't use joinTable
+                if (isset($this->_class->associationMappings[$field]['joinTable'])) {
+                    // bugfix http://www.doctrine-project.org/jira/browse/DDC-2808
+                    $conditionSql .= $this->_class->associationMappings[$field]['joinTable']['joinColumns'][0]['name'];
+                } else {
+                    $conditionSql .= $this->_class->associationMappings[$field]['joinColumns'][0]['name'];
+                }
             } else if ($assoc !== null && strpos($field, " ") === false && strpos($field, "(") === false) {
                 // very careless developers could potentially open up this normally hidden api for userland attacks,
                 // therefore checking for spaces and function calls which are not allowed.

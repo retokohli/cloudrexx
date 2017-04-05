@@ -44,7 +44,7 @@ namespace Cx\Core\View\Model\Entity;
  * @package     cloudrexx
  * @subpackage  core_view
  */
-class Theme extends \Cx\Model\Base\EntityBase
+class Theme extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget
 {
     private $id = null;
     private $themesname;
@@ -152,24 +152,6 @@ class Theme extends \Cx\Model\Base\EntityBase
 
         $timestamp = mktime(0,0,0,$month,$day,$year);
         return $timestamp;
-    }
-
-    /**
-     * @return string the preview image source web path
-     */
-    public function getPreviewImage() {
-        $websiteFilePath  = \Env::get('cx')->getWebsiteThemesPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
-        $codeBaseFilePath = \Env::get('cx')->getCodeBaseThemesPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
-        $filePath         = file_exists($websiteFilePath)
-                            ? $websiteFilePath
-                            : ( file_exists($codeBaseFilePath)
-                                ? $codeBaseFilePath
-                                : ''
-                              );
-        if ($filePath && file_exists($filePath)) {
-            return \Env::get('cx')->getWebsiteThemesWebPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
-        }
-        return \Env::get('cx')->getCodeBaseOffsetPath(). self::THEME_DEFAULT_PREVIEW_FILE;
     }
 
     /**
@@ -380,5 +362,85 @@ class Theme extends \Cx\Model\Base\EntityBase
 
     public function addDefault($type) {
         $this->defaults[] = $type;
+    }
+
+    /**
+     * Get the themes file path
+     *
+     * @param type $filePath
+     * @return string
+     */
+    public function getFilePath($filePath)
+    {
+        if (empty($filePath)) {
+            return '';
+        }
+        $fileSystem = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getMediaSourceManager()
+            ->getMediaType('themes')
+            ->getFileSystem();
+        $file = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($filePath, $fileSystem);
+
+        return $fileSystem->getFullPath($file);
+    }
+
+    /**
+     * Preview image source web path
+     *
+     * @return string the preview image source web path
+     */
+    public function getPreviewImage()
+    {
+        $filePath = $this->getFilePath($this->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE);
+        if ($filePath && file_exists($filePath)) {
+            return $this->cx->getWebsiteThemesWebPath() . '/' . $this->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE;
+        }
+        return $this->cx->getCodeBaseOffsetPath(). \Cx\Core\View\Model\Entity\Theme::THEME_DEFAULT_PREVIEW_FILE;
+    }
+
+    /**
+     * Dummy, we overwrite getContentTemplateForWidget() directly
+     * It is necessary to add this method since it's abstract in the parent
+     * class.
+     * @return string Empty string
+     */
+    public function getWidgetContentAttributeName($widgetName) { return ''; }
+
+    /**
+     * Returns the template in which the widget can be used
+     * @param string $widgetName Name of the Widget to get template for
+     * @param int $langId Language ID
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Current page
+     * @param string $channel Current channel
+     * @return \Cx\Core\Html\Sigma Template which may contain the widget
+     */
+    protected function getContentTemplateForWidget($widgetName, $langId, $page, $channel) {
+        // get static files
+        $indexFile = $this->getFilePath($this->getFolderName() . '/index.html');
+        $sidebarFile = $this->getFilePath($this->getFolderName() . '/sidebar.html');
+        // get $contentFile of theme
+        $mainController = $this->getComponentController();
+        $contentFile = $mainController->getContentTemplateFileFromChannel(
+            $channel,
+            $mainController->getThemeFromChannel($channel, $page),
+            $page
+        );
+
+        $template = new \Cx\Core\Html\Sigma();
+        $template->loadTemplateFile($indexFile);
+        $template->addBlock(
+            'CONTENT_FILE',
+            'content_file',
+            file_get_contents($contentFile)
+        );
+        if ($template->placeholderExists('SIDEBAR_FILE')) {
+            $template->addBlock(
+                'SIDEBAR_FILE',
+                'sidebar_file',
+                file_get_contents($sidebarFile)
+            );
+        }
+
+        return $template;
     }
 }

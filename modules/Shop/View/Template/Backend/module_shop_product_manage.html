@@ -212,6 +212,14 @@ function disableButtons(from, dest, add, remove) {
     remove.disabled = 1;
   }
 }
+!(function($jq) {
+    $jq(function(){
+        var locationHash = window.location.hash;
+        if (locationHash != '') {
+            selectTab(locationHash.substr(1));
+        }
+    });
+})(cx.jQuery);
 // ]]></script>
 <ul id="tabmenu">
   <li><a id="productManageTab_content1" class="active" href="javascript:{}" onclick="selectTab('content1')" title="{TXT_PRODUCT_INFORMATIONS}">{TXT_PRODUCT_INFORMATIONS}</a></li>
