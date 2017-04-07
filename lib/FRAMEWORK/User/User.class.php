@@ -405,30 +405,40 @@ class User extends User_Profile
         }
 
         if ($loginByEmail) {
-            $loginCheck = '`email` = "' . addslashes($username) . '"';
+            $loginCheck = '`email` = "' . contrexx_raw2db($username) . '"';
         } else {
-            $loginCheck = '`username` = "' . addslashes($username) . '"';
+            $loginCheck = '`username` = "' . contrexx_raw2db($username) . '"';
         }
 
         $loginStatusCondition = $captchaCheckResult == false ? 'AND `last_auth_status` = 1' : '';
 
 // TODO: add verificationTimeout as configuration option
         $verificationExpired = time() - 30 * 86400;
-        $objResult = $objDatabase->SelectLimit('
-            SELECT `id`
+        $objResult = $objDatabase->SelectLimit(
+            'SELECT `id`, `password`
               FROM `' . DBPREFIX . 'access_users`
              WHERE ' . $loginCheck . '
-               AND `password` = "'.addslashes($password).'"
                AND `active` = 1
                AND (`verified` = 1 OR `regdate` >= '.$verificationExpired.')
                ' . $loginStatusCondition . '
                AND (`expiration` = 0 OR `expiration` > ' . time() . ')
-        ', 1);
+            ',
+            1
+        );
 
         if (!$objResult || $objResult->RecordCount() != 1) {
             return false;
         }
-
+        $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getComponent('Access');
+        if (
+            !$accessController->checkPassword(
+                $password,
+                $objResult->fields['password']
+            )
+        ) {
+            return false;
+        }
         return $objResult->fields['id'];
     }
 
@@ -472,17 +482,27 @@ class User extends User_Profile
     {
         global $objDatabase;
 
-        $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getComponentControllerByName('Access');
         $query = '
-            SELECT 1
+            SELECT `password`
               FROM `'.DBPREFIX.'access_users`
-             WHERE `id` = '.$this->id.'
-               AND `password` = "' . $accessController->hash($password).'"
-        ';
+            WHERE `id` = ' . $this->id;
         $objResult = $objDatabase->Execute($query);
+        if (!$objResult || $objResult->RecordCount() == 0) {
+            return false;
+        }
 
-        return $objResult->RecordCount() ? true : false;
+        $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getComponent('Access');
+        if (
+            !$accessController->checkPassword(
+                $password,
+                $objResult->fields['password']
+            )
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
 
@@ -1453,8 +1473,8 @@ class User extends User_Profile
         }
 
         $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getComponentControllerByName('Access');
-        $this->restore_key = $accessController->hash(
+            ->getComponent('Access');
+        $this->restore_key = $accessController->hashPassword(
             $this->email . $this->regdate . time()
         );
         $this->restore_key_time = time() + 3600;
@@ -1677,8 +1697,8 @@ class User extends User_Profile
         $arrSettings = User_Setting::getSettings();
         if ($arrSettings['user_activation']['status']) {
             $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getComponentControllerByName('Access');
-            $this->restore_key = $accessController->hash(
+                ->getComponent('Access');
+            $this->restore_key = $accessController->hashPassword(
                 $this->username . $this->password . time()
             );
             $this->restore_key_time = $arrSettings['user_activation_timeout']['status'] ? time() + $arrSettings['user_activation_timeout']['value'] * 3600 : 0;
@@ -2506,8 +2526,8 @@ class User extends User_Profile
                 return false;
             }
             $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getComponentControllerByName('Access');
-            $this->password = $accessController->hash($password);
+                ->getComponent('Access');
+            $this->password = $accessController->hashPassword($password);
             return true;
         }
         if (isset($_CONFIG['passwordComplexity']) && $_CONFIG['passwordComplexity'] == 'on') {

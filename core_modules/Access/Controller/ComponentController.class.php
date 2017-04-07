@@ -276,46 +276,28 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Do something after system initialization
+     * Verify the password
      *
-     * @param \Cx\Core\Core\Controller\Cx $cx
+     * @param string $password Input password
+     * @param string $hash     Each password has hashstring
+     *
+     * @return boolean returns true | false, if given password matched with
+     *                 hash string returns true, otherwise false
      */
-    public function postInit(\Cx\Core\Core\Controller\Cx $cx)
+    public function checkPassword($password, $hash)
     {
-        $hashSalt = \Cx\Core\Setting\Controller\Setting::getValue(
-            'hashSalt',
-            'Config'
-        );
-
-        if (empty($hashSalt)) {
-            //update the hashSalt
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'core','Yaml');
-            \Cx\Core\Setting\Controller\Setting::set(
-                'hashSalt',
-                \User::make_password()
-            );
-            \Cx\Core\Setting\Controller\Setting::update('hashSalt');
-        }
+        return password_verify($password, $hash);
     }
 
     /**
-     * get the hash for given string
+     * Create the new password with hash
      *
-     * @param string $string input string
+     * @param string $password input password
      *
-     * @return string md5 sum for hashSalt and input string
+     * @return string the hashed password, or false on failure.
      */
-    public function hash($string)
+    public function hashPassword($password )
     {
-        if (empty($string)) {
-            return null;
-        }
-
-        $hashSalt = \Cx\Core\Setting\Controller\Setting::getValue(
-            'hashSalt',
-            'Config'
-        );
-
-        return md5($hashSalt . $string);
+        return password_hash($password, PASSWORD_DEFAULT);
     }
 }

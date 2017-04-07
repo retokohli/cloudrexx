@@ -3915,8 +3915,13 @@ die("Shop::processRedirect(): This method is obsolete!");
             }
             $password_old = contrexx_input2raw($_POST['shopCurrentPassword']);
             $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getComponentControllerByName('Access');
-            if ($accessController->hash($password_old) != self::$objCustomer->password()) {
+                ->getComponent('Access');
+            if (
+                !$accessController->checkPassword(
+                    $password_old,
+                    self::$objCustomer->password()
+                )
+            ) {
                 return \Message::error($_ARRAYLANG['TXT_SHOP_WRONG_CURRENT_PASSWORD']);
             }
             $password = contrexx_input2raw($_POST['shopNewPassword']);

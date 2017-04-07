@@ -589,11 +589,15 @@ class User extends \Cx\Model\Base\EntityBase {
      */
     public function setRestoreKey($restoreKey = null)
     {
+        if (!empty($restoreKey)) {
+            $this->restoreKey = $restoreKey;
+            return;
+        }
         $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getComponentControllerByName('Access');
-        $this->restoreKey = !empty($restoreKey)
-            ? $restoreKey
-            : $accessController->hash($this->email . $this->regdate . time());
+            ->getComponent('Access');
+        $this->restoreKey = $accessController->hashPassword(
+            $this->email . $this->regdate . time()
+        );
     }
 
     /**

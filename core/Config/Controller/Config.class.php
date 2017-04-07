@@ -1531,21 +1531,6 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for installationId");
             }
 
-            if (   !\Cx\Core\Setting\Controller\Setting::isDefined('hashSalt')
-                && !\Cx\Core\Setting\Controller\Setting::add(
-                        'hashSalt',
-                        '',
-                        1,
-                        \Cx\Core\Setting\Controller\Setting::TYPE_TEXT,
-                        null,
-                        'core'
-                    )
-            ) {
-                throw new \Cx\Lib\Update_DatabaseException(
-                    'Failed to add Setting entry for hashSalt'
-                );
-            }
-
             // component
             \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml', $configPath);
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('bannerStatus')

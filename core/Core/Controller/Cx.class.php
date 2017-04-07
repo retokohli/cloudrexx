@@ -3371,32 +3371,5 @@ namespace Cx\Core\Core\Controller {
             }
             return $this->mediaSourceManager;
         }
-
-        /**
-         * Get component controller object by given component name
-         *
-         * @param string $componentName component name
-         *
-         * @return \Cx\Core\Core\Controller\SystemComponentController
-         */
-        public function getComponentControllerByName($componentName)
-        {
-            if (empty($componentName)) {
-                return null;
-            }
-
-            $componentRepo = $this
-                ->getDb()->getEntityManager()
-                ->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-            $component = $componentRepo->findOneBy(
-                array('name' => $componentName)
-            );
-
-            if (!$component) {
-                return null;
-            }
-
-            return $component;
-        }
     }
 }
