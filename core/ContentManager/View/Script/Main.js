@@ -269,6 +269,8 @@ cx.ready(function() {
                     }
                     // add tree data to jstree (replace tree by new one) and open all nodes
                     cx.cm.createJsTree(cx.jQuery("#site-tree"), response.data.tree, response.data.nodeLevels, true);
+                    // close expanded translation tag
+                    cx.jQuery(".expand-translations").removeClass("open");
                     cx.trigger("loadingEnd", "contentmanager", {});
                 }
             });
@@ -1778,6 +1780,11 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         document.cookie = "userFrontendLangId=" + data.rslt;
     })
     .bind("after_open.jstree", function(event, data) {
+        if (open_all) {
+            // don't generate any translation tags, since they will all be
+            // generated together the next time the user expands them
+            return;
+        }
         var node = data.rslt.obj;
         var dropdowns = node.find(".translations.dropdown");
         if (dropdowns.length) {
