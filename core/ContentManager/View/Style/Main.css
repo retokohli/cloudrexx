@@ -109,7 +109,7 @@ h1{ font-size: 20px }
     visibility: hidden;
 }
 
-#site-language .chosen-results li:nth-child(n+10) {
+#site-language .chosen-results li:nth-child(n+11) {
     display: none !important;
 }
 
@@ -1495,6 +1495,10 @@ div.date img{
     float: right;
     width: 200px !important;
     height: 31px;
+}
+
+.chosen-container .chosen-results {
+    max-height: 250px;
 }
 
 .chosen-container-single .chosen-single {
