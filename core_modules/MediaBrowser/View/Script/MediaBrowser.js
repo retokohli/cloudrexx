@@ -175,15 +175,15 @@
                     function getSources(data) {
                         $scope.sources = data;
 
-                        if (mediabrowserConfig.get('startMedia')) {
+                        var startMediaConfig = mediabrowserConfig.get('startMedia');
+                        if (startMediaConfig.length) {
                             data.forEach(function (source) {
-                                if (source.value == mediabrowserConfig.get('startMedia')) {
+                                if (source.value == startMediaConfig) {
                                     $scope.selectedSource = source;
                                     return false;
                                 }
                             });
-                        }
-                        else {
+                        } else {
                             $scope.selectedSource = data[0];
                         }
                         if (mediabrowserConfig.get('mediatypes') != 'all') {
