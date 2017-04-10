@@ -1776,6 +1776,21 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
     .bind("set_lang.jstree", function(event, data) {
         document.cookie = "userFrontendLangId=" + data.rslt;
     })
+    .bind("after_open.jstree", function(event, data) {
+        var node = data.rslt.obj;
+        var dropdowns = node.find(".translations.dropdown");
+        if (dropdowns.length) {
+            dropdowns.each(function() {
+                // check if tags are already generated
+                if (cx.jQuery(this).next(".translations-expanded").length) {
+                    return;
+                }
+                cx.jQuery(this).after('<div class="expanded-tags translations"></div>');
+                cx.cm.generateTranslationTags(cx.jQuery(this));
+            });
+            cx.cm.expandTranslationCol(false);
+        }
+    })
     .ajaxStart(function(){
         if (!cx.cm.is_opening) {
             cx.ui.messages.showLoad();
@@ -3304,23 +3319,7 @@ cx.cm.expandTranslationCol = function(toggle) {
         cx.jQuery(".translations.dropdown").after('<div class="expanded-tags translations"></div>');
         cx.jQuery(".translations.dropdown").each(function() {
             // generate tags
-            cx.jQuery(this).find(".translation").each(function() {
-                // create div and adopt classes
-                var translationTag = cx.jQuery("<div></div>").attr("class", cx.jQuery(this).attr("class"));
-                // adopt text
-                translationTag.text(cx.jQuery(this).text());
-                // adopt click event
-                translationTag.click(function() {
-                    cx.jQuery(this)
-                      .parent()
-                      .prev(".translations.dropdown")
-                      .find(".translations-expanded ." + cx.jQuery(this).text()).trigger("click");
-                    // show actions in edit view
-                    cx.jQuery("div.actions").removeClass("hide");
-                });
-                // add tag
-                cx.jQuery(this).parent().parent().parent().next(".expanded-tags").append(translationTag);
-            });
+            cx.cm.generateTranslationTags(cx.jQuery(this));
         });
     }
 }
@@ -3344,4 +3343,24 @@ cx.cm.toggleColsRightOfTranslations = function() {
         // show other elements in row
         elToToggle.removeClass("hide");
     }
+}
+
+cx.cm.generateTranslationTags = function(dropdown) {
+    dropdown.find(".translation").each(function() {
+        // create div and adopt classes
+        var translationTag = cx.jQuery("<div></div>").attr("class", cx.jQuery(this).attr("class"));
+        // adopt text
+        translationTag.text(cx.jQuery(this).text());
+        // adopt click event
+        translationTag.click(function() {
+            cx.jQuery(this)
+              .parent()
+              .prev(".translations.dropdown")
+              .find(".translations-expanded ." + cx.jQuery(this).text()).trigger("click");
+            // show actions in edit view
+            cx.jQuery("div.actions").removeClass("hide");
+        });
+        // add tag
+        cx.jQuery(this).parent().parent().parent().next(".expanded-tags").append(translationTag);
+    });
 }
