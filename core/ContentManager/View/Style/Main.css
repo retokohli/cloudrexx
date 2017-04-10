@@ -470,6 +470,10 @@ th.translation .expand-translations {
     background-image: none;
 }
 
+#site-tree .translations-expanded > ul > li:nth-child(n+11) {
+    display: none !important; /* limit dropdown to 10 locales */
+}
+
 #site-tree .actions-expanded ul li.new {
     background-image: url(../Media/ActionNewWithin.png);
     background-position: left center;
