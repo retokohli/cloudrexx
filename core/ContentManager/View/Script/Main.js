@@ -452,6 +452,7 @@ cx.ready(function() {
             jsTreeLang = cx.jQuery('#site-tree').jstree('get_lang');
             cx.jQuery(this).children('.module.show, .preview.show, .lastupdate.show').removeClass('show').addClass('hide');
             cx.jQuery(this).children('.module.'+jsTreeLang + ', .preview.'+jsTreeLang + ', .lastupdate.' + jsTreeLang).toggleClass('show hide');
+            cx.cm.toggleColsRightOfTranslations();
         });
     });
     cx.jQuery(".chzn-select").trigger('change');
