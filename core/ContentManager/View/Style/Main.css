@@ -188,6 +188,11 @@ th.translation .expand-translations.open {
     background-image: url('../Media/Close.png');
 }
 
+#site-tree .expanded-tags.translations {
+    max-height: 30px;
+    overflow: auto;
+}
+
 th.translation .expand-translations {
     height: 16px;
     width: 16px;

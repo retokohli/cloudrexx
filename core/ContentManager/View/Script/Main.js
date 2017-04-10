@@ -1434,6 +1434,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     langEl.click(function() {
                         var page = cx.cm.getPageStatus(nodeIds[lang], lang);
                         if (page.existing) {
+
                             cx.cm.loadPage(page.id, null, null, "content");
                         } else {
                             cx.cm.setCurrentLang(lang);
@@ -1545,35 +1546,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
 
         cx.jQuery(".expand-translations").unbind("click").bind("click", function(e) {
             e.preventDefault();
-            cx.jQuery(this).toggleClass("open");
-            // hide/show translation dropdown
-            cx.jQuery(".translations.dropdown").toggle();
-            if (cx.jQuery(".expanded-tags").length) {
-                // hide/show expanded tags
-                cx.jQuery(".expanded-tags").toggle();
-                return;
-            } else { // generate expanded tags
-                cx.jQuery(".translations.dropdown").after('<div class="expanded-tags translations"></div>');
-                cx.jQuery(".translations.dropdown").each(function() {
-                    // generate tags
-                    cx.jQuery(this).find(".translation").each(function() {
-                        // create div and adopt classes
-                        var translationTag = cx.jQuery("<div></div>").attr("class", cx.jQuery(this).attr("class"));
-                        // adopt text
-                        translationTag.text(cx.jQuery(this).text());
-                        // adopt click event
-                        translationTag.click(function() {
-                            cx.jQuery(this)
-                                .parent()
-                                .prev(".translations.dropdown")
-                                .find(".translations-expanded ." + cx.jQuery(this).text()).trigger("click");
-                        });
-                        // add tag
-                        cx.jQuery(this).parent().parent().parent().next(".expanded-tags").append(translationTag);
-                    });
-                    // todo: expand column
-                });
-            }
+            cx.cm.expandTranslationCol(true);
         });
 
         cx.jQuery('.translations-expanded').live('mouseleave', function(event) {
@@ -2598,6 +2571,7 @@ cx.cm.hideEditView = function() {
     if (cx.jQuery('#content-manager').hasClass('sidebar-show')) {
         cx.cm.toggleSidebar();
     }
+    cx.cm.expandTranslationCol(false);
     cx.jQuery("#content-manager").removeClass("edit_view");
     cx.jQuery('#multiple-actions-strike').show();
     cx.jQuery('.jstree .actions .label, .jstree .actions .arrow').show();
@@ -3307,5 +3281,67 @@ cx.cm.updateLocaleSelect = function() {
             });
         }
         cx.jQuery(".chzn-select").trigger("chosen:updated");
+    }
+}
+
+/**
+ * Expands/Collapses the translation column
+ */
+cx.cm.expandTranslationCol = function(toggle) {
+    if (toggle) {
+        cx.jQuery(".expand-translations").toggleClass("open");
+    }
+    cx.cm.toggleColsRightOfTranslations();
+    if (cx.jQuery(".expanded-tags").length) {
+        // hide/show expanded tags
+        if (cx.jQuery(".expand-translations").hasClass("open")) {
+            cx.jQuery(".expanded-tags").show();
+        } else {
+            cx.jQuery(".expanded-tags").hide();
+        }
+        return;
+    } else if (cx.jQuery(".expand-translations").hasClass("open")) { // generate expanded tags
+        cx.jQuery(".translations.dropdown").after('<div class="expanded-tags translations"></div>');
+        cx.jQuery(".translations.dropdown").each(function() {
+            // generate tags
+            cx.jQuery(this).find(".translation").each(function() {
+                // create div and adopt classes
+                var translationTag = cx.jQuery("<div></div>").attr("class", cx.jQuery(this).attr("class"));
+                // adopt text
+                translationTag.text(cx.jQuery(this).text());
+                // adopt click event
+                translationTag.click(function() {
+                    cx.jQuery(this)
+                      .parent()
+                      .prev(".translations.dropdown")
+                      .find(".translations-expanded ." + cx.jQuery(this).text()).trigger("click");
+                    // show actions in edit view
+                    cx.jQuery("div.actions").removeClass("hide");
+                });
+                // add tag
+                cx.jQuery(this).parent().parent().parent().next(".expanded-tags").append(translationTag);
+            });
+        });
+    }
+}
+
+/**
+ * Shows/hides the columns right of the translation column, when the
+ * translation column is expanded/collapsed
+ */
+cx.cm.toggleColsRightOfTranslations = function() {
+    // expand translation header
+    var currentLang = cx.cm.getCurrentLang();
+    var elToToggle = cx.jQuery(
+      ".translations.dropdown, div.actions, .preview." + currentLang +
+      ", .module." + currentLang +
+      ", .lastupdate." + currentLang
+    );
+    if (cx.jQuery(".expand-translations").hasClass("open")) {
+        // hide other elements in row
+        elToToggle.addClass("hide");
+    } else {
+        // show other elements in row
+        elToToggle.removeClass("hide");
     }
 }
