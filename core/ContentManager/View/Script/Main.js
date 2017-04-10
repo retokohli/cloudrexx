@@ -1430,6 +1430,9 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             // show dropdown for more than 4 locales
             var languages = cx.jQuery("select.chzn-select option");
             if (languages.size() <= 4) { // tags
+                // hide expand-translations button
+                cx.jQuery(".expand-translations").hide();
+                // generate tags
                 cx.jQuery.each(languages, function(index, el) {
                     var lang = cx.jQuery(el).val();
                     var langEl = cx.jQuery("<div class=\"translation " + lang + "\" />");
