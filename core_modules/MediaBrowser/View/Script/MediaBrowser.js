@@ -1186,7 +1186,7 @@
                     mediabrowserConfig.set('views', attrs.cxMbViews.trim().split(","));
                 }
 
-                if (!mediabrowserConfig.isset('startMedia')) {
+                if (!mediabrowserConfig.get('startMedia').length) {
                     mediabrowserConfig.set('startMedia', 'files');
                     if (attrs.cxMbStartmediatype) {
                         mediabrowserConfig.set('startMedia', attrs.cxMbStartmediatype);
