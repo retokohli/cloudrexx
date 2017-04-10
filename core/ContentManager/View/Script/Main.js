@@ -1305,7 +1305,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             cx.jQuery('#node_' + nodeId).children('a').children('.jstree-checkbox').css('left', '-' + ((nodeLevels[nodeId] * 18) + 20) + 'px');
         }
 
-        cx.jQuery('#site-tree ul li').not(".actions-expanded li").each(function() {
+        cx.jQuery('#site-tree ul li').not(".actions-expanded li, .translations-expanded li").each(function() {
             cx.jQuery(this).children('a:last').after(function() {
                 if (!cx.jQuery(this).hasClass('jstree-move') && cx.jQuery(this).siblings('.jstree-move').length == 0) {
                     return '<a class="jstree-move" href="#"></a>';
