@@ -90,20 +90,26 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
      * @return array Content in an associative array
      */
     public function getWidget($params) {
-        $requiredParams = array(
+        if (
+            !isset($params['get']) ||
+            !isset($params['get']['name'])
+        ) {
+            throw new \InvalidArgumentException('Param "name" not set');
+        }
+        $widget = $this->getComponent('Widget')->getWidget($params['get']['name']);
+        $requiredParamsForWidgetsWithContent = array(
             'theme',
             'page',
             'lang',
-            'name',
             'targetComponent',
             'targetEntity',
             'targetId',
             'channel',
         );
-        if (isset($params['get'])) {
-            $params['get'] = contrexx_input2raw($params['get']);
-        } else {
-            $params['get'] = array();
+        // TODO: We should check at least all ESI params of this widget
+        $requiredParams = array();
+        if ($widget->hasContent()) {
+            $requiredParams = $requiredParamsForWidgetsWithContent;
         }
         foreach ($requiredParams as $requiredParam) {
             if (!isset($params['get'][$requiredParam])) {
@@ -122,7 +128,6 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
 
         // resolve widget template
         $widgetContent = '';
-        $widget = $this->getComponent('Widget')->getWidget($params['get']['name']);
         if (!$widget->hasContent()) {
             $widgetContent = '{' . $params['get']['name'] . '}';
         } else {
