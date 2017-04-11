@@ -51,7 +51,46 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array();
     }
 
-     /**
+    /**
+     * Do something after system initialization
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * This event must be registered in the postInit-Hook definition
+     * file config/postInitHooks.yml.
+     * @param \Cx\Core\Core\Controller\Cx   $cx The instance of \Cx\Core\Core\Controller\Cx
+     */
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx) {
+        $globalPlaceholders = array(
+            'contactFormEmail' => 'Email',
+            'Company',
+            'Address',
+            'Zip',
+            'Place',
+            'Country',
+            'Phone',
+            'Fax',
+            'coreAdminName' => 'Name',
+        );
+        $widgetController = $this->getComponent('Widget');
+        foreach ($globalPlaceholders as $configIndex=>$placeholder) {
+            if (is_int($configIndex)) {
+                $configIndex = 'contact' . $placeholder;
+            }
+            $widgetController->registerWidget(
+                new \Cx\Core_Modules\Widget\Model\Entity\FinalStringWidget(
+                    $this,
+                    'CONTACT_' . strtoupper($placeholder),
+                    \Cx\Core\Setting\Controller\Setting::getValue(
+                        $configIndex,
+                        'Config'
+                    )
+                )
+            );
+        }
+    }
+
+    /**
      * Load your component.
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page

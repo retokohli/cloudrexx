@@ -67,6 +67,7 @@ CREATE TABLE `contrexx_access_user_groups` (
   `is_active` tinyint(4) NOT NULL DEFAULT '1',
   `type` enum('frontend','backend') NOT NULL DEFAULT 'frontend',
   `homepage` varchar(255) NOT NULL DEFAULT '',
+  `toolbar` int(6) DEFAULT NULL,
   PRIMARY KEY (`group_id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_access_user_mail` (
@@ -453,6 +454,13 @@ CREATE TABLE `contrexx_core_wysiwyg_template` (
   `active` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_core_wysiwyg_toolbar` (
+  `id` int(6) NOT NULL AUTO_INCREMENT,
+  `available_functions` text NOT NULL,
+  `removed_buttons` text NOT NULL,
+  `is_default` int(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_module_pdf_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
@@ -3675,6 +3683,17 @@ CREATE TABLE `contrexx_syslog` (
   `data` text NOT NULL,
   `logger` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_translations` (
+  `id` int(10) UNSIGNED AUTO_INCREMENT,
+  `locale` varchar(8) NOT NULL,
+  `object_class` varchar(255) NOT NULL,
+  `field` varchar(32) NOT NULL,
+  `foreign_key` varchar(64) DEFAULT NULL,
+  `content` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `lookup_unique_idx` (`locale`,`object_class`,`foreign_key`,`field`),
+  KEY `content_lookup_idx` (`content`(255), `object_class`, `field`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_voting_additionaldata` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

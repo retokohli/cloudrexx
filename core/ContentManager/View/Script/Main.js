@@ -965,7 +965,6 @@ cx.cm = function(target) {
                 "page_metatitle",
                 "page_metadesc",
                 "page_metakeys",
-                "page_metaimage",
                 "page_slug"
             ];
             cx.jQuery.each(fields, function(index, el) {
@@ -1187,7 +1186,10 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             }
         },
         "cookies" : {
-            'save_selected' : false
+            'save_loaded' : cx.variables.get('save_loaded', 'contentmanager/jstree'),
+            'save_opened' : cx.variables.get('save_opened', 'contentmanager/jstree'),
+            'save_selected' : false,
+            'cookie_options': {path: cx.variables.get('basePath')}
         }
     })
     .bind("before.jstree", function(e, data) {
@@ -2669,7 +2671,7 @@ cx.cm.loadHistory = function(id, pos) {
         }
     }
 
-    cx.jQuery("#page_history").html("<div class=\"historyInit\"><img src=\"../lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>");
+    cx.jQuery("#page_history").html("<div class=\"historyInit\"><img src=\"" + cx.variables.get('basePath', 'contrexx') + "lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>");
     pageId = (id != undefined) ? parseInt(id) : parseInt(cx.jQuery('#pageId').val());
     if (isNaN(pageId) || (pageId == 0)) {
         return;

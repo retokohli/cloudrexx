@@ -329,7 +329,9 @@ class MediaDirectory extends MediaDirectoryLibrary
         if ($showLevelDetails) {
             $objLevel->listLevels($this->_objTpl, 5, $intLevelId);
             $showEntriesOfLevel = $objLevel->arrLevels[$intLevelId]['levelShowEntries'];
+        }
 
+        if ($objLevel) {
             // only set page's title to level's name
             // if not in legacy mode
             if (!$this->arrSettings['legacyBehavior']) {
@@ -342,7 +344,9 @@ class MediaDirectory extends MediaDirectoryLibrary
         if ($showCategoryDetails) {
             $objCategory->listCategories($this->_objTpl, 5, $intCategoryId);
             $showEntriesOfCategory = $objCategory->arrCategories[$intCategoryId]['catShowEntries'];
+        }
 
+        if ($objCategory) {
             // only set page's title to category's name
             // if not in legacy mode
             if (!$this->arrSettings['legacyBehavior']) {
@@ -550,9 +554,7 @@ class MediaDirectory extends MediaDirectoryLibrary
             $objEntry->updateHits($intEntryId);
 
             //set meta attributes
-            $entries = new MediaDirectoryEntry($this->moduleName);
-            $entries->getEntries($intEntryId, $intLevelId, $intCategoryId, null, null, null, 1, null, 1);
-            $entry = $entries->arrEntries[$intEntryId];
+            $entry = $objEntry->arrEntries[$intEntryId];
 
             $objInputfields = new MediaDirectoryInputfield($entry['entryFormId'], false, $entry['entryTranslationStatus'], $this->moduleName);
             $inputFields = $objInputfields->getInputfields();
@@ -604,7 +606,7 @@ class MediaDirectory extends MediaDirectoryLibrary
                 }
             }
 
-            $firstInputfieldValue = $entries->arrEntries[$intEntryId]['entryFields'][0];
+            $firstInputfieldValue = $objEntry->arrEntries[$intEntryId]['entryFields'][0];
             if (!$titleChanged && $firstInputfieldValue) {
                 $this->pageTitle = $firstInputfieldValue;
                 $this->metaTitle = $firstInputfieldValue;

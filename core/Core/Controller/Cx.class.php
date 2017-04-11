@@ -155,6 +155,12 @@ namespace Cx\Core\Core\Controller {
         protected $request = null;
 
         /**
+         * Response object
+         * @var \Cx\Lib\Net\Model\Entity\Response
+         */
+        protected $response = null;
+
+        /**
          * Component handler
          * @var \Cx\Core\Core\Controller\ComponentHandler
          */
@@ -786,6 +792,10 @@ namespace Cx\Core\Core\Controller {
                  * Command mode is different ;-)
                  */
                 if ($this->mode == self::MODE_MINIMAL) {
+                    // Legacy:
+                    if (!defined('MODULE_INDEX')) {
+                        define('MODULE_INDEX', '');
+                    }
                     return;
                 }
                 $this->loadContrexx();
@@ -1288,8 +1298,17 @@ namespace Cx\Core\Core\Controller {
             }
 
             // redirect to correct domain and protocol
+            $url = $protocol . '://' . $domain . $_SERVER['REQUEST_URI'];
+            $this->getComponent('Cache')->writeCacheFileForRequest(
+                null,
+                array(
+                    $_SERVER['SERVER_PROTOCOL'] . ' 301 Moved Permanently',
+                    'Location' => $url,
+                ),
+                ''
+            );
             \header($_SERVER['SERVER_PROTOCOL'] . ' 301 Moved Permanently');
-            \header('Location: ' . $protocol . '://' . $domain . $_SERVER['REQUEST_URI']);
+            \header('Location: ' . $url);
             exit;
         }
 
@@ -1444,6 +1463,11 @@ namespace Cx\Core\Core\Controller {
                         break;
                 }
             }
+            $this->response = new \Cx\Lib\Net\Model\Entity\Response(
+                null,
+                200,
+                $this->request
+            );
             //call post-init hooks
             $this->ch->callPostInitHooks();
         }
@@ -1483,6 +1507,11 @@ namespace Cx\Core\Core\Controller {
             // command mode is different
             if ($this->getMode() == static::MODE_COMMAND) {
                 global $argv;
+                
+                // Legacy:
+                if (!defined('MODULE_INDEX')) {
+                    define('MODULE_INDEX', '');
+                }
 
                 try {
                     // cleanup params
@@ -1502,6 +1531,33 @@ namespace Cx\Core\Core\Controller {
                         unset($params['__cap']);
                     }
                     $params = contrexx_input2raw($params);
+                    if (isset($params['lang'])) {
+                        $langId = \FWLanguage::getLanguageIdByCode($params['lang']);
+                        if ($langId) {
+                            if (!defined('FRONTEND_LANG_ID')) {
+                                define('FRONTEND_LANG_ID', $langId);
+                            }
+                            if (!defined('BACKEND_LANG_ID')) {
+                                define('BACKEND_LANG_ID', $langId);
+                            }
+                            if (!defined('LANG_ID')) {
+                                define('LANG_ID', $langId);
+                            }
+                        }
+                    }
+                    if (!\Env::get('Resolver')) {
+                        $url = $this->getRequest()->getUrl();
+                        $url->removeAllParams();
+                        $url->setPath('/');
+                        $resolver = new \Cx\Core\Routing\Resolver(
+                            $url,
+                            null,
+                            $this->getDb()->getEntityManager(),
+                            null,
+                            null
+                        );
+                        \Env::set('Resolver', $resolver);
+                    }
 
                     // parse body arguments:
                     // todo: this does not work for form-data encoded body (boundary...)
@@ -1720,6 +1776,7 @@ namespace Cx\Core\Core\Controller {
          */
         protected function postResolve() {
             $this->ch->callPostResolveHooks();
+            $this->ch->callAdjustResponseHooks($this->getResponse());
         }
 
         /**
@@ -1781,15 +1838,6 @@ namespace Cx\Core\Core\Controller {
             $content = str_replace('{PDF_URL}',             contrexx_raw2xhtml(\Env::get('init')->getUriBy('pdfview', 1)),         $content);
             $content = str_replace('{APP_URL}',             contrexx_raw2xhtml(\Env::get('init')->getUriBy('appview', 1)),         $content);
             $content = str_replace('{LOGOUT_URL}',          contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'logout')),  $content);
-            $content = str_replace('{CONTACT_EMAIL}',       isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $content);
-            $content = str_replace('{CONTACT_COMPANY}',     isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $content);
-            $content = str_replace('{CONTACT_ADDRESS}',     isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '', $content);
-            $content = str_replace('{CONTACT_ZIP}',         isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '', $content);
-            $content = str_replace('{CONTACT_PLACE}',       isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '', $content);
-            $content = str_replace('{CONTACT_COUNTRY}',     isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '', $content);
-            $content = str_replace('{CONTACT_PHONE}',       isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '', $content);
-            $content = str_replace('{CONTACT_FAX}',         isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '', $content);
-            $content = str_replace('{CONTACT_NAME}',        isset($_CONFIG['coreAdminName'])    ? contrexx_raw2xhtml($_CONFIG['coreAdminName'])    : '', $content);
             $content = str_replace('{GOOGLE_MAPS_API_KEY}', isset($_CONFIG['googleMapsAPIKey']) ? contrexx_raw2xhtml($_CONFIG['googleMapsAPIKey']) : '', $content);
         }
 
@@ -1973,17 +2021,13 @@ namespace Cx\Core\Core\Controller {
             // set global template variables
             $boolShop = \Cx\Modules\Shop\Controller\Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
-            $objNavbar->setLanguagePlaceholders($this->resolvedPage, $this->request->getUrl(), $this->template);
             $metarobots = $this->resolvedPage->getMetarobots();
             $this->template->setVariable(array(
-                'CHARSET'                        => \Env::get('init')->getFrontendLangCharset(),
                 'TITLE'                          => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
                 'METATITLE'                      => contrexx_raw2xhtml($this->resolvedPage->getMetatitle()),
                 'NAVTITLE'                       => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
                 'GLOBAL_TITLE'                   => $_CONFIG['coreGlobalPageTitle'],
                 'DOMAIN_URL'                     => $_CONFIG['domainUrl'],
-                'PATH_OFFSET'                    => $this->codeBaseOffsetPath,
-                'BASE_URL'                       => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'] . $this->codeBaseOffsetPath,
                 'METAKEYS'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetakeys()) : '',
                 'METADESC'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetadesc()) : '',
                 'METAROBOTS'                     => $metarobots ? 'all' : 'none',
@@ -2013,25 +2057,12 @@ namespace Cx\Core\Core\Controller {
                 'VISITOR_NUMBER'                 => $objCounter ? $objCounter->getVisitorNumber() : '',
                 'COUNTER'                        => $objCounter ? $objCounter->getCounterTag() : '',
                 'BANNER'                         => isset($objBanner) ? $objBanner->getBannerJS() : '',
-                'VERSION'                        => contrexx_raw2xhtml($_CONFIG['coreCmsName']),
-                'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl()),
-                'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl(), true),
-                'ACTIVE_LANGUAGE_NAME'           => \Env::get('init')->getFrontendLangName(),
                 'RANDOM'                         => md5(microtime()),
                 'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
                 'MODULE_INDEX'                   => MODULE_INDEX,
                 'LOGIN_URL'                      => '<a href="' . contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'Login')) . '" class="start-frontend-editing">' . $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'] . '</a>',
                 'TXT_CORE_LAST_MODIFIED_PAGE'    => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
                 'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_FORMAT_DATE, $this->resolvedPage->getUpdatedAt()->getTimestamp()),
-                'CONTACT_EMAIL'                  => isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '',
-                'CONTACT_NAME'                   => isset($_CONFIG['coreAdminName'])    ? contrexx_raw2xhtml($_CONFIG['coreAdminName'])    : '',
-                'CONTACT_COMPANY'                => isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '',
-                'CONTACT_ADDRESS'                => isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '',
-                'CONTACT_ZIP'                    => isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '',
-                'CONTACT_PLACE'                  => isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '',
-                'CONTACT_COUNTRY'                => isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '',
-                'CONTACT_PHONE'                  => isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '',
-                'CONTACT_FAX'                    => isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '',
                 'GOOGLE_MAPS_API_KEY'            => isset($_CONFIG['googleMapsAPIKey']) ? contrexx_raw2xhtml($_CONFIG['googleMapsAPIKey']) : '',
                 'FACEBOOK_LIKE_IFRAME'           => '<div id="fb-root"></div>
                                                     <script type="text/javascript">
@@ -2313,6 +2344,14 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
+         * Returns the Response object
+         * @return \Cx\Lib\Net\Model\Entity\Response Response object
+         */
+        public function getResponse() {
+            return $this->response;
+        }
+
+        /**
          * Returns the main template
          * @return \Cx\Core\Html\Sigma Main template
          */
@@ -2395,6 +2434,9 @@ namespace Cx\Core\Core\Controller {
                         $command = ($cmdValue && $cmdValue instanceof \Cx\Core_Modules\Access\Model\Entity\Permission) ? $cmdKey : $cmdValue;
                         if (isset($this->commands[$command])) {
                             throw new \Exception('Command \'' . $command . '\' is already in index');
+                        }
+                        if (!$component->hasAccessToExecuteCommand($command, array())) {
+                            continue;
                         }
                         $this->commands[$command] = $component;
                     }
