@@ -1776,6 +1776,7 @@ namespace Cx\Core\Core\Controller {
          */
         protected function postResolve() {
             $this->ch->callPostResolveHooks();
+            $this->ch->callAdjustResponseHooks($this->getResponse());
         }
 
         /**
@@ -2344,7 +2345,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Returns the Response object
-         * @return \Cx\Lib\Net\Model\Entit\Response Response object
+         * @return \Cx\Lib\Net\Model\Entity\Response Response object
          */
         public function getResponse() {
             return $this->response;

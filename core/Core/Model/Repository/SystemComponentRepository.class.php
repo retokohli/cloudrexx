@@ -316,6 +316,19 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
+     * Call hook script of all SystemComponents after post-resolving
+     * @param \Cx\Lib\Net\Model\Entity\Response $response Current response
+     */
+    public function callAdjustResponseHooks($response) {
+        $this->callHooks(
+            'adjustResponse',
+            array(
+                $response,
+            )
+        );
+    }
+
+    /**
      * Call hook script of all SystemComponents before loading content
      */
     public function callPreContentLoadHooks() {
