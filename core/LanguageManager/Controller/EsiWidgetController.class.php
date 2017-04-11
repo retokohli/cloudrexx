@@ -66,7 +66,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      * @param \Cx\Core\Routing\Model\Entity\Response $response Current response
      * @param array $params Array of params
      */
-    public abstract function parseWidget($name, $template, $response, $params)
+    public function parseWidget($name, $template, $response, $params)
     {
         if ($name === 'CHARSET') {
             $template->setVariable($name, \Env::get('init')->getFrontendLangCharset());
