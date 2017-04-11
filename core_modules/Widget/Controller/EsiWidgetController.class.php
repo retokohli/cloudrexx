@@ -155,6 +155,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
         $this->parseWidget(
             $params['get']['name'],
             $widgetTemplate,
+            $params['response'],
             $params['get']
         );
         $_GET = $backupGetParams;
@@ -236,7 +237,8 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
      * Parses a widget
      * @param string $name Widget name
      * @param \Cx\Core\Html\Sigma Widget template
+     * @param \Cx\Lib\Net\Model\Entity\Response $response Current response
      * @param array $params Array of params
      */
-    public abstract function parseWidget($name, $template, $params);
+    public abstract function parseWidget($name, $template, $response, $params);
 }
