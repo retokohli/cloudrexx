@@ -61,12 +61,12 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
 
     /**
      * Parses a widget
-     *
-     * @param string              $name     Widget name
-     * @param \Cx\Core\Html\Sigma $template Widget template
-     * @param string              $locale   RFC 3066 locale identifier
+     * @param string $name Widget name
+     * @param \Cx\Core\Html\Sigma Widget template
+     * @param \Cx\Core\Routing\Model\Entity\Response $response Current response
+     * @param array $params Array of params
      */
-    public function parseWidget($name, $template, $locale)
+    public abstract function parseWidget($name, $template, $response, $params)
     {
         if ($name === 'CHARSET') {
             $template->setVariable($name, \Env::get('init')->getFrontendLangCharset());
