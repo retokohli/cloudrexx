@@ -156,7 +156,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Response object
-         * @var \Cx\Lib\Net\Model\Entity\Response
+         * @var \Cx\Core\Routing\Model\Entity\Response
          */
         protected $response = null;
 
@@ -2347,7 +2347,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Returns the Response object
-         * @return \Cx\Lib\Net\Model\Entity\Response Response object
+         * @return \Cx\Core\Routing\Model\Entity\Response Response object
          */
         public function getResponse() {
             return $this->response;

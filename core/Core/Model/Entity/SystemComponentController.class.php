@@ -410,9 +410,9 @@ class SystemComponentController extends Controller {
      * PLEASE MAKE SURE THIS METHOD IS MOCKABLE. IT MAY ONLY INTERACT WITH
      * resolve() HOOK.
      *
-     * @param \Cx\Lib\Net\Model\Entity\Response $response Response object to adjust
+     * @param \Cx\Core\Routing\Model\Entity\Response $response Response object to adjust
      */
-    public function adjustResponse(\Cx\Lib\Net\Model\Entity\Response $response) {}
+    public function adjustResponse(\Cx\Core\Routing\Model\Entity\Response $response) {}
 
     /**
      * Load your component. It is needed for this request.
