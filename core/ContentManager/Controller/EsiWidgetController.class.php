@@ -53,26 +53,22 @@ namespace Cx\Core\ContentManager\Controller;
 class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetController {
 
     /**
-     * Page Id
-     *
-     * @var integer
-     */
-    protected $pageId;
-
-    /**
      * Parses a widget
      *
-     * @param string              $name     Widget name
-     * @param \Cx\Core\Html\Sigma $template Widget template
-     * @param string              $locale   RFC 3066 locale identifier
+     * @param string                                 $name     Widget name
+     * @param \Cx\Core\Html\Sigma Widget             $template Template
+     * @param \Cx\Core\Routing\Model\Entity\Response $response Response object
+     * @param array                                  $params   Get parameters
+     *
+     * @return null
      */
-    public function parseWidget($name, $template, $locale) 
+    public function parseWidget($name, $template, $response, $params)
     {
         if ($name === 'TXT_CORE_LAST_MODIFIED_PAGE') {
             $arrayLang = \Env::get('init')->getComponentSpecificLanguageData(
                 'Core',
                 true,
-                \FWLanguage::getLangIdByIso639_1($locale)
+                $params['lang']
             );
             $template->setVariable(
                 $name,
@@ -81,10 +77,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             return;
         }
 
-        $em       = $this->cx->getDb()->getEntityManager();
-        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-        $page     = $pageRepo->find($this->pageId);
-
+        $page = $params['page'];
         if (!$page) {
             return;
         }
@@ -141,20 +134,5 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                 break;
         }
         $template->setVariable($name, $widgetValue);
-    }
-
-    /**
-     * Returns the content of a widget
-     *
-     * @param array $params JsonAdapter parameters
-     *
-     * @return array Content in an associative array
-     */
-    public function getWidget($params)
-    {
-        if (isset($params['get']) && isset($params['get']['page'])) {
-            $this->pageId = $params['get']['page'];
-        }
-        return parent::getWidget($params);
     }
 }
