@@ -129,10 +129,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\Routing\Model\Entity\Response $response Response object to adjust
      */
     public function adjustResponse(\Cx\Core\Routing\Model\Entity\Response $response) {
-        $canonicalUrl = \Cx\Core\Routing\Url::fromPage(
-            $response->getPage(),
-            $response->getRequest()->getUrl()->getParamArray()
-        );
+        $params = $response->getRequest()->getUrl()->getParamArray();
+        unset($params['section']);
+        unset($params['cmd']);
+        $canonicalUrl = \Cx\Core\Routing\Url::fromPage($response->getPage(), $params);
         $response->setHeader(
             'Link',
             '<' . $canonicalUrl->toString() . '>; rel="canonical"'
