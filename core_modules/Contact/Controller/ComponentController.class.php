@@ -133,7 +133,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         unset($params['section']);
         unset($params['cmd']);
         $canonicalUrl = \Cx\Core\Routing\Url::fromPage($response->getPage(), $params);
-        header('Link: <' . $canonicalUrl->toString() . '>; rel="canonical"');
+        $response->setHeader(
+            'Link',
+            '<' . $canonicalUrl->toString() . '>; rel="canonical"'
+        );
     }
 
     /**

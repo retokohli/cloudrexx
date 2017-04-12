@@ -137,7 +137,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $response->getPage(),
             $response->getRequest()->getUrl()->getParamArray()
         );
-        header('Link: <' . $canonicalUrl->toString() . '>; rel="canonical"');
+        $response->setHeader(
+            'Link',
+            '<' . $canonicalUrl->toString() . '>; rel="canonical"'
+        );
     }
 
     /**
