@@ -156,7 +156,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Response object
-         * @var \Cx\Lib\Net\Model\Entity\Response
+         * @var \Cx\Core\Routing\Model\Entity\Response
          */
         protected $response = null;
 
@@ -607,7 +607,7 @@ namespace Cx\Core\Core\Controller {
          */
         public function getEndcode()
         {
-            return $this->endcode;
+            return $this->getResponse()->getParsedContent();
         }
 
         /**
@@ -1463,11 +1463,12 @@ namespace Cx\Core\Core\Controller {
                         break;
                 }
             }
-            $this->response = new \Cx\Lib\Net\Model\Entity\Response(
+            $this->response = new \Cx\Core\Routing\Model\Entity\Response(
                 null,
                 200,
                 $this->request
             );
+            $this->response->setContentType('text/html');
             //call post-init hooks
             $this->ch->callPostInitHooks();
         }
@@ -1623,7 +1624,7 @@ namespace Cx\Core\Core\Controller {
             $this->preFinalize();                       // Call pre finalize hook scripts
             $this->finalize();                          // Set template vars
             $this->postFinalize();                      // Call post finalize hook scripts
-            echo $this->endcode;                        // Display content
+            $this->getResponse()->send();               // Send response
         }
 
         /**
@@ -1775,6 +1776,7 @@ namespace Cx\Core\Core\Controller {
          * @todo Remove usage of globals
          */
         protected function postResolve() {
+            $this->getResponse()->setPage($this->getPage());
             $this->ch->callPostResolveHooks();
             $this->ch->callAdjustResponseHooks($this->getResponse());
         }
@@ -2210,7 +2212,7 @@ namespace Cx\Core\Core\Controller {
                     $this->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
                     $endcode
                 );
-                $this->endcode = $ls->replace();
+                $this->getResponse()->setParsedContent($ls->replace());
             } else {
                 // backend meta navigation
                 if ($this->template->blockExists('backend_metanavigation')) {
@@ -2312,7 +2314,7 @@ namespace Cx\Core\Core\Controller {
                     $this->getCodeBaseOffsetPath() . $this->getBackendFolderName() . '/',
                     $endcode
                 );
-                $this->endcode = $ls->replace();
+                $this->getResponse()->setParsedContent($ls->replace());
             }
 
             \DBG::log("(Cx: {$this->id}) Request parsing completed after $parsingTime");
@@ -2322,7 +2324,9 @@ namespace Cx\Core\Core\Controller {
          * Calls hooks after call to finalize()
          */
         protected function postFinalize() {
-            $this->ch->callPostFinalizeHooks($this->endcode);
+            $endcode = $this->getResponse()->getParsedContent();
+            $this->ch->callPostFinalizeHooks($endcode);
+            $this->getResponse()->setParsedContent($endcode);
         }
 
         /* GETTERS */
@@ -2345,7 +2349,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Returns the Response object
-         * @return \Cx\Lib\Net\Model\Entity\Response Response object
+         * @return \Cx\Core\Routing\Model\Entity\Response Response object
          */
         public function getResponse() {
             return $this->response;
