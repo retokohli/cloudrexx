@@ -2324,7 +2324,9 @@ namespace Cx\Core\Core\Controller {
          * Calls hooks after call to finalize()
          */
         protected function postFinalize() {
-            $this->ch->callPostFinalizeHooks($this->getResponse()->getParsedContent());
+            $endcode = $this->getResponse()->getParsedContent();
+            $this->ch->callPostFinalizeHooks($endcode);
+            $this->getResponse()->setParsedContent($endcode);
         }
 
         /* GETTERS */
