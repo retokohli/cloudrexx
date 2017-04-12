@@ -129,6 +129,12 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      */
     public function getWidget($params)
     {
+        global $_LANGID;
+
+        if (isset($params['get']['lang'])) {
+            $_LANGID         = \FWLanguage::getLangIdByIso639_1($params['get']['lang']);
+        }
+
         if (!isset($params['get']['name'])) {
             return parent::getWidget($params);
         }
