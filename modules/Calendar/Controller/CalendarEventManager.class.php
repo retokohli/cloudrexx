@@ -259,18 +259,11 @@ class CalendarEventManager extends CalendarLibrary
             $showIn_where = "";     
         } else {
             if($this->arrSettings['showEventsOnlyInActiveLanguage'] == 1) {
-                $showIn_where = "AND FIND_IN_SET('".$_LANGID."',event.show_in)>0 ";  
-            } else {                                      
-                $showIn_where = "";     
-            }  
-            
-            $objFWUser = \FWUser::getFWUserObject();   
-            if ($objFWUser->objUser->login()) {
-                $needAuth_where = '';     
+                $showIn_where = "AND FIND_IN_SET('".$_LANGID."',event.show_in)>0 ";
             } else {
-                $needAuth_where = ' AND event.access=0';
-            } 
-        }                                                                                        
+                $showIn_where = "";
+            }
+        }
 
         if ($this->endDate !== null) {
             $dateScope_where = '((
@@ -314,7 +307,6 @@ class CalendarEventManager extends CalendarLibrary
                          ".$searchTerm_DB."
                    WHERE ".$dateScope_where."
                          ".$onlyActive_where."
-                         ".$needAuth_where."
                          ".$categoryId_where."
                          ".$searchTerm_where."
                          ".$showIn_where."
@@ -326,8 +318,19 @@ class CalendarEventManager extends CalendarLibrary
         $objResult = $objDatabase->Execute($query);
         
         if ($objResult !== false) {
+            $objFWUser = \FWUser::getFWUserObject();
             while (!$objResult->EOF) {
                 $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($objResult->fields['id']));
+
+                if ($objEvent->access) {
+                    // cache userbased
+                    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                    $cx->getComponent('Cache')->forceUserbasedPageCache();
+                    if (!$objFWUser->objUser->login()) {
+                        $objResult->MoveNext();
+                        continue;
+                    }
+                }
 
                 if($objInit->mode == 'frontend' || $this->showSeries) {
                     $checkFutureEvents = true;

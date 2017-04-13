@@ -63,14 +63,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Do something after content is loaded from DB
+     * Do something before content is loaded from DB
      *
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
      * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
-    public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        $template = new \Cx\Core\Html\Sigma();
+    public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        $template = new \Cx\Core_Modules\Widget\Model\Entity\Sigma();
         $template->setTemplate($page->getContent());
         $this->parseWidgets($template, 'ContentManager', 'Page', $page->getId());
         $page->setContent($template->get());
@@ -184,12 +184,25 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return \Cx\Model\Base\EntityBase Parse target entity
      */
     protected function getParseTarget($componentName, $entityName, $entityId) {
+        if (!isset($this->cache)) {
+            $this->cache = array();
+        }
+        if (
+            isset($this->cache[$entityName]) &&
+            isset($this->cache[$entityName][$entityId])
+        ) {
+            return $this->cache[$entityName][$entityId];
+        }
         // the following IF block can be dropped as soon as Block is a Doctrine entity
         if ($componentName == 'Block' && $entityName == 'Block') {
-            return new \Cx\Modules\Block\Model\Entity\Block($entityId);
+            $target = new \Cx\Modules\Block\Model\Entity\Block($entityId);
+            $this->cache[$entityName][$entityId] = $target;
+            return $target;
         } else if ($componentName == 'View' && $entityName == 'Theme') {
             $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
-            return $themeRepo->findById($entityId);
+            $target = $themeRepo->findById($entityId);
+            $this->cache[$entityName][$entityId] = $target;
+            return $target;
         }
         $em = $this->cx->getDb()->getEntityManager();
         $component = $this->getComponent($componentName);
@@ -203,6 +216,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (!is_a($target, $this->getNamespace() . '\Model\Entity\WidgetParseTarget')) {
             throw new \Exception('Invalid parse target specified');
         }
+        $this->cache[$entityName][$entityId] = $target;
         return $target;
     }
 
