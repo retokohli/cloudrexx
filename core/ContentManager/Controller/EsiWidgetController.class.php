@@ -29,7 +29,7 @@
  * Class EsiWidgetController
  *
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
- * @author      Project Team SS4U <info@comvation.com>
+ * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  core_contentmanager
  * @version     1.0.0
@@ -44,7 +44,7 @@ namespace Cx\Core\ContentManager\Controller;
  * - Register it as a Controller in your ComponentController
  *
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
- * @author      Project Team SS4U <info@comvation.com>
+ * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  core_contentmanager
  * @version     1.0.0
@@ -56,7 +56,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      * Parses a widget
      *
      * @param string                                 $name     Widget name
-     * @param \Cx\Core\Html\Sigma Widget             $template Template
+     * @param \Cx\Core\Html\Sigma                    $template Widget Template
      * @param \Cx\Core\Routing\Model\Entity\Response $response Response object
      * @param array                                  $params   Get parameters
      *
