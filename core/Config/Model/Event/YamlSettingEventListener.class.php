@@ -131,8 +131,7 @@ class YamlSettingEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventL
                 case 'defaultMetaimage':
                     if ($value != $_CONFIG[$objSetting->getName()]) {
                         // drop esi/ssi cache
-                        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-                        $cx->getEvents()->triggerEvent(
+                        $this->cx->getEvents()->triggerEvent(
                             'clearEsiCache',
                             array('Widget', 'METAIMAGE')
                         );
