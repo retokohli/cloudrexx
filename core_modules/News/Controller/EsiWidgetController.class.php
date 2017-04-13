@@ -29,7 +29,7 @@
  * Class EsiWidgetController
  *
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
- * @author      Project Team SS4U <info@comvation.com>
+ * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  coremodule_news
  * @version     1.0.0
@@ -44,7 +44,7 @@ namespace Cx\Core_Modules\News\Controller;
  * - Register it as a Controller in your ComponentController
  *
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
- * @author      Project Team SS4U <info@comvation.com>
+ * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  coremodule_news
  * @version     1.0.0
@@ -52,26 +52,31 @@ namespace Cx\Core_Modules\News\Controller;
 
 class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetController {
     /**
-     * currentThemeId
-     *
-     * @var integer
-     */
-    protected $currentThemeId;
-
-    /**
      * Parses a widget
      *
-     * @param string $name Widget name
-     * @param \Cx\Core\Html\Sigma Widget template
-     * @param string $locale RFC 3066 locale identifier
+     * @param string                                 $name     Widget name
+     * @param \Cx\Core\Html\Sigma                    $template Widget Template
+     * @param \Cx\Core\Routing\Model\Entity\Response $response Response object
+     * @param array                                  $params   Get parameters
+     *
+     * @return null
      */
-    public function parseWidget($name, $template, $locale)
+    public function parseWidget($name, $template, $response, $params)
     {
-        global $_CONFIG, $_ARRAYLANG;
+        global $_CORELANG;
 
-        $langId          = \FWLanguage::getLangIdByIso639_1($locale);
-        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
-        $theme           = $themeRepository->findById($this->currentThemeId);
+        $langId = $params['lang'];
+        $theme  = $params['theme'];
+
+        //The global $_CORELANG is required in the following methods
+        //NewsHeadlines::getHomeHeadlines(), NewsTop::getHomeTopNews() and
+        //NewsLibrary::getNewsArchiveList()
+        $_CORELANG =
+            \Env::get('init')->getComponentSpecificLanguageData(
+                'Core',
+                true,
+                $langId
+            );
 
         // Parse Headlines
         $matches = null;
@@ -87,11 +92,6 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                 return;
             }
 
-            $_ARRAYLANG = array_merge(
-                $_ARRAYLANG,
-                \Env::get('init')->loadLanguageData('News')
-            );
-
             if (
                 preg_match(
                     '/\{CATEGORY_([0-9]+)\}/',
@@ -102,8 +102,12 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                 $category = $catMatches[1];
             }
             $newsHeadlines = new NewsHeadlines($templateContent);
-            $content       = $newsHeadlines->getHomeHeadlines($category, $langId);
+            $content       = $newsHeadlines->getHomeHeadlines(
+                $category,
+                $langId
+            );
             $template->setVariable($name, $content);
+            return;
         }
 
         // Parse Top news
@@ -115,6 +119,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             $newsTop = new NewsTop($templateContent);
             $content = $newsTop->getHomeTopNews(0, $langId);
             $template->setVariable($name, $content);
+            return;
         }
 
         // Parse News categories
@@ -122,6 +127,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             $newsLib = new NewsLibrary();
             $content = $newsLib->getNewsCategories($langId);
             $template->setVariable($name, $content);
+            return;
         }
 
         // Parse News Archives
@@ -129,52 +135,48 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             $newsLib = new NewsLibrary();
             $content = $newsLib->getNewsArchiveList($langId);
             $template->setVariable($name, $content);
+            return;
         }
 
         // Parse recent News Comments
         if ($name == 'NEWS_RECENT_COMMENTS_FILE') {
-            $pageContent = $this->getFileContent($theme, 'news_recent_comments.html');
+            $pageContent = $this->getFileContent(
+                $theme,
+                'news_recent_comments.html'
+            );
             if (!$pageContent) {
                 return;
             }
             $newsLib = new NewsRecentComments($pageContent);
             $content = $newsLib->getRecentNewsComments($langId);
             $template->setVariable($name, $content);
-        }
-
-        // Parse news teasers
-        if ($_CONFIG['newsTeasersStatus'] != '1') {
             return;
         }
 
-        if (preg_match('/TEASERS_([0-9a-zA-Z_-]+)/', $name, $matches)) {
-            $teasers = new Teasers(false, $langId);
-            $code    = '{' . $name . '}';
-            $teasers->setTeaserFrames(array($matches[1]), $code);
-            $template->setVariable($name, $code);
+        // Parse news teasers
+        $newsTeaserStatus = \Cx\Core\Setting\Controller\Setting::getValue(
+            'newsTeasersStatus',
+            'Config'
+        );
+        if ($newsTeaserStatus != '1') {
+            return;
         }
-    }
 
-    /**
-     * Returns the content of a widget
-     *
-     * @param array $params JsonAdapter parameters
-     *
-     * @return array Content in an associative array
-     */
-    public function getWidget($params)
-    {
-        if (isset($params['get']) && isset($params['get']['theme'])) {
-            $this->currentThemeId = $params['get']['theme'];
+        if (!preg_match('/TEASERS_([0-9a-zA-Z_-]+)/', $name, $matches)) {
+            return;
         }
-        return parent::getWidget($params);
+
+        $teasers = new Teasers(false, $langId);
+        $code    = '{' . $name . '}';
+        $teasers->setTeaserFrames(array($matches[1]), $code);
+        $template->setVariable($name, $code);
     }
 
     /**
      * Get file content
-     * 
-     * @param \Cx\Core\View\Model\Entity\Theme $theme
-     * @param type $fileName
+     *
+     * @param \Cx\Core\View\Model\Entity\Theme $theme    Theme object
+     * @param string                           $fileName Name of the file
      *
      * @return string
      */
