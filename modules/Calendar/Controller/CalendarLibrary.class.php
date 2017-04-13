@@ -583,7 +583,7 @@ class CalendarLibrary
         $javascript = <<< EOF
 <script type="text/javascript" src="lib/datepickercontrol/datepickercontrol.js"></script>
 EOF;
-        if($_GET['cmd'] == 'register') {
+        if (isset($_GET['cmd']) && $_GET['cmd'] == 'register') {
              $javascript .= <<< EOF
              
 <script type="text/javascript">

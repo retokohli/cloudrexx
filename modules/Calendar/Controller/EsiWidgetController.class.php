@@ -29,7 +29,7 @@
  * Class EsiWidgetController
  *
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
- * @author      Project Team SS4U <info@comvation.com>
+ * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  module_calendar
  * @version     1.0.0
@@ -44,7 +44,7 @@ namespace Cx\Modules\Calendar\Controller;
  * - Register it as a Controller in your ComponentController
  *
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
- * @author      Project Team SS4U <info@comvation.com>
+ * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  module_calendar
  * @version     1.0.0
@@ -52,47 +52,42 @@ namespace Cx\Modules\Calendar\Controller;
 
 class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetController {
     /**
-     * currentThemeId
-     *
-     * @var integer
-     */
-    protected $currentThemeId;
-
-    /**
      * Parses a widget
-     * @param string $name Widget name
-     * @param \Cx\Core\Html\Sigma Widget template
-     * @param string $locale RFC 3066 locale identifier
+     *
+     * @param string                                 $name     Widget name
+     * @param \Cx\Core\Html\Sigma                    $template Widget template
+     * @param \Cx\Core\Routing\Model\Entity\Response $response Response object
+     * @param array                                  $params   Get parameters
+     *
+     * @return null
      */
-    public function parseWidget($name, $template, $locale)
+    public function parseWidget($name, $template, $response, $params)
     {
-        global $_CONFIG, $_ARRAYLANG, $_LANGID;
+        global $_LANGID;
 
         $matches = null;
         if (
-            !preg_match('/^EVENTS(\d{1,2}|)_FILE/', $name, $matches) ||
+            !preg_match('/^EVENTS(\d{1,2}|)_FILE$/', $name, $matches) ||
             MODULE_INDEX >= 2 ||
-            !\Cx\Core\Setting\Controller\Setting::getValue('calendarheadlines', 'Config')
+            !\Cx\Core\Setting\Controller\Setting::getValue(
+                'calendarheadlines',
+                'Config'
+            )
         ) {
             return;
         }
 
         $category   = null;
         $catMatches = null;
-
-        $_LANGID         = \FWLanguage::getLangIdByIso639_1($locale);
-
-        $_ARRAYLANG = array_merge(
-            $_ARRAYLANG,
-            \Env::get('init')->getComponentSpecificLanguageData('Calendar', true, $_LANGID)
-        );
-
-        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
-        $theme           = $themeRepository->findById($this->currentThemeId);
-        if (!$theme) {
+        //The global $_LANGID is required in the method
+        //CalendarHeadlines::getHeadlines()
+        $_LANGID    = $params['lang'];
+        if (!$params['theme']) {
             return;
         }
-        $filePath   = $theme->getFolderName() . '/' . 'events' . $matches[1] . '.html';
+
+        $filePath   = $params['theme']->getFolderName() . '/' . 'events' .
+            $matches[1] . '.html';
         $fileSystem = \Cx\Core\Core\Controller\Cx::instanciate()
             ->getMediaSourceManager()
             ->getMediaType('themes')
@@ -115,43 +110,10 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         ) {
             $category = $catMatches[1];
         }
-        $headlines        = new CalendarHeadlines($content);
-        $headlinesContent = $headlines->getHeadlines($category);
-        $template->setVariable($name, $headlinesContent);
-    }
+        $headlines = new CalendarHeadlines($content);
+        $template->setVariable($name, $headlines->getHeadlines($category));
 
-    /**
-     * Returns the content of a widget
-     *
-     * @param array $params JsonAdapter parameters
-     *
-     * @return array Content in an associative array
-     */
-    public function getWidget($params)
-    {
-        global $_LANGID;
-
-        if (isset($params['get']['lang'])) {
-            $_LANGID         = \FWLanguage::getLangIdByIso639_1($params['get']['lang']);
-        }
-
-        if (!isset($params['get']['name'])) {
-            return parent::getWidget($params);
-        }
-
-        if (isset($params['get']) && isset($params['get']['theme'])) {
-            $this->currentThemeId = $params['get']['theme'];
-        }
-
-        $matches = null;
-        if (
-            !preg_match('/^EVENTS(\d{1,2}|)_FILE/', $params['get']['name'], $matches) ||
-            MODULE_INDEX >= 2 ||
-            !\Cx\Core\Setting\Controller\Setting::getValue('calendarheadlines', 'Config')
-        ) {
-            return parent::getWidget($params);
-        }
-
+        //Set expiration date
         // get next event
         $calendarLib = new \Cx\Modules\Calendar\Controller\CalendarLibrary('.');
         $calendarLib->getSettings();
@@ -193,7 +155,6 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                 '+' . $additionalYears . ' years'
             );
         }
-        $params['response']->setExpirationDate($cacheExpirationDate);
-        return parent::getWidget($params);
+        $response->setExpirationDate($cacheExpirationDate);
     }
 }
