@@ -177,8 +177,69 @@ CKEDITOR.on('instanceReady',function(){
                 this.button.setState(CKEDITOR.TRISTATE_ENABLE) // Enable "Template"-Button
             }
         }).bind(loadingTemplates)();
+
+        var dataImagePattern = /<img\s+[^>]*src=[\'\"](data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([a-z0-9\!\$\&\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*)\s*)[\'\"][^>]*>/i;
+        var editor = CKEDITOR.instances[instanceName];
+        editor.on("paste", function (evt) {
+            var data = evt.data.dataValue;
+            //TO-DO: We have to match all the base64 image
+            var dataMatches = data.match(dataImagePattern);
+            //TO-DO: We have to check the user have permission to see at least one location in MediaBrowser
+            //otherwise he cannot upload the picture
+            if (dataMatches && dataMatches.length) {
+                var options = {
+                    runtimes: 'html5,flash,silverlight,html4',
+                    multi_selection: true,
+                    max_file_size: '500mb',
+                    flash_swf_url: cx.variables.get('basePath','contrexx')+'lib/plupload/js/Moxie.swf',
+                    silverlight_xap_url: cx.variables.get('basePath','contrexx')+'lib/plupload/js/Moxie.xap',
+                    prevent_duplicates: true,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Check-CSRF': 'false'
+                    },
+                    chunk_size: cx.variables.get('chunk_size','uploader'),
+                    max_retries: 3
+                };
+                var uploader = new plupload.Uploader(options);
+                uploader.setOption('url', cx.variables.get('cadminPath','contrexx')+'?cmd=JsonData&object=Uploader&act=upload&id=' + uploader.id + '&csrf=' + cx.variables.get('csrf'));
+                var blob = dataURItoBlob(dataMatches[1]);
+                blob.name = "newImage.png";
+                blob.ruid = uploader.id;
+                uploader.bind('FilesAdded', function (up, files) {
+                    console.log('FileAdded successfully');
+                    uploader.start();
+                });
+                uploader.bind('FileUploaded', function (up, files) {
+                    console.log('FileUploaded successfully');
+                });
+                uploader.addFile(blob);
+            }
+        });
     }
 });
+
+function dataURItoBlob(dataURI) {
+    /* convert base64/URLEncoded data component to raw binary data held in a string */
+    var byteString;
+    if (dataURI.split(',')[0].indexOf('base64') >= 0) {
+        byteString = atob(dataURI.split(',')[1]);
+    } else {
+        byteString = unescape(dataURI.split(',')[1]);
+    }
+
+    /* separate out the mime component*/
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+    /* write the bytes of the string to a typed array */
+    var typedArray = new Uint8Array(byteString.length);
+    for (var i = 0; i < byteString.length; i++) {
+        typedArray[i] = byteString.charCodeAt(i);
+    }
+
+    var resultingBlob =  new Blob([typedArray], {type:mimeString});
+    return new mOxie.File(null, resultingBlob);
+}
 
 // hide 'browse'-buttons in case the user is a sole frontend-user
 // and is not permitted to access the MediaBrowser or Uploader
