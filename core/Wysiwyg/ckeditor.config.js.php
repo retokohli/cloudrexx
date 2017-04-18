@@ -204,7 +204,6 @@ CKEDITOR.on('instanceReady',function(){
                 var uploader = new plupload.Uploader(options);
                 uploader.setOption('url', cx.variables.get('cadminPath','contrexx')+'?cmd=JsonData&object=Uploader&act=upload&id=' + uploader.id + '&csrf=' + cx.variables.get('csrf'));
                 var blob = dataURItoBlob(dataMatches[1]);
-                blob.name = "newImage.png";
                 blob.ruid = uploader.id;
                 uploader.bind('FilesAdded', function (up, files) {
                     console.log('FileAdded successfully');
