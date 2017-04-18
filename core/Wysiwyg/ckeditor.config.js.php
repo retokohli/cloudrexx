@@ -178,51 +178,49 @@ CKEDITOR.on('instanceReady',function(){
             }
         }).bind(loadingTemplates)();
 
-        var dataImagePattern = /<img\s+[^>]*src=[\'\"](data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([a-z0-9\!\$\&\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*)\s*)[\'\"][^>]*>/i;
-        var editor = CKEDITOR.instances[instanceName];
-        editor.on("paste", function (evt) {
+        var dataImagePattern = /<img\s+[^>]*src=([\'\"])(data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([^\'\"]*)\s*)\1[^>]*>/g;
+        var editor = CKEDITOR.instances[instanceName], files = [];
+        editor.on('paste', function (evt) {
             var data = evt.data.dataValue;
-            //TO-DO: We have to match all the base64 image
-            var dataMatches = data.match(dataImagePattern);
+            while (match = dataImagePattern.exec(data)) {
+                files.push(dataURItoBlob(match[2]));
+            }
+
+            if (!files || files.length === 0) {
+                return;
+            }
+
+            <?php $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader(); ?>
+            var uploaderId = '<?php echo $uploader->getId(); ?>';
+            jQuery('<a/>').attr('id', 'wysiwygPasteUploadButton_' + uploaderId).attr('style', 'display:none').appendTo(document.body);
+
             //TO-DO: We have to check the user have permission to see at least one location in MediaBrowser
             //otherwise he cannot upload the picture
-            if (dataMatches && dataMatches.length) {
-                // TODO: id must be set on server-side (PHP)
-                //       using $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
-                id=1;
-                jQuery(document.body).append('<a id="wysiwygPasteUploadButton_' + id + '" style="display:none;"></a>');
-                var options = {
-                    runtimes: 'html5,flash,silverlight,html4',
-                    browse_button: 'wysiwygPasteUploadButton_' + id,
-                    multi_selection: true,
-                    max_file_size: '500mb',
-                    flash_swf_url: cx.variables.get('basePath','contrexx')+'lib/plupload/js/Moxie.swf',
-                    silverlight_xap_url: cx.variables.get('basePath','contrexx')+'lib/plupload/js/Moxie.xap',
-                    url: cx.variables.get('cadminPath','contrexx')+'?cmd=JsonData&object=Uploader&act=upload&id=' + id  + '&csrf=' + cx.variables.get('csrf'),
-                    prevent_duplicates: true,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Check-CSRF': 'false'
-                    },
-                    chunk_size: cx.variables.get('chunk_size','uploader'),
-                    max_retries: 3
-                };
-                var uploader = new plupload.Uploader(options);
+            var options = {
+                runtimes: 'html5,flash,silverlight,html4',
+                multi_selection: true,
+                max_file_size: '500mb',
+                browse_button: 'wysiwygPasteUploadButton_' + uploaderId,
+                url: cx.variables.get('cadminPath','contrexx')+'?cmd=JsonData&object=Uploader&act=upload&id=' + uploaderId + '&csrf=' + cx.variables.get('csrf'),
+                flash_swf_url: cx.variables.get('basePath','contrexx')+'lib/plupload/js/Moxie.swf',
+                silverlight_xap_url: cx.variables.get('basePath','contrexx')+'lib/plupload/js/Moxie.xap',
+                prevent_duplicates: true,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Check-CSRF': 'false'
+                },
+                chunk_size: cx.variables.get('chunk_size','uploader'),
+                max_retries: 3
+            };
 
-                uploader.bind('FilesAdded', function (up, files) {
-                    console.log('FileAdded successfully');
-                    up.start();
-                });
-                uploader.bind('FileUploaded', function (up, files) {
-                    console.log('FileUploaded successfully');
-                });
-                uploader.bind('PostInit', function (up) {
-                    var blob = dataURItoBlob(dataMatches[1]);
-                    up.addFile(blob);
-                });
-
-                uploader.init();
-            }
+            var uploader = new plupload.Uploader(options);
+            uploader.bind('FilesAdded', function (up, files) {
+                up.start();
+            });
+            uploader.bind('PostInit', function (up) {
+                up.addFile(files);
+            });
+            uploader.init();
         });
     }
 });
