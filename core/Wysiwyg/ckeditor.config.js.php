@@ -187,12 +187,18 @@ CKEDITOR.on('instanceReady',function(){
             //TO-DO: We have to check the user have permission to see at least one location in MediaBrowser
             //otherwise he cannot upload the picture
             if (dataMatches && dataMatches.length) {
+                // TODO: id must be set on server-side (PHP)
+                //       using $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+                id=1;
+                jQuery(document.body).append('<a id="wysiwygPasteUploadButton_' + id + '" style="display:none;"></a>');
                 var options = {
                     runtimes: 'html5,flash,silverlight,html4',
+                    browse_button: 'wysiwygPasteUploadButton_' + id,
                     multi_selection: true,
                     max_file_size: '500mb',
                     flash_swf_url: cx.variables.get('basePath','contrexx')+'lib/plupload/js/Moxie.swf',
                     silverlight_xap_url: cx.variables.get('basePath','contrexx')+'lib/plupload/js/Moxie.xap',
+                    url: cx.variables.get('cadminPath','contrexx')+'?cmd=JsonData&object=Uploader&act=upload&id=' + id  + '&csrf=' + cx.variables.get('csrf'),
                     prevent_duplicates: true,
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
@@ -202,17 +208,20 @@ CKEDITOR.on('instanceReady',function(){
                     max_retries: 3
                 };
                 var uploader = new plupload.Uploader(options);
-                uploader.setOption('url', cx.variables.get('cadminPath','contrexx')+'?cmd=JsonData&object=Uploader&act=upload&id=' + uploader.id + '&csrf=' + cx.variables.get('csrf'));
-                var blob = dataURItoBlob(dataMatches[1]);
-                blob.ruid = uploader.id;
+
                 uploader.bind('FilesAdded', function (up, files) {
                     console.log('FileAdded successfully');
-                    uploader.start();
+                    up.start();
                 });
                 uploader.bind('FileUploaded', function (up, files) {
                     console.log('FileUploaded successfully');
                 });
-                uploader.addFile(blob);
+                uploader.bind('PostInit', function (up) {
+                    var blob = dataURItoBlob(dataMatches[1]);
+                    up.addFile(blob);
+                });
+
+                uploader.init();
             }
         });
     }
