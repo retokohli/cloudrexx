@@ -88,7 +88,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
     public function getAccessableMethods() {
         return array(
             'getFiles', 'getSites', 'getSources', 'createThumbnails',
-            'createDir', 'renameFile', 'removeFile', 
+            'createDir', 'renameFile', 'removeFile',
             'removeFileFromFolderWidget'=> new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false),
             'folderWidget' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false)
         );
@@ -189,8 +189,8 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
         $pathArray                 = explode('/', $params['get']['path']);
         // Shift off the first element of the array to get the media type.
         $mediaType = array_shift($pathArray);
-        $strPath = '/' . join('/', $pathArray);
-        $dir        = $params['post']['dir'] . '/';
+        $strPath = '/' . utf8_decode(join('/', $pathArray));
+        $dir        = utf8_decode($params['post']['dir']) . '/';
         $this->setMessage(
             $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()->createDirectory(
                 $strPath, $dir
@@ -204,9 +204,9 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
     public function renameFile($params) {
         \Env::get('init')->loadLanguageData('MediaBrowser');
 
-        $path       = !empty($params['get']['path']) ? contrexx_input2raw($params['get']['path']) : null;
-        $oldName    = !empty($params['post']['oldName']) ? contrexx_input2raw($params['post']['oldName']) : null;
-        $newName    = !empty($params['post']['newName']) ? contrexx_input2raw($params['post']['newName']) : null;
+        $path       = !empty($params['get']['path']) ? contrexx_input2raw(utf8_decode($params['get']['path'])) : null;
+        $oldName    = !empty($params['post']['oldName']) ? contrexx_input2raw(utf8_decode($params['post']['oldName'])) : null;
+        $newName    = !empty($params['post']['newName']) ? contrexx_input2raw(utf8_decode($params['post']['newName'])) : null;
 
         if ($path && $oldName && $newName) {
             $pathArray = explode('/', $path);
@@ -216,7 +216,8 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
             $this->setMessage(
                 $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()->moveFile(
                     new \Cx\Core\MediaSource\Model\Entity\LocalFile(
-                        $strPath . $oldName
+                        $strPath . $oldName,
+                        $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()
                     ), $newName
                 )
             );
@@ -228,8 +229,9 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      */
     public function removeFile($params) {
         \Env::get('init')->loadLanguageData('MediaBrowser');
-        $path     = !empty($params['get']['path']) ? contrexx_input2raw($params['get']['path']) : null;
-        $filename = !empty($params['post']['file']['datainfo']['name']) ? contrexx_input2raw($params['post']['file']['datainfo']['name']) : null;
+        $path     = !empty($params['get']['path']) ? contrexx_input2raw(utf8_decode($params['get']['path'])) : null;
+        $filename = !empty($params['post']['file']['datainfo']['name']) ? contrexx_input2raw(utf8_decode($params['post']['file']['datainfo']['name'])) : null;
+
         if ($filename && $path) {
             $pathArray = explode('/', $path);
             // Shift off the first element of the array to get the media type.
@@ -238,7 +240,8 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
             $this->setMessage(
                 $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()->removeFile(
                     new \Cx\Core\MediaSource\Model\Entity\LocalFile(
-                        $strPath . $filename
+                        $strPath . $filename,
+                        $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()
                     )
                 )
             );
@@ -264,7 +267,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      * @return boolean|array
      */
     public function folderWidget($params) {
-        \cmsSession::getInstance();
+        $this->getComponent('Session')->getSession();
 
         $folderWidgetId = isset($params['get']['id']) ? contrexx_input2int($params['get']['id']) : 0;
         if (   empty($folderWidgetId)
@@ -306,7 +309,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      */
     public function removeFileFromFolderWidget($params)
     {
-        \cmsSession::getInstance();
+        $this->getComponent('Session')->getSession();
 
         $folderWidgetId = isset($params['get']['widget']) ? contrexx_input2int($params['get']['widget']) : 0;
         if (   empty($folderWidgetId)
@@ -324,7 +327,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
         $localFileSystem = new \Cx\Core\MediaSource\Model\Entity\LocalFileSystem($folder);
 
         $file    = '/' . $path;
-        $objFile = new \Cx\Core\MediaSource\Model\Entity\LocalFile($file);
+        $objFile = new \Cx\Core\MediaSource\Model\Entity\LocalFile($file, $localFileSystem);
 
         $this->setMessage($localFileSystem->removeFile($objFile));
 

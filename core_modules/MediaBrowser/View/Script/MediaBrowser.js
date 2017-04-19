@@ -882,6 +882,9 @@
             if (!angular.isObject(input)) return input;
             var array = [];
             for (var objectKey in input) {
+                if (!input[objectKey].datainfo) {
+                    continue;
+                }
                 array.push(input[objectKey]);
             }
             array.sort(function (a, b) {
@@ -951,7 +954,7 @@
                 resultArray.push(searchArray[key]);
             }
             if (searchArray[key] instanceof Object) {
-                resultArray = resultArray.concat(recursiveSearch(searchObject, searchArray[key], level++));
+                resultArray = resultArray.concat(recursiveSearch(searchObject, searchArray[key], level + 1));
             }
         }
         return resultArray;

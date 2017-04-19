@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,10 +24,10 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Main controller for Calendar
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
@@ -38,7 +38,7 @@ namespace Cx\Modules\Calendar\Controller;
 
 /**
  * Main controller for Calendar
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
@@ -53,7 +53,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
      /**
      * Load your component.
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -62,9 +62,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
 
                 define('CALENDAR_MANDATE', MODULE_INDEX);
-                
+
                 $objCalendar = new \Cx\Modules\Calendar\Controller\Calendar($page->getContent(), MODULE_INDEX);
-                $page->setContent($objCalendar->getCalendarPage());
+                $page->setContent($objCalendar->getCalendarPage($page));
                 if ($objCalendar->pageTitle) {
                     $page->setTitle($objCalendar->pageTitle);
                     $page->setContentTitle($objCalendar->pageTitle);
@@ -87,7 +87,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
     /**
      * Do something before content is loaded from DB
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -97,28 +97,42 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 // Get Calendar Events
                 $modulespath = ASCMS_MODULE_PATH.'/Calendar/Controller/CalendarHeadlines.class.php';
-                $eventsPlaceholder = '{EVENTS_FILE}';
                 if (   MODULE_INDEX < 2
                     && $_CONFIG['calendarheadlines']
-                    && (   strpos(\Env::get('cx')->getPage()->getContent(), $eventsPlaceholder) !== false
-                        || strpos($themesPages['index'], $eventsPlaceholder) !== false
-                        || strpos($themesPages['sidebar'], $eventsPlaceholder) !== false
-                        || strpos($page_template, $eventsPlaceholder) !== false)
                     && file_exists($modulespath)
                 ) {
                     $_ARRAYLANG = array_merge($_ARRAYLANG, \Env::get('init')->loadLanguageData('Calendar'));
-                    $calHeadlinesObj = new \Cx\Modules\Calendar\Controller\CalendarHeadlines($themesPages['calendar_headlines']);
-                    $calHeadlines = $calHeadlinesObj->getHeadlines();
-                    \Env::get('cx')->getPage()->setContent(str_replace($eventsPlaceholder, $calHeadlines, \Env::get('cx')->getPage()->getContent()));
-                    $themesPages['index']   = str_replace($eventsPlaceholder, $calHeadlines, $themesPages['index']);
-                    $themesPages['sidebar'] = str_replace($eventsPlaceholder, $calHeadlines, $themesPages['sidebar']);
-                    $page_template          = str_replace($eventsPlaceholder, $calHeadlines, $page_template);
+                    for ($i = 0; $i <= 10; $i++) {
+                        $visibleI = '';
+                        if ($i > 0) {
+                            $visibleI = (string)$i;
+                        }
+                        $eventsPlaceholder = '{EVENTS' . $visibleI . '_FILE}';
+                        if (
+                            strpos(\Env::get('cx')->getPage()->getContent(), $eventsPlaceholder) !== false
+                            || strpos($themesPages['index'], $eventsPlaceholder) !== false
+                            || strpos($themesPages['sidebar'], $eventsPlaceholder) !== false
+                            || strpos($page_template, $eventsPlaceholder) !== false
+                        ) {
+                            $category = null;
+                            $matches = array();
+                            if (preg_match('/\{CALENDAR_CATEGORY_([0-9]+)\}/', $themesPages['calendar_headlines' . $visibleI], $matches)) {
+                                $category = $matches[1];
+                            }
+                            $calHeadlinesObj = new \Cx\Modules\Calendar\Controller\CalendarHeadlines($themesPages['calendar_headlines'.$visibleI]);
+                            $calHeadlines = $calHeadlinesObj->getHeadlines($category);
+                            \Env::get('cx')->getPage()->setContent(str_replace($eventsPlaceholder, $calHeadlines, \Env::get('cx')->getPage()->getContent()));
+                            $themesPages['index'] = str_replace($eventsPlaceholder, $calHeadlines, $themesPages['index']);
+                            $themesPages['sidebar'] = str_replace($eventsPlaceholder, $calHeadlines, $themesPages['sidebar']);
+                            $page_template = str_replace($eventsPlaceholder, $calHeadlines, $page_template);
+                        }
+                    }
                 }
                 break;
             default:
                 break;
         }
-        
+
     }
 
     /**
@@ -135,5 +149,5 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $eventListener = new \Cx\Modules\Calendar\Model\Event\CalendarEventListener($this->cx);
         $this->cx->getEvents()->addEventListener('SearchFindContent', $eventListener);
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
-   }    
+   }
 }

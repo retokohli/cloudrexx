@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
 * User Management
 * @copyright    CLOUDREXX CMS - CLOUDREXX AG
@@ -73,7 +73,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
     public function __construct()
     {
         parent::__construct();
-        
+
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/Access/View/Template/Backend');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -107,7 +107,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
     */
     function _exportUsers($groupId = 0, $langId = null)
     {
-        global $_CORELANG, $objInit;
+        global $_CORELANG, $_ARRAYLANG, $objInit;
 
         $csvSeparator = ";";
         $groupId = intval($groupId);
@@ -129,9 +129,26 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             ($langId != null ? '_lang_'.$arrLangs[$langId]['lang'] : '').
             '.csv"', true);
 
-        $arrFields = array ('active', 'frontend lang', 'backend lang', 'gender', 'title', 'firstname', 'lastname', 'username', 'email', 'regdate');
+        $arrFields = array (
+            'active'            => $_ARRAYLANG['TXT_ACCESS_ACTIVE'],
+            'frontend_lang_id'  => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] . ' ('.$_CORELANG['TXT_LANGUAGE_FRONTEND'].')',
+            'backend_lang_id'   => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] . ' ('.$_CORELANG['TXT_LANGUAGE_BACKEND'].')',
+            'username'          => $_ARRAYLANG['TXT_ACCESS_USERNAME'],
+            'email'             => $_ARRAYLANG['TXT_ACCESS_EMAIL'],
+            'regdate'           => $_ARRAYLANG['TXT_ACCESS_REGISTERED_SINCE'],
+        );
+
+        // fetch profile attributes
+        $arrProfileFields = array_merge(
+            $objFWUser->objUser->objAttribute->getCoreAttributeIds(),
+            $objFWUser->objUser->objAttribute->getCustomAttributeIds()
+        );
         foreach ($arrFields as $field) {
             print $this->_escapeCsvValue($field).$csvSeparator;
+        }
+        foreach ($arrProfileFields as $profileField) {
+            $arrFields[$profileField] = $objFWUser->objUser->objAttribute->getById($profileField)->getName();
+            print $this->_escapeCsvValue($arrFields[$profileField]).$csvSeparator;
         }
         print "\n";
 
@@ -146,7 +163,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $filter['frontend_lang_id'] = $langId;
             }
         }
-        $objUser = $objFWUser->objUser->getUsers($filter, null, array('username'), array('active', 'frontend_lang_id', 'backend_lang_id', 'gender', 'title', 'firstname', 'lastname', 'username', 'email', 'regdate'));
+        $objUser = $objFWUser->objUser->getUsers($filter, null, array('username'), array_keys($arrFields));
         if ($objUser) {
             while (!$objUser->EOF) {
                 $activeStatus = $objUser->getActiveStatus() ? $_CORELANG['TXT_YES'] : $_CORELANG['TXT_NO'];
@@ -163,42 +180,64 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 }
                 $backendLang = $arrLangs[$backendLangId]['name']." (".$arrLangs[$backendLangId]['lang'].")";
 
-                // gender
-                switch ($objUser->getProfileAttribute('gender')) {
-                    case 'gender_male':
-                       $gender = $_CORELANG['TXT_ACCESS_MALE'];
-                    break;
-
-                    case 'gender_female':
-                       $gender = $_CORELANG['TXT_ACCESS_FEMALE'];
-                    break;
-
-                    default:
-                       $gender = $_CORELANG['TXT_ACCESS_NOT_SPECIFIED'];
-                    break;
-                }
-
-                // title
-                $title = '';
-                $objAttribute = $objFWUser->objUser->objAttribute->getById('title');
-                foreach ($objAttribute->getChildren() as $childAttributeId) {
-                    $objChildAtrribute = $objAttribute->getById($childAttributeId);
-                    if ($objChildAtrribute->getMenuOptionValue() == $objUser->getProfileAttribute('title')) {
-                        $title = $objChildAtrribute->getName();
-                        break;
-                    }
-                }
-
+                // active
                 print $this->_escapeCsvValue($activeStatus).$csvSeparator;
+
+                // frontend_lang_id
                 print $this->_escapeCsvValue($frontendLang).$csvSeparator;
+
+                // backend_lang_id
                 print $this->_escapeCsvValue($backendLang).$csvSeparator;
-                print $this->_escapeCsvValue($gender).$csvSeparator;
-                print $this->_escapeCsvValue($title).$csvSeparator;
-                print $this->_escapeCsvValue($objUser->getProfileAttribute('firstname')).$csvSeparator;
-                print $this->_escapeCsvValue($objUser->getProfileAttribute('lastname')).$csvSeparator;
+
+                // username
                 print $this->_escapeCsvValue($objUser->getUsername()).$csvSeparator;
+
+                // email
                 print $this->_escapeCsvValue($objUser->getEmail()).$csvSeparator;
+
+                // regdate
                 print $this->_escapeCsvValue(date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate())).$csvSeparator;
+
+                // profile attributes
+                foreach ($arrProfileFields as $field) {
+                    $value = $objUser->getProfileAttribute($field);
+
+                    switch ($field) {
+                        case 'gender':
+                            switch ($value) {
+                                case 'gender_male':
+                                   $value = $_CORELANG['TXT_ACCESS_MALE'];
+                                break;
+
+                                case 'gender_female':
+                                   $value = $_CORELANG['TXT_ACCESS_FEMALE'];
+                                break;
+
+                                default:
+                                   $value = $_CORELANG['TXT_ACCESS_NOT_SPECIFIED'];
+                                break;
+                            }
+                            break;
+
+                        case 'title':
+                        case 'country':
+                            $title = '';
+                            $value = $objUser->objAttribute->getById($field . '_' . $value)->getName();
+                            break;
+
+                        default:
+                            $objAttribute = $objUser->objAttribute->getById($field);
+                            if (!empty($value) && $objAttribute->getType() == 'date') {
+                                $date = new \DateTime();
+                                $date ->setTimestamp($value);
+                                $value = $date->format(ASCMS_DATE_FORMAT_DATE);
+                            }
+                            break;
+                    }
+                    print $this->_escapeCsvValue($value).$csvSeparator;
+                }
+
+                // add line break at end of row
                 print "\n";
 
                 $objUser->next();
@@ -446,7 +485,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     'ACCESS_LANG_NAME'          => $arrLang['lang'],
                 ));
 
-			    $this->_objTpl->parse('languages');
+                $this->_objTpl->parse('languages');
             }
 
             $this->_objTpl->setVariable(array(
@@ -596,6 +635,31 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
             $objGroup->setDynamicPermissionIds($arrCurrentAccessIds);
 
+            // Get Cx object from Environment variable
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            // Load entity manager
+            $dbCon = $cx->getDb()->getAdoDb();
+            // Instantiate a new Toolbarcontroller
+            $toolbarController = $cx->getComponent('Wysiwyg')->getController('Toolbar');
+            $newButtons = $_POST['removedButtons'];
+            // Get the assigned toolbar id of the current group
+            $toolbarIdRes = $dbCon->Execute('
+                SELECT `toolbar` FROM `' . DBPREFIX . 'access_user_groups`
+                WHERE `group_id` = ' . intval($objGroup->getId()) . '
+                LIMIT 1');
+            // Fetch the data
+            $toolbarId = $toolbarIdRes->fields;
+            $toolbarId = $toolbarId['toolbar'];
+            $newToolbarId = $toolbarController->store($newButtons, $toolbarId);
+            // Check if a new toolbar has been created or an existing one updated
+            if ($newToolbarId !== 0) {
+                // Set the toolbar id of the current group to the new id
+                $query = 'UPDATE `' . DBPREFIX . 'access_user_groups`
+                      SET `toolbar` = ' . intval($newToolbarId) . '
+                      WHERE `group_id` = ' . intval($objGroup->getId());
+                $dbCon->Execute($query);
+            }
+
             if (isset($_POST['access_save_group'])) {
                 if ($objGroup->store()) {
                     self::$arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ACCESS_GROUP_STORED_SUCCESSFULLY'];
@@ -667,6 +731,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 `areas`.`area_id`,
                 `areas`.`area_name`,
                 `areas`.`access_id`,
+                `areas`.`module_id`,
                 `areas`.`is_active`,
                 `areas`.`type`,
                 `areas`.`scope`,
@@ -706,6 +771,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     'access_id' => $objResult->fields['access_id'],
                     'status'    => $objResult->fields['is_active'],
                     'type'      => $objResult->fields['type'],
+                    'module_id' => $objResult->fields['module_id'],
                     'scope'     => $objResult->fields['scope'],
                     'group_id'  => $objResult->fields['parent_area_id'],
                     'allowed'   => in_array($objResult->fields['access_id'], $objGroup->getStaticPermissionIds()) ? 1 : 0
@@ -767,6 +833,17 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 }
             }
         }
+
+        // Parse toolbar configurator
+        $cx = \Env::get('cx');
+        $toolbarController = $cx->getComponent('Wysiwyg')->getController('Toolbar');
+        $toolbarConfigurator = $toolbarController->getToolbarConfiguratorTemplate('/core/Wysiwyg/');
+        $this->_objTpl->setGlobalVariable('ACCESS_WYSIWYG_TAB_NR', $tabNr);
+        $this->_objTpl->setVariable(array(
+            'TXT_ACCESS_TOOLBARCONFIGURATOR'    => $_ARRAYLANG['TXT_ACCESS_TOOLBARCONFIGURATOR'],
+            'ACCESS_PERMISSION_WYSIWYG_TOOLBAR' => $toolbarConfigurator->get(),
+        ));
+
         if ($tabNr > 1) {
             $this->_objTpl->parse('access_permission_tabs_menu');
         } else {
@@ -782,7 +859,10 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     'style'            => 'display: none;'
         ));
         $mediaBrowser->setCallback('SetUrl');
-        
+
+        // Parse toolbar configurator
+        $this->_objTpl->parse('access_permission_tab_wysiwyg');
+
         $this->attachJavaScriptFunction('accessSetWebpage');
         $this->attachJavaScriptFunction('accessSelectAllGroups');
         $this->attachJavaScriptFunction('accessDeselectAllGroups');
@@ -864,7 +944,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     $rowCssClass[] = 'active';
                 }
 
-                $published = $nodeData['metadata'][$pageData['attr']['id']]['publishing'] == 'published'; 
+                $published = $nodeData['metadata'][$pageData['attr']['id']]['publishing'] == 'published';
 
                 $this->_objTpl->setVariable(array(
                     'ACCESS_PAGE_ID'            => $pageData['attr']['id'],
@@ -904,12 +984,22 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
     {
         global $_CORELANG;
 
+        // hide access areas of inactive modules
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+        $componentRepository = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $component = $componentRepository->findOneBy(array('id' => $arrAreas[$areaId]['module_id']));
+        $areaHidden = '';
+        if ($component && !$component->isActive()) {
+            $areaHidden = 'display:none;';
+        }
+
         $this->_objTpl->setVariable(array(
             'ACCESS_AREA_ID'            => $arrAreas[$areaId]['access_id'],
             'ACCESS_AREA_NAME'          => isset($_CORELANG[$arrAreas[$areaId]['name']]) ? htmlentities($_CORELANG[$arrAreas[$areaId]['name']], ENT_QUOTES, CONTREXX_CHARSET) : $arrAreas[$areaId]['name'],
             'ACCESS_AREA_STYLE_NR'      => $arrAreas[$areaId]['type'] == 'group' ? 3 : ($arrAreas[$areaId]['type'] == 'navigation' ? 1 : 2),
             'ACCESS_AREA_TEXT_INDENT'   => $arrAreas[$areaId]['type'] == 'group' ? 0 : ($arrAreas[$areaId]['type'] == 'navigation' ? 20 : 40),
             'ACCESS_AREA_EXTRA_STYLE'   => $arrAreas[$areaId]['type'] == 'group' ? 'font-weight:bold;' : '',
+            'ACCESS_AREA_HIDDEN'        => $areaHidden,
         ));
 
         if ($arrAreas[$areaId]['scope'] == $scope || $arrAreas[$areaId]['scope'] == 'global') {
@@ -1103,7 +1193,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 'ACCESS_USER_USERNAME_FILTER'       => $usernameFilter,
                 'ACCESS_USER_STATUS_FILTER'         => $userStatusFilter,
                 'ACCESS_USER_ROLE_FILTER'           => $userRoleFilter,
-				'ACCESS_SEARCH_VALUE'               => contrexx_raw2xhtml(join(' ', $search))
+                'ACCESS_SEARCH_VALUE'               => contrexx_raw2xhtml(join(' ', $search))
             ));
 
             $this->_objTpl->setCurrentBlock('access_user_list');
@@ -1150,14 +1240,14 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
             $this->_objTpl->parse('access_has_users');
             $this->_objTpl->hideBlock('access_no_user');
-			$this->_objTpl->setVariable(array(
-				'TXT_ACCESS_CHECK_ALL'                      => $_ARRAYLANG['TXT_ACCESS_CHECK_ALL'],
-				'TXT_ACCESS_UNCHECK_ALL'                    => $_ARRAYLANG['TXT_ACCESS_UNCHECK_ALL'],
-				'TXT_ACCESS_SELECT_ACTION'                  => $_ARRAYLANG['TXT_ACCESS_SELECT_ACTION'],
-				'TXT_ACCESS_DELETE'                  		=> $_ARRAYLANG['TXT_ACCESS_DELETE'],
-				'ACCESS_CONFIRM_DELETE_USERS_TXT'    		=> preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_ACCESS_CONFIRM_DELETE_USERS'])),
-                'ACCESS_SEARCH_VALUE_ESCAPED'       		=> urlencode(implode(' ',$search))
-			));
+            $this->_objTpl->setVariable(array(
+                'TXT_ACCESS_CHECK_ALL'                      => $_ARRAYLANG['TXT_ACCESS_CHECK_ALL'],
+                'TXT_ACCESS_UNCHECK_ALL'                    => $_ARRAYLANG['TXT_ACCESS_UNCHECK_ALL'],
+                'TXT_ACCESS_SELECT_ACTION'                  => $_ARRAYLANG['TXT_ACCESS_SELECT_ACTION'],
+                'TXT_ACCESS_DELETE'                          => $_ARRAYLANG['TXT_ACCESS_DELETE'],
+                'ACCESS_CONFIRM_DELETE_USERS_TXT'            => preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_ACCESS_CONFIRM_DELETE_USERS'])),
+                'ACCESS_SEARCH_VALUE_ESCAPED'               => urlencode(implode(' ',$search))
+            ));
             $this->_objTpl->parse('access_user_action_dropdown');
         } else {
             $groupName = $groupId == 'groupless' ? $_ARRAYLANG['TXT_ACCESS_GROUPLESS_USERS'] : htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET);
@@ -1190,6 +1280,20 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         $this->notifyUserAboutAccountStatusChange($objUser);
                     }
                     self::$arrStatusMsg['ok'][] = sprintf($objUser->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_USER_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_ACCESS_USER_DEACTIVATED_SUCCESSFULLY'], $objUser->getUsername());
+                    //Clear cache
+                    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                    $cx->getEvents()->triggerEvent(
+                        'clearEsiCache',
+                        array(
+                            'Widget',
+                            array(
+                                'access_currently_online_member_list',
+                                'access_last_active_member_list',
+                                'access_latest_registered_member_list',
+                                'access_birthday_member_list'
+                            )
+                        )
+                    );
                 } else {
                     self::$arrStatusMsg['error'] = array_merge(self::$arrStatusMsg['error'], $objUser->getErrorMsg());
                 }
@@ -1210,19 +1314,21 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             \Permission::noAccess();
         }
 
-		if (isset($_POST['access_user_id']) && is_array($_POST['access_user_id'])) {
-			$_REQUEST['id'] = $_POST['access_user_id'];
+        if (isset($_POST['access_user_id']) && is_array($_POST['access_user_id'])) {
+            $_REQUEST['id'] = $_POST['access_user_id'];
         }
 
         $arrIds = !empty($_REQUEST['id']) ? is_array($_REQUEST['id']) ? $_REQUEST['id'] : array($_REQUEST['id']) : array();
         $objFWUser = \FWUser::getFWUserObject();
 
+        $clearCache = false;
         if (count($arrIds) > 0) {
             foreach ($arrIds as $id) {
                 $objUser = $objFWUser->objUser->getUser($id);
                 if ($objUser) {
                     if ($objUser->delete()) {
                         self::$arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_ACCESS_USER_SUCCESSFULLY_DELETED'], contrexx_raw2xhtml($objUser->getUsername()));
+                        $clearCache = true;
                     } else {
                         self::$arrStatusMsg['error'] = array_merge(self::$arrStatusMsg['error'], $objUser->getErrorMsg());
                     }
@@ -1231,6 +1337,24 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 }
             }
         }
+
+        //Clear cache
+        if ($clearCache) {
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getEvents()->triggerEvent(
+                'clearEsiCache',
+                array(
+                    'Widget',
+                    array(
+                        'access_currently_online_member_list',
+                        'access_last_active_member_list',
+                        'access_latest_registered_member_list',
+                        'access_birthday_member_list'
+                    )
+                )
+            );
+        }
+
         return $this->userList();
     }
 
@@ -1278,8 +1402,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
             if (isset($_POST['access_profile_attribute']) && is_array($_POST['access_profile_attribute'])) {
                 $arrProfile = $_POST['access_profile_attribute'];
-                if (   !empty($_POST['access_image_uploader_id']) 
-                    && isset($_POST['access_profile_attribute_images']) 
+                if (   !empty($_POST['access_image_uploader_id'])
+                    && isset($_POST['access_profile_attribute_images'])
                     && is_array($_POST['access_profile_attribute_images'])
                 ) {
                     $upload_res = $this->addUploadedImagesToProfile($objUser, $arrProfile, $_POST['access_profile_attribute_images'], $_POST['access_image_uploader_id']);
@@ -1300,7 +1424,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
 
             $objUser->setPrimaryGroup(isset($_POST['access_user_primary_group']) ? $_POST['access_user_primary_group'] : 0);
-            
+
             if (((isset($_POST['notification_email']) && $_POST['notification_email'] == 1 && !$objUser->getId()) || $objUser->setPassword(isset($_POST['access_user_password']) ? trim(contrexx_stripslashes($_POST['access_user_password'])) : '', isset($_POST['access_user_password_confirmed']) ? trim(contrexx_stripslashes($_POST['access_user_password_confirmed'])) : '')) &&
                 // only administrators are allowed to change the admin status and the account validity
                 (!\Permission::hasAllAccess() || $objUser->getId() == $objFWUser->objUser->getId() || (
@@ -1427,7 +1551,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
 
         $this->parseNewsletterLists($objUser);
-        
+
         $urlParams = '';
         $cancelUrl = 'index.php?cmd=Access&amp;act=user';
         $source = isset($_GET['source']) ? contrexx_input2raw($_GET['source']) : 'Access';
@@ -1444,7 +1568,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
 
         $this->attachJavaScriptFunction('addHistoryField');
-        
+
         $uploader = $this->getImageUploader();
         $this->_objTpl->setVariable(array(
             'ACCESS_USER_ID'                       => $objUser->getId(),
@@ -1536,18 +1660,18 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         if (contrexx_isModuleInstalled('Downloads')) {
             $this->processDigitalAssetManagementExtension($objUser);
         }
-        
+
         if(isset($_GET['source'])){
             switch ($_GET['source']){
                 case 'Newsletter':
-                    \Cx\Core\Csrf\Controller\Csrf::header('Location: 
+                    \Cx\Core\Csrf\Controller\Csrf::header('Location:
                         index.php?cmd=Newsletter&act=users&store=true'. //and add Params for Newsletter Filter
                         (!empty($_GET['newsletterListId']) ? '&newsletterListId='.contrexx_input2raw($_GET['newsletterListId']) : '').
                         (!empty($_GET['filterkeyword']) ? '&filterkeyword='.contrexx_input2raw($_GET['filterkeyword']) : '').
                         (!empty($_GET['filterattribute']) ? '&filterattribute='.contrexx_input2raw($_GET['filterattribute']) : '').
                         (!empty($_GET['filterStatus']) ? '&filterStatus='.contrexx_input2raw($_GET['filterStatus']) : '')
                     );
-                    exit;               
+                    exit;
             }
         }
     }
@@ -1649,23 +1773,10 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $objUserMail->load($mail2load, $_LANGID) ||
                 $objUserMail->load($mail2load)
             ) &&
-            (\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php')) &&
-            ($objMail = new \PHPMailer()) !== false
+            ($objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail()) !== false
         ) {
-            if ($_CONFIG['coreSmtpServer'] > 0 && \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/SmtpSettings.class.php')) {
-                if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
-            }
 
-            $objMail->CharSet = CONTREXX_CHARSET;
             $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
-            $objMail->AddReplyTo($objUserMail->getSenderMail());
             $objMail->Subject = $objUserMail->getSubject();
 
             if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
@@ -2047,9 +2158,9 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'TXT_ACCESS_MISCELLANEOUS'                          => $_ARRAYLANG['TXT_ACCESS_MISCELLANEOUS'],
             'TXT_ACCESS_STANDARD'                               => $_ARRAYLANG['TXT_ACCESS_STANDARD'],
             'TXT_ACCESS_EMAIL'                                  => $_ARRAYLANG['TXT_ACCESS_EMAIL'],
-            'TXT_ACCESS_SESSION_ON_INTERVAL'				    => $_ARRAYLANG['TXT_ACCESS_SESSION_ON_INTERVAL'],
+            'TXT_ACCESS_SESSION_ON_INTERVAL'                    => $_ARRAYLANG['TXT_ACCESS_SESSION_ON_INTERVAL'],
             'TXT_ACCESS_SESSION_DESCRIPTION'                    =>$_ARRAYLANG['TXT_ACCESS_SESSION_DESCRIPTION'],
-            'TXT_ACCESS_SESSION_TITLE' 				            => $_ARRAYLANG['TXT_ACCESS_SESSION_TITLE'],
+            'TXT_ACCESS_SESSION_TITLE'                             => $_ARRAYLANG['TXT_ACCESS_SESSION_TITLE'],
             'TXT_ACCESS_USE_SELECTED_ACCESS_FOR_EVERYONE'       => $_ARRAYLANG['TXT_ACCESS_USE_SELECTED_ACCESS_FOR_EVERYONE'],
             'TXT_ACCESS_CROP_THUMBNAIL_TXT'                     => $_ARRAYLANG['TXT_ACCESS_CROP_THUMBNAIL_TXT'],
             'TXT_ACCESS_SCALE_THUMBNAIL_TXT'                    => $_ARRAYLANG['TXT_ACCESS_SCALE_THUMBNAIL_TXT'],
@@ -2189,13 +2300,13 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
 
             $session_on_interval =  intval($_POST['sessioninterval']);
-   			if(trim($session_on_interval) != null) {
+               if(trim($session_on_interval) != null) {
 
-				if ($session_on_interval >=0 && $session_on_interval <= 300) {
+                if ($session_on_interval >=0 && $session_on_interval <= 300) {
 
-				 $arrSettings['session_user_interval']['value'] = $session_on_interval;
-				}
-			}
+                 $arrSettings['session_user_interval']['value'] = $session_on_interval;
+                }
+            }
 
 
             if (!empty($_POST["sociallogin_providers"])) {
@@ -2216,7 +2327,20 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                             self::$arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_SET_DEFAULT_EMAIL_ACCESS_FAILED'];
                         }
                     }
-
+                    //Clear cache
+                    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                    $cx->getEvents()->triggerEvent(
+                        'clearEsiCache',
+                        array(
+                            'Widget',
+                            array(
+                                'access_currently_online_member_list',
+                                'access_last_active_member_list',
+                                'access_latest_registered_member_list',
+                                'access_birthday_member_list'
+                            )
+                        )
+                    );
                 } else {
                     self::$arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_CONFIG_FAILED_SAVED'];
                     self::$arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_TRY_TO_REPEAT_OPERATION'];
@@ -2335,7 +2459,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'ACCESS_MAX_PIC_HEIGHT'                                 => $arrSettings['max_pic_height']['value'],
             'ACCESS_MAX_THUMBNAIL_PIC_WIDTH'                        => $arrSettings['max_thumbnail_pic_width']['value'],
             'ACCESS_MAX_THUMBNAIL_PIC_HEIGHT'                       => $arrSettings['max_thumbnail_pic_height']['value'],
-            'ACCESS_SESSION_USER_INTERVAL'			    => $arrSettings['session_user_interval']['value'],
+            'ACCESS_SESSION_USER_INTERVAL'                => $arrSettings['session_user_interval']['value'],
             'ACCESS_MAX_PIC_SIZE'                                   => \FWSystem::getLiteralSizeFormat($arrSettings['max_pic_size']['value']),
             'ACCESS_PROFILE_THUMBNAIL_CROP'                         => $arrSettings['profile_thumbnail_method']['value'] == 'crop' ? 'selected="selected"' : '',
             'ACCESS_PROFILE_THUMBNAIL_SCALE'                        => $arrSettings['profile_thumbnail_method']['value'] == 'scale' ? 'selected="selected"' : '',
@@ -3020,39 +3144,39 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
      * Sets up common User and Profile fields as well as
      * Newsletter list relations.
      * Fields and their mapping:
-     *  Anrede	-> Titel
+     *  Anrede    -> Titel
      *  Vorname
      *  Name
      *  eMail
      *  Firma
-     *  Strasse	-> Zusammen mit Hausnummer in Adresse
-     *  Hausnummer	-> Zusammen mit Strasse in Adresse
+     *  Strasse    -> Zusammen mit Hausnummer in Adresse
+     *  Hausnummer    -> Zusammen mit Strasse in Adresse
      *  PLZ
      *  Ort
      *  Land
-     *  Bundesland	-> Evtl in Ort?
-     *  Tel.-Vorwahl	-> Zusammen mit Tel.-Nummer in phone_office
-     *  Tel.-Nummer		-> Zusammen mit Tel.-Vorwahl in phone_office
-     *  Fax-Vorwahl		-> Zusammen mit Fax.-Nummer in phone_fax
-     *  Fax-Nummer		-> Zusammen mit Fax.-Vorwahl in phone_fax
-     *  Mobil-Vorwahl	-> Zusammen mit Mobil-Nummer in phone_mobile
-     *  Mobil-Nummer	-> Zusammen mit Mobil-Vorwahl in phone_mobile
-     *  P1	-> Interessen: Newsletter Listen, kommagetrennt
+     *  Bundesland    -> Evtl in Ort?
+     *  Tel.-Vorwahl    -> Zusammen mit Tel.-Nummer in phone_office
+     *  Tel.-Nummer        -> Zusammen mit Tel.-Vorwahl in phone_office
+     *  Fax-Vorwahl        -> Zusammen mit Fax.-Nummer in phone_fax
+     *  Fax-Nummer        -> Zusammen mit Fax.-Vorwahl in phone_fax
+     *  Mobil-Vorwahl    -> Zusammen mit Mobil-Nummer in phone_mobile
+     *  Mobil-Nummer    -> Zusammen mit Mobil-Vorwahl in phone_mobile
+     *  P1    -> Interessen: Newsletter Listen, kommagetrennt
      *      -> Nicht vorhandene Listen werden angelegt
-     *  P2	-> Antwort: ?
-     *  P3	-> ?
-     *  P4	-> Titel: ?
-     *  P5	-> ?
-     *  Ursprungsformular	-> ?
-     *  Permission	-> ?
-     *  Ausgetragen	-> Wenn true, alle Listenzuordnungen entfernen, sonst fehlende anlegen
-     *  Anzahl Hard-Bounces	-> Nicht vorhanden?
-     *  Status	-> Bedeutung?
-     *  Sprache	-> Wird die verwendet?
-     *  ID	-> Bedeutung?
-     *  Eintragungsdatum	-> regdate
-     *  Aenderungsdatum	-> ? (Nur regdate)
-     *  Austragungsdatum	-> ? (Nur regdate)
+     *  P2    -> Antwort: ?
+     *  P3    -> ?
+     *  P4    -> Titel: ?
+     *  P5    -> ?
+     *  Ursprungsformular    -> ?
+     *  Permission    -> ?
+     *  Ausgetragen    -> Wenn true, alle Listenzuordnungen entfernen, sonst fehlende anlegen
+     *  Anzahl Hard-Bounces    -> Nicht vorhanden?
+     *  Status    -> Bedeutung?
+     *  Sprache    -> Wird die verwendet?
+     *  ID    -> Bedeutung?
+     *  Eintragungsdatum    -> regdate
+     *  Aenderungsdatum    -> ? (Nur regdate)
+     *  Austragungsdatum    -> ? (Nur regdate)
      * @param   string    $file_name    The CSV file name
      */
     static function import_csv($file_name)
