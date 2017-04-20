@@ -68,6 +68,7 @@ if(!cx.variables.get('css', 'wysiwyg')) {
 }
 
 CKEDITOR.scriptLoader.load( '<?php echo $cx->getCodeBaseCoreModuleWebPath().'/MediaBrowser/View/Script/MediaBrowserCkeditorPlugin.js'   ?>' );
+CKEDITOR.scriptLoader.load( '<?php echo $cx->getCodeBaseCoreModuleWebPath().'/Uploader/View/Script/UploaderCkeditorPlugin.js'; ?>' );
 CKEDITOR.editorConfig = function( config )
 {
     config.skin = 'moono';
@@ -146,51 +147,6 @@ CKEDITOR.on('instanceReady',function(){
                 this.button.setState(CKEDITOR.TRISTATE_ENABLE) // Enable "Template"-Button
             }
         }).bind(loadingTemplates)();
-
-        var dataImagePattern = /<img\s+[^>]*src=([\'\"])(data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([^\'\"]*)\s*)\1[^>]*>/g;
-        var editor = CKEDITOR.instances[instanceName], files = [];
-        editor.on('paste', function (evt) {
-            var data = evt.data.dataValue;
-            while (match = dataImagePattern.exec(data)) {
-                files.push(dataURItoBlob(match[2]));
-            }
-
-            if (!files || files.length === 0) {
-                return;
-            }
-
-            <?php $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader(); ?>
-            var uploaderId = '<?php echo $uploader->getId(); ?>';
-            jQuery('<a/>').attr('id', 'wysiwygPasteUploadButton_' + uploaderId).attr('style', 'display:none').appendTo(document.body);
-
-            //TO-DO: We have to check the user have permission to see at least one location in MediaBrowser
-            //otherwise he cannot upload the picture
-            var options = {
-                runtimes: 'html5,flash,silverlight,html4',
-                multi_selection: true,
-                max_file_size: '500mb',
-                browse_button: 'wysiwygPasteUploadButton_' + uploaderId,
-                url: cx.variables.get('cadminPath','contrexx')+'?cmd=JsonData&object=Uploader&act=upload&id=' + uploaderId + '&csrf=' + cx.variables.get('csrf'),
-                flash_swf_url: cx.variables.get('basePath','contrexx')+'lib/plupload/js/Moxie.swf',
-                silverlight_xap_url: cx.variables.get('basePath','contrexx')+'lib/plupload/js/Moxie.xap',
-                prevent_duplicates: true,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Check-CSRF': 'false'
-                },
-                chunk_size: cx.variables.get('chunk_size','uploader'),
-                max_retries: 3
-            };
-
-            var uploader = new plupload.Uploader(options);
-            uploader.bind('FilesAdded', function (up, files) {
-                up.start();
-            });
-            uploader.bind('PostInit', function (up) {
-                up.addFile(files);
-            });
-            uploader.init();
-        });
     }
 
     var translations = cx.variables.get('toolbarTranslations', 'toolbarConfigurator');
@@ -205,28 +161,6 @@ CKEDITOR.on('instanceReady',function(){
         );
     }
 });
-
-function dataURItoBlob(dataURI) {
-    /* convert base64/URLEncoded data component to raw binary data held in a string */
-    var byteString;
-    if (dataURI.split(',')[0].indexOf('base64') >= 0) {
-        byteString = atob(dataURI.split(',')[1]);
-    } else {
-        byteString = unescape(dataURI.split(',')[1]);
-    }
-
-    /* separate out the mime component*/
-    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-
-    /* write the bytes of the string to a typed array */
-    var typedArray = new Uint8Array(byteString.length);
-    for (var i = 0; i < byteString.length; i++) {
-        typedArray[i] = byteString.charCodeAt(i);
-    }
-
-    var resultingBlob =  new Blob([typedArray], {type:mimeString});
-    return new mOxie.File(null, resultingBlob);
-}
 
 // hide 'browse'-buttons in case the user is a sole frontend-user
 // and is not permitted to access the MediaBrowser or Uploader

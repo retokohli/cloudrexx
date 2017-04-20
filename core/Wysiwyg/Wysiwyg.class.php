@@ -179,32 +179,10 @@ class Wysiwyg
         $mediaBrowserCkeditor->setCallback('ckeditor_image_callback');
 
         //Set MediaBrowser-option 'startmediatype' based on the component name
-        $componentName      = $this->systemComponentController->getName();
-        $mediaSourceManager = \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getMediaSourceManager();
-        $mediaSourceTypes   = $mediaSourceManager->getMediaTypes();
-
-        switch ($componentName) {
-            case 'ContentManager':
-                $mediaSourceName = 'files';
-                break;
-
-            case 'Contact':
-                $mediaSourceName = 'attach';
-                break;
-
-            case 'Media':
-                $mediaSourceName = 'media1';
-                break;
-
-            default:
-                $mediaSourceName = strtolower($componentName);
-
-        }
-
-        if (array_key_exists($mediaSourceName, $mediaSourceTypes)) {
+        $mediaSource = $this->getMediaSource();
+        if ($mediaSource) {
             $mediaBrowserCkeditor->setOptions(
-                array('startmediatype' => $mediaSourceName)
+                array('startmediatype' => $mediaSource->getName())
             );
         }
 
@@ -233,6 +211,59 @@ class Wysiwyg
         ');
 
         return $mediaBrowserCkeditor->getXHtml('mediabrowser').'<textarea name="'.$this->name.'" style="width: 100%; height: ' . $this->types[$this->type]['height'] . 'px">'.$this->value.'</textarea>';
+    }
+
+    /**
+     * Get MediaSource based on the component name
+     *
+     * @return Cx\Core\MediaSource\Model\Entity\MediaSource|boolean
+     */
+    public function getMediaSource()
+    {
+        $componentName      = $this->systemComponentController->getName();
+        $mediaSourceManager = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getMediaSourceManager();
+        $mediaSourceTypes   = $mediaSourceManager->getMediaTypes();
+
+        $mediaSourceName = strtolower($componentName);
+        switch ($componentName) {
+            case 'ContentManager':
+                $mediaSourceName = 'files';
+                break;
+
+            case 'Contact':
+                $mediaSourceName = 'attach';
+                break;
+
+            case 'Media':
+                $mediaSourceName = 'media1';
+                break;
+        }
+
+        if (!isset($mediaSourceTypes[$mediaSourceName])) {
+            return false;
+        }
+
+        return $mediaSourceTypes[$mediaSourceName];
+    }
+
+    /**
+     * Initialize the uploader and set uploader id and target path as javascript variable
+     */
+    public function getSource()
+    {
+        $uploader    = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+        $mediaSource = $this->getMediaSource();
+        $targetMediaSourcePath = '';
+        if ($mediaSource instanceof \Cx\Core\MediaSource\Model\Entity\MediaSource) {
+            $mediaSourcePath = $mediaSource->getDirectory();
+            $targetMediaSourcePath = $mediaSourcePath[1];
+        }
+        $cxJs = \ContrexxJavascript::getInstance();
+        $cxJs->setVariable(array(
+            'ckeditorUploaderId'   => $uploader->getId(),
+            'ckeditorUploaderPath' => $targetMediaSourcePath . '/'
+        ), 'wysiwyg');
     }
 
     /**
@@ -272,6 +303,7 @@ class Wysiwyg
      */
     public function __toString()
     {
+        $this->getSource();
         return $this->getSourceCode();
     }
 
