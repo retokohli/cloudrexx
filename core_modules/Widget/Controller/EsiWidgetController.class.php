@@ -188,10 +188,29 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
      */
     protected function objectifyParams($params) {
         $possibleGetParams = array(
-            'page' => function($pageId) {
+            'page' => function($pageId) use ($params) {
                 $em = $this->cx->getDb()->getEntityManager();
                 $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
                 $page = $pageRepo->findOneById($pageId);
+                if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION) {
+                    // get referrer
+                    $headers = $params['response']->getRequest()->getHeaders();
+                    $fragments = array();
+                    if (isset($headers['Referer'])) {
+                        // -> get additional path fragments
+                        $refUrl = new \Cx\Lib\Net\Model\Entity\Url($headers['Referer']);
+                        $pathParts = $refUrl->getPathParts();
+                        $offsetPathParts = explode('/', $this->cx->getWebsiteOffsetPath());
+                        $offsetPathParts[] = \Env::get('virtualLanguageDirectory');
+                        $fragments = array_diff_assoc($pathParts, $offsetPathParts);
+                    }
+                    // get the component
+                    $pageComponent = $this->getComponent($page->getModule());
+                    // resolve additional path fragments (if any)
+                    $pageComponent->resolve($fragments, $page);
+                    // adjust response
+                    $pageComponent->adjustResponse($params['response']);
+                }
                 return $page;
             },
             'lang' => function($langCode) {
