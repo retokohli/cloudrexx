@@ -88,7 +88,7 @@ class MediaBrowser extends EntityBase
      * @param string $entity MediaBrowser instantiated with optional entity
      * @throws MediaBrowserException If no $systemComponentController is provided and none can be found
      */
-    function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController = null, $entity = '')
+    public function __construct($systemComponentController = null, $entity = '')
     {
         // Sets provided SystemComponentController
         $this->systemComponentController = $systemComponentController;
