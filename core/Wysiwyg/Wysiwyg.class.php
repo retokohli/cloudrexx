@@ -130,10 +130,10 @@ class Wysiwyg
      * @param string $type the type of editor to use: possible types are small, full, bbcode
      * @param null|int $langId the language id
      * @param array $extraPlugins extra plugins to activate
-     * @param SystemComponentController $systemComponentController Wysiwyg instantiated with optional SystemComponentController
+     * @param \Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController Wysiwyg instantiated with optional SystemComponentController
      * @throws WysiwygException If no $systemComponentController is provided and none can be found
      */
-    public function __construct($name, $value = '', $type = 'small', $langId = null, $extraPlugins = array(), SystemComponentController $systemComponentController = null)
+    public function __construct($name, $value = '', $type = 'small', $langId = null, $extraPlugins = array(), \Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController = null)
     {
         // Sets provided SystemComponentController
         $this->systemComponentController = $systemComponentController;
