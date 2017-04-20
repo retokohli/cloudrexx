@@ -157,7 +157,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
             $params['get']['targetId'],
             array($params['get']['name'])
         );
-        $params['get'] = $this->objectifyParams($params['get']);
+        $params = $this->objectifyParams($params);
         $this->parseWidget(
             $params['get']['name'],
             $widgetTemplate,
@@ -187,7 +187,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
      * @return array Associative array of params
      */
     protected function objectifyParams($params) {
-        $possibleParams = array(
+        $possibleGetParams = array(
             'page' => function($pageId) {
                 $em = $this->cx->getDb()->getEntityManager();
                 $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
@@ -230,11 +230,11 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 return $currencyCode;
             },
         );
-        foreach ($possibleParams as $possibleParam=>$callback) {
-            if (!isset($params[$possibleParam])) {
+        foreach ($possibleGetParams as $possibleParam=>$callback) {
+            if (!isset($params['get'][$possibleParam])) {
                 continue;
             }
-            $params[$possibleParam] = $callback($params[$possibleParam]);
+            $params['get'][$possibleParam] = $callback($params['get'][$possibleParam]);
         }
         return $params;
     }
