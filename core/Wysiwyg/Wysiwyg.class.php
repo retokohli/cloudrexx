@@ -38,6 +38,17 @@ namespace Cx\Core\Wysiwyg;
 use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
 
 /**
+ * Class WysiwygException
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Manuel Schenk <manuel.schenk@comvation.com>
+ * @version     1.0.0
+ * @package     cloudrexx
+ * @subpackage  core_wysiwyg
+ */
+class WysiwygException extends \Exception {}
+
+/**
  * Wysiqyg class
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
@@ -106,6 +117,10 @@ class Wysiwyg
      * @var array array of extra plugins added for the wysiwyg editor
      */
     private $extraPlugins;
+    /**
+     * @var SystemComponentController Wysiwyg instantiated with optional SystemComponentController
+     */
+    protected $systemComponentController;
 
     /**
      * Initialize WYSIWYG editor
@@ -115,9 +130,30 @@ class Wysiwyg
      * @param string $type the type of editor to use: possible types are small, full, bbcode
      * @param null|int $langId the language id
      * @param array $extraPlugins extra plugins to activate
+     * @param SystemComponentController $systemComponentController Wysiwyg instantiated with optional SystemComponentController
+     * @throws WysiwygException If no $systemComponentController is provided and none can be found
      */
-    public function __construct($name, $value = '', $type = 'small', $langId = null, $extraPlugins = array())
+    public function __construct($name, $value = '', $type = 'small', $langId = null, $extraPlugins = array(), SystemComponentController $systemComponentController = null)
     {
+        // Sets provided SystemComponentController
+        $this->systemComponentController = $systemComponentController;
+        if (!$this->systemComponentController) {
+            // Searches a SystemComponentController intelligently by RegEx on backtrace stack frame
+            $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+            $trace = end($traces);
+            if (empty($trace['class'])) {
+                throw new WysiwygException('No SystemComponentController for Wysiwyg can be found');
+            }
+            $matches = array();
+            preg_match(
+                '/Cx\\\\(?:Core|Core_Modules|Modules)\\\\([^\\\\]*)\\\\/',
+                $trace['class'],
+                $matches
+            );
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $this->systemComponentController = $cx->getComponent($matches[1]);
+        }
+
         $this->name = $name;
         $this->value = $value;
         $this->type = strtolower($type);
@@ -133,11 +169,44 @@ class Wysiwyg
     public function getSourceCode()
     {
         $mediaBrowserCkeditor = new MediaBrowser();
-        $mediaBrowserCkeditor->setOptions(array('type' => 'button', 'style' => 'display:none'));
+        $mediaBrowserCkeditor->setOptions(
+            array(
+                'type'  => 'button',
+                'style' => 'display:none',
+                'id'    => 'ckeditor_image_button'
+            )
+        );
         $mediaBrowserCkeditor->setCallback('ckeditor_image_callback');
-        $mediaBrowserCkeditor->setOptions(array(
-                'id' => 'ckeditor_image_button'
-            ));
+
+        //Set MediaBrowser-option 'startmediatype' based on the component name
+        $componentName      = $this->systemComponentController->getName();
+        $mediaSourceManager = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getMediaSourceManager();
+        $mediaSourceTypes   = $mediaSourceManager->getMediaTypes();
+
+        switch ($componentName) {
+            case 'ContentManager':
+                $mediaSourceName = 'files';
+                break;
+
+            case 'Contact':
+                $mediaSourceName = 'attach';
+                break;
+
+            case 'Media':
+                $mediaSourceName = 'media1';
+                break;
+
+            default:
+                $mediaSourceName = strtolower($componentName);
+
+        }
+
+        if (array_key_exists($mediaSourceName, $mediaSourceTypes)) {
+            $mediaBrowserCkeditor->setOptions(
+                array('startmediatype' => $mediaSourceName)
+            );
+        }
 
         \JS::activate('ckeditor');
         \JS::activate('jquery');
