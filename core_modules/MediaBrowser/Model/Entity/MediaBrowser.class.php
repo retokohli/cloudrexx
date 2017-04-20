@@ -71,7 +71,7 @@ class MediaBrowser extends EntityBase
     protected $options = array();
 
     /**
-     * @var SystemComponentController $systemComponentController
+     * @var \Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController
      */
     protected $systemComponentController;
 
@@ -84,11 +84,11 @@ class MediaBrowser extends EntityBase
     /**
      * Create new instance of mediabrowser and register in componentcontroller.
      *
-     * @param SystemComponentController $systemComponentController MediaBrowser instantiated with optional SystemComponentController
+     * @param \Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController MediaBrowser instantiated with optional SystemComponentController
      * @param string $entity MediaBrowser instantiated with optional entity
      * @throws MediaBrowserException If no $systemComponentController is provided and none can be found
      */
-    function __construct(SystemComponentController $systemComponentController = null, $entity = '')
+    function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController = null, $entity = '')
     {
         // Sets provided SystemComponentController
         $this->systemComponentController = $systemComponentController;
