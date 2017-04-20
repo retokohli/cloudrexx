@@ -523,6 +523,19 @@ class CacheLib
         $arguments = array('get' => contrexx_input2raw($params));
         if ($response) {
             $arguments['response'] = $response;
+        } else if (isset($params['page'])) {
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $arguments['response'] = new \Cx\Core\Routing\Model\Entity\Response(
+                null,
+                200,
+                new \Cx\Core\Routing\Model\Entity\Request(
+                    'get',
+                    new \Cx\Core\Routing\Url($url),
+                    array(
+                        'Referer' => $cx->getRequest()->getUrl()->toString(),
+                    )
+                )
+            );
         }
 
         if (!$this->jsonData) {
