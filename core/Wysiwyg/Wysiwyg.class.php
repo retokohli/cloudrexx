@@ -118,7 +118,7 @@ class Wysiwyg
      */
     private $extraPlugins;
     /**
-     * @var SystemComponentController Wysiwyg instantiated with optional SystemComponentController
+     * @var \Cx\Core\Core\Model\Entity\SystemComponentController Wysiwyg instantiated with optional SystemComponentController
      */
     protected $systemComponentController;
 
