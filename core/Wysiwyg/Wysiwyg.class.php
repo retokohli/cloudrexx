@@ -184,7 +184,6 @@ class Wysiwyg
             ->getMediaSourceManager();
         $mediaSourceTypes   = $mediaSourceManager->getMediaTypes();
 
-        $mediaSourceName = strtolower($componentName);
         switch ($componentName) {
             case 'ContentManager':
                 $mediaSourceName = 'files';
@@ -197,6 +196,10 @@ class Wysiwyg
             case 'Media':
                 $mediaSourceName = 'media1';
                 break;
+
+            default:
+                $mediaSourceName = strtolower($componentName);
+
         }
 
         if (array_key_exists($mediaSourceName, $mediaSourceTypes)) {
