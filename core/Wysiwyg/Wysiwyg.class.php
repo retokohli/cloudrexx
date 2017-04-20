@@ -168,7 +168,7 @@ class Wysiwyg
      */
     public function getSourceCode()
     {
-        $mediaBrowserCkeditor = new MediaBrowser();
+        $mediaBrowserCkeditor = new MediaBrowser($this->systemComponentController);
         $mediaBrowserCkeditor->setOptions(
             array(
                 'type'  => 'button',
