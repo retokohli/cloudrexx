@@ -170,19 +170,11 @@ class Wysiwyg
     {
         $mediaBrowserCkeditor = new MediaBrowser($this->systemComponentController);
         $mediaBrowserCkeditor->setCallback('ckeditor_image_callback');
-
-        //Set MediaBrowser-option 'startmediatype' based on the component name
-        $mediaSourceManager = \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getMediaSourceManager();
-        $mediaSource = $mediaSourceManager->getMediaSourceByComponent($this->systemComponentController);
-
-        //If MediaSource does not exists, set the first MediaSource from the MediaSources list
+        $mediaSource     = $this->getMediaSource();
+        $mediaSourceName = '';
         if ($mediaSource) {
             $mediaSourceName = $mediaSource->getName();
-        } else {
-            $mediaSourceName = key($mediaSourceManager->getMediaTypes());
         }
-
         $mediaBrowserCkeditor->setOptions(
             array(
                 'type'           => 'button',
@@ -220,37 +212,23 @@ class Wysiwyg
     }
 
     /**
-     * Get MediaSource based on the component name
+     * Get MediaSource based on the component
      *
-     * @return Cx\Core\MediaSource\Model\Entity\MediaSource|boolean
+     * @return Cx\Core\MediaSource\Model\Entity\MediaSource
      */
     public function getMediaSource()
     {
-        $componentName      = $this->systemComponentController->getName();
         $mediaSourceManager = \Cx\Core\Core\Controller\Cx::instanciate()
             ->getMediaSourceManager();
-        $mediaSourceTypes   = $mediaSourceManager->getMediaTypes();
+        $mediaSource = $mediaSourceManager
+            ->getMediaSourceByComponent($this->systemComponentController);
 
-        $mediaSourceName = strtolower($componentName);
-        switch ($componentName) {
-            case 'ContentManager':
-                $mediaSourceName = 'files';
-                break;
-
-            case 'Contact':
-                $mediaSourceName = 'attach';
-                break;
-
-            case 'Media':
-                $mediaSourceName = 'media1';
-                break;
+        if ($mediaSource) {
+            return $mediaSource;
         }
 
-        if (!isset($mediaSourceTypes[$mediaSourceName])) {
-            return false;
-        }
-
-        return $mediaSourceTypes[$mediaSourceName];
+        //If MediaSource does not exists, set the first MediaSource from the MediaSources list
+        return current($mediaSourceManager->getMediaTypes());
     }
 
     /**
@@ -261,14 +239,14 @@ class Wysiwyg
         $uploader    = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
         $mediaSource = $this->getMediaSource();
         $targetMediaSourcePath = '';
-        if ($mediaSource instanceof \Cx\Core\MediaSource\Model\Entity\MediaSource) {
-            $mediaSourcePath = $mediaSource->getDirectory();
-            $targetMediaSourcePath = $mediaSourcePath[1];
+        if ($mediaSource) {
+            $mediaSourcePath       = $mediaSource->getDirectory();
+            $targetMediaSourcePath = $mediaSourcePath[1] . '/';
         }
         $cxJs = \ContrexxJavascript::getInstance();
         $cxJs->setVariable(array(
             'ckeditorUploaderId'   => $uploader->getId(),
-            'ckeditorUploaderPath' => $targetMediaSourcePath . '/'
+            'ckeditorUploaderPath' => $targetMediaSourcePath
         ), 'wysiwyg');
     }
 
