@@ -169,44 +169,29 @@ class Wysiwyg
     public function getSourceCode()
     {
         $mediaBrowserCkeditor = new MediaBrowser($this->systemComponentController);
-        $mediaBrowserCkeditor->setOptions(
-            array(
-                'type'  => 'button',
-                'style' => 'display:none',
-                'id'    => 'ckeditor_image_button'
-            )
-        );
         $mediaBrowserCkeditor->setCallback('ckeditor_image_callback');
 
         //Set MediaBrowser-option 'startmediatype' based on the component name
         $componentName      = $this->systemComponentController->getName();
         $mediaSourceManager = \Cx\Core\Core\Controller\Cx::instanciate()
             ->getMediaSourceManager();
-        $mediaSourceTypes   = $mediaSourceManager->getMediaTypes();
+        $mediaSourceName = $mediaSourceManager->getMediaSourceNameByComponent(
+            $componentName
+        );
 
-        switch ($componentName) {
-            case 'ContentManager':
-                $mediaSourceName = 'files';
-                break;
-
-            case 'Contact':
-                $mediaSourceName = 'attach';
-                break;
-
-            case 'Media':
-                $mediaSourceName = 'media1';
-                break;
-
-            default:
-                $mediaSourceName = strtolower($componentName);
-
+        //If MediaSource does not exists, set the first MediaSource from the MediaSources list
+        if (!$mediaSourceName) {
+            $mediaSourceName = key($mediaSourceManager->getMediaTypes());
         }
 
-        if (array_key_exists($mediaSourceName, $mediaSourceTypes)) {
-            $mediaBrowserCkeditor->setOptions(
-                array('startmediatype' => $mediaSourceName)
-            );
-        }
+        $mediaBrowserCkeditor->setOptions(
+            array(
+                'type'           => 'button',
+                'style'          => 'display:none',
+                'id'             => 'ckeditor_image_button',
+                'startmediatype' => $mediaSourceName
+            )
+        );
 
         \JS::activate('ckeditor');
         \JS::activate('jquery');

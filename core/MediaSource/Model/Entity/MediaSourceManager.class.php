@@ -270,4 +270,26 @@ class MediaSourceManager extends EntityBase
         }
         return $mediaSourceFile;
     }
+
+    /**
+     * Get MediaSource name by given component name
+     *
+     * @param string $name Component name
+     *
+     * @return boolean|string if Component does exist in the MediaSource
+     *                        returns MediaSource name, otherwise false
+     */
+    public function getMediaSourceNameByComponent($name)
+    {
+        if (empty($name)) {
+            return false;
+        }
+        foreach ($this->mediaTypes as $mediaSource) {
+            $systemComponent = $mediaSource->getSystemComponentController();
+            if ($name === $systemComponent->getName()) {
+                return $mediaSource->getName();
+            }
+        }
+        return false;
+    }
 }
