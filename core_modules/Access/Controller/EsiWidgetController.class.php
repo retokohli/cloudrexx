@@ -49,10 +49,16 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      * Parses a widget
      * @param string $name Widget name
      * @param \Cx\Core\Html\Sigma Widget template
-     * @param string $locale RFC 3066 locale identifier
+     * @param \Cx\Core\Routing\Model\Entity\Response $response Current response
+     * @param array $params Array of params
      */
-    public function parseWidget($name, $template, $locale)
+    public function parseWidget($name, $template, $response, $params)
     {
+
+        $langId = \FWLanguage::getLangIdByIso639_1($params['lang']);
+        $template->setVariable(\Env::get('init')->getComponentSpecificLanguageData('Access', true, $langId));
+        $template->setVariable(\Env::get('init')->getComponentSpecificLanguageData('Core', true, $langId));
+
         if (preg_match('/^access_logged_(in|out)\d{0,2}/', $name)) {
             $this->getComponent('Session')->getSession();
             \FWUser::parseLoggedInOutBlocks($template);

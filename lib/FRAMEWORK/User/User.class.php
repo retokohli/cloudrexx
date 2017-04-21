@@ -2361,6 +2361,18 @@ class User extends User_Profile
     public function registerSuccessfulLogin()
     {
         global $objDatabase;
+        
+        $this->updateLastAuthTime();
+        
+        // drop user specific ESI cache:
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $esiFiles = glob($cx->getWebsiteTempPath() . '/cache/*u' . session_id() . '*');
+        foreach ($esiFiles as $esiFile) {
+            try {
+                $file = new \Cx\Lib\FileSystem\File($esiFile);
+                $file->delete();
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {}
+        }
 
         return $objDatabase->Execute("
             UPDATE `".DBPREFIX."access_users`
