@@ -172,15 +172,14 @@ class Wysiwyg
         $mediaBrowserCkeditor->setCallback('ckeditor_image_callback');
 
         //Set MediaBrowser-option 'startmediatype' based on the component name
-        $componentName      = $this->systemComponentController->getName();
         $mediaSourceManager = \Cx\Core\Core\Controller\Cx::instanciate()
             ->getMediaSourceManager();
-        $mediaSourceName = $mediaSourceManager->getMediaSourceNameByComponent(
-            $componentName
-        );
+        $mediaSource = $mediaSourceManager->getMediaSourceByComponent($this->systemComponentController);
 
         //If MediaSource does not exists, set the first MediaSource from the MediaSources list
-        if (!$mediaSourceName) {
+        if ($mediaSource) {
+            $mediaSourceName = $mediaSource->getName();
+        } else {
             $mediaSourceName = key($mediaSourceManager->getMediaTypes());
         }
 
