@@ -168,23 +168,29 @@ class Wysiwyg
      */
     public function getSourceCode()
     {
-        $mediaBrowserCkeditor = new MediaBrowser();
-        $mediaBrowserCkeditor->setOptions(
-            array(
-                'type'  => 'button',
-                'style' => 'display:none',
-                'id'    => 'ckeditor_image_button'
-            )
-        );
+        $mediaBrowserCkeditor = new MediaBrowser($this->systemComponentController);
         $mediaBrowserCkeditor->setCallback('ckeditor_image_callback');
 
         //Set MediaBrowser-option 'startmediatype' based on the component name
-        $mediaSource = $this->getMediaSource();
+        $mediaSourceManager = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getMediaSourceManager();
+        $mediaSource = $mediaSourceManager->getMediaSourceByComponent($this->systemComponentController);
+
+        //If MediaSource does not exists, set the first MediaSource from the MediaSources list
         if ($mediaSource) {
-            $mediaBrowserCkeditor->setOptions(
-                array('startmediatype' => $mediaSource->getName())
-            );
+            $mediaSourceName = $mediaSource->getName();
+        } else {
+            $mediaSourceName = key($mediaSourceManager->getMediaTypes());
         }
+
+        $mediaBrowserCkeditor->setOptions(
+            array(
+                'type'           => 'button',
+                'style'          => 'display:none',
+                'id'             => 'ckeditor_image_button',
+                'startmediatype' => $mediaSourceName
+            )
+        );
 
         \JS::activate('ckeditor');
         \JS::activate('jquery');
