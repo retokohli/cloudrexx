@@ -52,8 +52,6 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      * @param \Cx\Core\Html\Sigma                    $template WidgetTemplate
      * @param \Cx\Core\Routing\Model\Entity\Response $response Response object
      * @param array                                  $params   Get parameters
-     *
-     * @return null
      */
     public function parseWidget($name, $template, $response, $params)
     {
@@ -186,35 +184,33 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         }
 
         //Parse the birthday users
-        if ($name !== 'access_birthday_member_list') {
-            return;
+        if ($name === 'access_birthday_member_list') {
+            if (
+                \FWUser::showBirthdayUsers() &&
+                $objAccessBlocks->isSomeonesBirthdayToday() &&
+                (
+                    $template->blockExists('access_birthday_female_members') ||
+                    $template->blockExists('access_birthday_male_members') ||
+                    $template->blockExists('access_birthday_members')
+                )
+            ) {
+                if ($template->blockExists('access_birthday_female_members')) {
+                    $objAccessBlocks->setBirthdayUsers('female');
+                }
+
+                if ($template->blockExists('access_birthday_male_members')) {
+                    $objAccessBlocks->setBirthdayUsers('male');
+                }
+
+                if ($template->blockExists('access_birthday_members')) {
+                    $objAccessBlocks->setBirthdayUsers();
+                }
+            } else {
+                $template->hideBlock($name);
+            }
+            $dateTime = new \DateTime();
+            $dateTime->setTime(23, 59, 59);
+            $response->setExpirationDate($dateTime);
         }
-
-        if (
-            \FWUser::showBirthdayUsers() &&
-            $objAccessBlocks->isSomeonesBirthdayToday() &&
-            (
-                $template->blockExists('access_birthday_female_members') ||
-                $template->blockExists('access_birthday_male_members') ||
-                $template->blockExists('access_birthday_members')
-            )
-        ) {
-            if ($template->blockExists('access_birthday_female_members')) {
-                $objAccessBlocks->setBirthdayUsers('female');
-            }
-
-            if ($template->blockExists('access_birthday_male_members')) {
-                $objAccessBlocks->setBirthdayUsers('male');
-            }
-
-            if ($template->blockExists('access_birthday_members')) {
-                $objAccessBlocks->setBirthdayUsers();
-            }
-        } else {
-            $template->hideBlock($name);
-        }
-        $dateTime = new \DateTime();
-        $dateTime->setTime(23, 59, 59);
-        $response->setExpirationDate($dateTime);
     }
 }
