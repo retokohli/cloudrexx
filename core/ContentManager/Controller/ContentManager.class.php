@@ -449,6 +449,16 @@ class ContentManager extends \Module
             'contrexxBaseUrl'    => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . '/',
             'contrexxPathOffset' => ASCMS_PATH_OFFSET,
         ), 'contentmanager');
+
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+        $mediaSourceManager = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getMediaSourceManager();
+        $mediaSource        = current($mediaSourceManager->getMediaTypes());
+        $mediaSourceDir     = $mediaSource->getDirectory();
+        $cxjs->setVariable(array(
+            'ckeditorUploaderId'   => $uploader->getId(),
+            'ckeditorUploaderPath' => $mediaSourceDir[1] . '/'
+        ), 'wysiwyg');
     }
 
     protected function getThemes()

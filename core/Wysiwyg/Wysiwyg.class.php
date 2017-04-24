@@ -170,17 +170,12 @@ class Wysiwyg
     {
         $mediaBrowserCkeditor = new MediaBrowser($this->systemComponentController);
         $mediaBrowserCkeditor->setCallback('ckeditor_image_callback');
-        $mediaSource     = $this->getMediaSource();
-        $mediaSourceName = '';
-        if ($mediaSource) {
-            $mediaSourceName = $mediaSource->getName();
-        }
         $mediaBrowserCkeditor->setOptions(
             array(
                 'type'           => 'button',
                 'style'          => 'display:none',
                 'id'             => 'ckeditor_image_button',
-                'startmediatype' => $mediaSourceName
+                'startmediatype' => $this->getMediaSource()->getName()
             )
         );
 
@@ -236,17 +231,12 @@ class Wysiwyg
      */
     public function getSource()
     {
-        $uploader    = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
-        $mediaSource = $this->getMediaSource();
-        $targetMediaSourcePath = '';
-        if ($mediaSource) {
-            $mediaSourcePath       = $mediaSource->getDirectory();
-            $targetMediaSourcePath = $mediaSourcePath[1] . '/';
-        }
-        $cxJs = \ContrexxJavascript::getInstance();
+        $uploader       = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+        $mediaSourceDir = $this->getMediaSource()->getDirectory();
+        $cxJs           = \ContrexxJavascript::getInstance();
         $cxJs->setVariable(array(
             'ckeditorUploaderId'   => $uploader->getId(),
-            'ckeditorUploaderPath' => $targetMediaSourcePath
+            'ckeditorUploaderPath' => $mediaSourceDir[1] . '/'
         ), 'wysiwyg');
     }
 

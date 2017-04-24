@@ -13,39 +13,27 @@ for(var instanceName in CKEDITOR.instances) {
             return;
         }
 
-        //If user has no permission to access its component/default mediaSource
-        //then replace pasted image with no-access image
-        var targetPath = cx.variables.get('ckeditorUploaderPath', 'wysiwyg');
-        if (!targetPath) {
-            event.data.dataValue = data.replace(
-                dataImagePattern,
-                cx.jQuery('<div />').html(
-                    cx.jQuery('<img />')
-                        .attr('src', '../core/Core/View/Media/no_access.png')
-                        .attr('title', 'Image paste denied')
-                        .attr('alt', 'Image paste denied')
-                ).html()
-            );
-            showMessage('Image paste denied', 'error', false);
-            return;
-        }
-
         //Upload process for pasted images
-        doUpload(event, files, targetPath, dataSrc);
+        doUpload(event, files, dataSrc);
     });
 }
 
 /**
  * Do the upload process
  *
- * @param object event      event object
- * @param array  files      array of upload files
- * @param string targetPath target path
- * @param array  dataSrc    array of data URI with file name
+ * @param {object} event   event object
+ * @param {array}  files   array of upload files
+ * @param {array}  dataSrc array of data URI with file name
  */
-function doUpload(event, files, targetPath, dataSrc) {
+function doUpload(event, files, dataSrc) {
     var uploaderId = cx.variables.get('ckeditorUploaderId', 'wysiwyg'),
+        targetPath = cx.variables.get('ckeditorUploaderPath', 'wysiwyg'),
         uploadedFilesCount = 0;
+
+    if (uploaderId == null || targetPath == null) {
+        showMessage('Error while uploading the pasted file.', 'error', false);
+        return;
+    }
     cx.jQuery('<a/>')
         .attr('id', 'wysiwygPasteUploadButton_' + uploaderId)
         .attr('style', 'display:none')
@@ -141,9 +129,9 @@ function doUpload(event, files, targetPath, dataSrc) {
 /**
  * Show success/error message
  *
- * @param string  message message content
- * @param string  status  upload status
- * @param boolean lock    lock
+ * @param {string}  message message content
+ * @param {string}  status  upload status
+ * @param {boolean} lock    lock
  */
 function showMessage(message, status, lock) {
     var showTime;
@@ -176,7 +164,7 @@ function showMessage(message, status, lock) {
 /**
  * Create file by using data URI
  *
- * @param string dataURI data URI
+ * @param {string} dataURI data URI
  *
  * @returns {mOxie.File}
  */
