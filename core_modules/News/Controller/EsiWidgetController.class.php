@@ -58,8 +58,6 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      * @param \Cx\Core\Html\Sigma                    $template Widget Template
      * @param \Cx\Core\Routing\Model\Entity\Response $response Response object
      * @param array                                  $params   Get parameters
-     *
-     * @return null
      */
     public function parseWidget($name, $template, $response, $params)
     {
@@ -158,18 +156,16 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             'newsTeasersStatus',
             'Config'
         );
-        if ($newsTeaserStatus != '1') {
-            return;
-        }
+        if ($newsTeaserStatus) {
+            if (!preg_match('/TEASERS_([0-9a-zA-Z_-]+)/', $name, $matches)) {
+                return;
+            }
 
-        if (!preg_match('/TEASERS_([0-9a-zA-Z_-]+)/', $name, $matches)) {
-            return;
+            $teasers = new Teasers(false, $langId);
+            $code    = '{' . $name . '}';
+            $teasers->setTeaserFrames(array($matches[1]), $code);
+            $template->setVariable($name, $code);
         }
-
-        $teasers = new Teasers(false, $langId);
-        $code    = '{' . $name . '}';
-        $teasers->setTeaserFrames(array($matches[1]), $code);
-        $template->setVariable($name, $code);
     }
 
     /**
