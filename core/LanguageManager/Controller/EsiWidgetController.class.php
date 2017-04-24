@@ -59,8 +59,6 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      * @param \Cx\Core\Html\Sigma Widget             $template Template
      * @param \Cx\Core\Routing\Model\Entity\Response $response Response object
      * @param array                                  $params   Get parameters
-     *
-     * @return null
      */
     public function parseWidget($name, $template, $response, $params)
     {
@@ -80,7 +78,8 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         $matches = null;
         if (preg_match('/^LANG_SELECTED_([A-Z]{2})$/', $name, $matches)) {
             $selected = '';
-            if (strtolower($matches[1]) === $params['lang']) {
+            $langCode = \FWLanguage::getLanguageCodeById($params['lang']);
+            if (strtolower($matches[1]) === $langCode) {
                 $selected = 'selected';
             }
             $template->setVariable($name, $selected);
