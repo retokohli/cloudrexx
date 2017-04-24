@@ -126,7 +126,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $this->cx->getEvents()->addEventListener('SearchFindContent', new \Cx\Core\ContentManager\Model\Event\PageEventListener());
    }
 
-    public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+    /**
+     * {@inheritdoc}
+     */
+    public function adjustResponse(
+        \Cx\Core\Routing\Model\Entity\Response $response
+    ) {
+        $page = $response->getPage();
         // Set meta image to default if it's not defined
         if (empty($page->getMetaimage())) {
             $page->setMetaimage(\Env::get('config')['defaultMetaimage']);
