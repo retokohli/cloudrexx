@@ -266,19 +266,39 @@ class CalendarEventManager extends CalendarLibrary
         }
 
         if ($this->endDate !== null) {
-            $dateScope_where = '((
-                ((event.startdate <= "'.$startDate.'") AND ("'.$endDate.'" <= event.enddate)) OR
-                ((("'.$startDate.'" <= event.startdate) AND ("'.$endDate.'" <= event.enddate)) AND ((event.startdate <= "'.$endDate.'") AND ("'.$endDate.'" <= event.enddate))) OR
-                (((event.startdate <= "'.$startDate.'") AND (event.enddate <= "'.$endDate.'")) AND (("'.$startDate.'" <= event.enddate) AND (event.enddate <= "'.$endDate.'"))) OR
-                (("'.$startDate.'" <= event.startdate) AND (event.enddate <= "'.$endDate.'"))
+            // Note: 'NOW' in the following comments refers to the filtered
+            //       date of the request.
+            $dateScope_where = '(('
+                // Event is happening now (it did already start) and will go on
+                // after the selected range.
+                // Logic: startdate <= START && enddate <= END
+                .'(event.startdate <= "'.$startDate.'" AND "'.$endDate.'" <= event.enddate) OR '
+
+                // Event is about to happen in the selected range, but will go
+                // on afterwards as well.
+                // Logic: START <= startdate <= END <= enddate
+                .'("'.$startDate.'" <= event.startdate AND "'.$endDate.'" <= event.enddate AND event.startdate <= "'.$endDate.'") OR '
+
+                // Event is happening now and is about to end in the selected range.
+                // Logic: startdate <= START <= enddate <= END
+                .'(event.startdate <= "'.$startDate.'" AND event.enddate <= "'.$endDate.'" AND "'.$startDate.'" <= event.enddate) OR '
+
+                // Event is happening exactly within the selected range
+                // Logic: START <= startdate <= enddate <= END
+                .'("'.$startDate.'" <= event.startdate AND event.enddate <= "'.$endDate.'")
             ) OR (
                 (event.series_status = 1) AND (event.startdate <= "'.$endDate.'")
             ))';
 
         } else {                                        
-            $dateScope_where = '((
-                ((event.enddate >= "'.$startDate.'") AND (event.startdate <= "'.$startDate.'")) OR
-                ((event.startdate >= "'.$startDate.'") AND (event.enddate >= "'.$startDate.'"))
+            // Note: 'NOW' in the following comments refers to the filtered
+            //       date of the request.
+            $dateScope_where = '(('
+                // event is happening now (startdate <= NOW <= enddate)
+                .'((event.enddate >= "'.$startDate.'") AND (event.startdate <= "'.$startDate.'")) OR '
+
+                // event lies in the future (NOW <= startdate <= enddate)
+                .'((event.startdate >= "'.$startDate.'") AND (event.enddate >= "'.$startDate.'"))
             ) OR (
                 (event.series_status = 1)
             ))';
