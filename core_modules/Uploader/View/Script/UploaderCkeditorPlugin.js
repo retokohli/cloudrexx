@@ -1,11 +1,15 @@
 var dataImagePattern = /<img\s+[^>]*src=([\'\"])(data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([^\'\"]*)\s*)\1[^>]*>/g;
-for(var instanceName in CKEDITOR.instances) {
+for (var instanceName in CKEDITOR.instances) {
     var editor = CKEDITOR.instances[instanceName];
     editor.on('paste', function (event) {
         var data = event.data.dataValue, match, files = [], dataSrc = [];
         while (match = dataImagePattern.exec(data)) {
             var file = dataURItoFile(match[2]);
-            dataSrc[file.name] = match[2];
+            if (!file) {
+                event.data.dataValue = data.replace(match[0], '');
+                continue;
+            }
+            dataSrc[file.name] = [match[0], match[2]];
             files.push(file);
         }
 
@@ -14,7 +18,8 @@ for(var instanceName in CKEDITOR.instances) {
         }
 
         //Upload process for pasted images
-        doUpload(event, files, dataSrc);
+        doUpload(event, files, dataSrc, event.data.dataValue);
+        event.data.dataValue = '';
     });
 }
 
@@ -24,14 +29,13 @@ for(var instanceName in CKEDITOR.instances) {
  * @param {object} event   event object
  * @param {array}  files   array of upload files
  * @param {array}  dataSrc array of data URI with file name
+ * @param {string} content pasted content
  */
-function doUpload(event, files, dataSrc) {
+function doUpload(event, files, dataSrc, content) {
     var uploaderId = cx.variables.get('ckeditorUploaderId', 'wysiwyg'),
-        targetPath = cx.variables.get('ckeditorUploaderPath', 'wysiwyg'),
-        uploadedFilesCount = 0;
+        targetPath = cx.variables.get('ckeditorUploaderPath', 'wysiwyg');
 
     if (uploaderId == null || targetPath == null) {
-        showMessage('Error while uploading the pasted file.', 'error', false);
         return;
     }
     cx.jQuery('<a/>')
@@ -79,50 +83,29 @@ function doUpload(event, files, dataSrc) {
         );
     });
 
-    uploader.bind('FilesAdded', function (up, files) {
-        up.start();
-    });
-
     uploader.bind('PostInit', function (up) {
         up.addFile(files);
     });
 
+    uploader.bind('FilesAdded', function (up, files) {
+        up.start();
+    });
+
     uploader.bind('FileUploaded', function (up, file, res) {
-        try {
-            var response = cx.jQuery.parseJSON(res.response);
-            if (response.status != 'error') {
-                var editorContent = event.editor.getData();
-                event.editor.setData(
-                    editorContent.replace(
-                        dataSrc[file.name],
-                        targetPath + file.name
-                    )
-                );
-                uploadedFilesCount++;
-                if (uploadedFilesCount == files.length) {
-                    showMessage('Files Uploaded Successfully', null, false);
-                }
-            } else {
-                showMessage(
-                    cx.variables.get(
-                        'TXT_CORE_MODULE_UPLOADER_ERROR_' + /[0-9]+/.exec(response.message),
-                        'mediabrowser'
-                    ),
-                    'error',
-                    false
-                );
-            }
-        } catch (ex) {
-            showMessage(
-                cx.variables.get(
-                    'TXT_CORE_MODULE_UPLOADER_ERROR_200',
-                    'mediabrowser'
-                ),
-                'error',
-                false
-            );
+        var response   = cx.jQuery.parseJSON(res.response),
+            currentImg = dataSrc[file.name][0];
+        if (response.status != 'error') {
+            content = content.replace(dataSrc[file.name][1], targetPath + file.name);
+        } else {
+            content = content.replace(currentImg, '');
         }
     });
+
+    uploader.bind('UploadComplete', function (up, files) {
+        event.editor.insertHtml(content);
+        showMessage('', null, false);
+    });
+
     uploader.init();
 }
 
@@ -155,8 +138,8 @@ function showMessage(message, status, lock) {
                 });
         }
     } else {
-        showTime = 10000;
-        cx.jQuery('#load-lock').hide();
+        showTime = 1;
+        cx.jQuery('#content #load-lock').hide();
     }
     cx.tools.StatusMessage.showMessage(message, status, showTime);
 }
@@ -170,22 +153,26 @@ function showMessage(message, status, lock) {
  */
 function dataURItoFile(dataURI) {
     /* convert base64/URLEncoded data component to raw binary data held in a string */
-    var byteString;
-    if (dataURI.split(',')[0].indexOf('base64') >= 0) {
-        byteString = atob(dataURI.split(',')[1]);
-    } else {
-        byteString = unescape(dataURI.split(',')[1]);
+    try {
+        var byteString;
+        if (dataURI.split(',')[0].indexOf('base64') >= 0) {
+            byteString = atob(dataURI.split(',')[1]);
+        } else {
+            byteString = unescape(dataURI.split(',')[1]);
+        }
+
+        /* separate out the mime component*/
+        var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+        /* write the bytes of the string to a typed array */
+        var typedArray = new Uint8Array(byteString.length);
+        for (var i = 0; i < byteString.length; i++) {
+            typedArray[i] = byteString.charCodeAt(i);
+        }
+
+        var resultingBlob =  new Blob([typedArray], {type:mimeString});
+        return new mOxie.File(null, resultingBlob);
+    } catch (ex) {
+        return false;
     }
-
-    /* separate out the mime component*/
-    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-
-    /* write the bytes of the string to a typed array */
-    var typedArray = new Uint8Array(byteString.length);
-    for (var i = 0; i < byteString.length; i++) {
-        typedArray[i] = byteString.charCodeAt(i);
-    }
-
-    var resultingBlob =  new Blob([typedArray], {type:mimeString});
-    return new mOxie.File(null, resultingBlob);
 }
