@@ -100,10 +100,15 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                 $category = $catMatches[1];
             }
             $newsHeadlines = new NewsHeadlines($templateContent);
+            $nextUpdateDate = null;
             $content       = $newsHeadlines->getHomeHeadlines(
                 $category,
-                $langId
+                $langId,
+                $nextUpdateDate
             );
+            if ($nextUpdateDate) {
+                $response->setExpirationDate($nextUpdateDate);
+            }
             $template->setVariable($name, $content);
             return;
         }
@@ -115,7 +120,11 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                 return;
             }
             $newsTop = new NewsTop($templateContent);
-            $content = $newsTop->getHomeTopNews(0, $langId);
+            $nextUpdateDate = null;
+            $content = $newsTop->getHomeTopNews(0, $langId, $nextUpdateDate);
+            if ($nextUpdateDate) {
+                $response->setExpirationDate($nextUpdateDate);
+            }
             $template->setVariable($name, $content);
             return;
         }
@@ -131,7 +140,11 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         // Parse News Archives
         if ($name == 'NEWS_ARCHIVES') {
             $newsLib = new NewsLibrary();
-            $content = $newsLib->getNewsArchiveList($langId);
+            $nextUpdateDate = null;
+            $content = $newsLib->getNewsArchiveList($langId, $nextUpdateDate);
+            if ($nextUpdateDate) {
+                $response->setExpirationDate($nextUpdateDate);
+            }
             $template->setVariable($name, $content);
             return;
         }
@@ -161,9 +174,13 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                 return;
             }
 
-            $teasers = new Teasers(false, $langId);
+            $nextUpdateDate = null;
+            $teasers = new Teasers(false, $langId, $nextUpdateDate);
             $code    = '{' . $name . '}';
             $teasers->setTeaserFrames(array($matches[1]), $code);
+            if ($nextUpdateDate) {
+                $response->setExpirationDate($nextUpdateDate);
+            }
             $template->setVariable($name, $code);
         }
     }
