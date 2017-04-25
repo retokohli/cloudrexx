@@ -79,7 +79,18 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
     }
 
 
-    function getHomeHeadlines($catId = 0, $langId = 0)
+    /**
+     * Parses the home headlines
+     * If there are any news with scheduled publishing $nextUpdateDate will
+     * contain the date when the next news changes its publishing state.
+     * If there are are no news with scheduled publishing $nextUpdateDate will
+     * be null.
+     * @param integer $catId Category ID
+     * @param integer $langId Language ID
+     * @param \DateTime $nextUpdateDate (reference) DateTime of the next change
+     * @return string Parsed HTML code
+     */
+    function getHomeHeadlines($catId = 0, $langId = 0, &$nextUpdateDate = null)
     {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
@@ -124,6 +135,8 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
                        tblN.enable_tags,
                        tblN.url1,
                        tblN.url2,
+                       tblN.startdate,
+                       tblN.enddate,
                        tblL.text NOT REGEXP '^(<br type=\"_moz\" />)?\$' AS newscontent,
                        tblL.text AS text,
                        tblL.title AS newstitle,
@@ -148,8 +161,35 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
                    "ORDER BY date DESC", $newsLimit);
         }
 
+        $nextUpdateDate = null;
         if ($objResult !== false && $objResult->RecordCount() >= 0) {
             while (!$objResult->EOF) {
+                if (
+                    $objResult->fields['startdate'] != '0000-00-00 00:00:00' &&
+                    $objResult->fields['enddate'] != '0000-00-00 00:00:00'
+                ) {
+                    $startDate = new \DateTime($objResult->fields['startdate']);
+                    $endDate = new \DateTime($objResult->field['enddate']);
+                    if (
+                        $endDate > new \DateTime() &&
+                        (
+                            !$nextUpdateDate ||
+                            $endDate < $nextUpdateDate
+                        )
+                    ) {
+                        $nextUpdateDate = $endDate;
+                    }
+                    if (
+                        $startDate > new \DateTime() &&
+                        (
+                            !$nextUpdateDate ||
+                            $startDate < $nextUpdateDate
+                        )
+                    ) {
+                        $nextUpdateDate = $startDate;
+                    }
+                }
+
                 $newsid = $objResult->fields['newsid'];
                 $newsCategories = $this->getCategoriesByNewsId($newsid);
                 $newsUrl   = empty($objResult->fields['redirect'])
