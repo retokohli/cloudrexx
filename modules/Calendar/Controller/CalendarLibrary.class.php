@@ -176,6 +176,34 @@ class CalendarLibrary
      * @var string
      */
     const ATTACHMENT_FIELD_KEY = 'attachment_id';
+
+    /**
+     * Setting value for option frontendPastEvents defining that all events
+     * having their start date as of today shall be listed in frontend till
+     * the end of today.
+     *
+     * @var integer
+     */
+    const SHOW_EVENTS_OF_TODAY = 0;
+
+    /**
+     * Setting value for option frontendPastEvents defining that only those
+     * events shall be listed in frontend that have not yet ended (end date lies
+     * in the past)
+     *
+     * @var integer
+     */
+    const SHOW_EVENTS_UNTIL_END = 1;
+
+    /**
+     * Setting value for option frontendPastEvents defining that only those
+     * events shall be listed in frontend that have not yet started (start date
+     * lies in the future)
+     *
+     * @todo Implement behavior of this option
+     * @var integer
+     */
+    const SHOW_EVENTS_UNTIL_START = 2;
     
     /**
      * Assign the template path

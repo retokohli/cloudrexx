@@ -113,21 +113,34 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
 
         //Set expiration date
         // get next event
-        $calendarLib = new \Cx\Modules\Calendar\Controller\CalendarLibrary('.');
+        $calendarLib = new CalendarLibrary('.');
         $calendarLib->getSettings();
 
         $startDate = new \DateTime();
-        //if ($calendarLib->arrSettings['frontendPastEvents'] == 0) {
-            // get next ending event starting from today 0:01
-            // the event's day on midnight is our expiration date
-            $startDate->setTime(0, 0, 0);
-        /*} else {
-            // get next ending event starting NOW
-            // the event's ending time is our expiration date
-            $offsetSeconds = abs($calendarLib->getInternDateTimeFromUser()->getOffset());
-            $startDate->sub(new \DateInterval('PT' . $offsetSeconds . 'S'));
-        }*/
-        $eventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager(
+
+        switch ($calendarLib->arrSettings['frontendPastEvents']) {
+            case CalendarLibrary::SHOW_EVENTS_OF_TODAY:
+                // get next ending event starting from today 0:01
+                // the event's day on midnight is our expiration date
+                $startDate->setTime(0, 0, 0);
+                break;
+
+            case CalendarLibrary::SHOW_EVENTS_UNTIL_START:
+                // TODO: implement logic
+                //break;
+
+            case CalendarLibrary::SHOW_EVENTS_UNTIL_END:
+            default:
+                // set the start date to NOW
+
+                // get next ending event starting NOW
+                // the event's ending time is our expiration date
+                $offsetSeconds = abs($calendarLib->getInternDateTimeFromUser()->getOffset());
+                $startDate->sub(new \DateInterval('PT' . $offsetSeconds . 'S'));
+                break;
+        }
+
+        $eventManager = new CalendarEventManager(
             $startDate,
             null,
             null,
@@ -140,10 +153,32 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         );
         $eventManager->getEventList();
         $cacheExpirationDate = null;
+
+        // if there is an upcoming event, then set then expiration date of the
+        // request based on that event
         if (isset($eventManager->eventList[0])) {
             $cacheExpirationDate = $eventManager->eventList[0]->endDate;
-            $cacheExpirationDate->setTime(23, 59, 59);
+            switch ($calendarLib->arrSettings['frontendPastEvents']) {
+                case CalendarLibrary::SHOW_EVENTS_OF_TODAY:
+                    // event shall be shown till the end of the day
+                    $cacheExpirationDate->setTime(23, 59, 59);
+                    break;
+
+                case CalendarLibrary::SHOW_EVENTS_UNTIL_START:
+                    // TODO: implement logic
+                    //break;
+
+                case CalendarLibrary::SHOW_EVENTS_UNTIL_END:
+                default:
+                    // Event shall be shown until it ends.
+                    // The expiration date has already been set properly above.
+                    // Nothing more to do here.
+                    break;
+            }
         }
+
+        // if there is no upcoming event, then set then expiration date to the
+        // next recurrence periode (which might again contain new events)
         if (!$cacheExpirationDate) {
             $cacheExpirationDate = new \DateTime();
             $additionalYears = intval(
