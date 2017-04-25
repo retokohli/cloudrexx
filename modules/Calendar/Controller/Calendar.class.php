@@ -906,8 +906,6 @@ UPLOADER;
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
-        $this->pageTitle = html_entity_decode($this->objEventManager->eventList[0]->title, ENT_QUOTES, CONTREXX_CHARSET);
-
         // Set the meta page description to the teaser text if displaying calendar details
         $teaser = html_entity_decode($this->objEventManager->eventList[0]->teaser, ENT_QUOTES, CONTREXX_CHARSET);
         if ($teaser) {
@@ -1002,8 +1000,6 @@ UPLOADER;
         }
 
         $dateForPageTitle = $objEvent->startDate;
-        $this->pageTitle = $this->format2userDate($dateForPageTitle)
-                            . ": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
 
         // Only show registration form if event lies in the future
         if(time() <= $objEvent->startDate->getTimestamp()) {
@@ -1386,4 +1382,39 @@ JAVASCRIPT;
         $this->objEventManager->showEventList($this->_objTpl);
 
     }
+
+    /**
+     * Set page title
+     *
+     * @param string $cmd page cmd
+     */
+    public function setPageTitle($cmd)
+    {
+        $event = $this->objEventManager->eventList[0];
+        if (!$event) {
+            return;
+        }
+
+        $eventTitle = html_entity_decode(
+            $event->title,
+            ENT_QUOTES,
+            CONTREXX_CHARSET
+        );
+        if ($cmd === 'detail') {
+            $this->pageTitle = $eventTitle;
+            return;
+        }
+
+        if (in_array($cmd, array('register', 'sign'))) {
+            if (
+                !$event->status ||
+                ($event->access == 1 && !\FWUser::getFWUserObject()->objUser->login())
+            ) {
+                return;
+            }
+            $this->pageTitle  = $this->format2userDate($event->startDate)
+                . ": " . $eventTitle;
+        }
+    }
+
 }

@@ -65,11 +65,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
                 $objCalendar = new \Cx\Modules\Calendar\Controller\Calendar($page->getContent(), MODULE_INDEX);
                 $page->setContent($objCalendar->getCalendarPage($page));
-                if ($objCalendar->pageTitle) {
-                    $page->setTitle($objCalendar->pageTitle);
-                    $page->setContentTitle($objCalendar->pageTitle);
-                    $page->setMetaTitle($objCalendar->pageTitle);
-                }
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
@@ -149,5 +144,32 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $eventListener = new \Cx\Modules\Calendar\Model\Event\CalendarEventListener($this->cx);
         $this->cx->getEvents()->addEventListener('SearchFindContent', $eventListener);
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
+   }
+
+    /**
+     * {@inheritdoc}
+     */
+   public function adjustResponse(
+        \Cx\Core\Routing\Model\Entity\Response $response
+    ) {
+        $page = $response->getPage();
+        if (
+            !$page ||
+            $page->getModule() !== $this->getName() ||
+            !in_array($page->getCmd(), array('detail', 'register', 'sign'))
+        ) {
+            return;
+        }
+
+        $calendar = new \Cx\Modules\Calendar\Controller\Calendar('');
+        $calendar->loadEventManager();
+        $calendar->setPageTitle($page->getCmd());
+        if (empty($calendar->pageTitle)) {
+            return;
+        }
+
+        $page->setTitle($calendar->pageTitle);
+        $page->setContentTitle($calendar->pageTitle);
+        $page->setMetaTitle($calendar->pageTitle);
    }
 }
