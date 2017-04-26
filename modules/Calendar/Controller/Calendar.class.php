@@ -203,7 +203,7 @@ class Calendar extends CalendarLibrary
                     $start = null;
                     self::showEvent($page, $start);
                     $response = $cx->getResponse();
-                    $response->setExpireDate($start);
+                    $response->setExpirationDate($start);
                 } else {
                     \Cx\Core\Csrf\Controller\Csrf::redirect(
                         \Cx\Core\Routing\Url::fromModuleAndCmd(
@@ -221,7 +221,7 @@ class Calendar extends CalendarLibrary
             case 'boxes':
                 // cache timeout: end of day
                 $response = $cx->getResponse();
-                $response->setExpireDate(new \DateTime('today midnight'));
+                $response->setExpirationDate(new \DateTime('today midnight'));
                 if (isset($_GET['act']) && $_GET['act'] == "list") {
                     self::boxesEventList();
                 } else {
@@ -233,7 +233,7 @@ class Calendar extends CalendarLibrary
                 $firstEndDate = null;
                 self::showCategoryView($firstEndDate);
                 $response = $cx->getResponse();
-                $response->setExpireDate($firstEndDate);
+                $response->setExpirationDate($firstEndDate);
                 break;
             case 'add':
                 // cache timeout: no timeout
@@ -251,7 +251,7 @@ class Calendar extends CalendarLibrary
                 $firstEndDate = null;
                 self::myEvents($firstEndDate);
                 $response = $cx->getResponse();
-                $response->setExpireDate($firstEndDate);
+                $response->setExpirationDate($firstEndDate);
                 break;
             case 'success':
                 // cache timeout: no timeout
@@ -265,7 +265,7 @@ class Calendar extends CalendarLibrary
                 $firstEndDate = null;
                 self::overview($firstEndDate);
                 $response = $cx->getResponse();
-                $response->setExpireDate($firstEndDate);
+                $response->setExpirationDate($firstEndDate);
                 break;
         }
 
