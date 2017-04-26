@@ -429,7 +429,7 @@ class CalendarCategory extends CalendarLibrary
 	            
 	            $objResult = $objDatabase->Execute($query);
 	            if ($objResult !== false) {
-                        //clear Cache
+                    // Clear Cache
                         $this->triggerEvent('clearEsiCache');
 	            	return true;
 	            } else {
