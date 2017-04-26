@@ -110,27 +110,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $newsObj = new News($page->getContent());
                 $page->setContent($newsObj->getNewsPage());
-                $newsObj->getPageTitle($page->getTitle());
-
-                if (substr($page->getCmd(), 0, 7) == 'details') {
-                    $page->setTitle($newsObj->newsTitle);
-                    $page->setContentTitle($newsObj->newsTitle);
-                    $page->setMetaTitle($newsObj->newsTitle);
-
-                    // Set the meta page description to the teaser text if displaying news details
-                    $teaser = $newsObj->getTeaser();
-                    if ($teaser) {
-                        $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET))));
-                    } else {
-                        $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($newsObj->newsText, ENT_QUOTES, CONTREXX_CHARSET))));
-                    }
-
-                    // Set the meta page image to the thumbnail if displaying news details
-                    $image = $newsObj->newsThumbnail;
-                    if ($image) {
-                        $page->setMetaimage($image);
-                    }
-                }
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
@@ -306,14 +285,49 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\Routing\Model\Entity\Response $response Response object to adjust
      */
     public function adjustResponse(\Cx\Core\Routing\Model\Entity\Response $response) {
+        $page   = $response->getPage();
         $params = $response->getRequest()->getUrl()->getParamArray();
         unset($params['section']);
         unset($params['cmd']);
-        $canonicalUrl = \Cx\Core\Routing\Url::fromPage($response->getPage(), $params);
+        $canonicalUrl = \Cx\Core\Routing\Url::fromPage($page, $params);
         $response->setHeader(
             'Link',
             '<' . $canonicalUrl->toString() . '>; rel="canonical"'
         );
+
+        if (
+             !$page ||
+             $page->getModule() !== $this->getName() ||
+             !$page->getCmd() === 'details'
+        ) {
+            return;
+        }
+
+        $news = new News('');
+        $news->getNewsPage();
+
+        //Set title's, if news title is not empty
+        if (!empty($news->newsTitle)) {
+            $page->setTitle($news->newsTitle);
+            $page->setContentTitle($news->newsTitle);
+            $page->setMetatitle($news->newsTitle);
+        }
+
+        //Set meta description, if news teaser text is not empty
+        $metaDesc = $news->newsText;
+        if (!empty($news->getTeaser())) {
+            $metaDesc = $news->getTeaser();
+        }
+        $page->setMetadesc(contrexx_raw2xhtml(
+            contrexx_strip_tags(
+                html_entity_decode($metaDesc, ENT_QUOTES, CONTREXX_CHARSET)
+            )
+        ));
+
+        //Set meta image, if news thumbnail is not empty
+        if (!empty($news->newsThumbnail)) {
+            $page->setMetaimage($news->newsThumbnail);
+        }
     }
 
     /**
