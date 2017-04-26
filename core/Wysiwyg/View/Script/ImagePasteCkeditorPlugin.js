@@ -43,9 +43,10 @@ for (var instanceName in CKEDITOR.instances) {
  * get file object from Data image present in the content
  *
  * @param {string} content     content
- * @param {bolean} inlineImage If true, it will check Data URL should be used as
+ * @param {bolean} inlineImage If true, it will check if Data URL used as
  *                             CSS inline image in the content,
- *                             otherwise it will check Data URL used in img
+ *                             otherwise it will check if Data URL used as
+ *                             image src in content
  *
  * @returns {object}
  */
