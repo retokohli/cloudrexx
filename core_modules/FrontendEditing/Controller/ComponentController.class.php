@@ -181,7 +181,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
 
-        $componentTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/' . $this->getName() . '/View/Template/Generic');
+        $componentTemplate = new \Cx\Core\Html\Sigma(
+            $this->cx->getCodeBaseCoreModulePath() . '/' . $this->getName() .
+            '/View/Template/Generic'
+        );
         $componentTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
         // add div around content
@@ -245,7 +248,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         $page              = $response->getPage();
         $componentTemplate = new \Cx\Core\Html\Sigma(
-            ASCMS_CORE_MODULE_PATH . '/' . $this->getName() .
+            $this->cx->getCodeBaseCoreModulePath() . '/' . $this->getName() .
             '/View/Template/Generic'
         );
         $componentTemplate->setErrorHandling(PEAR_ERROR_DIE);
