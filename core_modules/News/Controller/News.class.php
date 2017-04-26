@@ -1374,18 +1374,6 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
     }
 
 
-    /**
-    * Gets the global page title
-    *
-    * @param     string    (optional)$pageTitle
-    */
-    public function getPageTitle($pageTitle='')
-    {
-        if (empty($this->newsTitle)) {
-            $this->newsTitle = $pageTitle;
-        }
-    }
-
     private function notifyWebmasterAboutNewlySubmittedNewsMessage($news_id)
     {
         $user_id  = intval($this->arrSettings['news_notify_user']);
