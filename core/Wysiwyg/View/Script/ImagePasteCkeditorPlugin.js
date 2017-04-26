@@ -1,26 +1,81 @@
-var dataImagePattern = /<img\s+[^>]*src=([\'\"])(data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([^\'\"]*)\s*)\1[^>]*>/g;
+var editorMode = [];
 for (var instanceName in CKEDITOR.instances) {
-    var editor = CKEDITOR.instances[instanceName];
-    editor.on('paste', function (event) {
-        var data = event.data.dataValue, match, files = [], dataSrc = [];
-        while (match = dataImagePattern.exec(data)) {
-            var file = dataURItoFile(match[2]);
-            if (!file) {
-                event.data.dataValue = data.replace(match[0], '');
-                continue;
-            }
-            dataSrc[file.name] = [match[0], match[2]];
-            files.push(file);
-        }
+    CKEDITOR.instances[instanceName].on('paste', function (event) {
+        var result   = getDataFromContent(event.data.dataValue, false),
+            callback = function(event, value) {
+                event.editor.insertHtml(value);
+            };
 
-        if (!files || files.length === 0) {
+        if (!result.files || result.files.length === 0) {
+            event.data.dataValue = result.content;
             return;
         }
 
         //Upload process for pasted images
-        doUpload(event, files, dataSrc, event.data.dataValue);
+        doUpload(event, result.files, result.dataSrc, result.content, callback);
         event.data.dataValue = '';
     });
+    CKEDITOR.instances[instanceName].on('mode', function (event) {
+        if (editorMode[event.editor.name] == null) {
+            editorMode[event.editor.name] = event.editor.mode;
+        }
+        if (
+            editorMode[event.editor.name] === 'source' &&
+            event.editor.mode === 'wysiwyg'
+        ) {
+            var result   = getDataFromContent(event.editor.getData(), true),
+                callback = function(event, value) {
+                    event.editor.setData(value);
+                };
+            if (!result.files || result.files.length === 0) {
+                event.editor.setData(result.content);
+                return;
+            }
+
+            //Upload process for pasted images
+            doUpload(event, result.files, result.dataSrc, result.content, callback);
+        }
+        editorMode[event.editor.name] = event.editor.mode;
+    });
+}
+
+/**
+ * get file object from Data image present in the content
+ *
+ * @param {string} content     content
+ * @param {bolean} inlineImage If true, it will check Data URL should be used as
+ *                             CSS inline image in the content,
+ *                             otherwise it will check Data URL used in img
+ *
+ * @returns {object}
+ */
+function getDataFromContent(content, inlineImage)
+{
+    var match,
+        files = [],
+        dataSrc = [],
+        pattern,
+        data,
+        dataImagePattern = /<img\s+[^>]*src=([\'\"])(data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([^\'\"]*)\s*)\1[^>]*>/g,
+        inlineImagePattern = /url\(([\'\"])(data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([^\'\"]*)\s*)\1(\))/g;
+
+    pattern = dataImagePattern;
+    if (inlineImage) {
+        pattern = inlineImagePattern;
+    }
+
+    data = content;
+    while (match = pattern.exec(content)) {
+        var file = dataURItoFile(match[2]);
+        if (!file) {
+            data = data.replace(match[0], '');
+        } else {
+            dataSrc[file.name] = [match[0], match[2]];
+            files.push(file);
+        }
+    }
+
+    return {'files' : files, 'dataSrc' : dataSrc, 'content' : data};
 }
 
 /**
@@ -31,7 +86,8 @@ for (var instanceName in CKEDITOR.instances) {
  * @param {array}  dataSrc array of data URI with file name
  * @param {string} content pasted content
  */
-function doUpload(event, files, dataSrc, content) {
+function doUpload(event, files, dataSrc, content, callback)
+{
     var uploaderId = cx.variables.get('ckeditorUploaderId', 'wysiwyg'),
         targetPath = cx.variables.get('ckeditorUploaderPath', 'wysiwyg');
 
@@ -102,7 +158,7 @@ function doUpload(event, files, dataSrc, content) {
     });
 
     uploader.bind('UploadComplete', function (up, files) {
-        event.editor.insertHtml(content);
+        callback(event, content);
         showMessage('', null, false);
     });
 
@@ -116,7 +172,8 @@ function doUpload(event, files, dataSrc, content) {
  * @param {string}  status  upload status
  * @param {boolean} lock    lock
  */
-function showMessage(message, status, lock) {
+function showMessage(message, status, lock)
+{
     var showTime;
     if (lock) {
         showTime = null;
