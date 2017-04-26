@@ -124,12 +124,10 @@ class Wysiwyg extends \Cx\Model\Base\EntityBase
 
     /**
      * The SystemComponentController that did instanciate this Wysiwyg instance.
-     * Important: Please note that the SystemComponentController is not the
-     * same as the ComponentController of a Component.
      *
      * @var \Cx\Core\Core\Model\Entity\SystemComponentController SystemComponentController that instanciated this Wysiwyg instance
      */
-    protected $systemComponentController;
+    protected $callingSystemComponentController;
 
      /**
       * Initialize WYSIWYG editor
@@ -144,14 +142,14 @@ class Wysiwyg extends \Cx\Model\Base\EntityBase
      */
     public function __construct($name, $value = '', $type = 'small', $langId = null, $extraPlugins = array(), \Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController = null)
     {
-        // Sets provided SystemComponentController
-        $this->systemComponentController = $systemComponentController;
-        if (!$this->systemComponentController) {
-            // Searches a SystemComponentController intelligently by RegEx on backtrace stack frame
+        // Sets provided SystemComponentController that instanciated this Wysiwyg instance
+        $this->callingSystemComponentController = $systemComponentController;
+        if (!$this->callingSystemComponentController) {
+            // Searches the calling SystemComponentController intelligently by RegEx on backtrace stack frame
             $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
             $trace = end($traces);
             if (empty($trace['class'])) {
-                throw new WysiwygException('No SystemComponentController for Wysiwyg can be found');
+                throw new WysiwygException('No SystemComponentController found that instanciated Wysiwyg');
             }
             $matches = array();
             preg_match(
@@ -159,7 +157,7 @@ class Wysiwyg extends \Cx\Model\Base\EntityBase
                 $trace['class'],
                 $matches
             );
-            $this->systemComponentController = $this->cx->getComponent($matches[1]);
+            $this->callingSystemComponentController = $this->cx->getComponent($matches[1]);
         }
 
         $this->name = $name;
@@ -176,7 +174,7 @@ class Wysiwyg extends \Cx\Model\Base\EntityBase
      */
     public function getSourceCode()
     {
-        $mediaBrowserCkeditor = new MediaBrowser($this->systemComponentController);
+        $mediaBrowserCkeditor = new MediaBrowser($this->callingSystemComponentController);
         $mediaBrowserCkeditor->setOptions(array('type' => 'button', 'style' => 'display:none'));
         $mediaBrowserCkeditor->setCallback('ckeditor_image_callback');
         $mediaBrowserCkeditor->setOptions(array(

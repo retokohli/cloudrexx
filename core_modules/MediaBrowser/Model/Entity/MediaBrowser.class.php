@@ -73,12 +73,10 @@ class MediaBrowser extends EntityBase
     /**
      * The SystemComponentController that did instanciate this MediaBrowser
      * instance.
-     * Important: Please note that the SystemComponentController is not the
-     * same as the ComponentController of a Component.
      *
      * @var \Cx\Core\Core\Model\Entity\SystemComponentController SystemComponentController that instanciated this MediaBrowser instance
      */
-    protected $systemComponentController;
+    protected $callingSystemComponentController;
 
     /**
      * @var string $entity
@@ -95,14 +93,14 @@ class MediaBrowser extends EntityBase
      */
     public function __construct($systemComponentController = null, $entity = '')
     {
-        // Sets provided SystemComponentController
-        $this->systemComponentController = $systemComponentController;
-        if (!$this->systemComponentController) {
-            // Searches a SystemComponentController intelligently by RegEx on backtrace stack frame
+        // Sets provided SystemComponentController that instanciated this MediaBrowser instance
+        $this->callingSystemComponentController = $systemComponentController;
+        if (!$this->callingSystemComponentController) {
+            // Searches the calling SystemComponentController intelligently by RegEx on backtrace stack frame
             $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
             $trace = end($traces);
             if (empty($trace['class'])) {
-                throw new MediaBrowserException('No SystemComponentController for MediaBrowser can be found');
+                throw new MediaBrowserException('No SystemComponentController found that instanciated MediaBrowser');
             }
             $matches = array();
             preg_match(
@@ -110,7 +108,7 @@ class MediaBrowser extends EntityBase
                 $trace['class'],
                 $matches
             );
-            $this->systemComponentController = $this->getComponent($matches[1]);
+            $this->callingSystemComponentController = $this->getComponent($matches[1]);
         }
 
         $this->entity = $entity;
