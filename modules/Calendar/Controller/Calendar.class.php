@@ -53,7 +53,7 @@ class Calendar extends CalendarLibrary
      *
      * @var object
      */
-    private $objEventManager;
+    protected $objEventManager;
 
     /**
      * Start date
@@ -120,13 +120,6 @@ class Calendar extends CalendarLibrary
      * @var string
      */
     private $sortDirection = 'ASC';
-
-    /**
-     * APge Title
-     *
-     * @var string
-     */
-    public $pageTitle;
 
     /**
      * meta title
@@ -906,21 +899,6 @@ UPLOADER;
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
-        // Set the meta page description to the teaser text if displaying calendar details
-        $teaser = html_entity_decode($this->objEventManager->eventList[0]->teaser, ENT_QUOTES, CONTREXX_CHARSET);
-        if ($teaser) {
-            $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags($teaser)));
-        } else {
-            $description = html_entity_decode($this->objEventManager->eventList[0]->description, ENT_QUOTES, CONTREXX_CHARSET);
-            $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags($description)));
-        }
-
-        // Set the meta page image to event picture if displaying calendar details
-        $picture = $this->objEventManager->eventList[0]->pic;
-        if ($picture) {
-            $page->setMetaimage($picture);
-        }
-
         $this->_objTpl->setVariable(array(
             'TXT_'.$this->moduleLangVar.'_ATTACHMENT'        =>  $_ARRAYLANG['TXT_CALENDAR_ATTACHMENT'],
             'TXT_'.$this->moduleLangVar.'_THUMBNAIL'         =>  $_ARRAYLANG['TXT_CALENDAR_THUMBNAIL'],
@@ -1384,37 +1362,11 @@ JAVASCRIPT;
     }
 
     /**
-     * Set page title
-     *
-     * @param string $cmd page cmd
+     * Get the Event manager
      */
-    public function setPageTitle($cmd)
+    public function getEventManager()
     {
-        $event = $this->objEventManager->eventList[0];
-        if (!$event) {
-            return;
-        }
-
-        $eventTitle = html_entity_decode(
-            $event->title,
-            ENT_QUOTES,
-            CONTREXX_CHARSET
-        );
-        if ($cmd === 'detail') {
-            $this->pageTitle = $eventTitle;
-            return;
-        }
-
-        if (in_array($cmd, array('register', 'sign'))) {
-            if (
-                !$event->status ||
-                ($event->access == 1 && !\FWUser::getFWUserObject()->objUser->login())
-            ) {
-                return;
-            }
-            $this->pageTitle  = $this->format2userDate($event->startDate)
-                . ": " . $eventTitle;
-        }
+        return $this->objEventManager;
     }
 
 }
