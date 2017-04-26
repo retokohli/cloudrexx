@@ -209,7 +209,8 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
             $this->discardChanges = true;
             
             // drop user specific ESI cache:
-            $esiFiles = glob($this->cx->getWebsiteTempPath() . '/cache/*u' . $aKey . '*');
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $esiFiles = glob($cx->getWebsiteTempPath() . '/cache/*u' . $aKey . '*');
             foreach ($esiFiles as $esiFile) {
                 try {
                     $file = new \Cx\Lib\FileSystem\File($esiFile);
@@ -712,7 +713,8 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
         }
         
         // drop user specific ESI cache:
-        $esiFiles = glob($this->cx->getWebsiteTempPath() . '/cache/*_u*');
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $esiFiles = glob($cx->getWebsiteTempPath() . '/cache/*_u*');
         foreach ($esiFiles as $esiFile) {
             $match = array();
             if (!preg_match('#/[0-9a-f]{32}(?:_[pl][a-z0-9]+){0,2}?_u([a-z0-9]+)(?:_|$)#', $esiFile, $match)) {
