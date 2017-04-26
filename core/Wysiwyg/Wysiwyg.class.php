@@ -174,6 +174,8 @@ class Wysiwyg extends \Cx\Model\Base\EntityBase
      */
     public function getSourceCode()
     {
+        $this->initJsVariablesForUploader();
+
         $mediaBrowserCkeditor = new MediaBrowser($this->callingSystemComponentController);
         $mediaBrowserCkeditor->setCallback('ckeditor_image_callback');
         $mediaBrowserCkeditor->setOptions(
@@ -234,7 +236,7 @@ class Wysiwyg extends \Cx\Model\Base\EntityBase
     /**
      * Initialize the uploader and set uploader id and target path as javascript variable
      */
-    public function initJsVariablesForUploader()
+    protected function initJsVariablesForUploader()
     {
         $uploader       = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
         $mediaSourceDir = $this->getMediaSource()->getDirectory();
@@ -282,7 +284,6 @@ class Wysiwyg extends \Cx\Model\Base\EntityBase
      */
     public function __toString()
     {
-        $this->initJsVariablesForUploader();
         return $this->getSourceCode();
     }
 
