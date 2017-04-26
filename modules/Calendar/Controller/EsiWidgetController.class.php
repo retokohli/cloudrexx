@@ -131,12 +131,8 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
 
             case CalendarLibrary::SHOW_EVENTS_UNTIL_END:
             default:
-                // set the start date to NOW
-
-                // get next ending event starting NOW
-                // the event's ending time is our expiration date
-                $offsetSeconds = abs($calendarLib->getInternDateTimeFromUser()->getOffset());
-                $startDate->sub(new \DateInterval('PT' . $offsetSeconds . 'S'));
+                // keep the start date to NOW
+                // fixing the timezone offset is not required here
                 break;
         }
 
