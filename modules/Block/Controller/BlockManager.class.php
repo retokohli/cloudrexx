@@ -941,6 +941,9 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
 
         $objJs->setVariable('ckeditorconfigpath', substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH.'/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT)+1), 'block');
 
+        // manually set Wysiwyg variables as the Ckeditor will be
+        // loaded manually through JavaScript (and not properly through the
+        // component interface)
         $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
         $mediaSourceManager = \Cx\Core\Core\Controller\Cx::instanciate()
             ->getMediaSourceManager();

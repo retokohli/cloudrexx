@@ -450,6 +450,9 @@ class ContentManager extends \Module
             'contrexxPathOffset' => ASCMS_PATH_OFFSET,
         ), 'contentmanager');
 
+        // manually set Wysiwyg variables as the Ckeditor will be
+        // loaded manually through JavaScript (and not properly through the
+        // component interface)
         $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
         $mediaSourceManager = \Cx\Core\Core\Controller\Cx::instanciate()
             ->getMediaSourceManager();
