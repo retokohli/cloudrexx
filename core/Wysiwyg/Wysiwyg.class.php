@@ -219,8 +219,7 @@ class Wysiwyg extends \Cx\Model\Base\EntityBase
      */
     public function getMediaSource()
     {
-        $mediaSourceManager = \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getMediaSourceManager();
+        $mediaSourceManager = $this->cx->getMediaSourceManager();
         $mediaSource = $mediaSourceManager
             ->getMediaSourceByComponent($this->callingSystemComponentController);
 
@@ -235,7 +234,7 @@ class Wysiwyg extends \Cx\Model\Base\EntityBase
     /**
      * Initialize the uploader and set uploader id and target path as javascript variable
      */
-    public function getSource()
+    public function initJsVariablesForUploader()
     {
         $uploader       = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
         $mediaSourceDir = $this->getMediaSource()->getDirectory();
@@ -283,7 +282,7 @@ class Wysiwyg extends \Cx\Model\Base\EntityBase
      */
     public function __toString()
     {
-        $this->getSource();
+        $this->initJsVariablesForUploader();
         return $this->getSourceCode();
     }
 
