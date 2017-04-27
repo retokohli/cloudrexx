@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * User Management
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
@@ -46,15 +46,6 @@ namespace Cx\Core_Modules\Access\Controller;
  */
 class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
 {
-    public function __construct()
-    {
-        global $objTemplate;
-
-        parent::__construct();
-
-        $this->_objTpl = &$objTemplate;
-    }
-
 
     function setCurrentlyOnlineUsers($gender=null)
     {

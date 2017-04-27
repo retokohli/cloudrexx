@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,10 +24,10 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Main controller for DataAccess
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author Michael Ritter <michael.ritter@cloudrexx.com>
  * @package cloudrexx
@@ -38,24 +38,24 @@ namespace Cx\Core_Modules\DataAccess\Controller;
 
 /**
  * Main controller for DataAccess
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author Michael Ritter <michael.ritter@cloudrexx.com>
  * @package cloudrexx
  * @subpackage core_modules_dataaccess
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
-    
+
     /**
      * Returns all Controller class names for this component (except this)
-     * 
+     *
      * Be sure to return all your controller classes if you add your own
      * @return array List of Controller class names (without namespace)
      */
     public function getControllerClasses() {
         return array('JsonOutput', 'RawOutput');
     }
-    
+
     /**
      * Returns a list of command mode commands provided by this component
      * @return array List of command names
@@ -110,7 +110,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 return '';
         }
     }
-    
+
     /**
      * Execute one of the commands listed in getCommandsForCommandMode()
      *
@@ -118,9 +118,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @see getCommandsForCommandMode()
      * @param string $command Name of command to execute
      * @param array $arguments List of arguments for the command
+     * @param array  $dataArguments (optional) List of data arguments for the command
      * @return void
      */
-    public function executeCommand($command, $arguments, $dataArguments) {
+    public function executeCommand($command, $arguments, $dataArguments = array()) {
         try {
             switch ($command) {
                 case 'v1':
@@ -137,22 +138,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             echo 'Exception of type "' . get_class($e) . '" with message "' . $e->getMessage() . '"';
         }
     }
-    
+
     /**
      * Version 1 of Cloudrexx RESTful API
-     * 
+     *
      * @param string $command Name of command to execute
      * @param array $arguments List of arguments for the command
      * @return void
      */
     public function apiV1($command, $arguments, $dataArguments) {
         $method = strtolower($_SERVER['REQUEST_METHOD']);
-        
+
         // handle CLI
         if (php_sapi_name() == 'cli') {
             // we force usage of output module "raw" in CLI
             array_unshift($arguments, 'raw');
-            
+
             // method will not be set in CLI, there for we educate-guess it
             $method = 'get';
             if (count($dataArguments)) {
@@ -160,31 +161,31 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $method = 'put';
             }
         }
-        
+
         // If we can't find the output module, we can't produce a proper error message
         if (empty($arguments[0])) {
             throw new \InvalidArgumentException('Not enough arguments');
         }
         $outputModule = $this->getOutputModule($arguments[0]);
         $response = new \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse();
-        
+
         // Globally wrap all exceptions through the output module
         try {
             if (empty($arguments[1])) {
                 throw new \InvalidArgumentException('Not enough arguments');
             }
             $dataSource = $this->getDataSource($arguments[1]);
-            
+
             $elementId = null;
             if (isset($arguments[2])) {
                 $elementId = $arguments[2];
             }
-            
+
             $apiKey = null;
             if (isset($arguments['apikey'])) {
                 $apiKey = $arguments['apikey'];
             }
-            
+
             $order = array();
             if (isset($arguments['order'])) {
                 $order = $arguments['order'];
@@ -197,7 +198,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $order[$orderStringParts[0]] = $orderStringParts[1];
                 }
             }
-            
+
             $filter = array();
             if (isset($arguments['filter'])) {
                 $filterStrings = explode(';', $arguments['filter']);
@@ -206,7 +207,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $filter[$filterStringParts[0]] = $filterStringParts[1];
                 }
             }
-            
+
             $limit = 0;
             $offset = 0;
             if (isset($arguments['limit'])) {
@@ -216,7 +217,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $offset = $limitParts[1];
                 }
             }
-            
+
             $em = $this->cx->getDb()->getEntityManager();
             $dataAccessRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\DataAccess');
             $dataAccess = $dataAccessRepo->getAccess($outputModule, $dataSource, $method, $apiKey);
@@ -224,7 +225,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $response->setStatusCode(403);
                 throw new \BadMethodCallException('Access denied');
             }
-            
+
             if (
                 count($dataAccess->getAllowedOutputMethods()) &&
                 !in_array($arguments[0], $dataAccess->getAllowedOutputMethods())
@@ -232,11 +233,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $response->setStatusCode(403);
                 throw new \BadMethodCallException('Access denied');
             }
-            
+
             if (count($dataAccess->getAccessCondition())) {
                 $filter = array_merge($filter, $dataAccess->getAccessCondition());
             }
-            
+
             $data = array();
             switch ($method) {
                 // administrative access
@@ -247,7 +248,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     header('Allow: ' . implode(', ', $allowedMethods));
                     die();
                     break;
-                
+
                 // write access
                 case 'post':
                     // create entry
@@ -269,7 +270,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     // should be 404 if element is not set or not found
                     $data = $dataSource->remove($elementId);
                     break;
-                
+
                 // read access
                 case 'head':
                     // return the same headers as 'get', but no body
@@ -285,11 +286,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::STATUS_OK
             );
             $response->setData($data);
-            
+
             $response->send($outputModule);
         } catch (\Exception $e) {
             global $_ARRAYLANG;
-            
+
             $response->setStatus(
                 \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::STATUS_ERROR
             );
@@ -308,7 +309,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $response->send($outputModule);
         }
     }
-    
+
     /**
      * Returns the output module with the given name
      * @param string $name Name of the output module
@@ -321,7 +322,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         return $outputModule;
     }
-    
+
     /**
      * Returns the data source with the given name
      * @param string $name Name of the data source
@@ -366,4 +367,3 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
 }
-

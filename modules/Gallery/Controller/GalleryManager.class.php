@@ -468,7 +468,7 @@ class GalleryManager extends GalleryLibrary
                 $arrImageCount[$objResult->fields['id']] = '';
                 $objResult->MoveNext();
             }
-        
+
             foreach (array_keys($arrImageSize) as $intKey) {
                 $objResult = $objDatabase->Execute('SELECT     path
                                                    FROM     '.DBPREFIX.'module_gallery_pictures
@@ -481,10 +481,10 @@ class GalleryManager extends GalleryLibrary
                 $arrImageSize[$intKey] = round($arrImageSize[$intKey] / 1024,2);
             }
         }
-        
+
         //get the gallery name by current activate lang id
         $arrCategoryName = $this->getCategoryNameByLang();
-        
+
         $objResult = $objDatabase->Execute('SELECT         id
                                             FROM         '.DBPREFIX.'module_gallery_categories
                                             WHERE         pid=0
@@ -547,23 +547,23 @@ class GalleryManager extends GalleryLibrary
 
     /**
      * Show the Sub Categories
-     * 
+     *
      * @global ADONewConnection $objDatabase
      * @param integer $parentId
      * @param array $arrCategoryName
      * @param array $arrImageCount
      * @param array $arrImageSize
      * @param string $subCategorySpace
-     * 
+     *
      * @return boolean
      */
     function showSubCategories($parentId, $arrCategoryName, $arrImageCount, $arrImageSize, $subCategorySpace) {
         global $objDatabase;
-        
+
         if (empty($parentId)) {
             return;
         }
-        
+
         $objSubCategory = $objDatabase->Execute('SELECT `id`,
                                                         `sorting`,
                                                         `status`
@@ -590,27 +590,27 @@ class GalleryManager extends GalleryLibrary
                 ));
                 $this->_objTpl->parse('showCategories');
                 $intRowCounter++;
-                
+
                 //Showing third level sub categories
                 $this->showSubCategories($objSubCategory->fields['id'], $arrCategoryName, $arrImageCount, $arrImageSize, $subCategorySpace . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
-                
+
                 $objSubCategory->MoveNext();
             }
         }
         return;
     }
-    
+
     /**
      * Get the Category Name by Language
-     * 
+     *
      * @global ADONewConnection $objDatabase
      * @global Array            $_LANGID
-     * 
+     *
      * @return boolean|array
      */
     function getCategoryNameByLang() {
         global $objDatabase, $_LANGID;
-        
+
         $objSubResult = $objDatabase->Execute('SELECT `name`, `value`, `gallery_id`
                                                     FROM `' . DBPREFIX . 'module_gallery_language`
                                                         WHERE `lang_id` = ' . $_LANGID . '
@@ -625,7 +625,7 @@ class GalleryManager extends GalleryLibrary
         }
         return false;
     }
-    
+
     /**
      * Shows the 'Insert new category'-Form
      *
@@ -1751,7 +1751,7 @@ class GalleryManager extends GalleryLibrary
                                             ');
         $boolComment     = $objResult->fields['comment'];
         $boolVoting        = $objResult->fields['voting'];
-        
+
         if ($this->arrSettings['show_comments'] == 'off' || $boolComment == 0) {
             $this->_objTpl->hideBlock('tabComment');
             if ($_GET['active'] == 'comment') {
@@ -1812,7 +1812,7 @@ class GalleryManager extends GalleryLibrary
         if ($this->arrSettings['show_image_size'] != 'on') {
             $this->_objTpl->hideBlock('showImageSize');
         }
-        
+
         $boolSizeShow = ($objResult->fields['size_show'] == '1') ? 'checked' : '';
 
         $this->_objTpl->setVariable(array(
@@ -2075,7 +2075,6 @@ class GalleryManager extends GalleryLibrary
                 case 'enable_popups':
                     if ($objResult->fields['value'] != 'on') {
                         $this->_objTpl->SetVariable(array(
-                            'IMAGE_WIDTH_CONTAINER_VISIBILITY'  => 'display: none',
                             'SLIDE_SHOW_BLOCK'                  => 'display: none',
                         ));
                     } else {
@@ -2145,11 +2144,6 @@ class GalleryManager extends GalleryLibrary
             // the submitted category isnt allowed, so set the standardvalue 'proz'
             $_POST['standard_size_type'] = 'proz';
         }
-        if ($_POST['standard_height_abs'] > 0 && $_POST['standard_width_abs'] > 0) {
-            // only one value can be bigger than 0, so set one to zero
-            $_POST['standard_height_abs'] = 0;
-        }
-
         if ($_POST['standard_height_abs'] > 2000) {
             $_POST['standard_height_abs'] = 2000;
         }
@@ -2208,7 +2202,7 @@ class GalleryManager extends GalleryLibrary
         if (empty($_POST['show_file_name']) || $_POST['show_file_name'] != 'on') {
             $_POST['show_file_name'] = "off";
         }
-        
+
         if ($_POST['show_image_size'] != 'on') {
             // the value is not allowed, reset to off
             $_POST['show_image_size'] = 'off';
@@ -2260,12 +2254,12 @@ class GalleryManager extends GalleryLibrary
         $this->_objTpl->setVariable(array(
 //              'COMBO_UPLOADER_CODE' => $comboUp->getXHtml(true),
                 'COMBO_UPLOADER_CODE' => $uploader->getXHtml($_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM_SUBMIT']),
-			  'REDIRECT_URL'		=> $redirectUrl
+              'REDIRECT_URL'        => $redirectUrl
         ));
         //end of uploader button handling
 
         //get enabled filetypes
-		$strEnabledTypes = '';
+        $strEnabledTypes = '';
         if ($this->boolGifEnabled == true) {
             $strEnabledTypes .= 'GIF ';
         }
@@ -2311,31 +2305,31 @@ class GalleryManager extends GalleryLibrary
     /**
      * Upload the submitted images
      *
-     * @global	ADONewConnection
+     * @global    ADONewConnection
      * @global  array
      * @global  array
-     * @param   string		$tempPath
-     * @param   array		$paths
-     * @param   integer    	$uploadId
+     * @param   string        $tempPath
+     * @param   array        $paths
+     * @param   integer        $uploadId
      */
     public static function uploadFinished($tempPath, $tempWebPath, $paths, $uploadId, $fileInfos, $response) {
 
-		global $objDatabase, $_ARRAYLANG, $_CONFIG, $objInit;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG, $objInit;
         $lang = $objInit->loadLanguageData('Gallery');
-		$objGallery = new GalleryManager();
+        $objGallery = new GalleryManager();
 
-		$path = $paths['path'];
+        $path = $paths['path'];
         $webPath = $paths['webPath'];
 
         //we remember the names of the uploaded files here. they are stored in the session afterwards,
         //so we can later display them highlighted.
         $arrFiles = array();
 
-		//get allowed file types
-		$arrAllowedFileTypes = array();
-		if (imagetypes() & IMG_GIF) { $arrAllowedFileTypes[] = 'gif'; }
-		if (imagetypes() & IMG_JPG) { $arrAllowedFileTypes[] = 'jpg'; $arrAllowedFileTypes[] = 'jpeg'; }
-		if (imagetypes() & IMG_PNG) { $arrAllowedFileTypes[] = 'png'; }
+        //get allowed file types
+        $arrAllowedFileTypes = array();
+        if (imagetypes() & IMG_GIF) { $arrAllowedFileTypes[] = 'gif'; }
+        if (imagetypes() & IMG_JPG) { $arrAllowedFileTypes[] = 'jpg'; $arrAllowedFileTypes[] = 'jpeg'; }
+        if (imagetypes() & IMG_PNG) { $arrAllowedFileTypes[] = 'png'; }
 
         //rename files, delete unwanted
         $arrFilesToRename = array(); //used to remember the files we need to rename
@@ -2388,7 +2382,7 @@ class GalleryManager extends GalleryLibrary
         /* unwanted files have been deleted, unallowed filenames corrected.
            we can now simply return the desired target path, as only valid
            files are present in $tempPath */
-		return array($path, $webPath, $newName);
+        return array($path, $webPath, $newName);
     }
 
 
@@ -3257,10 +3251,10 @@ $strFileNew = '';
         $strWebpath     = $this->strImageWebPath;
         $strThumbPath   = $this->strThumbnailPath;
         $strThumbWebpath= $this->strThumbnailWebPath;
-                
+
         $objImage = new \ImageManager();
         $objImage->loadImage($strOrgPath.$strImagename);
-               
+
         //Rotate the clockwise
         if($objImage->rotateImage(270)){
 
@@ -3290,8 +3284,8 @@ $strFileNew = '';
                 $intNewHeight = round(($objResult->fields['size_proz'] / 100) * $intOldHeight, 0);
             }
 
-            //Resize the Rotated image 
-            if ($objImage->resizeImageSave($strOrgPath, $strWebpath, $strImagename, $intNewWidth, $intNewHeight, $objResult->fields['quality'], $strThumbPath, $strThumbWebpath, $strImagename)) {
+            //Resize the Rotated image
+            if ($this->createImages_JPG_GIF_PNG($strOrgPath, $strThumbPath, $strImagename, $strImagename, $intNewWidth, $intNewHeight, $objResult->fields['quality'])) {
                 if ($objResult->fields['size_type'] == 'abs') {
                     $objDatabase->Execute('    UPDATE     ' . DBPREFIX . 'module_gallery_pictures
                                     SET     size_abs_h=' . $intNewHeight . ',
@@ -3494,7 +3488,7 @@ $strFileNew = '';
         //check if file exists
         $boolChecker = false;
 
-        $strImportedImageName = $strFile;
+        $strImportedImageName = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($strFile);
         while ($boolChecker == false) {
             if (self::fileExists($this->strImagePath.$strImportedImageName, false)) {
                 $info     = pathinfo($strImportedImageName);
@@ -3618,8 +3612,8 @@ $strFileNew = '';
             $memoryLimit = $objSystem->getBytesOfLiteralSizeFormat(@ini_get('memory_limit'));
             // a $memoryLimit of zero means that there is no limit. so let's try it and hope that the host system has enough memory
             if (!empty($memoryLimit)) {
-                   $potentialRequiredMemory = $intSize[0] * $intSize[1] * ($intSize['bits']/8) * $intSize['channels'] * 1.8 * 2;
-        if (function_exists('memory_get_usage')) {
+               $potentialRequiredMemory = $intSize[0] * $intSize[1] * ($intSize['bits']/8) * $intSize['channels'] * 1.8 * 2;
+                if (function_exists('memory_get_usage')) {
                     $potentialRequiredMemory += memory_get_usage();
                 } else {
                     // add a default of 10 MBytes
@@ -3639,51 +3633,33 @@ $strFileNew = '';
             return false;
         }
 
-        switch ($strType)
-        {
-            case 1: //GIF
-                if ($this->boolGifEnabled) {
-                    $handleImage1 = ImageCreateFromGif ($strPathOld.$strFileOld);
-                    $handleImage2 = @ImageCreateTrueColor($intNewWidth,$intNewHeight);
-                    ImageCopyResampled($handleImage2, $handleImage1,0,0,0,0,$intNewWidth,$intNewHeight, $intWidth,$intHeight);
-                    ImageGif ($handleImage2, $strPathNew.$strFileNew);
+        $imageManager = new \ImageManager();
 
-                    ImageDestroy($handleImage1);
-                    ImageDestroy($handleImage2);
-                } else {
-                        $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_GIF_SUPPORT'];
-                }
-            break;
-            case 2: //JPG
-                if ($this->boolJpgEnabled) {
-                    $handleImage1 = ImageCreateFromJpeg($strPathOld.$strFileOld);
-                    $handleImage2 = ImageCreateTrueColor($intNewWidth,$intNewHeight);
-
-                    ImageCopyResampled($handleImage2, $handleImage1,0,0,0,0,$intNewWidth,$intNewHeight, $intWidth,$intHeight);
-                    ImageJpeg($handleImage2, $strPathNew.$strFileNew, $intQuality);
-
-                    ImageDestroy($handleImage1);
-                    ImageDestroy($handleImage2);
-                } else {
-                        $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_JPG_SUPPORT'];
-                }
-            break;
-            case 3: //PNG
-                if ($this->boolPngEnabled) {
-                    $handleImage1 = ImageCreateFromPNG($strPathOld.$strFileOld);
-                    $handleImage2 = @ImageCreateTrueColor($intNewWidth,$intNewHeight);
-                    ImageAlphaBlending($handleImage2, false);
-                    ImageSaveAlpha($handleImage2, true);
-                    ImageCopyResampled($handleImage2, $handleImage1,0,0,0,0,$intNewWidth,$intNewHeight, $intWidth,$intHeight);
-                    ImagePNG($handleImage2, $strPathNew.$strFileNew);
-                    ImageDestroy($handleImage1);
-                    ImageDestroy($handleImage2);
-                } else {
-                        $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_PNG_SUPPORT'];
-                }
-            break;
+        // load raw image
+        if (!$imageManager->loadImage($strPathOld.$strFileOld)) {
+            return false;
         }
-        return true;
+
+        // calculate the scale ratios
+        $rationWidth = $imageManager->orgImageWidth / $intNewWidth;
+        $rationHeight = $imageManager->orgImageHeight / $intNewHeight;
+
+        // crop the image to new dimension
+        if ($rationWidth < $rationHeight) {
+            $imageManager->orgImageHeight = $imageManager->orgImageHeight / $rationHeight * $rationWidth;
+        } else {
+            $imageManager->orgImageWidth = $imageManager->orgImageWidth / $rationWidth * $rationHeight;
+        }
+
+        // scale the image to thumbnail-size
+        if (!$imageManager->resizeImage(
+            $intNewWidth,
+            $intNewHeight,
+            $this->arrSettings['standard_quality']
+        )) {
+            return false;
+        }
+        return $imageManager->saveNewImage($strPathNew.$strFileNew, true);
     }
 
 

@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Main script for Cloudrexx
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
@@ -155,6 +155,12 @@ namespace Cx\Core\Core\Controller {
         protected $request = null;
 
         /**
+         * Response object
+         * @var \Cx\Core\Routing\Model\Entity\Response
+         */
+        protected $response = null;
+
+        /**
          * Component handler
          * @var \Cx\Core\Core\Controller\ComponentHandler
          */
@@ -235,6 +241,12 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         const FOLDER_NAME_TEMP = '/tmp';
+
+        /**
+         * The folder name used for the cache storage location in temp (/cache).
+         * @var string
+         */
+        const FOLDER_NAME_CACHE = '/cache';
 
         /**
          * The folder name used to access the backend of the website (/cadmin).
@@ -569,11 +581,34 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesAccessProfileWebPath;
         protected $websiteImagesAccessPhotoPath;
         protected $websiteImagesAccessPhotoWebPath;
-        
+
         /**
          * @var \Cx\Core\MediaSource\Model\Entity\MediaSourceManager
          */
         protected $mediaSourceManager;
+        
+        /**
+         * @var integer The memory limit. Is set in init
+         */
+        protected $memoryLimit = 48;
+
+        /**
+         * @var string The processed data to be sent to the client as response
+         */
+        protected $endcode;
+
+        /**
+         * @var array Contains the preloaded components from preInit and preComponentLoad
+         */
+        protected $preLoadedComponents = [];
+
+        /**
+         * @return string The processed data which is set in finalize
+         */
+        public function getEndcode()
+        {
+            return $this->getResponse()->getParsedContent();
+        }
 
         /**
          * This creates instances of this class
@@ -728,16 +763,23 @@ namespace Cx\Core\Core\Controller {
                 $this->handleCustomizing();
 
                 /**
-                 * Load all components to have them ready and initialize request and license
-                 * Request is not initialized for command mode
+                 * Initialize license
                  */
-                $this->postInit();
+                $this->preComponentLoad();
 
-                /*
+                /**
                  * Loads all active components
                  */
                 $this->loadComponents();
                 
+                $this->postComponentLoad();
+
+                /**
+                 * Initialize request
+                 * Request is not initialized for command mode
+                 */
+                $this->postInit();
+
                 /**
                  * Since we have a valid state now, we can start executing
                  * all of the component's hook methods.
@@ -750,6 +792,10 @@ namespace Cx\Core\Core\Controller {
                  * Command mode is different ;-)
                  */
                 if ($this->mode == self::MODE_MINIMAL) {
+                    // Legacy:
+                    if (!defined('MODULE_INDEX')) {
+                        define('MODULE_INDEX', '');
+                    }
                     return;
                 }
                 $this->loadContrexx();
@@ -820,6 +866,15 @@ namespace Cx\Core\Core\Controller {
          */
         protected function startTimer() {
             $this->startTime = explode(' ', microtime());
+        }
+
+        /**
+         * Get the start time
+         * 
+         * @return array
+         */
+        public function getStartTime() {
+            return $this->startTime;
         }
 
         /**
@@ -1103,16 +1158,18 @@ namespace Cx\Core\Core\Controller {
         /**
          * Calls pre-init hooks
          * Pre-Init hooks are defined in /config/preInitHooks.yml.
-         * 
+         *
          * @throws \Exception
          */
         protected function callPreInitHooks() {
             try {
                 $filename = $this->getWebsiteConfigPath() . '/preInitHooks.yml';
-                $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename);
+                $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename, false);
                 foreach ($objDataSet as $componentDefinition) {
                     $componentController = $this->getComponentControllerByNameAndType($componentDefinition['name'], $componentDefinition['type']);
                     $componentController->preInit($this);
+                    // store componentController in preLoadedCompnents, using the name as key
+                    $this->preLoadedComponents[$componentDefinition['name']] = $componentController;
                 }
             } catch (\Cx\Core_Modules\Listing\Model\Entity\DataSetException $e) {
                 throw new \Exception('Error in processing preInit-hooks: '.$e->getMessage());
@@ -1120,48 +1177,37 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Calls post-init hooks
-         * Post-Init hooks are defined in /config/postInitHooks.yml.
-         * 
+         * Calls preComponentLoad-Hooks
+         * PreComponentLoad-Hooks are defined in /config/preComponentLoadHooks.yml
+         *
          * @throws \Exception
          */
-        protected function callPostInitHooks() {
+        protected function callPreComponentLoadHooks() {
             try {
-                $filename = $this->getWebsiteConfigPath() . '/postInitHooks.yml';
-                $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename);
+                $filename = $this->getWebsiteConfigPath() . '/preComponentLoadHooks.yml';
+                $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename, false);
                 foreach ($objDataSet as $componentDefinition) {
-                    $this->eventManager->triggerEvent(
-                        'preComponent',
-                        array(
-                            'componentName' => $componentDefinition['name'],
-                            'component' => null,
-                            'hook' => 'postInit',
-                        )
-                    );
-                    $componentController = $this->getComponentControllerByNameAndType($componentDefinition['name'], $componentDefinition['type']);
-                    $componentController->postInit($this);
-                    $this->eventManager->triggerEvent(
-                        'postComponent',
-                        array(
-                            'componentName' => $componentDefinition['name'],
-                            'component' => null,
-                            'hook' => 'postInit',
-                        )
-                    );
+                    // check if componentController was already loaded in preInit
+                    if (array_key_exists($componentDefinition['name'], $this->preLoadedComponents)) {
+                        $componentController = $this->preLoadedComponents[$componentDefinition['name']];
+                    } else {
+                        $componentController = $this->getComponentControllerByNameAndType($componentDefinition['name'], $componentDefinition['type']);
+                        $this->preLoadedComponents[$componentDefinition['name']] = $componentController;
+                    }
+                    $componentController->preComponentLoad();
                 }
             } catch (\Cx\Core_Modules\Listing\Model\Entity\DataSetException $e) {
-                throw new \Exception('Error in processing postInit-hooks: '.$e->getMessage());
+                throw new \Exception('Error in processing preComponentLoad-hooks: '.$e->getMessage());
             }
         }
 
-        
         /**
          * Get component controller object by given component name and type
          * Calls before the method preInit() and postInit() hooks are called
-         * 
+         *
          * @param string $componentName component name
          * @param string $componentType component type
-         * 
+         *
          * @return \Cx\Core\Core\Controller\SystemComponentController
          */
         protected function getComponentControllerByNameAndType($componentName, $componentType)
@@ -1183,7 +1229,35 @@ namespace Cx\Core\Core\Controller {
         }
         
         /**
-         * This tries to set the memory limit if its lower than 32 megabytes
+         * Returns the ComponentController for the given component
+         * @deprecated All new classes should have access to $this->getComponent()
+         * @param string $name Component name
+         * @return \Cx\Core\Core\Model\Entity\SystemComponentController Component main controller
+         */
+        public function getComponent($name) {
+            if (!$this->getDb()) {
+                // try to load the component from the preloaded components
+                if (isset($this->preLoadedComponents[$name])) {
+                    return $this->preLoadedComponents[$name];
+                }
+                return null;
+            }
+            $em = $this->getDb()->getEntityManager();
+            $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+            $component = $componentRepo->findOneBy(array('name' => $name));
+            return $component;
+        }
+
+        /**
+         * @param integer $memoryLimit
+         */
+        public function setMemoryLimit($memoryLimit)
+        {
+            $this->memoryLimit = $memoryLimit;
+        }
+
+        /**
+         * This tries to set the memory limit if its lower than the needed memory limit
          */
         protected function tryToSetMemoryLimit() {
             $memoryLimit = array();
@@ -1191,20 +1265,8 @@ namespace Cx\Core\Core\Controller {
             if (!isset($memoryLimit[0])) {
                 return;
             }
-            $this->memoryLimit = $memoryLimit[0];
-
-            global $objCache;
-            if (
-                $objCache->getUserCacheEngine() == \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_APC ||
-                $objCache->getOpCacheEngine() == \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_APC
-            ) {
-                if ($this->memoryLimit < 32) {
-                    ini_set('memory_limit', '32M');
-                }
-            } else {
-                if ($this->memoryLimit < 48) {
-                    ini_set('memory_limit', '48M');
-                }
+            if ($memoryLimit[0] < $this->memoryLimit) {
+                ini_set('memory_limit', $this->memoryLimit . 'M');
             }
         }
 
@@ -1236,8 +1298,17 @@ namespace Cx\Core\Core\Controller {
             }
 
             // redirect to correct domain and protocol
+            $url = $protocol . '://' . $domain . $_SERVER['REQUEST_URI'];
+            $this->getComponent('Cache')->writeCacheFileForRequest(
+                null,
+                array(
+                    $_SERVER['SERVER_PROTOCOL'] . ' 301 Moved Permanently',
+                    'Location' => $url,
+                ),
+                ''
+            );
             \header($_SERVER['SERVER_PROTOCOL'] . ' 301 Moved Permanently');
-            \header('Location: ' . $protocol . '://' . $domain . $_SERVER['REQUEST_URI']);
+            \header('Location: ' . $url);
             exit;
         }
 
@@ -1294,21 +1365,9 @@ namespace Cx\Core\Core\Controller {
          * @global type $objInit
          */
         protected function init() {
-            global $objDatabase, $objInit, $objCache, $_DBCONFIG, $_CONFIG;
+            global $objDatabase, $objInit, $_DBCONFIG, $_CONFIG;
 
-            /**
-             * Start caching with op cache, user cache and cloudrexx caching
-             */
-            $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
-            if ($this->mode == self::MODE_FRONTEND) {
-                $objCache->deactivateNotUsedOpCaches();
-            } elseif (!isset($_GET['cmd']) || $_GET['cmd'] != 'settings') {
-                $objCache->deactivateNotUsedOpCaches();
-            }
             $this->tryToSetMemoryLimit();
-
-            // start cloudrexx caching
-            $objCache->startContrexxCaching();
 
             /**
              * Include all the required files.
@@ -1336,7 +1395,7 @@ namespace Cx\Core\Core\Controller {
             $objDbUser->setPassword($_DBCONFIG['password']);
 
             // Initialize database connection
-            $this->db = new \Cx\Core\Model\Db($objDb, $objDbUser);
+            $this->db = new \Cx\Core\Model\Db($objDb, $objDbUser, $this->getComponent('Cache')->getCacheDriver());
             $objDatabase = $this->db->getAdoDb();
             \Env::set('db', $objDatabase);
 
@@ -1379,7 +1438,7 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Late initializations. Loads components
+         * Initializes request
          */
         protected function postInit() {
             global $_CONFIG;
@@ -1404,16 +1463,39 @@ namespace Cx\Core\Core\Controller {
                         break;
                 }
             }
-            $this->license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $this->getDb()->getAdoDb());
+            $this->response = new \Cx\Core\Routing\Model\Entity\Response(
+                null,
+                200,
+                $this->request
+            );
+            $this->response->setContentType('text/html');
             //call post-init hooks
-            $this->callPostInitHooks();
+            $this->ch->callPostInitHooks();
+        }
+
+        /**
+         * Initialize license and call pre-component-load hook scripts
+         * @throws \Cx\Core\Model\DbException
+         * @throws \Exception
+         */
+        protected function preComponentLoad() {
+            global $_CONFIG;
+            $this->license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $this->getDb()->getAdoDb());
+            $this->callPreComponentLoadHooks();
         }
 
         /**
          * Loads all active components
          */
         protected function loadComponents() {
-            $this->ch = new \Cx\Core\Core\Controller\ComponentHandler($this->license, $this->mode == self::MODE_FRONTEND, $this->db->getEntityManager());
+            $this->ch = new \Cx\Core\Core\Controller\ComponentHandler($this->license, $this->mode == self::MODE_FRONTEND, $this->db->getEntityManager(), $this->preLoadedComponents);
+        }
+
+        /**
+         * Call post-component-load hook scripts
+         */
+        protected function postComponentLoad() {
+            $this->ch->callPostComponentLoadHooks();
         }
 
         /* STAGE 3: loadContrexx(), call hook scripts */
@@ -1426,6 +1508,11 @@ namespace Cx\Core\Core\Controller {
             // command mode is different
             if ($this->getMode() == static::MODE_COMMAND) {
                 global $argv;
+                
+                // Legacy:
+                if (!defined('MODULE_INDEX')) {
+                    define('MODULE_INDEX', '');
+                }
 
                 try {
                     // cleanup params
@@ -1445,7 +1532,34 @@ namespace Cx\Core\Core\Controller {
                         unset($params['__cap']);
                     }
                     $params = contrexx_input2raw($params);
-                    
+                    if (isset($params['lang'])) {
+                        $langId = \FWLanguage::getLanguageIdByCode($params['lang']);
+                        if ($langId) {
+                            if (!defined('FRONTEND_LANG_ID')) {
+                                define('FRONTEND_LANG_ID', $langId);
+                            }
+                            if (!defined('BACKEND_LANG_ID')) {
+                                define('BACKEND_LANG_ID', $langId);
+                            }
+                            if (!defined('LANG_ID')) {
+                                define('LANG_ID', $langId);
+                            }
+                        }
+                    }
+                    if (!\Env::get('Resolver')) {
+                        $url = $this->getRequest()->getUrl();
+                        $url->removeAllParams();
+                        $url->setPath('/');
+                        $resolver = new \Cx\Core\Routing\Resolver(
+                            $url,
+                            null,
+                            $this->getDb()->getEntityManager(),
+                            null,
+                            null
+                        );
+                        \Env::set('Resolver', $resolver);
+                    }
+
                     // parse body arguments:
                     // todo: this does not work for form-data encoded body (boundary...)
                     $dataArguments = array();
@@ -1473,7 +1587,7 @@ namespace Cx\Core\Core\Controller {
                     }
 
                     $objCommand = $this->commands[$command];
-                    //Check the access permission for the command.                    
+                    //Check the access permission for the command.
                     if(!$objCommand->hasAccessToExecuteCommand($command, $params)) {
                         throw new \Exception('The command ' . $command . ' has been rejected by not complying to the permission requirements of the requested method.');
                     }
@@ -1483,7 +1597,7 @@ namespace Cx\Core\Core\Controller {
                 } catch (\Exception $e) {
                     throw new \Exception($e);
                 }
-                
+
             }
             // init template
             $this->loadTemplate();                      // Sigma Template
@@ -1508,8 +1622,9 @@ namespace Cx\Core\Core\Controller {
             $this->setPostContentLoadPlaceholders();    // Set Placeholders
 
             $this->preFinalize();                       // Call pre finalize hook scripts
-            $this->finalize();                          // Set template vars and display content
+            $this->finalize();                          // Set template vars
             $this->postFinalize();                      // Call post finalize hook scripts
+            $this->getResponse()->send();               // Send response
         }
 
         /**
@@ -1570,7 +1685,10 @@ namespace Cx\Core\Core\Controller {
                     // Resolver code
                     // @todo: move to resolver
                     //expose the virtual language directory to the rest of the cms
-                    $virtualLanguageDirectory = '/'.$url->getLangDir();
+                    $virtualLanguageDirectory = $url->getLangDir(true);
+                    if (!empty($virtualLanguageDirectory)) {
+                        $virtualLanguageDirectory = '/' . $virtualLanguageDirectory;
+                    }
                     \Env::set('virtualLanguageDirectory', $virtualLanguageDirectory);
                     // TODO: this constanst used to be located in config/set_constants.php, but needed to be relocated to this very place,
                     // because it depends on Env::get('virtualLanguageDirectory').
@@ -1658,7 +1776,9 @@ namespace Cx\Core\Core\Controller {
          * @todo Remove usage of globals
          */
         protected function postResolve() {
+            $this->getResponse()->setPage($this->getPage());
             $this->ch->callPostResolveHooks();
+            $this->ch->callAdjustResponseHooks($this->getResponse());
         }
 
         /**
@@ -1720,15 +1840,6 @@ namespace Cx\Core\Core\Controller {
             $content = str_replace('{PDF_URL}',             contrexx_raw2xhtml(\Env::get('init')->getUriBy('pdfview', 1)),         $content);
             $content = str_replace('{APP_URL}',             contrexx_raw2xhtml(\Env::get('init')->getUriBy('appview', 1)),         $content);
             $content = str_replace('{LOGOUT_URL}',          contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'logout')),  $content);
-            $content = str_replace('{CONTACT_EMAIL}',       isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $content);
-            $content = str_replace('{CONTACT_COMPANY}',     isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $content);
-            $content = str_replace('{CONTACT_ADDRESS}',     isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '', $content);
-            $content = str_replace('{CONTACT_ZIP}',         isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '', $content);
-            $content = str_replace('{CONTACT_PLACE}',       isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '', $content);
-            $content = str_replace('{CONTACT_COUNTRY}',     isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '', $content);
-            $content = str_replace('{CONTACT_PHONE}',       isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '', $content);
-            $content = str_replace('{CONTACT_FAX}',         isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '', $content);
-            $content = str_replace('{CONTACT_NAME}',        isset($_CONFIG['coreAdminName'])    ? contrexx_raw2xhtml($_CONFIG['coreAdminName'])    : '', $content);
             $content = str_replace('{GOOGLE_MAPS_API_KEY}', isset($_CONFIG['googleMapsAPIKey']) ? contrexx_raw2xhtml($_CONFIG['googleMapsAPIKey']) : '', $content);
         }
 
@@ -1912,20 +2023,17 @@ namespace Cx\Core\Core\Controller {
             // set global template variables
             $boolShop = \Cx\Modules\Shop\Controller\Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
-            $objNavbar->setLanguagePlaceholders($this->resolvedPage, $this->request->getUrl(), $this->template);
             $metarobots = $this->resolvedPage->getMetarobots();
             $this->template->setVariable(array(
-                'CHARSET'                        => \Env::get('init')->getFrontendLangCharset(),
                 'TITLE'                          => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
                 'METATITLE'                      => contrexx_raw2xhtml($this->resolvedPage->getMetatitle()),
                 'NAVTITLE'                       => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
                 'GLOBAL_TITLE'                   => $_CONFIG['coreGlobalPageTitle'],
                 'DOMAIN_URL'                     => $_CONFIG['domainUrl'],
-                'PATH_OFFSET'                    => $this->codeBaseOffsetPath,
-                'BASE_URL'                       => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'] . $this->codeBaseOffsetPath,
                 'METAKEYS'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetakeys()) : '',
                 'METADESC'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetadesc()) : '',
                 'METAROBOTS'                     => $metarobots ? 'all' : 'none',
+                'METAIMAGE'                      => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetaimage()) : '',
                 'CONTENT_TITLE'                  => $this->resolvedPage->getContentTitle(),
                 'CONTENT_TEXT'                   => $this->resolvedPage->getContent(),
                 'CSS_NAME'                       => contrexx_raw2xhtml($this->resolvedPage->getCssName()),
@@ -1951,25 +2059,12 @@ namespace Cx\Core\Core\Controller {
                 'VISITOR_NUMBER'                 => $objCounter ? $objCounter->getVisitorNumber() : '',
                 'COUNTER'                        => $objCounter ? $objCounter->getCounterTag() : '',
                 'BANNER'                         => isset($objBanner) ? $objBanner->getBannerJS() : '',
-                'VERSION'                        => contrexx_raw2xhtml($_CONFIG['coreCmsName']),
-                'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl()),
-                'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl(), true),
-                'ACTIVE_LANGUAGE_NAME'           => \Env::get('init')->getFrontendLangName(),
                 'RANDOM'                         => md5(microtime()),
                 'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
                 'MODULE_INDEX'                   => MODULE_INDEX,
                 'LOGIN_URL'                      => '<a href="' . contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'Login')) . '" class="start-frontend-editing">' . $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'] . '</a>',
                 'TXT_CORE_LAST_MODIFIED_PAGE'    => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
                 'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_FORMAT_DATE, $this->resolvedPage->getUpdatedAt()->getTimestamp()),
-                'CONTACT_EMAIL'                  => isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '',
-                'CONTACT_NAME'                   => isset($_CONFIG['coreAdminName'])    ? contrexx_raw2xhtml($_CONFIG['coreAdminName'])    : '',
-                'CONTACT_COMPANY'                => isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '',
-                'CONTACT_ADDRESS'                => isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '',
-                'CONTACT_ZIP'                    => isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '',
-                'CONTACT_PLACE'                  => isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '',
-                'CONTACT_COUNTRY'                => isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '',
-                'CONTACT_PHONE'                  => isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '',
-                'CONTACT_FAX'                    => isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '',
                 'GOOGLE_MAPS_API_KEY'            => isset($_CONFIG['googleMapsAPIKey']) ? contrexx_raw2xhtml($_CONFIG['googleMapsAPIKey']) : '',
                 'FACEBOOK_LIKE_IFRAME'           => '<div id="fb-root"></div>
                                                     <script type="text/javascript">
@@ -2030,7 +2125,6 @@ namespace Cx\Core\Core\Controller {
          * @todo Remove usage of globals
          * @global type $themesPages
          * @global null $moduleStyleFile
-         * @global type $objCache
          * @global array $_CONFIG
          * @global type $subMenuTitle
          * @global type $_CORELANG
@@ -2038,7 +2132,7 @@ namespace Cx\Core\Core\Controller {
          * @global type $cmd
          */
         protected function finalize() {
-            global $themesPages, $moduleStyleFile, $objCache, $_CONFIG,
+            global $themesPages, $moduleStyleFile, $_CONFIG,
                     $subMenuTitle, $_CORELANG, $plainCmd, $cmd;
 
             if ($this->mode == self::MODE_FRONTEND) {
@@ -2071,19 +2165,14 @@ namespace Cx\Core\Core\Controller {
                     );
 
                 if (!$this->resolvedPage->getUseSkinForAllChannels() && isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
-                    $this->cl->loadFile($this->codeBaseCorePath . '/pdf.class.php');
-                    $pageTitle = $this->resolvedPage->getTitle();
-                    $objPDF          = new \PDF();
-                    $objPDF->title   = $pageTitle.(empty($pageTitle) ? null : '.pdf');
-                    $objPDF->content = $this->template->get();
+                    $pageTitle  = $this->resolvedPage->getTitle();
+                    $extenstion = empty($pageTitle) ? null : '.pdf';
+                    $objPDF     = new \Cx\Core_Modules\Pdf\Model\Entity\PdfDocument();
+                    $objPDF->SetTitle($pageTitle . $extenstion);
+                    $objPDF->setContent($this->template->get());
                     $objPDF->Create();
                     exit;
                 }
-
-                //enable gzip compressing of the output - up to 75% smaller responses!
-                //commented out because of certain php.inis generating a
-                //WARNING: ob_start(): output handler 'ob_gzhandler' cannot be used after 'URL-Rewriter
-                //ob_start("ob_gzhandler");
 
                 // fetch the parsed webpage
                 $this->template->setVariable('JAVASCRIPT', 'javascript_inserting_here');
@@ -2123,11 +2212,7 @@ namespace Cx\Core\Core\Controller {
                     $this->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
                     $endcode
                 );
-                $endcode = $ls->replace();
-
-                echo $endcode;
-
-                $objCache->endContrexxCaching($this->resolvedPage);
+                $this->getResponse()->setParsedContent($ls->replace());
             } else {
                 // backend meta navigation
                 if ($this->template->blockExists('backend_metanavigation')) {
@@ -2215,12 +2300,6 @@ namespace Cx\Core\Core\Controller {
                     $this->template->hideBlock('additional_style');
                 }
 
-
-                //enable gzip compressing of the output - up to 75% smaller responses!
-                //commented out because of certain php.inis generating a
-                //WARNING: ob_start(): output handler 'ob_gzhandler' cannot be used after 'URL-Rewriter
-                //ob_start("ob_gzhandler");
-
                 /*echo '<pre>';
                 print_r($_SESSION);
                 /*echo '<b>Overall time: ' . (microtime(true) - $timeAtStart) . 's<br />';
@@ -2235,9 +2314,7 @@ namespace Cx\Core\Core\Controller {
                     $this->getCodeBaseOffsetPath() . $this->getBackendFolderName() . '/',
                     $endcode
                 );
-                $endcode = $ls->replace();
-
-                echo $endcode;
+                $this->getResponse()->setParsedContent($ls->replace());
             }
 
             \DBG::log("(Cx: {$this->id}) Request parsing completed after $parsingTime");
@@ -2247,7 +2324,9 @@ namespace Cx\Core\Core\Controller {
          * Calls hooks after call to finalize()
          */
         protected function postFinalize() {
-            $this->ch->callPostFinalizeHooks();
+            $endcode = $this->getResponse()->getParsedContent();
+            $this->ch->callPostFinalizeHooks($endcode);
+            $this->getResponse()->setParsedContent($endcode);
         }
 
         /* GETTERS */
@@ -2266,6 +2345,14 @@ namespace Cx\Core\Core\Controller {
          */
         public function getRequest() {
             return $this->request;
+        }
+
+        /**
+         * Returns the Response object
+         * @return \Cx\Core\Routing\Model\Entity\Response Response object
+         */
+        public function getResponse() {
+            return $this->response;
         }
 
         /**
@@ -2351,6 +2438,9 @@ namespace Cx\Core\Core\Controller {
                         $command = ($cmdValue && $cmdValue instanceof \Cx\Core_Modules\Access\Model\Entity\Permission) ? $cmdKey : $cmdValue;
                         if (isset($this->commands[$command])) {
                             throw new \Exception('Command \'' . $command . '\' is already in index');
+                        }
+                        if (!$component->hasAccessToExecuteCommand($command, array())) {
+                            continue;
                         }
                         $this->commands[$command] = $component;
                     }
@@ -2657,7 +2747,7 @@ namespace Cx\Core\Core\Controller {
             $this->websiteMediaMarketPath       = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Market';
             $this->websiteMediaCrmPath          = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Crm';
             $this->websiteMediaDirectoryPath    = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Directory';
-            
+
             $this->websiteImagesContentWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/content';
             $this->websiteImagesAttachWebPath   = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/attach';
             $this->websiteImagesShopWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Shop';
@@ -2681,7 +2771,7 @@ namespace Cx\Core\Core\Controller {
             $this->websiteMediaFileSharingWebPath=$this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/FileSharing';
             $this->websiteMediaMarketWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/Market';
             $this->websiteMediaDirectoryWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/Directory';
-                        
+
             $this->websitePublicTempPath        = $this->websiteTempPath    . self::FOLDER_NAME_PUBLIC_TEMP;
             $this->websitePublicTempWebPath     = $this->websiteTempWebPath . self::FOLDER_NAME_PUBLIC_TEMP;
         }
@@ -2759,6 +2849,16 @@ namespace Cx\Core\Core\Controller {
          */
         public function getWebsiteTempWebPath() {
             return $this->websiteTempWebPath;
+        }
+
+        /**
+         * Return the absolute path to the temp storage location (/tmp)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_CACHE_PATH.
+         * @return string
+         */
+        public function getWebsiteCachePath() {
+            return $this->websiteTempPath . self::FOLDER_NAME_CACHE;
         }
 
         /**
@@ -3142,7 +3242,7 @@ namespace Cx\Core\Core\Controller {
         public function getWebsitePublicTempWebPath() {
             return $this->websitePublicTempWebPath;
         }
-        
+
          /**
          * Return the absolute path to the website's data repository to the
          * location of the /images/Crm
@@ -3223,7 +3323,7 @@ namespace Cx\Core\Core\Controller {
         public function getWebsiteImagesAccessPhotoPath() {
             return $this->websiteImagesAccessPhotoPath;
         }
-        
+
         /**
          * Return the offset path to the data repository of the access photo.
          * Formerly known as ASCMS_ACCESS_PHOTO_IMG_WEB_PATH.

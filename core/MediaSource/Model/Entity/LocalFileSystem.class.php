@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * @copyright   Cloudrexx AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
@@ -39,6 +39,10 @@ use Cx\Model\Base\EntityBase;
 class LocalFileSystem extends EntityBase implements FileSystem
 {
 
+    /**
+     * The path of the file system.
+     * Without ending directory separator.
+     */
     private $rootPath;
     protected $fileListCache;
 
@@ -60,16 +64,22 @@ class LocalFileSystem extends EntityBase implements FileSystem
         return new self($path);
     }
 
+    /**
+     * @todo    Option $recursive does not work. It always acts as recursive is set to TRUE
+     */
     public function getFileList($directory, $recursive = false, $readonly = false) {
         if (isset($this->fileListCache[$directory][$recursive][$readonly])) {
             return $this->fileListCache[$directory][$recursive][$readonly];
         }
 
+        $dirPath = rtrim($this->rootPath . '/' . $directory,'/');
+        if (!file_exists($dirPath)) {
+            return array();
+        }
+
         $recursiveIteratorIterator = new \RegexIterator(
             new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator(
-                    rtrim($this->rootPath . '/' . $directory,'/')
-                ),
+                new \RecursiveDirectoryIterator($dirPath),
                 \RecursiveIteratorIterator::SELF_FIRST
             ), '/^((?!thumb(_[a-z]+)?).)*$/'
         );
@@ -134,7 +144,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
                 'type' => $file->getType(),
                 'thumbnail' => $thumbnails
             );
-            
+
             if ($readonly){
                 $fileInfos['readonly'] = true;
             }
@@ -170,7 +180,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
         $this->fileListCache[$directory][$recursive][$readonly] = $jsonFileArray;
         return $jsonFileArray;
     }
-    
+
     /**
      * Applies utf8_encode() to keys and values of an array
      * From: http://stackoverflow.com/questions/7490105/array-walk-recursive-modify-both-keys-and-values
@@ -205,7 +215,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
         foreach ($arrays as $array) {
             reset($base); //important
             while (list($key, $value) = each($array)) {
-                if (is_array($value) && is_array($base[$key])) {
+                if (is_array($value) && isset($base[$key]) && is_array($base[$key])) {
                     $base[$key] = $this->array_merge_recursive($base[$key], $value);
                 } else {
                     $base[$key] = $value;
@@ -469,5 +479,35 @@ class LocalFileSystem extends EntityBase implements FileSystem
                 $thumbnail
             );
         }
+    }
+
+    /**
+     * Get Root path of the filesystem
+     *
+     * @return string
+     */
+    public function getRootPath()
+    {
+        return $this->rootPath;
+    }
+
+    /**
+     * Set root path of the filesystem
+     *
+     * @param string $rootPath
+     */
+    public function setRootPath($rootPath)
+    {
+        $this->rootPath = $rootPath;
+    }
+
+    public function getFileFromPath($filepath) {
+        $fileinfo = pathinfo($filepath);
+        $path = dirname($filepath);
+        $files = $this->getFileList($fileinfo['dirname']);
+        if (!isset($files[$fileinfo['basename']])) {
+            return false;
+        }
+        return new LocalFile($filepath, $this);
     }
 }
