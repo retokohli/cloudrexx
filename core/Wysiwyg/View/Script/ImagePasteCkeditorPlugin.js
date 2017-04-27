@@ -1,10 +1,10 @@
-var editorMode = [];
+var wysiwygEditorMode = [];
 for (var instanceName in CKEDITOR.instances) {
     CKEDITOR.instances[instanceName].on('paste', function (event) {
-        var result   = getDataFromContent(event.data.dataValue, false),
-            callback = function(event, value) {
-                event.editor.insertHtml(value);
-            };
+        var result   = wysiwygGetDataFromContent(event.data.dataValue);
+        var callback = function(event, value) {
+            event.editor.insertHtml(value);
+        };
 
         if (!result.files || result.files.length === 0) {
             event.data.dataValue = result.content;
@@ -12,19 +12,19 @@ for (var instanceName in CKEDITOR.instances) {
         }
 
         //Upload process for pasted images
-        doUpload(event, result.files, result.dataSrc, result.content, callback);
+        wysiwygUploadInlineFile(event, result.files, result.dataSrc, result.content, callback);
         event.data.dataValue = '';
     });
     CKEDITOR.instances[instanceName].on('mode', function (event) {
-        if (editorMode[event.editor.name] == null) {
-            editorMode[event.editor.name] = event.editor.mode;
+        if (wysiwygEditorMode[event.editor.name] == null) {
+            wysiwygEditorMode[event.editor.name] = event.editor.mode;
         }
         if (
-            editorMode[event.editor.name] === 'source' &&
+            wysiwygEditorMode[event.editor.name] === 'source' &&
             event.editor.mode === 'wysiwyg'
         ) {
-            var result   = getDataFromContent(event.editor.getData(), true),
-                callback = function(event, value) {
+            var result   = wysiwygGetDataFromContent(event.editor.getData());
+            var callback = function(event, value) {
                     event.editor.setData(value);
                 };
             if (!result.files || result.files.length === 0) {
@@ -33,9 +33,9 @@ for (var instanceName in CKEDITOR.instances) {
             }
 
             //Upload process for pasted images
-            doUpload(event, result.files, result.dataSrc, result.content, callback);
+            wysiwygUploadInlineFile(event, result.files, result.dataSrc, result.content, callback);
         }
-        editorMode[event.editor.name] = event.editor.mode;
+        wysiwygEditorMode[event.editor.name] = event.editor.mode;
     });
 }
 
@@ -43,36 +43,29 @@ for (var instanceName in CKEDITOR.instances) {
  * get file object from Data image present in the content
  *
  * @param {string} content     content
- * @param {bolean} inlineImage If true, it will check if Data URL used as
- *                             CSS inline image in the content,
- *                             otherwise it will check if Data URL used as
- *                             image src in content
- *
  * @returns {object}
  */
-function getDataFromContent(content, inlineImage)
+function wysiwygGetDataFromContent(content)
 {
     var match,
         files = [],
         dataSrc = [],
-        pattern,
-        data,
-        dataImagePattern = /<img\s+[^>]*src=([\'\"])(data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([^\'\"]*)\s*)\1[^>]*>/g,
-        inlineImagePattern = /url\(([\'\"])(data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([^\'\"]*)\s*)\1(\))/g;
-
-    pattern = dataImagePattern;
-    if (inlineImage) {
-        pattern = inlineImagePattern;
-    }
+        data;
+    var imagePattern = {
+        dataImagePattern:   /<img\s+[^>]*src=([\'\"])(data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([^\'\"]*)\s*)\1[^>]*>/g,
+        inlineImagePattern: /url\(([\'\"])(data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([^\'\"]*)\s*)\1(\))/g
+    };
 
     data = content;
-    while (match = pattern.exec(content)) {
-        var file = dataURItoFile(match[2]);
-        if (!file) {
-            data = data.replace(match[0], '');
-        } else {
-            dataSrc[file.name] = [match[0], match[2]];
-            files.push(file);
+    for (patternIdx in imagePattern) {
+        while (match = imagePattern[patternIdx].exec(content)) {
+            var file = wysiwygCreateBlobFromBase64String(match[2]);
+            if (!file) {
+                data = data.replace(match[0], '');
+            } else {
+                dataSrc[file.name] = [match[0], match[2]];
+                files.push(file);
+            }
         }
     }
 
@@ -87,7 +80,7 @@ function getDataFromContent(content, inlineImage)
  * @param {array}  dataSrc array of data URI with file name
  * @param {string} content pasted content
  */
-function doUpload(event, files, dataSrc, content, callback)
+function wysiwygUploadInlineFile(event, files, dataSrc, content, callback)
 {
     var uploaderId = cx.variables.get('ckeditorUploaderId', 'wysiwyg'),
         targetPath = cx.variables.get('ckeditorUploaderPath', 'wysiwyg');
@@ -122,7 +115,7 @@ function doUpload(event, files, dataSrc, content, callback)
     var uploader = new plupload.Uploader(options);
     uploader.bind('BeforeUpload', function (up, files) {
         //Show loading message
-        showMessage(
+        wysiwygShowStatusMessage(
             cx.jQuery('<div />').html(
                 cx.jQuery('<div/>')
                 .attr('id', 'loading')
@@ -160,7 +153,7 @@ function doUpload(event, files, dataSrc, content, callback)
 
     uploader.bind('UploadComplete', function (up, files) {
         callback(event, content);
-        showMessage('', null, false);
+        wysiwygShowStatusMessage('', null, false);
     });
 
     uploader.init();
@@ -173,7 +166,7 @@ function doUpload(event, files, dataSrc, content, callback)
  * @param {string}  status  upload status
  * @param {boolean} lock    lock
  */
-function showMessage(message, status, lock)
+function wysiwygShowStatusMessage(message, status, lock)
 {
     var showTime;
     if (lock) {
@@ -209,7 +202,7 @@ function showMessage(message, status, lock)
  *
  * @returns {mOxie.File}
  */
-function dataURItoFile(dataURI) {
+function wysiwygCreateBlobFromBase64String(dataURI) {
     /* convert base64/URLEncoded data component to raw binary data held in a string */
     try {
         var byteString;
