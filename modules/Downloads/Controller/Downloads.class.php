@@ -52,6 +52,12 @@ class Downloads extends DownloadsLibrary
     private $categoryId;
     private $cmd = '';
     private $pageTitle;
+
+    /**
+     * @var string $metaKeys The metakeys is used to set page metakeys
+     */
+    private $metaKeys;
+
     /**
      * @var \Cx\Core\Html\Sigma
      */
@@ -234,7 +240,7 @@ class Downloads extends DownloadsLibrary
 
                 $metakeys = $objDownload->getMetakeys(FRONTEND_LANG_ID);
                 if ($this->arrConfig['use_attr_metakeys'] && !empty($metakeys)) {
-                    \Env::get('cx')->getPage()->setMetakeys($metakeys);
+                    $this->metaKeys = $metakeys;
                 }
 
                 $this->parseRelatedCategories($objDownload);
@@ -874,6 +880,15 @@ JS_CODE;
         return $this->pageTitle;
     }
 
+    /**
+     * Get meta keywords
+     *
+     * @return string
+     */
+    public function getMetaKeywords()
+    {
+        return $this->metaKeys;
+    }
 
     private function parseCategories($objCategory, $arrCategoryBlocks, $categoryLimit = null, $variablePrefix = '', $rowBlock = null, $arrSubCategoryBlocks = null, $subCategoryLimit = null, $subPrefix = '')
     {
