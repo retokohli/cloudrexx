@@ -174,26 +174,16 @@ class Wysiwyg extends \Cx\Model\Base\EntityBase
      */
     public function getSourceCode()
     {
+        $this->initJsVariablesForUploader();
+
         $mediaBrowserCkeditor = new MediaBrowser($this->callingSystemComponentController);
         $mediaBrowserCkeditor->setCallback('ckeditor_image_callback');
-
-        // Set MediaBrowser-option 'startmediatype' based on the component name
-        $mediaSourceManager = $this->cx->getMediaSourceManager();
-        $mediaSource = $mediaSourceManager->getMediaSourceByComponent($this->callingSystemComponentController);
-
-        // If MediaSource does not exist, set the first MediaSource from the MediaSources list
-        if ($mediaSource) {
-            $mediaSourceName = $mediaSource->getName();
-        } else {
-            $mediaSourceName = current($mediaSourceManager->getMediaTypes())->getName();
-        }
-
         $mediaBrowserCkeditor->setOptions(
             array(
                 'type'           => 'button',
                 'style'          => 'display:none',
                 'id'             => 'ckeditor_image_button',
-                'startmediatype' => $mediaSourceName
+                'startmediatype' => $this->getMediaSource()->getName()
             )
         );
 
@@ -222,6 +212,39 @@ class Wysiwyg extends \Cx\Model\Base\EntityBase
         ');
 
         return $mediaBrowserCkeditor->getXHtml('mediabrowser').'<textarea name="'.$this->name.'" style="width: 100%; height: ' . $this->types[$this->type]['height'] . 'px">'.$this->value.'</textarea>';
+    }
+
+    /**
+     * Get MediaSource based on the component
+     *
+     * @return Cx\Core\MediaSource\Model\Entity\MediaSource
+     */
+    public function getMediaSource()
+    {
+        $mediaSourceManager = $this->cx->getMediaSourceManager();
+        $mediaSource = $mediaSourceManager
+            ->getMediaSourceByComponent($this->callingSystemComponentController);
+
+        if ($mediaSource) {
+            return $mediaSource;
+        }
+
+        //If MediaSource does not exists, set the first MediaSource from the MediaSources list
+        return current($mediaSourceManager->getMediaTypes());
+    }
+
+    /**
+     * Initialize the uploader and set uploader id and target path as javascript variable
+     */
+    protected function initJsVariablesForUploader()
+    {
+        $uploader       = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+        $mediaSourceDir = $this->getMediaSource()->getDirectory();
+        $cxJs           = \ContrexxJavascript::getInstance();
+        $cxJs->setVariable(array(
+            'ckeditorUploaderId'   => $uploader->getId(),
+            'ckeditorUploaderPath' => $mediaSourceDir[1] . '/'
+        ), 'wysiwyg');
     }
 
     /**
