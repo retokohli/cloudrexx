@@ -167,11 +167,14 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         // TODO: $dynVars needs to be built dynamically (via event handler)
         $this->dynVars = array(
             'GEO' => array(
+                // This is not specified by W3C but by Akamai
                 'country_code' => function() use ($cx) {
                     return $cx->getComponent('GeoIp')->getCountryCode(array())['content'];
                 },
             ),
             'HTTP_COOKIE' => array(
+                // This only supports PHPSESSID instead of full cookie support
+                // as specified by W3C
                 'PHPSESSID' => function() {
                     $sessId = 0;
                     if (!empty($_COOKIE[session_name()])) {
@@ -180,7 +183,19 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                     return $sessId;
                 },
             ),
+            // HTTP_ACCEPT_LANGUAGE
+            // HTTP_HOST
+            // HTTP_USER_AGENT
+            'HTTP_REFERER' => function() {
+                if (!isset($_SERVER['HTTP_REFERER'])) {
+                    return '';
+                }
+                return $_SERVER['HTTP_REFERER'];
+            },
             'QUERY_STRING' => function () {
+                // This is not according to W3C specifications since it
+                // includes the leading "?" if there are params. This is due
+                // to backwards compatibility
                 $parameters = array();
                 parse_str($_SERVER['QUERY_STRING'], $parameters);
                 if (isset($parameters['__cap'])) {
