@@ -85,13 +85,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Generate PDF Document
      *
-     * @param integer $pdfTemplateId id of the PDF Template
-     * @param array   $substitution  array of substitution values
-     * @param string  $mailTplKey    MailTemplate key
+     * @param integer $pdfTemplateId          id of the PDF Template
+     * @param array   $substitution           array of substitution values
+     * @param string  $mailTplKey             MailTemplate key
+     * @param boolean $convertToHtmlEntities  convert input to HTML entities
      *
      * @return mixed array|null
      */
-    public function generatePDF($pdfTemplateId, $substitution, $mailTplKey)
+    public function generatePDF($pdfTemplateId, $substitution, $mailTplKey, $convertToHtmlEntities = false)
     {
         if (empty($mailTplKey)) {
             return;
@@ -111,7 +112,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         \Cx\Core\MailTemplate\Controller\MailTemplate::substitute(
             $tplContent,
             $substitution,
-            true
+            $convertToHtmlEntities
         );
 
         $session    = $this->getComponent('Session')->getSession();

@@ -85,7 +85,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param array  $dataArguments (optional) List of data arguments for the command
      * @return void
      */
-    public function executeCommand($command, $arguments) {
+    public function executeCommand($command, $arguments, $dataArguments = array()) {
         switch ($command) {
             case 'Data':
                 if (
@@ -117,7 +117,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         echo $data['data']['content'];
                         break;
                     case 'Json':
-                        echo $json->json($data, true);
+                        echo $json->parse($data, true);
                         break;
                     default:
                         throw new \Exception('No such output module: "' . $outputModule . '"');
@@ -146,7 +146,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $adapter = contrexx_input2raw($_GET['object']);
                 $method = contrexx_input2raw($_GET['act']);
                 // TODO: Replace arguments by something reasonable
-                $arguments = array('get' => $_GET, 'post' => $_POST);
+                $arguments = array(
+                    'get' => $_GET,
+                    'post' => $_POST,
+                    'response' => $this->cx->getResponse(),
+                );
                 echo $json->jsondata($adapter, $method, $arguments);
                 die();
                 break;
@@ -170,7 +174,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $adapter = contrexx_input2raw($_GET['object']);
                     $method = contrexx_input2raw($_GET['act']);
                     // TODO: Replace arguments by something reasonable
-                    $arguments = array('get' => $_GET, 'post' => $_POST);
+                    $arguments = array(
+                        'get' => $_GET,
+                        'post' => $_POST,
+                        'response' => $this->cx->getResponse(),
+                    );
                     echo $json->jsondata($adapter, $method, $arguments);
                     die();
                 }
