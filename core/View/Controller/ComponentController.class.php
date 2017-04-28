@@ -53,21 +53,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return array List of Controller class names (without namespace)
      */
     public function getControllerClasses() {
-        return array('EsiWidget');
-    }
-
-    /**
-     * Returns a list of JsonAdapter class names
-     *
-     * The array values might be a class name without namespace. In that case
-     * the namespace \Cx\{component_type}\{component_name}\Controller is used.
-     * If the array value starts with a backslash, no namespace is added.
-     *
-     * Avoid calculation of anything, just return an array!
-     * @return array List of ComponentController classes
-     */
-    public function getControllersAccessableByJson() {
-        return array('EsiWidgetController');
+        return array();
     }
 
     /**
@@ -86,20 +72,28 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'PDF_URL',
             'APP_URL',
         );
+        $currentUrl = $this->cx->getRequest()->getUrl();
         foreach ($widgetNames as $widgetName) {
-            $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
-                $this,
-                $widgetName,
-                false,
-                '',
-                '',
-                array(
-                    'ref' => '$(HTTP_REFERER)',
-                )
-            );
-            $widget->setEsiVariable(0);
+            $active = 1;
+            $view = strtolower(substr($widgetName, 0, -4));
+            if ($view == 'standard' || $view == 'mobile') {
+                if ($view == 'standard') {
+                    $active = 0;
+                }
+                $view = 'smallscreen';
+            } else {
+                $view .= 'view';
+            }
+            $widgetUrl = clone $currentUrl;
+            $widgetUrl->setParam($view, $active);
+            $content = contrexx_raw2xhtml((string) $widgetUrl);
+
             $widgetController->registerWidget(
-                $widget
+                new \Cx\Core_Modules\Widget\Model\Entity\FinalStringWidget(
+                    $this,
+                    $widgetName,
+                    $content
+                )
             );
         }
     }
