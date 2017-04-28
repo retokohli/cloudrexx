@@ -80,8 +80,12 @@ h1{ font-size: 20px }
 }
 
 #content-manager #cm-left table.adminlist {
+    width: auto;
+    min-width: 100%;
     float: left;
     margin: 11px 0 0 0;
+    white-space: nowrap;
+    background: #0071bc;
 }
 
 .ie7 #input1{ float:left; }
@@ -128,11 +132,24 @@ h1{ font-size: 20px }
 #site-structure {
     position: relative;
     float: left;
-    width: 100%;
+    width: auto;
+    min-width: 100%;
     border-right: 1px solid #e5e5e5;
     border-left: 1px solid #e5e5e5;
     margin-left: -1px;
-    overflow: visible;
+    overflow-y: visible;
+    overflow-x: auto;
+    background: linear-gradient(
+            to bottom,
+            #ffffff,
+            #ffffff 30px,
+            #e5e5e5 1px,
+            #e5e5e5
+    );
+    /* The rectangle in which to repeat.
+       It can be fully wide in this case */
+    background-size: 100% 31px;
+    background-position: 0 11px;
 }
 
 #site-structure th.lastupdate {
@@ -179,12 +196,12 @@ h1{ font-size: 20px }
 }
 
 #flip-menu .jstree-action.open,
-th.translation .expand-translations.close  {
+th.translation .switch-tag-dropdown.close  {
     background-image: url('../Media/Expand.png');
 }
 
 #flip-menu .jstree-action.close,
-th.translation .expand-translations.open {
+th.translation .switch-tag-dropdown.open {
     background-image: url('../Media/Close.png');
 }
 
@@ -193,7 +210,7 @@ th.translation .expand-translations.open {
     overflow: auto;
 }
 
-th.translation .expand-translations {
+th.translation .switch-tag-dropdown {
     height: 16px;
     width: 16px;
     display: inline-block;
@@ -225,6 +242,29 @@ th.translation .expand-translations {
     margin: 0;
 }
 
+.adminlist tr {
+    font-size: 0;
+}
+
+#content-manager table.adminlist th {
+    box-sizing: border-box;
+    display: inline-block;
+    width: auto;
+    height: 31px;
+    line-height: 31px;
+}
+
+#content-manager.edit_view .adminlist th {
+    display: table-cell;
+}
+
+.adminlist th.page,
+#site-tree > ul {
+    min-width: 40%;
+}
+
+.adminlist th.page
+
 *+html #site-tree ul,
 *+html #site-tree ul li {
     width: 100%;
@@ -241,10 +281,68 @@ th.translation .expand-translations {
 #site-tree .jstree-wrapper {
     position: absolute;
     left: 0;
-    width: 100%;
+    width: auto;
+    min-width: 60%;
     height: 30px;
-    border-bottom: 1px solid #e5e5e5;
     z-index: auto;
+    padding-left: 40%;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+#site-tree > ul,
+#site-tree .jstree-wrapper .translations,
+#site-tree .jstree-wrapper .module,
+#site-tree .jstree-wrapper .preview,
+#site-tree .jstree-wrapper .actions,
+#site-tree .jstree-wrapper .lastupdate {
+    box-sizing: border-box;
+}
+
+.adminlist th {
+    height: 31px;
+    line-height: 31px;
+}
+
+.adminlist th.translation {
+    min-width: 15%;
+}
+
+#site-tree .jstree-wrapper .translations {
+    left: 40%;
+}
+
+.adminlist th.module {
+    min-width: 14%;
+}
+
+#site-tree .jstree-wrapper .module {
+    left: 55%;
+}
+
+.adminlist th.preview {
+    min-width: 7%;
+}
+
+#site-tree .jstree-wrapper .preview {
+    left: 70%;
+}
+
+.adminlist th.actions {
+    min-width: 8%;
+}
+
+#site-tree .jstree-wrapper .actions {
+    left: 77%;
+}
+
+.adminlist th.lastupdate {
+    min-width: 16%;
+}
+
+#site-tree .jstree-wrapper .lastupdate {
+    left: auto;
+    right: 0;
 }
 
 #site-tree .jstree-wrapper.hover,
@@ -257,24 +355,23 @@ th.translation .expand-translations {
 #site-tree .preview ,
 #site-tree .actions {
     position: absolute;
-    top: 0;
-    float: left;
+    float: none;
     width: auto;
     height: 30px;
     line-height: 30px;
     font-size: 11px;
+    display: inline-block;
+    white-space: nowrap;
+    vertical-align: middle;
+    padding: 0 10px;
 }
 
 #site-tree .show {
-    display: block;
+    display: inline-block;
 }
 
 #site-tree .hide {
     display: none;
-}
-
-#site-tree .translations {
-    left: 42.7%;
 }
 
 #site-tree .translations .translation {
@@ -302,33 +399,22 @@ th.translation .expand-translations {
     background: #e45f5f;
 }
 
-#site-tree .module {
-    left: 55.8%;
-}
-
-#site-tree .user {
-    left: 65.6%;
-}
-
 #site-tree .preview {
-    left: 70.6%;
     background: url(../Media/Preview.png) no-repeat left center;
     padding: 0 0 0 16px !important;
 }
 
 #site-tree .lastupdate {
-    right: 10px;
+    text-align: right;
 }
 
 #site-tree .lastupdate .date {
     position: static;
-    float: left;
     width: auto;
 }
 
 #site-tree .lastupdate .user.tp-trigger {
     position: static;
-    float: left;
     width: 14px !important;
     padding: 0 0 0 5px;
     background: url(../Media/User.png) no-repeat right center;
@@ -341,10 +427,6 @@ th.translation .expand-translations {
 
 #site-tree .lastupdate .user.tp-value {
     display: none;
-}
-
-#site-tree .actions {
-    left: 77.6%;
 }
 
 #site-tree .actions, #site-tree .translations.dropdown {
@@ -361,10 +443,15 @@ th.translation .expand-translations {
     cursor: pointer;
 }
 
+#site-tree .translations .label {
+    display: none;
+}
+
 #site-tree .actions .label,
 #site-tree .translations.dropdown .label {
     float: left;
     width: auto;
+    display: inline;
 }
 
 #site-tree .actions .arrow,
@@ -377,6 +464,10 @@ th.translation .expand-translations {
 
 #content-manager #site-tree {
     padding: 0 0 0 30px;
+    min-width: 100%;
+    display: inline-block;
+    box-sizing: border-box;
+    background: none;
 }
 
 #content-manager.edit_view #site-tree {
@@ -389,8 +480,10 @@ th.translation .expand-translations {
 }
 
 #content-manager.edit_view #site-tree .actions {
+    position: absolute;
     left: auto;
     right: 10px;
+    min-width: 0;
 }
 
 #content-manager.edit_view #site-tree .actions .label,
@@ -401,14 +494,16 @@ th.translation .expand-translations {
 #site-tree .actions-expanded,
 #site-tree .translations-expanded {
     display: block;
-    position: absolute;
-    top: 23px;
-    left: 0;
+    position: relative;
+    top: -5px;
+    margin-left: -16px; /* negated padding of div.actions */
     z-index: 11;
 }
 
 #content-manager.edit_view #site-tree .actions-expanded {
+    position: absolute;
     left: auto;
+    top: 23px;
     right: 3px;
 }
 
@@ -423,6 +518,8 @@ th.translation .expand-translations {
 
 #site-tree .actions-expanded ul,
 #site-tree .translations-expanded ul {
+    position: fixed; /* to avoid vertical scroll bars on site-tree */
+    width: auto;
     float: left;
     background: #ffffff;
     border:  1px solid #d3d3d3;
@@ -454,6 +551,9 @@ th.translation .expand-translations {
     height: auto;
     margin: 0;
     box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -o-box-sizing: border-box;
     padding: 5px;
     border-bottom: 1px solid #ffffff;
 }
@@ -1532,3 +1632,9 @@ div.date img{
     margin:0px !important;
 }
 span.app-template-tooltip { word-wrap: break-word;}
+
+@media only screen and (max-width: 1279px) {
+    #site-structure {
+        min-width: 1022px;
+    }
+}
