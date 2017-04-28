@@ -66,7 +66,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                 $view = strtolower(substr($name, 0, -4));
                 if ($view == 'standard' || $view == 'mobile') {
                     if ($view == 'standard') {
-                        $view = 0;
+                        $active = 0;
                     }
                     $view = 'smallscreen';
                 } else {
