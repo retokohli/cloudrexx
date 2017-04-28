@@ -76,7 +76,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                 $url->setParam($view, $active);
                 $template->setVariable(
                     $name,
-                    $url
+                    contrexx_raw2xhtml($url)
                 );
                 break;
         }
