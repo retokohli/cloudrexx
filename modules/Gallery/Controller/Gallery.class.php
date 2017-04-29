@@ -186,18 +186,6 @@ class Gallery
             $objResult->MoveNext();
         }
 
-        // set requested page's meta data
-        if ($imageDesc) {
-            $metaDescription = $imageDesc;
-        } else {
-            $metaDescription = $imageName;
-        }
-        $page = \Cx\Core\Core\Controller\Cx::instanciate()->getPage();
-        $page->setTitle($imageName);
-        $page->setContentTitle($imageName);
-        $page->setMetaTitle($imageName);
-        $page->setMetadesc($metaDescription);
-
         // get pictures of the current category
         $objResult = $objDatabase->Execute(
             "SELECT id FROM ".DBPREFIX."module_gallery_pictures ".
@@ -487,18 +475,6 @@ class Gallery
             $objResult->MoveNext();
         }
 
-        // set requested page's meta data
-        if ($imageDesc) {
-            $metaDescription = $imageDesc;
-        } else {
-            $metaDescription = $imageName;
-        }
-        $page = \Cx\Core\Core\Controller\Cx::instanciate()->getPage();
-        $page->setTitle($imageName);
-        $page->setContentTitle($imageName);
-        $page->setMetaTitle($imageName);
-        $page->setMetadesc($metaDescription);
-
         // get pictures of the current category
         $objResult = $objDatabase->Execute(
             "SELECT id FROM ".DBPREFIX."module_gallery_pictures ".
@@ -681,6 +657,75 @@ class Gallery
         }
         $objTpl->show();
         die;
+    }
+
+    /**
+     * Get Page title and description
+     *
+     * @return array returns pagetitle and metadescription as array
+     */
+    public function getPageAttributes()
+    {
+        global $objDatabase;
+
+        $picId = 0;
+        if (!empty($_GET['pId'])) {
+            $picId = contrexx_input2int($_GET['pId']);
+            $catId = $this->getCategoryId($picId);
+        } else {
+            $catId = contrexx_input2int($_GET['cmd']);
+            if (isset($_GET['cid'])) {
+                $catId = contrexx_input2int($_GET['cid']);
+            }
+        }
+
+        if (!$catId) {
+            return;
+        }
+        //check category protected or not
+        $categoryProtected = $this->categoryIsProtected($catId);
+        if (
+            $categoryProtected &&
+            !\Permission::checkAccess($categoryProtected, 'dynamic', true)
+        ) {
+            return;
+        }
+
+        if ($picId) {
+            $picture = $objDatabase->Execute('
+                SELECT
+                        `name`,
+                        `desc`
+                    FROM ' . DBPREFIX . 'module_gallery_language_pics
+                    WHERE
+                        `picture_id`=' . $picId . ' AND
+                        `lang_id`   =' . $this->langId . '
+                    LIMIT 1
+            ');
+            $title = $picture->fields['name'];
+            $desc  = $picture->fields['desc'];
+        } else {
+            $query = '
+                SELECT
+                        `value`
+                    FROM ' . DBPREFIX . 'module_gallery_language
+                    WHERE
+                        `gallery_id`=' . $catId . ' AND
+                        `lang_id`   =' . $this->langId . ' AND
+                        `name`      =';
+            // name of requested category
+            $nameResult = $objDatabase->SelectLimit($query . '\'name\'', 1);
+            $title = $nameResult->fields['value'];
+
+            // description of requested category
+            $descResult = $objDatabase->SelectLimit($query . '\'desc\'', 1);
+            $desc = $descResult->fields['value'];
+        }
+        //Consider title as description, if description is empty
+        if (empty($desc)) {
+            $desc = $title;
+        }
+        return array('title' => $title, 'desc' => $desc);
     }
 
     /**
@@ -923,36 +968,12 @@ class Gallery
 
         // set requested page's meta data based on requested category
         if ($intParentId) {
-            // name of requested category
-            $objResult = $objDatabase->SelectLimit(
-                "SELECT value FROM ".DBPREFIX."module_gallery_language ".
-                "WHERE gallery_id=$intParentId AND lang_id=$this->langId AND name='name'", 1);
-            $name = $objResult->fields['value'];
-
             // description of requested category
             $objResult = $objDatabase->SelectLimit(
                 "SELECT value FROM ".DBPREFIX."module_gallery_language ".
                 "WHERE gallery_id=$intParentId AND lang_id=$this->langId AND name='desc'", 1);
             $description = $objResult->fields['value'];
             $strCategoryComment = nl2br($description);
-
-            if ($description) {
-                $metaDescription = $description;
-            } else {
-                $metaDescription = $name;
-            }
-
-            // only overwrite requested page's meta data if the requested
-            // category does have a name or description set
-            $page = \Cx\Core\Core\Controller\Cx::instanciate()->getPage();
-            if (!empty($name)) {
-                $page->setTitle($name);
-                $page->setContentTitle($name);
-                $page->setMetaTitle($name);
-            }
-            if (!empty($metaDescription)) {
-                $page->setMetadesc($metaDescription);
-            }
         }
 
         $objResult = $objDatabase->Execute(

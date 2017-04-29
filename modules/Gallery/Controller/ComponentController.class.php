@@ -132,15 +132,31 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *
      * @param \Cx\Core\Routing\Model\Entity\Response $response Response object to adjust
      */
-    public function adjustResponse(\Cx\Core\Routing\Model\Entity\Response $response) {
+    public function adjustResponse(
+        \Cx\Core\Routing\Model\Entity\Response $response
+    ) {
+        $page   = $response->getPage();
         $params = $response->getRequest()->getUrl()->getParamArray();
         unset($params['section']);
         unset($params['cmd']);
-        $canonicalUrl = \Cx\Core\Routing\Url::fromPage($response->getPage(), $params);
+        $canonicalUrl = \Cx\Core\Routing\Url::fromPage($page, $params);
         $response->setHeader(
             'Link',
             '<' . $canonicalUrl->toString() . '>; rel="canonical"'
         );
+
+        $gallery    = new Gallery('');
+        $pageValues = $gallery->getPageAttributes();
+        if ($pageValues) {
+            if ($pageValues['title']) {
+                $page->setTitle($pageValues['title']);
+                $page->setContentTitle($pageValues['title']);
+                $page->setMetaTitle($pageValues['title']);
+            }
+            if ($pageValues['desc']) {
+                $page->setMetadesc($pageValues['desc']);
+            }
+        }
     }
 
     /**
