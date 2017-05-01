@@ -978,8 +978,12 @@ cx.cm = function(target) {
         }
     });
 
-    cx.jQuery("select#page_application").change(cx.cm.homeCheck, cx.jQuery("#pageId").val());
-    cx.jQuery('#page input[name="page[area]"]').keyup(cx.cm.homeCheck, cx.jQuery("#pageId").val());
+    cx.jQuery("select#page_application").change(function() {
+        return cx.cm.homeCheck(true, cx.jQuery("#pageId").val());
+    });
+    cx.jQuery('#page input[name="page[area]"]').keyup(function() {
+        return cx.cm.homeCheck(true, cx.jQuery("#pageId").val());
+    });
     cx.jQuery('#page input[name="page[area]"]').change(function() {
         cx.cm.loadApplicationTemplate(cx.jQuery('#page select[name="page[application]"]').val(),
                                       cx.jQuery('#page input[name="page[area]"]').val(),
