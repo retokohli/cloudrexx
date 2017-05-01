@@ -1374,7 +1374,13 @@ class MediaDirectory extends MediaDirectoryLibrary
             $levelId = intval($requestParams['lid']);
         }
 
-        $this->arrNavtree[] = '<a href="'.$this->getAutoSlugPath(null, $intCategoryId, $levelId).'">'.contrexx_raw2xhtml($objCategory->arrCategories[$intCategoryId]['catName'][0]).'</a>';
+        // link category if an associated application page does exist
+        $url = $this->getAutoSlugPath(null, $intCategoryId, $levelId);
+        if ($url) {
+            $this->arrNavtree[] = '<a href="'.$url.'">'.contrexx_raw2xhtml($objCategory->arrCategories[$intCategoryId]['catName'][0]).'</a>';
+        } else {
+            $this->arrNavtree[] = contrexx_raw2xhtml($objCategory->arrCategories[$intCategoryId]['catName'][0]);
+        }
 
         if($objCategory->arrCategories[$intCategoryId]['catParentId'] != 0) {
             $this->getNavtreeCategories($objCategory->arrCategories[$intCategoryId]['catParentId']);
@@ -1387,7 +1393,13 @@ class MediaDirectory extends MediaDirectoryLibrary
     {
         $objLevel = new MediaDirectoryLevel($intLevelId, null, 0, $this->moduleName);
 
-        $this->arrNavtree[] = '<a href="'.$this->getAutoSlugPath(null, null, $intLevelId).'">'.contrexx_raw2xhtml($objLevel->arrLevels[$intLevelId]['levelName'][0]).'</a>';
+        // link level if an associated application page does exist
+        $url = $this->getAutoSlugPath(null, null, $intLevelId);
+        if ($url) {
+            $this->arrNavtree[] = '<a href="'.$url.'">'.contrexx_raw2xhtml($objLevel->arrLevels[$intLevelId]['levelName'][0]).'</a>';
+        } else {
+            $this->arrNavtree[] = contrexx_raw2xhtml($objLevel->arrLevels[$intLevelId]['levelName'][0]);
+        }
 
         if($objLevel->arrLevels[$intLevelId]['levelParentId'] != 0) {
             $this->getNavtreeLevels($objLevel->arrLevels[$intLevelId]['levelParentId']);
