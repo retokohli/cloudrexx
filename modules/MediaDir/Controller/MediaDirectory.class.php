@@ -333,9 +333,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         //get navtree
-        if($this->_objTpl->blockExists($this->moduleNameLC.'Navtree') && ($intCategoryId != 0 || $intLevelId != 0)){
-            $this->getNavtree($intCategoryId, $intLevelId);
-        }
+        $this->getNavtree($intCategoryId, $intLevelId);
 
         //get searchform
         if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
@@ -553,9 +551,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         //get navtree
-        if($this->_objTpl->blockExists($this->moduleNameLC.'Navtree') && ($intCategoryId != 0 || $intLevelId != 0)){
-            $this->getNavtree($intCategoryId, $intLevelId);
-        }
+        $this->getNavtree($intCategoryId, $intLevelId);
 
         //get searchform
         $searchTerm = null;
@@ -686,9 +682,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         //get navtree
-        if($this->_objTpl->blockExists($this->moduleNameLC.'Navtree') && ($intCategoryId != 0 || $intLevelId != 0)){
-            $this->getNavtree($intCategoryId, $intLevelId);
-        }
+        $this->getNavtree($intCategoryId, $intLevelId);
 
         if (!$intEntryId || !$this->_objTpl->blockExists($this->moduleNameLC.'EntryList')) {
             header("Location: index.php?section=".$this->moduleName);
@@ -1287,14 +1281,38 @@ class MediaDirectory extends MediaDirectoryLibrary
 
 
 
-    function getNavtree($intCategoryId, $intLevelId)
-    {
+    /**
+     * Parse the component's own breadcrumb
+     *
+     * @param   integer $intCategoryId  ID of the requested category
+     * @param   integer $intLevelId  ID of the requested level
+     * @param   \Cx\Core\Html\Sigma $template Optional template object to be used instead of the component's own template object ($this->_objTpl)
+     */
+    public function getNavtree($intCategoryId, $intLevelId, $template = null) {
         global $_ARRAYLANG;
 
+        // if no specific \Cx\Core\Html\Sigma template is set,
+        // do use the currently loaded template
+        if (!$template) {
+            $template = $this->_objTpl;
+        }
+
+        // abort in case the associated template block is missing
+        if (!$template->blockExists($this->moduleNameLC.'Navtree') && ($intCategoryId != 0 || $intLevelId != 0)){
+            return;
+        }
+
+        // abort in case no category or level data is set
+        if (!$intCategoryId && !$intLevelId) {
+            return;
+        }
+
+        // load categories into tree
         if($intCategoryId != 0) {
            $this->getNavtreeCategories($intCategoryId);
         }
 
+        // load levels into tree
         if($intLevelId != 0 && $this->arrSettings['settingsShowLevels'] == 1) {
            $this->getNavtreeLevels($intLevelId);
         }
@@ -1312,10 +1330,15 @@ class MediaDirectory extends MediaDirectoryLibrary
         $arrEntry = null;
         $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
         if (isset($requestParams['eid'])) {
-            $arrEntry = $this->getCurrentFetchedEntryDataObject();
+            $arrEntry = $this->getCurrentFetchedEntryDataObject()->arrEntries[$requestParams['eid']];
         }
 
-        $this->arrNavtree[] = '<a href="'.$this->getAutoSlugPath($arrEntry).'">'.$_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'].'</a>';
+        // fetch associated overview page of entry
+        $url = $this->getAutoSlugPath($arrEntry, null, null, false, false);
+
+        if ($url) {
+            $this->arrNavtree[] = '<a href="'.$url.'">'.$_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'].'</a>';
+        }
         krsort($this->arrNavtree);
 
         if(!empty($this->arrNavtree)) {
@@ -1325,18 +1348,18 @@ class MediaDirectory extends MediaDirectoryLibrary
                 $strClass = $i == $count -1 ? 'last' : '';
                 $strSeparator = $i == 0 ? '' : '&gt;';
 
-                $this->_objTpl->setVariable(array(
+                $template->setVariable(array(
                     $this->moduleLangVar.'_NAVTREE_LINK'    =>  $strName,
                     $this->moduleLangVar.'_NAVTREE_LINK_CLASS'    =>  $strClass,
                     $this->moduleLangVar.'_NAVTREE_SEPARATOR'    =>  $strSeparator
                 ));
 
                 $i++;
-                $this->_objTpl->parse($this->moduleNameLC.'NavtreeElement');
+                $template->parse($this->moduleNameLC.'NavtreeElement');
             }
-            $this->_objTpl->parse($this->moduleNameLC.'Navtree');
+            $template->parse($this->moduleNameLC.'Navtree');
         } else {
-            $this->_objTpl->hideBlock($this->moduleNameLC.'Navtree');
+            $template->hideBlock($this->moduleNameLC.'Navtree');
         }
     }
 
@@ -1352,7 +1375,13 @@ class MediaDirectory extends MediaDirectoryLibrary
             $levelId = intval($requestParams['lid']);
         }
 
-        $this->arrNavtree[] = '<a href="'.$this->getAutoSlugPath(null, $intCategoryId, $levelId).'">'.contrexx_raw2xhtml($objCategory->arrCategories[$intCategoryId]['catName'][0]).'</a>';
+        // link category if an associated application page does exist
+        $url = $this->getAutoSlugPath(null, $intCategoryId, $levelId);
+        if ($url) {
+            $this->arrNavtree[] = '<a href="'.$url.'">'.contrexx_raw2xhtml($objCategory->arrCategories[$intCategoryId]['catName'][0]).'</a>';
+        } else {
+            $this->arrNavtree[] = contrexx_raw2xhtml($objCategory->arrCategories[$intCategoryId]['catName'][0]);
+        }
 
         if($objCategory->arrCategories[$intCategoryId]['catParentId'] != 0) {
             $this->getNavtreeCategories($objCategory->arrCategories[$intCategoryId]['catParentId']);
@@ -1365,7 +1394,13 @@ class MediaDirectory extends MediaDirectoryLibrary
     {
         $objLevel = new MediaDirectoryLevel($intLevelId, null, 0, $this->moduleName);
 
-        $this->arrNavtree[] = '<a href="'.$this->getAutoSlugPath(null, null, $intLevelId).'">'.contrexx_raw2xhtml($objLevel->arrLevels[$intLevelId]['levelName'][0]).'</a>';
+        // link level if an associated application page does exist
+        $url = $this->getAutoSlugPath(null, null, $intLevelId);
+        if ($url) {
+            $this->arrNavtree[] = '<a href="'.$url.'">'.contrexx_raw2xhtml($objLevel->arrLevels[$intLevelId]['levelName'][0]).'</a>';
+        } else {
+            $this->arrNavtree[] = contrexx_raw2xhtml($objLevel->arrLevels[$intLevelId]['levelName'][0]);
+        }
 
         if($objLevel->arrLevels[$intLevelId]['levelParentId'] != 0) {
             $this->getNavtreeLevels($objLevel->arrLevels[$intLevelId]['levelParentId']);

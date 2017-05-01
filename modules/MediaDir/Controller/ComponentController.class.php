@@ -159,7 +159,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 array_push($mediadirCheck, $i);
             }
         }
-        if ($mediadirCheck || $objTemplate->blockExists('mediadirLatest') || $objTemplate->blockExists('mediadirList')) {
+        if ($mediadirCheck || $objTemplate->blockExists('mediadirLatest') || $objTemplate->blockExists('mediadirList') || $objTemplate->blockExists('mediadirNavtree')) {
             $objInit->loadLanguageData('MediaDir');
 
             $objMediadir = new MediaDirectory('', $this->getName());
@@ -238,6 +238,19 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             // -> parse all entries now (use template block mediadirList)
             if(!$foundOne) {
                 $objMediadir->parseEntries($objTemplate);
+            }
+        }
+        if ($objTemplate->blockExists('mediadirNavtree')) {
+            $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+            if (isset($requestParams['cid'])) {
+                $categoryId = intval($requestParams['cid']);
+            }
+            if (isset($requestParams['lid'])) {
+                $levelId = intval($requestParams['lid']);
+            }
+            $objMediadir->getNavtree($categoryId, $levelId, $objTemplate);
+            if ($objMediadir->getMetaTitle() != '') {
+                $page->setMetatitle($page->getTitle() . $objMediadir->getMetaTitle());
             }
         }
     }
