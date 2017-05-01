@@ -1572,7 +1572,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 translations.addClass("dropdown");
                 translations.children(".translation").hide();
             }
-            // translate cols *width of translations* to right
+            // expand site-structure according to translations column width
             var difference = translations.width() - prevWidth;
 
             var parentWidth = cx.jQuery("table.adminlist").outerWidth();
@@ -1639,7 +1639,6 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 cx.jQuery('.translations-expanded').length > 0
             ) {
                 cx.jQuery('.translations-expanded').each(function() {
-                    // cx.jQuery(this).parent().parent().children().css('z-index', 'auto');
                     cx.jQuery(this).hide();
                 });
             }
@@ -1648,7 +1647,6 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         cx.jQuery('.jstree li, .actions-expanded').live('mouseleave', function(event) {
             if (!cx.jQuery(event.target).is('li.action-item') && cx.jQuery('.actions-expanded').length > 0) {
                 cx.jQuery('.actions-expanded').each(function() {
-                    // cx.jQuery(this).parent().parent().children().css('z-index', 'auto');
                     cx.jQuery(this).hide();
                 });
             }
