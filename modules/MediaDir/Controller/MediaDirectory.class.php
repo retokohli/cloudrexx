@@ -1333,8 +1333,9 @@ class MediaDirectory extends MediaDirectoryLibrary
             $arrEntry = $this->getCurrentFetchedEntryDataObject()->arrEntries[$requestParams['eid']];
         }
 
-// TODO: this does not yet work on reisen & tours on the same time
-        $url = $this->getAutoSlugPath($arrEntry);
+        // fetch associated overview page of entry
+        $url = $this->getAutoSlugPath($arrEntry, null, null, false, false);
+
         if ($url) {
             $this->arrNavtree[] = '<a href="'.$url.'">'.$_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'].'</a>';
         }
