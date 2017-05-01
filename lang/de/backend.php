@@ -1255,7 +1255,7 @@ $_ARRAYLANG['TXT_CORE_CONTENTTITLE'] = "Titel (Seite)";
 
 // CORE/CM
 $_ARRAYLANG['TXT_CORE_CM_STATUS_PAGE'] = 'Status / Seite';
-$_ARRAYLANG['TXT_CORE_CM_TRANSLATIONS'] = 'Übersetzungen';
+$_ARRAYLANG['TXT_CORE_CM_TRANSLATIONS'] = 'Sprachversionen';
 $_ARRAYLANG['TXT_CORE_CM_SECTION_CMD'] = 'Section / CMD';
 $_ARRAYLANG['TXT_CORE_CM_LOG'] = 'Log';
 $_ARRAYLANG['TXT_CORE_CM_LAST_MODIFIED'] = 'Letzte Änderung durch Benutzer';
