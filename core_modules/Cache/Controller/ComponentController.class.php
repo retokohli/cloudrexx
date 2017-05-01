@@ -96,7 +96,27 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             return;
         }
-        $this->cache->startContrexxCaching();
+        $this->cache->startContrexxCaching($this->cx);
+    }
+
+    /**
+     * Register events
+     */
+    public function registerEvents()
+    {
+        $this->cx->getEvents()->addEvent('clearEsiCache');
+    }
+
+    /**
+     * Registers event listeners
+     */
+    public function registerEventListeners() {
+        $evm = $this->cx->getEvents();
+        $evm->addModelListener(
+            'postFlush',
+            'Cx\Core\Routing\Model\Entity\RewriteRule',
+            new \Cx\Core_Modules\Cache\Model\Event\RewriteRuleEventListener($this->cx)
+        );
     }
 
     /**
@@ -107,7 +127,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             return;
         }
-        $endcode = $this->cache->endContrexxCaching($this->cx->getPage(), $endcode);
+        $page = $this->cx->getPage();
+        if (!$page) {
+            $page = \Env::get('Page');
+        }
+        $endcode = $this->cache->endContrexxCaching($page, $endcode);
     }
 
     /**
@@ -156,8 +180,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Wrapper to drop all cached ESI/SSI elements
      */
-    public function clearSsiCache() {
-        $this->cache->clearSsiCache();
+    public function clearSsiCache($urlPattern = '') {
+        $this->cache->clearSsiCache($urlPattern);
     }
 
     /**
@@ -206,10 +230,25 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Deletes a file from page cache
+     * @param int $pageId ID of the page to drop cache of
+     */
+    public function deleteSingleFile($pageId) {
+        $this->cache->deleteSingleFile($pageId);
+    }
+
+    /**
      * Delete all cached files for a component from cache-folder
      */
     function deleteComponentFiles($componentName) {
         $this->cache->deleteComponentFiles($componentName);
+    }
+
+    /**
+     * Deletes cached header redirects
+     */
+    function deleteNonPagePageCache() {
+        $this->cache->deleteNonPagePageCache();
     }
 
     /**
@@ -245,5 +284,179 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function internalEsiParsing($htmlCode) {
         return $this->cache->internalEsiParsing($htmlCode);
+    }
+
+    /**
+     * Writes the cache file for the current request
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Current page (might be null for redirects before postResolve)
+     * @param array $headers List of headers set for the current response
+     * @param string $endcode Current response
+     */
+    public function writeCacheFileForRequest($page, $headers, $endcode) {
+        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
+        $this->cache->writeCacheFileForRequest($page, $headers, $endcode);
+    }
+
+    /**
+     * Returns a list of command mode commands provided by this component
+     * @return array List of command names
+     */
+    public function getCommandsForCommandMode() {
+        return array(
+            'Cache' => new \Cx\Core_Modules\Access\Model\Entity\Permission(
+                null,
+                array('cli'),
+                false
+            ),
+        );
+    }
+
+    /**
+     * Returns the description for a command provided by this component
+     * @param string $command The name of the command to fetch the description from
+     * @param boolean $short Wheter to return short or long description
+     * @return string Command description
+     */
+    public function getCommandDescription($command, $short = false) {
+        if ($command != 'Cache') {
+            return '';
+        }
+        if ($short) {
+            return 'Allows to clear caches';
+        }
+        return 'Cache clear user [<engine>]
+Cache clear page [<pageId>]
+Cache clear (esi|proxy) [<urlPattern>]
+Cache clear opcode [<engine>]
+Cache clear all';
+    }
+
+    /**
+     * Execute one of the commands listed in getCommandsForCommandMode()
+     * @see getCommandsForCommandMode()
+     * @param string $command Name of command to execute
+     * @param array $arguments List of arguments for the command
+     * @param array  $dataArguments (optional) List of data arguments for the command
+     * @return void
+     */
+    public function executeCommand($command, $arguments, $dataArguments = array()) {
+        switch ($command) {
+            case 'Cache':
+                if (count($arguments) < 2) {
+                    echo 'Not enough arguments' . "\n";
+                    return;
+                }
+                switch (array_shift($arguments)) {
+                    case 'clear':
+                        $type = array_shift($arguments);
+                        $options = '';
+                        if (count($arguments)) {
+                            $options = array_shift($arguments);
+                        }
+                        $this->clearCacheCommand($type, $options);
+                        break;
+                    default:
+                        echo 'No such command' . "\n";
+                        break;
+                }
+                break;
+        }
+    }
+
+    /**
+     * Clears the selected type of cache.
+     *
+     * Known cache types are:
+     * - user: DB cache
+     * - page: "Contrexx cache"
+     * - esi: ESI/SSI cache (internal or on proxy)
+     * - proxy: Reverse proxy cache
+     * - opcode: PHP OP code cache
+     * - all: Drop all of the above
+     * @param string $type Cache type to clear
+     * @param string $options (optional) Engine for user or opcode cache, filter for page, esi and reverse proxy cache
+     */
+    protected function clearCacheCommand($type, $options = '') {
+        $types = array('user', 'page', 'esi', 'proxy', 'opcode');
+        if ($type == 'all') {
+            foreach ($types as $type) {
+                $this->commandClearCache($type);
+            }
+            return;
+        }
+        if (!in_array($type, $types)) {
+            echo 'Unknown cache type' . "\n";
+            return;
+        }
+        switch ($type) {
+            case 'user':
+                if (!empty($options)) {
+                    if (!in_array(
+                        $options,
+                        array(
+                            CacheLib::CACHE_ENGINE_APC,
+                            CacheLib::CACHE_ENGINE_MEMCACHE,
+                            CacheLib::CACHE_ENGINE_MEMCACHED,
+                            CacheLib::CACHE_ENGINE_XCACHE,
+                            CacheLib::CACHE_ENGINE_FILESYSTEM,
+                        )
+                    )) {
+                        echo 'Unknown cache engine' . "\n";
+                        return;
+                    }
+                    $this->cache->_deleteAllFiles($options);
+                    break;
+                }
+                $this->cache->_deleteAllFiles();
+                break;
+            case 'page':
+                if (!empty($options)) {
+                    $this->cache>_deleteSingleFile($options);
+                    break;
+                }
+                // @TODO: this will drop ESI cache too
+                $this->cache->_deleteAllFiles('cxPages');
+                break;
+            case 'esi':
+                $this->cache->clearSsiCache();
+                break;
+            case 'proxy':
+                if (empty($options)) {
+                    $options = '*';
+                }
+                $this->cache->clearReverseProxyCache($options);
+                break;
+            case 'opcode':
+                if (!empty($options)) {
+                    if (!in_array(
+                        $options,
+                        array(
+                            CacheLib::CACHE_ENGINE_APC,
+                            CacheLib::CACHE_ENGINE_ZEND_OPCACHE,
+                            CacheLib::CACHE_ENGINE_XCACHE,
+                        )
+                    )) {
+                        echo 'Unknown cache engine' . "\n";
+                        return;
+                    }
+                    $this->cache->_deleteAllFiles($options);
+                    break;
+                }
+                $this->cache->_deleteAllFiles($this->cache->getOpCacheEngine());
+                break;
+        }
+        echo 'Cache cleared' . "\n";
+    }
+
+    /**
+     * Forces page cache to be stored per user
+     */
+    public function forceUserbasedPageCache() {
+        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
+        $this->cache->forceUserbasedPageCache();
     }
 }

@@ -199,6 +199,9 @@ class MediaDirectory extends MediaDirectoryLibrary
         $objLevel = null;
         $objCategory = null;
 
+        // whether the category or level list will be displayed
+        $listCategoriesAndLevels = false;
+
         // whether the loaded form (if at all) does use categories or not
         $bolFormUseCategory = false;
 
@@ -291,6 +294,10 @@ class MediaDirectory extends MediaDirectoryLibrary
             }
         }
 
+        if ($this->_objTpl->blockExists($this->moduleNameLC.'CategoriesLevelsList')) {
+            $listCategoriesAndLevels = true;
+        }
+
         // detect if the use of categories and/or levels has been activated
         //
         // note: in a previous version of Cloudrexx, this has only been done
@@ -356,7 +363,21 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         // check show entries
-        $showEntries = $showEntriesOfLevel || $showEntriesOfCategory || $bolLatest || (!$bolFormUseCategory && !$bolFormUseLevel);
+        $showEntries = 
+               // a level has been selected and it is configured to list entries
+               $showEntriesOfLevel
+               // a category has been selected and it is configured to list entries
+            || $showEntriesOfCategory
+               // if neither a level nor a category has been selected and list of latest entries is active
+            || $bolLatest
+               // if the loaded form does not use categories nor levels
+            || (!$bolFormUseCategory && !$bolFormUseLevel);
+
+        // in case a form has been requested, but we're not going to list any categories nor any levels
+        // nor the latest entries, then we shall simply parse all form entries
+        if (!$showEntries && $intCmdFormId && !$showCategoryDetails && !$showLevelDetails && !$listCategoriesAndLevels) {
+            $showEntries = true;
+        }
 
         // fetch entries
         if ($showEntries) {
@@ -668,7 +689,6 @@ class MediaDirectory extends MediaDirectoryLibrary
             exit;
         }
 
-
         $objEntry = new MediaDirectoryEntry($this->moduleName);
         $objEntry->getEntries($intEntryId,$intLevelId,$intCategoryId,null,null,null,1,null,1);
 
@@ -695,9 +715,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         $objEntry->updateHits($intEntryId);
 
         //set meta attributes
-        $entries = new MediaDirectoryEntry($this->moduleName);
-        $entries->getEntries($intEntryId, $intLevelId, $intCategoryId, null, null, null, 1, null, 1);
-        $entry = $entries->arrEntries[$intEntryId];
+        $entry = $objEntry->arrEntries[$intEntryId];
 
         $objInputfields = new MediaDirectoryInputfield($entry['entryFormId'], false, $entry['entryTranslationStatus'], $this->moduleName);
         $inputFields = $objInputfields->getInputfields();
@@ -749,7 +767,7 @@ class MediaDirectory extends MediaDirectoryLibrary
             }
         }
 
-        $firstInputfieldValue = $entries->arrEntries[$intEntryId]['entryFields'][0];
+        $firstInputfieldValue = $objEntry->arrEntries[$intEntryId]['entryFields'][0];
         if (!$titleChanged && $firstInputfieldValue) {
             $this->pageTitle = $firstInputfieldValue;
             $this->metaTitle = $firstInputfieldValue;

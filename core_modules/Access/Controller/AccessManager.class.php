@@ -635,6 +635,31 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
             $objGroup->setDynamicPermissionIds($arrCurrentAccessIds);
 
+            // Get Cx object from Environment variable
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            // Load entity manager
+            $dbCon = $cx->getDb()->getAdoDb();
+            // Instantiate a new Toolbarcontroller
+            $toolbarController = $cx->getComponent('Wysiwyg')->getController('Toolbar');
+            $newButtons = $_POST['removedButtons'];
+            // Get the assigned toolbar id of the current group
+            $toolbarIdRes = $dbCon->Execute('
+                SELECT `toolbar` FROM `' . DBPREFIX . 'access_user_groups`
+                WHERE `group_id` = ' . intval($objGroup->getId()) . '
+                LIMIT 1');
+            // Fetch the data
+            $toolbarId = $toolbarIdRes->fields;
+            $toolbarId = $toolbarId['toolbar'];
+            $newToolbarId = $toolbarController->store($newButtons, $toolbarId);
+            // Check if a new toolbar has been created or an existing one updated
+            if ($newToolbarId !== 0) {
+                // Set the toolbar id of the current group to the new id
+                $query = 'UPDATE `' . DBPREFIX . 'access_user_groups`
+                      SET `toolbar` = ' . intval($newToolbarId) . '
+                      WHERE `group_id` = ' . intval($objGroup->getId());
+                $dbCon->Execute($query);
+            }
+
             if (isset($_POST['access_save_group'])) {
                 if ($objGroup->store()) {
                     self::$arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ACCESS_GROUP_STORED_SUCCESSFULLY'];
@@ -808,6 +833,17 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 }
             }
         }
+
+        // Parse toolbar configurator
+        $cx = \Env::get('cx');
+        $toolbarController = $cx->getComponent('Wysiwyg')->getController('Toolbar');
+        $toolbarConfigurator = $toolbarController->getToolbarConfiguratorTemplate('/core/Wysiwyg/');
+        $this->_objTpl->setGlobalVariable('ACCESS_WYSIWYG_TAB_NR', $tabNr);
+        $this->_objTpl->setVariable(array(
+            'TXT_ACCESS_TOOLBARCONFIGURATOR'    => $_ARRAYLANG['TXT_ACCESS_TOOLBARCONFIGURATOR'],
+            'ACCESS_PERMISSION_WYSIWYG_TOOLBAR' => $toolbarConfigurator->get(),
+        ));
+
         if ($tabNr > 1) {
             $this->_objTpl->parse('access_permission_tabs_menu');
         } else {
@@ -823,6 +859,9 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     'style'            => 'display: none;'
         ));
         $mediaBrowser->setCallback('SetUrl');
+
+        // Parse toolbar configurator
+        $this->_objTpl->parse('access_permission_tab_wysiwyg');
 
         $this->attachJavaScriptFunction('accessSetWebpage');
         $this->attachJavaScriptFunction('accessSelectAllGroups');
@@ -1241,6 +1280,20 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         $this->notifyUserAboutAccountStatusChange($objUser);
                     }
                     self::$arrStatusMsg['ok'][] = sprintf($objUser->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_USER_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_ACCESS_USER_DEACTIVATED_SUCCESSFULLY'], $objUser->getUsername());
+                    //Clear cache
+                    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                    $cx->getEvents()->triggerEvent(
+                        'clearEsiCache',
+                        array(
+                            'Widget',
+                            array(
+                                'access_currently_online_member_list',
+                                'access_last_active_member_list',
+                                'access_latest_registered_member_list',
+                                'access_birthday_member_list'
+                            )
+                        )
+                    );
                 } else {
                     self::$arrStatusMsg['error'] = array_merge(self::$arrStatusMsg['error'], $objUser->getErrorMsg());
                 }
@@ -1268,12 +1321,14 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         $arrIds = !empty($_REQUEST['id']) ? is_array($_REQUEST['id']) ? $_REQUEST['id'] : array($_REQUEST['id']) : array();
         $objFWUser = \FWUser::getFWUserObject();
 
+        $clearCache = false;
         if (count($arrIds) > 0) {
             foreach ($arrIds as $id) {
                 $objUser = $objFWUser->objUser->getUser($id);
                 if ($objUser) {
                     if ($objUser->delete()) {
                         self::$arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_ACCESS_USER_SUCCESSFULLY_DELETED'], contrexx_raw2xhtml($objUser->getUsername()));
+                        $clearCache = true;
                     } else {
                         self::$arrStatusMsg['error'] = array_merge(self::$arrStatusMsg['error'], $objUser->getErrorMsg());
                     }
@@ -1282,6 +1337,24 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 }
             }
         }
+
+        //Clear cache
+        if ($clearCache) {
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getEvents()->triggerEvent(
+                'clearEsiCache',
+                array(
+                    'Widget',
+                    array(
+                        'access_currently_online_member_list',
+                        'access_last_active_member_list',
+                        'access_latest_registered_member_list',
+                        'access_birthday_member_list'
+                    )
+                )
+            );
+        }
+
         return $this->userList();
     }
 
@@ -1700,21 +1773,9 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $objUserMail->load($mail2load, $_LANGID) ||
                 $objUserMail->load($mail2load)
             ) &&
-            (\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php')) &&
-            ($objMail = new \PHPMailer()) !== false
+            ($objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail()) !== false
         ) {
-            if ($_CONFIG['coreSmtpServer'] > 0 && \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/SmtpSettings.class.php')) {
-                if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
-            }
 
-            $objMail->CharSet = CONTREXX_CHARSET;
             $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
             $objMail->Subject = $objUserMail->getSubject();
 
@@ -2266,7 +2327,20 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                             self::$arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_SET_DEFAULT_EMAIL_ACCESS_FAILED'];
                         }
                     }
-
+                    //Clear cache
+                    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                    $cx->getEvents()->triggerEvent(
+                        'clearEsiCache',
+                        array(
+                            'Widget',
+                            array(
+                                'access_currently_online_member_list',
+                                'access_last_active_member_list',
+                                'access_latest_registered_member_list',
+                                'access_birthday_member_list'
+                            )
+                        )
+                    );
                 } else {
                     self::$arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_CONFIG_FAILED_SAVED'];
                     self::$arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_TRY_TO_REPEAT_OPERATION'];
