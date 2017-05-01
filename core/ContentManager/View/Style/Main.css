@@ -129,31 +129,28 @@ h1{ font-size: 20px }
     width: 342px !important;
 }
 
-#site-structure {
+#site-structure-wrapper {
     position: relative;
+    width: auto;
+    min-width: 100%;
+}
+
+#site-structure {
     float: left;
     width: auto;
     min-width: 100%;
     border-right: 1px solid #e5e5e5;
     border-left: 1px solid #e5e5e5;
     margin-left: -1px;
-    overflow-y: visible;
+    overflow-y: hidden;
     overflow-x: auto;
-    background: linear-gradient(
-            to bottom,
-            #ffffff,
-            #ffffff 30px,
-            #e5e5e5 1px,
-            #e5e5e5
-    );
-    /* The rectangle in which to repeat.
-       It can be fully wide in this case */
-    background-size: 100% 31px;
-    background-position: 0 11px;
 }
 
 #site-structure th.lastupdate {
+    position: absolute;
     text-align: right;
+    left: auto;
+    right: 0;
 }
 
 #content-manager.edit_view #site-structure {
@@ -284,10 +281,10 @@ th.translation .switch-tag-dropdown {
     width: auto;
     min-width: 60%;
     height: 30px;
-    z-index: auto;
     padding-left: 40%;
     display: inline-block;
     white-space: nowrap;
+    border-bottom: 1px solid #e5e5e5;
 }
 
 #site-tree > ul,
@@ -325,24 +322,23 @@ th.translation .switch-tag-dropdown {
 }
 
 #site-tree .jstree-wrapper .preview {
-    left: 70%;
+    left: 69%;
 }
 
 .adminlist th.actions {
-    min-width: 8%;
+    min-width: 15%;
 }
 
 #site-tree .jstree-wrapper .actions {
-    left: 77%;
+    left: 76%;
 }
 
 .adminlist th.lastupdate {
-    min-width: 16%;
+    min-width: 9%;
 }
 
 #site-tree .jstree-wrapper .lastupdate {
-    left: auto;
-    right: 0;
+    left: 91%;
 }
 
 #site-tree .jstree-wrapper.hover,
@@ -400,8 +396,8 @@ th.translation .switch-tag-dropdown {
 }
 
 #site-tree .preview {
-    background: url(../Media/Preview.png) no-repeat left center;
-    padding: 0 0 0 16px !important;
+    background: url(../Media/Preview.png) no-repeat 10px center;
+    padding: 0 0 0 26px !important;
 }
 
 #site-tree .lastupdate {
@@ -411,6 +407,7 @@ th.translation .switch-tag-dropdown {
 #site-tree .lastupdate .date {
     position: static;
     width: auto;
+    min-width: 86px;
 }
 
 #site-tree .lastupdate .user.tp-trigger {
@@ -430,8 +427,8 @@ th.translation .switch-tag-dropdown {
 }
 
 #site-tree .actions, #site-tree .translations.dropdown {
-    background: url(../Media/ActionPlus.png) no-repeat left center;
-    padding: 0 0 0 16px;
+    background: url(../Media/ActionPlus.png) no-repeat 10px center;
+    padding: 0 0 0 26px;
 }
 
 #site-tree .actions:hover,
@@ -494,10 +491,11 @@ th.translation .switch-tag-dropdown {
 #site-tree .actions-expanded,
 #site-tree .translations-expanded {
     display: block;
-    position: relative;
-    top: -5px;
-    margin-left: -16px; /* negated padding of div.actions */
-    z-index: 11;
+    overflow: hidden;
+    position: absolute;
+    top: 23px;
+    left: 10px;
+    z-index: 1;
 }
 
 #content-manager.edit_view #site-tree .actions-expanded {
@@ -518,7 +516,6 @@ th.translation .switch-tag-dropdown {
 
 #site-tree .actions-expanded ul,
 #site-tree .translations-expanded ul {
-    position: fixed; /* to avoid vertical scroll bars on site-tree */
     width: auto;
     float: left;
     background: #ffffff;

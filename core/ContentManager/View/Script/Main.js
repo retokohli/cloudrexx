@@ -1447,7 +1447,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             // dropdown
             translations
               .append('<div class="label">' + cx.variables.get('TXT_CORE_CM_TRANSLATIONS', 'contentmanager/lang') + '</div><div class="arrow" /></div>')
-              .append("<div class=\"translations-expanded\" style=\"display: none;\"><ul></ul></div>")
+              .prepend("<div class=\"translations-expanded\" style=\"display: none;\"><ul></ul></div>")
               .click(function() {
                   cx.jQuery(this).children(".translations-expanded").toggle();
               });
@@ -1470,17 +1470,19 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             if (languages.size() <= 4) { // tags
                 // show tags
                 cx.jQuery(".switch-tag-dropdown").addClass("open");
+                cx.jQuery("#site-structure").addClass("open");
                 translations.removeClass("dropdown");
                 translations.children(".translation").show();
             } else {
                 // show dropdown
                 cx.jQuery(".switch-tag-dropdown").removeClass("open");
+                cx.jQuery("#site-structure").removeClass("open");
                 translations.addClass("dropdown");
                 translations.children(".translation").hide();
             }
 
             var actions = cx.jQuery('<div class="actions"><div class="label">' + cx.variables.get('TXT_CORE_CM_ACTIONS', 'contentmanager/lang') + '</div><div class="arrow" /></div>')
-                            .append("<div class=\"actions-expanded\" style=\"display: none;\"><ul></ul></div>")
+                            .prepend("<div class=\"actions-expanded\" style=\"display: none;\"><ul></ul></div>")
                             .click(function() {
                                 cx.jQuery(this).children(".actions-expanded").toggle();
                             });
@@ -1572,16 +1574,64 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             }
             // translate cols *width of translations* to right
             var difference = translations.width() - prevWidth;
-            if (difference < 0) {
-                difference = 0;
+
+            var parentWidth = cx.jQuery("table.adminlist").outerWidth();
+            var parentExpandedWidth = parentWidth + difference;
+
+            var expandFactor = parentWidth / parentExpandedWidth;
+
+            cx.jQuery("table.adminlist").width(parentExpandedWidth);
+
+            var tableHeaders = cx.jQuery("th.page," +
+                "th.translation," +
+                "th.module," +
+                "th.preview," +
+                "th.actions," +
+                "th.lastupdate"
+            );
+            var cols = cx.jQuery("#site-tree .translations," +
+                "#site-tree .module," +
+                "#site-tree .preview," +
+                "#site-tree .actions," +
+                "#site-tree .lastupdate"
+            ).not(".hide");
+            if (difference >= 0) {
+                // adjust cols
+                cols.css("left", function() {
+                    var oldLeft = cx.jQuery(this).position().left;
+                    if (cx.jQuery(this).hasClass("translations")) {
+                        var newLeft = oldLeft * expandFactor;
+                    } else {
+                        var newLeft = oldLeft * expandFactor + difference;
+                    }
+                    // adjust table headers
+                    var thEl = null;
+                    switch (true) {
+                        case cx.jQuery(this).hasClass('translations'):
+                            thEl = cx.jQuery("th.translation");
+                            break;
+                        case cx.jQuery(this).hasClass('module'):
+                            thEl = cx.jQuery("th.module");
+                            break;
+                        case cx.jQuery(this).hasClass('preview'):
+                            thEl = cx.jQuery("th.preview");
+                            break;
+                        case cx.jQuery(this).hasClass('actions'):
+                            thEl = cx.jQuery("th.actions");
+                            break;
+                    }
+                    if (thEl) {
+                        thEl.css({
+                            "position": "absolute",
+                            "left": newLeft + "px",
+                        });
+                    }
+                    return newLeft + "px";
+                });
+            } else {
+                tableHeaders.removeAttr("style");
+                cols.removeAttr("style");
             }
-            cx.jQuery(".module, .preview, .actions, .lastupdate").css({
-                '-webkit-transform': 'translate(' + difference + 'px, 0)',
-                '-moz-transform': 'translate(' + difference + 'px, 0)',
-                '-ms-transform': 'translate(' + difference + 'px, 0)',
-                '-o-transform': 'translate(' + difference + 'px, 0)',
-                'transform': 'translate(' + difference + 'px, 0)'
-            });
         });
 
         cx.jQuery('.translations-expanded').live('mouseleave', function(event) {
