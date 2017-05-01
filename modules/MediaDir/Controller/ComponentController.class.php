@@ -148,40 +148,97 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         global $mediadirCheck, $objTemplate, $_CORELANG, $objInit;
-        switch ($this->cx->getMode()) {
-            case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-                $mediadirCheck = array();
-                for ($i = 1; $i <= 10; ++$i) {
-                    if ($objTemplate->blockExists('mediadirLatest_row_'.$i)){
-                        array_push($mediadirCheck, $i);
-                    }
-                }
-                if ($mediadirCheck || $objTemplate->blockExists('mediadirLatest')) {
-                    $objInit->loadLanguageData('MediaDir');
 
-                    $objMediadir = new MediaDirectory('', $this->getName());
-                    $objTemplate->setVariable('TXT_MEDIADIR_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
+        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
+
+        $mediadirCheck = array();
+        for ($i = 1; $i <= 10; ++$i) {
+            if ($objTemplate->blockExists('mediadirLatest_row_'.$i)){
+                array_push($mediadirCheck, $i);
+            }
+        }
+        if ($mediadirCheck || $objTemplate->blockExists('mediadirLatest') || $objTemplate->blockExists('mediadirList')) {
+            $objInit->loadLanguageData('MediaDir');
+
+            $objMediadir = new MediaDirectory('', $this->getName());
+            $objTemplate->setVariable('TXT_MEDIADIR_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
+        }
+        if ($mediadirCheck) {
+            $objMediadir->getHeadlines($mediadirCheck);
+        }
+        if ($objTemplate->blockExists('mediadirLatest')){
+            $objMediadirForms = new \Cx\Modules\MediaDir\Controller\MediaDirectoryForm(null, 'MediaDir');
+            $foundOne = false;
+            foreach ($objMediadirForms->getForms() as $key => $arrForm) {
+                if ($objTemplate->blockExists('mediadirLatest_form_'.$arrForm['formCmd'])) {
+                    $objMediadir->getLatestEntries($key, 'mediadirLatest_form_'.$arrForm['formCmd']);
+                    $foundOne = true;
                 }
-                if ($mediadirCheck) {
-                    $objMediadir->getHeadlines($mediadirCheck);
-                }
-                if ($objTemplate->blockExists('mediadirLatest')){
-                    $objMediadirForms = new \Cx\Modules\MediaDir\Controller\MediaDirectoryForm(null, 'MediaDir');
-                    $foundOne = false;
-                    foreach ($objMediadirForms->getForms() as $key => $arrForm) {
-                        if ($objTemplate->blockExists('mediadirLatest_form_'.$arrForm['formCmd'])) {
-                            $objMediadir->getLatestEntries($key, 'mediadirLatest_form_'.$arrForm['formCmd']);
-                            $foundOne = true;
-                        }
+            }
+            //for the backward compatibility
+            if(!$foundOne) {
+                $objMediadir->getLatestEntries();
+            }
+        }
+
+        // Parse entries of specific form, category and/or level.   
+        // Entries are listed in custom set order
+        if ($objTemplate->blockExists('mediadirList')) {
+            // hold information if a specific block has been parsed
+            $foundOne = false;
+
+            // function to match for placeholders in template that act as a filter. I.e.:
+            //     MEDIADIR_FILTER_FORM_3
+            //     MEDIADIR_FILTER_CATEGORY_4
+            //     MEDIADIR_FILTER_LEVEL_5
+            $fetchMediaDirListFilters = function($block) use ($objTemplate) {
+                $filter = array();
+                $placeholderList = join("\n", $objTemplate->getPlaceholderList($block));
+                if (preg_match_all('/MEDIADIR_FILTER_(FORM|CATEGORY|LEVEL)_([0-9]+)/', $placeholderList, $match)) {
+                    foreach ($match[1] as $idx => $key) {
+                        $filterKey = strtolower($key);
+                        $filter[$filterKey] = intval($match[2][$idx]);
                     }
-                    //for the backward compatibility
-                    if(!$foundOne) {
-                        $objMediadir->getLatestEntries();
+                }
+                return $filter;
+            };
+
+            // fetch mediadir object data
+            $objMediadirForm = new \Cx\Modules\MediaDir\Controller\MediaDirectoryForm(null, $this->getName());
+            $objMediadirCategory = new MediaDirectoryCategory(null, null, 0, $this->getName());
+            $objMediadirLevel = new MediaDirectoryLevel(null, null, 1, $this->getName());
+
+            // put all object data into one array
+            $objects = array(
+                'form' => array_keys($objMediadirForm->getForms()),
+                'category' => array_keys($objMediadirCategory->arrCategories),
+                'level' => array_keys($objMediadirLevel->arrLevels),
+            );
+
+            // check for form specific entry listing
+            foreach ($objects as $objectType => $arrObjectList) {
+                foreach ($arrObjectList as $objectId) {
+                    // the specific block to parse. I.e.:
+                    //    mediadirList_form_3
+                    //    mediadirList_category_4
+                    //    mediadirList_level_5
+                    $block = 'mediadirList_'.$objectType.'_'.$objectId;
+                    if ($objTemplate->blockExists($block)) {
+                        $filter = $fetchMediaDirListFilters($block);
+                        $filter[$objectType] = $objectId;
+                        $objMediadir->parseEntries($objTemplate, $block, $filter);
+                        $foundOne = true;
                     }
                 }
-                break;
-            default:
-                break;
+            }
+
+            // fallback, no specific block has been parsed
+            // -> parse all entries now (use template block mediadirList)
+            if(!$foundOne) {
+                $objMediadir->parseEntries($objTemplate);
+            }
         }
     }
 
