@@ -182,7 +182,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
 
     /**
      * This makes object of the given params (if possible)
-     * Known params are page, lang, user, theme, channel, country and currency
+     * Known params are page, lang, user, theme, channel, country, currency and ref
      * @param array $params Associative array of params
      * @return array Associative array of params
      */
@@ -248,6 +248,15 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 // this should return a currency object
                 return $currencyCode;
             },
+            'ref' => function($originalUrl) use ($params) {
+                $headers = $params['response']->getRequest()->getHeaders();
+                $originalUrl = str_replace(
+                    '$(HTTP_REFERER)',
+                    $headers['Referer'],
+                    $originalUrl
+                );
+                return $originalUrl;
+            }
         );
         foreach ($possibleGetParams as $possibleParam=>$callback) {
             if (!isset($params['get'][$possibleParam])) {
