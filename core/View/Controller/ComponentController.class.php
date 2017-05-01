@@ -86,7 +86,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
             $widgetUrl = clone $currentUrl;
             $widgetUrl->setParam($view, $active);
-            $content = contrexx_raw2xhtml((string) $widgetUrl);
+            $content = (string) $widgetUrl;
 
             $widgetController->registerWidget(
                 new \Cx\Core_Modules\Widget\Model\Entity\FinalStringWidget(
