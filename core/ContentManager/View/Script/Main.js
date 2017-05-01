@@ -1034,7 +1034,6 @@ cx.cm.loadApplicationTemplate = function(application, area, template) {
     cx.trigger("loadingStart", "contentmanager", {});
     cx.jQuery.ajax({
         url: "index.php?cmd=JsonData&object=page&act=loadApplicationTemplate&app=" + application + "&area=" + area + "&template=" + template,
-        async: false,
         success: function(response) {
             var templateFile = response.data.files;
             var select = cx.jQuery('#page select[name="page[applicationTemplate]"]');
