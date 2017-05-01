@@ -1507,7 +1507,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
 
         cx.jQuery("a.preview").click(function() {
             var pageId = cx.jQuery(this).parent().parent().children("a." + cx.cm.getCurrentLang()).attr("id");
-            var path = "../" + cx.cm.getCurrentLang() + cx.cm.getPagePath(pageId) + "?pagePreview=1";
+            var path = cx.variables.get("basePath", "contrexx") + cx.cm.getCurrentLang() + cx.cm.getPagePath(pageId) + "?pagePreview=1";
             cx.jQuery(this).attr("href", path);
         });
 

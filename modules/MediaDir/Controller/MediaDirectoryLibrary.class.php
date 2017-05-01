@@ -83,6 +83,21 @@ class MediaDirectoryLibrary
     public $moduleLangVar = "MEDIADIR";
     public $moduleConstVar = "MEDIADIR";
 
+    protected $slugConversions = array(
+        '_' => '',
+        '-' => '_',
+        ' ' => '-',
+    );
+
+    protected static $level = null;
+    protected static $category = null;
+    protected static $form = null;
+
+    /*
+     * @var \Cx\Core\Core\Controller\Cx
+     */
+    protected $cx;
+
     /**
      * Holds the MediaDirectoryEntry object with the most recently
      * loaded entries (using MediaDirectoryEntry::getEntries())
@@ -95,6 +110,9 @@ class MediaDirectoryLibrary
      */
     function __construct($tplPath, $name)
     {
+// TODO: assignment will be obsolete once this component has been migrated to extend form SystemComponentController
+        $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
+
         $this->_objTpl = new \Cx\Core\Html\Sigma($tplPath);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -533,11 +551,13 @@ class MediaDirectoryLibrary
     }
 
     /**
-     * getQueryToFindFirstInputFieldId
+     * Get SQL statement to fetch the ID of the primary field of a form.
+     * The SQL statement can be used as a sub-query in a query where contrexx_module_mediadir_entry
+     * is used and has been aliased as 'entry'
      *
      * @return string
      */
-    public function getQueryToFindFirstInputFieldId()
+    public function getQueryToFindPrimaryInputFieldId() 
     {
         $query = "SELECT
                         first_rel_inputfield.`field_id` AS `id`
@@ -554,6 +574,7 @@ class MediaDirectoryLibrary
                     AND
                         (first_rel_inputfield.`form_id` = entry.`form_id`)
                     ORDER BY
+                        FIELD(inputfield.context_type, 'title') DESC,
                         inputfield.`order` ASC
                     LIMIT 1";
         return $query;
@@ -934,6 +955,351 @@ EOF;
                         ->getThumbnailsFromFile(dirname($path), $path, true);
 
         return current($thumbnails);
+    }
+
+    public function getSlugFromName($name) {
+        $slug = str_replace(array_keys($this->slugConversions), $this->slugConversions, $name);
+        return urlencode($slug);
+    }
+
+    public function getNameFromSlug($slug) {
+        $slugConversions = array_reverse($this->slugConversions, true);
+        return  str_replace($slugConversions, array_keys($slugConversions), $slug);
+    }
+
+    /**
+     * Get the human readable url for a mediadir location
+     *
+     *  URI-Slug scheme precedence
+     *  1. $levelId & $categoryId are set:
+     *      Url will point to specific level & category application page (if existing).
+     *      I.e.: section=MediaDir&cmd=4-2
+     *
+     *  2. $levelId is set:
+     *      Url will point to specific level application page (if existing).
+     *      I.e.: section=MediaDir&cmd=4
+     *
+     *  3. $categoryId is set:
+     *      Url will point to specific category application page (if existing).
+     *      I.e.: section=MediaDir&cmd=2
+     *
+     *  4. if $arrEntry is set:
+     *     Url will point to specific form application page (if existing).
+     *     I.e.: section=MediaDir&cmd=team
+     *
+     *  5. $categoryId is set:
+     *     Url will point to main application page (if existing).
+     *     I.e.: section=MediaDir
+     *
+     *  6. if $arrEntry is set:
+     *     Url will point to specific form detail application page (if existing).
+     *     I.e.: section=MediaDir&cmd=detail12
+     *
+     *  7. if $arrEntry is set:
+     *     Url will point to generic detail application page (if existing).
+     *     I.e.: section=MediaDir&cmd=detail
+     *
+     *  8. fallback #1
+     *     Url will point to main application page (if existing).
+     *     I.e.: section=MediaDir
+     *
+     *  9. fallback #2
+     *     Lookup failed, NULL will be returned
+     *
+     * @param   array   $arrEntry   (Optional) Array definition of the entry to locate
+     * @param   integer $categoryId (Optional) ID of the category to locate
+     * @param   integer $levelId    (Optional) ID of the level to locate
+     * @param   boolean $useRequestedPageAsFallback    (Optional) Whether or not to use
+     *                                                 the requested page as fallback in
+     *                                                 case no matching mediadir application
+     *                                                 could be found
+     * @return  \Cx\Core\Routing\Url    Returns an Url object of the mediadir location.
+     *                                  If location is invalid, method will return NULL.
+     */
+    public function getAutoSlugPath($arrEntry = null, $categoryId = null, $levelId = null, $useRequestedPageAsFallback = false) {
+        $entryId = null;
+        $entryName = null;
+        $formId = null;
+        $formCmd = null;
+        $page = null;
+
+        if (isset($arrEntry['entryId'])) {
+            $entryId = $arrEntry['entryId'];
+        }
+
+        if (isset($arrEntry['entryFields'][0])) {
+            $entryName = $arrEntry['entryFields'][0];
+        }
+
+        if (isset($arrEntry['entryFormId'])) {
+            $formId = $arrEntry['entryFormId'];
+            $formData = $this->getFormData();
+            if (isset($formData[$formId])) {
+                $formCmd = $formData[$formId]['formCmd'];
+            }
+        }
+
+        // fetch level & category specific page
+        if ($levelId && $categoryId) {
+            $page = $this->getApplicationPageByLevelAndCategory($levelId, $categoryId);
+            if ($page) {
+                $levelId = null;
+                $categoryId = null;
+            }
+        }
+
+        // fetch level specific page
+        if (!$page && $levelId) {
+            $page = $this->getApplicationPageByLevel($levelId);
+            if ($page) {
+                $levelId = null;
+            }
+        }
+
+        // fetch category specific page
+        if (!$page && $categoryId) {
+            $page = $this->getApplicationPageByCategory($categoryId);
+            if ($page) {
+                $categoryId = null;
+            }
+        }
+
+        // fetch form specific page
+        if (!$page && $entryId && $formCmd) {
+            $page = $this->getApplicationPageByForm($formCmd);
+        }
+
+        // fetch generic application page
+        if (!$page && $categoryId) {
+            $page = $this->getMainApplicationPage();
+        }
+
+        // fetch specific detail page
+        if (!$page && $entryId) {
+            $page = $this->getApplicationPageByEntry($formId);
+        }
+
+        // fetch generic application page
+        if (!$page) {
+            $page = $this->getMainApplicationPage();
+        }
+
+        if (!$page && $useRequestedPageAsFallback) {
+            $page = $this->cx->getPage();
+        }
+
+        if (!$page) {
+            return null;
+        }
+
+        $url = \Cx\Core\Routing\Url::fromPage($page);
+
+        // create human readable url if option has been enabled to do so
+        if ($this->arrSettings['usePrettyUrls']) {
+            $url->setPath($url->getPath() . $this->getLevelSlugPath($levelId) . $this->getCategorySlugPath($categoryId) . $this->getEntrySlugPath($entryName));
+        } else {
+            if ($entryId) {
+                $url->setParam('eid', $entryId);
+            }
+            if ($categoryId) {
+                $url->setParam('cid', $categoryId);
+            }
+            if ($levelId) {
+                $url->setParam('lid', $levelId);
+            }
+        }
+
+        return $url;
+    }
+
+    public function getApplicationPageByLevelAndCategory($levelId, $categoryId) {
+        // abort in case levels are not in use
+        if (!$this->arrSettings['settingsShowLevels']) {
+            return null;
+        }
+
+        $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+
+        // fetch level & category specific application page (i.e. section=MediaDir&cmd=3_2)
+        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $levelId.'-'.$categoryId, FRONTEND_LANG_ID);
+        if ($page && $page->isActive()) {
+            return $page;
+        }
+
+        return null;
+    }
+
+    public function getApplicationPageByLevel($levelId) {
+        // abort in case levels are not in use
+        if (!$this->arrSettings['settingsShowLevels']) {
+            return null;
+        }
+
+        $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+
+        // fetch level specific application page (i.e. section=MediaDir&cmd=3)
+        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $levelId, FRONTEND_LANG_ID);
+        if ($page && $page->isActive()) {
+            return $page;
+        }
+
+        return null;
+    }
+
+    public function getApplicationPageByCategory($categoryId) {
+        // abort in case levels are in use
+        if ($this->arrSettings['settingsShowLevels']) {
+            return null;
+        }
+
+        $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+
+        // fetch category specific application page (i.e. section=MediaDir&cmd=3)
+        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $categoryId, FRONTEND_LANG_ID);
+        if ($page && $page->isActive()) {
+            return $page;
+        }
+
+        return null;
+    }
+
+    protected function getApplicationPageByForm($formCmd) {
+        $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+
+        // fetch form specific application page (i.e. section=MediaDir&cmd=team)
+        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $formCmd, FRONTEND_LANG_ID);
+        if ($page && $page->isActive()) {
+            return $page;
+        }
+
+        return null;
+    }
+
+    protected function getMainApplicationPage() {
+        $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+
+        // fetch main application page (i.e. section=MediaDir)
+        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, '', FRONTEND_LANG_ID);
+        if ($page && $page->isActive()) {
+            return $page;
+        }
+
+        return null;
+    }
+
+    public function getApplicationPageByEntry($formId = null) {
+        $detailCmd = 'detail';
+        $formSpecificDetailCmd = $detailCmd . $formId;
+        $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+
+        // fetch form specific detail page (i.e. section=MediaDir&cmd=detail3)
+        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $formSpecificDetailCmd, FRONTEND_LANG_ID);
+
+        // check if form specific detail page exists
+        if (!$page || !$page->isActive()) {
+            // fetch regular detail page (section=MediaDir&cmd=detail)
+            $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $detailCmd, FRONTEND_LANG_ID);
+        }
+
+        if ($page && $page->isActive()) {
+            return $page;
+        }
+
+        return null;
+    }
+
+    public function getLevelSlugPath($levelId) {
+        if (!$levelId) {
+            return '';
+        }
+
+        $slugParts = array();
+        $arrLevels = $this->getLevelData();
+        while (isset($arrLevels[$levelId])) {
+            $slugParts[] = $this->getSlugFromName($arrLevels[$levelId]['levelName'][0]);
+            $levelId = $arrLevels[$levelId]['levelParentId'];
+        }
+
+        if ($slugParts) {
+            $slugParts = array_reverse($slugParts);
+            return '/' . join('/', $slugParts);
+        }
+
+        return '';
+    }
+
+    public function getCategorySlugPath($categoryId) {
+        if (!$categoryId) {
+            return '';
+        }
+
+        $slugParts = array();
+        $arrCategories = $this->getCategoryData();
+        while (isset($arrCategories[$categoryId])) {
+            $slugParts[] = $this->getSlugFromName($arrCategories[$categoryId]['catName'][0]);
+            $categoryId = $arrCategories[$categoryId]['catParentId'];
+        }
+
+        if ($slugParts) {
+            $slugParts = array_reverse($slugParts);
+            return '/' . join('/', $slugParts);
+        }
+
+        return '';
+    }
+
+    public function getEntrySlugPath($entryName) {
+        if (!$entryName) {
+            return '';
+        }
+
+        return '/' . $this->getSlugFromName($entryName);
+    }
+
+    public function getLevelData() {
+        if (!isset(self::$level)) {
+            $level = new MediaDirectoryLevel(null, null, 1, $this->moduleName);
+            $arrLevels = $level->arrLevels;
+            $arrAllLevels = array();
+            
+            while ($arrLevels) {
+                $arrLevel = array_pop($arrLevels);
+                if ($arrLevel['levelChildren']) {
+                    $arrLevels = array_merge($arrLevels, $arrLevel['levelChildren']);
+                }
+                $arrAllLevels[$arrLevel['levelId']] = $arrLevel;
+            }
+            self::$level = $arrAllLevels;
+        }
+
+        return self::$level;
+    }
+
+    public function getCategoryData() {
+        if (!isset(self::$category)) {
+            $category = new MediaDirectoryCategory(null, null, 1, $this->moduleName);
+            $arrCategories = $category->arrCategories;
+            $arrAllCategories = array();
+            
+            while ($arrCategories) {
+                $arrCategory = array_pop($arrCategories);
+                if ($arrCategory['catChildren']) {
+                    $arrCategories = array_merge($arrCategories, $arrCategory['catChildren']);
+                }
+                $arrAllCategories[$arrCategory['catId']] = $arrCategory;
+            }
+            self::$category = $arrAllCategories;
+        }
+
+        return self::$category;
+    }
+
+    public function getFormData() {
+        if (!isset(self::$form)) {
+            self::$form = new MediaDirectoryForm(null, $this->moduleName);
+        }
+
+        return self::$form->arrForms;
     }
 
     /**
