@@ -77,7 +77,10 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
         }
 
         if (!$glob) {
-            $searchParts = $cx->getComponent('Cache')->getCacheFileNameSearchPartsFromUrl($urlPattern);
+            $searchParts = $cx->getComponent('Cache')->getCacheFileNameSearchPartsFromUrl(
+                $urlPattern,
+                $cx->getRequest()->getUrl()
+            );
             $glob = $strCachePath . $cx->getComponent('Cache')->getCacheFileNameFromUrl(
                 $urlPattern,
                 $cx->getRequest()->getUrl(),
@@ -131,7 +134,7 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
     protected function globDrop($glob) {
         $fileNames = glob($glob);
         foreach ($fileNames as $fileName) {
-            if (!preg_match('#/[0-9a-f]{32}((_[plutgc][a-zA-Z0-9]+)+)?$#', $fileName)) {
+            if (!preg_match('#/[0-9a-f]{32}((_[plutcgr][a-zA-Z0-9]+)+)?$#', $fileName)) {
                 continue;
             }
             try {

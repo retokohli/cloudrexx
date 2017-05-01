@@ -262,10 +262,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Returns the validated file search parts of the URL
      * @param string $url URL to parse
+     * @param string $originalUrl URL of the page that ESI is parsed for
      * @return array <fileNamePrefix>=><parsedValue> type array
      */
-    public function getCacheFileNameSearchPartsFromUrl($urlPattern) {
-        return $this->cache->getCacheFileNameSearchPartsFromUrl($urlPattern);
+    public function getCacheFileNameSearchPartsFromUrl($urlPattern, $originalUrl) {
+        return $this->cache->getCacheFileNameSearchPartsFromUrl($urlPattern, $originalUrl);
     }
 
     /**
