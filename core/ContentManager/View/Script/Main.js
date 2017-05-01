@@ -978,8 +978,12 @@ cx.cm = function(target) {
         }
     });
 
-    cx.jQuery("select#page_application").change(cx.cm.homeCheck, cx.jQuery("#pageId").val());
-    cx.jQuery('#page input[name="page[area]"]').keyup(cx.cm.homeCheck, cx.jQuery("#pageId").val());
+    cx.jQuery("select#page_application").change(function() {
+        return cx.cm.homeCheck(true, cx.jQuery("#pageId").val());
+    });
+    cx.jQuery('#page input[name="page[area]"]').keyup(function() {
+        return cx.cm.homeCheck(true, cx.jQuery("#pageId").val());
+    });
     cx.jQuery('#page input[name="page[area]"]').change(function() {
         cx.cm.loadApplicationTemplate(cx.jQuery('#page select[name="page[application]"]').val(),
                                       cx.jQuery('#page input[name="page[area]"]').val(),
@@ -1027,10 +1031,8 @@ cx.cm = function(target) {
     });
 };
 cx.cm.loadApplicationTemplate = function(application, area, template) {
-    cx.trigger("loadingStart", "contentmanager", {});
     cx.jQuery.ajax({
         url: "index.php?cmd=JsonData&object=page&act=loadApplicationTemplate&app=" + application + "&area=" + area + "&template=" + template,
-        async: false,
         success: function(response) {
             var templateFile = response.data.files;
             var select = cx.jQuery('#page select[name="page[applicationTemplate]"]');
@@ -1050,7 +1052,6 @@ cx.cm.loadApplicationTemplate = function(application, area, template) {
             cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
         }
     }).always(function(response) {
-        //cx.trigger("loadingEnd", "contentmanager", response);
         if(response.hasOwnProperty('area')){
             delete response.data.area;
         }
@@ -1060,9 +1061,7 @@ cx.cm.loadApplicationTemplate = function(application, area, template) {
         if(response.hasOwnProperty('path')){
             delete response.data.path;
         }
-        cx.trigger("loadingEnd", "contentmanager", response);
     });
-    //cx.trigger("loadingEnd", "contentmanager", {});
 }
 
 cx.cm.homeCheck = function(addClasses, pageId) {
