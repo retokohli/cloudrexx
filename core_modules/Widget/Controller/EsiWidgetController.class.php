@@ -248,6 +248,15 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 // this should return a currency object
                 return $currencyCode;
             },
+            'ref' => function($originalUrl) use ($params) {
+                $headers = $params['response']->getRequest()->getHeaders();
+                $originalUrl = str_replace(
+                    '$(HTTP_REFERER)',
+                    $headers['Referer'],
+                    $originalUrl
+                );
+                return $originalUrl;
+            }
         );
         foreach ($possibleGetParams as $possibleParam=>$callback) {
             if (!isset($params['get'][$possibleParam])) {

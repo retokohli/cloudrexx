@@ -134,7 +134,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         //            system.
         $request = array_merge_recursive($_GET, $_POST);
         ksort($request);
-        $currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
+        $this->currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
             $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         $country = '';
         $geoIp = $cx->getComponent('GeoIp');
@@ -145,7 +145,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             }
         }
         $this->arrPageContent = array(
-            'url' => $currentUrl,
+            'url' => $this->currentUrl,
             'request' => $request,
             'isMobile' => $isMobile,
             'country' => $country,
@@ -436,6 +436,9 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $this->cleanupCacheFiles($this->strCacheFilename, $pageId, $userbased);
 
         if (count($headers)) {
+            foreach ($headers as &$header) {
+                $header = (string) $header;
+            }
             $handleFile = $this->strCachePath . $this->strCacheFilename . '_h' . $pageId . $user;
             $File = new \Cx\Lib\FileSystem\File($handleFile);
             $File->write(serialize($headers));
@@ -495,7 +498,10 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $settings = $this->getSettings();
         $replaceEsiFn = function($matches) use (&$cxNotYetInitialized, $settings) {
             // return cached content if available
-            $cacheFile = $this->getCacheFileNameFromUrl($matches[1]);
+            $cacheFile = $this->getCacheFileNameFromUrl(
+                $matches[1],
+                $this->currentUrl
+            );
             if ($settings['internalSsiCache'] == 'on' && file_exists($this->strCachePath . $cacheFile)) {
                 if (filemtime($this->strCachePath . $cacheFile) > (time() - $this->intCachingTime)) {
                     return file_get_contents($this->strCachePath . $cacheFile);

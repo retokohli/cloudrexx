@@ -61,6 +61,7 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
     
     /**
      * Clears a cache page
+     * Please note that this will not work during an ESI sub-request.
      * @param string $urlPattern Drop all pages that match the pattern, for exact format, make educated guesses
      * @param string $domain Domain name to drop cache page of
      * @param int $port Port to drop cache page of
@@ -77,9 +78,17 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
 
         if (!$glob) {
             $searchParts = $cx->getComponent('Cache')->getCacheFileNameSearchPartsFromUrl($urlPattern);
-            $glob = $strCachePath . $cx->getComponent('Cache')->getCacheFileNameFromUrl($urlPattern, false) . '*' . implode('', $searchParts) . '*';
+            $glob = $strCachePath . $cx->getComponent('Cache')->getCacheFileNameFromUrl(
+                $urlPattern,
+                $cx->getRequest()->getUrl(),
+                false
+            ) . '*' . implode('', $searchParts) . '*';
             $this->toggleHttps($urlPattern);
-            $glob2 = $strCachePath . $cx->getComponent('Cache')->getCacheFileNameFromUrl($urlPattern, false) . '*' . implode('', $searchParts) . '*';
+            $glob2 = $strCachePath . $cx->getComponent('Cache')->getCacheFileNameFromUrl(
+                $urlPattern,
+                $cx->getRequest()->getUrl(),
+                false
+            ) . '*' . implode('', $searchParts) . '*';
         }
         
         if ($glob !== null) {
@@ -90,7 +99,10 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
             return;
         }
 
-        $cacheFile = $cx->getComponent('Cache')->getCacheFileNameFromUrl($urlPattern);
+        $cacheFile = $cx->getComponent('Cache')->getCacheFileNameFromUrl(
+            $urlPattern,
+            $cx->getRequest()->getUrl()
+        );
         try {
             $file = new \Cx\Lib\FileSystem\File($strCachePath . $cacheFile);
             $file->delete();
@@ -98,7 +110,10 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
         
         // make sure HTTP and HTTPS files are dropped
         $this->toggleHttps($urlPattern);
-        $cacheFile = $cx->getComponent('Cache')->getCacheFileNameFromUrl($urlPattern);
+        $cacheFile = $cx->getComponent('Cache')->getCacheFileNameFromUrl(
+            $urlPattern,
+            $cx->getRequest()->getUrl()
+        );
         try {
             $file = new \Cx\Lib\FileSystem\File($strCachePath . $cacheFile);
             $file->delete();
