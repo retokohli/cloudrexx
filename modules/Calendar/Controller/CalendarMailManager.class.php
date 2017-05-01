@@ -263,21 +263,7 @@ class CalendarMailManager extends CalendarLibrary {
 
             $recipients = $this->getSendMailRecipients($actionId, $event, $regId, $objRegistration);
 
-            $objMail = new \phpmailer();
-
-            if ($_CONFIG['coreSmtpServer'] > 0) {
-                $arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
-                if ($arrSmtp !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
-            }
-
-            $objMail->CharSet = CONTREXX_CHARSET;
+            $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
             $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
 
             foreach ($recipients as $mailAdress => $langId) {
@@ -316,13 +302,13 @@ class CalendarMailManager extends CalendarLibrary {
 
                     $replaceContent  = array($eventTitle, $eventStart, $eventEnd, $eventLink, $regLink, $userNick, $userFirstname, $userLastname, $domain, $date);
 
-                    $mailTitle       = str_replace($placeholder, $replaceContent, $mailTitle);
-                    $mailContentText = str_replace($placeholder, $replaceContent, $mailContentText);
+                    $mailTitle       = str_replace($placeholder, array_map('contrexx_xhtml2raw', $replaceContent), $mailTitle);
+                    $mailContentText = str_replace($placeholder, array_map('contrexx_xhtml2raw', $replaceContent), $mailContentText);
                     $mailContentHtml = str_replace($placeholder, $replaceContent, $mailContentHtml);
 
                     if (!empty($regId)) {
-                        $mailTitle       = str_replace($regSearch, $regReplace, $mailTitle);
-                        $mailContentText = str_replace($regSearch, $regReplace, $mailContentText);
+                        $mailTitle       = str_replace($regSearch, array_map('contrexx_xhtml2raw', $regReplace), $mailTitle);
+                        $mailContentText = str_replace($regSearch, array_map('contrexx_xhtml2raw', $regReplace), $mailContentText);
                         $mailContentHtml = str_replace($regSearch, $regReplace, $mailContentHtml);
 
                         $mailContentText = str_replace('[[REGISTRATION_DATA]]', $registrationDataText, $mailContentText);
