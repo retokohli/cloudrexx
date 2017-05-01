@@ -186,6 +186,7 @@ EOF;
             $bolShowCategorySelector = in_array(1, $this->arrSettings['categorySelectorExpSearch']);
         }
 
+        $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
         if ($this->arrSettings['settingsShowLevels'] && $bolShowLevelSelector) {
             if (intval($arrIds[0]) != 0) {
                 $intLevelId = intval($arrIds[0]);
@@ -193,7 +194,9 @@ EOF;
                 $intLevelId = 0;
             }
 
-            $intLevelId = isset($_GET['lid']) ? intval($_GET['lid']) : $intLevelId;
+            if (isset($requestParams['lid'])) {
+                $intLevelId = intval($requestParams['lid']);
+            }
 
             $objLevels = new MediaDirectoryLevel(null, null, 1, $this->moduleName);
             $strLevelDropdown = $objLevels->listLevels($this->_objTpl, 3, $intLevelId);
@@ -223,7 +226,9 @@ EOF;
             $intCategoryId = 0;
         }
 
-        $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : $intCategoryId;
+        if (isset($requestParams['cid'])) {
+            $intCategoryId = intval($requestParams['cid']);
+        }
 
         if ($bolShowCategorySelector) {
             $objCategories = new MediaDirectoryCategory(null, null, 1, $this->moduleName);

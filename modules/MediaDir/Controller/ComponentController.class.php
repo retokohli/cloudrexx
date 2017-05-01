@@ -200,4 +200,142 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $this->cx->getEvents()->addEventListener('SearchFindContent',$eventListener);
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
     }
+
+    /**
+     * Called for additional, component specific resolving
+     * 
+     * If /en/Path/to/Page is the path to a page for this component
+     * a request like /en/Path/to/Page/with/some/parameters will
+     * give an array like array('with', 'some', 'parameters') for $parts
+     * 
+     * This may be used to redirect to another page
+     * @param array $parts List of additional path parts
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Resolved virtual page
+     */
+    public function resolve($parts, $page) {
+        if (empty($parts)) {
+            $this->setCanonicalPage($page);
+            return;
+        }
+
+        $objMediaDirectoryEntry = new MediaDirectoryEntry($this->getName());
+        if (!$objMediaDirectoryEntry->arrSettings['usePrettyUrls']) {
+            return;
+        }
+
+        $levelId = null;
+        $categoryId = null;
+
+        $detailPage = $page;
+        $slugCount = count($parts);
+        $cmd = $page->getCmd();
+        $slug = array_pop($parts);
+
+        // detect entry
+        $entryId = $objMediaDirectoryEntry->findOneBySlug($slug);
+        if ($entryId) {
+            if (substr($cmd,0,6) != 'detail') {
+                $formId = null;
+                $formData = $objMediaDirectoryEntry->getFormData();
+                foreach ($formData as $arrForm) {
+                    if ($arrForm['formCmd'] == $cmd) {
+                        $formId= $arrForm['formId'];
+                        break;
+                    }
+                }
+
+                if (!$formId) {
+                    $objMediaDirectoryEntry->getEntries(intval($entryId),null,null,null,null,null,1,null,1);
+                    $formDefinition = $objMediaDirectoryEntry->getFormDefinitionOfEntry($entryId);
+                    $formId = $formDefinition['formId'];
+                }
+
+                $detailPage = $objMediaDirectoryEntry->getApplicationPageByEntry($formId);
+                if (!$detailPage) {
+                    return;
+                }
+                // TODO: we need an other method that does also load the additional infos (template, css, etc.)
+                //       this new method must also be used for symlink pages
+                $page->setContentOf($detailPage, true);
+                //$page->getFallbackContentFrom($detailPage);
+                $_GET['cmd']     = $_POST['cmd']     = $_REQUEST['cmd']     = $detailPage->getCmd();
+            }
+
+            $this->cx->getRequest()->getUrl()->setParam('eid', $entryId);
+
+            if (empty($parts)) {
+                $this->setCanonicalPage($detailPage);
+                return;
+            }
+
+            $slug = array_pop($parts);
+        }
+
+        // detect level and/or category
+        while ($slug && (!$levelId || !$categoryId)) {
+            // let's check if a category exists by the supplied slug
+            if (!$levelId && $objMediaDirectoryEntry->arrSettings['settingsShowLevels']) {
+                $objMediaDirectoryLevel = new MediaDirectoryLevel(null, null, 0, $this->getName());
+                $levelId = $objMediaDirectoryLevel->findOneBySlug($slug);
+                if ($levelId) {
+                    $this->cx->getRequest()->getUrl()->setParam('lid', $levelId);
+                }
+            }
+
+            // let's check if a category exists by the supplied slug
+            if (!$categoryId) {
+                $objMediaDirectoryCategory = new MediaDirectoryCategory(null, null, 0, $this->getName());
+                $categoryId = $objMediaDirectoryCategory->findOneBySlug($slug);
+                if ($categoryId) {
+                    $this->cx->getRequest()->getUrl()->setParam('cid', $categoryId);
+                }
+            }
+
+            $slug = array_pop($parts);
+        }
+
+        if ($levelId || $categoryId) {
+            $this->setCanonicalPage($detailPage);
+        }
+    }
+
+    protected function setCanonicalPage($canonicalPage) {
+        $this->canonicalPage = $canonicalPage;
+    }
+    
+    /**
+     * Do something with a Response object
+     * You may do page alterations here (like changing the metatitle)
+     * You may do response alterations here (like set headers)
+     * PLEASE MAKE SURE THIS METHOD IS MOCKABLE. IT MAY ONLY INTERACT WITH
+     * resolve() HOOK.
+     *
+     * @param \Cx\Core\Routing\Model\Entity\Response $response Response object to adjust
+     */
+    public function adjustResponse(\Cx\Core\Routing\Model\Entity\Response $response) {
+        $canonicalUrlArguments = array('eid', 'cid', 'lid', 'preview', 'pos');
+        if (in_array('eid', array_keys($response->getRequest()->getUrl()->getParamArray()))) {
+            $canonicalUrlArguments = array_filter($canonicalUrlArguments, function($key) {return !in_array($key, array('cid', 'lid'));});
+        }
+
+        // filter out all non-relevant URL arguments
+        /*$params = array_filter(
+            $this->cx->getRequest()->getUrl()->getParamArray(),
+            function($key) {return in_array($key, $canonicalUrlArguments);},
+            \ARRAY_FILTER_USE_KEY
+        );*/
+
+        foreach ($response->getRequest()->getUrl()->getParamArray() as $key => $value) {
+            if (!in_array($key, $canonicalUrlArguments)) {
+                continue;
+            }
+            $params[$key] = $value;
+        }
+
+        $canonicalUrl = \Cx\Core\Routing\Url::fromPage($this->canonicalPage, $params);
+        $response->setHeader(
+            'Link',
+            '<' . $canonicalUrl->toString() . '>; rel="canonical"'
+        );
+    }
 }
