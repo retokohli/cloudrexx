@@ -182,7 +182,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
 
     /**
      * This makes object of the given params (if possible)
-     * Known params are page, lang, user, theme, channel, country and currency
+     * Known params are page, lang, user, theme, channel, country, currency and ref
      * @param array $params Associative array of params
      * @return array Associative array of params
      */
