@@ -340,7 +340,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         //get searchform
         if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
             $objSearch = new MediaDirectorySearch($this->moduleName);
-            $objSearch->getSearchform($this->_objTpl, 1);
+            $objSearch->getSearchform($this->_objTpl);
         }
 
         // note: the initialization of the objects $objLevel and $objCategory
@@ -561,7 +561,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         $searchTerm = null;
         if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
             $objSearch = new MediaDirectorySearch($this->moduleName);
-            $objSearch->getSearchform($this->_objTpl, 1);
+            $objSearch->getSearchform($this->_objTpl);
             $searchTerm = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : null;
         }
 
@@ -690,84 +690,96 @@ class MediaDirectory extends MediaDirectoryLibrary
             $this->getNavtree($intCategoryId, $intLevelId);
         }
 
-        if($intEntryId != 0 && $this->_objTpl->blockExists($this->moduleNameLC.'EntryList')) {
-            $objEntry = new MediaDirectoryEntry($this->moduleName);
-            $objEntry->getEntries($intEntryId,$intLevelId,$intCategoryId,null,null,null,1,null,1);
-            $objEntry->listEntries($this->_objTpl, 2);
-            $objEntry->updateHits($intEntryId);
-
-            //set meta attributes
-            $entry = $objEntry->arrEntries[$intEntryId];
-
-            $objInputfields = new MediaDirectoryInputfield($entry['entryFormId'], false, $entry['entryTranslationStatus'], $this->moduleName);
-            $inputFields = $objInputfields->getInputfields();
-
-            $titleChanged = false;
-            $contentChanged = false;
-
-            foreach ($inputFields as $arrInputfield) {
-                $contextType = isset($arrInputfield['context_type']) ? $arrInputfield['context_type'] : '';
-                if (!in_array($contextType, array('title', 'content', 'image'))) {
-                    continue;
-                }
-                $strType = isset($arrInputfield['type_name']) ? $arrInputfield['type_name'] : '';
-                $strInputfieldClass = "\Cx\Modules\MediaDir\Model\Entity\MediaDirectoryInputfield" . ucfirst($strType);
-                try {
-                    $objInputfield = safeNew($strInputfieldClass, $this->moduleName);
-                    $arrTranslationStatus = (contrexx_input2int($arrInputfield['type_multi_lang']) == 1)
-                        ? $entry['entryTranslationStatus']
-                        : null;
-                    $arrInputfieldContent = $objInputfield->getContent($entry['entryId'], $arrInputfield, $arrTranslationStatus);
-                    switch ($contextType) {
-                        case 'title':
-                            $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE'];
-                            if ($inputfieldValue) {
-                                $this->metaTitle .= ' - ' . $inputfieldValue;
-                                $this->pageTitle = $inputfieldValue;
-                            }
-                            $titleChanged = true;
-                            break;
-                        case 'content':
-                            $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE'];
-                            if ($inputfieldValue) {
-                                $this->metaDescription = $inputfieldValue;
-                            }
-                            $contentChanged = true;
-                            break;
-                        case 'image':
-                            $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE_SRC'];
-                            if ($inputfieldValue) {
-                                $this->metaImage = $inputfieldValue;
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                } catch (\Exception $e) {
-                    \DBG::log($e->getMessage());
-                    continue;
-                }
-            }
-
-            $firstInputfieldValue = $objEntry->arrEntries[$intEntryId]['entryFields'][0];
-            if (!$titleChanged && $firstInputfieldValue) {
-                $this->pageTitle = $firstInputfieldValue;
-                $this->metaTitle = $firstInputfieldValue;
-            }
-            if (!$contentChanged && $firstInputfieldValue) {
-                $this->metaDescription = $firstInputfieldValue;
-            }
-
-            if(empty($objEntry->arrEntries)) {
-                $this->_objTpl->hideBlock($this->moduleNameLC.'EntryList');
-                $this->_objTpl->clearVariables();
-
-                header("Location: index.php?section=".$this->moduleName);
-                exit;
-            }
-        } else {
+        if (!$intEntryId || !$this->_objTpl->blockExists($this->moduleNameLC.'EntryList')) {
             header("Location: index.php?section=".$this->moduleName);
             exit;
+        }
+
+        $objEntry = new MediaDirectoryEntry($this->moduleName);
+        $objEntry->getEntries($intEntryId,$intLevelId,$intCategoryId,null,null,null,1,null,1);
+
+        if (empty($objEntry->arrEntries)) {
+            $this->_objTpl->hideBlock($this->moduleNameLC.'EntryList');
+            $this->_objTpl->clearVariables();
+
+            header("Location: index.php?section=".$this->moduleName);
+            exit;
+        }
+
+        // parse search form
+        if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
+            $objSearch = new MediaDirectorySearch($this->moduleName);
+            try {
+                $objSearch->getSearchform($this->_objTpl, $objEntry->getFormUrl());
+            } catch (MediaDirectoryEntryException $e) {
+                \DBG::log('Unable to load search form: '.$e->getMessage());
+            }
+        }
+
+        // parse entry details
+        $objEntry->listEntries($this->_objTpl, 2);
+        $objEntry->updateHits($intEntryId);
+
+        //set meta attributes
+        $entry = $objEntry->arrEntries[$intEntryId];
+
+        $objInputfields = new MediaDirectoryInputfield($entry['entryFormId'], false, $entry['entryTranslationStatus'], $this->moduleName);
+        $inputFields = $objInputfields->getInputfields();
+
+        $titleChanged = false;
+        $contentChanged = false;
+
+        foreach ($inputFields as $arrInputfield) {
+            $contextType = isset($arrInputfield['context_type']) ? $arrInputfield['context_type'] : '';
+            if (!in_array($contextType, array('title', 'content', 'image'))) {
+                continue;
+            }
+            $strType = isset($arrInputfield['type_name']) ? $arrInputfield['type_name'] : '';
+            $strInputfieldClass = "\Cx\Modules\MediaDir\Model\Entity\MediaDirectoryInputfield" . ucfirst($strType);
+            try {
+                $objInputfield = safeNew($strInputfieldClass, $this->moduleName);
+                $arrTranslationStatus = (contrexx_input2int($arrInputfield['type_multi_lang']) == 1)
+                    ? $entry['entryTranslationStatus']
+                    : null;
+                $arrInputfieldContent = $objInputfield->getContent($entry['entryId'], $arrInputfield, $arrTranslationStatus);
+                switch ($contextType) {
+                    case 'title':
+                        $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE'];
+                        if ($inputfieldValue) {
+                            $this->metaTitle .= ' - ' . $inputfieldValue;
+                            $this->pageTitle = $inputfieldValue;
+                        }
+                        $titleChanged = true;
+                        break;
+                    case 'content':
+                        $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE'];
+                        if ($inputfieldValue) {
+                            $this->metaDescription = $inputfieldValue;
+                        }
+                        $contentChanged = true;
+                        break;
+                    case 'image':
+                        $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE_SRC'];
+                        if ($inputfieldValue) {
+                            $this->metaImage = $inputfieldValue;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            } catch (\Exception $e) {
+                \DBG::log($e->getMessage());
+                continue;
+            }
+        }
+
+        $firstInputfieldValue = $objEntry->arrEntries[$intEntryId]['entryFields'][0];
+        if (!$titleChanged && $firstInputfieldValue) {
+            $this->pageTitle = $firstInputfieldValue;
+            $this->metaTitle = $firstInputfieldValue;
+        }
+        if (!$contentChanged && $firstInputfieldValue) {
+            $this->metaDescription = $firstInputfieldValue;
         }
     }
 
@@ -795,7 +807,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         //get searchform
         if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
             $objSearch = new MediaDirectorySearch($this->moduleName);
-            $objSearch->getSearchform($this->_objTpl, 1);
+            $objSearch->getSearchform($this->_objTpl);
         }
 
         $objEntry = new MediaDirectoryEntry($this->moduleName);
@@ -818,7 +830,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         //get searchform
         if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
             $objSearch = new MediaDirectorySearch($this->moduleName);
-            $objSearch->getSearchform($this->_objTpl, 1);
+            $objSearch->getSearchform($this->_objTpl);
         }
 
         $objEntry = new MediaDirectoryEntry($this->moduleName);
@@ -923,7 +935,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         //get searchform
         if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
             $objSearch = new MediaDirectorySearch($this->moduleName);
-            $objSearch->getSearchform($this->_objTpl, 1);
+            $objSearch->getSearchform($this->_objTpl);
         }
 
         $objEntry = new MediaDirectoryEntry($this->moduleName);
