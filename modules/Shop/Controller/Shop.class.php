@@ -128,9 +128,8 @@ class Shop extends ShopLibrary
      */
     static function init()
     {
-//\DBG::log("Shop::init(): Entered");
         if (self::$initialized) {
-die("Shop::init(): ERROR: Shop::init() called more than once!");
+            return;
         }
         self::init_session();
         if (   empty($_REQUEST['section'])

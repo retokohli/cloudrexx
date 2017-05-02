@@ -61,13 +61,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 \Env::get('cx')->getPage()->setContent(Shop::getPage(\Env::get('cx')->getPage()->getContent()));
-
-                // show product title if the user is on the product details page
-                if ($page_metatitle = Shop::getPageTitle()) {
-                    \Env::get('cx')->getPage()->setTitle($page_metatitle);
-                    \Env::get('cx')->getPage()->setContentTitle($page_metatitle);
-                    \Env::get('cx')->getPage()->setMetaTitle($page_metatitle);
-                }
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
@@ -120,23 +113,38 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Do something with a Response object
-     * You may do page alterations here (like changing the metatitle)
-     * You may do response alterations here (like set headers)
-     * PLEASE MAKE SURE THIS METHOD IS MOCKABLE. IT MAY ONLY INTERACT WITH
-     * resolve() HOOK.
-     *
-     * @param \Cx\Core\Routing\Model\Entity\Response $response Response object to adjust
+     * {@inheritdoc}
      */
     public function adjustResponse(\Cx\Core\Routing\Model\Entity\Response $response) {
+        $page   = $response->getPage();
         $params = $response->getRequest()->getUrl()->getParamArray();
         unset($params['section']);
         unset($params['cmd']);
-        $canonicalUrl = \Cx\Core\Routing\Url::fromPage($response->getPage(), $params);
+        $canonicalUrl = \Cx\Core\Routing\Url::fromPage($page, $params);
         $response->setHeader(
             'Link',
             '<' . $canonicalUrl->toString() . '>; rel="canonical"'
         );
+
+        if (
+            !$page ||
+            $page->getModule() !== $this->getName() ||
+            !in_array(
+                $page->getCmd(),
+                array('', 'details', 'lastFive', 'products')
+            )
+        ) {
+            return;
+        }
+
+        Shop::getPage('');
+        // show product title if the user is on the product details page
+        $page_metatitle = Shop::getPageTitle();
+        if ($page_metatitle) {
+            $page->setTitle($page_metatitle);
+            $page->setContentTitle($page_metatitle);
+            $page->setMetaTitle($page_metatitle);
+        }
     }
 
     /**
