@@ -92,7 +92,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
     function getInputfields()
     {
-        global $_ARRAYLANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $objDatabase;
 
         // LANG_ID is set to backend or frontend interface language.
         // If LANG_ID is not yet set, then we've been requested from

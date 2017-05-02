@@ -496,7 +496,7 @@ class CacheLib
      * @throws \Exception If JsonAdapter request did not succeed
      * @return string API content or empty string
      */
-    protected function getApiResponseForUrl($url, $response = null) {
+    protected function getApiResponseForUrl($url) {
         // Initialize only when needed, we need DB for this!
         if (empty($this->apiUrlString)) {
             $this->apiUrlString = substr(\Cx\Core\Routing\Url::fromApi('', array(), array()), 0, -1);
@@ -521,9 +521,18 @@ class CacheLib
         unset($params['object']);
         unset($params['act']);
         $arguments = array('get' => contrexx_input2raw($params));
-        if ($response) {
-            $arguments['response'] = $response;
-        }
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $arguments['response'] = new \Cx\Core\Routing\Model\Entity\Response(
+            null,
+            200,
+            new \Cx\Core\Routing\Model\Entity\Request(
+                'get',
+                new \Cx\Core\Routing\Url($url),
+                array(
+                    'Referer' => $cx->getRequest()->getUrl()->toString(),
+                )
+            )
+        );
 
         if (!$this->jsonData) {
             $this->jsonData = new \Cx\Core\Json\JsonData();
@@ -574,6 +583,7 @@ class CacheLib
             'channel',
             'country',
             'currency',
+            'ref',
             'targetComponent',
             'targetEntity',
             'targetId',
@@ -1015,9 +1025,10 @@ class CacheLib
     /**
      * Returns the validated file search parts of the URL
      * @param string $url URL to parse
+     * @param string $originalUrl URL of the page that ESI is parsed for
      * @return array <fileNamePrefix>=><parsedValue> type array
      */
-    public function getCacheFileNameSearchPartsFromUrl($url) {
+    public function getCacheFileNameSearchPartsFromUrl($url, $originalUrl) {
         try {
             $url = new \Cx\Lib\Net\Model\Entity\Url($url);
             $params = $url->getParsedQuery();
@@ -1032,6 +1043,7 @@ class CacheLib
             'ch' => 'channel',
             'g' => 'country',
             'c' => 'currency',
+            'r' => 'ref',
             'tc' => 'targetComponent',
             'te' => 'targetEntity',
             'ti' => 'targetId',
@@ -1041,9 +1053,17 @@ class CacheLib
             if (!isset($params[$long])) {
                 continue;
             }
-            // security: abort if any mystirius characters are found
+            // security: abort if any mysterious characters are found
             if (!preg_match('/^[a-zA-Z0-9-]+$/', $params[$long])) {
                 return array();
+            }
+            if ($long == 'ref') {
+                $params[$long] = str_replace(
+                    '$(HTTP_REFERER)',
+                    $originalUrl,
+                    $params[$long]
+                );
+                $params[$long] = md5($params[$long]);
             }
             $fileNameSearchParts[$short] = '_' . $short . $params[$long];
         }
@@ -1053,10 +1073,12 @@ class CacheLib
     /**
      * Gets the local cache file name for an URL
      * @param string $url URL to get file name for
-     * @return string File name
+     * @param string $originalUrl URL of the page that ESI is parsed for
+     * @param boolean $withCacheInfoPart (optional) Adds info part (default true)
+     * @return string File name (without path)
      */
-    public function getCacheFileNameFromUrl($url, $withCacheInfoPart = true) {
-        $cacheInfoParts = $this->getCacheFileNameSearchPartsFromUrl($url);
+    public function getCacheFileNameFromUrl($url, $originalUrl, $withCacheInfoPart = true) {
+        $cacheInfoParts = $this->getCacheFileNameSearchPartsFromUrl($url, $originalUrl);
         try {
             $url = new \Cx\Lib\Net\Model\Entity\Url($url);
             $params = $url->getParsedQuery();
@@ -1071,12 +1093,22 @@ class CacheLib
             'channel',
             'country',
             'currency',
+            'ref',
             'targetComponent',
             'targetEntity',
             'targetId',
         );
         foreach ($correctIndexOrder as $paramName) {
             unset($params[$paramName]);
+        }
+        // Make sure placeholders are replaced before generating filename.
+        // Otherwise the filename will be non-unique.
+        if (isset($params['ref'])) {
+            $params['ref'] = str_replace(
+                '$(HTTP_REFERER)',
+                $originalUrl,
+                $params['ref']
+            );
         }
         $fileName = '';
         if (is_object($url)) {
