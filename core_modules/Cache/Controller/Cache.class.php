@@ -503,7 +503,25 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 $this->currentUrl
             );
             if ($settings['internalSsiCache'] == 'on' && file_exists($this->strCachePath . $cacheFile)) {
-                if (filemtime($this->strCachePath . $cacheFile) > (time() - $this->intCachingTime)) {
+                $expireTimestamp = -1;
+                if (file_exists($this->strCachePath . $cacheFile . '_h')) {
+                    $expireTimestamp = file_get_contents(
+                        $this->strCachePath . $cacheFile . '_h'
+                    );
+                }
+
+                if (
+                    (
+                        $expireTimestamp && $expireTimestamp > time()
+                    ) ||
+                    (
+                        !$expireTimestamp && filemtime(
+                            $this->strCachePath . $cacheFile
+                        ) > (
+                            time() - $this->intCachingTime
+                        )
+                    )
+                ) {
                     return file_get_contents($this->strCachePath . $cacheFile);
                 } else {
                     $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
