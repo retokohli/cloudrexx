@@ -145,6 +145,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             '<' . $canonicalUrl->toString() . '>; rel="canonical"'
         );
 
+        if ($page->getModule() !== $this->getName()) {
+            return;
+        }
         $gallery    = new Gallery('');
         $pageValues = $gallery->getPageAttributes();
         if ($pageValues) {
