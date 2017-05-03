@@ -87,6 +87,7 @@ class MediaDirectoryLibrary
         '_' => '',
         '-' => '_',
         ' ' => '-',
+        '&' => '<and>',
     );
 
     protected static $level = null;
@@ -1013,10 +1014,13 @@ EOF;
      *                                                 the requested page as fallback in
      *                                                 case no matching mediadir application
      *                                                 could be found
+     * @param   boolean $includeDetailApplicationPage  (Optional) Whether or not to include
+     *                                                 the detail application page as a 
+     *                                                 feasible url target
      * @return  \Cx\Core\Routing\Url    Returns an Url object of the mediadir location.
      *                                  If location is invalid, method will return NULL.
      */
-    public function getAutoSlugPath($arrEntry = null, $categoryId = null, $levelId = null, $useRequestedPageAsFallback = false) {
+    public function getAutoSlugPath($arrEntry = null, $categoryId = null, $levelId = null, $useRequestedPageAsFallback = false, $includeDetailApplicationPage = true) {
         $entryId = null;
         $entryName = null;
         $formId = null;
@@ -1075,7 +1079,7 @@ EOF;
         }
 
         // fetch specific detail page
-        if (!$page && $entryId) {
+        if (!$page && $includeDetailApplicationPage && $entryId) {
             $page = $this->getApplicationPageByEntry($formId);
         }
 
