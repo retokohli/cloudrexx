@@ -338,6 +338,8 @@ $_ARRAYLANG['TXT_MEDIADIR_ACTIVE'] = "Active";
 $_ARRAYLANG['TXT_MEDIADIR_AVERAGE_SYMBOL'] = "&Oslash;";
 $_ARRAYLANG['TXT_MEDIADIR_COMMENT'] = "Comment";
 $_ARRAYLANG['TXT_MEDIADIR_BEHAVIOR'] = 'Behavior';
+$_ARRAYLANG['TXT_MEDIADIR_PRETTY_URLS'] = 'Pretty URLs';
+$_ARRAYLANG['TXT_MEDIADIR_PRETTY_URLS_INFO'] = 'This option activates the use of pretty URLs. Links within the Media Directory will use aliases instead of URL arguments. More information discribing this feature can be found in the <a href="%s" target="_blank">documentation</a>.';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR'] = 'Legacy behavior';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_INFO'] = 'This option activates legacy behavior which causes the following behavioral changes: %s';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_SEARCH_ON_CATEGORY_VIEW'] = 'The level and category dropdown selection will not be available on the expanded search functionality when directly accessing a category (through the page\'s area/CMD) or on the detail section of an entry';
