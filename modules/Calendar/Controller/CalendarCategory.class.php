@@ -367,8 +367,8 @@ class CalendarCategory extends CalendarLibrary
 		        }
 		        
 		        if ($objResult !== false) {
-                            //Clear cache
-                            $this->triggerEvent('clearEsiCache');
+                    //Clear cache
+                    $this->triggerEvent('clearEsiCache');
 		            return true;
 		        } else {
 		            return false;
@@ -430,7 +430,7 @@ class CalendarCategory extends CalendarLibrary
 	            $objResult = $objDatabase->Execute($query);
 	            if ($objResult !== false) {
                     // Clear Cache
-                        $this->triggerEvent('clearEsiCache');
+                    $this->triggerEvent('clearEsiCache');
 	            	return true;
 	            } else {
 	            	return false;

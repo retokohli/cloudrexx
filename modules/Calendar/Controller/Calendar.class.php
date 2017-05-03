@@ -195,14 +195,13 @@ class Calendar extends CalendarLibrary
             $cmd = 'category';
         }
 
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         switch ($cmd) {
             case 'detail':
                 if( $id!= null && $_GET['date'] != null) {
                     // cache timeout: this event's start date (registrations!)
                     $start = null;
                     self::showEvent($page, $start);
-                    $response = $cx->getResponse();
+                    $response = $this->cx->getResponse();
                     $response->setExpirationDate($start);
                 } else {
                     \Cx\Core\Csrf\Controller\Csrf::redirect(
@@ -220,7 +219,7 @@ class Calendar extends CalendarLibrary
                 break;
             case 'boxes':
                 // cache timeout: end of day
-                $response = $cx->getResponse();
+                $response = $this->cx->getResponse();
                 $response->setExpirationDate(new \DateTime('today midnight'));
                 if (isset($_GET['act']) && $_GET['act'] == "list") {
                     self::boxesEventList();
@@ -232,7 +231,7 @@ class Calendar extends CalendarLibrary
                 // cache timeout: next expiring event end (of this category)
                 $firstEndDate = null;
                 self::showCategoryView($firstEndDate);
-                $response = $cx->getResponse();
+                $response = $this->cx->getResponse();
                 $response->setExpirationDate($firstEndDate);
                 break;
             case 'add':
@@ -250,7 +249,7 @@ class Calendar extends CalendarLibrary
                 $this->checkAccess('my_events');
                 $firstEndDate = null;
                 self::myEvents($firstEndDate);
-                $response = $cx->getResponse();
+                $response = $this->cx->getResponse();
                 $response->setExpirationDate($firstEndDate);
                 break;
             case 'success':
@@ -264,7 +263,7 @@ class Calendar extends CalendarLibrary
                 // cache timeout: next expiring event end (of all events)
                 $firstEndDate = null;
                 self::overview($firstEndDate);
-                $response = $cx->getResponse();
+                $response = $this->cx->getResponse();
                 $response->setExpirationDate($firstEndDate);
                 break;
         }
@@ -1297,8 +1296,7 @@ UPLOADER;
      */
     protected function getUploaderCode($fieldKey, $fieldName, $uploadCallBack = "uploadFinished", $allowImageOnly = true)
     {
-        $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
-        $cx->getComponent('Session')->getSession();
+        $this->cx->getComponent('Session')->getSession();
         try {
             $uploader      = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
             $uploaderId    = $uploader->getId();
@@ -1314,7 +1312,7 @@ UPLOADER;
             $uploader->setUploadLimit(1);
             $uploader->setOptions($uploadOptions);
             $uploader->setFinishedCallback(array(
-                $cx->getCodeBaseModulePath().'/Calendar/Controller/Calendar.class.php',
+                $this->cx->getCodeBaseModulePath().'/Calendar/Controller/Calendar.class.php',
                 '\Cx\Modules\Calendar\Controller\Calendar',
                 $uploadCallBack
             ));
