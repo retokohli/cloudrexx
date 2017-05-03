@@ -149,5 +149,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $eventListener = new \Cx\Modules\Calendar\Model\Event\CalendarEventListener($this->cx);
         $this->cx->getEvents()->addEventListener('SearchFindContent', $eventListener);
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
+
+        foreach ($this->getEntityClasses() as $entityClassName) {
+            $this->cx->getEvents()->addModelListener(\Doctrine\ORM\Events::onFlush, $entityClassName, $eventListener);
+        }
    }
 }

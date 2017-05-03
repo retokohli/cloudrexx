@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- *
+ * 
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,10 +24,10 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
-
+ 
 /**
- * Calendar
- *
+ * Calendar 
+ * 
  * @package    cloudrexx
  * @subpackage module_calendar
  * @author     Cloudrexx <info@cloudrexx.com>
@@ -38,7 +38,7 @@ namespace Cx\Modules\Calendar\Controller;
 
 /**
  * Calendar Class Host Manager
- *
+ * 
  * @package    cloudrexx
  * @subpackage module_calendar
  * @author     Cloudrexx <info@cloudrexx.com>
@@ -49,12 +49,12 @@ class CalendarCategory extends CalendarLibrary
 {
     /**
      * category id
-     *
+     * 
      * @access public
      * @var integer
      */
     public $id;
-
+    
     /**
      * category name
      *
@@ -62,7 +62,7 @@ class CalendarCategory extends CalendarLibrary
      * @var string
      */
     public $name;
-
+    
     /**
      * position
      *
@@ -70,7 +70,7 @@ class CalendarCategory extends CalendarLibrary
      * @var integer
      */
     public $pos;
-
+    
     /**
      * status
      *
@@ -78,7 +78,7 @@ class CalendarCategory extends CalendarLibrary
      * @var boolean
      */
     public $status;
-
+    
     /**
      * Category data
      *
@@ -87,33 +87,34 @@ class CalendarCategory extends CalendarLibrary
      * @see getData();
      */
     public $arrData = array();
-
+    
     /**
      * category manager constructor
-     *
+     * 
      * Loads the category by given id
-     *
-     * @param integer $id category id
+     * 
+     * @param integer $id category id     
      */
     function __construct($id=null){
         if($id != null) {
             self::get($id);
         }
+        $this->init();
     }
-
+    
     /**
      * Loads the catgory
-     *
+     *      
      * @param integer $catId
-     *
+     * 
      * @return null
      */
     function get($catId) {
         global $objDatabase, $_LANGID;
-
-        $query = "SELECT category.`id` AS `id`,
-                         category.`pos` AS `pos`,
-                         category.`status` AS `status`,
+        
+        $query = "SELECT category.`id` AS `id`, 
+                         category.`pos` AS `pos`, 
+                         category.`status` AS `status`, 
                          name.`name` AS `name`
                     FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_category AS category,
                          ".DBPREFIX."module_".$this->moduleTablePrefix."_category_name AS name
@@ -121,50 +122,50 @@ class CalendarCategory extends CalendarLibrary
                      AND category.id = name.cat_id
                      AND name.lang_id = '".intval($_LANGID)."'
                    LIMIT 1";
-
+        
         $objResult = $objDatabase->Execute($query);
-
+        
         if ($objResult !== false) {
-            $this->id = intval($catId);
-            $this->name = $objResult->fields['name'];
-            $this->pos = intval($objResult->fields['pos']);
-            $this->status = intval($objResult->fields['status']);
+        	$this->id = intval($catId);
+	        $this->name = $objResult->fields['name'];
+	        $this->pos = intval($objResult->fields['pos']);
+	        $this->status = intval($objResult->fields['status']);
         }
     }
-
+    
     /**
      * Loads the category data
-     *
+     * 
      * @return null
      */
     function getData() {
         global $objDatabase, $_LANGID;
-
+        
         //get category name(s)
-        $query = "SELECT `name`,`lang_id`
+        $query = "SELECT `name`,`lang_id` 
                     FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_category_name
                    WHERE cat_id = '".intval($this->id)."'";
-
+        
         $objResult = $objDatabase->Execute($query);
-
+        
         if ($objResult !== false) {
             while (!$objResult->EOF) {
-                if($objResult->fields['lang_id'] == $_LANGID) {
-                    $this->arrData['name'][0] = htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
-                }
+            	if($objResult->fields['lang_id'] == $_LANGID) {
+            		$this->arrData['name'][0] = htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
+            	}
                 $this->arrData['name'][intval($objResult->fields['lang_id'])] = htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
                 $objResult->MoveNext();
             }
         }
-
+        
         //get category host(s)
-        $query = "SELECT `title`,`id`
+        $query = "SELECT `title`,`id` 
                     FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_host
                    WHERE cat_id = '".intval($this->id)."'
                      AND confirmed = '1'";
-
+        
         $objResult = $objDatabase->Execute($query);
-
+        
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $this->arrData['hosts'][intval($objResult->fields['id'])] = htmlentities($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET);
@@ -172,174 +173,271 @@ class CalendarCategory extends CalendarLibrary
             }
         }
     }
-
+    
     /**
      * Switch the status of the catgory
-     *
+     * 
      * @return boolean true if status updated successfully, false otherwise
      */
-    function switchStatus(){
+    function switchStatus()
+    {
         global $objDatabase;
-
-        if($this->status == 1) {
-            $categoryStatus = 0;
-        } else {
-            $categoryStatus = 1;
-        }
-
-
+        
+        $categoryStatus = ($this->status == 1) ? 0 : 1;
+        $category = $this->getCategoryEntity(
+            $this->id, array('status' => $categoryStatus)
+        );
+        //Trigger preUpdate event for Category Entity
+        $this->triggerEvent(
+            'model/preUpdate', $category,
+            array('relations' => array('oneToMany' => 'getCategoryNames')), true
+        );
+        
         $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_category
                      SET status = '".intval($categoryStatus)."'
                    WHERE id = '".intval($this->id)."'";
-
+        
         $objResult = $objDatabase->Execute($query);
-
+        
         if ($objResult !== false) {
+            //Trigger postUpdate event for Category Entity
+            $this->triggerEvent('model/postUpdate', $category);
+            $this->triggerEvent('model/postFlush');
             return true;
         } else {
             return false;
         }
     }
-
+    
     /**
      * Save the category order
-     *
+     *      
      * @param integer $order order number of the category
-     *
+     * 
      * @return boolean true if order updated successfully, false otherwise
      */
-    function saveOrder($order) {
-        global $objDatabase, $_LANGID;
-
+    function saveOrder($order)
+    {
+        global $objDatabase;
+                  
+        $category = $this->getCategoryEntity($this->id, array('pos' => $order));
+        //Trigger preUpdate event for Category Entity
+        $this->triggerEvent(
+            'model/preUpdate', $category,
+            array('relations' => array('oneToMany' => 'getCategoryNames')), true
+        );
         $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_category
-                     SET `pos` = '".intval($order)."'
+                     SET `pos` = '".intval($order)."'          
                    WHERE id = '".intval($this->id)."'";
-
-        $objResult = $objDatabase->Execute($query);
-
+                               
+        $objResult = $objDatabase->Execute($query);   
+        
         if ($objResult !== false) {
+            //Trigger postUpdate event for Category Entity
+            $this->triggerEvent('model/postUpdate', $category);
+            $this->triggerEvent('model/postFlush');
             return true;
         } else {
             return false;
         }
     }
-
+    
     /**
      * Save the category
-     *
+     *      
      * @param array $data posted data from the user
-     *
+     * 
      * @return boolean true if data saved successfully, false otherwise
      */
-    function save($data) {
+    function save($data)
+    {
         global $objDatabase, $_LANGID;
-
-        $arrHosts = array();
-        $arrHosts = $data['selectedHosts'];
-        $arrNames = array();
+    	
+    	$arrHosts = array();
+    	$arrHosts = $data['selectedHosts'];
+    	$arrNames = array();
         $arrNames = $data['name'];
-
-        if(intval($this->id) == 0) {
-            $query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_category
-                                  (`pos`,`status`)
+        
+        $id       = $this->id;
+        $formData = array('categoryNames' => $arrNames);
+        $category = $this->getCategoryEntity($this->id, $formData);
+    	if(intval($this->id) == 0) {
+            //Trigger event prePersist for Category Entity
+            $this->triggerEvent(
+                'model/prePersist', $category,
+                array(
+                    'relations' => array('oneToMany' => 'getCategoryNames')
+                ), true
+            );
+    		$query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_category
+    		                      (`pos`,`status`)
                            VALUES ('0','0')";
-
-            $objResult = $objDatabase->Execute($query);
-
-            if($objResult === false) {
+    		
+	        $objResult = $objDatabase->Execute($query);
+	        
+    		if($objResult === false) {
                 return false;
             }
-
+            
             $this->id = intval($objDatabase->Insert_ID());
+	} else {
+            //Trigger event preUpdate for Category Entity
+            $this->triggerEvent(
+                'model/preUpdate', $category,
+                array(
+                    'relations' => array('oneToMany' => 'getCategoryNames')
+                ), true
+            );
+    	}
+    	
+        $categoryNames = $category->getCategoryNames();
+        foreach ($categoryNames as $categoryName) {
+            //Trigger event preRemove for CategoryName Entity
+            $this->triggerEvent('model/preRemove', $categoryName);
         }
-
-        //names
-        $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_category_name
+    	//names
+    	$query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_category_name
                         WHERE cat_id = '".intval($this->id)."'";
-
+            
         $objResult = $objDatabase->Execute($query);
-
+        
         if ($objResult !== false) {
-            foreach ($arrNames as $langId => $categoryName) {
-                if($langId != 0) {
-                    $categoryName = $categoryName=='' ? $arrNames[0] : $categoryName;
-
-                    if($_LANGID == $langId) {
-                        $categoryName = $arrNames[0] != $this->name ? $arrNames[0] : $categoryName;
-                    }
-
-                    $query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_category_name
-                                          (`cat_id`,`lang_id`,`name`)
-                                   VALUES ('".intval($this->id)."','".intval($langId)."','".contrexx_addslashes(contrexx_strip_tags($categoryName))."')";
-
-                    $objResult = $objDatabase->Execute($query);
-                }
+            foreach ($categoryNames as $categoryName) {
+                //Trigger event postRemove for CategoryName Entity
+                $this->triggerEvent('model/postRemove', $categoryName);
             }
+            $category = $this->getCategoryEntity($this->id);
+        	foreach ($arrNames as $langId => $categoryName) {
+        		if($langId != 0) {
+                    $categoryName = ($categoryName == '') ? $arrNames[0] : $categoryName;
+	        		if($_LANGID == $langId) {
+	        			$categoryName = $arrNames[0] != $this->name ? $arrNames[0] : $categoryName;
+	        		}
 
-            if ($objResult !== false) {
-                //hosts
-                foreach ($arrHosts as $key => $hostId) {
-                    $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_host
-                                 SET cat_id = '".intval($this->id)."'
-                               WHERE id = '".intval($hostId)."'";
-
-                    $objResult = $objDatabase->Execute($query);
-                }
-
-                if ($objResult !== false) {
-                    return true;
+                    $formData = array(
+                        'catId'  => intval($this->id),
+                        'name'   => contrexx_addslashes(contrexx_strip_tags($categoryName)),
+                        'langId' => intval($langId)
+                    );
+                    $categoryNameEntity = $this->getCategoryNameEntity(
+                        $category, $formData
+                    );
+                    //Trigger event prePersist for CategoryName Entity
+                    $this->triggerEvent(
+                        'model/prePersist', $categoryNameEntity,
+                        array(
+                            'relations' => array('manyToOne' => 'getCategory')
+                        ), true
+                    );
+	        		
+	        		$query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_category_name
+	                                      (`cat_id`,`lang_id`,`name`)
+                                   VALUES ('" . intval($this->id) . "','" . $formData['langId'] . "','" . $formData['name'] . "')";
+	            
+	                $objResult = $objDatabase->Execute($query);
+                    if ($objResult !== false) {
+                        //Trigger event postPersist for CategoryName Entity
+                        $this->triggerEvent('model/postPersist', $categoryNameEntity);
+        		}
+        	}
+            }
+            $this->triggerEvent('model/postFlush');
+        	
+	        if ($objResult !== false) {
+                if ($id == 0) {
+                    //Trigger event postPersist for Category Entity
+                    $this->triggerEvent('model/postPersist', $category, null, true);
                 } else {
-                    return false;
+                    //Trigger event postUpdate for Category Entity
+                    $this->triggerEvent('model/postUpdate', $category);
                 }
-            } else {
-                return false;
-            }
+                $this->triggerEvent('model/postFlush');
+
+                //hosts
+		        foreach ($arrHosts as $key => $hostId) {
+			        $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_host
+			                     SET cat_id = '".intval($this->id)."'          
+			                   WHERE id = '".intval($hostId)."'";
+			            
+			        $objResult = $objDatabase->Execute($query);
+		        }
+		        
+		        if ($objResult !== false) {
+		            return true;
+		        } else {
+		            return false;
+		        }
+	        } else {
+	            return false;
+	        }
         } else {
-            return false;
+        	return false;
         }
     }
-
+    
     /**
      * Delete the category
-     *
+     *     
      * @return boolean true if data deleted successfully, false otherwise
      */
-    function delete(){
+    function delete()
+    {
         global $objDatabase;
 
+        $category = $this->getCategoryEntity($this->id);
+        //Trigger preRemove event for Category Entity
+        $this->triggerEvent(
+            'model/preRemove', $category,
+            array(
+                'relations' => array('oneToMany' => 'getCategoryNames')
+            ), true
+        );
+        
         $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_category
                         WHERE id = '".intval($this->id)."'";
-
+        
         $objResult = $objDatabase->Execute($query);
-
+        
         if ($objResult !== false) {
-            $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_category_name
-                            WHERE cat_id = '".intval($this->id)."'";
-
-            $objResult = $objDatabase->Execute($query);
-
-            if ($objResult !== false) {
-                $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_host
-                             SET cat_id = '0'
-                           WHERE cat_id = '".intval($this->id)."'";
-
-                $objResult = $objDatabase->Execute($query);
-                if ($objResult !== false) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
+            $categoryNames = $category->getCategoryNames();
+            foreach ($categoryNames as $categoryName) {
+                //Trigger preRemove event for CategoryName Entity
+                $this->triggerEvent('model/preRemove', $categoryName);
             }
+        	$query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_category_name
+	                        WHERE cat_id = '".intval($this->id)."'";
+	        
+	        $objResult = $objDatabase->Execute($query);
+	        
+	        if ($objResult !== false) {
+                foreach ($categoryNames as $categoryName) {
+                    //Trigger postRemove event for CategoryName Entity
+                    $this->triggerEvent('model/postRemove', $categoryName);
+                }
+                //Trigger postRemove event for Category Entity
+                $this->triggerEvent('model/postRemove', $category);
+                $this->triggerEvent('model/postFlush');
+	        	$query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_host
+	        	             SET cat_id = '0'          
+	                       WHERE cat_id = '".intval($this->id)."'";
+	            
+	            $objResult = $objDatabase->Execute($query);
+	            if ($objResult !== false) {
+	            	return true;
+	            } else {
+	            	return false;
+	            }
+	        } else {
+                return false;
+	        }
         } else {
             return false;
         }
     }
-
+    
     /**
      * Count the number of entries in the category
-     *
+     *      
      * @return integer Entry count of the category
      */
     function countEntries($getAll = false, $onlyActive = false)
@@ -347,22 +445,22 @@ class CalendarCategory extends CalendarLibrary
 
         // get startdate
         if (!empty($_GET['from'])) {
-            $startDate = $this->getDateTime($_GET['from']);
-        } else if ($_GET['cmd'] == 'archive') {
-            $startDate = null;
+            $startDate = $this->getDateTime($_GET['from']); 
+        } else if ($_GET['cmd'] == 'archive') {                             
+            $startDate = null; 
         } else {
             $startDate = new \DateTime();
-            $startDay   = isset($_GET['day']) ? $_GET['day'] : $startDate->format('d');
+            $startDay   = isset($_GET['day']) ? $_GET['day'] : $startDate->format('d');   
             $startDay   = $_GET['cmd'] == 'boxes' ? 1 : $startDay;
-            $startMonth = isset($_GET['month']) ? $_GET['month'] : $startDate->format('m');
+            $startMonth = isset($_GET['month']) ? $_GET['month'] : $startDate->format('m'); 
             $startYear  = isset($_GET['year']) ? $_GET['year'] : $startDate->format('Y');
             $startDate->setDate($startYear, $startMonth, $startDay);
             $startDate->setTime(0, 0, 0);
-        }
-
+        }                   
+        
         // get enddate
         if (!empty($_GET['till'])) {
-            $endDate = $this->getDateTime($_GET['till']);
+            $endDate = $this->getDateTime($_GET['till']); 
         } else if ($_GET['cmd'] == 'archive') {
             $endDate = new \DateTime();
         } else {
@@ -387,5 +485,93 @@ class CalendarCategory extends CalendarLibrary
         $count = count($objEventManager->eventList);
 
         return $count;
+    }
+
+    /**
+     * Get category entity
+     *
+     * @param integer $id       category id
+     * @param array   $formData category field values
+     *
+     * @return \Cx\Modules\Calendar\Model\Entity\Category
+     */
+    public function getCategoryEntity($id, $formData = array())
+    {
+        if (empty($id)) {
+            $category = new \Cx\Modules\Calendar\Model\Entity\Category();
+        } else {
+            $category = $this
+                ->em
+                ->getRepository('Cx\Modules\Calendar\Model\Entity\Category')
+                ->findOneById($id);
+        }
+        $category->setVirtual(true);
+
+        if (!$category) {
+            return null;
+        }
+
+        if (!$formData) {
+            return $category;
+        }
+
+        foreach ($formData as $fieldName => $fieldValue) {
+            if ($fieldName == 'categoryNames' && is_array($fieldValue)) {
+                foreach ($fieldValue as $langId => $value) {
+                    if ($langId == 0) {
+                        continue;
+                    }
+                    $value = ($value == '') ? $fieldValue[0] : $value;
+                    if ($langId == $_LANGID) {
+                        $value = ($fieldValue[0] != $this->name)
+                            ? $fieldValue[0] : $value;
+                    }
+                    $formData = array(
+                        'catId'  => $id,
+                        'name'   => $value,
+                        'langId' => $langId
+                    );
+                    $this->getCategoryNameEntity($category, $formData);
+                }
+            } else {
+                $category->{'set'.ucfirst($fieldName)}($fieldValue);
+            }
+        }
+
+        return $category;
+    }
+
+    /**
+     * Get category name entity
+     *
+     * @param \Cx\Modules\Calendar\Model\Entity\Category $category    category entity
+     * @param array                                      $fieldValues categoryName field values
+     *
+     * @return \Cx\Modules\Calendar\Model\Entity\CategoryName
+     */
+    public function getCategoryNameEntity(
+        \Cx\Modules\Calendar\Model\Entity\Category $category,
+        $fieldValues
+    ){
+        $isNewEntity  = false;
+        $categoryName = $category->getCategoryNameByLangId($fieldValues['langId']);
+        if (!$categoryName) {
+            $isNewEntity  = true;
+            $categoryName = new \Cx\Modules\Calendar\Model\Entity\CategoryName();
+        }
+        $categoryName->setVirtual(true);
+        foreach ($fieldValues as $fieldName => $fieldValue) {
+            $methodName = 'set'.ucfirst($fieldName);
+            if (method_exists($categoryName, $methodName)) {
+                $categoryName->{$methodName}($fieldValue);
+            }
+        }
+
+        if ($isNewEntity) {
+            $category->addCategoryName($categoryName);
+            $categoryName->setCategory($category);
+        }
+
+        return $categoryName;
     }
 }
