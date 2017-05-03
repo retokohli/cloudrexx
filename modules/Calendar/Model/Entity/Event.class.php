@@ -280,6 +280,11 @@ class Event extends \Cx\Model\Base\EntityBase {
     protected $seriesPatternExceptions;
 
     /**
+     * @var text $seriesAdditionalRecurrences
+     */
+    protected $seriesAdditionalRecurrences;
+
+    /**
      * @var boolean $status
      */
     protected $status;
@@ -1387,6 +1392,26 @@ class Event extends \Cx\Model\Base\EntityBase {
     public function getSeriesPatternExceptions()
     {
         return $this->seriesPatternExceptions;
+    }
+
+    /**
+     * Set seriesAdditionalRecurrences
+     *
+     * @param text $seriesAdditionalRecurrences
+     */
+    public function setSeriesAdditionalRecurrences($seriesAdditionalRecurrences)
+    {
+        $this->seriesAdditionalRecurrences = $seriesAdditionalRecurrences;
+    }
+
+    /**
+     * Get seriesAdditionalRecurrences
+     *
+     * @return text $seriesAdditionalRecurrences
+     */
+    public function getSeriesAdditionalRecurrences()
+    {
+        return $this->seriesAdditionalRecurrences;
     }
 
     /**

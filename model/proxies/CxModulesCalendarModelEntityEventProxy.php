@@ -591,6 +591,18 @@ class CxModulesCalendarModelEntityEventProxy extends \Cx\Modules\Calendar\Model\
         return parent::getSeriesPatternExceptions();
     }
 
+    public function setSeriesAdditionalRecurrences($seriesAdditionalRecurrences)
+    {
+        $this->_load();
+        return parent::setSeriesAdditionalRecurrences($seriesAdditionalRecurrences);
+    }
+
+    public function getSeriesAdditionalRecurrences()
+    {
+        $this->_load();
+        return parent::getSeriesAdditionalRecurrences();
+    }
+
     public function setStatus($status)
     {
         $this->_load();
@@ -699,6 +711,18 @@ class CxModulesCalendarModelEntityEventProxy extends \Cx\Modules\Calendar\Model\
         return parent::getPlaceZip();
     }
 
+    public function setPlaceWebsite($placeWebsite)
+    {
+        $this->_load();
+        return parent::setPlaceWebsite($placeWebsite);
+    }
+
+    public function getPlaceWebsite()
+    {
+        $this->_load();
+        return parent::getPlaceWebsite();
+    }
+
     public function setPlaceLink($placeLink)
     {
         $this->_load();
@@ -709,6 +733,18 @@ class CxModulesCalendarModelEntityEventProxy extends \Cx\Modules\Calendar\Model\
     {
         $this->_load();
         return parent::getPlaceLink();
+    }
+
+    public function getPlacePhone()
+    {
+        $this->_load();
+        return parent::getPlacePhone();
+    }
+
+    public function setPlacePhone($placePhone)
+    {
+        $this->_load();
+        return parent::setPlacePhone($placePhone);
     }
 
     public function setPlaceMap($placeMap)
@@ -759,6 +795,18 @@ class CxModulesCalendarModelEntityEventProxy extends \Cx\Modules\Calendar\Model\
         return parent::getOrgZip();
     }
 
+    public function setOrgWebsite($orgWebsite)
+    {
+        $this->_load();
+        return parent::setOrgWebsite($orgWebsite);
+    }
+
+    public function getOrgWebsite()
+    {
+        $this->_load();
+        return parent::getOrgWebsite();
+    }
+
     public function setOrgLink($orgLink)
     {
         $this->_load();
@@ -769,6 +817,18 @@ class CxModulesCalendarModelEntityEventProxy extends \Cx\Modules\Calendar\Model\
     {
         $this->_load();
         return parent::getOrgLink();
+    }
+
+    public function getOrgPhone()
+    {
+        $this->_load();
+        return parent::getOrgPhone();
+    }
+
+    public function setOrgPhone($orgPhone)
+    {
+        $this->_load();
+        return parent::setOrgPhone($orgPhone);
     }
 
     public function setOrgEmail($orgEmail)
@@ -924,7 +984,7 @@ class CxModulesCalendarModelEntityEventProxy extends \Cx\Modules\Calendar\Model\
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'type', 'startDate', 'endDate', 'useCustomDateDisplay', 'showStartDateList', 'showEndDateList', 'showStartTimeList', 'showEndTimeList', 'showTimeTypeList', 'showStartDateDetail', 'showEndDateDetail', 'showStartTimeDetail', 'showEndTimeDetail', 'showTimeTypeDetail', 'google', 'access', 'priority', 'price', 'link', 'pic', 'attach', 'placeMediadirId', 'showIn', 'invitedGroups', 'invitedMails', 'invitationSent', 'invitationEmailTemplate', 'registration', 'registrationNum', 'registrationNotification', 'emailTemplate', 'ticketSales', 'numSeating', 'seriesStatus', 'seriesType', 'seriesPatternCount', 'seriesPatternWeekday', 'seriesPatternDay', 'seriesPatternWeek', 'seriesPatternMonth', 'seriesPatternType', 'seriesPatternDouranceType', 'seriesPatternEnd', 'seriesPatternEndDate', 'seriesPatternBegin', 'seriesPatternExceptions', 'status', 'confirmed', 'showDetailView', 'author', 'allDay', 'locationType', 'placeId', 'placeStreet', 'placeZip', 'placeLink', 'placeMap', 'hostType', 'orgStreet', 'orgZip', 'orgLink', 'orgEmail', 'hostMediadirId', 'registrationExternalLink', 'registrationExternalFullyBooked', 'eventFields', 'registrations', 'category', 'registrationForm');
+        return array('__isInitialized__', 'id', 'type', 'startDate', 'endDate', 'useCustomDateDisplay', 'showStartDateList', 'showEndDateList', 'showStartTimeList', 'showEndTimeList', 'showTimeTypeList', 'showStartDateDetail', 'showEndDateDetail', 'showStartTimeDetail', 'showEndTimeDetail', 'showTimeTypeDetail', 'google', 'access', 'priority', 'price', 'link', 'pic', 'attach', 'placeMediadirId', 'showIn', 'invitedGroups', 'invitedMails', 'invitationSent', 'invitationEmailTemplate', 'registration', 'registrationNum', 'registrationNotification', 'emailTemplate', 'ticketSales', 'numSeating', 'seriesStatus', 'seriesType', 'seriesPatternCount', 'seriesPatternWeekday', 'seriesPatternDay', 'seriesPatternWeek', 'seriesPatternMonth', 'seriesPatternType', 'seriesPatternDouranceType', 'seriesPatternEnd', 'seriesPatternEndDate', 'seriesPatternBegin', 'seriesPatternExceptions', 'seriesAdditionalRecurrences', 'status', 'confirmed', 'showDetailView', 'author', 'allDay', 'locationType', 'placeId', 'placeStreet', 'placeZip', 'placeWebsite', 'placeLink', 'placePhone', 'placeMap', 'hostType', 'orgStreet', 'orgZip', 'orgWebsite', 'orgLink', 'orgPhone', 'orgEmail', 'hostMediadirId', 'registrationExternalLink', 'registrationExternalFullyBooked', 'eventFields', 'registrations', 'category', 'registrationForm');
     }
 
     public function __clone()

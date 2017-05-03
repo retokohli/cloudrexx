@@ -147,6 +147,9 @@ Cx\Modules\Calendar\Model\Entity\Event:
     seriesPatternExceptions:
       type: text
       column: series_pattern_exceptions
+    seriesAdditionalRecurrences:
+      type: text
+      column: series_additional_recurrences
     status:
       type: boolean
     confirmed:
