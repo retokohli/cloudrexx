@@ -781,6 +781,7 @@ class CalendarEvent extends CalendarLibrary
                          event.series_pattern_end_date AS series_pattern_end_date,
                          event.series_pattern_begin AS series_pattern_begin,
                          event.series_pattern_exceptions AS series_pattern_exceptions,
+                         event.series_additional_recurrences AS series_additional_recurrences,
                          event.all_day,
                          event.location_type AS location_type,
                          field.place AS place,
@@ -913,6 +914,11 @@ class CalendarEvent extends CalendarLibrary
                         $seriesPatternExceptions = array_map(array($this, 'getInternDateTimeFromDb'), (array) explode(",", $objResult->fields['series_pattern_exceptions']));
                     }
                     $this->seriesData['seriesPatternExceptions'] = $seriesPatternExceptions;
+                    $seriesAdditionalRecurrences = array();
+                    if (!\FWValidator::isEmpty($objResult->fields['series_additional_recurrences'])) {
+                        $seriesAdditionalRecurrences = array_map(array($this, 'getInternDateTimeFromDb'), (array) explode(",", $objResult->fields['series_additional_recurrences']));
+                    }
+                    $this->seriesData['seriesAdditionalRecurrences'] = $seriesAdditionalRecurrences;
                 }    
                   
                 
@@ -1274,6 +1280,7 @@ class CalendarEvent extends CalendarLibrary
         $seriesPatternDouranceType      = 0;
         $seriesPatternEnd               = 0;
         $seriesExeptions                = '';
+        $seriesAdditionalRecurrences    = '';
         $seriesPatternEndDate           = '0000-00-00 00:00:00';
         
         if($seriesStatus == 1) {
@@ -1289,6 +1296,14 @@ class CalendarEvent extends CalendarLibrary
                 $seriesExeptions = join(",", $exeptions);
             }
         
+            if (!empty($data['additionalRecurrences'])) {
+                $additionalRecurrenceDates = array();
+                foreach ($data['additionalRecurrences'] as $additionalRecurrence) {
+                    $additionalRecurrenceDates[] = $this->getDbDateTimeFromIntern($this->getDateTime($additionalRecurrence, 23, 59))->format('Y-m-d');
+                }
+                sort($additionalRecurrenceDates);
+                $seriesAdditionalRecurrences = join(",", $additionalRecurrenceDates);
+            }
             switch($seriesType) {
                 case 1;
                     if ($seriesStatus == 1) {
@@ -1415,6 +1430,7 @@ class CalendarEvent extends CalendarLibrary
             'series_pattern_end'            => $seriesPatternEnd,
             'series_pattern_end_date'       => $seriesPatternEndDate,
             'series_pattern_exceptions'     => $seriesExeptions,
+            'series_additional_recurrences' => $seriesAdditionalRecurrences,
             'independent_series'            => $seriesIndependent,
             'all_day'                       => $allDay,
             'location_type'                 => $locationType,

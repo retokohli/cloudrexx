@@ -588,6 +588,10 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_EVENT_REGISTRATION_FULL_BOOKED'   => $_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTRATION_FULL_BOOKED'],
             'TXT_'.$this->moduleLangVar.'_MORE'                             => $_ARRAYLANG['TXT_CALENDAR_MORE'],
             'TXT_'.$this->moduleLangVar.'_MINIMIZE'                         => $_ARRAYLANG['TXT_CALENDAR_MINIMIZE'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_SERIES_ADDITIONAL_RECURRENCES' => $_ARRAYLANG['TXT_CALENDAR_EVENT_SERIES_ADDITIONAL_RECURRENCES'],
+            'TXT_'.$this->moduleLangVar.'_ADD'                                 => $_ARRAYLANG['TXT_CALENDAR_ADD'],
+            'TXT_'.$this->moduleLangVar.'_SELECT_ADDITIONAL_RECURRENCES_TITLE' => $_ARRAYLANG['TXT_CALENDAR_SELECT_ADDITIONAL_RECURRENCES_TITLE'],
+            'TXT_'.$this->moduleLangVar.'_SELECT_ADDITIONAL_RECURRENCES_INFO'  => $_ARRAYLANG['TXT_CALENDAR_SELECT_ADDITIONAL_RECURRENCES_INFO'],
 
             //show media browser button
             $this->moduleLangVar.'_EVENT_REDIRECT_BROWSE_BUTTON'            => self::showMediaBrowserButton('eventRedirect', 'sitestructure'),
@@ -858,6 +862,15 @@ class CalendarManager extends CalendarLibrary
 
                     $this->_objTpl->parse('eventExeptions');
                 }
+            }
+            $dayArray = explode(',', $_CORELANG['TXT_CORE_DAY_ABBREV2_ARRAY']);
+            foreach ($objEvent->seriesData['seriesAdditionalRecurrences'] as $additionalRecurrence) {
+                $recurrenceDate = $this->format2userDate($additionalRecurrence);
+                $this->_objTpl->setVariable(array(
+                    $this->moduleLangVar . '_SERIES_ADDITIONAL_RECURRENCES_DATE' =>  $recurrenceDate,
+                    $this->moduleLangVar . '_SERIES_ADDITIONAL_RECURRENCES_FULL_DATE' => $dayArray[$this->formatDateTime2user($additionalRecurrence, "w")] .", ". $recurrenceDate
+                ));
+                $this->_objTpl->parse('eventAdditionalRecurrences');
             }
         } else {
             $seriesPatternDaily = 'checked="checked"';
