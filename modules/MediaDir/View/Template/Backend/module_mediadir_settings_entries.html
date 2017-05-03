@@ -279,6 +279,15 @@ $J(document).ready(function(){
         <th colspan="2">{TXT_MEDIADIR_BEHAVIOR}</th>
     </tr>
     <tr class="row1">
+        <td width="280">{TXT_MEDIADIR_PRETTY_URLS}</td>
+        <td>
+            <input type="radio" name="usePrettyUrls" id="usePrettyUrlsOn" value="1" {MEDIADIR_SETTINGS_PRETTY_URLS_ON} />
+            <label for="usePrettyUrlsOn">{TXT_MEDIADIR_ACTIVATE}</label>
+            <input type="radio" name="usePrettyUrls" id="usePrettyUrlsOff" value="0" {MEDIADIR_SETTINGS_PRETTY_URLS_OFF} />
+            <label for="usePrettyUrlsOff">{TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_PRETTY_URLS_INFO}</span></label>
+        </td>
+    </tr>
+    <tr class="row2">
         <td width="280">{TXT_MEDIADIR_LEGACY_BEHAVIOR}</td>
         <td>
             <input type="radio" name="legacyBehavior" value="1" {MEDIADIR_SETTINGS_LEGACY_BEHAVIOR_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="legacyBehavior" value="0" {MEDIADIR_SETTINGS_LEGACY_BEHAVIOR_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_LEGACY_BEHAVIOR_INFO}</span>

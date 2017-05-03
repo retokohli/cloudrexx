@@ -353,6 +353,8 @@ $_ARRAYLANG['TXT_MEDIADIR_ACTIVE'] = "Aktiv";
 $_ARRAYLANG['TXT_MEDIADIR_AVERAGE_SYMBOL'] = "&Oslash;";
 $_ARRAYLANG['TXT_MEDIADIR_COMMENT'] = "Kommentar";
 $_ARRAYLANG['TXT_MEDIADIR_BEHAVIOR'] = 'Verhalten';
+$_ARRAYLANG['TXT_MEDIADIR_PRETTY_URLS'] = 'Sprechende URLs';
+$_ARRAYLANG['TXT_MEDIADIR_PRETTY_URLS_INFO'] = 'Diese Option aktiviert die Verwendung von sprechenden URLs. Die Verlinkung innerhalb der Medienverzeichnis Anwendung erfolgt damit nicht über Parameter, sondern über Aliase. Weitere Informationen zur Funktionalität sind der <a href="%s" target="_blank">Dokumentation</a> zu entnehmen.';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR'] = 'Legacy Verhalten';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_INFO'] = 'Diese Option aktiviert das Legacy-Verhalten, welches folgende Verhaltensweisen aktiviert: %s';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_SEARCH_ON_CATEGORY_VIEW'] = 'Beim Direktzugriff auf eine Kategorie (als ID im Bereich/CMD) oder der Detailansicht eines Eintrages wird der Ebenen- und Kategorienfilter der erweiterten Suchfunktion nicht angezeigt';

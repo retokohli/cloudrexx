@@ -46,6 +46,12 @@ use Cx\Modules\MediaDir\Model\Event\MediaDirEventListener;
  * @subpackage  module_mediadir
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
+
+    /**
+     * @var \Cx\Core\ContentManager\Model\Entity\Page Canonical page
+     */
+    protected $canonicalPage = null;
+
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
@@ -369,6 +375,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
 
+    /**
+     * Sets the canonical page
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $canonicalPage Canonical page
+     */
     protected function setCanonicalPage($canonicalPage) {
         $this->canonicalPage = $canonicalPage;
     }
