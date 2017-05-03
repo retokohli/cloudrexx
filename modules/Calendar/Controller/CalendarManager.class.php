@@ -156,6 +156,8 @@ class CalendarManager extends CalendarLibrary
             } else {
                  $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_EDITED'];
             }
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Home');
         }
 
         if(isset($_GET['delete'])) {
@@ -167,6 +169,8 @@ class CalendarManager extends CalendarLibrary
             } else {
                  $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_DELETED'];
             }
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Home');
         }
 
         if(isset($_GET['confirm'])) {
@@ -178,6 +182,8 @@ class CalendarManager extends CalendarLibrary
             } else {
                 $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_EDITED'];
             }
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Home');
         }
 
         if(isset($_GET['export'])) {
@@ -214,6 +220,8 @@ class CalendarManager extends CalendarLibrary
                         break;
                 }
             }
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Home');
 
             if($status) {
                 $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_'.$messageVar];
@@ -1110,6 +1118,7 @@ class CalendarManager extends CalendarLibrary
         }
         
         \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Home');
     }
 
 
@@ -1328,6 +1337,7 @@ class CalendarManager extends CalendarLibrary
         /* } */
         
         \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Home');
     }
 
 
@@ -1575,7 +1585,7 @@ class CalendarManager extends CalendarLibrary
     {
         global $_ARRAYLANG;
 
-        \JS::activate('jquery-cookie');
+        \JS::activate('js-cookie');
         $this->_objTpl->loadTemplateFile('module_calendar_registrations.html');
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($eventId));
 
@@ -1799,6 +1809,7 @@ class CalendarManager extends CalendarLibrary
         ));
         
         \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Home');
     }
 
     /**

@@ -156,7 +156,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Response object
-         * @var \Cx\Lib\Net\Model\Entity\Response
+         * @var \Cx\Core\Routing\Model\Entity\Response
          */
         protected $response = null;
 
@@ -607,7 +607,7 @@ namespace Cx\Core\Core\Controller {
          */
         public function getEndcode()
         {
-            return $this->endcode;
+            return $this->getResponse()->getParsedContent();
         }
 
         /**
@@ -1463,11 +1463,12 @@ namespace Cx\Core\Core\Controller {
                         break;
                 }
             }
-            $this->response = new \Cx\Lib\Net\Model\Entity\Response(
+            $this->response = new \Cx\Core\Routing\Model\Entity\Response(
                 null,
                 200,
                 $this->request
             );
+            $this->response->setContentType('text/html');
             //call post-init hooks
             $this->ch->callPostInitHooks();
         }
@@ -1623,7 +1624,7 @@ namespace Cx\Core\Core\Controller {
             $this->preFinalize();                       // Call pre finalize hook scripts
             $this->finalize();                          // Set template vars
             $this->postFinalize();                      // Call post finalize hook scripts
-            echo $this->endcode;                        // Display content
+            $this->getResponse()->send();               // Send response
         }
 
         /**
@@ -1775,7 +1776,9 @@ namespace Cx\Core\Core\Controller {
          * @todo Remove usage of globals
          */
         protected function postResolve() {
+            $this->getResponse()->setPage($this->getPage());
             $this->ch->callPostResolveHooks();
+            $this->ch->callAdjustResponseHooks($this->getResponse());
         }
 
         /**
@@ -1831,11 +1834,6 @@ namespace Cx\Core\Core\Controller {
 
             $content = str_replace('{PAGE_URL}',            htmlspecialchars(\Env::get('init')->getPageUri()), $content);
             $content = str_replace('{PAGE_URL_ENCODED}',    urlencode(\Env::get('init')->getPageUri()->toString()), $content);
-            $content = str_replace('{STANDARD_URL}',        contrexx_raw2xhtml(\Env::get('init')->getUriBy('smallscreen', 0)),     $content);
-            $content = str_replace('{MOBILE_URL}',          contrexx_raw2xhtml(\Env::get('init')->getUriBy('smallscreen', 1)),     $content);
-            $content = str_replace('{PRINT_URL}',           contrexx_raw2xhtml(\Env::get('init')->getUriBy('printview', 1)),       $content);
-            $content = str_replace('{PDF_URL}',             contrexx_raw2xhtml(\Env::get('init')->getUriBy('pdfview', 1)),         $content);
-            $content = str_replace('{APP_URL}',             contrexx_raw2xhtml(\Env::get('init')->getUriBy('appview', 1)),         $content);
             $content = str_replace('{LOGOUT_URL}',          contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'logout')),  $content);
             $content = str_replace('{GOOGLE_MAPS_API_KEY}', isset($_CONFIG['googleMapsAPIKey']) ? contrexx_raw2xhtml($_CONFIG['googleMapsAPIKey']) : '', $content);
         }
@@ -2020,29 +2018,9 @@ namespace Cx\Core\Core\Controller {
             // set global template variables
             $boolShop = \Cx\Modules\Shop\Controller\Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
-            $objNavbar->setLanguagePlaceholders($this->resolvedPage, $this->request->getUrl(), $this->template);
-            $metarobots = $this->resolvedPage->getMetarobots();
             $this->template->setVariable(array(
-                'CHARSET'                        => \Env::get('init')->getFrontendLangCharset(),
-                'TITLE'                          => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
-                'METATITLE'                      => contrexx_raw2xhtml($this->resolvedPage->getMetatitle()),
-                'NAVTITLE'                       => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
                 'GLOBAL_TITLE'                   => $_CONFIG['coreGlobalPageTitle'],
                 'DOMAIN_URL'                     => $_CONFIG['domainUrl'],
-                'PATH_OFFSET'                    => $this->codeBaseOffsetPath,
-                'BASE_URL'                       => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'] . $this->codeBaseOffsetPath,
-                'METAKEYS'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetakeys()) : '',
-                'METADESC'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetadesc()) : '',
-                'METAROBOTS'                     => $metarobots ? 'all' : 'none',
-                'METAIMAGE'                      => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetaimage()) : '',
-                'CONTENT_TITLE'                  => $this->resolvedPage->getContentTitle(),
-                'CONTENT_TEXT'                   => $this->resolvedPage->getContent(),
-                'CSS_NAME'                       => contrexx_raw2xhtml($this->resolvedPage->getCssName()),
-                'STANDARD_URL'                   => contrexx_raw2xhtml(\Env::get('init')->getUriBy('smallscreen', 0)),
-                'MOBILE_URL'                     => contrexx_raw2xhtml(\Env::get('init')->getUriBy('smallscreen', 1)),
-                'PRINT_URL'                      => contrexx_raw2xhtml(\Env::get('init')->getUriBy('printview', 1)),
-                'PDF_URL'                        => contrexx_raw2xhtml(\Env::get('init')->getUriBy('pdfview', 1)),
-                'APP_URL'                        => contrexx_raw2xhtml(\Env::get('init')->getUriBy('appview', 1)),
                 'LOGOUT_URL'                     => contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'logout')),
                 'PAGE_URL'                       => htmlspecialchars(\Env::get('init')->getPageUri()),
                 'PAGE_URL_ENCODED'               => urlencode(\Env::get('init')->getPageUri()->toString()),
@@ -2060,16 +2038,10 @@ namespace Cx\Core\Core\Controller {
                 'VISITOR_NUMBER'                 => $objCounter ? $objCounter->getVisitorNumber() : '',
                 'COUNTER'                        => $objCounter ? $objCounter->getCounterTag() : '',
                 'BANNER'                         => isset($objBanner) ? $objBanner->getBannerJS() : '',
-                'VERSION'                        => contrexx_raw2xhtml($_CONFIG['coreCmsName']),
-                'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl()),
-                'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl(), true),
-                'ACTIVE_LANGUAGE_NAME'           => \Env::get('init')->getFrontendLangName(),
                 'RANDOM'                         => md5(microtime()),
                 'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
                 'MODULE_INDEX'                   => MODULE_INDEX,
                 'LOGIN_URL'                      => '<a href="' . contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'Login')) . '" class="start-frontend-editing">' . $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'] . '</a>',
-                'TXT_CORE_LAST_MODIFIED_PAGE'    => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
-                'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_FORMAT_DATE, $this->resolvedPage->getUpdatedAt()->getTimestamp()),
                 'GOOGLE_MAPS_API_KEY'            => isset($_CONFIG['googleMapsAPIKey']) ? contrexx_raw2xhtml($_CONFIG['googleMapsAPIKey']) : '',
                 'FACEBOOK_LIKE_IFRAME'           => '<div id="fb-root"></div>
                                                     <script type="text/javascript">
@@ -2217,7 +2189,7 @@ namespace Cx\Core\Core\Controller {
                     $this->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
                     $endcode
                 );
-                $this->endcode = $ls->replace();
+                $this->getResponse()->setParsedContent($ls->replace());
             } else {
                 // backend meta navigation
                 if ($this->template->blockExists('backend_metanavigation')) {
@@ -2319,7 +2291,7 @@ namespace Cx\Core\Core\Controller {
                     $this->getCodeBaseOffsetPath() . $this->getBackendFolderName() . '/',
                     $endcode
                 );
-                $this->endcode = $ls->replace();
+                $this->getResponse()->setParsedContent($ls->replace());
             }
 
             \DBG::log("(Cx: {$this->id}) Request parsing completed after $parsingTime");
@@ -2329,7 +2301,9 @@ namespace Cx\Core\Core\Controller {
          * Calls hooks after call to finalize()
          */
         protected function postFinalize() {
-            $this->ch->callPostFinalizeHooks($this->endcode);
+            $endcode = $this->getResponse()->getParsedContent();
+            $this->ch->callPostFinalizeHooks($endcode);
+            $this->getResponse()->setParsedContent($endcode);
         }
 
         /* GETTERS */
@@ -2352,7 +2326,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Returns the Response object
-         * @return \Cx\Lib\Net\Model\Entit\Response Response object
+         * @return \Cx\Core\Routing\Model\Entity\Response Response object
          */
         public function getResponse() {
             return $this->response;

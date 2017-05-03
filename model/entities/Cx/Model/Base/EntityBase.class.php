@@ -112,9 +112,12 @@ class EntityBase {
      */
     public function getComponentController() {
         $matches = array();
-        preg_match('/Cx\\\\(?:Core|Core_Modules|Modules)\\\\([^\\\\]*)\\\\/', get_class($this), $matches);
+        preg_match('/Cx\\\\(?:Core|Core_Modules|Modules)\\\\([^\\\\]*)\\\\|Cx\\\\Model\\\\Proxies\\\\Cx(?:Core_Modules|Core|Modules)([^\\\\]*)ModelEntity/', get_class($this), $matches);
         if (empty($matches[1])) {
-            throw new \Exception('Could not find component name');
+            if (empty($matches[2])) {
+                throw new \Exception('Could not find component name');
+            }
+            $matches[1] = $matches[2];
         }
         $em = $this->cx->getDb()->getEntityManager();
         $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');

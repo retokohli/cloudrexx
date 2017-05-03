@@ -202,6 +202,11 @@ class CalendarEventManager extends CalendarLibrary
     public $listType;
 
     /**
+     * @var array List of indexData of calendar events synced from a remote location
+     */
+    protected static $syncedIds;
+    
+    /**
      * Loads the event manager configuration
      *
      * @param integer $startDate     Start date Unix timestamp
@@ -258,29 +263,42 @@ class CalendarEventManager extends CalendarLibrary
             } else {
                 $showIn_where = "";
             }
-
-            $objFWUser = \FWUser::getFWUserObject();
-            if ($objFWUser->objUser->login()) {
-                $needAuth_where = '';
-            } else {
-                $needAuth_where = ' AND event.access=0';
-            }
         }
 
         if ($this->endDate !== null) {
-            $dateScope_where = '((
-                ((event.startdate <= "'.$startDate.'") AND ("'.$endDate.'" <= event.enddate)) OR
-                ((("'.$startDate.'" <= event.startdate) AND ("'.$endDate.'" <= event.enddate)) AND ((event.startdate <= "'.$endDate.'") AND ("'.$endDate.'" <= event.enddate))) OR
-                (((event.startdate <= "'.$startDate.'") AND (event.enddate <= "'.$endDate.'")) AND (("'.$startDate.'" <= event.enddate) AND (event.enddate <= "'.$endDate.'"))) OR
-                (("'.$startDate.'" <= event.startdate) AND (event.enddate <= "'.$endDate.'"))
+            // Note: 'NOW' in the following comments refers to the filtered
+            //       date of the request.
+            $dateScope_where = '(('
+                // Event is happening now (it did already start) and will go on
+                // after the selected range.
+                // Logic: startdate <= START && enddate <= END
+                .'(event.startdate <= "'.$startDate.'" AND "'.$endDate.'" <= event.enddate) OR '
+
+                // Event is about to happen in the selected range, but will go
+                // on afterwards as well.
+                // Logic: START <= startdate <= END <= enddate
+                .'("'.$startDate.'" <= event.startdate AND "'.$endDate.'" <= event.enddate AND event.startdate <= "'.$endDate.'") OR '
+
+                // Event is happening now and is about to end in the selected range.
+                // Logic: startdate <= START <= enddate <= END
+                .'(event.startdate <= "'.$startDate.'" AND event.enddate <= "'.$endDate.'" AND "'.$startDate.'" <= event.enddate) OR '
+
+                // Event is happening exactly within the selected range
+                // Logic: START <= startdate <= enddate <= END
+                .'("'.$startDate.'" <= event.startdate AND event.enddate <= "'.$endDate.'")
             ) OR (
                 (event.series_status = 1) AND (event.startdate <= "'.$endDate.'")
             ))';
 
         } else {
-            $dateScope_where = '((
-                ((event.enddate >= "'.$startDate.'") AND (event.startdate <= "'.$startDate.'")) OR
-                ((event.startdate >= "'.$startDate.'") AND (event.enddate >= "'.$startDate.'"))
+            // Note: 'NOW' in the following comments refers to the filtered
+            //       date of the request.
+            $dateScope_where = '(('
+                // event is happening now (startdate <= NOW <= enddate)
+                .'((event.enddate >= "'.$startDate.'") AND (event.startdate <= "'.$startDate.'")) OR '
+
+                // event lies in the future (NOW <= startdate <= enddate)
+                .'((event.startdate >= "'.$startDate.'") AND (event.enddate >= "'.$startDate.'"))
             ) OR (
                 (event.series_status = 1)
             ))';
@@ -309,7 +327,6 @@ class CalendarEventManager extends CalendarLibrary
                          ".$searchTerm_DB."
                    WHERE ".$dateScope_where."
                          ".$onlyActive_where."
-                         ".$needAuth_where."
                          ".$categoryId_where."
                          ".$searchTerm_where."
                          ".$showIn_where."
@@ -321,8 +338,19 @@ class CalendarEventManager extends CalendarLibrary
         $objResult = $objDatabase->Execute($query);
 
         if ($objResult !== false) {
+            $objFWUser = \FWUser::getFWUserObject();
             while (!$objResult->EOF) {
                 $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($objResult->fields['id']));
+
+                if ($objEvent->access) {
+                    // cache userbased
+                    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                    $cx->getComponent('Cache')->forceUserbasedPageCache();
+                    if (!$objFWUser->objUser->login()) {
+                        $objResult->MoveNext();
+                        continue;
+                    }
+                }
 
                 if($objInit->mode == 'frontend' || $this->showSeries) {
                     $checkFutureEvents = true;
@@ -459,9 +487,37 @@ class CalendarEventManager extends CalendarLibrary
      * @return null
      */
     function _clearEmptyEvents() {
+        // customizing: hide synced events in backend
+        $cx = \Env::get('cx');
+        if (!isset(static::$syncedIds)) {
+            $query = '
+                SELECT
+                    `local_id`
+                FROM
+                    `' . DBPREFIX . 'core_module_sync_id_mapping`
+                WHERE
+                    `entity_type` LIKE \'Cx\\\\\\\\Modules\\\\\\\\Calendar\\\\\\\\Model\\\\\\\\Entity\\\\\\\\Event\'
+            ';
+            $adoDb = $cx->getDb()->getAdoDb();
+            $result = $adoDb->execute($query);
+            static::$syncedIds = array();
+            while (!$result->EOF) {
+                static::$syncedIds[] = $result->fields['local_id'];
+                $result->MoveNext();
+            }
+        }
+        
          foreach($this->eventList as $key => $objEvent) {
              if(empty($objEvent->title)) {
                 unset($this->eventList[$key]);
+                continue;
+            }
+            if ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+                $indexData = serialize(array('id' => (string) $objEvent->getId()));
+                if (in_array($indexData, static::$syncedIds)) {
+                    unset($this->eventList[$key]);
+                    continue;
+                }
              }
          }
     }
@@ -600,7 +656,7 @@ class CalendarEventManager extends CalendarLibrary
      *
      * @return null
      */
-    function showEvent($objTpl, $eventId, $eventStartDate) {
+    function showEvent($objTpl, $eventId, $eventStartDate, &$start = null) {
         global $objInit, $_ARRAYLANG, $_LANGID, $_CONFIG;
 
         $this->getSettings();
@@ -676,6 +732,7 @@ class CalendarEventManager extends CalendarLibrary
                 $freeSeats = $_ARRAYLANG['TXT_CALENDAR_NOT_SPECIFIED'];
             }
 
+            $start = $objEvent->startDate;
             $objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_ID'                => $objEvent->id,
                 $this->moduleLangVar.'_EVENT_START'             => $this->format2userDateTime($startDate),
@@ -1128,7 +1185,7 @@ class CalendarEventManager extends CalendarLibrary
      *
      * @return null
      */
-    function showEventList($objTpl, $type='') {
+    function showEventList($objTpl, $type='', &$firstEndDate = null) {
         global $objInit, $_ARRAYLANG, $_LANGID;
 
         $this->getFrontendLanguages();
@@ -1225,6 +1282,9 @@ class CalendarEventManager extends CalendarLibrary
 
                 $startDate = $objEvent->startDate;
                 $endDate   = $objEvent->endDate;
+                if (!$firstEndDate || $endDate < $firstEndDate) {
+                    $firstEndDate = $endDate;
+                }
 
                 if ($objEvent->numSubscriber) {
                     $freeSeats = \FWValidator::isEmpty($objEvent->getFreePlaces()) ? '0 ('.$_ARRAYLANG['TXT_CALENDAR_SAVE_IN_WAITLIST'].')' : $objEvent->getFreePlaces();

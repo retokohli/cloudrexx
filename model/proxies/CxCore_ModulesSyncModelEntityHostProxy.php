@@ -93,16 +93,65 @@ class CxCore_ModulesSyncModelEntityHostProxy extends \Cx\Core_Modules\Sync\Model
         return parent::getUrlTemplate();
     }
 
-    public function addHostEntities(\Cx\Core_Modules\Sync\Model\Entity\HostEntity $hostEntities)
+    public function addHostEntity(\Cx\Core_Modules\Sync\Model\Entity\HostEntity $hostEntity)
     {
         $this->_load();
-        return parent::addHostEntities($hostEntities);
+        return parent::addHostEntity($hostEntity);
     }
 
     public function getHostEntities()
     {
         $this->_load();
         return parent::getHostEntities();
+    }
+
+    public function setHostEntities($hostEntities)
+    {
+        $this->_load();
+        return parent::setHostEntities($hostEntities);
+    }
+
+    public function addChange(\Cx\Core_Modules\Sync\Model\Entity\Change $change)
+    {
+        $this->_load();
+        return parent::addChange($change);
+    }
+
+    public function getChanges()
+    {
+        $this->_load();
+        return parent::getChanges();
+    }
+
+    public function setChanges($changes)
+    {
+        $this->_load();
+        return parent::setChanges($changes);
+    }
+
+    public function getToUri($dataSourceName, $entityIndexData = array (
+))
+    {
+        $this->_load();
+        return parent::getToUri($dataSourceName, $entityIndexData);
+    }
+
+    public function handleModelChange($entityIndexData, $entityClassName, $entity, $eventType, $spooler, $sync)
+    {
+        $this->_load();
+        return parent::handleModelChange($entityIndexData, $entityClassName, $entity, $eventType, $spooler, $sync);
+    }
+
+    public function addContentsToChangeset($change)
+    {
+        $this->_load();
+        return parent::addContentsToChangeset($change);
+    }
+
+    public function sendChange($change)
+    {
+        $this->_load();
+        return parent::sendChange($change);
     }
 
     public function __get($name)
@@ -144,7 +193,7 @@ class CxCore_ModulesSyncModelEntityHostProxy extends \Cx\Core_Modules\Sync\Model
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'host', 'active', 'apiKey', 'apiVersion', 'urlTemplate', 'hostEntities');
+        return array('__isInitialized__', 'id', 'host', 'active', 'apiKey', 'apiVersion', 'urlTemplate', 'hostEntities', 'changes');
     }
 
     public function __clone()
