@@ -45,6 +45,18 @@ class CxModulesCalendarModelEntityRegistrationProxy extends \Cx\Modules\Calendar
         return parent::getDate();
     }
 
+    public function setSubmissionDate($submissionDate)
+    {
+        $this->_load();
+        return parent::setSubmissionDate($submissionDate);
+    }
+
+    public function getSubmissionDate()
+    {
+        $this->_load();
+        return parent::getSubmissionDate();
+    }
+
     public function setHostName($hostName)
     {
         $this->_load();
@@ -228,7 +240,7 @@ class CxModulesCalendarModelEntityRegistrationProxy extends \Cx\Modules\Calendar
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'date', 'hostName', 'ipAddress', 'type', 'key', 'userId', 'langId', 'export', 'paymentMethod', 'paid', 'registrationFormFieldValues', 'event');
+        return array('__isInitialized__', 'id', 'date', 'submissionDate', 'hostName', 'ipAddress', 'type', 'key', 'userId', 'langId', 'export', 'paymentMethod', 'paid', 'registrationFormFieldValues', 'event');
     }
 
     public function __clone()
