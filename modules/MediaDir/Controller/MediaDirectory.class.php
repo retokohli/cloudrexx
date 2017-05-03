@@ -1168,21 +1168,39 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
     }
 
-
+    /**
+     * Get the page title
+     *
+     * @return string
+     */
     public function getPageTitle() {
         return $this->pageTitle;
     }
 
+    /**
+     * Get the meta title
+     *
+     * @return string
+     */
     public function getMetaTitle() {
         return $this->metaTitle;
     }
 
+    /**
+     * Get the meta description
+     *
+     * @return string
+     */
     public function getMetaDescription() {
         return $this->metaDescription;
     }
 
+    /**
+     * Get the meta image
+     *
+     * @return string
+     */
     public function getMetaImage() {
         return $this->metaImage;
     }
 }
-?>

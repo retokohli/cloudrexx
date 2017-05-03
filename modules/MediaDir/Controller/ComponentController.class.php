@@ -66,21 +66,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $pageMetaTitle = \Env::get('cx')->getPage()->getMetatitle();
                 $objMediaDirectory->metaTitle = $pageMetaTitle;
                 \Env::get('cx')->getPage()->setContent($objMediaDirectory->getPage());
-                if ($objMediaDirectory->getPageTitle() != '' && $objMediaDirectory->getPageTitle() != \Env::get('cx')->getPage()->getTitle()) {
-                    \Env::get('cx')->getPage()->setTitle($objMediaDirectory->getPageTitle());
-                    \Env::get('cx')->getPage()->setContentTitle($objMediaDirectory->getPageTitle());
-                    \Env::get('cx')->getPage()->setMetaTitle($objMediaDirectory->getPageTitle());
-                }
-                if ($objMediaDirectory->getMetaTitle() != '') {
-                    \Env::get('cx')->getPage()->setMetatitle($objMediaDirectory->getMetaTitle());
-                }
-                if ($objMediaDirectory->getMetaDescription() != '') {
-                    \Env::get('cx')->getPage()->setMetadesc($objMediaDirectory->getMetaDescription());
-                }
-                if ($objMediaDirectory->getMetaImage() != '') {
-                    \Env::get('cx')->getPage()->setMetaimage($objMediaDirectory->getMetaImage());
-                }
-
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
@@ -199,5 +184,57 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $eventListener = new MediaDirEventListener($this->cx);
         $this->cx->getEvents()->addEventListener('SearchFindContent',$eventListener);
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function adjustResponse(
+        \Cx\Core\Routing\Model\Entity\Response $response
+    ) {
+        $page    = $response->getPage();
+        $pageCmd = array('', 'overview');
+        $matches = array();
+        if (preg_match('/^detail.*$/', $page->getCmd(), $matches)) {
+            $pageCmd[] = $matches[0];
+        }
+
+        $levelCatIds = array();
+        if(preg_match("/^\d+.*$/", $page->getCmd(), $levelCatIds)){
+            $pageCmd[] = $levelCatIds[0];
+        }
+
+        $forms = new MediaDirectoryForm();
+        foreach ($forms->getForms() as $form) {
+            $pageCmd[] = $form['formCmd'];
+        }
+
+        if (
+            !$page ||
+            $page->getModule() !== $this->getName() ||
+            !in_array($page->getCmd(), $pageCmd)
+        ) {
+            return;
+        }
+
+        $objMediaDirectory = new MediaDirectory($page->getContent(), $this->getName());
+        $objMediaDirectory->getPage();
+        if ($objMediaDirectory->getPageTitle()) {
+            $page->setTitle($objMediaDirectory->getPageTitle());
+            $page->setContentTitle($objMediaDirectory->getPageTitle());
+            $page->setMetaTitle($objMediaDirectory->getPageTitle());
+        }
+
+        if ($objMediaDirectory->getMetaTitle()) {
+            $page->setMetatitle($objMediaDirectory->getMetaTitle());
+        }
+
+        if ($objMediaDirectory->getMetaDescription() != '') {
+            $page->setMetadesc($objMediaDirectory->getMetaDescription());
+        }
+
+        if ($objMediaDirectory->getMetaImage() != '') {
+            $page->setMetaimage($objMediaDirectory->getMetaImage());
+        }
     }
 }
