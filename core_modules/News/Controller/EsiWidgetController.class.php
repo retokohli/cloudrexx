@@ -61,20 +61,22 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      */
     public function parseWidget($name, $template, $response, $params)
     {
-        global $_CORELANG;
+        global $_CORELANG, $_ARRAYLANG;
 
         $langId = $params['lang'];
         $theme  = $params['theme'];
 
-        //The global $_CORELANG is required in the following methods
+        //The globals $_CORELANG and $_ARRAYLANG are required in the following methods
         //NewsHeadlines::getHomeHeadlines(), NewsTop::getHomeTopNews() and
         //NewsLibrary::getNewsArchiveList()
-        $_CORELANG =
-            \Env::get('init')->getComponentSpecificLanguageData(
-                'Core',
-                true,
-                $langId
-            );
+        $_CORELANG = array_merge(
+            $_CORELANG,
+            \Env::get('init')->getComponentSpecificLanguageData('Core', true, $langId)
+        );
+        $_ARRAYLANG = array_merge(
+            $_ARRAYLANG,
+            \Env::get('init')->getComponentSpecificLanguageData('News', true, $langId)
+        );
 
         // Parse Headlines
         $matches = null;
