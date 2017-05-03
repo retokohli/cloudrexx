@@ -263,13 +263,6 @@ class CalendarEventManager extends CalendarLibrary
             } else {
                 $showIn_where = "";
             }
-
-            $objFWUser = \FWUser::getFWUserObject();
-            if ($objFWUser->objUser->login()) {
-                $needAuth_where = '';
-            } else {
-                $needAuth_where = ' AND event.access=0';
-            }
         }
 
         if ($this->endDate !== null) {
@@ -314,7 +307,6 @@ class CalendarEventManager extends CalendarLibrary
                          ".$searchTerm_DB."
                    WHERE ".$dateScope_where."
                          ".$onlyActive_where."
-                         ".$needAuth_where."
                          ".$categoryId_where."
                          ".$searchTerm_where."
                          ".$showIn_where."
