@@ -61,7 +61,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      */
     public function parseWidget($name, $template, $response, $params)
     {
-        global $_LANGID;
+        global $_LANGID, $_ARRAYLANG;
 
         $matches = null;
         if (
@@ -108,6 +108,12 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         ) {
             $category = $catMatches[1];
         }
+
+        $_ARRAYLANG = array_merge(
+            $_ARRAYLANG,
+            \Env::get('init')->getComponentSpecificLanguageData('Calendar', true, $_LANGID)
+        );
+
         $headlines = new CalendarHeadlines($content);
         $template->setVariable($name, $headlines->getHeadlines($category));
 
