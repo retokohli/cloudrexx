@@ -81,13 +81,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function postInit(\Cx\Core\Core\Controller\Cx $cx)
     {
-        //Creating widget only for the frontend placeholder/template block.
-        //But the placeholder CONTENT_TITLE was used in both the frontend and
-        //backend templates. To avoid creating a widget for the backend placeholder,
-        //we will call the return if the mode is backend.
-        if($this->cx->getMode() === \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
-            return;
-        }
         $widgetController = $this->getComponent('Widget');
         foreach (
             array(
