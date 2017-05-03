@@ -157,7 +157,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
             $params['get']['targetId'],
             array($params['get']['name'])
         );
-        $params['get'] = $this->objectifyParams($params['get']);
+        $params = $this->objectifyParams($params);
         $this->parseWidget(
             $params['get']['name'],
             $widgetTemplate,
@@ -182,16 +182,35 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
 
     /**
      * This makes object of the given params (if possible)
-     * Known params are page, lang, user, theme, channel, country and currency
+     * Known params are page, lang, user, theme, channel, country, currency and ref
      * @param array $params Associative array of params
      * @return array Associative array of params
      */
     protected function objectifyParams($params) {
-        $possibleParams = array(
-            'page' => function($pageId) {
+        $possibleGetParams = array(
+            'page' => function($pageId) use ($params) {
                 $em = $this->cx->getDb()->getEntityManager();
                 $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
                 $page = $pageRepo->findOneById($pageId);
+                if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION) {
+                    // get referrer
+                    $headers = $params['response']->getRequest()->getHeaders();
+                    $fragments = array();
+                    if (isset($headers['Referer'])) {
+                        // -> get additional path fragments
+                        $refUrl = new \Cx\Lib\Net\Model\Entity\Url($headers['Referer']);
+                        $pathParts = $refUrl->getPathParts();
+                        $offsetPathParts = explode('/', $this->cx->getWebsiteOffsetPath());
+                        $offsetPathParts[] = \Env::get('virtualLanguageDirectory');
+                        $fragments = array_diff_assoc($pathParts, $offsetPathParts);
+                    }
+                    // get the component
+                    $pageComponent = $this->getComponent($page->getModule());
+                    // resolve additional path fragments (if any)
+                    $pageComponent->resolve($fragments, $page);
+                    // adjust response
+                    $pageComponent->adjustResponse($params['response']);
+                }
                 return $page;
             },
             'lang' => function($langCode) {
@@ -229,12 +248,21 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 // this should return a currency object
                 return $currencyCode;
             },
+            'ref' => function($originalUrl) use ($params) {
+                $headers = $params['response']->getRequest()->getHeaders();
+                $originalUrl = str_replace(
+                    '$(HTTP_REFERER)',
+                    $headers['Referer'],
+                    $originalUrl
+                );
+                return $originalUrl;
+            }
         );
-        foreach ($possibleParams as $possibleParam=>$callback) {
-            if (!isset($params[$possibleParam])) {
+        foreach ($possibleGetParams as $possibleParam=>$callback) {
+            if (!isset($params['get'][$possibleParam])) {
                 continue;
             }
-            $params[$possibleParam] = $callback($params[$possibleParam]);
+            $params['get'][$possibleParam] = $callback($params['get'][$possibleParam]);
         }
         return $params;
     }
