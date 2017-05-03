@@ -266,19 +266,39 @@ class CalendarEventManager extends CalendarLibrary
         }
 
         if ($this->endDate !== null) {
-            $dateScope_where = '((
-                ((event.startdate <= "'.$startDate.'") AND ("'.$endDate.'" <= event.enddate)) OR
-                ((("'.$startDate.'" <= event.startdate) AND ("'.$endDate.'" <= event.enddate)) AND ((event.startdate <= "'.$endDate.'") AND ("'.$endDate.'" <= event.enddate))) OR
-                (((event.startdate <= "'.$startDate.'") AND (event.enddate <= "'.$endDate.'")) AND (("'.$startDate.'" <= event.enddate) AND (event.enddate <= "'.$endDate.'"))) OR
-                (("'.$startDate.'" <= event.startdate) AND (event.enddate <= "'.$endDate.'"))
+            // Note: 'NOW' in the following comments refers to the filtered
+            //       date of the request.
+            $dateScope_where = '(('
+                // Event is happening now (it did already start) and will go on
+                // after the selected range.
+                // Logic: startdate <= START && enddate <= END
+                .'(event.startdate <= "'.$startDate.'" AND "'.$endDate.'" <= event.enddate) OR '
+
+                // Event is about to happen in the selected range, but will go
+                // on afterwards as well.
+                // Logic: START <= startdate <= END <= enddate
+                .'("'.$startDate.'" <= event.startdate AND "'.$endDate.'" <= event.enddate AND event.startdate <= "'.$endDate.'") OR '
+
+                // Event is happening now and is about to end in the selected range.
+                // Logic: startdate <= START <= enddate <= END
+                .'(event.startdate <= "'.$startDate.'" AND event.enddate <= "'.$endDate.'" AND "'.$startDate.'" <= event.enddate) OR '
+
+                // Event is happening exactly within the selected range
+                // Logic: START <= startdate <= enddate <= END
+                .'("'.$startDate.'" <= event.startdate AND event.enddate <= "'.$endDate.'")
             ) OR (
                 (event.series_status = 1) AND (event.startdate <= "'.$endDate.'")
             ))';
 
         } else {
-            $dateScope_where = '((
-                ((event.enddate >= "'.$startDate.'") AND (event.startdate <= "'.$startDate.'")) OR
-                ((event.startdate >= "'.$startDate.'") AND (event.enddate >= "'.$startDate.'"))
+            // Note: 'NOW' in the following comments refers to the filtered
+            //       date of the request.
+            $dateScope_where = '(('
+                // event is happening now (startdate <= NOW <= enddate)
+                .'((event.enddate >= "'.$startDate.'") AND (event.startdate <= "'.$startDate.'")) OR '
+
+                // event lies in the future (NOW <= startdate <= enddate)
+                .'((event.startdate >= "'.$startDate.'") AND (event.enddate >= "'.$startDate.'"))
             ) OR (
                 (event.series_status = 1)
             ))';
@@ -633,7 +653,7 @@ class CalendarEventManager extends CalendarLibrary
      *
      * @return null
      */
-    function showEvent($objTpl, $eventId, $eventStartDate) {
+    function showEvent($objTpl, $eventId, $eventStartDate, &$start = null) {
         global $objInit, $_ARRAYLANG, $_LANGID, $_CONFIG;
 
         $this->getSettings();
@@ -709,6 +729,7 @@ class CalendarEventManager extends CalendarLibrary
                 $freeSeats = $_ARRAYLANG['TXT_CALENDAR_NOT_SPECIFIED'];
             }
 
+            $start = $objEvent->startDate;
             $objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_ID'                => $objEvent->id,
                 $this->moduleLangVar.'_EVENT_START'             => $this->format2userDateTime($startDate),
@@ -1160,7 +1181,7 @@ class CalendarEventManager extends CalendarLibrary
      *
      * @return null
      */
-    function showEventList($objTpl, $type='') {
+    function showEventList($objTpl, $type='', &$firstEndDate = null) {
         global $objInit, $_ARRAYLANG, $_LANGID;
 
         $this->getFrontendLanguages();
@@ -1257,6 +1278,9 @@ class CalendarEventManager extends CalendarLibrary
 
                 $startDate = $objEvent->startDate;
                 $endDate   = $objEvent->endDate;
+                if (!$firstEndDate || $endDate < $firstEndDate) {
+                    $firstEndDate = $endDate;
+                }
 
                 if ($objEvent->numSubscriber) {
                     $freeSeats = \FWValidator::isEmpty($objEvent->getFreePlaces()) ? '0 ('.$_ARRAYLANG['TXT_CALENDAR_SAVE_IN_WAITLIST'].')' : $objEvent->getFreePlaces();

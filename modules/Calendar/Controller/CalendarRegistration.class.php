@@ -516,6 +516,10 @@ class CalendarRegistration extends CalendarLibrary
             $this->triggerEvent('model/postFlush');
         }
 
+        // Drop all cache (since placeholder with registration count could by everywhere
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getComponent('Cache')->deleteComponentFiles('Calendar');
+
         if ($regId == 0) {
             //Trigger postPersist event for Registration Entity
             $this->triggerEvent('model/postPersist', $registration, null, true);

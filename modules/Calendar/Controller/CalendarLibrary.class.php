@@ -176,6 +176,34 @@ class CalendarLibrary
      * @var string
      */
     const ATTACHMENT_FIELD_KEY = 'attachment_id';
+
+    /**
+     * Setting value for option frontendPastEvents defining that all events
+     * having their start date as of today shall be listed in frontend till
+     * the end of today.
+     *
+     * @var integer
+     */
+    const SHOW_EVENTS_OF_TODAY = 0;
+
+    /**
+     * Setting value for option frontendPastEvents defining that only those
+     * events shall be listed in frontend that have not yet ended (end date lies
+     * in the past)
+     *
+     * @var integer
+     */
+    const SHOW_EVENTS_UNTIL_END = 1;
+
+    /**
+     * Setting value for option frontendPastEvents defining that only those
+     * events shall be listed in frontend that have not yet started (start date
+     * lies in the future)
+     *
+     * @todo Implement behavior of this option
+     * @var integer
+     */
+    const SHOW_EVENTS_UNTIL_START = 2;
     
     /**
      * Assign the template path
@@ -583,7 +611,7 @@ class CalendarLibrary
         $javascript = <<< EOF
 <script type="text/javascript" src="lib/datepickercontrol/datepickercontrol.js"></script>
 EOF;
-        if($_GET['cmd'] == 'register') {
+        if (isset($_GET['cmd']) && $_GET['cmd'] == 'register') {
              $javascript .= <<< EOF
              
 <script type="text/javascript">
@@ -901,6 +929,14 @@ EOF;
             return null;
         }
 
+        if ($eventName == 'clearEsiCache') {
+            $this->cx->getEvents()->triggerEvent(
+                'clearEsiCache',
+                array('Widget', $this->getHeadlinePlaceholders())
+            );
+            return;
+        }
+
         if ($eventName == 'model/postFlush') {
             $this->cx->getEvents()->triggerEvent(
                 $eventName,
@@ -1016,5 +1052,25 @@ EOF;
                 );
             }
         }
+    }
+
+    /**
+     * Get the list of calendar headline placeholders
+     *
+     * @return array
+     */
+    public function getHeadlinePlaceholders()
+    {
+        $placeholders = array();
+        for ($i = 1; $i <= 10; $i++) {
+            $id = '';
+            if ($i > 1) {
+                $id = $i;
+            }
+
+            $placeholders[] = 'EVENTS' . $id . '_FILE';
+        }
+
+        return $placeholders;
     }
 }

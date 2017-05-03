@@ -1581,6 +1581,8 @@ class CalendarEvent extends CalendarLibrary
                 $objMailManager->sendMail($event, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_INVITATION, null, $templateId);
             }
         }
+        //Clear cache
+        $this->triggerEvent('clearEsiCache');
 
         return true;
     }
@@ -1833,6 +1835,8 @@ class CalendarEvent extends CalendarLibrary
                 $objResult = $objDatabase->Execute($query);
                 $this->triggerEvent('model/postFlush');
                 if ($objResult !== false) {
+                    //Clear cache
+                    $this->triggerEvent('clearEsiCache');
                     return true;
                 } else {
                     return false;
@@ -1960,6 +1964,8 @@ class CalendarEvent extends CalendarLibrary
             //Trigger postUpdate event for Event Entity
             $this->triggerEvent('model/postUpdate', $event);
             $this->triggerEvent('model/postFlush');
+            //Clear cache
+            $this->triggerEvent('clearEsiCache');
             return true;
         } else {
             return false;
