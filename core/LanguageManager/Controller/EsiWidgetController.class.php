@@ -29,7 +29,7 @@
  * Class EsiWidgetController
  *
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
- * @author      Project Team SS4U <info@comvation.com>
+ * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  core_languagemanager
  * @version     1.0.0
@@ -44,7 +44,7 @@ namespace Cx\Core\LanguageManager\Controller;
  * - Register it as a Controller in your ComponentController
  *
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
- * @author      Project Team SS4U <info@comvation.com>
+ * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  core_languagemanager
  * @version     1.0.0
@@ -53,20 +53,14 @@ namespace Cx\Core\LanguageManager\Controller;
 class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetController {
 
     /**
-    * current page ID
-    *
-    * @var integer
-    */
-    protected $currentPageId;
-
-    /**
      * Parses a widget
      *
-     * @param string              $name     Widget name
-     * @param \Cx\Core\Html\Sigma $template Widget template
-     * @param string              $locale   RFC 3066 locale identifier
+     * @param string                                 $name     Widget name
+     * @param \Cx\Core\Html\Sigma Widget             $template Template
+     * @param \Cx\Core\Routing\Model\Entity\Response $response Response object
+     * @param array                                  $params   Get parameters
      */
-    public function parseWidget($name, $template, $locale)
+    public function parseWidget($name, $template, $response, $params)
     {
         if ($name === 'CHARSET') {
             $template->setVariable($name, \Env::get('init')->getFrontendLangCharset());
@@ -74,23 +68,25 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         }
 
         if ($name == 'ACTIVE_LANGUAGE_NAME') {
-            $template->setVariable($name, $locale);
+            $template->setVariable(
+                $name,
+                \FWLanguage::getLanguageCodeById($params['lang'])
+            );
             return;
         }
 
         $matches = null;
         if (preg_match('/^LANG_SELECTED_([A-Z]{2})$/', $name, $matches)) {
-            $selected   = '';
-            if (strtolower($matches[1]) === $locale) {
+            $selected = '';
+            $langCode = \FWLanguage::getLanguageCodeById($params['lang']);
+            if (strtolower($matches[1]) === $langCode) {
                 $selected = 'selected';
             }
             $template->setVariable($name, $selected);
             return;
         }
 
-        $em       = $this->cx->getDb()->getEntityManager();
-        $pageRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
-        $page     = $pageRepo->find($this->currentPageId);
+        $page = $params['page'];
         if (!$page) {
             return;
         }
@@ -115,20 +111,4 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             );
         }
     }
-
-    /**
-    * Returns the content of a widget
-    *
-    * @param array $params JsonAdapter parameters
-    *
-    * @return array Content in an associative array
-    */
-    public function getWidget($params)
-    {
-        if (isset($params['get']) && isset($params['get']['page'])) {
-            $this->currentPageId = $params['get']['page'];
-        }
-        return parent::getWidget($params);
-    }
-
 }
