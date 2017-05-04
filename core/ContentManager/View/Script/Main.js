@@ -1467,15 +1467,19 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 });
                 translationDropdown.append(langEl);
             });
-            if (languages.size() <= 4) { // tags
+            var switchTagDropdown = cx.jQuery(".switch-tag-dropdown");
+            if (
+              languages.size() <= 4 ||
+              switchTagDropdown.hasClass("open")
+            ) { // tags
                 // show tags
-                cx.jQuery(".switch-tag-dropdown").addClass("open");
+                switchTagDropdown.addClass("open");
                 cx.jQuery("#site-structure").addClass("open");
                 translations.removeClass("dropdown");
                 translations.children(".translation").show();
             } else {
                 // show dropdown
-                cx.jQuery(".switch-tag-dropdown").removeClass("open");
+                switchTagDropdown.removeClass("open");
                 cx.jQuery("#site-structure").removeClass("open");
                 translations.addClass("dropdown");
                 translations.children(".translation").hide();
@@ -1859,13 +1863,22 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
     .bind("set_lang.jstree", function(event, data) {
         document.cookie = "userFrontendLangId=" + data.rslt;
     })
-    .bind("after_open.jstree", function(event, data) {
-        if (open_all) {
-            // don't generate any translation tags, since they will all be
-            // generated together the next time the user expands them
-            return;
+    .bind("open_node.jstree", function(event, data) {
+        var translations = cx.jQuery(data.rslt.obj).find(".translations");
+        if (cx.jQuery(".switch-tag-dropdown").hasClass("open")) {
+            // adjust left position of cols (adopt from parent row)
+            var alreadyExpanded = cx.jQuery(translations[0]).parent();
+            var cols = alreadyExpanded.parent().find("li .translations," +
+              "li .module," +
+              "li .preview," +
+              "li .actions," +
+              "li .lastupdate"
+            ).not(".hide");
+            cols.css("left", function() {
+                var colClass = cx.jQuery(this).attr("class").split(" ")[0];
+                return alreadyExpanded.find("."+colClass).not(".hide").css("left");
+            });
         }
-        var node = data.rslt.obj;
     })
     .ajaxStart(function(){
         if (!cx.cm.is_opening) {
