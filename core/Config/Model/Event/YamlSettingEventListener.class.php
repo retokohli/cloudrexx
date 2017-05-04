@@ -143,6 +143,15 @@ class YamlSettingEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventL
                         );
                     }
                     break;
+                case 'defaultMetaimage':
+                    if ($value != $_CONFIG[$objSetting->getName()]) {
+                        // drop esi/ssi cache
+                        $this->cx->getEvents()->triggerEvent(
+                            'clearEsiCache',
+                            array('Widget', 'METAIMAGE')
+                        );
+                    }
+                    break;
             }
         } catch (YamlSettingEventListenerException $e) {
             \DBG::msg($e->getMessage());
