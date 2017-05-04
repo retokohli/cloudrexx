@@ -1449,14 +1449,14 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
               .append('<div class="label">' + cx.variables.get('TXT_CORE_CM_TRANSLATIONS', 'contentmanager/lang') + '</div><div class="arrow" /></div>')
               .prepend("<div class=\"translations-expanded\" style=\"display: none;\"><ul></ul></div>")
               .click(function() {
-                  cx.jQuery(this).children(".translations-expanded").toggle();
+                  cx.jQuery(this).children(".translations-expanded").show();
               });
             var translationDropdown = translations.find(".translations-expanded ul");
             cx.jQuery.each(languages, function(index, el) {
                 var lang = cx.jQuery(el).val();
                 var langEl = cx.jQuery("<li class=\"translation " + lang + "\" />");
                 langEl.html("<span>" + cx.jQuery(el).text() + "</span>");
-                langEl.click(function() {
+                langEl.children("span").click(function() {
                     var page = cx.cm.getPageStatus(nodeIds[lang], lang);
                     if (page.existing) {
                         cx.cm.loadPage(page.id, null, null, "content");
@@ -1694,6 +1694,25 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             var pAndV = cx.jQuery(this).children("ins.page, ins.publishing").clone();
             var langEl = cx.jQuery("#node_" +nodeId+ " .translations-expanded .translation."+lang);
             pAndV.prependTo(langEl);
+        });
+
+        cx.jQuery("#site-tree .translations-expanded ins").click(function(event) {
+            if (cx.jQuery(this).is('ins.page')) {
+                action = "hide";
+                if (cx.jQuery(this).hasClass('invisible')) {
+                    action = "show";
+                }
+            } else {
+                action = "deactivate";
+                if (cx.jQuery(this).hasClass('unpublished')) {
+                    action = "activate";
+                }
+            }
+            var node = cx.jQuery(this).parentsUntil("#site-tree > ul").last("li");
+            var nodeId = node.attr("id").split("_")[1];
+            var lang = cx.jQuery(this).parent().attr("class").split(" ")[1];
+            var page = node.children("a."+lang);
+            cx.cm.performAction(action, page.attr("id"), nodeId);
         });
 
         var checkSiteTree = setInterval(function() {
@@ -2349,6 +2368,12 @@ cx.cm.updateTreeEntry = function(newStatus) {
         default:
             break;
     }
+
+    // update publishing/visibility in dropdown as well
+    var translation = node.find(".translations-expanded .translation."+pageLang);
+    translation.children("ins.publishing").attr("class", publishing.attr("class"));
+    translation.children("ins.page").attr("class", visibility.attr("class"));
+
 
     // make sure IDs are correct
     newStatus.id = pageId;

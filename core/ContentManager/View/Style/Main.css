@@ -615,8 +615,8 @@ th.translation .switch-tag-dropdown {
 }
 
 #site-tree .translations-expanded ins.publishing {
-    height: 17px;
-    background-position: -5px -4px;
+    position: relative;
+    top: 1px;
 }
 
 #site-tree .translations-expanded span {
