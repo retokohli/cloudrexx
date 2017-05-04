@@ -88,6 +88,16 @@ h1{ font-size: 20px }
     background: #0071bc;
 }
 
+#content-manager.edit_view table.adminlist {
+    /* overwrite fix width set by js when expanding translations*/
+    width: auto !important;
+}
+
+#content-manager.edit_view .actions {
+    left: auto !important;
+    right: 0;
+}
+
 .ie7 #input1{ float:left; }
 .ie7 .space{ margin-bottom: 10px; }
 
