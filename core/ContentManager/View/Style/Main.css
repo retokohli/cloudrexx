@@ -352,7 +352,6 @@ th.translation .switch-tag-dropdown {
 #site-tree .actions {
     position: absolute;
     float: none;
-    width: auto;
     height: 30px;
     line-height: 30px;
     font-size: 11px;
@@ -370,7 +369,7 @@ th.translation .switch-tag-dropdown {
     display: none;
 }
 
-#site-tree .translations .translation {
+#site-tree .translations:not(.dropdown) .translation {
     float: left;
     width: auto;
     height: 18px;
@@ -391,7 +390,7 @@ th.translation .switch-tag-dropdown {
     cursor: pointer;
 }
 
-#site-tree .translations .translation.unpublished {
+#site-tree .translations:not(.dropdown) .translation.unpublished {
     background: #e45f5f;
 }
 
@@ -490,8 +489,7 @@ th.translation .switch-tag-dropdown {
 
 #site-tree .actions-expanded,
 #site-tree .translations-expanded {
-    display: block;
-    overflow: hidden;
+    display: inline-block;
     position: absolute;
     top: 23px;
     left: 10px;
@@ -503,20 +501,17 @@ th.translation .switch-tag-dropdown {
     left: auto;
     top: 23px;
     right: 3px;
+    white-space: nowrap;
 }
 
-#site-tree .translations-expanded,
+#site-tree .actions-expanded ul,
 #site-tree .translations-expanded ul {
-    width: 100%;
-}
-
-#site-tree .actions-expanded ul {
     padding: 12px 15px;
 }
 
 #site-tree .actions-expanded ul,
 #site-tree .translations-expanded ul {
-    width: auto;
+    display: inline-block;
     float: left;
     background: #ffffff;
     border:  1px solid #d3d3d3;
@@ -536,30 +531,19 @@ th.translation .switch-tag-dropdown {
     background-repeat: no-repeat;
     background-position: 2px center;
     margin: 3px 0 3px 0;
-    display: block !important;
+    display: inline-block !important;
 }
 
 #site-tree .actions-expanded ul li {
     padding: 0 0 0 21px;
 }
 
-#site-tree .translations-expanded ul li.translation {
-    width: 100%;
-    height: auto;
-    margin: 0;
-    box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -o-box-sizing: border-box;
-    padding: 5px;
-    border-bottom: 1px solid #ffffff;
+#site-tree .translations-expanded ul li {
+    line-height: 22px;
 }
 
-#site-tree .translations-expanded ul li:last-child.translation {
-    border-bottom: none;
-}
-
-#site-tree .actions-expanded ul li::-moz-selection {
+#site-tree .actions-expanded ul li::-moz-selection,
+#site-tree .translations-expanded ul li::-moz-selection {
     background: none;
 }
 
@@ -609,9 +593,37 @@ th.translation .switch-tag-dropdown {
 
 #site-tree .actions-expanded ul li:hover,
 #site-tree .actions-expanded ul li:focus,
-#site-tree .actions-expanded ul li:active {
+#site-tree .actions-expanded ul li:active,
+#site-tree .translations-expanded ul li:hover,
+#site-tree .translations ul li:focus,
+#site-tree .translations ul li:active {
     cursor: pointer;
     color: #757575;
+}
+
+#site-tree .translations-expanded span,
+#site-tree .translations-expanded ins {
+    display: inline-block;
+    float: none;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+}
+
+#site-tree .translations-expanded ins {
+    padding-right: 5px;
+}
+
+#site-tree .translations-expanded ins.publishing {
+    height: 17px;
+    background-position: -5px -4px;
+}
+
+#site-tree .translations-expanded span {
+    position: static;
+    height: 17px;
+    line-height: 17px;
+    vertical-align: top;
 }
 
 #site-tree .jstree-icon,

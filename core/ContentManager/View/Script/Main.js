@@ -1455,7 +1455,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             cx.jQuery.each(languages, function(index, el) {
                 var lang = cx.jQuery(el).val();
                 var langEl = cx.jQuery("<li class=\"translation " + lang + "\" />");
-                langEl.text(lang);
+                langEl.html("<span>" + cx.jQuery(el).text() + "</span>");
                 langEl.click(function() {
                     var page = cx.cm.getPageStatus(nodeIds[lang], lang);
                     if (page.existing) {
@@ -1639,7 +1639,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         });
 
         cx.jQuery('.translations-expanded').live('mouseleave', function(event) {
-            if (!cx.jQuery(event.target).is('li.translation-item') &&
+            if (!cx.jQuery(event.target).is('li.translation') &&
                 cx.jQuery('.translations-expanded').length > 0
             ) {
                 cx.jQuery('.translations-expanded').each(function() {
@@ -1690,6 +1690,10 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             if (pageId) {
                 cx.cm.updateTreeEntry(cx.cm.getPageStatus(nodeId, lang));
             }
+            // copy publishing and visibility icon to dropdown
+            var pAndV = cx.jQuery(this).children("ins.page, ins.publishing").clone();
+            var langEl = cx.jQuery("#node_" +nodeId+ " .translations-expanded .translation."+lang);
+            pAndV.prependTo(langEl);
         });
 
         var checkSiteTree = setInterval(function() {
