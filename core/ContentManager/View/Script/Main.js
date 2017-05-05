@@ -450,8 +450,13 @@ cx.ready(function() {
 
         cx.jQuery('#site-tree>ul li .jstree-wrapper').each(function() {
             jsTreeLang = cx.jQuery('#site-tree').jstree('get_lang');
-            cx.jQuery(this).children('.module.show, .preview.show, .lastupdate.show').removeClass('show').addClass('hide');
-            cx.jQuery(this).children('.module.'+jsTreeLang + ', .preview.'+jsTreeLang + ', .lastupdate.' + jsTreeLang).toggleClass('show hide');
+            var prevShown = cx.jQuery(this).children('.module.show, .preview.show, .lastupdate.show');
+            prevShown.removeClass('show').addClass('hide');
+            cx.jQuery(this).children('.module.'+jsTreeLang + ', .preview.'+jsTreeLang + ', .lastupdate.' + jsTreeLang)
+              .css("left", function() {
+                  return prevShown.filter("."+cx.jQuery(this).attr("class").split(" ")[0]).css("left");
+              })
+              .toggleClass('show hide');
         });
     });
     cx.jQuery(".chzn-select").trigger('change');
@@ -1891,19 +1896,21 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
     })
     .bind("open_node.jstree", function(event, data) {
         if (cx.jQuery(".switch-tag-dropdown").hasClass("open")) {
-            var translations = cx.jQuery(data.rslt.obj).find(".translations");
+            var node = cx.jQuery(data.rslt.obj);
             // adjust left position of cols (adopt from parent row)
-            var alreadyExpanded = cx.jQuery(translations[0]).parent();
-            var cols = alreadyExpanded.parent().find("li .translations," +
-              "li .module," +
-              "li .preview," +
-              "li .actions," +
-              "li .lastupdate"
-            ).not(".hide");
+            var alreadyExpanded = node.children(".jstree-wrapper");
+            var lang = cx.cm.getCurrentLang();
+            //module
+            var cols = node.children("ul").find(".translations," +
+            "."+lang+".module," +
+            "."+lang+".preview," +
+            ".actions," +
+            "."+lang+".lastupdate"
+            );
             cols.css("left", function() {
-                var colClass = cx.jQuery(this).attr("class").split(" ")[0];
-                return alreadyExpanded.find("."+colClass).not(".hide").css("left");
+               return alreadyExpanded.children("."+cx.jQuery(this).attr("class").split(" ")[0]).not(".hide").css("left");
             });
+            // node.children("ul").find(".module."+lang).css("left", alreadyExpanded.children(".module."+lang).css("left"));
         }
     })
     .ajaxStart(function(){
