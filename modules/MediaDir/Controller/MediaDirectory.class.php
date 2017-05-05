@@ -775,6 +775,28 @@ class MediaDirectory extends MediaDirectoryLibrary
         if (!$contentChanged && $firstInputfieldValue) {
             $this->metaDescription = $firstInputfieldValue;
         }
+
+        // check if we shall parse any related entries
+        if (!$this->_objTpl->blockExists($this->moduleNameLC.'RelatedList')) {
+            return;
+        }
+
+        // fetch related entries
+        $objEntry->getEntries(null,$intLevelId,$intCategoryId,null,null,null,1,null,1);
+
+        // remove currently parsed entry
+        unset($objEntry->arrEntries[$intEntryId]);
+
+        // abort in case no related entries are present
+        if (empty($objEntry->arrEntries)) {
+            return;
+        }
+
+        // set mediadirRelatedList tempalte block to be parsed
+        $objEntry->setStrBlockName($this->moduleNameLC.'RelatedList');
+
+        // prarse related entries
+        $objEntry->listEntries($this->_objTpl, 5);
     }
 
 
