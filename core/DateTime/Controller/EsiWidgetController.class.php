@@ -55,26 +55,25 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
     /**
      * Parses a widget
      *
-     * @param string              $name     Widget name
-     * @param \Cx\Core\Html\Sigma $template Widget template
-     * @param string              $locale   RFC 3066 locale identifier
+     * @param string                                 $name     Widget name
+     * @param \Cx\Core\Html\Sigma                    $template WidgetTemplate
+     * @param \Cx\Core\Routing\Model\Entity\Response $response Response object
+     * @param array                                  $params   Get parameters
      */
-    public function parseWidget($name, $template, $locale)
+    public function parseWidget($name, $template, $response, $params)
     {
         global $_CORELANG;
 
-        if ($name !== 'DATE') {
-            return;
-        }
-
         //The global $_CORELANG is required by the method showFormattedDate()
-        $langId    = \FWLanguage::getLangIdByIso639_1($locale);
         $_CORELANG = \Env::get('init')->getComponentSpecificLanguageData(
             'Core',
             true,
-            $langId
+            $params['lang']
         );
 
         $template->setVariable($name, showFormattedDate());
+        $cacheExpirationDate = new \DateTime();
+        $cacheExpirationDate->setTime(23,59,59);
+        $response->setExpirationDate($cacheExpirationDate);
     }
 }

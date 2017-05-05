@@ -81,8 +81,7 @@ class YamlSettingEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventL
                             'DATE_DAY',
                             'DATE_TIME'
                         );
-                        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-                        $cx->getEvents()->triggerEvent(
+                        $this->cx->getEvents()->triggerEvent(
                             'clearEsiCache', array('Widget',  $widgetNames)
                         );
                     }
