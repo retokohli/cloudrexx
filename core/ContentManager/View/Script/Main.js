@@ -1449,7 +1449,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
               .append('<div class="label">' + cx.variables.get('TXT_CORE_CM_TRANSLATIONS', 'contentmanager/lang') + '</div><div class="arrow" /></div>')
               .prepend("<div class=\"translations-expanded\" style=\"display: none;\"><ul></ul></div>")
               .click(function() {
-                  cx.jQuery(this).children(".translations-expanded").show();
+                  cx.jQuery(this).children(".translations-expanded").toggle();
               });
             var translationDropdown = translations.find(".translations-expanded ul");
             cx.jQuery.each(languages, function(index, el) {
