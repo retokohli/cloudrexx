@@ -1468,10 +1468,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 translationDropdown.append(langEl);
             });
             var switchTagDropdown = cx.jQuery(".switch-tag-dropdown");
-            if (
-              languages.size() <= 4 ||
-              switchTagDropdown.hasClass("open")
-            ) { // tags
+            if (switchTagDropdown.hasClass("open")) { // tags
                 // show tags
                 switchTagDropdown.addClass("open");
                 cx.jQuery("#site-structure").addClass("open");
@@ -1579,13 +1576,6 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             // expand site-structure according to translations column width
             var difference = translations.width() - prevWidth;
 
-            var parentWidth = cx.jQuery("table.adminlist").outerWidth();
-            var parentExpandedWidth = parentWidth + difference;
-
-            var expandFactor = parentWidth / parentExpandedWidth;
-
-            cx.jQuery("table.adminlist").width(parentExpandedWidth);
-
             var tableHeaders = cx.jQuery("th.page," +
                 "th.translation," +
                 "th.module," +
@@ -1599,7 +1589,16 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 "#site-tree .actions," +
                 "#site-tree .lastupdate"
             ).not(".hide");
-            if (difference >= 0) {
+
+            if (
+              difference >= 0 &&
+              translations.width() > cx.jQuery("th.translation").width()
+            ) {
+                var parentWidth = cx.jQuery("table.adminlist").outerWidth();
+                var parentExpandedWidth = parentWidth + difference;
+                var expandFactor = parentWidth / parentExpandedWidth;
+                cx.jQuery("table.adminlist").width(parentExpandedWidth);
+
                 // adjust cols
                 cols.css("left", function() {
                     var oldLeft = cx.jQuery(this).position().left;
@@ -1635,6 +1634,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             } else {
                 tableHeaders.removeAttr("style");
                 cols.removeAttr("style");
+                cx.jQuery("table.adminlist").removeAttr("style");
             }
         });
 
@@ -1887,8 +1887,8 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         document.cookie = "userFrontendLangId=" + data.rslt;
     })
     .bind("open_node.jstree", function(event, data) {
-        var translations = cx.jQuery(data.rslt.obj).find(".translations");
         if (cx.jQuery(".switch-tag-dropdown").hasClass("open")) {
+            var translations = cx.jQuery(data.rslt.obj).find(".translations");
             // adjust left position of cols (adopt from parent row)
             var alreadyExpanded = cx.jQuery(translations[0]).parent();
             var cols = alreadyExpanded.parent().find("li .translations," +
