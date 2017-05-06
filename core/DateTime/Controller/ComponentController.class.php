@@ -169,59 +169,23 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $widgetController = $this->getComponent('Widget');
 
         //EsiWidget
-        $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
-            $this,
-            'DATE'
-        );
-        $widget->setEsiVariable(
-            \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_LANG
-        );
-        $widgetController->registerWidget($widget);
-
-        //FinalStringWidget
         $widgets = array(
+            'DATE',
             'TIME',
             'DATE_YEAR',
             'DATE_MONTH',
             'DATE_DAY',
             'DATE_TIME',
         );
-
         foreach ($widgets as $widgetName) {
-            $widgetValue = '';
-
-            if ($widgetName === 'TIME') {
-                $date = $this->createDateTimeForUser('now');
-                $widgetValue = $date->format('H:i');
-            }
-
-            if ($widgetName === 'DATE_YEAR') {
-                $date = $this->createDateTimeForUser('now');
-                $widgetValue = $date->format('Y');
-            }
-
-            if ($widgetName === 'DATE_MONTH') {
-                $date = $this->createDateTimeForUser('now');
-                $widgetValue = $date->format('m');
-            }
-
-            if ($widgetName === 'DATE_DAY') {
-                $date = $this->createDateTimeForUser('now');
-                $widgetValue = $date->format('d');
-            }
-
-            if ($widgetName === 'DATE_TIME') {
-                $date = $this->createDateTimeForUser('now');
-                $widgetValue = $date->format('H:i');
-            }
-
-            $widgetController->registerWidget(
-                new \Cx\Core_Modules\Widget\Model\Entity\FinalStringWidget(
-                    $this,
-                    $widgetName,
-                    $widgetValue
-                )
+            $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+                $this,
+                $widgetName
             );
+            $widget->setEsiVariable(
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_LANG
+            );
+            $widgetController->registerWidget($widget);
         }
     }
 }
