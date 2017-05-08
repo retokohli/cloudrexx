@@ -405,6 +405,25 @@ cx.ready(function() {
         }
     });
 
+    cx.jQuery("#site-tree .translations-expanded ins").click(function(event) {
+        if (cx.jQuery(this).is('ins.page')) {
+            action = "hide";
+            if (cx.jQuery(this).hasClass('invisible')) {
+                action = "show";
+            }
+        } else {
+            action = "deactivate";
+            if (cx.jQuery(this).hasClass('unpublished')) {
+                action = "activate";
+            }
+        }
+        var node = cx.jQuery(this).parentsUntil("#site-tree > ul").last("li");
+        var nodeId = node.attr("id").split("_")[1];
+        var lang = cx.jQuery(this).parent().attr("class").split(" ")[1];
+        var page = node.children("a."+lang);
+        cx.cm.performAction(action, page.attr("id"), nodeId);
+    });
+
     var data = cx.jQuery.parseJSON(cx.variables.get("tree-data", "contentmanager/tree"));
     cx.cm.actions = data.data.actions;
     cx.cm.hasHome = data.data.hasHome;
@@ -1388,7 +1407,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         cx.jQuery('#' + cx.jQuery('#pageId').val()).siblings('.jstree-wrapper').addClass('active');
 
         // add a wrapper div for the horizontal lines
-        cx.jQuery('#site-tree li > ins.jstree-icon').each(function(index, node) {
+        cx.jQuery('#site-tree li:not(.translation) > ins.jstree-icon').each(function(index, node) {
             cx.jQuery(this).hover(
                 function() {
                     if (mouseIsUp) {
@@ -1698,29 +1717,23 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             if (pageId) {
                 cx.cm.updateTreeEntry(cx.cm.getPageStatus(nodeId, lang));
             }
-            // copy publishing and visibility icon to dropdown
-            var pAndV = cx.jQuery(this).children("ins.page, ins.publishing").clone();
-            var langEl = cx.jQuery("#node_" +nodeId+ " .translations-expanded .translation."+lang);
-            pAndV.prependTo(langEl);
-        });
 
-        cx.jQuery("#site-tree .translations-expanded ins").click(function(event) {
-            if (cx.jQuery(this).is('ins.page')) {
-                action = "hide";
-                if (cx.jQuery(this).hasClass('invisible')) {
-                    action = "show";
+            var langEl = cx.jQuery("#node_" +nodeId+ " > .jstree-wrapper  .translations-expanded .translation."+lang);
+            if (
+              !cx.jQuery(this).hasClass("jstree-move") &&
+              !langEl.find("ins.page, ins.publishing").length
+            ) { // don't prepend twice
+                // copy publishing and visibility icon to dropdown
+                if (
+                    !cx.jQuery(this).has("ins.page") ||
+                    !cx.jQuery(this).has("ins.publishing")
+                ) {
+                    return;
                 }
-            } else {
-                action = "deactivate";
-                if (cx.jQuery(this).hasClass('unpublished')) {
-                    action = "activate";
-                }
+                var insertPage = cx.jQuery(this).children("ins.page").clone();
+                var insertPublishing = cx.jQuery(this).children("ins.publishing").clone();
+                langEl.prepend(insertPage).prepend(insertPublishing);
             }
-            var node = cx.jQuery(this).parentsUntil("#site-tree > ul").last("li");
-            var nodeId = node.attr("id").split("_")[1];
-            var lang = cx.jQuery(this).parent().attr("class").split(" ")[1];
-            var page = node.children("a."+lang);
-            cx.cm.performAction(action, page.attr("id"), nodeId);
         });
 
         var checkSiteTree = setInterval(function() {
