@@ -417,7 +417,7 @@ cx.ready(function() {
                 action = "activate";
             }
         }
-        var node = cx.jQuery(this).parentsUntil("#site-tree > ul").last("li");
+        var node = cx.jQuery(this).closest("li[id^='node_']");
         var nodeId = node.attr("id").split("_")[1];
         var lang = cx.jQuery(this).parent().attr("class").split(" ")[1];
         var page = node.children("a."+lang);
