@@ -405,7 +405,7 @@ cx.ready(function() {
         }
     });
 
-    cx.jQuery("#site-tree .translations-expanded ins").click(function(event) {
+    cx.jQuery("#site-tree .translations-expanded ins").live("click", function(event) {
         if (cx.jQuery(this).is('ins.page')) {
             action = "hide";
             if (cx.jQuery(this).hasClass('invisible')) {
