@@ -1134,6 +1134,11 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
 
     var eventAdded = false;
 
+    // reset expanded table
+    if (cx.jQuery(".switch-tag-dropdown").hasClass("open")) {
+        cx.cm.resetExpandedTable();
+    }
+
     target.jstree({
         // List of active plugins
         "plugins" : [
@@ -1587,10 +1592,10 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
 
         cx.jQuery(".switch-tag-dropdown").unbind("click").bind("click", function(e) {
             e.preventDefault();
-            var translations = cx.jQuery("#site-tree .translations");
-            var prevWidth = translations.width();
             // toggle open class
             cx.jQuery(this).toggleClass("open");
+
+            var translations = cx.jQuery("#site-tree .translations");
             // show dropdown/tags
             if (cx.jQuery(this).hasClass("open")) { // tags
                 translations.removeClass("dropdown");
@@ -1600,69 +1605,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 translations.addClass("dropdown");
                 translations.children(".translation").hide();
             }
-            // expand site-structure according to translations column width
-            var difference = translations.width() - prevWidth;
-
-            var tableHeaders = cx.jQuery("th.page," +
-                "th.translation," +
-                "th.module," +
-                "th.preview," +
-                "th.actions," +
-                "th.lastupdate"
-            );
-            var cols = cx.jQuery("#site-tree .translations," +
-                "#site-tree .module," +
-                "#site-tree .preview," +
-                "#site-tree .actions," +
-                "#site-tree .lastupdate"
-            ).not(".hide");
-
-            if (
-              difference >= 0 &&
-              translations.width() > cx.jQuery("th.translation").width()
-            ) {
-                var parentWidth = cx.jQuery("table.adminlist").outerWidth();
-                var parentExpandedWidth = parentWidth + difference;
-                var expandFactor = parentWidth / parentExpandedWidth;
-                cx.jQuery("table.adminlist").width(parentExpandedWidth);
-
-                // adjust cols
-                cols.css("left", function() {
-                    var oldLeft = cx.jQuery(this).position().left;
-                    if (cx.jQuery(this).hasClass("translations")) {
-                        var newLeft = oldLeft * expandFactor;
-                    } else {
-                        var newLeft = oldLeft * expandFactor + difference;
-                    }
-                    // adjust table headers
-                    var thEl = null;
-                    switch (true) {
-                        case cx.jQuery(this).hasClass('translations'):
-                            thEl = cx.jQuery("th.translation");
-                            break;
-                        case cx.jQuery(this).hasClass('module'):
-                            thEl = cx.jQuery("th.module");
-                            break;
-                        case cx.jQuery(this).hasClass('preview'):
-                            thEl = cx.jQuery("th.preview");
-                            break;
-                        case cx.jQuery(this).hasClass('actions'):
-                            thEl = cx.jQuery("th.actions");
-                            break;
-                    }
-                    if (thEl) {
-                        thEl.css({
-                            "position": "absolute",
-                            "left": newLeft + "px",
-                        });
-                    }
-                    return newLeft + "px";
-                });
-            } else {
-                tableHeaders.removeAttr("style");
-                cols.removeAttr("style");
-                cx.jQuery("table.adminlist").removeAttr("style");
-            }
+            cx.cm.expandSiteStructure();
         });
 
         cx.jQuery('.translations-expanded').live('mouseleave', function(event) {
@@ -1900,6 +1843,10 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 clearInterval(setPageTitlesWidth);
             }
         }, 100);
+
+        if (open_all) {
+            cx.cm.expandSiteStructure();
+        }
     })
     .bind("refresh.jstree", function(event, data) {
         cx.jQuery(event.target).jstree('loaded');
@@ -3437,4 +3384,98 @@ cx.cm.updateLocaleSelect = function() {
         }
         cx.jQuery(".chzn-select").trigger("chosen:updated");
     }
+}
+
+/**
+ * Expands/contracts site structure when locale tags are shown/hidden
+ */
+cx.cm.expandSiteStructure = function() {
+    var translations = cx.jQuery("#site-tree .translations");
+    // expand site-structure according to translations column width
+    var difference = translations.width() - cx.jQuery("th.translation").width();
+
+    var cols = cx.cm.getSiteStructureCols();
+
+    if (difference >= 0) {
+        var parentWidth = cx.jQuery("table.adminlist").outerWidth();
+        var parentExpandedWidth = parentWidth + difference;
+        var expandFactor = parentWidth / parentExpandedWidth;
+        cx.jQuery("table.adminlist").width(parentExpandedWidth);
+
+        // adjust cols
+        cols.css("left", function() {
+            var oldLeft = cx.jQuery(this).position().left;
+            if (cx.jQuery(this).hasClass("translations")) {
+                var newLeft = oldLeft * expandFactor;
+            } else {
+                var newLeft = oldLeft * expandFactor + difference;
+            }
+            // adjust table headers
+            var thEl = null;
+            switch (true) {
+                case cx.jQuery(this).hasClass('translations'):
+                    thEl = cx.jQuery("th.translation");
+                    break;
+                case cx.jQuery(this).hasClass('module'):
+                    thEl = cx.jQuery("th.module");
+                    break;
+                case cx.jQuery(this).hasClass('preview'):
+                    thEl = cx.jQuery("th.preview");
+                    break;
+                case cx.jQuery(this).hasClass('actions'):
+                    thEl = cx.jQuery("th.actions");
+                    break;
+            }
+            if (thEl) {
+                thEl.css({
+                    "position": "absolute",
+                    "left": newLeft + "px",
+                });
+            }
+            return newLeft + "px";
+        });
+    } else {
+        cx.cm.resetExpandedTable();
+    }
+}
+
+/**
+ * Resets the expanded tables width and the positions of its headers and cols
+ */
+cx.cm.resetExpandedTable = function() {
+    // table headers
+    tableHeaders = cx.cm.getSiteStructureHeaders();
+    tableHeaders.removeAttr("style");
+    // cols
+    cols = cx.cm.getSiteStructureCols();
+    cols.removeAttr("style");
+    // table
+    cx.jQuery("table.adminlist").removeAttr("style");
+}
+
+/**
+ * Gets the headers of the site structure table
+ * @returns {jQuery} The selected ths
+ */
+cx.cm.getSiteStructureHeaders = function() {
+    return cx.jQuery("th.page," +
+      "th.translation," +
+      "th.module," +
+      "th.preview," +
+      "th.actions," +
+      "th.lastupdate"
+    );
+}
+
+/**
+ * Gets the (shown) cols of the site structure table
+ * @returns {jQuery} The selected cols
+ */
+cx.cm.getSiteStructureCols = function() {
+    return cx.jQuery("#site-tree .translations," +
+      "#site-tree .module," +
+      "#site-tree .preview," +
+      "#site-tree .actions," +
+      "#site-tree .lastupdate"
+    ).not(".hide");
 }
