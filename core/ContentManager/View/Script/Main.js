@@ -1,5 +1,6 @@
 var baseUrl = 'index.php?cmd=ContentManager';
 var regExpUriProtocol = new RegExp(cx.variables.get('regExpUriProtocol', 'contentmanager'));
+var firstLoad = true;
 
 var mouseIsUp = true;
 cx.jQuery(document).bind('mouseup.global', function() {
@@ -1498,20 +1499,6 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 });
                 translationDropdown.append(langEl);
             });
-            var switchTagDropdown = cx.jQuery(".switch-tag-dropdown");
-            if (switchTagDropdown.hasClass("open")) { // tags
-                // show tags
-                switchTagDropdown.addClass("open");
-                cx.jQuery("#site-structure").addClass("open");
-                translations.removeClass("dropdown");
-                translations.children(".translation").show();
-            } else {
-                // show dropdown
-                switchTagDropdown.removeClass("open");
-                cx.jQuery("#site-structure").removeClass("open");
-                translations.addClass("dropdown");
-                translations.children(".translation").hide();
-            }
 
             var actions = cx.jQuery('<div class="actions"><div class="label">' + cx.variables.get('TXT_CORE_CM_ACTIONS', 'contentmanager/lang') + '</div><div class="arrow" /></div>')
                             .prepend("<div class=\"actions-expanded\" style=\"display: none;\"><ul></ul></div>")
@@ -1592,20 +1579,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
 
         cx.jQuery(".switch-tag-dropdown").unbind("click").bind("click", function(e) {
             e.preventDefault();
-            // toggle open class
-            cx.jQuery(this).toggleClass("open");
-
-            var translations = cx.jQuery("#site-tree .translations");
-            // show dropdown/tags
-            if (cx.jQuery(this).hasClass("open")) { // tags
-                translations.removeClass("dropdown");
-                translations.find(".translations-expanded").hide();
-                translations.children(".translation").show();
-            } else { // dropdown
-                translations.addClass("dropdown");
-                translations.children(".translation").hide();
-            }
-            cx.cm.expandSiteStructure();
+            cx.cm.switchTagDropdown(true);
         });
 
         cx.jQuery('.translations-expanded').live('mouseleave', function(event) {
@@ -1816,6 +1790,16 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 zIndex -= 10;
             });
         }
+        if (
+          firstLoad &&
+          cx.variables.get("showLocaleTagsByDefault", "contentmanager") == "on"
+        ) {
+            cx.cm.switchTagDropdown(true);
+            firstLoad = false;
+        } else {
+            cx.cm.resetExpandedTable();
+            cx.cm.switchTagDropdown(false);
+        }
     })
     .bind("loaded.jstree", function(event, data) {
         if (open_all) {
@@ -1843,10 +1827,6 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 clearInterval(setPageTitlesWidth);
             }
         }, 100);
-
-        if (open_all) {
-            cx.cm.expandSiteStructure();
-        }
     })
     .bind("refresh.jstree", function(event, data) {
         cx.jQuery(event.target).jstree('loaded');
@@ -1872,6 +1852,12 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             });
             // node.children("ul").find(".module."+lang).css("left", alreadyExpanded.children(".module."+lang).css("left"));
         }
+    })
+    .bind("open_all.jstree", function(event, data) {
+        // setTimout 0 is neccessary, otherwise the translation col width is 0
+        setTimeout(function() {
+            cx.cm.expandSiteStructure();
+        },0);
     })
     .ajaxStart(function(){
         if (!cx.cm.is_opening) {
@@ -3393,7 +3379,6 @@ cx.cm.expandSiteStructure = function() {
     var translations = cx.jQuery("#site-tree .translations");
     // expand site-structure according to translations column width
     var difference = translations.width() - cx.jQuery("th.translation").width();
-
     var cols = cx.cm.getSiteStructureCols();
 
     if (difference >= 0) {
@@ -3478,4 +3463,29 @@ cx.cm.getSiteStructureCols = function() {
       "#site-tree .actions," +
       "#site-tree .lastupdate"
     ).not(".hide");
+}
+
+/**
+ * Handles the switching between the locale tags and the dropdown
+ * @param toggle Wether to switch or not
+ */
+cx.cm.switchTagDropdown = function(toggle) {
+    var switchTagDropdown = cx.jQuery(".switch-tag-dropdown");
+    var translations = cx.jQuery("#site-tree .translations");
+
+    if (toggle) {
+        // toggle open class
+        cx.jQuery(switchTagDropdown).toggleClass("open");
+    }
+    if (switchTagDropdown.hasClass("open")) { // tags
+      // show tags
+      translations.removeClass("dropdown");
+      translations.find(".translations-expanded").hide();
+      translations.children(".translation").show();
+    } else {
+      // show dropdown
+      translations.addClass("dropdown");
+      translations.children(".translation").hide();
+    }
+    cx.cm.expandSiteStructure();
 }

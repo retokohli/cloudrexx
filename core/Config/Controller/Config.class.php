@@ -1340,6 +1340,11 @@ class Config
                     \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getBackendLanguages()}', 'administrationArea') ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default language (Backend)");
             }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('showLocaleTagsByDefault')
+                && !\Cx\Core\Setting\Controller\Setting::add('showLocaleTagsByDefault', isset($existingConfig['showLocaleTagsByDefault']) ? $existingConfig['showLocaleTagsByDefault'] : 'on', 0,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'administrationArea')){
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default showing of locale tags");
+            }
 
             //security group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'security','Yaml', $configPath);

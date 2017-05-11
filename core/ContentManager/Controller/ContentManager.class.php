@@ -420,6 +420,7 @@ class ContentManager extends \Module
             'regExpUriProtocol'  =>  \FWValidator::REGEX_URI_PROTO,
             'contrexxBaseUrl'    => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . '/',
             'contrexxPathOffset' => ASCMS_PATH_OFFSET,
+            'showLocaleTagsByDefault'  => $_CONFIG['showLocaleTagsByDefault'],
         ), 'contentmanager');
     }
 
