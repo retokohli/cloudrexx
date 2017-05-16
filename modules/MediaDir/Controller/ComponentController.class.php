@@ -175,7 +175,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $objMediadir->getHeadlines($mediadirCheck);
         }
         if ($objTemplate->blockExists('mediadirLatest')){
-            $objMediadirForms = new \Cx\Modules\MediaDir\Controller\MediaDirectoryForm(null, 'MediaDir');
+            $objMediadirForms = new MediaDirectoryForm(null, 'MediaDir');
             $foundOne = false;
             foreach ($objMediadirForms->getForms() as $key => $arrForm) {
                 if ($objTemplate->blockExists('mediadirLatest_form_'.$arrForm['formCmd'])) {
@@ -196,7 +196,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $foundOne = false;
 
             // fetch mediadir object data
-            $objMediadirForm = new \Cx\Modules\MediaDir\Controller\MediaDirectoryForm(null, $this->getName());
+            $objMediadirForm = new MediaDirectoryForm(null, $this->getName());
             $objMediadirCategory = new MediaDirectoryCategory(null, null, 0, $this->getName());
             $objMediadirLevel = new MediaDirectoryLevel(null, null, 1, $this->getName());
 
