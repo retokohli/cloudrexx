@@ -92,7 +92,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'METAROBOTS',
                 'METAIMAGE',
                 'CONTENT_TITLE',
-                'CONTENT_TEXT',
+                //'CONTENT_TEXT',
                 'CSS_NAME',
                 'TXT_CORE_LAST_MODIFIED_PAGE',
                 'LAST_MODIFIED_PAGE'
