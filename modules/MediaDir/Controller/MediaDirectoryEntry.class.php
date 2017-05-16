@@ -887,6 +887,61 @@ JSCODE;
                 ));
 
                 break;
+
+            case 5:
+                // Frontend View: related entries
+                foreach ($this->arrEntries as $key => $arrEntry) {
+                    if(($arrEntry['entryDurationStart'] < $intToday && $arrEntry['entryDurationEnd'] > $intToday) || $arrEntry['entryDurationType'] == 1) {
+                        $objInputfields = new MediaDirectoryInputfield(intval($arrEntry['entryFormId']),false,$arrEntry['entryTranslationStatus'], $this->moduleName);
+                        $objInputfields->moduleNameLC .= '_related';
+                        $objInputfields->moduleLangVar .= '_RELATED';
+                        $objInputfields->listInputfields($objTpl, 3, intval($arrEntry['entryId']));
+
+                        if(intval($arrEntry['entryAddedBy']) != 0) {
+                            if ($objUser = $objFWUser->objUser->getUser(intval($arrEntry['entryAddedBy']))) {
+                                $strAddedBy = $objUser->getUsername();
+                            } else {
+                                $strAddedBy = "unknown";
+                            }
+                        } else {
+                            $strAddedBy = "unknown";
+                        }
+
+                        $strDetailUrl = '#';
+                        try {
+                            if ($arrEntry['entryReadyToConfirm'] == 1 || $arrEntry['entryConfirmed'] == 1) {
+                                $strDetailUrl = $this->getDetailUrlOfEntry($arrEntry);
+                            }
+                        } catch (MediaDirectoryEntryException $e) {}
+                        $objTpl->setVariable(array(
+                            $this->moduleLangVar.'_RELATED_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
+                            $this->moduleLangVar.'_RELATED_ENTRY_ID' =>  $arrEntry['entryId'],
+                            $this->moduleLangVar.'_RELATED_ENTRY_TITLE' => contrexx_raw2xhtml($arrEntry['entryFields'][0]),
+                            $this->moduleLangVar.'_RELATED_ENTRY_TITLE_URL_ENCODED' => urlencode($arrEntry['entryFields'][0]),
+                            $this->moduleLangVar.'_RELATED_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
+                            $this->moduleLangVar.'_RELATED_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
+                            $this->moduleLangVar.'_RELATED_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
+                            $this->moduleLangVar.'_RELATED_ENTRY_HITS' =>  $arrEntry['entryHits'],
+                            $this->moduleLangVar.'_RELATED_ENTRY_POPULAR_HITS' =>  $arrEntry['entryPopularHits'],
+                            $this->moduleLangVar.'_RELATED_ENTRY_DETAIL_URL' => $strDetailUrl,
+                            'TXT_'.$this->moduleLangVar.'_RELATED_ENTRY_DETAIL' =>  $_ARRAYLANG['TXT_MEDIADIR_DETAIL'],
+                        ));
+
+                        foreach ($arrEntry['entryFields'] as $key => $strFieldValue) {
+                            $intPos = $key+1;
+
+                            $objTpl->setVariable(array(
+                                'MEDIADIR_RELATED_ENTRY_FIELD_'.$intPos.'_POS' => substr($strFieldValue, 0, 255),
+                            ));
+                        }
+
+                        $i++;
+                        $objTpl->parse($this->strBlockName);
+
+                        $objTpl->clearVariables();
+                    }
+                }
+                break;
         }
     }
 

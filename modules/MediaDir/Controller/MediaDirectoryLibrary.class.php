@@ -1355,4 +1355,64 @@ EOF;
 
         self::$currentFetchedEntryDataObject->listEntries($template, 4, $placeholder);
     }
+
+    /**
+     * Identity filters specified as placeholders in the block $block of
+     * template $templatet to be applied on the listing of entries.
+     * Filters can have the following form:
+     * - MEDIADIR_FILTER_FORM_3 => filter by form
+     * - MEDIADIR_FILTER_CATEGORY_4 => filter by category
+     * - MEDIADIR_FILTER_LEVEL_5 => filter by level
+     * - MEDIADIR_FILTER_AUTO => filter by supplied arguments as default
+     *
+     * @param   string  $block Name of the template block to look up for filter
+     *                         placeholders
+     * @param   \Cx\Core\Html\Sigma $template   Template object where the block
+     *                                          $block is located in
+     * @param   integer $formId If supplied and filter MEDIADIR_FILTER_AUTO is
+     *                          present, then do set filter 'form' to $formId
+     * @param   integer $categoryId If supplied and filter MEDIADIR_FILTER_AUTO
+     *                              is present, then do set filter 'category' to
+     *                              $categoryId
+     * @param   integer $levelId If supplied and filter MEDIADIR_FILTER_AUTO is
+     *                           present, then do set filter 'level' to $levelId
+     * @return  array   Array containing the identified filters. Where the array
+     *                  index represents the filter-key and the array value the
+     *                  value to filter for. I.e.:
+     *                  array('form' => 3, 'category' => 4, 'level' => 5)
+     */
+    public static function fetchMediaDirListFiltersFromTemplate($block, $template, $formId = null, $categoryId = null, $levelId = null) {
+        $filter = array();
+        $placeholderList = join("\n", $template->getPlaceholderList($block));
+        if (preg_match_all('/MEDIADIR_FILTER_(FORM|CATEGORY|LEVEL)_([0-9]+)/', $placeholderList, $match)) {
+            foreach ($match[1] as $idx => $key) {
+                $filterKey = strtolower($key);
+                $filter[$filterKey] = intval($match[2][$idx]);
+            }
+        }
+
+        // If filter MEDIADIR_FILTER_AUTO is present, then we will override the
+        // filters by the supplied arguments $formId, $categoryId and $levelId.
+        // Otherwise, we will ignore any supplied arguments
+        if (!in_array('MEDIADIR_FILTER_AUTO', $placeholderList)) {
+            return $filter;
+        }
+
+        // override form filter
+        if ($formId) {
+            $filter['form'] = $formId;
+        }
+
+        // override category filter
+        if ($categoryId) {
+            $filter['category'] = $categoryId;
+        }
+
+        // override level filter
+        if ($levelId) {
+            $filter['level'] = $levelId;
+        }
+
+        return $filter;
+    }
 }
