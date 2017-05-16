@@ -2019,6 +2019,7 @@ namespace Cx\Core\Core\Controller {
             $boolShop = \Cx\Modules\Shop\Controller\Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
             $this->template->setVariable(array(
+                'CONTENT_TEXT'                   => $this->resolvedPage->getContent(),
                 'LOGOUT_URL'                     => contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'logout')),
                 'PAGE_URL'                       => htmlspecialchars(\Env::get('init')->getPageUri()),
                 'PAGE_URL_ENCODED'               => urlencode(\Env::get('init')->getPageUri()->toString()),

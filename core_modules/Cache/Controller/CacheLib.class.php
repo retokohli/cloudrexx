@@ -533,6 +533,7 @@ class CacheLib
                 )
             )
         );
+        $arguments['response']->setPage($cx->getPage());
 
         if (!$this->jsonData) {
             $this->jsonData = new \Cx\Core\Json\JsonData();
