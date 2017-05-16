@@ -195,22 +195,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             // hold information if a specific block has been parsed
             $foundOne = false;
 
-            // function to match for placeholders in template that act as a filter. I.e.:
-            //     MEDIADIR_FILTER_FORM_3
-            //     MEDIADIR_FILTER_CATEGORY_4
-            //     MEDIADIR_FILTER_LEVEL_5
-            $fetchMediaDirListFilters = function($block) use ($objTemplate) {
-                $filter = array();
-                $placeholderList = join("\n", $objTemplate->getPlaceholderList($block));
-                if (preg_match_all('/MEDIADIR_FILTER_(FORM|CATEGORY|LEVEL)_([0-9]+)/', $placeholderList, $match)) {
-                    foreach ($match[1] as $idx => $key) {
-                        $filterKey = strtolower($key);
-                        $filter[$filterKey] = intval($match[2][$idx]);
-                    }
-                }
-                return $filter;
-            };
-
             // fetch mediadir object data
             $objMediadirForm = new \Cx\Modules\MediaDir\Controller\MediaDirectoryForm(null, $this->getName());
             $objMediadirCategory = new MediaDirectoryCategory(null, null, 0, $this->getName());
@@ -232,7 +216,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     //    mediadirList_level_5
                     $block = 'mediadirList_'.$objectType.'_'.$objectId;
                     if ($objTemplate->blockExists($block)) {
-                        $filter = $fetchMediaDirListFilters($block);
+                        $filter = MediaDirectoryLibrary::fetchMediaDirListFiltersFromTemplate($block, $objTemplate);
                         $filter[$objectType] = $objectId;
                         $objMediadir->parseEntries($objTemplate, $block, $filter);
                         $foundOne = true;
