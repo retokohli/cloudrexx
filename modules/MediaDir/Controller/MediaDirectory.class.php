@@ -781,19 +781,37 @@ class MediaDirectory extends MediaDirectoryLibrary
             return;
         }
 
+        $formId = null;
+        $categoryId = null;
+        $levelId = null;
+
+        $filter = MediaDirectoryLibrary::fetchMediaDirListFiltersFromTemplate($this->moduleNameLC.'RelatedList', $this->_objTpl, null, $intCategoryId, $intLevelId);
+
+        if (isset($filter['form'])) {
+            $formId = $filter['form'];
+        }
+        if (isset($filter['category'])) {
+            $categoryId = $filter['category'];
+        }
+        if (isset($filter['level'])) {
+            $levelId = $filter['level'];
+        }
+
         // fetch related entries
-        $objEntry->getEntries(null,$intLevelId,$intCategoryId,null,null,null,1,null,1);
+        $objEntry->getEntries(null, $levelId, $categoryId, null, null, null, true, null, $this->arrSettings['settingsPagingNumEntries'], null, null, $formId);
 
         // remove currently parsed entry
         unset($objEntry->arrEntries[$intEntryId]);
 
         // abort in case no related entries are present
         if (empty($objEntry->arrEntries)) {
+            // hide block being used to display related entries
+            $this->_objTpl->hideBlock($this->moduleNameLC.'RelatedList');
             return;
         }
 
         // set mediadirRelatedList tempalte block to be parsed
-        $objEntry->setStrBlockName($this->moduleNameLC.'RelatedList');
+        $objEntry->setStrBlockName($this->moduleNameLC.'RelatedListEntry');
 
         // prarse related entries
         $objEntry->listEntries($this->_objTpl, 5);

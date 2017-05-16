@@ -894,6 +894,7 @@ JSCODE;
                     if(($arrEntry['entryDurationStart'] < $intToday && $arrEntry['entryDurationEnd'] > $intToday) || $arrEntry['entryDurationType'] == 1) {
                         $objInputfields = new MediaDirectoryInputfield(intval($arrEntry['entryFormId']),false,$arrEntry['entryTranslationStatus'], $this->moduleName);
                         $objInputfields->moduleNameLC .= '_related';
+                        $objInputfields->moduleLangVar .= '_RELATED';
                         $objInputfields->listInputfields($objTpl, 3, intval($arrEntry['entryId']));
 
                         if(intval($arrEntry['entryAddedBy']) != 0) {
