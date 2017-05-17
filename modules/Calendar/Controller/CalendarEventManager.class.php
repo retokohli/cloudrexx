@@ -1044,6 +1044,12 @@ class CalendarEventManager extends CalendarLibrary
             $regLinkSrc       = '';
             $registrationOpen = false;
         }
+         
+        $regLinkSrc = str_replace(
+            '[[SERIES_ELEMENT_STARTDATE]]',
+            $event->startDate->getTimestamp(),
+            $regLinkSrc
+        );
         $objTpl->setVariable(array(
             $this->moduleLangVar . '_EVENT_REGISTRATION_LINK'        => $regLink,
             $this->moduleLangVar . '_EVENT_REGISTRATION_LINK_SRC'    => $regLinkSrc,
@@ -1781,12 +1787,6 @@ class CalendarEventManager extends CalendarLibrary
                 }
                 break;
         }
-
-        $objCloneEvent->registrationExternalLink = str_replace(
-            '[[SERIES_ELEMENT_STARTDATE]]',
-            $objCloneEvent->startDate->getTimestamp(),
-            $objCloneEvent->registrationExternalLink
-        );
 
         if (   $isAllowedEvent
             && !$this->isDateExists($objCloneEvent->startDate, $objCloneEvent->seriesData['seriesPatternExceptions'])
