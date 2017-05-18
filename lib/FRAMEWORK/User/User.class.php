@@ -664,7 +664,7 @@ class User extends User_Profile
     public function getAssociatedGroupIds($activeOnly=false)
     {
         if (!isset($this->arrGroups)) {
-            $this->arrGroups = $this->loadGroups();
+            $this->arrGroups = $this->loadGroups($activeOnly);
         }
         return $this->arrGroups;
     }
