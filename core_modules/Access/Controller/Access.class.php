@@ -154,6 +154,65 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
     }
 
+    /**
+     * Sanitize the array $filter by ensuring that is only contains
+     * valid keys specified by $allowedFilterKeys.
+     * 
+     * @param   array   $filter Nested array containing profile attribute
+     *                          filter conditions.
+     * @param   array   $allowedFilterKeys  Array consisting of keys that
+     *                                      are allowed to be used as filter
+     *                                      keys.
+     */
+    protected function sanitizeProfileFilter(&$filter, $allowedFilterKeys) { 
+        // verify that the requested filter is valid
+        foreach ($filter as $attribute => &$argument) {
+            // verify $attribute
+            if (   !in_array(strtoupper($attribute), $allowedFilterKeys)
+                && (!is_int($attribute) || !is_array($argument))
+            ) {
+                unset($filter[$attribute]);
+                continue;
+            }
+
+            if (is_array($argument)) {
+                $this->sanitizeProfileFilter($argument, $allowedFilterKeys);
+                // in case $argument contains no valid filters, we shall
+                // remove it completely
+                if (empty($argument)) {
+                    unset($filter[$attribute]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Identifies all valid filter keys (of the current request) to be used
+     * for filtering the users. 
+     * Valid filter arguments can be specified in the application
+     * template in the form of template placeholders. I.e. add the
+     * following placeholder to allow filtering by firstname:
+     *     {ACCESS_FILTER_PROFILE_ATTRIBUTE_FIRSTNAME}
+     *
+     * @return  array   Array consisting of valid filter keys to be used for
+     *                  filtering users.
+     */
+    protected function fetchAllowedFilterAttributes() {
+        // fetch all placeholders from current application template
+        $placeholders = $this->_objTpl->getPlaceholderList();
+        $filterAttributePlaceholderPrefix = $this->modulePrefix.'FILTER_PROFILE_ATTRIBUTE_';
+
+        // filter out special placeholders that identiy allowed filter attributes
+        $attributeFilterPlaceholders = preg_grep('/^' . $filterAttributePlaceholderPrefix . '/', $placeholders);
+        $allowedFilterAttributes = preg_filter('/^' . $filterAttributePlaceholderPrefix . '/', '', $attributeFilterPlaceholders);
+        
+        // add filter join methods (OR and AND) to allowed filter attributes
+        $allowedFilterAttributes = array_merge($allowedFilterAttributes, array('AND', 'OR', '=', '<', '>', '!=', '<', '>', 'REGEXP', 'LIKE'));
+
+        return $allowedFilterAttributes;
+    }
+
+
     private function members($groupId = null)
     {
         global $_ARRAYLANG, $_CONFIG;
@@ -162,17 +221,31 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $search = isset($_REQUEST['search']) && !empty($_REQUEST['search']) ? preg_split('#\s+#', $_REQUEST['search']) : array();
         $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $usernameFilter = isset($_REQUEST['username_filter']) && $_REQUEST['username_filter'] != '' && in_array(ord($_REQUEST['username_filter']), array_merge(array(48), range(65, 90))) ? $_REQUEST['username_filter'] : null;
-        $userFilter = array('active' => true);
+
+        $userFilter['AND'][] = array('active' => true);
+
+        if (isset($_REQUEST['profile_filter']) && is_array($_REQUEST['profile_filter'])) {
+            $profileFilter = $_REQUEST['profile_filter'];
+
+            // decode URL notation in supplied profile filter arguments
+            array_walk_recursive($profileFilter, function(&$value, $key) {$value = urldecode($value);});
+
+            // Ensure profile filter does only contain allowed filter arguments.
+            $this->sanitizeProfileFilter($profileFilter, $this->fetchAllowedFilterAttributes());
+            if (!empty($profileFilter)) {
+                $userFilter['AND'][] = $profileFilter;
+            }
+        }
 
         $this->parseLetterIndexList('index.php?section=Access&amp;cmd=members&amp;groupId='.$groupId, 'username_filter', $usernameFilter);
 
         $this->_objTpl->setVariable('ACCESS_SEARCH_VALUE', htmlentities(join(' ', $search), ENT_QUOTES, CONTREXX_CHARSET));
 
         if ($groupId) {
-            $userFilter['group_id'] = $groupId;
+            $userFilter['AND'][] = array('group_id' => $groupId);
         }
         if ($usernameFilter !== null) {
-            $userFilter['username'] = array('REGEXP' => '^'.($usernameFilter == '0' ? '[0-9]|-|_' : $usernameFilter));
+            $userFilter['AND'][] = array('username' => array('REGEXP' => '^'.($usernameFilter == '0' ? '[0-9]|-|_' : $usernameFilter)));
         }
 
         $objFWUser = \FWUser::getFWUserObject();
