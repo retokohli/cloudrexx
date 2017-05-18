@@ -601,12 +601,32 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 \Permission::noAccess();
             }
 
+            $grantsPermissionToManageGroups = in_array(
+                AccessLib::MANAGE_GROUPS_ACCESS_ID,
+                $objGroup->getStaticPermissionIds()
+            );
+
             $objGroup->setName(!empty($_POST['access_group_name']) ? trim(contrexx_input2raw($_POST['access_group_name'])) : '');
             $objGroup->setDescription(!empty($_POST['access_group_description']) ? trim(contrexx_input2raw($_POST['access_group_description'])) : '');
-            $objGroup->setActiveStatus(isset($_POST['access_group_status']) ? (bool)$_POST['access_group_status'] : false);
             $objGroup->setType(!empty($_POST['access_group_type']) ? $_POST['access_group_type'] : '');
             $objGroup->setHomepage(!empty($_POST['access_group_homepage']) ? trim(contrexx_input2raw($_POST['access_group_homepage'])) : '');
             $objGroup->setUsers(isset($_POST['access_group_associated_users']) && is_array($_POST['access_group_associated_users']) ? $_POST['access_group_associated_users'] : array());
+
+            $activeStatus = isset($_POST['access_group_status']) ?
+                (bool)$_POST['access_group_status'] :
+                false;
+            // make sure last group which grants the user the permission to
+            // manage groups is not deactivated
+            if (
+                !$activeStatus &&
+                $grantsPermissionToManageGroups &&
+                !$this->checkManageGroupAccessPermission($objGroup->getId())
+            ) {
+                $activeStatus = true;
+                self::$arrStatusMsg['error'][] =
+                    $_ARRAYLANG['TXT_ACCESS_GROUP_NOT_DEACTIVATED_DUE_TO_MANAGE_GROUP_RIGHTS'];
+            }
+            $objGroup->setActiveStatus($activeStatus);
 
             $accessAreaIds =
                 (   isset($_POST['access_area_id'])
@@ -616,10 +636,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             if (
                 // check if AccessLib::MANAGE_GROUPS_ACCESS_ID
                 // existed in old permissions
-                in_array(
-                    AccessLib::MANAGE_GROUPS_ACCESS_ID,
-                    $objGroup->getStaticPermissionIds()
-                ) &&
+                $grantsPermissionToManageGroups &&
                 // check if AccessLib::MANAGE_GROUPS_ACCESS_ID would be
                 // illegaly removed from static permission ids
                 !in_array(
