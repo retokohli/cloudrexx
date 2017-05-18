@@ -613,28 +613,25 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 &&  is_array($_POST['access_area_id'])
                 ) ? $_POST['access_area_id'] : array();
 
-            // check if AccessLib::MANAGE_GROUPS_ACCESS_ID
-            // existed in old permissions
             if (
+                // check if AccessLib::MANAGE_GROUPS_ACCESS_ID
+                // existed in old permissions
                 in_array(
                     AccessLib::MANAGE_GROUPS_ACCESS_ID,
                     $objGroup->getStaticPermissionIds()
-                )
-            ) {
+                ) &&
                 // check if AccessLib::MANAGE_GROUPS_ACCESS_ID would be
                 // illegaly removed from static permission ids
-                if (
-                    !in_array(
-                        AccessLib::MANAGE_GROUPS_ACCESS_ID,
-                        $accessAreaIds
-                    ) &&
-                    !$this->checkManageGroupAccessPermission($objGroup->getId())
-                ) {
-                    // add AccessLib::MANAGE_GROUPS_ACCESS_ID manually
-                    $accessAreaIds[] = AccessLib::MANAGE_GROUPS_ACCESS_ID;
-                    self::$arrStatusMsg['error'][] =
-                        $_ARRAYLANG['TXT_ACCESS_GROUP_MANAGE_GROUP_RIGHTS_NOT_DELETED'];
-                }
+                !in_array(
+                    AccessLib::MANAGE_GROUPS_ACCESS_ID,
+                    $accessAreaIds
+                ) &&
+                !$this->checkManageGroupAccessPermission($objGroup->getId())
+            ) {
+                // add AccessLib::MANAGE_GROUPS_ACCESS_ID manually
+                $accessAreaIds[] = AccessLib::MANAGE_GROUPS_ACCESS_ID;
+                self::$arrStatusMsg['error'][] =
+                    $_ARRAYLANG['TXT_ACCESS_GROUP_MANAGE_GROUP_RIGHTS_NOT_DELETED'];
             }
             $objGroup->setStaticPermissionIds($accessAreaIds);
 
