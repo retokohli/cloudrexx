@@ -340,3 +340,4 @@ $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION_TEXT'] = "Die Pflichtfelder m�
 $_ARRAYLANG['TXT_CORE_MODULE_ACCESS_MANAGE_USERS'] = "Benutzer verwalten";
 $_ARRAYLANG['TXT_CORE_MODULE_ACCESS_MANAGE_USER_GROUPS'] = "Benutzergruppen verwalten";
 $_ARRAYLANG['TXT_CORE_MODULE_ACCESS_NO_PERMISSION_DELETE_ADMIN_USER'] = "Sie verfügen nicht über die benötigte Berechtigungsstufe, um das Konto %s zu löschen";
+$_ARRAYLANG['TXT_ACCESS_TOOLBARCONFIGURATOR'] = 'Editorfunktionen';

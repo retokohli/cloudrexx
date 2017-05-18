@@ -147,6 +147,16 @@ class CalendarLibrary
     public $arrCommunityGroups = array();    
         
     /**
+     * @var \Cx\Core\Core\Controller\Cx
+     */
+    protected $cx;
+
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
+    protected $em;
+
+    /**
      * map field key
      *
      * @var string
@@ -166,6 +176,34 @@ class CalendarLibrary
      * @var string
      */
     const ATTACHMENT_FIELD_KEY = 'attachment_id';
+
+    /**
+     * Setting value for option frontendPastEvents defining that all events
+     * having their start date as of today shall be listed in frontend till
+     * the end of today.
+     *
+     * @var integer
+     */
+    const SHOW_EVENTS_OF_TODAY = 0;
+
+    /**
+     * Setting value for option frontendPastEvents defining that only those
+     * events shall be listed in frontend that have not yet ended (end date lies
+     * in the past)
+     *
+     * @var integer
+     */
+    const SHOW_EVENTS_UNTIL_END = 1;
+
+    /**
+     * Setting value for option frontendPastEvents defining that only those
+     * events shall be listed in frontend that have not yet started (start date
+     * lies in the future)
+     *
+     * @todo Implement behavior of this option
+     * @var integer
+     */
+    const SHOW_EVENTS_UNTIL_START = 2;
     
     /**
      * Assign the template path
@@ -183,6 +221,16 @@ class CalendarLibrary
             $this->moduleLangVar.'_DATE_FORMAT'  => self::getDateFormat(1),
             $this->moduleLangVar.'_JAVASCRIPT'   => self::getJavascript(),
         ));
+
+        $this->init();
+    }
+
+    /**
+     * Initialize $cx and $em
+     */
+    public function init() {
+        $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $this->em = $this->cx->getDb()->getEntityManager();
     }
 
     /**
@@ -563,7 +611,7 @@ class CalendarLibrary
         $javascript = <<< EOF
 <script type="text/javascript" src="lib/datepickercontrol/datepickercontrol.js"></script>
 EOF;
-        if($_GET['cmd'] == 'register') {
+        if (isset($_GET['cmd']) && $_GET['cmd'] == 'register') {
              $javascript .= <<< EOF
              
 <script type="text/javascript">
@@ -859,5 +907,170 @@ EOF;
         $dateTimeInDbTimezone = clone($dateTime);
         return $this->getComponent('DateTime')
                     ->intern2db($dateTimeInDbTimezone);
+    }
+
+    /**
+     * Trigger the event
+     *
+     * @param string  $eventName trigger event name
+     * @param object  $entity    entity object
+     * @param array   $relations entity relations
+     * @param boolean $isDetach  is detachable entity
+     *
+     * @return null
+     */
+    public function triggerEvent(
+        $eventName,
+        $entity = null,
+        $relations = array(),
+        $isDetach = false
+    ) {
+        if (empty($eventName)) {
+            return null;
+        }
+
+        if ($eventName == 'clearEsiCache') {
+            $this->cx->getEvents()->triggerEvent(
+                'clearEsiCache',
+                array('Widget', $this->getHeadlinePlaceholders())
+            );
+            return;
+        }
+
+        if ($eventName == 'model/postFlush') {
+            $this->cx->getEvents()->triggerEvent(
+                $eventName,
+                array(
+                    new \Doctrine\ORM\Event\PostFlushEventArgs($this->em)
+                )
+            );
+            return;
+        }
+
+        if (!$entity) {
+            return null;
+        }
+
+        if ($isDetach) {
+            if (!empty($relations) && $relations['relations']) {
+                $this->detachJoinedEntity(
+                    $entity, $relations['relations'],
+                    $relations['joinEntityRelations']
+                );
+            }
+            $this->em->detach($entity);
+        }
+
+        $this->cx->getEvents()->triggerEvent(
+            $eventName,
+            array(
+                new \Doctrine\ORM\Event\LifecycleEventArgs(
+                    $entity, $this->em
+                )
+            )
+        );
+    }
+
+    /**
+     * Detach the entity
+     *
+     * @param object $entity             entity object
+     * @param string $methodName         method name
+     * @param array  $relation           relationship array
+     * @param array  $joinEntityRelation joined entity's relationship array
+     *
+     * @return null
+     */
+    public function detachEntity(
+        $entity,
+        $methodName,
+        $relation,
+        $joinEntityRelation
+    ) {
+        if (!$entity || empty($methodName) || empty($relation)) {
+            return null;
+        }
+
+        if (!method_exists($entity, $methodName) || !($entity->$methodName())) {
+            return null;
+        }
+
+        if ($relation == 'oneToMany') {
+            foreach ($entity->$methodName() as $subEntity) {
+                if ($joinEntityRelation[$methodName]) {
+                    $this->detachJoinedEntity(
+                        $subEntity,
+                        $joinEntityRelation[$methodName],
+                        $joinEntityRelation
+                    );
+                }
+                $this->em->detach($subEntity);
+            }
+        } else if ($relation == 'manyToOne') {
+            if ($joinEntityRelation[$methodName]) {
+                $this->detachJoinedEntity(
+                    $entity->$methodName(),
+                    $joinEntityRelation[$methodName],
+                    $joinEntityRelation
+                );
+            }
+            $this->em->detach($entity->$methodName());
+        }
+    }
+
+    /**
+     * Detach the jointed entity
+     *
+     * @param object $entity             entity object
+     * @param array  $relations          relationship array
+     * @param array  $joinEntityRelation joined entity's relationship array
+     *
+     * @return null
+     */
+    public function detachJoinedEntity(
+        $entity,
+        $relations,
+        $joinEntityRelation
+    ) {
+        if (!$entity || empty($relations)) {
+            return null;
+        }
+
+        foreach ($relations as $relation => $methodName) {
+            if (!is_array($methodName)) {
+                $this->detachEntity(
+                    $entity, $methodName,
+                    $relation, $joinEntityRelation
+                );
+                continue;
+            }
+
+            foreach ($methodName as $functionName) {
+                $this->detachEntity(
+                    $entity, $functionName,
+                    $relation, $joinEntityRelation
+                );
+            }
+        }
+    }
+
+    /**
+     * Get the list of calendar headline placeholders
+     *
+     * @return array
+     */
+    public function getHeadlinePlaceholders()
+    {
+        $placeholders = array();
+        for ($i = 1; $i <= 10; $i++) {
+            $id = '';
+            if ($i > 1) {
+                $id = $i;
+            }
+
+            $placeholders[] = 'EVENTS' . $id . '_FILE';
+        }
+
+        return $placeholders;
     }
 }

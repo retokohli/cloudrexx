@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * LinkSanitizer
  *
@@ -47,7 +47,7 @@ class LinkSanitizer {
     const ATTRIBUTE_AND_OPEN_QUOTE = 1;
     const FILE_PATH                = 3;
     const CLOSE_QUOTE              = 4;
-    
+
     protected $cx;
     protected $offset;
     protected $content;
@@ -67,7 +67,7 @@ class LinkSanitizer {
     public function replace() {
         $content = preg_replace_callback("/
             (
-                # match all SRC and HREF attributes 
+                # match all SRC and HREF attributes
                 \s+(src|href|action)\s*=\s*['\"]
                 |
                 # or match all CSS @import statements
@@ -76,6 +76,12 @@ class LinkSanitizer {
 
             # but only those who's values don't start with a slash..
             (?=[^\/])
+
+            # ..and neither start with a SSI-tag
+            (?!<!--\#[a-z]+\s+)
+
+            # ..and neither start with a ESI-tag
+            (?!<esi:)
 
             # ..and neither start with a protocol (http:, ftp:, javascript:, mailto:, etc)
             (?![a-zA-Z]+:)
@@ -88,7 +94,7 @@ class LinkSanitizer {
 
             # ..and neither start with a backslash which would indicate that the url lies within some javascript code
             (?!\\\)
-            
+
             # match file path and closing quote
             ([^'\"]*)(['\"])
         /x", array($this, 'getPath'), $this->content);
@@ -151,7 +157,7 @@ class LinkSanitizer {
                     return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
                     $ret .
                     $matches[\LinkSanitizer::CLOSE_QUOTE];
-                
+
                 // backend case
                 } else if (isset($params['cmd'])) {
                     $ret .= $params['cmd'];
@@ -182,7 +188,7 @@ class LinkSanitizer {
         ) {
             // this is an existing file, do not add virtual language dir
             return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
-            $localFile .
+            $localFile . (isset($testPath[1]) ? '?' . $testPath[1] : '') .
             $matches[\LinkSanitizer::CLOSE_QUOTE];
         } else {
             // this is a link to a page, add virtual language dir
@@ -202,14 +208,14 @@ class LinkSanitizer {
      * @return  bool     true if the file exists, otherwise false
      */
     private function fileExists($filePath) {
-        if (file_exists($filePath)) {
+        if (\Env::get('ClassLoader')->getFilePath($filePath)) {
             return true;
         }
 
         $arrUrl = parse_url($filePath);
         if (!empty($arrUrl['path'])
             && substr($arrUrl['path'], -4) !== '.php'
-            && file_exists($arrUrl['path'])) {
+            && \Env::get('ClassLoader')->getFilePath($arrUrl['path'])) {
             return true;
         }
 
