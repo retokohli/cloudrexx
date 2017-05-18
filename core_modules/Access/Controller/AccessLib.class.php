@@ -80,7 +80,7 @@ class AccessLib
      */
     private $attributeNamePrefix = 'access_profile_attribute';
     protected $accountAttributeNamePrefix = 'access_user_';
-    private $modulePrefix = 'ACCESS_';
+    protected $modulePrefix = 'ACCESS_';
 
     private $arrAttributeTypeTemplates;
 
