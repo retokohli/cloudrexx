@@ -2164,49 +2164,63 @@ JS
     }
 
     /**
-     * Additional permission check for user with access permission MANAGE_GROUPS_ACCESS_ID.
-     * Check if the user group(with access permission MANAGE_GROUPS_ACCESS_ID)
-     * count is one and user going to edit that group or not
+     * Additional permission check for users with access permission
+     * MANAGE_GROUPS_ACCESS_ID.
      *
-     * @param integer $groupId group id
+     * Exists to avoid that the user removes his permission to manage access groups
      *
+     * Will return false when the group which is edited/deactivated/deleted
+     * is the only group which grants the user the permission to edit groups
+     *
+     * Will return true otherwise (or if the user has administrator privileges)
+     *
+     * @param integer $groupId The id of the group which is edited
      * @return boolean
      */
-    public function checkManageGroupAccessPermission($groupId)
-    {
-        $objFWUser  = \FWUser::getFWUserObject();
-        $userGroups = $objFWUser->objUser->getAssociatedGroupIds();
+    public function checkManageGroupAccessPermission($groupId) {
 
-        //Check if the current user have only one group
-        //(that group have access permission MANAGE_GROUPS_ACCESS_ID)
-        //and that group is edited then return false
-        if (count($userGroups) == 1 && in_array($groupId, $userGroups)) {
-            return false;
+        $fwUser = \FWUser::getFWUserObject();
+        // get the active groups associated to the user
+        $userGroups = $fwUser->objUser->getAssociatedGroupIds(true);
+
+        // case 1: user is admin, dont bother
+        if ($fwUser->objUser->getAdminStatus()) {
+            return true;
         }
 
-        //find the group ids which are all have the access permission
-        //AccessLib::MANAGE_GROUPS_ACCESS_ID
-        $groupIds  = array();
-        $groups    = $objFWUser->objGroup->getGroups(
-            array(
-                'static'    => AccessLib::MANAGE_GROUPS_ACCESS_ID,
-                'is_active' => true
-            )
-        );
-        if ($groups) {
-            while(!$groups->EOF) {
-                $groupIds[] = $groups->getId();
-                $groups->next();
+        // case 2: user has only one associated group
+        if (count($userGroups) == 1) {
+            // when the edited group is the user's group, return false,
+            // otherwise true
+            return !($groupId == $userGroups[0]);
+        }
+        // case 3: user has multiple associated groups
+        // if the edited group isn't in the user's groups,
+        // don't bother and return true already
+        if (!in_array($groupId, $userGroups)) {
+            return true;
+        }
+        // now we have to check if another group exists,
+        // which gives the user the right to edit groups
+
+        // 1. exclude edited group id from the selection
+        $userGroups = array_diff($userGroups, array($groupId));
+        // 2. check if the remaining groups have the access permission
+        //    AccessLib::MANAGE_GROUPS_ACCESS_ID
+        foreach ($userGroups as $id) {
+            $group = $fwUser->objGroup->getGroup($id);
+            if (
+                in_array(
+                    AccessLib::MANAGE_GROUPS_ACCESS_ID,
+                    $group->getStaticPermissionIds()
+                )
+            ) {
+                return true;
             }
         }
-
-        //Check if the user group(with access permission MANAGE_GROUPS_ACCESS_ID)
-        //count is one and that group is edited then return false
-        $intersectGrps = array_intersect($userGroups, $groupIds);
-        if (count($intersectGrps) == 1 && in_array($groupId, $intersectGrps)) {
-            return false;
-        }
-
-        return true;
+        // no other group found, removing of permission not allowed
+        return false;
     }
+
+
 }
