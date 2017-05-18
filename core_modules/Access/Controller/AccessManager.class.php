@@ -1142,26 +1142,34 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         // only administrators and the user with permission MANAGE_GROUPS_ACCESS_ID
         // are allowed to delete a group
-        if (   (   !\Permission::hasAllAccess()
-                && !\Permission::checkAccess(
-                       AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
-                   )
-               )
-            || (   !\Permission::hasAllAccess()
-                && \Permission::checkAccess(
-                       AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
-                   )
-                && !$this->checkManageGroupAccessPermission($objGroup->getId())
-               )
+        if (
+            !\Permission::hasAllAccess() &&
+            !\Permission::checkAccess(
+                AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+            )
         ) {
             \Permission::noAccess();
         }
 
         if ($objGroup->getId()) {
-            if ($objGroup->delete()) {
-                self::$arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_ACCESS_GROUP_SUCCESSFULLY_DELETED'], contrexx_raw2xhtml($objGroup->getName()));
+
+            // make sure last group which grants the user the permission to
+            // manage groups is not deleted
+            if (
+                in_array(
+                    AccessLib::MANAGE_GROUPS_ACCESS_ID,
+                    $objGroup->getStaticPermissionIds()
+                ) &&
+                !$this->checkManageGroupAccessPermission($objGroup->getId())
+            ) {
+                self::$arrStatusMsg['error'][] =
+                    $_ARRAYLANG['TXT_ACCESS_GROUP_NOT_DELETED_DUE_TO_MANAGE_GROUP_RIGHTS'];
             } else {
-                self::$arrStatusMsg['error'][] = $objGroup->getErrorMsg();
+                if ($objGroup->delete()) {
+                    self::$arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_ACCESS_GROUP_SUCCESSFULLY_DELETED'], contrexx_raw2xhtml($objGroup->getName()));
+                } else {
+                    self::$arrStatusMsg['error'][] = $objGroup->getErrorMsg();
+                }
             }
         } else {
             self::$arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ACCESS_NO_GROUP_WITH_ID'], $id);
