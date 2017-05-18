@@ -1077,27 +1077,36 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         // only administrators and the user with permission MANAGE_GROUPS_ACCESS_ID
         // are allowed to change the status of group
-        if (   (   !\Permission::hasAllAccess()
-                && !\Permission::checkAccess(
-                       AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
-                   )
-               )
-            || (   !\Permission::hasAllAccess()
-                && \Permission::checkAccess(
-                       AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
-                   )
-                && !$this->checkManageGroupAccessPermission($objGroup->getId())
-               )
+        if (
+            !\Permission::hasAllAccess() &&
+            !\Permission::checkAccess(
+                AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+            )
         ) {
             \Permission::noAccess();
         }
 
         if ($objGroup->getId()) {
-            $objGroup->setActiveStatus(!$objGroup->getActiveStatus());
-            if ($objGroup->store()) {
-                self::$arrStatusMsg['ok'][] = sprintf($objGroup->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_GROUP_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_ACCESS_GROUP_DEACTIVATED_SUCCESSFULLY'], $objGroup->getName());
+
+            // make sure last group which grants the user the permission to
+            // manage groups is not deactivated
+            if (
+                $objGroup->getActiveStatus() &&
+                in_array(
+                    AccessLib::MANAGE_GROUPS_ACCESS_ID,
+                    $objGroup->getStaticPermissionIds()
+                ) &&
+                !$this->checkManageGroupAccessPermission($objGroup->getId())
+            ) {
+                self::$arrStatusMsg['error'][] =
+                    $_ARRAYLANG['TXT_ACCESS_GROUP_NOT_DEACTIVATED_DUE_TO_MANAGE_GROUP_RIGHTS'];
             } else {
-                self::$arrStatusMsg['error'][] = $objGroup->getErrorMsg();
+                $objGroup->setActiveStatus(!$objGroup->getActiveStatus());
+                if ($objGroup->store()) {
+                    self::$arrStatusMsg['ok'][] = sprintf($objGroup->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_GROUP_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_ACCESS_GROUP_DEACTIVATED_SUCCESSFULLY'], $objGroup->getName());
+                } else {
+                    self::$arrStatusMsg['error'][] = $objGroup->getErrorMsg();
+                }
             }
         } else {
             self::$arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ACCESS_NO_GROUP_WITH_ID'], $id);

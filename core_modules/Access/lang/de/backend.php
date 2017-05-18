@@ -143,6 +143,7 @@ $_ARRAYLANG['TXT_ACCESS_GROUPS'] = "Gruppen";
 $_ARRAYLANG['TXT_ACCESS_GROUP_STORED_SUCCESSFULLY'] = "Die Gruppe wurde erfolgreich gespeichert";
 $_ARRAYLANG['TXT_ACCESS_GROUP_SUCCESSFULLY_DELETED'] = "Die Gruppe %s wurde erfolgreich gelöscht.";
 $_ARRAYLANG['TXT_ACCESS_GROUP_MANAGE_GROUP_RIGHTS_NOT_DELETED'] = "Die Berechtigung \"Benutzergruppen verwalten\" wurde für die Gruppe nicht entfernt, da ihr Benutzer sonst keine Gruppen mehr bearbeiten kann.";
+$_ARRAYLANG['TXT_ACCESS_GROUP_NOT_DEACTIVATED_DUE_TO_MANAGE_GROUP_RIGHTS'] = "Die Benutzergruppe wurde nicht deaktiviert, da ihr Benutzer sonst keine Gruppen mehr bearbeiten kann.";
 $_ARRAYLANG['TXT_ACCESS_GROUP_TYP'] = "Gruppentyp";
 $_ARRAYLANG['TXT_ACCESS_HISTORY'] = "Verlauf";
 $_ARRAYLANG['TXT_ACCESS_HTML_UC'] = "HTML";
