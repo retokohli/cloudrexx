@@ -142,6 +142,7 @@ $_ARRAYLANG['TXT_ACCESS_GROUP_LIST'] = "Group overview";
 $_ARRAYLANG['TXT_ACCESS_GROUPS'] = "Groups";
 $_ARRAYLANG['TXT_ACCESS_GROUP_STORED_SUCCESSFULLY'] = "The group was saved successfully.";
 $_ARRAYLANG['TXT_ACCESS_GROUP_SUCCESSFULLY_DELETED'] = "The group %s was removed.";
+$_ARRAYLANG['TXT_ACCESS_GROUP_MANAGE_GROUP_RIGHTS_NOT_DELETED'] = "The permission \"Manage user groups\" wasn't removed for this group, otherwise your user wouldn't be able to manage groups anymore.";
 $_ARRAYLANG['TXT_ACCESS_GROUP_TYP'] = "Group type";
 $_ARRAYLANG['TXT_ACCESS_HISTORY'] = "History";
 $_ARRAYLANG['TXT_ACCESS_HTML_UC'] = "HTML";
