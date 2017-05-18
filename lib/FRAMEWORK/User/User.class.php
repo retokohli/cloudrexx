@@ -976,7 +976,7 @@ class User extends User_Profile
      * <pre class="brush: php">
      * $filter = array(
      *      'lastname' => array(
-     * array(
+     *          array(
      *              '>'  => 'a',
      *              '<'  => 'e%'
      *              '!=' => 'd%'
@@ -989,7 +989,7 @@ class User extends User_Profile
      * <br>
      * <h5>Fetch all active users that have been signed in within the last hour</h5>
      * <pre class="brush: php">
-     * array(
+     * $filter = array(
      *      'is_active' => 1,
      *      'last_auth' => array(
      *          '>' => time()-3600
@@ -1541,53 +1541,55 @@ class User extends User_Profile
              * $attribute is the account attribute like 'email' or 'username'
              * $condition is either a simple condition (integer or string) or an condition matrix (array)
              */
-            if (isset($this->arrAttributes[$attribute])) {
-                $arrComparisonOperators = array(
-                    'int'       => array('=','<','>'),
-                    'string'    => array('!=','<','>', 'REGEXP')
-                );
-                $arrDefaultComparisonOperator = array(
-                    'int'       => '=',
-                    'string'    => 'LIKE'
-                );
-                $arrEscapeFunction = array(
-                    'int'       => 'intval',
-                    'string'    => 'addslashes'
-                );
+            if (!isset($this->arrAttributes[$attribute])) {
+                continue;
+            }
 
-                if (is_array($condition)) {
-                    $arrRestrictions = array();
-                    foreach ($condition as $operator => $restriction) {
-                        /**
-                         * $operator is either a comparison operator ( =, LIKE, <, >) if $restriction is an array or if $restriction is just an integer or a string then its an index which would be useless
-                         * $restriction is either a integer or a string or an array which represents a restriction matrix
-                         */
-                        if (is_array($restriction)) {
-                            $arrConditionRestriction = array();
-                            foreach ($restriction as $restrictionOperator => $restrictionValue) {
-                                /**
-                                 * $restrictionOperator is a comparison operator ( =, <, >)
-                                 * $restrictionValue represents the condition
-                                 */
-                                $arrConditionRestriction[] = "tblU.`{$attribute}` ".(
-                                    in_array($restrictionOperator, $arrComparisonOperators[$this->arrAttributes[$attribute]], true) ?
-                                        $restrictionOperator
-                                    :   $arrDefaultComparisonOperator[$this->arrAttributes[$attribute]]
-                                )." '".$arrEscapeFunction[$this->arrAttributes[$attribute]]($restrictionValue)."'";
-                            }
-                            $arrRestrictions[] = implode(' AND ', $arrConditionRestriction);
-                        } else {
-                            $arrRestrictions[] = "tblU.`{$attribute}` ".(
-                                in_array($operator, $arrComparisonOperators[$this->arrAttributes[$attribute]], true) ?
-                                    $operator
+            $arrComparisonOperators = array(
+                'int'       => array('=','<','>'),
+                'string'    => array('!=','<','>', 'REGEXP')
+            );
+            $arrDefaultComparisonOperator = array(
+                'int'       => '=',
+                'string'    => 'LIKE'
+            );
+            $arrEscapeFunction = array(
+                'int'       => 'intval',
+                'string'    => 'addslashes'
+            );
+
+            if (is_array($condition)) {
+                $arrRestrictions = array();
+                foreach ($condition as $operator => $restriction) {
+                    /**
+                     * $operator is either a comparison operator ( =, LIKE, <, >) if $restriction is an array or if $restriction is just an integer or a string then its an index which would be useless
+                     * $restriction is either a integer or a string or an array which represents a restriction matrix
+                     */
+                    if (is_array($restriction)) {
+                        $arrConditionRestriction = array();
+                        foreach ($restriction as $restrictionOperator => $restrictionValue) {
+                            /**
+                             * $restrictionOperator is a comparison operator ( =, <, >)
+                             * $restrictionValue represents the condition
+                             */
+                            $arrConditionRestriction[] = "tblU.`{$attribute}` ".(
+                                in_array($restrictionOperator, $arrComparisonOperators[$this->arrAttributes[$attribute]], true) ?
+                                    $restrictionOperator
                                 :   $arrDefaultComparisonOperator[$this->arrAttributes[$attribute]]
-                            )." '".$arrEscapeFunction[$this->arrAttributes[$attribute]]($restriction)."'";
+                            )." '".$arrEscapeFunction[$this->arrAttributes[$attribute]]($restrictionValue)."'";
                         }
+                        $arrRestrictions[] = implode(' AND ', $arrConditionRestriction);
+                    } else {
+                        $arrRestrictions[] = "tblU.`{$attribute}` ".(
+                            in_array($operator, $arrComparisonOperators[$this->arrAttributes[$attribute]], true) ?
+                                $operator
+                            :   $arrDefaultComparisonOperator[$this->arrAttributes[$attribute]]
+                        )." '".$arrEscapeFunction[$this->arrAttributes[$attribute]]($restriction)."'";
                     }
-                    $arrConditions[] = '(('.implode(') OR (', $arrRestrictions).'))';
-                } else {
-                    $arrConditions[] = "(tblU.`".$attribute."` ".$arrDefaultComparisonOperator[$this->arrAttributes[$attribute]]." '".$arrEscapeFunction[$this->arrAttributes[$attribute]]($condition)."')";
                 }
+                $arrConditions[] = '(('.implode(') OR (', $arrRestrictions).'))';
+            } else {
+                $arrConditions[] = "(tblU.`".$attribute."` ".$arrDefaultComparisonOperator[$this->arrAttributes[$attribute]]." '".$arrEscapeFunction[$this->arrAttributes[$attribute]]($condition)."')";
             }
         }
 
