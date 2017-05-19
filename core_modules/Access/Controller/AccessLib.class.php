@@ -2211,7 +2211,7 @@ JS
             $group = $fwUser->objGroup->getGroup($id);
             if (
                 in_array(
-                    AccessLib::MANAGE_GROUPS_ACCESS_ID,
+                    static::MANAGE_GROUPS_ACCESS_ID,
                     $group->getStaticPermissionIds()
                 )
             ) {
