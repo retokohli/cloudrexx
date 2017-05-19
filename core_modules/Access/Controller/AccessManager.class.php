@@ -1388,7 +1388,6 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 //User with permission MANAGE_USER_ACCESS_ID
                 //have no access to change the status of admin user
                 if (   !\Permission::hasAllAccess()
-                    && $manageUserAccess
                     && $objUser->getAdminStatus()
                 ) {
                     \Permission::noAccess();
@@ -1452,7 +1451,6 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     //User with permission MANAGE_USER_ACCESS_ID
                     //have no access to delete admin user
                     if (   !\Permission::hasAllAccess()
-                        && $manageUserAccess
                         && $objUser->getAdminStatus()
                     ) {
                         self::$arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_CORE_MODULE_ACCESS_NO_PERMISSION_DELETE_ADMIN_USER'], contrexx_raw2xhtml($objUser->getUsername()));
@@ -1559,10 +1557,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
             // only administrators and group with MANAGE_GROUPS_ACCESS_ID
             // are allowed to change the group assigement
-            if (   \Permission::hasAllAccess()
-                || $manageGroupAccess
-                || $manageUserAccess
-            ) {
+            if (\Permission::hasAllAccess() || $manageGroupAccess) {
                 if (isset($_POST['access_user_associated_groups']) && is_array($_POST['access_user_associated_groups'])) {
                     $objUser->setGroups($_POST['access_user_associated_groups']);
                 } else {
@@ -1621,10 +1616,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         $this->_objTpl->hideBlock('access_profile_group_assignment');
         // only administrators and group with MANAGE_GROUPS_ACCESS_ID
         // are allowed to change the group assigement
-        if (   \Permission::hasAllAccess()
-            || $manageGroupAccess
-            || $manageUserAccess
-        ) {
+        if (\Permission::hasAllAccess() || $manageGroupAccess) {
             $objGroup = $objFWUser->objGroup->getGroups();
             while (!$objGroup->EOF) {
                 $var = in_array($objGroup->getId(), $objUser->getAssociatedGroupIds()) ? 'associatedGroups' : 'notAssociatedGroups';
