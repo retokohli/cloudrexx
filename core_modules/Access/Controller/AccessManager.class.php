@@ -629,7 +629,6 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             // only administrators and the user with permission MANAGE_GROUPS_ACCESS_ID
             // are allowed to modify a group
             if (
-                !\Permission::hasAllAccess() &&
                 !\Permission::checkAccess(
                     static::MANAGE_GROUPS_ACCESS_ID, 'static', true
                 )
@@ -1136,7 +1135,6 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         // only administrators and the user with permission MANAGE_GROUPS_ACCESS_ID
         // are allowed to change the status of group
         if (
-            !\Permission::hasAllAccess() &&
             !\Permission::checkAccess(
                 static::MANAGE_GROUPS_ACCESS_ID, 'static', true
             )
@@ -1184,7 +1182,6 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         // only administrators and the user with permission MANAGE_GROUPS_ACCESS_ID
         // are allowed to delete a group
         if (
-            !\Permission::hasAllAccess() &&
             !\Permission::checkAccess(
                 static::MANAGE_GROUPS_ACCESS_ID, 'static', true
             )
@@ -1414,10 +1411,11 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         // only administrators and group with MANAGE_USER_ACCESS_ID
         // are allowed to change the status of user account
-        $manageUserAccess = \Permission::checkAccess(
-            static::MANAGE_USER_ACCESS_ID, 'static', true
-        );
-        if (!\Permission::hasAllAccess() && !$manageUserAccess) {
+        if (
+            !\Permission::checkAccess(
+                static::MANAGE_USER_ACCESS_ID, 'static', true
+            )
+        ) {
             \Permission::noAccess();
         }
 
@@ -1470,10 +1468,11 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         // only administrators and group with MANAGE_USER_ACCESS_ID
         // are allowed to delete a user account
-        $manageUserAccess = \Permission::checkAccess(
-            static::MANAGE_USER_ACCESS_ID, 'static', true
-        );
-        if (!\Permission::hasAllAccess() && !$manageUserAccess) {
+        if (
+            !\Permission::checkAccess(
+                static::MANAGE_USER_ACCESS_ID, 'static', true
+            )
+        ) {
             \Permission::noAccess();
         }
 
@@ -1550,23 +1549,23 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             $cssDisplayStatus = '';
         }
 
-        $manageUserAccess = \Permission::checkAccess(
-            static::MANAGE_USER_ACCESS_ID, 'static', true
-        );
         $manageGroupAccess = \Permission::checkAccess(
             static::MANAGE_GROUPS_ACCESS_ID, 'static', true
         );
         if (isset($_POST['access_save_user'])) {
             $arrSettings = \User_Setting::getSettings();
 
-            // only administrators are allowed to change a users account. or users may be allowed to change their own account
+            // only administrators and users with MANAGE_USER_ACCES_ID are
+            // allowed to change a users account.
+            // Or users may be allowed to change their own account
             if (
-                !\Permission::hasAllAccess() &&
+                !\Permission::checkAccess(
+                    static::MANAGE_USER_ACCESS_ID, 'static', true
+                ) &&
                 (
                     $objUser->getId() != $objFWUser->objUser->getId() ||
                     !\Permission::checkAccess(31, 'static', true)
-                ) &&
-                !$manageUserAccess
+                )
             ) {
                 \Permission::noAccess();
             }
@@ -1600,7 +1599,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
             // only administrators and group with MANAGE_GROUPS_ACCESS_ID
             // are allowed to change the group assigement
-            if (\Permission::hasAllAccess() || $manageGroupAccess) {
+            if ($manageGroupAccess) {
                 if (isset($_POST['access_user_associated_groups']) && is_array($_POST['access_user_associated_groups'])) {
                     $objUser->setGroups($_POST['access_user_associated_groups']);
                 } else {
@@ -1659,7 +1658,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         $this->_objTpl->hideBlock('access_profile_group_assignment');
         // only administrators and group with MANAGE_GROUPS_ACCESS_ID
         // are allowed to change the group assigement
-        if (\Permission::hasAllAccess() || $manageGroupAccess) {
+        if ($manageGroupAccess) {
             $objGroup = $objFWUser->objGroup->getGroups();
             while (!$objGroup->EOF) {
                 $var = in_array($objGroup->getId(), $objUser->getAssociatedGroupIds()) ? 'associatedGroups' : 'notAssociatedGroups';
