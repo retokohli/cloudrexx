@@ -647,8 +647,10 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             ) {
                 // add static::MANAGE_GROUPS_ACCESS_ID manually
                 $accessAreaIds[] = static::MANAGE_GROUPS_ACCESS_ID;
-                self::$arrStatusMsg['error'][] =
-                    $_ARRAYLANG['TXT_ACCESS_GROUP_MANAGE_GROUP_RIGHTS_NOT_DELETED'];
+                self::$arrStatusMsg['error'][] = sprintf(
+                    $_ARRAYLANG['TXT_ACCESS_GROUP_MANAGE_GROUP_RIGHTS_NOT_DELETED'],
+                    $_ARRAYLANG['TXT_CORE_MODULE_ACCESS_MANAGE_USER_GROUPS']
+                );
             }
             $objGroup->setStaticPermissionIds($accessAreaIds);
 
