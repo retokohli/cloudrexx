@@ -2180,13 +2180,14 @@ JS
     public function checkManageGroupAccessPermission($groupId) {
 
         $fwUser = \FWUser::getFWUserObject();
-        // get the active groups associated to the user
-        $userGroups = $fwUser->objUser->getAssociatedGroupIds(true);
 
         // case 1: user is admin, dont bother
         if ($fwUser->objUser->getAdminStatus()) {
             return true;
         }
+
+        // get the active groups associated to the user
+        $userGroups = $fwUser->objUser->getAssociatedGroupIds(true);
 
         // case 2: user has only one associated group
         if (count($userGroups) == 1) {
