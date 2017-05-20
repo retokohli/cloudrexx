@@ -262,19 +262,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Returns the validated file search parts of the URL
      * @param string $url URL to parse
+     * @param string $originalUrl URL of the page that ESI is parsed for
      * @return array <fileNamePrefix>=><parsedValue> type array
      */
-    public function getCacheFileNameSearchPartsFromUrl($urlPattern) {
-        return $this->cache->getCacheFileNameSearchPartsFromUrl($urlPattern);
+    public function getCacheFileNameSearchPartsFromUrl($urlPattern, $originalUrl) {
+        return $this->cache->getCacheFileNameSearchPartsFromUrl($urlPattern, $originalUrl);
     }
 
     /**
      * Gets the local cache file name for an URL
      * @param string $url URL to get file name for
-     * @return string File name
+     * @param string $originalUrl URL of the page that ESI is parsed for
+     * @param boolean $withCacheInfoPart (optional) Adds info part (default true)
+     * @return string File name (without path)
      */
-    public function getCacheFileNameFromUrl($urlPattern, $withCacheInfoPart = true) {
-        return $this->cache->getCacheFileNameFromUrl($urlPattern, $withCacheInfoPart);
+    public function getCacheFileNameFromUrl($url, $originalUrl, $withCacheInfoPart = true) {
+        return $this->cache->getCacheFileNameFromUrl($url, $originalUrl, $withCacheInfoPart);
     }
 
     /**
@@ -448,5 +451,15 @@ Cache clear all';
                 break;
         }
         echo 'Cache cleared' . "\n";
+    }
+
+    /**
+     * Forces page cache to be stored per user
+     */
+    public function forceUserbasedPageCache() {
+        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
+        $this->cache->forceUserbasedPageCache();
     }
 }

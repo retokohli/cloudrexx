@@ -110,13 +110,27 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
      * @param array $excludedWidgets List of widget names that shall not be parsed
      */
     public function parse($template, $response, $targetComponent, $targetEntity, $targetId, $excludedWidgets = array()) {
+        // Disable parsing of widgets in backend pending furtzer notice
+        // See CLX-1674
+        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+            return;
+        }
+
         if (!$this->hasContent()) {
             if (!$template->placeholderExists($this->getName())) {
                 return;
             }
+            $content = $this->internalParse(
+                $template,
+                $response,
+                $targetComponent,
+                $targetEntity,
+                $targetId
+            );
+            \LinkGenerator::parseTemplate($content);
             $template->setVariable(
                 $this->getName(),
-                $this->internalParse($template, $response, $targetComponent, $targetEntity, $targetId)
+                $content
             );
         } else {
             if (!$template->blockExists($this->getName())) {
