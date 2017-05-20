@@ -28,7 +28,7 @@
  * Class EsiWidgetController
  *
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
- * @author      Project Team SS4U <info@comvation.com>
+ * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  module_downloads
  * @version     1.0.0
@@ -43,7 +43,7 @@ namespace Cx\Modules\Downloads\Controller;
  * - Register it as a Controller in your ComponentController
  *
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
- * @author      Project Team SS4U <info@comvation.com>
+ * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  module_downloads
  * @version     1.0.0
@@ -52,34 +52,29 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
 
     /**
      * Parses a widget
-     * @param string $name Widget name
-     * @param \Cx\Core\Html\Sigma Widget template
-     * @param string $locale RFC 3066 locale identifier
+     *
+     * @param string                                 $name     Widget name
+     * @param \Cx\Core\Html\Sigma                    $template Widget Template
+     * @param \Cx\Core\Routing\Model\Entity\Response $response Current response
+     * @param array                                  $params   Array of params
      */
-    public function parseWidget($name, $template, $locale)
+    public function parseWidget($name, $template, $response, $params)
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_LANGID;
 
         $this->getComponent('Session')->getSession();
         //The $_LANGID is required in the Downloads::overview()
-        $_LANGID    = \FWLanguage::getLangIdByIso639_1($locale);
-        $_ARRAYLANG = array_merge(
-            $_ARRAYLANG,
-            \Env::get('init')->getComponentSpecificLanguageData(
-                'Downloads',
-                true,
-                $_LANGID
-            )
-        );
+        $_LANGID = $params['lang'];
 
-        $matches = NULL;
+        $matches = array();
         if (preg_match('/^DOWNLOADS_GROUP_([0-9]+)$/', $name, $matches)) {
             $downloads    = new DownloadsLibrary();
             $groupContent = $downloads->getGroupById($matches[1], $_LANGID);
             $template->setVariable($name, $groupContent);
+            return;
         }
 
-        $catMatches = NULL;
+        $catMatches = array();
         if (preg_match('/^downloads_category_(\d+)_list$/', $name, $catMatches)) {
             $downloads = new Downloads($template, array('category' => $catMatches[1]));
             $downloads->getPage();
