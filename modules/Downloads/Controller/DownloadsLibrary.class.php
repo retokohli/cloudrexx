@@ -168,7 +168,7 @@ class DownloadsLibrary
             $objDatabase->Execute("UPDATE `".DBPREFIX."module_downloads_settings` SET `value` = '".addslashes($value)."' WHERE `name` = '".$key."'");
         }
         //clear Esi Cache
-        self::clearEsiCache();
+        static::clearEsiCache();
     }
 
     public function getSettings()
@@ -387,12 +387,12 @@ class DownloadsLibrary
     public function getGroupById($id, $langId)
     {
         if (empty($id)) {
-            return;
+            return '';
         }
         $group = Group::getGroup($id);
 
         if (!$group->getActiveStatus()) {
-            return;
+            return '';
         }
 
         $sortOrder = $this->categoriesSortingOptions[$this->arrConfig['categories_sorting_order']];
