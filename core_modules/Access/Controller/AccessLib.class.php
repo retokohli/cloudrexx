@@ -283,9 +283,15 @@ class AccessLib
         case 'date':
             $value = $objUser->getProfileAttribute($attributeId, $historyId);
             $arrPlaceholders['_VALUE'] = $value !== false && $value !== '' ? htmlentities(date(ASCMS_DATE_FORMAT_DATE, intval($value)), ENT_QUOTES, CONTREXX_CHARSET) : '';
-            $arrPlaceholders['_MONTH'] = $this->getDateMonthMenu($attributeName, date('m', intval($objUser->getProfileAttribute($attributeId, $historyId))));
-            $arrPlaceholders['_DAY'] = $this->getDateDayMenu($attributeName, date('d', intval($objUser->getProfileAttribute($attributeId, $historyId))));
-            $arrPlaceholders['_YEAR'] = $this->getDateYearMenu($attributeName, date('Y', intval($objUser->getProfileAttribute($attributeId, $historyId))));
+            if ($edit) {
+                $arrPlaceholders['_MONTH'] = $this->getDateMonthMenu($attributeName, date('m', intval($objUser->getProfileAttribute($attributeId, $historyId))));
+                $arrPlaceholders['_DAY'] = $this->getDateDayMenu($attributeName, date('d', intval($objUser->getProfileAttribute($attributeId, $historyId))));
+                $arrPlaceholders['_YEAR'] = $this->getDateYearMenu($attributeName, date('Y', intval($objUser->getProfileAttribute($attributeId, $historyId))));
+            } else {
+                $arrPlaceholders['_MONTH'] = date('m', intval($objUser->getProfileAttribute($attributeId, $historyId)));
+                $arrPlaceholders['_DAY'] = date('d', intval($objUser->getProfileAttribute($attributeId, $historyId)));
+                $arrPlaceholders['_YEAR'] = date('Y', intval($objUser->getProfileAttribute($attributeId, $historyId)));
+            }
             break;
         case 'text':
         case 'mail':
