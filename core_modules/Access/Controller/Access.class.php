@@ -202,7 +202,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $placeholders = $this->_objTpl->getPlaceholderList();
         $filterAttributePlaceholderPrefix = $this->modulePrefix.'FILTER_PROFILE_ATTRIBUTE_';
 
-        // filter out special placeholders that identiy allowed filter attributes
+        // filter out special placeholders that identify allowed filter attributes
         $attributeFilterPlaceholders = preg_grep('/^' . $filterAttributePlaceholderPrefix . '/', $placeholders);
         $allowedFilterAttributes = preg_filter('/^' . $filterAttributePlaceholderPrefix . '/', '', $attributeFilterPlaceholders);
         
