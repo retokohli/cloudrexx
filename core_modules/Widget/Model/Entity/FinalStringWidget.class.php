@@ -67,7 +67,7 @@ class FinalStringWidget extends Widget {
      * @param string $string String to display
      */
     public function __construct($component, $name, $string) {
-        parent::__construct($component, $name, false);
+        parent::__construct($component, $name);
         $this->string = $string;
     }
 

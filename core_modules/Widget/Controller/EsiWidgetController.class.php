@@ -108,7 +108,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
         );
         // TODO: We should check at least all ESI params of this widget
         $requiredParams = array();
-        if ($widget->hasContent()) {
+        if ($widget->getType() != \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK) {
             $requiredParams = $requiredParamsForWidgetsWithContent;
         }
         foreach ($requiredParams as $requiredParam) {
