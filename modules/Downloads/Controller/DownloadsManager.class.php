@@ -1397,6 +1397,7 @@ class DownloadsManager extends DownloadsLibrary
 
         $this->objTemplate->setVariable(array(
             'TXT_DOWNLOADS_GENERAL'                         => $_ARRAYLANG['TXT_DOWNLOADS_GENERAL'],
+            'TXT_DOWNLOADS_ADDITIONAL_OPTIONS'              => $_ARRAYLANG['TXT_DOWNLOADS_ADDITIONAL_OPTIONS'],
             'TXT_DOWNLOADS_PERMISSIONS'                     => $_ARRAYLANG['TXT_DOWNLOADS_PERMISSIONS'],
             'TXT_DOWNLOADS_DOWNLOAD_VISIBILITY_DESC'        => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_VISIBILITY_DESC'],
             'TXT_DOWNLOADS_NAME'                            => $_ARRAYLANG['TXT_DOWNLOADS_NAME'],
