@@ -129,7 +129,7 @@ class User_Profile
                                 $arrDateCombined[$char] = $arrDate[1][$charNr];
                             }
 
-                            $value = mktime(1, 0, 0,
+                            $value = gmmktime(1, 0, 0,
                                 (isset($arrDateCombined['m']) ? $arrDateCombined['m'] : $arrDateCombined['n']), // month
                                 (isset($arrDateCombined['d']) ? $arrDateCombined['d'] : $arrDateCombined['j']), // day
                                 (isset($arrDateCombined['Y']) ? $arrDateCombined['Y'] : ($arrDateCombined['y'] + ($arrDateCombined['y'] < 70 ? 2000 : 1900))) // year

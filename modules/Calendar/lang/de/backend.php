@@ -650,3 +650,6 @@ $_ARRAYLANG['TXT_CALENDAR_EXPORT_TITLE'] = 'Export-Format wählen';
 $_ARRAYLANG['TXT_CALENDAR_EXPORT_SUB_TITLE'] = 'Wählen Sie das Dateiformat, welches für den Export verwendet werden soll';
 $_ARRAYLANG['TXT_CALENDAR_EXPORT_CSV'] = 'CSV';
 $_ARRAYLANG['TXT_CALENDAR_EXPORT_CSV_FOR_MS_EXCEL'] = 'CSV für MS Excel';
+$_ARRAYLANG['TXT_CALENDAR_EVENT_SERIES_ADDITIONAL_RECURRENCES'] = "Zusätzliche Wiederholungen";
+$_ARRAYLANG['TXT_CALENDAR_SELECT_ADDITIONAL_RECURRENCES_TITLE'] = "Zusätzliche Wiederholung hinzufügen";
+$_ARRAYLANG['TXT_CALENDAR_SELECT_ADDITIONAL_RECURRENCES_INFO'] = "Wählen Sie ein zusätzliches Wiederholungsdatum für die Veranstaltung aus";

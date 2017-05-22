@@ -656,10 +656,15 @@ class User extends User_Profile
     }
 
 
-    public function getAssociatedGroupIds()
+    /**
+     * Returns an array containing the ids of the user's associated groups
+     * @param boolean $activeOnly Wether to load only the active groups or all
+     * @return array
+     */
+    public function getAssociatedGroupIds($activeOnly=false)
     {
         if (!isset($this->arrGroups)) {
-            $this->arrGroups = $this->loadGroups();
+            $this->arrGroups = $this->loadGroups($activeOnly);
         }
         return $this->arrGroups;
     }
@@ -2363,6 +2368,18 @@ class User extends User_Profile
     public function registerSuccessfulLogin()
     {
         global $objDatabase;
+        
+        $this->updateLastAuthTime();
+        
+        // drop user specific ESI cache:
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $esiFiles = glob($cx->getWebsiteTempPath() . '/cache/*u' . session_id() . '*');
+        foreach ($esiFiles as $esiFile) {
+            try {
+                $file = new \Cx\Lib\FileSystem\File($esiFile);
+                $file->delete();
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {}
+        }
 
         return $objDatabase->Execute("
             UPDATE `".DBPREFIX."access_users`
