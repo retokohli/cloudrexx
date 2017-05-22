@@ -127,8 +127,19 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
         }
 
         // resolve widget template
+        $widget = $this->getComponent('Widget')->getWidget($params['get']['name']);
+        return $this->internalParseWidget($widget, $params);
+    }
+
+    /**
+     * Parses a widget
+     * @param \Cx\Core_Modules\Widget\Model\Entity\Widget $widget The Widget
+     * @param array $params Params passed by ESI (/API) request
+     * @return array Content in an associative array
+     */
+    protected function internalParseWidget($widget, $params) {
         $widgetContent = '';
-        if (!$widget->hasContent()) {
+        if ($widget->getType() != \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK) {
             $widgetContent = '{' . $params['get']['name'] . '}';
         } else {
             $widgetTemplate = $this->getComponent('Widget')->getWidgetContent(
