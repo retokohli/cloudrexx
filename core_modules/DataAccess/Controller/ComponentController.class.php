@@ -107,7 +107,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param array $arguments List of arguments for the command
      * @return void
      */
-    public function executeCommand($command, $arguments, $dataArguments) {
+    public function executeCommand($command, $arguments, $dataArguments = array()) {
         try {
             switch ($command) {
                 case 'v1':

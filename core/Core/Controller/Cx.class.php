@@ -1396,7 +1396,8 @@ namespace Cx\Core\Core\Controller {
             \Env::set('db', $objDatabase);
 
             $em = $this->db->getEntityManager();
-            \Env::set('pageguard', new \PageGuard($this->db->getAdoDb()));
+            $pageGuard = new \PageGuard($this->db->getAdoDb());
+            \Env::set('pageguard', $pageGuard);
 
             \DBG::set_adodb_debug_mode();
 
