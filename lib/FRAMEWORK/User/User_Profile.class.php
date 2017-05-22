@@ -484,7 +484,7 @@ class User_Profile
                     $percent = '%';
                     if (   !is_array($condition)
                         && strpos('%', $condition) !== false) $percent = '';
-                    $arrConditions["tblA_$tableIdx"] =
+                    $arrConditions['tblA_' . $tableIdx] =
                         "tblA_$tableIdx.`attribute_id` = ".$attribute.
                         " AND (tblA_$tableIdx.`value` LIKE '$percent".
                         (is_array($condition)
@@ -494,14 +494,14 @@ class User_Profile
                     break;
 
                 case 'int':
-                    $arrConditions["tblA_$tableIdx"] = "tblA_$tableIdx.`attribute_id` = ".$attribute." AND (tblA_$tableIdx.`value` = '".(is_array($condition) ? implode("' OR tblA_$tableIdx.`value` = '", array_map('intval', $condition)) : intval($condition))."')";
+                    $arrConditions['tblA_' . $tableIdx] = "tblA_$tableIdx.`attribute_id` = ".$attribute." AND (tblA_$tableIdx.`value` = '".(is_array($condition) ? implode("' OR tblA_$tableIdx.`value` = '", array_map('intval', $condition)) : intval($condition))."')";
                     break;
                 case 'array':
                     if (count($this->objAttribute->getChildren())) {
                         foreach ($this->objAttribute->getChildren() as $childAttributeId) {
                             $arrSubFilter[$childAttributeId] = $condition;
                         }
-                        $arrConditions["tblA_$tableIdx"] = implode(' OR ', $this->parseCustomAttributeFilterConditions($arrSubFilter, $tableIdx));
+                        $arrConditions['tblA_' . $tableIdx] = implode(' OR ', $this->parseCustomAttributeFilterConditions($arrSubFilter, $tableIdx));
                     }
                     break;
             }
