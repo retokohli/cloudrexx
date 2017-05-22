@@ -452,7 +452,13 @@ class User_Profile
      * @param   mixed     $arrFilter    The term or array of terms
      * @param   string    $forceTableIdx    Argument must not be used
      *                                      directly. Will internally be used
-     *                                      for recursion.
+     *                                      for recursion (parsing child
+     *                                      attributes of complex profile
+     *                                      attributes like gender or
+     *                                      country). If $forceTableIdx is set
+     *                                      then its value will be used as
+     *                                      prefix for the table alias of the
+     *                                      SQL statement.
      * @return  array                   The array of SQL snippets
      */
     protected function parseCustomAttributeFilterConditions($arrFilter, $forceTableIdx = null)
