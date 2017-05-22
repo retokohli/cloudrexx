@@ -3627,7 +3627,7 @@ CREATE TABLE `contrexx_stats_requests` (
   `sid` varchar(32) NOT NULL DEFAULT '',
   `pageTitle` varchar(250) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unique` (`page`)
+  UNIQUE KEY `pageId` (`pageId`)
 ) ENGINE=MyISAM;
 CREATE TABLE `contrexx_stats_requests_summary` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
