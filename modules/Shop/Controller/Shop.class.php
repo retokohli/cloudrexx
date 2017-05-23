@@ -116,6 +116,13 @@ class Shop extends ShopLibrary
     protected static $pageTitle = null;
 
     /**
+     * Whether or not a session has been initialized
+     * and is being used
+     * @var boolean
+     */
+    protected static $hasSession = false;
+
+    /**
      * Initialize
      * @access public
      */
@@ -174,6 +181,15 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
     }
 
     /**
+     * Returns true if the shop is using a session
+     * @return  boolean             True if the shop is using a session, false otherwise
+     */
+    public static function hasSession()
+    {
+        return self::$hasSession;
+    }
+
+    /**
      * Initialises the session with regard to the Shop
      *
      * Does nothing but return if either
@@ -183,19 +199,21 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
      */
     private static function init_session()
     {
-        if (empty($_SESSION)) {
+        $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+
+        if (!$cx->getComponent('Session')->isInitialized()) {
             if (checkForSpider()) {
                 return;
             }
             if (!self::use_session()) {
                 return;
             }
-            $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
             $sessionObj = $cx->getComponent('Session')->getSession();
         }
         if (empty($_SESSION['shop'])) {
             $_SESSION['shop'] = array();
         }
+        self::$hasSession = true;
     }
 
     /**
@@ -967,6 +985,7 @@ die("Failed to update the Cart!");
         }
         $cell = 0;
         $arrDefaultImageSize = false;
+        $categoriesPerRow = \Cx\Core\Setting\Controller\Setting::getValue('num_categories_per_row','Shop');
         // For all child categories do...
         foreach ($arrShopCategory as $objCategory) {
             $id = $objCategory->id();
@@ -1036,7 +1055,7 @@ die("Failed to update the Cart!");
             }
             if (self::$objTemplate->blockExists('subCategories')) {
                 self::$objTemplate->parse('subCategories');
-                if (++$cell % 4 == 0) {
+                if (++$cell % $categoriesPerRow == 0) {
                     self::$objTemplate->parse('subCategoriesRow');
                 }
             }

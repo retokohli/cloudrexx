@@ -76,8 +76,10 @@ class CalendarSettings extends CalendarLibrary
      *
      * @see getFrontendLanguages();
      */
-    function __construct(){
+    function __construct()
+    {
         $this->getFrontendLanguages();
+        parent::__construct();
     }
 
     /**
@@ -222,6 +224,7 @@ class CalendarSettings extends CalendarLibrary
             $objForm = new \Cx\Modules\Calendar\Controller\CalendarForm(intval($_POST['formId']));
 
             if($objForm->save($_POST)) {
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
                 if(intval($_POST['formId']) == 0 || intval($_POST['copy']) == 1) {
                     $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_FORM_SUCCESSFULLY_ADDED'];
                 } else {
@@ -239,6 +242,7 @@ class CalendarSettings extends CalendarLibrary
         if(isset($_GET['switch_status'])) {
             $objForm = new \Cx\Modules\Calendar\Controller\CalendarForm(intval($_GET['switch_status']));
             if($objForm->switchStatus()) {
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
                 $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_FORM_SUCCESSFULLY_EDITED'];
             } else {
                 $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_FORM_CORRUPT_EDITED'];
@@ -248,6 +252,7 @@ class CalendarSettings extends CalendarLibrary
         if(isset($_GET['delete'])) {
             $objForm = new \Cx\Modules\Calendar\Controller\CalendarForm(intval($_GET['delete']));
             if($objForm->delete()) {
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
                 $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_FORM_SUCCESSFULLY_DELETED'];
             } else {
                 $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_FORM_CORRUPT_DELETED'];
@@ -264,6 +269,7 @@ class CalendarSettings extends CalendarLibrary
             }
 
             if($status) {
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
                 $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_FORM_SUCCESSFULLY_EDITED'];
             } else {
                  $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_FORM_CORRUPT_EDITED'];
@@ -689,6 +695,9 @@ class CalendarSettings extends CalendarLibrary
         }
 
         if ($objResult !== false) {
+            //Clear cache
+            $this->triggerEvent('clearEsiCache');
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
             $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_SETTINGS_SUCCESSFULLY_EDITED'];
         } else {
             $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_SETTINGS_CORRUPT_EDITED'];

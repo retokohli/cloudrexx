@@ -198,17 +198,29 @@ class Calendar extends CalendarLibrary
         switch ($cmd) {
             case 'detail':
                 if( $id!= null && $_GET['date'] != null) {
-                    self::showEvent($page);
+                    // cache timeout: this event's start date (registrations!)
+                    $start = null;
+                    self::showEvent($page, $start);
+                    $response = $this->cx->getResponse();
+                    $response->setExpirationDate($start);
                 } else {
-                    \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName));
+                    \Cx\Core\Csrf\Controller\Csrf::redirect(
+                        \Cx\Core\Routing\Url::fromModuleAndCmd(
+                            $this->moduleName
+                        )
+                    );
                     exit();
                 }
                 break;
             case 'register':
             case 'sign':
+                // cache timeout: no timeout
                 self::showRegistrationForm();
                 break;
             case 'boxes':
+                // cache timeout: end of day
+                $response = $this->cx->getResponse();
+                $response->setExpirationDate(new \DateTime('today midnight'));
                 if (isset($_GET['act']) && $_GET['act'] == "list") {
                     self::boxesEventList();
                 } else {
@@ -216,28 +228,43 @@ class Calendar extends CalendarLibrary
                 }
                 break;
             case 'category':
-                self::showCategoryView();
+                // cache timeout: next expiring event end (of this category)
+                $firstEndDate = null;
+                self::showCategoryView($firstEndDate);
+                $response = $this->cx->getResponse();
+                $response->setExpirationDate($firstEndDate);
                 break;
             case 'add':
+                // cache timeout: no timeout
                 $this->checkAccess('add_event');
                 self::modifyEvent();
                 break;
             case 'edit':
+                // cache timeout: no timeout
                 $this->checkAccess('edit_event');
                 self::modifyEvent(intval($id));
                 break;
             case 'my_events':
+                // cache timeout: next expiring event end (of my events)
                 $this->checkAccess('my_events');
-                self::myEvents();
+                $firstEndDate = null;
+                self::myEvents($firstEndDate);
+                $response = $this->cx->getResponse();
+                $response->setExpirationDate($firstEndDate);
                 break;
             case 'success':
+                // cache timeout: no timeout
                 self::showSuccessPage();
                 break;
             case 'list':
             case 'eventlist':
             case 'archive':
             default:
-                self::overview();
+                // cache timeout: next expiring event end (of all events)
+                $firstEndDate = null;
+                self::overview($firstEndDate);
+                $response = $this->cx->getResponse();
+                $response->setExpirationDate($firstEndDate);
                 break;
         }
 
@@ -271,11 +298,30 @@ class Calendar extends CalendarLibrary
             $startYear  = isset($_GET['year']) ? $_GET['year'] : $this->startDate->format('Y');
 
             $this->startDate->setDate($startYear, $startMonth, $startDay);
+
             $this->getSettings();
-            if ($this->arrSettings['frontendPastEvents'] == 0) {
-                // if we want to show events of the whole day
-                // we need to set start date to 0:00
-                $this->startDate->setTime(0, 0, 0);
+            switch ($this->arrSettings['frontendPastEvents']) {
+                case CalendarLibrary::SHOW_EVENTS_OF_TODAY:
+                    // if we want to show events of the whole day
+                    // we need to set start date to 0:00
+                    $this->startDate->setTime(0, 0, 0);
+                    break;
+
+                case CalendarLibrary::SHOW_EVENTS_UNTIL_START:
+                    // TODO: implement logic
+                    //break;
+
+                case CalendarLibrary::SHOW_EVENTS_UNTIL_END:
+                default:
+                    // set the start date to NOW
+
+                    // this is a very dirty hack and should not be necessary!
+                    // this re-substracts the timezone offset, since it will be added
+                    // twice below. This does not work for timezones with a negative
+                    // offset to UTC!
+                    $offsetSeconds = abs($this->getInternDateTimeFromUser()->getOffset());
+                    $this->startDate->sub(new \DateInterval('PT' . $offsetSeconds . 'S'));
+                    break;
             }
         }
 
@@ -412,7 +458,7 @@ class Calendar extends CalendarLibrary
      *
      * @return null
      */
-    function overview()
+    function overview(&$firstEndDate = null)
     {
         global $_ARRAYLANG, $_CORELANG;
 
@@ -478,7 +524,11 @@ EOF;
             ));
         }
 
-        $this->objEventManager->showEventList($this->_objTpl);
+        $this->objEventManager->showEventList(
+            $this->_objTpl,
+            '',
+            $firstEndDate
+        );
     }
 
     /**
@@ -486,7 +536,7 @@ EOF;
      *
      * @return null
      */
-    function myEvents()
+    function myEvents(&$firstEndDate = null)
     {
         global $_ARRAYLANG, $_CORELANG;
 
@@ -507,7 +557,11 @@ EOF;
             ));
         }
 
-        $this->objEventManager->showEventList($this->_objTpl);
+        $this->objEventManager->showEventList(
+            $this->_objTpl,
+            '',
+            $firstEndDate
+        );
     }
 
     /**
@@ -888,7 +942,7 @@ UPLOADER;
      *
      * @return null
      */
-    function showEvent($page)
+    function showEvent($page, &$start = null)
     {
         global $_ARRAYLANG, $_CORELANG, $_LANGID;
 
@@ -947,7 +1001,12 @@ UPLOADER;
             'TXT_'.$this->moduleLangVar.'_REGISTRATION_INFO' =>  $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_INFO']
         ));
 
-        $this->objEventManager->showEvent($this->_objTpl, intval($_GET['id']), intval($_GET['date']));
+        $this->objEventManager->showEvent(
+            $this->_objTpl,
+            intval($_GET['id']),
+            intval($_GET['date']),
+            $start
+        );
     }
 
     /**
@@ -1112,7 +1171,7 @@ UPLOADER;
      *
      * @return null
      */
-    function showCategoryView()
+    function showCategoryView(&$firstEndDate = null)
     {
         global $_ARRAYLANG, $_CORELANG;
 
@@ -1152,7 +1211,11 @@ UPLOADER;
                 $this->moduleLangVar.'_CATEGORY_NAME' =>  $objCategory->name,
             ));
 
-            $this->objEventManager->showEventList($this->_objTpl);
+            $this->objEventManager->showEventList(
+                $this->_objTpl,
+                '',
+                $firstEndDate
+            );
 
             $this->_objTpl->parse('categoryList');
         } else {
@@ -1160,7 +1223,11 @@ UPLOADER;
                 $objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($this->startDate,$this->endDate,$objCategory->id,$this->searchTerm,true,$this->needAuth,true,$this->startPos,$this->numEvents);
                 $objEventManager->getEventList();
 
-                $objEventManager->showEventList($this->_objTpl);
+                $objEventManager->showEventList(
+                    $this->_objTpl,
+                    '',
+                    $firstEndDate
+                );
 
                 $this->_objTpl->setGlobalVariable(array(
                     $this->moduleLangVar.'_CATEGORY_NAME' =>  $objCategory->name,
@@ -1229,8 +1296,7 @@ UPLOADER;
      */
     protected function getUploaderCode($fieldKey, $fieldName, $uploadCallBack = "uploadFinished", $allowImageOnly = true)
     {
-        $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
-        $cx->getComponent('Session')->getSession();
+        $this->cx->getComponent('Session')->getSession();
         try {
             $uploader      = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
             $uploaderId    = $uploader->getId();
@@ -1246,7 +1312,7 @@ UPLOADER;
             $uploader->setUploadLimit(1);
             $uploader->setOptions($uploadOptions);
             $uploader->setFinishedCallback(array(
-                $cx->getCodeBaseModulePath().'/Calendar/Controller/Calendar.class.php',
+                $this->cx->getCodeBaseModulePath().'/Calendar/Controller/Calendar.class.php',
                 '\Cx\Modules\Calendar\Controller\Calendar',
                 $uploadCallBack
             ));
