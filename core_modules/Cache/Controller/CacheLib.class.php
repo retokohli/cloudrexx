@@ -119,6 +119,11 @@ class CacheLib
     protected $ssiProxy;
 
     /**
+     * @var \Cx\Core\Json\JsonData
+     */
+    protected $jsonData = null;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -516,9 +521,24 @@ class CacheLib
         unset($params['object']);
         unset($params['act']);
         $arguments = array('get' => contrexx_input2raw($params));
-        
-        $json = new \Cx\Core\Json\JsonData();
-        $response = $json->data($adapter, $method, $arguments);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $arguments['response'] = new \Cx\Core\Routing\Model\Entity\Response(
+            null,
+            200,
+            new \Cx\Core\Routing\Model\Entity\Request(
+                'get',
+                new \Cx\Core\Routing\Url($url),
+                array(
+                    'Referer' => $cx->getRequest()->getUrl()->toString(),
+                )
+            )
+        );
+        $arguments['response']->setPage($cx->getPage());
+
+        if (!$this->jsonData) {
+            $this->jsonData = new \Cx\Core\Json\JsonData();
+        }
+        $response = $this->jsonData->data($adapter, $method, $arguments);
         if (
             !isset($response['status']) ||
             $response['status'] != 'success' ||
@@ -561,8 +581,10 @@ class CacheLib
             'lang',
             'user',
             'theme',
+            'channel',
             'country',
             'currency',
+            'ref',
             'targetComponent',
             'targetEntity',
             'targetId',
@@ -579,7 +601,10 @@ class CacheLib
     /**
      * Drops all cached ESI/SSI elements
      */
-    public function clearSsiCache() {
+    public function clearSsiCache($urlPattern = '') {
+        if (!empty($urlPattern)) {
+            $this->getSsiProxy()->clearCachePage($urlPattern, $this->getDomainsAndPorts());
+        }
         $this->getSsiProxy()->clearCache($this->getDomainsAndPorts());
     }
 
@@ -1004,18 +1029,25 @@ class CacheLib
     /**
      * Returns the validated file search parts of the URL
      * @param string $url URL to parse
+     * @param string $originalUrl URL of the page that ESI is parsed for
      * @return array <fileNamePrefix>=><parsedValue> type array
      */
-    public function getCacheFileNameSearchPartsFromUrl($url) {
-        $url = new \Cx\Lib\Net\Model\Entity\Url($url);
-        $params = $url->getParsedQuery();
+    public function getCacheFileNameSearchPartsFromUrl($url, $originalUrl) {
+        try {
+            $url = new \Cx\Lib\Net\Model\Entity\Url($url);
+            $params = $url->getParsedQuery();
+        } catch (\Cx\Lib\Net\Model\Entity\UrlException $e) {
+            parse_str(substr($url, 1), $params);
+        }
         $searchParams = array(
             'p' => 'page',
             'l' => 'lang',
             'u' => 'user',
             't' => 'theme',
+            'ch' => 'channel',
             'g' => 'country',
             'c' => 'currency',
+            'r' => 'ref',
             'tc' => 'targetComponent',
             'te' => 'targetEntity',
             'ti' => 'targetId',
@@ -1025,9 +1057,17 @@ class CacheLib
             if (!isset($params[$long])) {
                 continue;
             }
-            // security: abort if any mystirius characters are found
+            // security: abort if any mysterious characters are found
             if (!preg_match('/^[a-zA-Z0-9-]+$/', $params[$long])) {
                 return array();
+            }
+            if ($long == 'ref') {
+                $params[$long] = str_replace(
+                    '$(HTTP_REFERER)',
+                    $originalUrl,
+                    $params[$long]
+                );
+                $params[$long] = md5($params[$long]);
             }
             $fileNameSearchParts[$short] = '_' . $short . $params[$long];
         }
@@ -1037,19 +1077,27 @@ class CacheLib
     /**
      * Gets the local cache file name for an URL
      * @param string $url URL to get file name for
-     * @return string File name
+     * @param string $originalUrl URL of the page that ESI is parsed for
+     * @param boolean $withCacheInfoPart (optional) Adds info part (default true)
+     * @return string File name (without path)
      */
-    public function getCacheFileNameFromUrl($url, $withCacheInfoPart = true) {
-        $cacheInfoParts = $this->getCacheFileNameSearchPartsFromUrl($url);
-        $url = new \Cx\Lib\Net\Model\Entity\Url($url);
-        $params = $url->getParsedQuery();
+    public function getCacheFileNameFromUrl($url, $originalUrl, $withCacheInfoPart = true) {
+        $cacheInfoParts = $this->getCacheFileNameSearchPartsFromUrl($url, $originalUrl);
+        try {
+            $url = new \Cx\Lib\Net\Model\Entity\Url($url);
+            $params = $url->getParsedQuery();
+        } catch (\Cx\Lib\Net\Model\Entity\UrlException $e) {
+            parse_str(substr($url, 1), $params);
+        }
         $correctIndexOrder = array(
             'page',
             'lang',
             'user',
             'theme',
+            'channel',
             'country',
             'currency',
+            'ref',
             'targetComponent',
             'targetEntity',
             'targetId',
@@ -1057,9 +1105,23 @@ class CacheLib
         foreach ($correctIndexOrder as $paramName) {
             unset($params[$paramName]);
         }
-        $url->setParsedQuery($params);
-        $url = $url->toString();
-        $fileName = md5($url);
+        // Make sure placeholders are replaced before generating filename.
+        // Otherwise the filename will be non-unique.
+        if (isset($params['ref'])) {
+            $params['ref'] = str_replace(
+                '$(HTTP_REFERER)',
+                $originalUrl,
+                $params['ref']
+            );
+        }
+        $fileName = '';
+        if (is_object($url)) {
+            $url->setParsedQuery($params);
+            $url = $url->toString();
+            $fileName = md5($url);
+        } else {
+            $url = http_build_query($params);
+        }
         if ($withCacheInfoPart) {
             $fileName .= implode('', $cacheInfoParts);
         }
@@ -1072,7 +1134,7 @@ class CacheLib
     function deleteSingleFile($intPageId) {
         $intPageId = intval($intPageId);
         if ( 0 < $intPageId ) {
-            $files = glob($this->strCachePath . '*_{,h}' . $intPageId, GLOB_BRACE);
+            $files = glob($this->strCachePath . '*_{,h}' . $intPageId . '*', GLOB_BRACE);
             if ( count( $files ) ) {
                 foreach ( $files as $file ) {
                     @unlink( $file );

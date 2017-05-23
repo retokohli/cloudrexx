@@ -231,30 +231,41 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      */
     protected function callHooks($hookName, $arguments) {
         foreach ($this->findActive() as $component) {
-            $this->cx->getEvents()->triggerEvent(
-                'preComponent',
-                array(
-                    'componentName' => $component->getName(),
-                    'component' => $component,
-                    'hook' => $hookName,
-                )
-            );
-            call_user_func_array(
-                array(
-                    $component,
-                    $hookName,
-                ),
-                $arguments
-            );
-            $this->cx->getEvents()->triggerEvent(
-                'postComponent',
-                array(
-                    'componentName' => $component->getName(),
-                    'component' => $component,
-                    'hook' => $hookName,
-                )
-            );
+            $this->callHook($component, $hookName, $arguments);
         }
+    }
+
+    /**
+     * Calls a hook on a component
+     *
+     * @param \Cx\Core\Core\Model\Entity\SystemComponentController $component Component to call hook of
+     * @param string $hookMethodName Method name of the hook to call
+     * @param array $arguments Arguments for the hook
+     */
+    protected function callHook($component, $hookName, $arguments) {
+        $this->cx->getEvents()->triggerEvent(
+            'preComponent',
+            array(
+                'componentName' => $component->getName(),
+                'component' => $component,
+                'hook' => $hookName,
+            )
+        );
+        call_user_func_array(
+            array(
+                $component,
+                $hookName,
+            ),
+            $arguments
+        );
+        $this->cx->getEvents()->triggerEvent(
+            'postComponent',
+            array(
+                'componentName' => $component->getName(),
+                'component' => $component,
+                'hook' => $hookName,
+            )
+        );
     }
 
     /**
@@ -319,6 +330,30 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
             'postResolve',
             array(
                 $this->cx->getPage(),
+            )
+        );
+    }
+
+    /**
+     * Call hook script of current SystemComponent after post-resolving
+     * @param \Cx\Core\Routing\Model\Entity\Response $response Current response
+     */
+    public function callAdjustResponseHooks($response) {
+        // only call the hook on application pages
+        if ($response->getPage()->getType() != \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION) {
+            return;
+        }
+        // only call the hook on the current page's component
+        $component = $this->findOneBy(
+            array(
+                'name' => $response->getPage()->getModule(),
+            )
+        );
+        $this->callHook(
+            $component,
+            'adjustResponse',
+            array(
+                $response,
             )
         );
     }

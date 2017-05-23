@@ -46,15 +46,6 @@ namespace Cx\Core_Modules\Access\Controller;
  */
 class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
 {
-    public function __construct()
-    {
-        global $objTemplate;
-
-        parent::__construct();
-
-        $this->_objTpl = &$objTemplate;
-    }
-
 
     function setCurrentlyOnlineUsers($gender=null)
     {

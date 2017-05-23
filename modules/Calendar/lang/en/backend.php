@@ -650,3 +650,6 @@ $_ARRAYLANG['TXT_CALENDAR_EXPORT_TITLE'] = 'Select export format';
 $_ARRAYLANG['TXT_CALENDAR_EXPORT_SUB_TITLE'] = 'Select the file format to be used for the export';
 $_ARRAYLANG['TXT_CALENDAR_EXPORT_CSV'] = 'CSV';
 $_ARRAYLANG['TXT_CALENDAR_EXPORT_CSV_FOR_MS_EXCEL'] = 'CSV for MS Excel';
+$_ARRAYLANG['TXT_CALENDAR_EVENT_SERIES_ADDITIONAL_RECURRENCES'] = "Additional recurrences";
+$_ARRAYLANG['TXT_CALENDAR_SELECT_ADDITIONAL_RECURRENCES_TITLE'] = "Add additional recurrence";
+$_ARRAYLANG['TXT_CALENDAR_SELECT_ADDITIONAL_RECURRENCES_INFO'] = "Select an additional recurrence date for this event";
