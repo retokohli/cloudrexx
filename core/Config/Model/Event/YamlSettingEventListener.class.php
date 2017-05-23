@@ -57,7 +57,7 @@ class YamlSettingEventListenerException extends \Exception {}
  * @package     cloudrexx
  * @subpackage  core_config
  */
-class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
+class YamlSettingEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventListener {
     public function preUpdate($eventArgs) {
         global $_CONFIG,$_ARRAYLANG;
         try {
@@ -79,6 +79,7 @@ class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListe
                     }
                     $value = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
                     $objSetting->setValue($value);
+                    $this->getComponent('Cache')->deleteNonPagePageCache();
                     break;
 
                 case 'forceProtocolFrontend':
@@ -88,6 +89,7 @@ class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListe
                         }
                         $objSetting->setValue($value);
                     }
+                    $this->getComponent('Cache')->deleteNonPagePageCache();
                     break;
 
                 case 'forceProtocolBackend':
@@ -107,6 +109,7 @@ class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListe
                     }
                     $value = \Cx\Core\Config\Controller\Config::checkAccessibility($protocol) ? $value : 'off';
                     $objSetting->setValue($value);
+                    $this->getComponent('Cache')->deleteNonPagePageCache();
                     break;
 
                 case 'cacheReverseProxy':
@@ -123,6 +126,15 @@ class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListe
                     if ($value != $_CONFIG[$objSetting->getName()]) {
                         // drop esi/ssi cache
                         \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->clearSsiCache();
+                    }
+                    break;
+                case 'defaultMetaimage':
+                    if ($value != $_CONFIG[$objSetting->getName()]) {
+                        // drop esi/ssi cache
+                        $this->cx->getEvents()->triggerEvent(
+                            'clearEsiCache',
+                            array('Widget', 'METAIMAGE')
+                        );
                     }
                     break;
             }

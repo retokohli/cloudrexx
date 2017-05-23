@@ -1239,6 +1239,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'    => $_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'],
             'TXT_NEWS_SEARCH_INFO'              => $_ARRAYLANG['TXT_NEWS_SEARCH_INFO'],
             'TXT_NEWS_SEARCH_PLACEHOLDER'       => $_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'],
+            'TXT_NEWS_REDIRECT_NEW_WINDOW'       => $_ARRAYLANG['TXT_NEWS_REDIRECT_NEW_WINDOW'],
+            'TXT_NEWS_REDIRECT_NEW_WINDOW_HELP'  => $_ARRAYLANG['TXT_NEWS_REDIRECT_NEW_WINDOW_HELP'],
 
             'TXT_NEWS_TAGS'             => $_ARRAYLANG['TXT_NEWS_TAGS'],
             'TXT_NEWS_TAGS_ENABLE'      => $_ARRAYLANG['TXT_NEWS_TAGS_ENABLE'],
@@ -1311,8 +1313,6 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 'TXT_SELECT_ALL'                => $_ARRAYLANG['TXT_SELECT_ALL'],
                 'TXT_DESELECT_ALL'              => $_ARRAYLANG['TXT_DESELECT_ALL'],
                 'TXT_ASSOCIATED_BOXES'          => $_ARRAYLANG['TXT_ASSOCIATED_BOXES'],
-                'TXT_NEWS_REDIRECT_NEW_WINDOW'       => $_ARRAYLANG['TXT_NEWS_REDIRECT_NEW_WINDOW'],
-                'TXT_NEWS_REDIRECT_NEW_WINDOW_HELP'  => $_ARRAYLANG['TXT_NEWS_REDIRECT_NEW_WINDOW_HELP'],
                 'NEWS_HEADLINES_TEASERS_TXT'    => $_ARRAYLANG['TXT_HEADLINES'].' / '.$_ARRAYLANG['TXT_TEASERS'],
                 'NEWS_USE_ONLY_TEASER_CHECKED'  => $newsTeaserOnly ? 'checked="checked"' : '',
                 'NEWS_TEASER_FRAMES'            => $frameIds,
@@ -3295,7 +3295,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $overviewUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
                 'News',
                 $cmdOverview,
-                $LangId,
+                $langId,
                 array(
                     'category' => $newsCategoryId,
                 )

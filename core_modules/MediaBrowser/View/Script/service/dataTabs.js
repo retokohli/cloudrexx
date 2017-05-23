@@ -1,11 +1,8 @@
 /* global cx */
 cx.ready(function() {
   angular.module('MediaBrowser')
-    .provider('dataTabs', dataTabsProvider)
-;
-  var dataTabs =
-    [
-    ];
+    .provider('dataTabs', dataTabsProvider);
+  var dataTabs = [];
   function dataTabsProvider() {
     this.add = add;
     this.$get = $get;

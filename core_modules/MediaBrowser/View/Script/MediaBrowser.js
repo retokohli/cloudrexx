@@ -30,7 +30,7 @@ cx.ready(function() {
         $compileProvider.debugInfoEnabled(false);
       }])
     .config(["dataTabsProvider", function(dataTabsProvider) {
-        // YTF is this called four times!?
+        // TODO: Why is this called four times!?
         if (unique_datatabs++) {
           return;
         }
@@ -842,6 +842,8 @@ cx.ready(function() {
               };
             } catch (e) {
               return [];
+            if (searchArray[key] instanceof Object) {
+                resultArray = resultArray.concat(recursiveSearch(searchObject, searchArray[key], level + 1));
             }
           } else {
             var fileSearchWords = searchFile.toLowerCase().split(" ");
