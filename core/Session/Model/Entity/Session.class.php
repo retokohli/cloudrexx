@@ -283,12 +283,13 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                     if (is_a($sessionValue, 'Cx\Core\Model\RecursiveArrayAccess')) {
                         // Do flush session data to database through a transaction.
                         // This will have a great impact on performance.
-                        \Env::get('db')->StartTrans();
+                        $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
+                        $db->StartTrans();
                         static::updateToDb($sessionValue);
-                        if (\Env::get('db')->HasFailedTrans()) {
+                        if ($db->HasFailedTrans()) {
                             \DBG::msg('Oops: Unable to flush session data to database. This will result in lost session data!');
                         }
-                        \Env::get('db')->CompleteTrans();
+                        $db->CompleteTrans();
                     } else {
                         if ($this->isDirty($lockKey)) {
                             // is_callable() can return true for type array, so we need to check that it is not an array
@@ -308,7 +309,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                                         `value` = "'. $serializedValue .'"
                                       ON DUPLICATE KEY UPDATE
                                          `value` = "'. $serializedValue .'"';
-                            \Env::get('db')->Execute($query);
+                            $db->Execute($query);
 
                             $this->releaseLock($lockKey);
                         }
