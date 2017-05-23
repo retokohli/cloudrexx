@@ -73,9 +73,9 @@ class DoctrineRepository extends DataSource {
     ) {
         $repo = $this->getRepository();
         $em = $this->cx->getDb()->getEntityManager();
-        
+
         $criteria = array();
-        
+
         // $filter
         if (count($fieldList)) {
             foreach ($filter as $field=>$value) {
@@ -85,14 +85,14 @@ class DoctrineRepository extends DataSource {
                 $criteria[$field] = $value;
             }
         }
-        
+
         // $elementId
         if (isset($elementId)) {
             $meta = $em->getClassMetadata($this->getIdentifier());
             $identifierField = $meta->getSingleIdentifierFieldName();
             $criteria[$identifierField] = $elementId;
         }
-        
+
         // $order
         foreach ($order as $field=>$ascdesc) {
             if (
@@ -102,7 +102,7 @@ class DoctrineRepository extends DataSource {
                 unset($order[$field]);
             }
         }
-        
+
         // order, limit and offset are not supported by our doctrine version
         // yet! This would be the nice way to solve this:
         /*$result = $repo->findBy(
@@ -111,7 +111,7 @@ class DoctrineRepository extends DataSource {
             (int) $limit,
             (int) $offset
         );//*/
-        
+
         // but for now we'll have to:
         $qb = $em->createQueryBuilder();
         $qb->select('x')
@@ -135,7 +135,7 @@ class DoctrineRepository extends DataSource {
             }
         }
         $result = $qb->getQuery()->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
-        
+
         // $fieldList
         $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($result);
         if (count($fieldList)) {
@@ -150,10 +150,10 @@ class DoctrineRepository extends DataSource {
             );
             $dataSet = $dataSetFlipped->flip();
         }
-        
+
         return $dataSet->toArray();
     }
-    
+
     /**
      * Adds a new entry to this DataSource
      * @param array $data Field=>value-type array. Not all fields may be required.
@@ -165,14 +165,28 @@ class DoctrineRepository extends DataSource {
         $entityClass = $this->getIdentifier();
         $entityClassMetadata = $em->getClassMetadata($entityClass);
         $entity = $entityClassMetadata->newInstance();
-        
+
         $this->setEntityData($entity, $data);
-        
+
         $em->persist($entity);
         $em->flush();
-        return $entityClassMetadata->getSingleIdReflectionProperty()->getValue($entity);
+        return $this->getEntityIndexData($entity);
     }
     
+    /**
+     * @todo: This method should be elsewhere
+     */
+    protected function getEntityIndexData($entity) {
+        $em = $this->cx->getDb()->getEntityManager();
+        $entityClassName = get_class($entity);
+        $entityMetaData = $em->getClassMetadata($entityClassName);
+        $entityIndexData = array();
+        foreach ($entityMetaData->getIdentifierFieldNames() as $field) {
+            $entityIndexData[$field] = $entityMetaData->getFieldValue($entity, $field);
+        }
+        return $entityIndexData;
+    }
+
     /**
      * Updates an existing entry of this DataSource
      * @param string $elementId ID of the element to update
@@ -182,19 +196,19 @@ class DoctrineRepository extends DataSource {
     public function update($elementId, $data) {
         $em = $this->cx->getDb()->getEntityManager();
         $repo = $this->getRepository();
-        
+
         $entity = $repo->find($elementId);
-        
+
         if (!$entity) {
             throw new \Exception('Entry not found!');
         }
-        
+
         $this->setEntityData($entity, $data);
-        
+
         $em->persist($entity);
         $em->flush();
     }
-    
+
     /**
      * Drops an entry from this DataSource
      * @param string $elementId ID of the element to update
@@ -203,17 +217,17 @@ class DoctrineRepository extends DataSource {
     public function remove($elementId) {
         $em = $this->cx->getDb()->getEntityManager();
         $repo = $this->getRepository();
-        
+
         $entity = $repo->find($elementId);
-        
+
         if (!$entity) {
             throw new \Exception('Entry not found!');
         }
-        
+
         $em->remove($entity);
         $em->flush();
     }
-    
+
     /**
      * Returns the repository for this DataSource
      * @return \Doctrine\ORM\EntityRepository Repository for this DataSource
@@ -221,14 +235,14 @@ class DoctrineRepository extends DataSource {
     protected function getRepository() {
         $em = $this->cx->getDb()->getEntityManager();
         $repo = $em->getRepository($this->getIdentifier());
-        
+
         if (!$repo) {
             throw new \Exception('Repository not found!');
         }
-        
+
         return $repo;
     }
-    
+
     /**
      * Sets data for an entity
      * @todo Check relations
@@ -238,15 +252,15 @@ class DoctrineRepository extends DataSource {
     protected function setEntityData($entity, $data) {
         $em = $this->cx->getDb()->getEntityManager();
         $entityClassMetadata = $em->getClassMetadata(get_class($entity));
-        $primaryKeyName = $entityClassMetadata->getSingleIdentifierFieldName(); //get primary key name
+        $primaryKeyNames = $entityClassMetadata->getIdentifierFieldNames(); //get primary key name
         $entityColumnNames = $entityClassMetadata->getColumnNames(); //get the names of all fields
-        
+
         foreach($entityColumnNames as $column) {
             $name = $entityClassMetadata->getFieldName($column);
-            if ($name == $primaryKeyName || !isset($data[$name])) {
+            if (/*in_array($name, $primaryKeyNames) ||*/ !isset($data[$name])) {
                 continue;
             }
-            
+
             $fieldDefinition = $entityClassMetadata->getFieldMapping($name);
             if ($fieldDefinition['type'] == 'datetime') {
                 $data[$name] = new \DateTime($data[$name]);
@@ -256,11 +270,32 @@ class DoctrineRepository extends DataSource {
                     $data[$name] = array();
                 }
             }
-            
+
             $fieldSetMethodName = 'set'.preg_replace('/_([a-z])/', '\1', ucfirst($name));
             // set the value as property of the current object, so it is ready to be stored in the database
             $entity->$fieldSetMethodName($data[$name]);
         }
+        
+        $associationMappings = $entityClassMetadata->getAssociationMappings();
+        $classMethods = get_class_methods($entity);
+        foreach ($associationMappings as $field => $associationMapping) {
+            if (   $entityClassMetadata->isSingleValuedAssociation($field)
+                && in_array('set'.ucfirst($field), $classMethods)
+            ) {
+                $foreignId = $data[$field];
+                if (is_array($foreignId)) {
+                    $foreignId = current($foreignId);
+                }
+                $targetRepo = $em->getRepository($associationMapping['targetEntity']);
+                $targetEntity = $targetRepo->findOneBy(array(
+                    $associationMapping['joinColumns'][0]['referencedColumnName'] => $foreignId,
+                ));
+                if (!$targetEntity) {
+                    throw new \Exception('Entity not found (' . $associationMapping['targetEntity'] . ' with ID ' . $foreignId . ')');
+                }
+                $setMethod = 'set'.ucfirst($field);
+                $entity->$setMethod($targetEntity);
+            }
+        }
     }
 }
-

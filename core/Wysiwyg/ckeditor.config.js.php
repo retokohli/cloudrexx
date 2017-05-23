@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -37,8 +37,8 @@ if (strpos(dirname(__FILE__), 'customizing') === false) {
 require_once($contrexx_path . '/core/Core/init.php');
 $cx = init('minimal');
 
-$sessionObj = \cmsSession::getInstance();
-$_SESSION->cmsSessionStatusUpdate('backend');
+$sessionObj = $cx->getComponent('Session')->getSession();
+$sessionObj->cmsSessionStatusUpdate('backend');
 
 $pageId = !empty($_GET['pageId']) ? $_GET['pageId'] : null;
 
@@ -68,6 +68,7 @@ if(!cx.variables.get('css', 'wysiwyg')) {
 }
 
 CKEDITOR.scriptLoader.load( '<?php echo $cx->getCodeBaseCoreModuleWebPath().'/MediaBrowser/View/Script/MediaBrowserCkeditorPlugin.js'   ?>' );
+CKEDITOR.scriptLoader.load( '<?php echo $cx->getCodeBaseCoreWebPath().'/Wysiwyg/View/Script/ImagePasteCkeditorPlugin.js'; ?>' );
 CKEDITOR.editorConfig = function( config )
 {
     config.skin = 'moono';
@@ -80,7 +81,7 @@ CKEDITOR.editorConfig = function( config )
     config.shiftEnterMode = CKEDITOR.ENTER_P;
     config.startupOutlineBlocks = true;
     config.allowedContent = true;
-    
+
     config.ignoreEmptyParagraph = false;
     config.protectedSource.push(/<i[^>]*><\/i>/g);
     config.protectedSource.push(/<span[^>]*><\/span>/g);
@@ -92,60 +93,29 @@ CKEDITOR.editorConfig = function( config )
     config.protectedSource.push(/<a[^>]*><\/a>/g);
 
     config.tabSpaces = 4;
-    config.baseHref = '<?php echo $cx->getRequest()->getUrl()->getProtocol() . '://' . $mainDomain . $cx->getWebsiteOffsetPath(); ?>/';
-
+    config.baseHref = '<?php echo \Cx\Core\Routing\Url::fromCapturedRequest('', $cx->getWebsiteOffsetPath(), array())->toString(); ?>';
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
-    
     config.templates_replaceContent = <?php echo \Cx\Core\Setting\Controller\Setting::getValue('replaceActualContents','Wysiwyg')? 'true' : 'false' ?>;
 
-    config.toolbar_Full = config.toolbar_Small = [
-        ['Source','-','NewPage','Templates'],
-        ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'],
-        ['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
-        ['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
-        ['NumberedList','BulletedList','-','Outdent','Indent', 'Blockquote'],
-        ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
-        ['Link','Unlink','Anchor'],
-        ['Image','Flash','Table','HorizontalRule','SpecialChar'],
-        ['Format'],
-        ['TextColor','BGColor'],
-        ['ShowBlocks'],
-        ['Maximize'],
-        ['Div','CreateDiv']
-    ];
+    config.toolbar_Full = config.toolbar_Small = <?php echo $wysiwyg->getToolbar() ?>;
 
-    config.toolbar_BBCode = [
-        ['Source','-','NewPage'],
-        ['Undo','Redo','-','Replace','-','SelectAll','RemoveFormat'],
-        ['Bold','Italic','Underline','Link','Unlink','SpecialChar'],
-    ];
+    config.toolbar_BBCode = <?php echo $wysiwyg->getToolbar('bbcode') ?>;
 
-    config.toolbar_FrontendEditingContent = [
-        ['Publish','Save','Templates'],
-        ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'],
-        ['Undo','Redo','-','Replace','-','SelectAll','RemoveFormat'],
-        ['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
-        ['NumberedList','BulletedList','-','Outdent','Indent', 'Blockquote'],
-        '/',
-        ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
-        ['Link','Unlink','Anchor'],
-        ['Image','Flash','Table','HorizontalRule','SpecialChar'],
-        ['Format'],
-        ['TextColor','BGColor'],
-        ['ShowBlocks']
-    ];
+    config.toolbar_FrontendEditingContent = <?php echo $wysiwyg->getToolbar('frontendEditingContent') ?>;
 
-    config.toolbar_FrontendEditingTitle = [
-        ['Publish','Save'],
-        ['Cut','Copy','Paste','-','Scayt'],
-        ['Undo','Redo']
-    ];
+    config.toolbar_FrontendEditingTitle = <?php echo $wysiwyg->getToolbar('frontendEditingTitle') ?>;
     config.extraPlugins = 'codemirror';
-    
+
     //Set the CSS Stuff
     config.contentsCss = cx.variables.get('css', 'wysiwyg');
     config.bodyClass = cx.variables.get('bodyClass', 'wysiwyg');
     config.bodyId = cx.variables.get('bodyId', 'wysiwyg');
+    if (
+        window.location.pathname == cx.variables.get('cadminPath') + 'Config/Wysiwyg' ||
+        window.location.pathname == cx.variables.get('cadminPath') + 'Access/group'
+    ) {
+        <?php echo $wysiwyg->getRemovedButtons(); ?>;
+    }
 };
 
 //loading the templates
@@ -154,7 +124,7 @@ CKEDITOR.on('instanceReady',function(){
     for(var instanceName in CKEDITOR.instances) {
         //console.log( CKEDITOR.instances[instanceName] );
         loadingTemplates.button = CKEDITOR.instances[instanceName].getCommand("templates") //Reference to Template-Button
-        
+
         // Define Standard-Path
         //var path = CKEDITOR.plugins.getPath('templates')
         //var defaultPath = path.split("lib/ckeditor/")[0]+"customizing/lib/ckeditor"+path.split("lib/ckeditor")[1]+"templates/"
@@ -177,6 +147,18 @@ CKEDITOR.on('instanceReady',function(){
                 this.button.setState(CKEDITOR.TRISTATE_ENABLE) // Enable "Template"-Button
             }
         }).bind(loadingTemplates)();
+    }
+
+    var translations = cx.variables.get('toolbarTranslations', 'toolbarConfigurator');
+    if (translations && cx.variables.get('language') == 'de') {
+        cx.jQuery('div.toolbarModifier ul[data-type="table-body"] > li[data-type="group"] > ul > li[data-type="subgroup"] > p > span').each(
+            function() {
+                if (translations.hasOwnProperty(cx.jQuery(this).text())) {
+                    var translation = cx.jQuery(this).text();
+                    cx.jQuery(this).text(translations[translation]);
+                }
+            }
+        );
     }
 });
 
@@ -219,7 +201,7 @@ if (<?php
             dialogDefinition.getContents('info').remove('browse');
             dialogDefinition.getContents('Link').remove('browse');
         }
-        
+
         if (dialogName == 'flash') {
             dialogDefinition.getContents('info').remove('browse');
         }
@@ -234,7 +216,7 @@ cx.bind("loadingEnd", function(myArgs) {
             for(var instanceName in CKEDITOR.instances) {
                 //CKEDITOR.instances[instanceName].config.contentsCss =  data.wysiwygCssReload.css;
                 var is_same = (data.wysiwygCssReload.css).equals(cx.variables.get('css', 'wysiwyg')) && cx.variables.get('css', 'wysiwyg').every(function(element, index) {
-                    return element === data.wysiwygCssReload.css[index]; 
+                    return element === data.wysiwygCssReload.css[index];
                 });
                 if(!is_same){
                     //cant set the css on the run, so you must destroy the wysiwyg and recreate it
@@ -245,7 +227,7 @@ cx.bind("loadingEnd", function(myArgs) {
                     var config = {
                         customConfig: cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'),
                         toolbar: 'Full',
-                        skin: 'moono',
+                        skin: 'moono'
                     };
                     CKEDITOR.replace('page[content]', config);
                 }
@@ -260,8 +242,8 @@ Array.prototype.equals = function (array) {
     if (!array) {
         return false;
     }
-    
-    // compare lengths - can save a lot of time 
+
+    // compare lengths - can save a lot of time
     if (this.length != array.length) {
         return false;
     }
@@ -279,4 +261,4 @@ Array.prototype.equals = function (array) {
         }
     }
     return true;
-}
+};

@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * @copyright   Cloudrexx AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
@@ -87,13 +87,36 @@ class MediaSource extends DataSource {
      */
     protected $fileSystem;
 
-    function __construct($name,$humanName, $directory, $accessIds = array(), $position = '',FileSystem $fileSystem = null) {
+    /**
+     * @var \Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController
+     */
+    protected $systemComponentController;
+
+    public function __construct($name,$humanName, $directory, $accessIds = array(), $position = '',FileSystem $fileSystem = null, \Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController = null) {
         $this->fileSystem = $fileSystem ? $fileSystem : LocalFileSystem::createFromPath($directory[0]);
         $this->name      = $name;
         $this->position  = $position;
         $this->humanName = $humanName;
         $this->directory = $directory;
         $this->accessIds = $accessIds;
+
+        // Sets provided SystemComponentController
+        $this->systemComponentController = $systemComponentController;
+        if (!$this->systemComponentController) {
+            // Searches a SystemComponentController intelligently by RegEx on backtrace stack frame
+            $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+            $trace = end($traces);
+            if (empty($trace['class'])) {
+                throw new MediaBrowserException('No SystemComponentController for ' . __CLASS__ . ' can be found');
+            }
+            $matches = array();
+            preg_match(
+                '/Cx\\\\(?:Core|Core_Modules|Modules)\\\\([^\\\\]*)\\\\/',
+                $trace['class'],
+                $matches
+            );
+            $this->systemComponentController = $this->getComponent($matches[1]);
+        }
     }
 
     /**
@@ -189,6 +212,13 @@ class MediaSource extends DataSource {
     }
 
     /**
+     * @return \Cx\Core\Core\Model\Entity\SystemComponentController
+     */
+    public function getSystemComponentController() {
+        return $this->systemComponentController;
+    }
+
+    /**
      * Gets one or more entries from this DataSource
      *
      * If an argument is not provided, no restriction is made for this argument.
@@ -214,7 +244,7 @@ class MediaSource extends DataSource {
     ) {
         throw new \Exception('Not yet implemented');
     }
-    
+
     /**
      * Adds a new entry to this DataSource
      * @param array $data Field=>value-type array. Not all fields may be required.
@@ -223,7 +253,7 @@ class MediaSource extends DataSource {
     public function add($data) {
         throw new \Exception('Not yet implemented');
     }
-    
+
     /**
      * Updates an existing entry of this DataSource
      * @param string $elementId ID of the element to update
@@ -233,7 +263,7 @@ class MediaSource extends DataSource {
     public function update($elementId, $data) {
         throw new \Exception('Not yet implemented');
     }
-    
+
     /**
      * Drops an entry from this DataSource
      * @param string $elementId ID of the element to update

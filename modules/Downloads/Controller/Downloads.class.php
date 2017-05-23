@@ -195,7 +195,7 @@ class Downloads extends DownloadsLibrary
     private function overview()
     {
         global $_LANGID;
-        
+
         // load source code if cmd value is integer
         if ($this->objTemplate->placeholderExists('APPLICATION_DATA')) {
             $page = new \Cx\Core\ContentManager\Model\Entity\Page();
@@ -227,6 +227,7 @@ class Downloads extends DownloadsLibrary
 
             if ($objDownload->load(!empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0)
                 && (!$objDownload->getExpirationDate() || $objDownload->getExpirationDate() > time())
+                && $objDownload->getActiveStatus()
             ) {
                 /* DOWNLOAD DETAIL PAGE */
                 $this->pageTitle = contrexx_raw2xhtml($objDownload->getName(FRONTEND_LANG_ID));
@@ -383,22 +384,22 @@ class Downloads extends DownloadsLibrary
 
     /**
      * Upload Finished callback
-     * 
+     *
      * This is called as soon as uploads have finished.
      * takes care of moving them to the right folder
-     * 
-     * @param string $tempPath    Path to the temporary directory containing the files at this moment 
+     *
+     * @param string $tempPath    Path to the temporary directory containing the files at this moment
      * @param string $tempWebPath Points to the same folder as tempPath, but relative to the webroot
-     * @param array  $data        Data given to setData() when creating the uploader  
+     * @param array  $data        Data given to setData() when creating the uploader
      * @param string $uploadId    unique session id for the current upload
-     * @param array  $fileInfos   uploaded file informations  
+     * @param array  $fileInfos   uploaded file informations
      * @param array  $response    uploaded status
-     * 
+     *
      * @return array path and webpath
      */
-    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response) 
+    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
     {
-        
+
         $path = $data['path'];
         $webPath = $data['webPath'];
         $objCategory = Category::getCategory($data['category_id']);
@@ -413,11 +414,11 @@ class Downloads extends DownloadsLibrary
         //rename files, delete unwanted
         $arrFilesToRename = array(); //used to remember the files we need to rename
         $h = opendir($tempPath);
-        
+
         if (!$h) {
             return array($path, $webPath);
         }
-        
+
         while (false !== ($file = readdir($h))) {
             //skip . and ..
             if ($file == '.' || $file == '..') { continue; }
@@ -426,7 +427,7 @@ class Downloads extends DownloadsLibrary
                 //delete potentially malicious files
                 $objTempFile = new \Cx\Lib\FileSystem\File($tempPath . '/' . $file);
                 if (!\FWValidator::is_file_ending_harmless($file)) {
-                    $objTempFile->delete();                  
+                    $objTempFile->delete();
                     continue;
                 }
 
@@ -435,7 +436,7 @@ class Downloads extends DownloadsLibrary
                     $objTempFile->rename($tempPath . '/' . $cleanFile, false);
                     $file = $cleanFile;
                 }
-                
+
                 $info = pathinfo($file);
                 //check if file needs to be renamed
                 $newName = '';
@@ -447,7 +448,7 @@ class Downloads extends DownloadsLibrary
                     $arrFilesToRename[$file] = $newName;
                     array_push($arrFiles, $newName);
                 }
-                
+
                 if (!isset($arrFilesToRename[$file])) {
                     array_push($uploadFiles, $file);
                 }
@@ -458,7 +459,7 @@ class Downloads extends DownloadsLibrary
                     $objTempFile->rename($tempPath . '/' . $newName, false);
                     array_push($uploadFiles, $newName);
                 }
-                
+
                 //move file from temp path into target folder
                 $objImage = new \ImageManager();
                 foreach ($uploadFiles as $fileName) {
@@ -477,22 +478,22 @@ class Downloads extends DownloadsLibrary
             $objDownloads = new downloads('');
             $objDownloads->addDownloadFromUpload($info['filename'], $info['extension'], $suffix, $objCategory, $objDownloads, $fileInfos['name']);
         }
-        
+
         return array($path, $webPath);
     }
-    
+
     /**
      * Save upload file details to database for download
-     * 
+     *
      * @param string $fileName      filename it is modified name or original name
      *                              ie) what name will be mentioned for upload file in target folder
      * @param string $fileExtension file extension
      * @param mixed  $suffix        if choosen file is already exist, suffix will be created as string
-     *                              otherwise empty          
+     *                              otherwise empty
      * @param object $objCategory   upload file category
      * @param object $objDownloads  downdload file object from the upload informations
      * @param object $sourceName    original file name
-     * 
+     *
      * @return boolean true | false
      */
     public static function addDownloadFromUpload($fileName, $fileExtension, $suffix, $objCategory, $objDownloads, $sourceName)
@@ -542,7 +543,7 @@ class Downloads extends DownloadsLibrary
         $objDownload->setGroups(array());
         $objDownload->setCategories(array($objCategory->getId()));
         $objDownload->setDownloads(array());
-        
+
 
         if (!$objDownload->store($objCategory)) {
             $objDownloads->arrStatusMsg['error'] = array_merge($objDownloads->arrStatusMsg['error'], $objDownload->getErrorMsg());
@@ -626,7 +627,7 @@ class Downloads extends DownloadsLibrary
     private function parseUploadForm($objCategory)
     {
         global $_CONFIG, $_ARRAYLANG;
-        
+
         if (!$this->objTemplate->blockExists('downloads_simple_file_upload') && !$this->objTemplate->blockExists('downloads_advanced_file_upload')) {
             return;
         }
@@ -874,7 +875,7 @@ JS_CODE;
     }
 
 
-    private function parseCategories($objCategory, $arrCategoryBlocks, $categoryLimit = null, $variablePrefix = '', $rowBlock = null, $arrSubCategoryBlocks = null, $subCategoryLimit = null)
+    private function parseCategories($objCategory, $arrCategoryBlocks, $categoryLimit = null, $variablePrefix = '', $rowBlock = null, $arrSubCategoryBlocks = null, $subCategoryLimit = null, $subPrefix = '')
     {
         global $_ARRAYLANG;
 
@@ -898,8 +899,24 @@ JS_CODE;
 
                 // parse subcategories
                 if (isset($arrSubCategoryBlocks)) {
-                    $this->parseCategories($objSubcategory, array('downloads_overview_subcategory_list', 'downloads_overview_subcategory'), $subCategoryLimit, 'SUB');
+                    $this->parseCategories(
+                        $objSubcategory,
+                        array(
+                            'downloads_overview_subcategory_list',
+                            'downloads_overview_subcategory'
+                        ),
+                        $subCategoryLimit,
+                        'SUB',
+                        null,
+                        null,
+                        null,
+                        'OVERVIEW_'
+                    );
                 }
+                $this->parseDownloads(
+                    $objSubcategory,
+                    $subPrefix . 'SUBCATEGORY_'
+                );
 
                 // parse category
                 $this->objTemplate->parse($arrCategoryBlocks[1]);
@@ -1034,11 +1051,11 @@ JS_CODE;
     }
 
 
-    private function parseDownloads($objCategory)
+    private function parseDownloads($objCategory, $variablePrefix = '')
     {
         global $_CONFIG, $_ARRAYLANG;
 
-        if (!$this->objTemplate->blockExists('downloads_file_list')) {
+        if (!$this->objTemplate->blockExists('downloads_' . strtolower($variablePrefix) . 'file_list')) {
             return;
         }
 
@@ -1072,7 +1089,7 @@ JS_CODE;
         }
 
         if ($objDownload->EOF) {
-            $this->objTemplate->hideBlock('downloads_file_list');
+            $this->objTemplate->hideBlock('downloads_' . strtolower($variablePrefix) . 'file_list');
         } else {
             $row = 1;
             while (!$objDownload->EOF) {
@@ -1084,9 +1101,9 @@ JS_CODE;
 
 
                 // parse download info
-                $this->parseDownloadAttributes($objDownload, $categoryId, $allowdDeleteFiles);
-                $this->objTemplate->setVariable('DOWNLOADS_FILE_ROW_CLASS', 'row'.($row++ % 2 + 1));
-                $this->objTemplate->parse('downloads_file');
+                $this->parseDownloadAttributes($objDownload, $categoryId, $allowdDeleteFiles, $variablePrefix);
+                $this->objTemplate->setVariable('DOWNLOADS_' . $variablePrefix .'FILE_ROW_CLASS', 'row'.($row++ % 2 + 1));
+                $this->objTemplate->parse('downloads_' . strtolower($variablePrefix) . 'file');
 
 
                 $objDownload->next();
@@ -1095,19 +1112,19 @@ JS_CODE;
             $downloadCount = $objDownload->getFilteredSearchDownloadCount();
             if ($downloadCount > $_CONFIG['corePagingLimit']) {
                 if(\Env::get('cx')->getPage()->getModule() != 'Downloads'){
-                    $this->objTemplate->setVariable('DOWNLOADS_FILE_PAGING', getPaging($downloadCount, $limitOffset, '', "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
+                    $this->objTemplate->setVariable('DOWNLOADS_' . $variablePrefix .'FILE_PAGING', getPaging($downloadCount, $limitOffset, '', "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
                 }else{
-                    $this->objTemplate->setVariable('DOWNLOADS_FILE_PAGING', getPaging($downloadCount, $limitOffset, '&'.substr($this->moduleParamsHtml, 1).'&category='.$objCategory->getId().'&downloads_search_keyword='.htmlspecialchars($this->searchKeyword), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
+                    $this->objTemplate->setVariable('DOWNLOADS_' . $variablePrefix .'FILE_PAGING', getPaging($downloadCount, $limitOffset, '&'.substr($this->moduleParamsHtml, 1).'&category='.$objCategory->getId().'&downloads_search_keyword='.htmlspecialchars($this->searchKeyword), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
                 }
             }
 
             $this->objTemplate->setVariable(array(
-                'TXT_DOWNLOADS_FILES'       => $_ARRAYLANG['TXT_DOWNLOADS_FILES'],
-                'TXT_DOWNLOADS_DOWNLOAD'    => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD'],
-                'TXT_DOWNLOADS_DOWNLOADS'   => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']
+                'TXT_DOWNLOADS_' . $variablePrefix .'FILES'       => $_ARRAYLANG['TXT_DOWNLOADS_FILES'],
+                'TXT_DOWNLOADS_' . $variablePrefix .'DOWNLOAD'    => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD'],
+                'TXT_DOWNLOADS_' . $variablePrefix .'DOWNLOADS'   => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']
             ));
 
-            $this->objTemplate->parse('downloads_file_list');
+            $this->objTemplate->parse('downloads_' . strtoupper($variablePrefix) . 'file_list');
         }
     }
 
@@ -1152,7 +1169,7 @@ JS_CODE;
     }
 
 
-    private function parseDownloadAttributes($objDownload, $categoryId, $allowDeleteFilesFromCategory = false)
+    private function parseDownloadAttributes($objDownload, $categoryId, $allowDeleteFilesFromCategory = false, $variablePrefix = '')
     {
         global $_ARRAYLANG, $_LANGID;
 
@@ -1201,37 +1218,37 @@ JS_CODE;
         }
 
         $this->objTemplate->setVariable(array(
-            'TXT_DOWNLOADS_DOWNLOAD'            => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD'],
-            'TXT_DOWNLOADS_ADDED_BY'            => $_ARRAYLANG['TXT_DOWNLOADS_ADDED_BY'],
-            'TXT_DOWNLOADS_LAST_UPDATED'        => $_ARRAYLANG['TXT_DOWNLOADS_LAST_UPDATED'],
-            'TXT_DOWNLOADS_DOWNLOADED'          => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADED'],
-            'TXT_DOWNLOADS_VIEWED'              => $_ARRAYLANG['TXT_DOWNLOADS_VIEWED'],
-            'DOWNLOADS_FILE_ID'                 => $objDownload->getId(),
-            'DOWNLOADS_FILE_DETAIL_SRC'         => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$categoryId.'&amp;id='.$objDownload->getId(),
-            'DOWNLOADS_FILE_NAME'               => htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
-            'DOWNLOADS_FILE_DESCRIPTION'        => nl2br(htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET)),
-            'DOWNLOADS_FILE_SHORT_DESCRIPTION'  => htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET),
-            'DOWNLOADS_FILE_IMAGE'              => $image,
-            'DOWNLOADS_FILE_IMAGE_SRC'          => $imageSrc,
-            'DOWNLOADS_FILE_THUMBNAIL'          => $thumbnail,
-            'DOWNLOADS_FILE_THUMBNAIL_SRC'      => $thumbnailSrc,
-            'DOWNLOADS_FILE_ICON'               => $this->getHtmlImageTag($objDownload->getIcon(), htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
-            'DOWNLOADS_FILE_FILE_TYPE_ICON'     => $this->getHtmlImageTag($objDownload->getFileIcon(), htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
-            'DOWNLOADS_FILE_DELETE_ICON'        => $deleteIcon,
-            'DOWNLOADS_FILE_DOWNLOAD_LINK_SRC'  => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;download='.$objDownload->getId(),
-            'DOWNLOADS_FILE_OWNER'              => $this->getParsedUsername($objDownload->getOwnerId()),
-            'DOWNLOADS_FILE_OWNER_ID'           => $objDownload->getOwnerId(),
-            'DOWNLOADS_FILE_SRC'                => htmlentities($objDownload->getSourceName(), ENT_QUOTES, CONTREXX_CHARSET),
-            'DOWNLOADS_FILE_LAST_UPDATED'       => date(ASCMS_DATE_FORMAT, $objDownload->getMTime()),
-            'DOWNLOADS_FILE_VIEWS'              => $objDownload->getViewCount(),
-            'DOWNLOADS_FILE_DOWNLOAD_COUNT'     => $objDownload->getDownloadCount()
+            'TXT_DOWNLOADS_'.$variablePrefix.'DOWNLOAD'            => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD'],
+            'TXT_DOWNLOADS_'.$variablePrefix.'ADDED_BY'            => $_ARRAYLANG['TXT_DOWNLOADS_ADDED_BY'],
+            'TXT_DOWNLOADS_'.$variablePrefix.'LAST_UPDATED'        => $_ARRAYLANG['TXT_DOWNLOADS_LAST_UPDATED'],
+            'TXT_DOWNLOADS_'.$variablePrefix.'DOWNLOADED'          => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADED'],
+            'TXT_DOWNLOADS_'.$variablePrefix.'VIEWED'              => $_ARRAYLANG['TXT_DOWNLOADS_VIEWED'],
+            'DOWNLOADS_'.$variablePrefix.'FILE_ID'                 => $objDownload->getId(),
+            'DOWNLOADS_'.$variablePrefix.'FILE_DETAIL_SRC'         => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$categoryId.'&amp;id='.$objDownload->getId(),
+            'DOWNLOADS_'.$variablePrefix.'FILE_NAME'               => htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_'.$variablePrefix.'FILE_DESCRIPTION'        => nl2br(htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET)),
+            'DOWNLOADS_'.$variablePrefix.'FILE_SHORT_DESCRIPTION'  => htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_'.$variablePrefix.'FILE_IMAGE'              => $image,
+            'DOWNLOADS_'.$variablePrefix.'FILE_IMAGE_SRC'          => $imageSrc,
+            'DOWNLOADS_'.$variablePrefix.'FILE_THUMBNAIL'          => $thumbnail,
+            'DOWNLOADS_'.$variablePrefix.'FILE_THUMBNAIL_SRC'      => $thumbnailSrc,
+            'DOWNLOADS_'.$variablePrefix.'FILE_ICON'               => $this->getHtmlImageTag($objDownload->getIcon(), htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+            'DOWNLOADS_'.$variablePrefix.'FILE_FILE_TYPE_ICON'     => $this->getHtmlImageTag($objDownload->getFileIcon(), htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+            'DOWNLOADS_'.$variablePrefix.'FILE_DELETE_ICON'        => $deleteIcon,
+            'DOWNLOADS_'.$variablePrefix.'FILE_DOWNLOAD_LINK_SRC'  => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;download='.$objDownload->getId(),
+            'DOWNLOADS_'.$variablePrefix.'FILE_OWNER'              => $this->getParsedUsername($objDownload->getOwnerId()),
+            'DOWNLOADS_'.$variablePrefix.'FILE_OWNER_ID'           => $objDownload->getOwnerId(),
+            'DOWNLOADS_'.$variablePrefix.'FILE_SRC'                => htmlentities($objDownload->getSourceName(), ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_'.$variablePrefix.'FILE_LAST_UPDATED'       => date(ASCMS_DATE_FORMAT, $objDownload->getMTime()),
+            'DOWNLOADS_'.$variablePrefix.'FILE_VIEWS'              => $objDownload->getViewCount(),
+            'DOWNLOADS_'.$variablePrefix.'FILE_DOWNLOAD_COUNT'     => $objDownload->getDownloadCount()
         ));
 
         // parse size
         if ($this->arrConfig['use_attr_size']) {
             $this->objTemplate->setVariable(array(
-                'TXT_DOWNLOADS_SIZE'                => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
-                'DOWNLOADS_FILE_SIZE'               => $this->getFormatedFileSize($objDownload->getSize())
+                'TXT_DOWNLOADS_'.$variablePrefix.'SIZE'                => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
+                'DOWNLOADS_'.$variablePrefix.'FILE_SIZE'               => $this->getFormatedFileSize($objDownload->getSize())
             ));
             $this->objTemplate->touchBlock('download_size_information');
             $this->objTemplate->touchBlock('download_size_list');
@@ -1243,8 +1260,8 @@ JS_CODE;
         // parse license
         if ($this->arrConfig['use_attr_license']) {
             $this->objTemplate->setVariable(array(
-                'TXT_DOWNLOADS_LICENSE'             => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
-                'DOWNLOADS_FILE_LICENSE'            => htmlentities($objDownload->getLicense(), ENT_QUOTES, CONTREXX_CHARSET),
+                'TXT_DOWNLOADS_'.$variablePrefix.'LICENSE'             => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
+                'DOWNLOADS_'.$variablePrefix.'FILE_LICENSE'            => htmlentities($objDownload->getLicense(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
             $this->objTemplate->touchBlock('download_license_information');
             $this->objTemplate->touchBlock('download_license_list');
@@ -1256,8 +1273,8 @@ JS_CODE;
         // parse version
         if ($this->arrConfig['use_attr_version']) {
             $this->objTemplate->setVariable(array(
-                'TXT_DOWNLOADS_VERSION'             => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
-                'DOWNLOADS_FILE_VERSION'            => htmlentities($objDownload->getVersion(), ENT_QUOTES, CONTREXX_CHARSET),
+                'TXT_DOWNLOADS_'.$variablePrefix.'VERSION'             => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
+                'DOWNLOADS_'.$variablePrefix.'FILE_VERSION'            => htmlentities($objDownload->getVersion(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
             $this->objTemplate->touchBlock('download_version_information');
             $this->objTemplate->touchBlock('download_version_list');
@@ -1269,8 +1286,8 @@ JS_CODE;
         // parse author
         if ($this->arrConfig['use_attr_author']) {
             $this->objTemplate->setVariable(array(
-                'TXT_DOWNLOADS_AUTHOR'              => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
-                'DOWNLOADS_FILE_AUTHOR'             => htmlentities($objDownload->getAuthor(), ENT_QUOTES, CONTREXX_CHARSET),
+                'TXT_DOWNLOADS_'.$variablePrefix.'AUTHOR'              => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
+                'DOWNLOADS_'.$variablePrefix.'FILE_AUTHOR'             => htmlentities($objDownload->getAuthor(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
             $this->objTemplate->touchBlock('download_author_information');
             $this->objTemplate->touchBlock('download_author_list');
@@ -1282,9 +1299,9 @@ JS_CODE;
         // parse website
         if ($this->arrConfig['use_attr_website']) {
             $this->objTemplate->setVariable(array(
-                'TXT_DOWNLOADS_WEBSITE'             => $_ARRAYLANG['TXT_DOWNLOADS_WEBSITE'],
-                'DOWNLOADS_FILE_WEBSITE'            => $this->getHtmlLinkTag(htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET)),
-                'DOWNLOADS_FILE_WEBSITE_SRC'        => htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET),
+                'TXT_DOWNLOADS_'.$variablePrefix.'WEBSITE'             => $_ARRAYLANG['TXT_DOWNLOADS_WEBSITE'],
+                'DOWNLOADS_'.$variablePrefix.'FILE_WEBSITE'            => $this->getHtmlLinkTag(htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET)),
+                'DOWNLOADS_'.$variablePrefix.'FILE_WEBSITE_SRC'        => htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
             $this->objTemplate->touchBlock('download_website_information');
             $this->objTemplate->touchBlock('download_website_list');
@@ -1432,7 +1449,13 @@ JS_CODE;
         $objDownload->load(!empty($_GET['download']) ? intval($_GET['download']) : 0);
         if (!$objDownload->EOF) {
             // check if the download is expired
-            if ($objDownload->getExpirationDate() && $objDownload->getExpirationDate() < time()) {
+            if (
+                (
+                    $objDownload->getExpirationDate() &&
+                    $objDownload->getExpirationDate() < time()
+                ) ||
+                !$objDownload->getActiveStatus()
+            ) {
                 \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Error&id=404");
                 exit;
             }
@@ -1488,7 +1511,7 @@ JS_CODE;
             'is_active'     => true,
             'id'            => $arrCategoryIds,
             // read_access_id = 0 refers to unprotected categories
-            'read_access_id'=> array(0), 
+            'read_access_id'=> array(0),
         );
         $objUser = \FWUser::getFWUserObject()->objUser;
         if ($objUser->login()) {

@@ -326,7 +326,8 @@ class Import extends ImportExport
                 return false;
             }
             
-            $objSession = \cmsSession::getInstance();
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $objSession = $cx->getComponent('Session')->getSession();
             $uploaderFolder = $objSession->getTempPath() . '/' . $uploaderId;
             if (!\Cx\Lib\FileSystem\FileSystem::exists($uploaderFolder)) {
                 return false;
