@@ -865,6 +865,10 @@ namespace Cx\Core\Core\Controller {
          * Starts time measurement for page parsing time
          */
         protected function startTimer() {
+            if ($this->startTime) {
+                return;
+            }
+
             $this->startTime = explode(' ', microtime());
         }
 
@@ -2115,10 +2119,6 @@ namespace Cx\Core\Core\Controller {
                     $subMenuTitle, $_CORELANG, $plainCmd, $cmd;
 
             if ($this->mode == self::MODE_FRONTEND) {
-                // parse system
-                $parsingTime = $this->stopTimer();
-                $this->template->setVariable('PARSING_TIME', $parsingTime);
-
                 $this->parseGlobalPlaceholders($themesPages['sidebar']);
 
                 $this->template->setVariable(array(
@@ -2218,20 +2218,6 @@ namespace Cx\Core\Core\Controller {
                     $this->template->touchBlock('backend_metanavigation');
                 }
 
-                // page parsing
-                $parsingTime = $this->stopTimer();
-//                var_dump($parsingTime);
-    /*echo ($finishTime[0] - $startTime[0]) . '<br />';
-    if (!isset($_SESSION['asdf1']) || isset($_GET['reset'])) {
-        $_SESSION['asdf1'] = 0;
-        $_SESSION['asdf2'] = 0;
-    }
-    echo $_SESSION['asdf1'] . '<br />';
-    if ($_SESSION['asdf1'] > 0) {
-        echo $_SESSION['asdf2'] / $_SESSION['asdf1'];
-    }
-    $_SESSION['asdf1']++;
-    $_SESSION['asdf2'] += ($finishTime[0] - $startTime[0]);//*/
                 $objAdminNav = new \adminMenu($plainCmd);
                 $objAdminNav->getAdminNavbar();
                 $this->template->setVariable(array(
@@ -2240,7 +2226,6 @@ namespace Cx\Core\Core\Controller {
                     'TXT_GENERATED_IN' => $_CORELANG['TXT_GENERATED_IN'],
                     'TXT_SECONDS' => $_CORELANG['TXT_SECONDS'],
                     'TXT_LOGOUT_WARNING' => $_CORELANG['TXT_LOGOUT_WARNING'],
-                    'PARSING_TIME'=> $parsingTime,
                     'LOGGED_NAME' => htmlentities($this->getUser()->objUser->getProfileAttribute('firstname').' '.$this->getUser()->objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET),
                     'TXT_LOGGED_IN_AS' => $_CORELANG['TXT_LOGGED_IN_AS'],
                     'TXT_LOG_OUT' => $_CORELANG['TXT_LOG_OUT'],
@@ -2295,8 +2280,6 @@ namespace Cx\Core\Core\Controller {
                 );
                 $this->getResponse()->setParsedContent($ls->replace());
             }
-
-            \DBG::log("(Cx: {$this->id}) Request parsing completed after $parsingTime");
         }
 
         /**
@@ -2306,6 +2289,9 @@ namespace Cx\Core\Core\Controller {
             $endcode = $this->getResponse()->getParsedContent();
             $this->ch->callPostFinalizeHooks($endcode);
             $this->getResponse()->setParsedContent($endcode);
+
+            $parsingTime = $this->stopTimer();
+            \DBG::log("(Cx: {$this->id}) Request parsing completed after $parsingTime");
         }
 
         /* GETTERS */
