@@ -318,3 +318,4 @@ $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION'] = "Automatische Erstell
 $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION_DESC'] = "Definieren Sie die Benutzergruppen, zu welchen der neu erstellende Benutzer hinzugefügt werden soll, wenn die Option zur automatischen Erstellung einer Kategorie im Digital Asset Management Modul ausgewählt wird.";
 $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_LISTING'] = "Anzeige";
 $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_STATISTICS'] = "Statistik";
+$_ARRAYLANG['TXT_DOWNLOADS_CONTENT'] = "Inhalt";

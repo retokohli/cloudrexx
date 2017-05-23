@@ -318,3 +318,4 @@ $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION'] = "Automatic Category C
 $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION_DESC'] = "Set the user groups to which a newly created user should be assigned to, if the option to automatically create a category within the Digital Asset Management module has been selected.";
 $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_LISTING'] = "Listing";
 $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_STATISTICS'] = "Statistics";
+$_ARRAYLANG['TXT_DOWNLOADS_CONTENT'] = "Content";
