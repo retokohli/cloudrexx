@@ -139,6 +139,7 @@ class Permission extends \Cx\Model\Base\EntityBase {
         if (count($this->validUserGroups) || count($this->validAccessIds)) {
             $this->requiresLogin = true;
         }
+        $this->setVirtual(true);
         $this->setCallback($callback);
         $this->readDataAccesses  = new \Doctrine\Common\Collections\ArrayCollection();
         $this->writeDataAccesses = new \Doctrine\Common\Collections\ArrayCollection();
