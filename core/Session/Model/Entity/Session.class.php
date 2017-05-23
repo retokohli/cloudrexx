@@ -309,7 +309,7 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                                         `value` = "'. $serializedValue .'"
                                       ON DUPLICATE KEY UPDATE
                                          `value` = "'. $serializedValue .'"';
-                            $db->Execute($query);
+                            \Env::get('db')->Execute($query);
 
                             $this->releaseLock($lockKey);
                         }
