@@ -38,7 +38,6 @@
 
 namespace Cx\Core_Modules\MediaBrowser\Controller;
 
-// Fixed: Remove unused "use"s
 use Cx\Core\Core\Model\Entity\SystemComponentController;
 use Cx\Core\Html\Sigma;
 use Cx\Core_Modules\MediaBrowser\Model\Event\MediaBrowserEventListener;
