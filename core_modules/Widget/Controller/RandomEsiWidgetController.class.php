@@ -47,17 +47,84 @@ namespace Cx\Core_Modules\Widget\Controller;
 abstract class RandomEsiWidgetController extends EsiWidgetController {
 
     /**
+     * @var int Max count of widgets that are randomized by ESI
+     */
+    const DEFAULT_SUBWIDGET_COUNT_LIMIT = 100;
+
+    /**
+     * @var int Max cache lifetime of subwidgets in seconds
+     */
+    const DEFAULT_SUBWIDGET_CACHE_LIFETIME = 60 * 60 * 24;
+
+    /**
+     * Max number of sub-widgets that will be randomized per widget
+     * @var integer Sub-widget count
+     */
+    protected $subwidgetCountLimit;
+
+    /**
+     * Max lifetime of randomized content in seconds
+     * This is only used if the number of sub-widgets is greater than
+     * $subwidgetCountLimit. In this case sub-widgets are randomly picked and
+     * cached.
+     * @var integer Cache lifetime in seconds
+     */
+    protected $subwidgetCacheLifetime;
+
+    /**
+     * @inheritdoc
+     */
+    public function __construct(SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
+        parent::__construct($systemComponentController, $cx);
+        $this->subwidgetCountLimit = static::DEFAULT_SUBWIDGET_COUNT_LIMIT;
+        $this->subwidgetCacheLifetime = static::DEFAULT_SUBWIDGET_CACHE_LIFETIME;
+    }
+
+    /**
+     * Returns the max number of cached sub-widgets
+     * @return integer Number of widgets
+     */
+    public function getSubwidgetCountLimit() {
+        return $this->subwidgetCountLimit;
+    }
+
+    /**
+     * Returns the max lifetime of cached sub-widgets
+     * @return integer Lifetime in seconds
+     */
+    public function getSubwidgetCacheLifetime() {
+        return $this->subwidgetCacheLifetime;
+    }
+
+    /**
      * Parses a widget
-     * @todo Add logic to limit randomized ESI widgets and set a timeout
      * @param \Cx\Core_Modules\Widget\Model\Entity\Widget $widget The Widget
      * @param array $params Params passed by ESI (/API) request
      * @return array Content in an associative array
      */
     protected function internalParseWidget($widget, $params) {
         if ($widget instanceof \Cx\Core_Modules\Widget\Model\Entity\RandomEsiWidget) {
+            $esiInfos = $this->getRandomEsiWidgetContentInfos($widget);
+
+            if (count($esiInfos) > $this->getSubwidgetCountLimit()) {
+                // randomly pick some
+                $randomIndexes = array_rand($esiInfos, $this->getSubwidgetCountLimit());
+                $limitedEsiInfos = array();
+                foreach ($randomIndexes as $index) {
+                    $limitedEsiInfos[] = $esiInfos[$index];
+                }
+                $esiInfos = $limitedEsiInfos;
+                // set timeout
+                $params['response']->setExpirationDate(
+                    new \DateTime(
+                        '+' . $this->getSubwidgetCacheLifetime() . 'seconds'
+                    )
+                );
+            }
+
             $esiContent = $this->getComponent('Cache')->getRandomizedEsiContent(
-                $this->getRandomEsiWidgetContentInfos($widget)
-            ); 
+                $esiInfos
+            );
             return array(
                 'content' => $esiContent,
             );
