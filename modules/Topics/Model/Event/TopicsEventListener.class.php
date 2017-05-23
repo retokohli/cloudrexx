@@ -24,7 +24,7 @@ class TopicsEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventListen
      * @global  array   $_ARRAYLANG
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    public function mediabrowserLoad()
+    public function mediaBrowserPluginInitialize()
     {
         global $_ARRAYLANG;
         \JS::registerCSS('modules/Topics/View/Style/TopicsBrowser.css');

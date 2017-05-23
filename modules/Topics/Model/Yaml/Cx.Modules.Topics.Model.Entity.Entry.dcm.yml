@@ -25,10 +25,10 @@ Cx\Modules\Topics\Model\Entity\Entry:
       type: string
       length: 255
       gedmo:
-        - translatable
+        translatable: {}
         sluggable:
           position: 0
-          field: 'slug'
+#          field: 'slug'
 # Note: In later versions of Doctrine, multiple slug fields are supported:
 #          slugField: 'slug'
 # Not used:
@@ -38,12 +38,12 @@ Cx\Modules\Topics\Model\Entity\Entry:
       length: 255
       nullable: true
       gedmo:
-        - translatable
+        translatable: {}
         slug:
           separator: -
 # Note: In later versions of Doctrine, multiple slug fields are supported:
-#          fields:
-#            - name
+          fields:
+            - name
 # Not used:
 #        - versioned
     href:

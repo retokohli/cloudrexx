@@ -330,7 +330,7 @@ cx.ready(function() {
       slug_category + "/" +
       locale_list + "/" +
       locale_detail + "/" +
-      slug_entry +
+      (slug_entry ? slug_entry : "") +
       window.location.hash;
     // Update the address without reloading the page; see
     //  http://stackoverflow.com/questions/3338642/updating-address-bar-with-new-url-without-hash-or-reloading-the-page

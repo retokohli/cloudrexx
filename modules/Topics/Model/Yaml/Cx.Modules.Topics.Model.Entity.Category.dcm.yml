@@ -28,22 +28,22 @@ Cx\Modules\Topics\Model\Entity\Category:
       type: string
       length: 255
       gedmo:
-        - translatable
         sluggable:
           position: 0
-          slugField: 'slug'
+#          slugField: 'slug'
+        translatable: {}
 # Not used:
 #        - versioned
     slug:
       type: string
       length: 255
       gedmo:
-        - translatable
         slug:
           separator: -
 # Note: In later versions of Doctrine, multiple slug fields are supported:
-#          fields:
-#            - name
+          fields:
+            - name
+        translatable: {}
 # Not used:
 #        - versioned
     description:

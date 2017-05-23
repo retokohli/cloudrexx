@@ -92,9 +92,7 @@ REPLACE INTO `contrexx_backend_areas`
 VALUES
 (229, 2, 'navigation', 'backend', 'TXT_MODULE_TOPICS', 1, 'index.php?cmd=Topics&act=Entry', '_self', 900, 2, 900);
 
-DELETE FROM `contrexx_component`
-WHERE `name`='Topics';
-INSERT INTO `contrexx_component`
+REPLACE INTO `contrexx_component`
 (`id`, `name`, `type`)
 VALUES
 (NULL, 'Topics', 'module');

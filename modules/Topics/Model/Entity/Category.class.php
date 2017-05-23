@@ -72,7 +72,7 @@ implements \Gedmo\Translatable\Translatable
     /**
      * @var Cx\Modules\Topics\Model\Entity\Entry
      */
-    protected $entries;
+    private $entries;
 
     /**
      * Set up the Category with an empty Collection of associated Entries

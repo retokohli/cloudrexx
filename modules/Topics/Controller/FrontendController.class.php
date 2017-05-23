@@ -75,14 +75,19 @@ extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController
         ));
         \Cx\Core\Setting\Controller\Setting::init('Topics', 'config');
         $cxjs = \ContrexxJavascript::getInstance();
-        $cxjs->setVariable('url_base', $parameters->getUrlBase(), 'Module/Topics');
-        $cxjs->setVariable('locale_system', \FWLanguage::getLocaleByFrontendId(FRONTEND_LANG_ID), 'Module/Topics');
-        $cxjs->setVariable('locale_list', $parameters->getLocaleList(), 'Module/Topics');
-        $cxjs->setVariable('locale_detail', $parameters->getLocaleDetail(), 'Module/Topics');
-        $cxjs->setVariable('slug_category', $parameters->getSlugCategory(), 'Module/Topics');
-        $cxjs->setVariable('slug_entry', $parameters->getSlugEntry(), 'Module/Topics');
-        $cxjs->setVariable('frontend_fulltext_enable',
-            (boolean)\Cx\Core\Setting\Controller\Setting::getValue('frontend_fulltext_enable'), 'Module/Topics');
+        $cxjs->setVariable(array(
+            'url_base' => $parameters->getUrlBase(),
+            'locale_system' =>
+                \FWLanguage::getLocaleByFrontendId(FRONTEND_LANG_ID),
+            'locale_list' => $parameters->getLocaleList(),
+            'locale_detail' => $parameters->getLocaleDetail(),
+            'slug_category' => $parameters->getSlugCategory(),
+            'slug_entry', $parameters->getSlugEntry(),
+            'frontend_fulltext_enable' =>
+                (boolean)\Cx\Core\Setting\Controller\Setting::getValue(
+                    'frontend_fulltext_enable'
+                ),
+        ), 'Module/Topics');
     }
 
     /**

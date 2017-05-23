@@ -55,9 +55,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return  string
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    public function getCommandDescription($command, $short = false)
-    {
-        $short = false; // Ignored
+    public function getCommandDescription($command, $short = false) {
+        $short = null; // Ignored
         switch ($command) {
             case 'TopicsEntries':
                 return 'Send Topics Entries parsed into HTML'
@@ -66,12 +65,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Register the mediabrowser.load event listener
+     * Register the MediaBrowser.Plugin:initialize event listener
      */
-    public function registerEventListeners()
-    {
+    public function registerEventListeners() {
         $this->cx->getEvents()->addEventListener(
-            'mediabrowser.load',
+            'MediaBrowser.Plugin:initialize',
             new \Cx\Modules\Topics\Model\Event\TopicsEventListener($this->cx)
         );
     }
