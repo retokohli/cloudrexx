@@ -30,7 +30,7 @@ cx.ready(function() {
         $compileProvider.debugInfoEnabled(false);
       }])
     .config(["dataTabsProvider", function(dataTabsProvider) {
-        // YTF is this called four times!?
+        // TODO: Why is this called four times!?
         if (unique_datatabs++) {
           return;
         }
