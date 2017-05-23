@@ -64,8 +64,8 @@ cx.ready(function() {
         mediabrowserConfig, mediabrowserFiles, dataTabs) {
         $scope.sourcesLoaded = $q.defer();
         $scope.searchString = '';
-        $scope.sorting = 'cleansize';
-        $scope.reverse = false;
+        $scope.sorting = 'name';
+        $scope.reverse = true;
         $scope.path = [{
             name: cx.variables.get('TXT_FILEBROWSER_FILES', 'mediabrowser'),
             path: 'files',
