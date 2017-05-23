@@ -353,7 +353,7 @@ function adjustLanguages() {
     var languageBars = document.getElementsByClassName('downloads_download_language');
     var availableWidth = 90;
     for (var i = 0; i < languageBars.length; i++) {
-        var languages = languageBars[i].querySelectorAll('td[width=""]');
+        var languages = languageBars[i].querySelectorAll('td:not([width])');
         for (var j = 0; j < languages.length; j++) {
             if (j !== languages.length - 1) {
                 languages[j].width = 10 + '%';
@@ -375,25 +375,32 @@ function setActiveLanguage() {
     langtabs[0].style.display = 'block';
 }
 
-function langTab(ele, id) {
-    updateContent(id, false);
-
-    $J('.tabmenu li a').removeClass('active').addClass('inactive');
-    $J(ele).removeClass('inactive').addClass('active');
-    swapHeaderLangName();
-}
-
-function swapHeaderLangName(){
-    $J('form[name=blockFormModifyBlock] table.block_lang th:first-child').each(
-        function(){
-            $J(this).text($J(this).text().replace(/\s\(.*?\)$/, '')+' ('+$J('#blockLanguages li a.active').text()+')')
+function swapHeaderLangName() {
+    $J('table.downloads_download_language th:first-child, table.downloads_download_tab th:first-child').each(
+        function () {
+            $J(this).text($J(this).text().replace(/\s\(.*?\)$/, '') + ' (' + $J('#downloadGeneral .langmenu li a.active').text().replace(/\s/g, '') + ')')
         }
     )
 }
 
-window.onload = function() {
+function switchBox(element, contentId) {
+    if (element.checked) {
+        document.getElementById('downloadsLanguage_' + contentId).style.display = 'block';
+        selectTab(contentId);
+        swapHeaderLangName();
+        return;
+    }
+    document.getElementById('downloadsLanguage_' + contentId).style.display = 'none';
+    var language = document.querySelector('table.downloads_download_language input[id^="downloads_download_language"][checked="checked"]');
+    var firstLanguageId = language.id.substr(language.id.length - 1);
+    selectTab('downloadLanguage' + firstLanguageId);
+    swapHeaderLangName();
+}
+
+window.onload = function () {
     adjustLanguages();
     setActiveLanguage();
+    swapHeaderLangName();
 };
 
 // ]]>
@@ -406,12 +413,13 @@ window.onload = function() {
     <tr class="row1">
         <td width="10%">{TXT_DOWNLOADS_LANGUAGE}</td>
         <!-- BEGIN downloads_language_list -->
-        <td width="">
+        <td>
             <input id="downloads_download_language_{DOWNLOADS_LANGUAGE_ID}"
                    {DOWNLOADS_LANGUAGE_CHECKED}
                    type="checkbox"
                    name="downloads_download_language[{DOWNLOADS_LANGUAGE_ID}]"
-                   value="1"/>
+                   value="1"
+                   onclick="switchBox(this, 'downloadLanguage{DOWNLOADS_LANGUAGE_ID}')"/>
             <label for="downloads_download_language_{DOWNLOADS_LANGUAGE_ID}">
                 {DOWNLOADS_LANGUAGE_NAME} [{DOWNLOADS_LANGUAGE_SHORT}]
             </label>
@@ -457,7 +465,7 @@ window.onload = function() {
             <li>
                 <a id="downloadsLanguage_downloadLanguage{DOWNLOADS_LANGUAGE_ID}"
                    href="javascript:void(0)"
-                   onclick="selectTab('downloadLanguage{DOWNLOADS_LANGUAGE_ID}')"
+                   onclick="selectTab('downloadLanguage{DOWNLOADS_LANGUAGE_ID}');swapHeaderLangName()"
                    title="{DOWNLOADS_LANGUAGE_NAME}"
                    {DOWNLOADS_LANGUAGE_ACTIVE}>
                     {DOWNLOADS_LANGUAGE_NAME}
@@ -465,7 +473,7 @@ window.onload = function() {
             </li>
             <!-- END downloads_language_tab -->
         </ul>
-        <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+        <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist downloads_download_tab">
             <thead>
                 <tr>
                     <th colspan="2">{TXT_DOWNLOADS_CONTENT}</th>
