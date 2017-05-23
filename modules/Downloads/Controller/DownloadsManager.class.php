@@ -1430,7 +1430,8 @@ class DownloadsManager extends DownloadsLibrary
             'TXT_DOWNLOADS_CHECK_ALL'                       => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
             'TXT_DOWNLOADS_UNCHECK_ALL'                     => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
             'TXT_DOWNLOADS_CANCEL'                          => $_ARRAYLANG['TXT_DOWNLOADS_CANCEL'],
-            'TXT_DOWNLOADS_SAVE'                            => $_ARRAYLANG['TXT_DOWNLOADS_SAVE']
+            'TXT_DOWNLOADS_SAVE'                            => $_ARRAYLANG['TXT_DOWNLOADS_SAVE'],
+            'TXT_DOWNLOADS_LANGUAGE'                        => $_ARRAYLANG['TXT_DOWNLOADS_LANGUAGE'],
         ));
 
         // parse sorting & paging of the categories overview section
@@ -1450,6 +1451,14 @@ class DownloadsManager extends DownloadsLibrary
         $arrLanguages = \FWLanguage::getLanguageArray();
         foreach ($arrLanguages as $langId => $arrLanguage) {
             if ($arrLanguage['frontend'] == 1) {
+                $this->objTemplate->setVariable(array(
+                    'DOWNLOADS_LANGUAGE_ID' => $langId,
+                    'DOWNLOADS_LANGUAGE_NAME' => $arrLanguage['name'],
+                    'DOWNLOADS_LANGUAGE_SHORT' => $arrLanguage['lang'],
+                    'DOWNLOADS_LANGUAGE_CHECKED' => !empty($objDownload->getName($langId)) ? 'checked="checked"' : '',
+                ));
+                $this->objTemplate->parse('downloads_language_list');
+
                 $this->objTemplate->setVariable(array(
                     'DOWNLOADS_DOWNLOAD_NAME'       => htmlentities($objDownload->getName($langId), ENT_QUOTES, CONTREXX_CHARSET),
                     'DOWNLOADS_DOWNLOAD_LANG_ID'    => $langId,

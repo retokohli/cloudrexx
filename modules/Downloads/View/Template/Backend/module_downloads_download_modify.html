@@ -347,8 +347,50 @@ function downloadsAdjustSourceConfig()
       }
     }
 
+// ----------------------------------------------------------------------------------- //
+
+function adjustLanguages() {
+    var languageBars = document.getElementsByClassName('downloads_download_language');
+    var availableWidth = 90;
+    for (var i = 0; i < languageBars.length; i++) {
+        var languages = languageBars[i].querySelectorAll('td[width=""]');
+        for (var j = 0; j < languages.length; j++) {
+            if (j !== languages.length - 1) {
+                languages[j].width = 10 + '%';
+                availableWidth = availableWidth - 10;
+            } else {
+                languages[j].width = availableWidth + '%';
+            }
+        }
+    }
+}
+window.onload = adjustLanguages;
+
 // ]]>
 </script>
+
+<table width="100%" class="adminlist downloads_download_language">
+    <tr>
+        <th colspan="10">{TXT_DOWNLOADS_LANGUAGE}</th>
+    </tr>
+    <tr class="row1">
+        <td width="10%">{TXT_DOWNLOADS_LANGUAGE}</td>
+        <!-- BEGIN downloads_language_list -->
+        <td width="">
+            <input id="downloads_download_language_{DOWNLOADS_LANGUAGE_ID}"
+                   {DOWNLOADS_LANGUAGE_CHECKED}
+                   type="checkbox"
+                   name="downloads_download_language[{DOWNLOADS_LANGUAGE_ID}]"
+                   value="1"/>
+            <label for="downloads_download_language_{DOWNLOADS_LANGUAGE_ID}">
+                {DOWNLOADS_LANGUAGE_NAME} [{DOWNLOADS_LANGUAGE_SHORT}]
+            </label>
+        </td>
+        <!-- END downloads_language_list -->
+    </tr>
+</table>
+
+<br/>
 
 <ul id="tabmenu">
     <li><a id="downloadsTab_downloadGeneral" class="active" href="javascript:void(0)" onclick="selectTab('downloadGeneral')" title="{TXT_DOWNLOADS_GENERAL}">{TXT_DOWNLOADS_GENERAL}</a></li>
