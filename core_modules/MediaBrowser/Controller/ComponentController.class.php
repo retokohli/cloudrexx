@@ -106,7 +106,7 @@ class ComponentController extends
     public function registerEvents()
     {
         $eventHandlerInstance = $this->cx->getEvents();
-        $eventHandlerInstance->addEvent('mediabrowser.load');
+        $eventHandlerInstance->addEvent('MediaBrowser.Plugin:initialize');
     }
 
     /**
@@ -195,7 +195,9 @@ class ComponentController extends
         // Dependencies must be loaded first
         \JS::registerJS('core_modules/MediaBrowser/View/Script/service/dataTabs.js');
         // Enable extensions after the dataTabs service, where they plug into
-        $this->cx->getEvents()->triggerEvent('mediabrowser.load');
+        $this->cx->getEvents()->triggerEvent(
+            'MediaBrowser.Plugin:initialize'
+        );
         // Load the dependant main part after extensions have been connected
         \JS::registerJS('core_modules/MediaBrowser/View/Script/MediaBrowser.js');
     }
