@@ -1558,13 +1558,23 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             // only administrators and users with MANAGE_USER_ACCES_ID are
             // allowed to change a users account.
             // Or users may be allowed to change their own account
+            $manageUserAccess = \Permission::checkAccess(
+                static::MANAGE_USER_ACCESS_ID,
+                'static',
+                true
+            );
             if (
-                !\Permission::checkAccess(
-                    static::MANAGE_USER_ACCESS_ID, 'static', true
-                ) &&
                 (
-                    $objUser->getId() != $objFWUser->objUser->getId() ||
-                    !\Permission::checkAccess(31, 'static', true)
+                    !$manageUserAccess &&
+                    (
+                        $objUser->getId() != $objFWUser->objUser->getId() ||
+                        !\Permission::checkAccess(31, 'static', true)
+                    )
+                ) ||
+                (
+                    !$objFWUser->objUser->getAdminStatus() &&
+                    $manageUserAccess &&
+                    $objUser->getAdminStatus()
                 )
             ) {
                 \Permission::noAccess();
