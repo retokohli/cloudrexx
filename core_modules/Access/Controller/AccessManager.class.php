@@ -1557,27 +1557,23 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
             // only administrators and users with MANAGE_USER_ACCES_ID are
             // allowed to change a users account.
-            // Or users may be allowed to change their own account
-            $manageUserAccess = \Permission::checkAccess(
-                static::MANAGE_USER_ACCESS_ID,
-                'static',
-                true
-            );
-            if (
-                (
+            // Or users may be allowed to change their own account.
+            // Only administrators are allowed to modify a super admin account
+            if (!$objFWUser->objUser->getAdminStatus()) {
+                $manageUserAccess = \Permission::checkAccess(
+                    static::MANAGE_USER_ACCESS_ID,
+                    'static',
+                    true
+                );
+                $noAccessToModifyOwnEntry =
                     !$manageUserAccess &&
-                    (
-                        $objUser->getId() != $objFWUser->objUser->getId() ||
-                        !\Permission::checkAccess(31, 'static', true)
-                    )
-                ) ||
-                (
-                    !$objFWUser->objUser->getAdminStatus() &&
-                    $manageUserAccess &&
-                    $objUser->getAdminStatus()
-                )
-            ) {
-                \Permission::noAccess();
+                    ($objUser->getId() != $objFWUser->objUser->getId() ||
+                    !\Permission::checkAccess(31, 'static', true));
+                $noAccessToModifySuperAdmin =
+                    $manageUserAccess && $objUser->getAdminStatus();
+                if ($noAccessToModifyOwnEntry || $noAccessToModifySuperAdmin) {
+                    \Permission::noAccess();
+                }
             }
 
             $objUser->setUsername(isset($_POST['access_user_username']) ? trim(contrexx_stripslashes($_POST['access_user_username'])) : '');
