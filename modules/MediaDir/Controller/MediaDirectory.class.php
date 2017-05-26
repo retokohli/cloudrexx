@@ -781,7 +781,7 @@ class MediaDirectory extends MediaDirectoryLibrary
             return;
         }
 
-        $latest = false;
+        $latest = null;
         $limit = $this->arrSettings['settingsPagingNumEntries'];
         $offset = null;
         $formId = null;
@@ -1000,7 +1000,7 @@ class MediaDirectory extends MediaDirectoryLibrary
     public function parseEntries($template, $block = '', $config = array()) {
         $objEntry = new MediaDirectoryEntry($this->moduleName);
 
-        $latest = false;
+        $latest = null;
         $limit = $this->arrSettings['settingsPagingNumEntries'];
         $offset = null;
         $formId = null;
