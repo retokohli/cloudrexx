@@ -1370,7 +1370,7 @@ class DownloadsManager extends DownloadsLibrary
             $objDownload->setNames(isset($_POST['downloads_download_name']) ? $this->filterLanguages($unselectedLanguages, array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_name']))) : array());
             $objDownload->setDescriptions(isset($_POST['downloads_download_description']) ? $this->filterLanguages($unselectedLanguages, array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_description']))) : array());
             $this->arrConfig['use_attr_metakeys'] ? $objDownload->setMetakeys(isset($_POST['downloads_download_metakeys']) ? $this->filterLanguages($unselectedLanguages, array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_metakeys']))) : array()) : null;
-            $objDownload->setType(isset($_POST['downloads_download_type']) ? $this->filterLanguages($unselectedLanguages, contrexx_stripslashes($_POST['downloads_download_type'])) : '');
+            $objDownload->setType(isset($_POST['downloads_download_type']) ? contrexx_stripslashes(array_values($_POST['downloads_download_type'])[0]) : '');
             $objDownload->setSources(isset($_POST['downloads_download_' . $objDownload->getType() . '_source']) ? $this->filterLanguages($unselectedLanguages, array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_' . $objDownload->getType() . '_source']))) : array());
 
             // language non-specific attributes
@@ -1395,7 +1395,7 @@ class DownloadsManager extends DownloadsLibrary
             $objDownload->setDownloads(!empty($_POST['downloads_download_associated_downloads']) ? array_map('intval', $_POST['downloads_download_associated_downloads']) : array());
 
             $objDownload->updateMTime();
-            if ($objDownload->store()) {
+            if ($objDownload->store(null, $selectedLanguages)) {
                 if (!empty($this->parentCategoryId)) {
                     header('location: '.\Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Downloads&act=categories&parent_id='.$this->parentCategoryId));
                 } else {
@@ -1497,8 +1497,8 @@ class DownloadsManager extends DownloadsLibrary
                     'DOWNLOADS_DOWNLOAD_LANG_NAME' => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET),
                     'DOWNLOADS_DOWNLOAD_FILE_SOURCE' => $objDownload->getType() == 'file' ? htmlentities($objDownload->getSource($langId), ENT_QUOTES, CONTREXX_CHARSET) : '',
                     'DOWNLOADS_DOWNLOAD_URL_SOURCE' => $objDownload->getType() == 'url' ? htmlentities($objDownload->getSource($langId), ENT_QUOTES, CONTREXX_CHARSET) : 'http://',
-                    'DOWNLOADS_DOWNLOAD_TYPE_FILE_CONFIG_DISPLAY'   => $objDownload->getType() == 'file' ? 'block' : 'none',
-                    'DOWNLOADS_DOWNLOAD_TYPE_URL_CONFIG_DISPLAY'    => $objDownload->getType() == 'url' ? 'block' : 'none',
+                    'DOWNLOADS_DOWNLOAD_TYPE_FILE_CONFIG_DISPLAY' => $objDownload->getType() == 'file' ? 'block' : 'none',
+                    'DOWNLOADS_DOWNLOAD_TYPE_URL_CONFIG_DISPLAY' => $objDownload->getType() == 'url' ? 'block' : 'none',
                     'DOWNLOADS_DOWNLOAD_TYPE_FILE_CHECKED' => $objDownload->getType() == 'file' ? 'checked="checked"' : '',
                     'DOWNLOADS_DOWNLOAD_TYPE_URL_CHECKED' => $objDownload->getType() == 'url' ? 'checked="checked"' : '',
                 ));

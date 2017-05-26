@@ -142,13 +142,33 @@ function mbCallback(data)
     }
 }
 
-function downloadsAdjustSourceConfig(source, id) {
+function downloadsAdjustSourceConfig(source) {
     if (source == 'file') {
-        document.getElementById('downloads_download_type_file_config_' + id).style.display = '';
-        document.getElementById('downloads_download_type_url_config_' + id).style.display = 'none';
+        var radios = document.querySelectorAll('[name^="downloads_download_type"][value="file"]');
+        for (var i = 0; i < radios.length; i++) {
+            radios[i].checked = true
+        }
+        var files = document.getElementsByClassName('downloads_download_type_file_config');
+        for (var i = 0; i < files.length; i++) {
+            files[i].style.display = '';
+        }
+        var urls = document.getElementsByClassName('downloads_download_type_url_config');
+        for (var i = 0; i < urls.length; i++) {
+            urls[i].style.display = 'none';
+        }
     } else if (source == 'url') {
-        document.getElementById('downloads_download_type_file_config_' + id).style.display = 'none';
-        document.getElementById('downloads_download_type_url_config_' + id).style.display = '';
+        var radios = document.querySelectorAll('[name^="downloads_download_type"][value="url"]');
+        for (var i = 0; i < radios.length; i++) {
+            radios[i].checked = true
+        }
+        var files = document.getElementsByClassName('downloads_download_type_file_config');
+        for (var i = 0; i < files.length; i++) {
+            files[i].style.display = 'none';
+        }
+        var urls = document.getElementsByClassName('downloads_download_type_url_config');
+        for (var i = 0; i < urls.length; i++) {
+            urls[i].style.display = '';
+        }
     }
 }
 
@@ -498,14 +518,14 @@ window.onload = function () {
                     <tr class="row1">
                         <td>{TXT_DOWNLOADS_SOURCE}</td>
                         <td>
-                            <input type="radio" name="downloads_download_type[{DOWNLOADS_DOWNLOAD_LANG_ID}]" id="downloads_download_type_file_{DOWNLOADS_DOWNLOAD_LANG_ID}" class="downloads_download_type_file" value="file" {DOWNLOADS_DOWNLOAD_TYPE_FILE_CHECKED} onchange="downloadsAdjustSourceConfig('file', {DOWNLOADS_DOWNLOAD_LANG_ID})" /><label for="downloads_download_type_file_{DOWNLOADS_DOWNLOAD_LANG_ID}">{TXT_DOWNLOADS_LOCAL_FILE}</label>
-                            <input type="radio" name="downloads_download_type[{DOWNLOADS_DOWNLOAD_LANG_ID}]" id="downloads_download_type_url_{DOWNLOADS_DOWNLOAD_LANG_ID}" class="downloads_download_type_url" value="url" {DOWNLOADS_DOWNLOAD_TYPE_URL_CHECKED} onchange="downloadsAdjustSourceConfig('url', {DOWNLOADS_DOWNLOAD_LANG_ID})" /><label for="downloads_download_type_url_{DOWNLOADS_DOWNLOAD_LANG_ID}">{TXT_DOWNLOADS_URL}</label>
+                            <input type="radio" name="downloads_download_type[{DOWNLOADS_DOWNLOAD_LANG_ID}]" id="downloads_download_type_file_{DOWNLOADS_DOWNLOAD_LANG_ID}" value="file" {DOWNLOADS_DOWNLOAD_TYPE_FILE_CHECKED} onchange="downloadsAdjustSourceConfig('file', {DOWNLOADS_DOWNLOAD_LANG_ID})" /><label for="downloads_download_type_file_{DOWNLOADS_DOWNLOAD_LANG_ID}">{TXT_DOWNLOADS_LOCAL_FILE}</label>
+                            <input type="radio" name="downloads_download_type[{DOWNLOADS_DOWNLOAD_LANG_ID}]" id="downloads_download_type_url_{DOWNLOADS_DOWNLOAD_LANG_ID}" value="url" {DOWNLOADS_DOWNLOAD_TYPE_URL_CHECKED} onchange="downloadsAdjustSourceConfig('url', {DOWNLOADS_DOWNLOAD_LANG_ID})" /><label for="downloads_download_type_url_{DOWNLOADS_DOWNLOAD_LANG_ID}">{TXT_DOWNLOADS_URL}</label>
                             <br />
-                            <div id="downloads_download_type_file_config_{DOWNLOADS_DOWNLOAD_LANG_ID}" style="display:{DOWNLOADS_DOWNLOAD_TYPE_FILE_CONFIG_DISPLAY}">
-                                <input type="text" name="downloads_download_file_source[{DOWNLOADS_DOWNLOAD_LANG_ID}]" value="{DOWNLOADS_DOWNLOAD_FILE_SOURCE}" style="width:300px;" /> <input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsGetFileBrowser(document.getElementById('downloads_download_file_source_{DOWNLOADS_DOWNLOAD_LANG_ID}'),null,null,document.getElementById('downloads_download_mime_type'))" />
+                            <div id="downloads_download_type_file_config_{DOWNLOADS_DOWNLOAD_LANG_ID}" class="downloads_download_type_file_config" style="display:{DOWNLOADS_DOWNLOAD_TYPE_FILE_CONFIG_DISPLAY}">
+                                <input type="text" id="downloads_download_file_source_{DOWNLOADS_DOWNLOAD_LANG_ID}" name="downloads_download_file_source[{DOWNLOADS_DOWNLOAD_LANG_ID}]" value="{DOWNLOADS_DOWNLOAD_FILE_SOURCE}" style="width:300px;" /> <input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsGetFileBrowser(document.getElementById('downloads_download_file_source_{DOWNLOADS_DOWNLOAD_LANG_ID}'),null,null,document.getElementById('downloads_download_mime_type'))" />
                             </div>
-                            <div id="downloads_download_type_url_config_{DOWNLOADS_DOWNLOAD_LANG_ID}" style="display:{DOWNLOADS_DOWNLOAD_TYPE_URL_CONFIG_DISPLAY}">
-                                <input type="text" name="downloads_download_url_source[{DOWNLOADS_DOWNLOAD_LANG_ID}]" value="{DOWNLOADS_DOWNLOAD_URL_SOURCE}" style="width:300px;" />
+                            <div id="downloads_download_type_url_config_{DOWNLOADS_DOWNLOAD_LANG_ID}" class="downloads_download_type_url_config" style="display:{DOWNLOADS_DOWNLOAD_TYPE_URL_CONFIG_DISPLAY}">
+                                <input type="text" id="downloads_download_url_source_{DOWNLOADS_DOWNLOAD_LANG_ID}" name="downloads_download_url_source[{DOWNLOADS_DOWNLOAD_LANG_ID}]" value="{DOWNLOADS_DOWNLOAD_URL_SOURCE}" style="width:300px;" />
                             </div>
                         </td>
                     </tr>

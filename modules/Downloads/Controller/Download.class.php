@@ -1104,7 +1104,7 @@ class Download {
      * @global array
      * @return boolean
      */
-    public function store($objCategory = null)
+    public function store($objCategory = null, $selectedLanguages)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -1127,7 +1127,7 @@ class Download {
         }
 
         foreach ($this->sources as $source) {
-            if (empty($source)) {
+            if (empty($source) && in_array($source['id'], $selectedLanguages)) {
                 $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_SET_SOURCE_MANDATORY'];
                 return false;
             }
@@ -1138,7 +1138,7 @@ class Download {
             return false;
         }
 
-        if (empty($this->names)) {
+        if (isset($this->names) && !$this->validateName($selectedLanguages)) {
             return false;
         }
 
@@ -1482,6 +1482,26 @@ class Download {
             return false;
         } else {
             return true;
+        }
+    }
+
+    private function validateName($selectedLanguages)
+    {
+        global $_ARRAYLANG;
+        $arrLanguages = \FWLanguage::getLanguageArray();
+        $namesSet = true;
+        foreach ($arrLanguages as $langId => $arrLanguage) {
+            if ($arrLanguage['frontend'] != 1) continue;
+            if (empty($this->names[$langId]) && in_array($langId, $selectedLanguages)) {
+                $namesSet = false;
+                break;
+            }
+        }
+        if ($namesSet) {
+            return true;
+        } else {
+            $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_EMPTY_NAME_ERROR'];
+            return false;
         }
     }
 
