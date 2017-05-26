@@ -1138,7 +1138,7 @@ class Download {
             return false;
         }
 
-        if (isset($this->names) && !$this->validateName()) {
+        if (empty($this->names)) {
             return false;
         }
 
@@ -1482,28 +1482,6 @@ class Download {
             return false;
         } else {
             return true;
-        }
-    }
-
-    private function validateName()
-    {
-        global $_ARRAYLANG;
-
-        $arrLanguages = \FWLanguage::getLanguageArray();
-        $namesSet = true;
-        foreach ($arrLanguages as $langId => $arrLanguage) {
-            if ($arrLanguage['frontend'] != 1) continue;
-            if (empty($this->names[$langId])) {
-                $namesSet = false;
-                break;
-            }
-        }
-
-        if ($namesSet) {
-            return true;
-        } else {
-            $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_EMPTY_NAME_ERROR'];
-            return false;
         }
     }
 
