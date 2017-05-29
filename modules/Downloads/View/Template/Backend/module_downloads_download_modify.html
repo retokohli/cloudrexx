@@ -143,7 +143,7 @@ function mbCallback(data)
 }
 
 function downloadsAdjustSourceConfig(source) {
-    if (source == 'file') {
+    if (source === 'file') {
         var radios = document.querySelectorAll('[name^="downloads_download_type"][value="file"]');
         for (var i = 0; i < radios.length; i++) {
             radios[i].checked = true
@@ -156,7 +156,7 @@ function downloadsAdjustSourceConfig(source) {
         for (var i = 0; i < urls.length; i++) {
             urls[i].style.display = 'none';
         }
-    } else if (source == 'url') {
+    } else if (source === 'url') {
         var radios = document.querySelectorAll('[name^="downloads_download_type"][value="url"]');
         for (var i = 0; i < radios.length; i++) {
             radios[i].checked = true
@@ -432,19 +432,19 @@ window.onload = function () {
         </tr>
         <tr class="row1">
             <td width="10%">{TXT_DOWNLOADS_LANGUAGE}</td>
-            <!-- BEGIN downloads_language_list -->
+            <!-- BEGIN downloads_download_language_list -->
             <td>
-                <input id="downloads_download_language_{DOWNLOADS_LANGUAGE_ID}"
-                       {DOWNLOADS_LANGUAGE_CHECKED}
+                <input id="downloads_download_language_{DOWNLOADS_DOWNLOAD_LANGUAGE_ID}"
+                       {DOWNLOADS_DOWNLOAD_LANGUAGE_CHECKED}
                        type="checkbox"
-                       name="downloads_download_language[{DOWNLOADS_LANGUAGE_ID}]"
+                       name="downloads_download_language[{DOWNLOADS_DOWNLOAD_LANGUAGE_ID}]"
                        value="1"
-                       onclick="switchBox(this, 'downloadLanguage{DOWNLOADS_LANGUAGE_ID}')"/>
-                <label for="downloads_download_language_{DOWNLOADS_LANGUAGE_ID}">
-                    {DOWNLOADS_LANGUAGE_NAME} [{DOWNLOADS_LANGUAGE_SHORT}]
+                       onclick="switchBox(this, 'downloadLanguage{DOWNLOADS_DOWNLOAD_LANGUAGE_ID}')"/>
+                <label for="downloads_download_language_{DOWNLOADS_DOWNLOAD_LANGUAGE_ID}">
+                    {DOWNLOADS_DOWNLOAD_LANGUAGE_NAME} [{DOWNLOADS_DOWNLOAD_LANGUAGE_SHORT}]
                 </label>
             </td>
-            <!-- END downloads_language_list -->
+            <!-- END downloads_download_language_list -->
         </tr>
     </table>
 
@@ -480,17 +480,17 @@ window.onload = function () {
         </table>
         <br/>
         <ul class="tabmenu langmenu">
-            <!-- BEGIN downloads_language_tab -->
+            <!-- BEGIN downloads_download_language_tab -->
             <li>
-                <a id="downloadsLanguage_downloadLanguage{DOWNLOADS_LANGUAGE_ID}"
+                <a id="downloadsLanguage_downloadLanguage{DOWNLOADS_DOWNLOAD_LANGUAGE_ID}"
                    href="javascript:void(0)"
-                   onclick="selectTab('downloadLanguage{DOWNLOADS_LANGUAGE_ID}');swapHeaderLangName()"
-                   title="{DOWNLOADS_LANGUAGE_NAME}"
-                   {DOWNLOADS_LANGUAGE_ACTIVE}>
-                    {DOWNLOADS_LANGUAGE_NAME}
+                   onclick="selectTab('downloadLanguage{DOWNLOADS_DOWNLOAD_LANGUAGE_ID}');swapHeaderLangName()"
+                   title="{DOWNLOADS_DOWNLOAD_LANGUAGE_NAME}"
+                   {DOWNLOADS_DOWNLOAD_LANGUAGE_ACTIVE}>
+                    {DOWNLOADS_DOWNLOAD_LANGUAGE_NAME}
                 </a>
             </li>
-            <!-- END downloads_language_tab -->
+            <!-- END downloads_download_language_tab -->
         </ul>
         <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist downloads_download_tab">
             <thead>
@@ -499,7 +499,7 @@ window.onload = function () {
                 </tr>
             </thead>
         </table>
-        <!-- BEGIN downloads_language_content -->
+        <!-- BEGIN downloads_download_language_content -->
         <div id="downloadLanguage{DOWNLOADS_DOWNLOAD_LANG_ID}" class="downloadsLanguage" style="display:none;">
             <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
                 <tbody>
@@ -540,7 +540,7 @@ window.onload = function () {
                 </tbody>
             </table>
         </div>
-        <!-- END downloads_language_content -->
+        <!-- END downloads_download_language_content -->
     </div>
     <!-- end div downloadsTab_downloadGeneral -->
 

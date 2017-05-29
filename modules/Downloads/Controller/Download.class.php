@@ -1100,6 +1100,8 @@ class Download {
      *
      * This stores the metadata of the download to the database.
      *
+     * @param Category $objCategory
+     * @param array $selectedLanguages Allowed languages
      * @global ADONewConnection
      * @global array
      * @return boolean
@@ -1488,6 +1490,7 @@ class Download {
     private function validateName($selectedLanguages)
     {
         global $_ARRAYLANG;
+
         $arrLanguages = \FWLanguage::getLanguageArray();
         $namesSet = true;
         foreach ($arrLanguages as $langId => $arrLanguage) {
@@ -1497,6 +1500,7 @@ class Download {
                 break;
             }
         }
+
         if ($namesSet) {
             return true;
         } else {

@@ -528,12 +528,12 @@ class DownloadsManager extends DownloadsLibrary
             'TXT_DOWNLOADS_CHECK_ALL'                                   => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
             'TXT_DOWNLOADS_DETAIL_PAGE'                                 => $_ARRAYLANG['TXT_DOWNLOADS_DETAIL_PAGE'],
             'TXT_DOWNLOADS_EXTENDED'                                    => $_ARRAYLANG['TXT_DOWNLOADS_EXTENDED'],
+            'TXT_DOWNLOADS_LOCAL_FILE'                                  => $_ARRAYLANG['TXT_DOWNLOADS_LOCAL_FILE'],
             'TXT_DOWNLOADS_NAME'                                        => $_ARRAYLANG['TXT_DOWNLOADS_NAME'],
             'TXT_DOWNLOADS_SAVE'                                        => $_ARRAYLANG['TXT_DOWNLOADS_SAVE'],
             'TXT_DOWNLOADS_STATUS'                                      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
             'TXT_DOWNLOADS_UNCHECK_ALL'                                 => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
-            'TXT_DOWNLOADS_URL'                                         => $_ARRAYLANG['TXT_DOWNLOADS_URL'],
-            'TXT_DOWNLOADS_LOCAL_FILE'                                  => $_ARRAYLANG['TXT_DOWNLOADS_LOCAL_FILE'],
+            'TXT_DOWNLOADS_URL'                                         => $_ARRAYLANG['TXT_DOWNLOADS_URL']
         ));
 
         // parse sorting & paging of the groups overview section
@@ -1328,6 +1328,7 @@ class DownloadsManager extends DownloadsLibrary
         }
     }
 
+
     private function download()
     {
         global $objDatabase, $_ARRAYLANG, $_LANGID;
@@ -1367,11 +1368,11 @@ class DownloadsManager extends DownloadsLibrary
             }
 
             // language specific attributes
-            $objDownload->setNames(isset($_POST['downloads_download_name']) ? $this->filterLanguages($unselectedLanguages, array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_name']))) : array());
-            $objDownload->setDescriptions(isset($_POST['downloads_download_description']) ? $this->filterLanguages($unselectedLanguages, array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_description']))) : array());
-            $this->arrConfig['use_attr_metakeys'] ? $objDownload->setMetakeys(isset($_POST['downloads_download_metakeys']) ? $this->filterLanguages($unselectedLanguages, array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_metakeys']))) : array()) : null;
+            $objDownload->setNames(isset($_POST['downloads_download_name']) ? $this->filterArray($unselectedLanguages, array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_name']))) : array());
+            $objDownload->setDescriptions(isset($_POST['downloads_download_description']) ? $this->filterArray($unselectedLanguages, array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_description']))) : array());
+            $this->arrConfig['use_attr_metakeys'] ? $objDownload->setMetakeys(isset($_POST['downloads_download_metakeys']) ? $this->filterArray($unselectedLanguages, array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_metakeys']))) : array()) : null;
             $objDownload->setType(isset($_POST['downloads_download_type']) ? contrexx_stripslashes(array_values($_POST['downloads_download_type'])[0]) : '');
-            $objDownload->setSources(isset($_POST['downloads_download_' . $objDownload->getType() . '_source']) ? $this->filterLanguages($unselectedLanguages, array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_' . $objDownload->getType() . '_source']))) : array());
+            $objDownload->setSources(isset($_POST['downloads_download_' . $objDownload->getType() . '_source']) ? $this->filterArray($unselectedLanguages, array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_' . $objDownload->getType() . '_source']))) : array());
 
             // language non-specific attributes
             $objDownload->setActiveStatus(!empty($_POST['downloads_download_is_active']));
@@ -1461,19 +1462,19 @@ class DownloadsManager extends DownloadsLibrary
         foreach ($arrLanguages as $langId => $arrLanguage) {
             if ($arrLanguage['frontend'] == 1) {
                 $this->objTemplate->setVariable(array(
-                    'DOWNLOADS_LANGUAGE_ID' => $langId,
-                    'DOWNLOADS_LANGUAGE_NAME' => $arrLanguage['name'],
-                    'DOWNLOADS_LANGUAGE_SHORT' => $arrLanguage['lang'],
-                    'DOWNLOADS_LANGUAGE_CHECKED' => !empty($objDownload->getName($langId)) ? 'checked="checked"' : '',
+                    'DOWNLOADS_DOWNLOAD_LANGUAGE_ID' => $langId,
+                    'DOWNLOADS_DOWNLOAD_LANGUAGE_NAME' => $arrLanguage['name'],
+                    'DOWNLOADS_DOWNLOAD_LANGUAGE_SHORT' => $arrLanguage['lang'],
+                    'DOWNLOADS_DOWNLOAD_LANGUAGE_CHECKED' => !empty($objDownload->getName($langId)) ? 'checked="checked"' : '',
                 ));
-                $this->objTemplate->parse('downloads_language_list');
+                $this->objTemplate->parse('downloads_download_language_list');
 
                 $this->objTemplate->setVariable(array(
-                    'DOWNLOADS_LANGUAGE_ID' => $langId,
-                    'DOWNLOADS_LANGUAGE_NAME' => $arrLanguage['name'],
-                    'DOWNLOADS_LANGUAGE_ACTIVE' => empty($objDownload->getName($langId)) ? 'style="display:none;"' : '',
+                    'DOWNLOADS_DOWNLOAD_LANGUAGE_ID' => $langId,
+                    'DOWNLOADS_DOWNLOAD_LANGUAGE_NAME' => $arrLanguage['name'],
+                    'DOWNLOADS_DOWNLOAD_LANGUAGE_ACTIVE' => empty($objDownload->getName($langId)) ? 'style="display:none;"' : '',
                 ));
-                $this->objTemplate->parse('downloads_language_tab');
+                $this->objTemplate->parse('downloads_download_language_tab');
 
                 if ($this->arrConfig['use_attr_metakeys']) {
                     $this->objTemplate->setVariable(array(
@@ -1502,7 +1503,7 @@ class DownloadsManager extends DownloadsLibrary
                     'DOWNLOADS_DOWNLOAD_TYPE_FILE_CHECKED' => $objDownload->getType() == 'file' ? 'checked="checked"' : '',
                     'DOWNLOADS_DOWNLOAD_TYPE_URL_CHECKED' => $objDownload->getType() == 'url' ? 'checked="checked"' : '',
                 ));
-                $this->objTemplate->parse('downloads_language_content');
+                $this->objTemplate->parse('downloads_download_language_content');
             }
         }
 
@@ -1758,16 +1759,16 @@ class DownloadsManager extends DownloadsLibrary
     }
 
     /**
-     * Removes provided language from array
+     * Removes given array elements from provided array
      *
-     * @param $unselectedLanguages languages to delete from array
-     * @param $unfilteredArray unfiltered array (key is language id)
-     * @return mixed
+     * @param array $filter Array of element to delete from $unfilteredArray
+     * @param array $unfilteredArray Array to be filtered
+     * @return array
      */
-    protected function filterLanguages($unselectedLanguages, $unfilteredArray)
+    protected function filterArray($filter, $unfilteredArray)
     {
         foreach ($unfilteredArray as $key => $value) {
-            if (in_array($key, $unselectedLanguages)) {
+            if (in_array($key, $filter)) {
                 unset($unfilteredArray[$key]);
             }
         }
