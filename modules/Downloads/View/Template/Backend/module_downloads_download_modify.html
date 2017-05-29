@@ -376,7 +376,7 @@ function adjustLanguages() {
         for (var j = 0; j < languages.length; j++) {
             if (j !== languages.length - 1) {
                 languages[j].width = 10 + '%';
-                availableWidth = availableWidth - 10;
+                availableWidth -= 10;
             } else {
                 languages[j].width = availableWidth + '%';
             }
@@ -395,9 +395,17 @@ function setActiveLanguage() {
 }
 
 function swapHeaderLangName() {
-    $J('table.downloads_download_language th:first-child, table.downloads_download_tab th:first-child').each(
+    cx.jQuery(
+        'table.downloads_download_language th:first-child,' +
+        'table.downloads_download_tab th:first-child'
+    ).each(
         function () {
-            $J(this).text($J(this).text().replace(/\s\(.*?\)$/, '') + ' (' + $J('#downloadGeneral .langmenu li a.active').text().replace(/\s/g, '') + ')')
+            cx.jQuery(this).text(
+                cx.jQuery(this).text().replace(/\s\(.*?\)$/, '') +
+                ' (' +
+                cx.jQuery('#downloadGeneral .langmenu li a.active').text().replace(/\s/g, '') +
+                ')'
+            );
         }
     )
 }
