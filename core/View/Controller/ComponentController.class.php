@@ -55,7 +55,55 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return array List of Controller class names (without namespace)
      */
     public function getControllerClasses() {
-        return array();
+        return array('EsiWidget');
+    }
+
+    /**
+     * Returns a list of JsonAdapter class names
+     *
+     * The array values might be a class name without namespace. In that case
+     * the namespace \Cx\{component_type}\{component_name}\Controller is used.
+     * If the array value starts with a backslash, no namespace is added.
+     *
+     * Avoid calculation of anything, just return an array!
+     * @return array List of ComponentController classes
+     */
+    public function getControllersAccessableByJson() {
+        return array('EsiWidgetController');
+    }
+
+    /**
+     * Do something after system initialization
+     *
+     * This event must be registered in the postInit-Hook definition
+     * file config/postInitHooks.yml.
+     * @param \Cx\Core\Core\Controller\Cx   $cx The instance of \Cx\Core\Core\Controller\Cx
+     */
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx) {
+        $widgetController = $this->getComponent('Widget');
+        $widgetNames = array(
+            'STANDARD_URL',
+            'MOBILE_URL',
+            'PRINT_URL',
+            'PDF_URL',
+            'APP_URL',
+        );
+        foreach ($widgetNames as $widgetName) {
+            $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+                $this,
+                $widgetName,
+                false,
+                '',
+                '',
+                array(
+                    'ref' => '$(HTTP_REFERER)',
+                )
+            );
+            $widget->setEsiVariable(0);
+            $widgetController->registerWidget(
+                $widget
+            );
+        }
     }
     /**
      * Register your event listeners here

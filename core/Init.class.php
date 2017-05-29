@@ -1158,7 +1158,7 @@ class InitCMS
 
     public function getUriBy($key = '', $value = '')
     {
-        $url = \Env::get('Resolver')->getUrl();
+        $url = \Env::get('cx')->getRequest()->getUrl();
         $myUrl = clone $url;
         $myUrl->setParam($key, $value);
 
@@ -1168,7 +1168,7 @@ class InitCMS
 
     public function getPageUri()
     {
-        return \Env::get('Resolver')->getUrl();
+        return \Env::get('cx')->getRequest()->getUrl();
     }
 
 

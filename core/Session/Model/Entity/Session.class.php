@@ -207,6 +207,16 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
             }
             // do not write the session data
             $this->discardChanges = true;
+            
+            // drop user specific ESI cache:
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $esiFiles = glob($cx->getWebsiteTempPath() . '/cache/*u' . $aKey . '*');
+            foreach ($esiFiles as $esiFile) {
+                try {
+                    $file = new \Cx\Lib\FileSystem\File($esiFile);
+                    $file->delete();
+                } catch (\Cx\Lib\FileSystem\FileSystemException $e) {}
+            }
         }
         return true;
     }
@@ -271,7 +281,15 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                 if (isset($this->data[$lockKey])) {
                     $sessionValue = $this->data[$lockKey];
                     if (is_a($sessionValue, 'Cx\Core\Model\RecursiveArrayAccess')) {
+                        // Do flush session data to database through a transaction.
+                        // This will have a great impact on performance.
+                        $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
+                        $db->StartTrans();
                         static::updateToDb($sessionValue);
+                        if ($db->HasFailedTrans()) {
+                            \DBG::msg('Oops: Unable to flush session data to database. This will result in lost session data!');
+                        }
+                        $db->CompleteTrans();
                     } else {
                         if ($this->isDirty($lockKey)) {
                             // is_callable() can return true for type array, so we need to check that it is not an array
@@ -700,6 +718,23 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
             if (!in_array(substr($sessionPath, strlen($this->sessionPathPrefix)), $sessions)) {
                 \Cx\Lib\FileSystem\FileSystem::delete_folder(ASCMS_TEMP_WEB_PATH . '/' . $sessionPath, true);
             }
+        }
+        
+        // drop user specific ESI cache:
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $esiFiles = glob($cx->getWebsiteTempPath() . '/cache/*_u*');
+        foreach ($esiFiles as $esiFile) {
+            $match = array();
+            if (!preg_match('#/[0-9a-f]{32}(?:_[pl][a-z0-9]+){0,2}?_u([a-z0-9]+)(?:_|$)#', $esiFile, $match)) {
+                continue;
+            }
+            if (in_array($match[1], $sessions)) {
+                continue;
+            }
+            try {
+                $file = new \Cx\Lib\FileSystem\File($esiFile);
+                $file->delete();
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {}
         }
     }
 
