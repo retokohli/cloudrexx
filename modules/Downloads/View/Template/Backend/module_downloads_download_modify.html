@@ -417,9 +417,23 @@ function switchBox(element, contentId) {
         swapHeaderLangName();
         return;
     }
+
+    var languages = document.querySelectorAll('table.downloads_download_language input[id^="downloads_download_language"]');
+    var checkedLanguages = [];
+    for (var i = 0; i < languages.length; i++) {
+        if (!languages[i].checked) {
+            continue;
+        }
+        checkedLanguages.push(languages[i]);
+    }
+
+    if (checkedLanguages.length < 1) {
+        element.checked = true;
+        return;
+    }
+
     document.getElementById('downloadsLanguage_' + contentId).style.display = 'none';
-    var language = document.querySelector('table.downloads_download_language input[id^="downloads_download_language"][checked="checked"]');
-    var firstLanguageId = language.id.substr(language.id.length - 1);
+    var firstLanguageId = checkedLanguages[0].id.substr(checkedLanguages[0].id.length - 1);
     selectTab('downloadLanguage' + firstLanguageId);
     swapHeaderLangName();
 }
