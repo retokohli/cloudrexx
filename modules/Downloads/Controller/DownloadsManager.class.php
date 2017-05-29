@@ -1331,7 +1331,7 @@ class DownloadsManager extends DownloadsLibrary
 
     private function download()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $_ARRAYLANG, $_LANGID;
 
         $objFWUser = \FWUser::getFWUserObject();
         $objDownload = new Download();
@@ -1356,13 +1356,14 @@ class DownloadsManager extends DownloadsLibrary
 
         if (isset($_POST['downloads_download_save'])) {
             // language logic
+            $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
             $selectedLanguages = isset($_POST['downloads_download_language']) ? array_keys(array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_language']))) : array();
             $availableLanguages = \FWLanguage::getLanguageArray();
             $unselectedLanguages = array();
             foreach ($availableLanguages as $language) {
                 if ($language['frontend'] == 1 && !in_array($language['id'], $selectedLanguages)) {
                     $query = 'DELETE FROM `' . DBPREFIX . '_module_downloads_download_locale` WHERE `download_id` = ' . $objDownload->getId() . ' AND `lang_id` = ' . $language['id'];
-                    $objDatabase->Execute($query);
+                    $db->Execute($query);
                     array_push($unselectedLanguages, intval($language['id']));
                 }
             }
