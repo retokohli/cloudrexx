@@ -76,10 +76,16 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         }
 
         $matches = null;
-        if (preg_match('/^LANG_SELECTED_([A-Z]{2})$/', $name, $matches)) {
+        if (
+            preg_match(
+                '/^LANG_SELECTED_([A-Z]{1,2}(?:-[A-Z]{2,4})?)$/',
+                $name,
+                $matches
+            )
+        ) {
             $selected = '';
             $langCode = \FWLanguage::getLanguageCodeById($params['lang']);
-            if (strtolower($matches[1]) === $langCode) {
+            if ($matches[1] === strtoupper($langCode)) {
                 $selected = 'selected';
             }
             $template->setVariable($name, $selected);
@@ -103,8 +109,14 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         }
 
         $langMatches = null;
-        if (preg_match('/^LANG_CHANGE_([A-Z]{2})$/', $name, $langMatches)) {
-            $langId = \FWLanguage::getLangIdByIso639_1($langMatches[1]);
+        if (
+            preg_match(
+                '/^LANG_CHANGE_([A-Z]{1,2}(?:-[A-Z]{2,4})?)$/',
+                $name,
+                $langMatches
+            )
+        ) {
+            $langId = \FWLanguage::getLanguageIdByCode($langMatches[1]);
             $template->setVariable(
                 $name,
                 $navbar->getLanguageLinkById($page, $langId)
