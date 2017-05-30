@@ -731,6 +731,7 @@ class User extends User_Profile
         $arrConditions = array();
         $arrSearchConditions = array();
         $tblCoreAttributes = false;
+        $tblCustomAttributes = false;
         $tblGroup = false;
         $groupTables = false;
 
@@ -754,6 +755,7 @@ class User extends User_Profile
             if (count($arrCustomAttributeConditions = $this->parseAttributeSearchConditions($search, false))) {
                 $groupTables = true;
                 $arrSearchConditions[] = implode(' OR ', $arrCustomAttributeConditions);
+                $tblCustomAttributes = true;
             }
             if (count($arrSearchConditions)) {
                 $arrConditions[] = implode(' OR ', $arrSearchConditions);
@@ -763,6 +765,9 @@ class User extends User_Profile
         $arrTables = array();
         if (!empty($tblCoreAttributes)) {
             $arrTables[] = 'core';
+        }
+        if (!empty($tblCustomAttributes)) {
+            $arrTables[] = 'custom';
         }
         if ($tblGroup) {
             $arrTables[] = 'group';
@@ -1157,6 +1162,7 @@ class User extends User_Profile
             .(count($arrSelectCoreExpressions) ? ', tblP.`'.implode('`, tblP.`', $arrSelectCoreExpressions).'`' : '')
             .'FROM `'.DBPREFIX.'access_users` AS tblU'
             .(count($arrSelectCoreExpressions) || $arrQuery['tables']['core'] ? ' INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id` = tblU.`id`' : '')
+            .($arrQuery['tables']['custom'] ? ' INNER JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id` = tblU.`id`' : '')
             .($arrQuery['tables']['group']
                 ? (isset($filter['group_id']) && $filter['group_id'] == 'groupless'
                     ? ' LEFT JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`'
@@ -1351,6 +1357,7 @@ class User extends User_Profile
         $arrCustomJoins = array();
         $arrCustomSelection = array();
         $joinCoreTbl = false;
+        $joinCustomTbl = false;
         $joinGroupTbl = false;
         $arrUserIds = array();
         $arrSortExpressions = array();
@@ -1360,6 +1367,9 @@ class User extends User_Profile
             if (isset($sqlCondition['tables'])) {
                 if (in_array('core', $sqlCondition['tables'])) {
                     $joinCoreTbl = true;
+                }
+                if (in_array('custom', $sqlCondition['tables'])) {
+                    $joinCustomTbl = true;
                 }
                 if (in_array('group', $sqlCondition['tables'])) {
                     $joinGroupTbl = true;
@@ -1406,6 +1416,7 @@ class User extends User_Profile
             SELECT SQL_CALC_FOUND_ROWS DISTINCT tblU.`id`
               FROM `'.DBPREFIX.'access_users` AS tblU'.
             ($joinCoreTbl ? ' INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id`=tblU.`id`' : '').
+            ($joinCustomTbl ? ' INNER JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id`=tblU.`id`' : '').
             ($joinGroupTbl
                 ? ($groupless
                     ? ' LEFT JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id`=tblU.`id`'
@@ -1438,6 +1449,7 @@ class User extends User_Profile
         return array(
             'tables' => array(
                 'core'      => $joinCoreTbl,
+                'custom'    => $joinCustomTbl,
                 'group'     => $joinGroupTbl
             ),
             'joins'         => $arrCustomJoins,
