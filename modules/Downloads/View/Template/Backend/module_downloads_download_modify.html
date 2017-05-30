@@ -144,31 +144,11 @@ function mbCallback(data)
 
 function downloadsAdjustSourceConfig(source) {
     if (source === 'file') {
-        var radios = document.querySelectorAll('[name^="downloads_download_type"][value="file"]');
-        for (var i = 0; i < radios.length; i++) {
-            radios[i].checked = true
-        }
-        var files = document.getElementsByClassName('downloads_download_type_file_config');
-        for (var i = 0; i < files.length; i++) {
-            files[i].style.display = '';
-        }
-        var urls = document.getElementsByClassName('downloads_download_type_url_config');
-        for (var i = 0; i < urls.length; i++) {
-            urls[i].style.display = 'none';
-        }
+        cx.jQuery('.downloads_download_type_file_config').css('display', 'block');
+        cx.jQuery('.downloads_download_type_url_config').css('display', 'none');
     } else if (source === 'url') {
-        var radios = document.querySelectorAll('[name^="downloads_download_type"][value="url"]');
-        for (var i = 0; i < radios.length; i++) {
-            radios[i].checked = true
-        }
-        var files = document.getElementsByClassName('downloads_download_type_file_config');
-        for (var i = 0; i < files.length; i++) {
-            files[i].style.display = 'none';
-        }
-        var urls = document.getElementsByClassName('downloads_download_type_url_config');
-        for (var i = 0; i < urls.length; i++) {
-            urls[i].style.display = '';
-        }
+        cx.jQuery('.downloads_download_type_file_config').css('display', 'none');
+        cx.jQuery('.downloads_download_type_url_config').css('display', 'block');
     }
 }
 
