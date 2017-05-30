@@ -1120,9 +1120,18 @@ JS_CODE;
 
             $this->objTemplate->setVariable(array(
                 'TXT_DOWNLOADS_' . $variablePrefix .'FILES'       => $_ARRAYLANG['TXT_DOWNLOADS_FILES'],
-                'TXT_DOWNLOADS_' . $variablePrefix .'DOWNLOAD'    => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD'],
                 'TXT_DOWNLOADS_' . $variablePrefix .'DOWNLOADS'   => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']
             ));
+
+            // The following language-placeholder is available in template
+            // block downloads_file_list as well as in downloads_file.
+            // As a result of that, we must only parse it in downloads_file_list
+            // in case the placeholder is actually in use in the template.
+            $downloadsTxtKey = 'TXT_DOWNLOADS_' . $variablePrefix .'DOWNLOAD';
+            $placeholders = $this->objTemplate->getPlaceholderList('downloads_' . strtoupper($variablePrefix) . 'file_list');
+            if (in_array($downloadsTxtKey, $placeholders)) {
+                $this->objTemplate->setVariable($downloadsTxtKey, $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD']);
+            }
 
             $this->objTemplate->parse('downloads_' . strtoupper($variablePrefix) . 'file_list');
         }
