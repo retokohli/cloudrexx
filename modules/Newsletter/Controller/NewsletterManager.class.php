@@ -668,7 +668,7 @@ class NewsletterManager extends NewsletterLib
                         $this->_impTpl->setVariable(array(
                             'NEWS_CATEGORY_NAME' => $objNews->fields['name']
                         ));
-                        if($current_category == $objNews->fields['catid'])
+                        if($current_category == $objNews->fields['catid'] && $this->_impTpl->blockExists('news_category'))
                             $this->_impTpl->hideBlock("news_category");
                         $current_category = $objNews->fields['catid'];
                         $newsid         = $objNews->fields['newsid'];
@@ -3681,7 +3681,7 @@ class NewsletterManager extends NewsletterLib
                     'NEWS_CATEGORY_NAME' => contrexx_raw2xhtml($objNews->fields['catname']),
                     'NEWS_CATEGORY_ID' => $objNews->fields['catid'],
                 ));
-                if($current_category == $objNews->fields['catid'])
+                if($current_category == $objNews->fields['catid'] && $this->_objTpl->blockExists('news_category'))
                     $this->_objTpl->hideBlock("news_category");
                 $current_category = $objNews->fields['catid'];
 // TODO: Unused
@@ -3783,7 +3783,7 @@ class NewsletterManager extends NewsletterLib
                         $this->_objTpl->setVariable(array(
                             'NEWS_CATEGORY_NAME' => $objNews->fields['name']
                         ));
-                        if($current_category == $objNews->fields['catid'])
+                        if($current_category == $objNews->fields['catid'] && $this->_objTpl->blockExists('news_category'))
                             $this->_objTpl->hideBlock("news_category");
                         $current_category = $objNews->fields['catid'];
                         $newsid         = $objNews->fields['newsid'];
