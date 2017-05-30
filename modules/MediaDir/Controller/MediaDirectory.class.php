@@ -781,24 +781,36 @@ class MediaDirectory extends MediaDirectoryLibrary
             return;
         }
 
+        $latest = false;
+        $limit = $this->arrSettings['settingsPagingNumEntries'];
+        $offset = null;
         $formId = null;
         $categoryId = null;
         $levelId = null;
 
-        $filter = MediaDirectoryLibrary::fetchMediaDirListFiltersFromTemplate($this->moduleNameLC.'RelatedList', $this->_objTpl, null, $intCategoryId, $intLevelId);
+        $config = MediaDirectoryLibrary::fetchMediaDirListConfigFromTemplate($this->moduleNameLC.'RelatedList', $this->_objTpl, null, $intCategoryId, $intLevelId);
 
-        if (isset($filter['form'])) {
-            $formId = $filter['form'];
+        if (isset($config['list']['latest'])) {
+            $latest = $config['list']['latest'];
         }
-        if (isset($filter['category'])) {
-            $categoryId = $filter['category'];
+        if (isset($config['list']['limit'])) {
+            $limit = $config['list']['limit'];
         }
-        if (isset($filter['level'])) {
-            $levelId = $filter['level'];
+        if (isset($config['list']['offset'])) {
+            $offset = $config['list']['offset'];
+        }
+        if (isset($config['filter']['form'])) {
+            $formId = $config['filter']['form'];
+        }
+        if (isset($config['filter']['category'])) {
+            $categoryId = $config['filter']['category'];
+        }
+        if (isset($config['filter']['level'])) {
+            $levelId = $config['filter']['level'];
         }
 
         // fetch related entries
-        $objEntry->getEntries(null, $levelId, $categoryId, null, null, null, true, null, $this->arrSettings['settingsPagingNumEntries'], null, null, $formId);
+        $objEntry->getEntries(null, $levelId, $categoryId, null, $latest, null, true, $offset, $limit, null, null, $formId);
 
         // remove currently parsed entry
         unset($objEntry->arrEntries[$intEntryId]);
@@ -962,39 +974,63 @@ class MediaDirectory extends MediaDirectoryLibrary
      * Parse entries in template block mediadirList of supplied template object $template.
      * If $block is set, then the template block identifined by $block will be parsed
      * instead of mediadirList.
-     * Using $filter the entries to be parsed can be filtered by form, category and/or level
+     * Using $config the entries to be parsed can be filtered by form, category and/or level
      * association.
      * @param   \Cx\Core\Html\Sigma $template   Template object to be used for parsing
      * @param   string  $block  The template block to be parsed. If not set, the template block mediadirList will be parsed.
-     * @param   array   $filter Filter the entries to be parsed by form, category and/or level association. Schema:
-     *                          array(
-     *                                  'form'     => <form-id>,
-     *                                  'category' => <category-id>,
-     *                                  'level'    => <level-id>
-     *                          )
+     * @param   array   $config Filter the entries to be parsed by form,
+     *                          category and/or level association.
+     *                          Additionally, the order of the listing can be
+     *                          set according to the latest additions.
+     *                          Further, the listing can be limited to a
+     *                          specific amount of entries. Schema:
+     *                  <pre>array(
+     *                      'list' => array(
+     *                           'latest' => <true|false>,
+     *                           'limit' => <limit>,
+     *                           'offset' => <offset>
+     *                      ),
+     *                      'filter' => array(
+     *                           'form' => <form-id>,
+     *                           'category' => <category-id>,
+     *                           'level' => <level-id>
+     *                      )
+     *                  )</pre>
      */
-    public function parseEntries($template, $block = '', $filter = array()) {
+    public function parseEntries($template, $block = '', $config = array()) {
         $objEntry = new MediaDirectoryEntry($this->moduleName);
 
+        $latest = false;
+        $limit = $this->arrSettings['settingsPagingNumEntries'];
+        $offset = null;
         $formId = null;
         $categoryId = null;
         $levelId = null;
 
-        if (isset($filter['form'])) {
-            $formId = $filter['form'];
+        if (isset($config['list']['latest'])) {
+            $latest = $config['list']['latest'];
         }
-        if (isset($filter['category'])) {
-            $categoryId = $filter['category'];
+        if (isset($config['list']['limit'])) {
+            $limit = $config['list']['limit'];
         }
-        if (isset($filter['level'])) {
-            $levelId = $filter['level'];
+        if (isset($config['list']['offset'])) {
+            $offset = $config['list']['offset'];
+        }
+        if (isset($config['filter']['form'])) {
+            $formId = $config['filter']['form'];
+        }
+        if (isset($config['filter']['category'])) {
+            $categoryId = $config['filter']['category'];
+        }
+        if (isset($config['filter']['level'])) {
+            $levelId = $config['filter']['level'];
         }
 
         if (empty($block)) {
             $block = $this->moduleNameLC.'List';
         }
 
-        $objEntry->getEntries(null, $levelId, $categoryId, null, null, null, true, null, $this->arrSettings['settingsPagingNumEntries'], null, null, $formId);
+        $objEntry->getEntries(null, $levelId, $categoryId, null, $latest, null, true, $offset, $limit, null, null, $formId);
         $objEntry->setStrBlockName($block);
         $objEntry->listEntries($template, 2);
     }
@@ -1387,11 +1423,40 @@ class MediaDirectory extends MediaDirectoryLibrary
             foreach ($this->arrNavtree as $key => $strName) {
                 $strClass = $i == $count -1 ? 'last' : '';
                 $strSeparator = $i == 0 ? '' : '&gt;';
+                $url = '';
+                $title = '';
 
+                // Note: the following is a workaround as the array
+                // $this->arrNavtree does not contain normalized data,
+                // but instead already the processed HTML-links.
+                //
+                // Load HTML code of navtree element into a DOMDocument
+                $domDocument = \DOMDocument::loadHTML($strName);
+                if ($domDocument) {
+                    // fetch link tags
+                    $nodeList = $domDocument->getElementsByTagName('a');
+
+                    // check if the navtree element was an actual HTML-link
+                    if ($nodeList->length) {
+                        // as the HTML-code did only contain one link element,
+                        // the first one (index 0) will be our navtree element
+                        $item = $nodeList->item(0);
+                        if ($item) {
+                            $url = $item->getAttribute('href');
+                            $title = $item->textContent;
+                        }
+                    } else {
+                        // in case the navtree element was not a HTML-link,
+                        // we shall only set the TITLE placeholder
+                        $title = $strName;
+                    }
+                }
                 $template->setVariable(array(
-                    $this->moduleLangVar.'_NAVTREE_LINK'    =>  $strName,
-                    $this->moduleLangVar.'_NAVTREE_LINK_CLASS'    =>  $strClass,
-                    $this->moduleLangVar.'_NAVTREE_SEPARATOR'    =>  $strSeparator
+                    $this->moduleLangVar.'_NAVTREE_LINK'        =>  $strName,
+                    $this->moduleLangVar.'_NAVTREE_LINK_SRC'    =>  $url,
+                    $this->moduleLangVar.'_NAVTREE_LINK_TITLE'  =>  $title,
+                    $this->moduleLangVar.'_NAVTREE_LINK_CLASS'  =>  $strClass,
+                    $this->moduleLangVar.'_NAVTREE_SEPARATOR'   =>  $strSeparator
                 ));
 
                 $i++;

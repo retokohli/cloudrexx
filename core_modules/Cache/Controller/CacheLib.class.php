@@ -211,7 +211,9 @@ class CacheLib
         if ($this->isInstalled(self::CACHE_ENGINE_ZEND_OPCACHE)) {
             ini_set('opcache.save_comments', 1);
             ini_set('opcache.load_comments', 1);
-            @ini_set('opcache.enable', 1);
+            if (!ini_get('opcache.enable')) {
+                @ini_set('opcache.enable', 1);
+            }
 
             if (
                 !$this->isActive(self::CACHE_ENGINE_ZEND_OPCACHE) ||
@@ -666,7 +668,10 @@ class CacheLib
                 }
                 return true;
             case self::CACHE_ENGINE_ZEND_OPCACHE:
-                return ini_get('opcache.save_comments') && ini_get('opcache.load_comments');
+                // opcache.load_comments no longer exists since PHP7
+                // therefore, ini_get() will return FALSE in case the
+                // php directive does not exist
+                return ini_get('opcache.save_comments') && (ini_get('opcache.load_comments') === false || ini_get('opcache.load_comments'));
             case self::CACHE_ENGINE_MEMCACHE:
                 return $this->memcache ? true : false;
             case self::CACHE_ENGINE_MEMCACHED:

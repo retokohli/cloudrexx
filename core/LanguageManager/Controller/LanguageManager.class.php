@@ -1141,7 +1141,7 @@ class LanguageManager
                     $alias = $pageRepo->findBy(array(
                         'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS,
                         'slug' => $languageCode,
-                    ), true);
+                    ), null, null, null, true);
 
                     if (count($alias)) {
                         if (is_array($alias)) $alias = $alias[0];
