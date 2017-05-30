@@ -1435,12 +1435,20 @@ class MediaDirectory extends MediaDirectoryLibrary
                 if ($domDocument) {
                     // fetch link tags
                     $nodeList = $domDocument->getElementsByTagName('a');
-                    // as the HTML-code did only contain one link element,
-                    // the first one (index 0) will be our navtree element
-                    $item = $nodeList->item(0);
-                    if ($item) {
-                        $url = $item->getAttribute('href');
-                        $title = $item->textContent;
+
+                    // check if the navtree element was an actual HTML-link
+                    if ($nodeList->length) {
+                        // as the HTML-code did only contain one link element,
+                        // the first one (index 0) will be our navtree element
+                        $item = $nodeList->item(0);
+                        if ($item) {
+                            $url = $item->getAttribute('href');
+                            $title = $item->textContent;
+                        }
+                    } else {
+                        // in case the navtree element was not a HTML-link,
+                        // we shall only set the TITLE placeholder
+                        $title = $strName;
                     }
                 }
                 $template->setVariable(array(
