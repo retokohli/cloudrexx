@@ -1246,6 +1246,11 @@ class User extends User_Profile
             // parse filter arguments (generate SQL statements)
             foreach ($filterArguments as $argument) {
                 $filterConditions = $this->parseFilterConditions($argument, $tblCoreAttributes, $tblGroup, $customAttributeJoins, $groupTables);
+
+                // don't add empty arguments to SQL query (through $arrConditions)
+                if (!$filterConditions) {
+                    continue;
+                }
                 $arrConditions[] = implode(' AND ', $filterConditions);
             }
 
