@@ -220,7 +220,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         } else {
             $cacheFileUserRegex = '(?:_u0|)';
         }
-        $cacheFileRegex = '/([0-9a-f]{32})_([0-9]+' . $cacheFileUserRegex . ')?$/';
+        $cacheFileRegex = '/([0-9a-f]{32})_(([0-9]+)' . $cacheFileUserRegex . ')?$/';
         $files = preg_grep(
             $cacheFileRegex,
             $files
