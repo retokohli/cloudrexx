@@ -242,6 +242,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             // load headers
             $matches = array();
             preg_match($cacheFileRegex, $file, $matches);
+            // @todo: Make header cache user based
             $headerFile = $this->strCachePath . $matches[1] . '_h' . $matches[2];
             if (file_exists($headerFile)) {
                 $headers = unserialize(file_get_contents($headerFile));
@@ -276,6 +277,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             $endcode = file_get_contents($file);
 
             echo $this->internalEsiParsing($endcode, true);
+            $parsingTime = $cx->stopTimer();
+            \DBG::log("(Cx: {$cx->getId()}) Request parsing completed after $parsingTime (from cache)");
             exit;
         } else {
             $headerFile = new \Cx\Lib\FileSystem\File($headerFile);
@@ -443,6 +446,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             $File = new \Cx\Lib\FileSystem\File($handleFile);
             $File->write(serialize($headers));
         }
+        \DBG::log('Writing cache file "' . $this->strCacheFilename . '_' . $pageId . $user . ' for request info:');
+        \DBG::dump($this->arrPageContent);
         // write page cache file
         $handleFile = $this->strCachePath . $this->strCacheFilename . '_' . $pageId . $user;
         $File = new \Cx\Lib\FileSystem\File($handleFile);
@@ -522,8 +527,11 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                         )
                     )
                 ) {
+                    \DBG::dump($matches[1]);
+                    \DBG::dump($cacheFile);
                     return file_get_contents($this->strCachePath . $cacheFile);
                 } else {
+                    \DBG::msg('Drop expired cached file ' . $this->strCachePath . $cacheFile);
                     $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
                     $file->delete();
                 }
