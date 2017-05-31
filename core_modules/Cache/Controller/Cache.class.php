@@ -223,7 +223,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         // sort out false-positives (header and ESI cache files)
         $cacheFileUserRegex = '';
         if (isset($_COOKIE[session_name()])) {
-            $cacheFileUserRegex = '(?:_u(?:' . preg_quote($_COOKIE[session_name()]) . '))?';
+            $cacheFileUserRegex = '(?:_u(?:' . preg_quote($_COOKIE[session_name()]) . ')?)';
         } else {
             $cacheFileUserRegex = '(?:_u0|)';
         }
