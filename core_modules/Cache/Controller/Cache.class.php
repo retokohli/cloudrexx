@@ -564,6 +564,19 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 $content = $this->getApiResponseForUrl($matches[1]);
 
                 if ($settings['internalSsiCache'] == 'on') {
+                    // back-replace ESI variables that are url encoded
+                    foreach ($this->dynVars as $groupName=>$vars) {
+                        if (is_callable($vars)) {
+                            $esiPlaceholder = '$(' . $groupName . ')';
+                            $content = str_replace(urlencode($esiPlaceholder), $esiPlaceholder, $content);
+                        } else {
+                            foreach ($vars as $varName=>$url) {
+                                $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
+                                $content = str_replace(urlencode($esiPlaceholder), $esiPlaceholder, $content);
+                            }
+                        }
+                    }
+
                     $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
                     $file->write($content);
                 }
