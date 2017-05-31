@@ -512,10 +512,10 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
                 if (
                     (
-                        $expireTimestamp && $expireTimestamp > time()
+                        $expireTimestamp >= 0 && $expireTimestamp > time()
                     ) ||
                     (
-                        !$expireTimestamp && filemtime(
+                        $expireTimestamp < 0 && filemtime(
                             $this->strCachePath . $cacheFile
                         ) > (
                             time() - $this->intCachingTime
