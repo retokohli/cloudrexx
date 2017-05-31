@@ -550,7 +550,7 @@ class Customer extends \User
      * is sent after paying with some external PSP that uses some form of
      * instant payment notification (i.e. PayPal)!
      * In that case, it is *NOT* included in the template produced.
-     * Call {@see Shop::sendLogin()} while processing the Order instead.
+     *
      * @return    array               The Customer data substitution array
      * @see       MailTemplate::substitute()
      */

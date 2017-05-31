@@ -1825,8 +1825,13 @@ class User extends User_Profile
      * It used the old mail function
      *
      * @param string $generatedPassword
+     *
+     * @return boolean Returns true if mail sent successfully otherwise false
      */
-    protected function sendUserAccountInvitationMail($generatedPassword) {
+    public function sendUserAccountInvitationMail($generatedPassword)
+    {
+        global $_LANGID;
+
         $objUserMail = \FWUser::getFWUserObject()->getMail();
         if (
             (
@@ -1879,7 +1884,7 @@ class User extends User_Profile
 
             $objMail->AddAddress($this->getEmail());
 
-            $objMail->Send();
+            return $objMail->Send();
         }
     }
 

@@ -3769,8 +3769,10 @@ die("Shop::processRedirect(): This method is obsolete!");
         // Send the Customer login separately, as the password possibly
         // won't be available later
         if (!empty($_SESSION['shop']['password'])) {
-            self::sendLogin(
-                self::$objCustomer->email(), $_SESSION['shop']['password']);
+            $user = \FWUser::getFWUserObject()->objUser->getUsers(
+                array('email' => static::$objCustomer->email())
+            );
+            $user->sendUserAccountInvitationMail($_SESSION['shop']['password']);
         }
         // Show payment processing page.
         // Note that some internal payments are redirected away
@@ -3913,12 +3915,11 @@ die("Shop::processRedirect(): This method is obsolete!");
             if (empty($_POST['shopCurrentPassword'])) {
                 return \Message::error($_ARRAYLANG['TXT_SHOP_ENTER_CURRENT_PASSWORD']);
             }
-            $password_old = contrexx_input2raw($_POST['shopCurrentPassword']);
             $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
                 ->getComponent('Access');
             if (
                 !$accessController->checkPassword(
-                    $password_old,
+                    contrexx_input2raw($_POST['shopCurrentPassword']),
                     self::$objCustomer->password()
                 )
             ) {
@@ -3955,44 +3956,6 @@ die("Shop::processRedirect(): This method is obsolete!");
         return false;
     }
 
-
-    /**
-     * Sends the Customer login data
-     *
-     * Note that this only works as expected *after* the Customer has logged
-     * in, but *before* the Customer is redirected to an online payment service
-     * provider, as the session usually gets lost in the process.
-     * So, it's best to call this right after storing the Order, before the
-     * payment transaction is started.
-     * @param   string   $email     The e-mail address
-     * @param   string   $password  The password
-     * @return  boolean             True on success, false otherwise
-     */
-    static function sendLogin($email, $password)
-    {
-        global $_ARRAYLANG;
-
-        $objCustomer = new Customer();
-        $objCustomer = $objCustomer->getUsers(array('email' => $email));
-        if (!$objCustomer || $objCustomer->EOF) {
-            return \Message::error($_ARRAYLANG['TXT_SHOP_NO_ACCOUNT_WITH_EMAIL']);
-        }
-        $arrSubstitution =
-              $objCustomer->getSubstitutionArray()
-            + self::getSubstitutionArray();
-        if (!$arrSubstitution) return false;
-        $arrSubstitution['CUSTOMER_LOGIN'][0]['CUSTOMER_PASSWORD'] = $password;
-        // Defaults to FRONTEND_LANG_ID
-        $arrMailTemplate = array(
-            'section' => 'Shop',
-            'key' => 'customer_login',
-            'substitution' => &$arrSubstitution,
-            'to' => $objCustomer->email(),
-        );
-        return \Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate);
-    }
-
-
     /**
      * Shows the form for entering the e-mail address
      *
@@ -4014,7 +3977,10 @@ die("Shop::processRedirect(): This method is obsolete!");
                 \Message::error($_ARRAYLANG['TXT_SHOP_UNABLE_SET_NEW_PASSWORD']);
                 break;
             }
-            if (!self::sendLogin($email, $password)) {
+            $user = \FWUser::getFWUserObject()->objUser->getUsers(
+                array('email' => $email)
+            );
+            if (!$user->sendUserAccountInvitationMail($password)) {
                 \Message::error($_ARRAYLANG['TXT_SHOP_UNABLE_TO_SEND_EMAIL']);
                 break;
             }

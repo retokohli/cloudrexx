@@ -3099,23 +3099,10 @@ if ($test === NULL) {
         }
         \Message::ok($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
         if (isset($_POST['sendlogindata'])) {
-// TODO: Use a common sendLogin() method
-            $lang_id = $objCustomer->getFrontendLanguage();
-            $arrSubs = $objCustomer->getSubstitutionArray();
-            $arrSubs['CUSTOMER_LOGIN'] = array(0 => array(
-                'CUSTOMER_USERNAME' => $username,
-                'CUSTOMER_PASSWORD' => $password,
-            ));
-//DBG::log("Subs: ".var_export($arrSubs, true));
-            // Select template for sending login data
-            $arrMailTemplate = array(
-                'key' => 'customer_login',
-                'section' => 'Shop',
-                'lang_id' => $lang_id,
-                'to' => $email,
-                'substitution' => $arrSubs,
+            $user = \FWUser::getFWUserObject()->objUser->getUsers(
+                array('email' => $email)
             );
-            if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
+            if (!$user->sendUserAccountInvitationMail($password)) {
                 \Message::warning($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
                 return $objCustomer->id();
             }
