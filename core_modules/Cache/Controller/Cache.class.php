@@ -86,6 +86,11 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
     {
         global $_CONFIG;
 
+        if ($_CONFIG['cacheEnabled'] == 'off') {
+            $this->boolIsEnabled = false;
+            return;
+        }
+
         // in case the request's origin is from a mobile devie
         // and this is the first request (the InitCMS object wasn't yet
         // able to determine of the mobile device wishes to be served
@@ -96,17 +101,19 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             !isset($_REQUEST['smallscreen'])
         );
 
-        if ($_CONFIG['cacheEnabled'] == 'off') {
-            $this->boolIsEnabled = false;
-            return;
-        }
-
         if (isset($_REQUEST['caching']) && $_REQUEST['caching'] == '0') {
             $this->boolIsEnabled = false;
             return;
         }
 
+        // @todo: A component should have a possibility to add caching exceptions
         if (isset($_GET['templateEditor']) && $_GET['templateEditor'] == 1) {
+            $this->boolIsEnabled = false;
+            return;
+        }
+
+        // @todo: A component should have a possibility to add caching exceptions
+        if (isset($_GET['pagePreview'])) {
             $this->boolIsEnabled = false;
             return;
         }
