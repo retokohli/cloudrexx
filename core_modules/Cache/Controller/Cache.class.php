@@ -320,12 +320,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
             // all the following exceptions are TEMPORARY and only necessary
             // due to non-proper implementation of caching mechanisms
-            
-            // do not cache if a user is logged in (since we can't handle user based ESI caches yet)
-            function ($cx, $page) {
-                return session_id() != '' &&
-                    \FWUser::getFWUserObject()->objUser->login();
-            },
 
             // do not cache if uploader is in use (since its ID will get cached otherwise)
             function ($cx, $page) {
