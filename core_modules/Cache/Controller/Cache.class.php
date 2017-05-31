@@ -296,9 +296,14 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
     {
         // back-replace ESI variables that are url encoded
         foreach ($this->dynVars as $groupName=>$vars) {
-            foreach ($vars as $varName=>$url) {
-                $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
+            if (is_callable($vars)) {
+                $esiPlaceholder = '$(' . $groupName . ')';
                 $endcode = str_replace(urlencode($esiPlaceholder), $esiPlaceholder, $endcode);
+            } else {
+                foreach ($vars as $varName=>$url) {
+                    $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
+                    $endcode = str_replace(urlencode($esiPlaceholder), $esiPlaceholder, $endcode);
+                }
             }
         }
         
