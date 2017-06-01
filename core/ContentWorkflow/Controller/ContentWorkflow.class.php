@@ -428,13 +428,15 @@ class ContentWorkflow extends \Module {
 
         $this->restorePage($node, $currentPage, $logs);
 
-        $logsRemove = $this->logRepo->getLogsByAction('remove');
-        foreach ($logsRemove as $logRemove) {
-            $arrData = $this->revertPage($logRemove->getObjectId());
-            $page    = $arrData['page'];
-            $logs    = $arrData['logs'];
-            if ($page->getNodeIdShadowed() == $nodeIdShadowed) {
-                $this->restorePage($node, $page, $logs);
+        if ($nodeIdShadowed !== null) {
+            $logsRemove = $this->logRepo->getLogsByAction('remove');
+            foreach ($logsRemove as $logRemove) {
+                $arrData = $this->revertPage($logRemove->getObjectId());
+                $page    = $arrData['page'];
+                $logs    = $arrData['logs'];
+                if ($page->getNodeIdShadowed() == $nodeIdShadowed) {
+                    $this->restorePage($node, $page, $logs);
+                }
             }
         }
 
