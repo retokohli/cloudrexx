@@ -116,10 +116,23 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                 $langMatches
             )
         ) {
-            $langId = \FWLanguage::getLanguageIdByCode($langMatches[1]);
+            // make iso1 part of code lowercase (e.g DE-CH --> de-CH)
+            $code = explode('-', $langMatches[1]);
+            $code[0] = strtolower($code[0]);
+            $code = implode('-', $code);
+
+            $locale = $this->cx->getDb()->getEntityManager()
+                ->getRepository('\Cx\Core\Locale\Model\Entity\Locale')
+                ->findOneByCode($code);
+
+            // return early and don't set variable if locale doesn't exist
+            if (!$locale) {
+                return;
+            }
+
             $template->setVariable(
                 $name,
-                $navbar->getLanguageLinkById($page, $langId)
+                $navbar->getLanguageLinkById($page, $locale->getId())
             );
         }
     }
