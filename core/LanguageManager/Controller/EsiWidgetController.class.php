@@ -70,7 +70,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         if ($name == 'ACTIVE_LANGUAGE_NAME') {
             $template->setVariable(
                 $name,
-                \FWLanguage::getLanguageCodeById($params['lang'])
+                $params['locale']->getShortForm()
             );
             return;
         }
@@ -84,7 +84,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             )
         ) {
             $selected = '';
-            $langCode = \FWLanguage::getLanguageCodeById($params['lang']);
+            $langCode = $params['locale']->getShortForm();
             if ($matches[1] === strtoupper($langCode)) {
                 $selected = 'selected';
             }
