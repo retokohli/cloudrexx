@@ -298,7 +298,9 @@ class EsiWidget extends Widget {
                         $esiVarValue = $this->cx->getPage()->getId();
                         break;
                     case static::ESI_VAR_NAME_LANG:
-                        $esiVarValue = \FWLanguage::getLanguageCodeById(
+                        $esiVarValue = $this->getComponent(
+                            'Locale'
+                        )->getLocaleCode(
                             $this->cx->getPage()->getLang()
                         );
                         break;

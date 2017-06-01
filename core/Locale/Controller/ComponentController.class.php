@@ -87,4 +87,19 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array('JsonLocaleController');
     }
 
+    /**
+     * JsonAdapter method to return the locale code
+     * @param integer $localeId The locale's ID
+     * @return string Combination of iso1 and alpha2 code
+     */
+    public function getLocaleCode($localeId) {
+        $locale = $this->cx
+            ->getDb()->getEntityManager()
+            ->find('Cx\Core\Locale\Model\Entity\Locale', $localeId);
+        if (!$locale) {
+            return '';
+        }
+        return $locale->getShortForm();
+    }
+
 }
