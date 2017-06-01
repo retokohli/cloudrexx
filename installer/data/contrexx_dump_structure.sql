@@ -35,6 +35,7 @@ CREATE TABLE `contrexx_access_user_attribute` (
   `order_id` int(10) unsigned NOT NULL DEFAULT '0',
   `access_special` enum('','menu_select_higher','menu_select_lower') NOT NULL DEFAULT '',
   `access_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `read_access_id` int(10) unsigned NOT NULL DEFAULT '0'
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_access_user_attribute_name` (
@@ -58,6 +59,7 @@ CREATE TABLE `contrexx_access_user_core_attribute` (
   `order_id` int(10) unsigned NOT NULL DEFAULT '0',
   `access_special` enum('','menu_select_higher','menu_select_lower') NOT NULL DEFAULT '',
   `access_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `read_access_id` int(10) unsigned NOT NULL DEFAULT '0'
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_user_groups` (
