@@ -105,8 +105,10 @@ class LocaleRepository extends EntityRepository
         }
         $criteria = array(
             'iso1' => $matches[1], // [a-z]{1,2}
-            'country' => $matches[2] // [A-Z]{2,4}
         );
+        if (isset($matches[2])) {
+            $criteria['country'] = $matches[2]; // [A-Z]{2,4}
+        }
         $locale = parent::findOneBy($criteria);
         return $locale;
     }
