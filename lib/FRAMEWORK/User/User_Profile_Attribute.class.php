@@ -69,21 +69,21 @@ class User_Profile_Attribute
      *
      * @var integer
      */
-    private $readAccessId;
+    protected $readAccessId;
 
     /**
      * Read Group access ids
      *
      * @var array
      */
-    private $readAccessGroupIds;
+    protected $readAccessGroupIds;
 
     /**
      * Read protection status(1 or 0)
      *
      * @var boolean
      */
-    private $readProtected;
+    protected $readProtected;
 
     private $arrAttributeTree;
     private $arrAttributeRelations;

@@ -868,17 +868,6 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                         $objUser->objAttribute->getId()
                     );
 
-                    if (
-                        $objAttribute->isReadProtected() &&
-                        !in_array(
-                            $objAttribute->getReadAccessId(),
-                            $objUser->getDynamicPermissionIds()
-                        )
-                    ) {
-                        $objUser->objAttribute->next();
-                        continue;
-                    }
-
                     $placeholderName  = strtoupper($objUser->objAttribute->getId());
                     $searchTerms[]    = '[[USER_' . $placeholderName . ']]';
                     $placeholderValue = $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, true);
