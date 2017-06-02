@@ -662,22 +662,23 @@ class Download {
             $arrSelectLocaleExpressions = array_keys($this->arrAttributes['locale']);
         }
 
-        if (count($arrSelectLocaleExpressions) || $arrQuery['tables']['locale']) {
-            $arrQuery['conditions'][] = 'tblL.`lang_id` = '.LANG_ID;
-        }
+        array_walk($arrSelectLocaleExpressions, array($this, 'walkDownloadQueryFunctions'));
 
-        $query = 'SELECT DISTINCT tblD.`'.implode('`, tblD.`', $arrSelectCoreExpressions).'`'
-            .(count($arrSelectLocaleExpressions) ? ', tblL.`'.implode('`, tblL.`', $arrSelectLocaleExpressions).'`' : '')
-            .'FROM `'.DBPREFIX.'module_downloads_download` AS tblD'
-            .(count($arrSelectLocaleExpressions) || $arrQuery['tables']['locale'] ? ' INNER JOIN `'.DBPREFIX.'module_downloads_download_locale` AS tblL ON tblL.`download_id` = tblD.`id`' : '')
-            .($arrQuery['tables']['category'] ? (
-                ' INNER JOIN `'.DBPREFIX.'module_downloads_rel_download_category` AS tblRC ON tblRC.`download_id` = tblD.`id`')
-                .($this->isFrontendMode ? ' INNER JOIN `'.DBPREFIX.'module_downloads_category` AS tblC ON tblC.`id` = tblRC.`category_id`' : '')
+        $query = 'SELECT DISTINCT tblD.`' . implode('`, tblD.`', $arrSelectCoreExpressions) . '`'
+            . (count($arrSelectLocaleExpressions) ? ', ' . implode(', ', $arrSelectLocaleExpressions) . ' ' : '')
+            . 'FROM `' . DBPREFIX . 'module_downloads_download` AS tblD'
+            . (count($arrSelectLocaleExpressions) || $arrQuery['tables']['locale'] ?
+                ' LEFT JOIN `' . DBPREFIX . 'module_downloads_download_locale` AS tblL ON tblL.`download_id` = tblD.`id` AND tblL.`lang_id` = ' . LANG_ID
+                . ' LEFT JOIN `' . DBPREFIX . 'module_downloads_download_locale` AS tblL2 ON tblL2.`download_id` = tblD.`id` AND tblL.`name` IS NULL'
                 : '')
-            .($arrQuery['tables']['download'] ? ' INNER JOIN `'.DBPREFIX.'module_downloads_rel_download_download` AS tblR ON (tblR.`id1` = tblD.`id` OR tblR.`id2` = tblD.`id`)' : '')
-            .(count($arrQuery['conditions']) ? ' WHERE ('.implode(') AND (', $arrQuery['conditions']).')' : '')
+            . ($arrQuery['tables']['category'] ? (
+                    ' INNER JOIN `' . DBPREFIX . 'module_downloads_rel_download_category` AS tblRC ON tblRC.`download_id` = tblD.`id`')
+                . ($this->isFrontendMode ? ' INNER JOIN `' . DBPREFIX . 'module_downloads_category` AS tblC ON tblC.`id` = tblRC.`category_id`' : '')
+                : '')
+            . ($arrQuery['tables']['download'] ? ' INNER JOIN `' . DBPREFIX . 'module_downloads_rel_download_download` AS tblR ON (tblR.`id1` = tblD.`id` OR tblR.`id2` = tblD.`id`)' : '')
+            . (count($arrQuery['conditions']) ? ' WHERE (' . implode(') AND (', $arrQuery['conditions']) . ')' : '')
             //.' GROUP BY tblD.`id`'
-            .(count($arrQuery['sort']) ? ' ORDER BY '.implode(', ', $arrQuery['sort']) : '');
+            . (count($arrQuery['sort']) ? ' ORDER BY ' . implode(', ', $arrQuery['sort']) : '');
 
         if (empty($limit)) {
             $objDownload = $objDatabase->Execute($query);
@@ -699,6 +700,11 @@ class Download {
             $this->clean();
             return false;
         }
+    }
+
+    protected function walkDownloadQueryFunctions(&$item, &$key)
+    {
+        $item = 'IF(tblL.' . $item . ' IS NULL, tblL2.' . $item . ', tblL.name) AS ' . $item;
     }
 
     private function getFilteredIdList($arrFilter = null, $search = null, $subCategories = false)
