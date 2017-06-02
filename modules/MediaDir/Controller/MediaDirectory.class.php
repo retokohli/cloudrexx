@@ -1537,7 +1537,21 @@ class MediaDirectory extends MediaDirectoryLibrary
         return $this->metaImage;
     }
 
+    /**
+     * Returns the metakeys
+     *
+     * If the metakeys come from an inputfield type like checkbox,
+     * which generate html code around the actual keywords,
+     * the html tags will be stripped and the keywords will be
+     * separated by comma
+     *
+     * @return string The meta keywords separated by comma
+     */
     public function getMetaKeys() {
-        return $this->metaKeys;
+        if ($this->metaKeys == strip_tags($this->metaKeys)) {
+            return $this->metaKeys;
+        }
+        // contains html code, actual values must be excluded
+        return str_replace(' ', ', ', strip_tags($this->metaKeys));
     }
 }
