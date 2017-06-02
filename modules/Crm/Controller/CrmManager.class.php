@@ -130,7 +130,9 @@ class CrmManager extends CrmLibrary
                 $_ARRAYLANG['TXT_CRM_SETTINGS']."</a>";
         }
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION", $contentNavigation);
+        if ($objTemplate instanceof \Cx\Core\Html\Sigma) {
+            $objTemplate->setVariable("CONTENT_NAVIGATION", $contentNavigation);
+        }
 
         $dispatcher = CrmEventDispatcher::getInstance();
         $default_handler = new \Cx\Modules\Crm\Model\Events\CrmDefaultEventHandler();
@@ -5858,6 +5860,7 @@ END;
      * @param array      $data        the data which are attached by uploader init method
      * @param integer    $uploadId    the upload id
      * @param array      $fileInfos   the file infos
+     * @param String     $response    the respose
      *
      * @return array the target paths
      */
@@ -5970,6 +5973,7 @@ END;
      * @param array      $data        the data which are attached by uploader init method
      * @param integer    $uploadId    the upload id
      * @param array      $fileInfos   the file infos
+     * @param String     $response    the respose
      *
      * @return array the target paths
      */
@@ -6043,6 +6047,7 @@ END;
      * @param array      $data        the data which are attached by uploader init method
      * @param integer    $uploadId    the upload id
      * @param array      $fileInfos   the file infos
+     * @param String     $response    the respose
      *
      * @return array the target paths
      */
