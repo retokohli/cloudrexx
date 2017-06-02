@@ -704,7 +704,7 @@ class Download {
 
     protected function walkDownloadQueryFunctions(&$item, &$key)
     {
-        $item = 'IF(tblL.' . $item . ' IS NULL, tblL2.' . $item . ', tblL.name) AS ' . $item;
+        $item = 'IF(tblL.' . $item . ' IS NULL, tblL2.' . $item . ', tblL.' . $item . ') AS ' . $item;
     }
 
     private function getFilteredIdList($arrFilter = null, $search = null, $subCategories = false)
