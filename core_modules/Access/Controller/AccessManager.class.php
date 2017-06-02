@@ -2819,6 +2819,20 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         return;
                     }
                 }
+                //Clear cache
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                $cx->getEvents()->triggerEvent(
+                    'clearEsiCache',
+                    array(
+                        'Widget',
+                        array(
+                            'access_currently_online_member_list',
+                            'access_last_active_member_list',
+                            'access_latest_registered_member_list',
+                            'access_birthday_member_list'
+                        )
+                    )
+                );
             } else {
                 self::$arrStatusMsg['error'][] = $objAttribute->getErrorMsg();
             }
@@ -3093,6 +3107,20 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     $_REQUEST['id'] = 0;
                     return $this->_configAttributes();
                 }
+                //Clear cache
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                $cx->getEvents()->triggerEvent(
+                    'clearEsiCache',
+                    array(
+                        'Widget',
+                        array(
+                            'access_currently_online_member_list',
+                            'access_last_active_member_list',
+                            'access_latest_registered_member_list',
+                            'access_birthday_member_list'
+                        )
+                    )
+                );
             } else {
                 self::$arrStatusMsg['error'][] = $objAttribute->getErrorMsg();
                 if ($objAttribute->getParent()) {
