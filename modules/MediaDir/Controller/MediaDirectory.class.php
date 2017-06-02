@@ -1552,6 +1552,12 @@ class MediaDirectory extends MediaDirectoryLibrary
             return $this->metaKeys;
         }
         // contains html code, actual values must be excluded
-        return str_replace(' ', ', ', strip_tags($this->metaKeys));
+        return preg_replace(
+            '/\s+/',
+            ', ',
+            trim(
+                preg_replace('/<[^>]+>/', ' ', $this->metaKeys)
+            )
+        );
     }
 }
