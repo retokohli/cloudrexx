@@ -368,10 +368,14 @@ function setActiveLanguage() {
     var langmenues = document.getElementsByClassName('langmenu');
     for (var i = 0; i < langmenues.length; i++) {
         var languages = langmenues[i].querySelectorAll('li a');
-        languages[0].className += ' active';
+        for (var j = 0; j < languages.length; j++) {
+            if (languages[j].style.display !== 'none') {
+                languages[j].className += ' active';
+                languages[j].click();
+                break;
+            }
+        }
     }
-    var langtabs = document.querySelectorAll('*[id^="downloadLanguage"]');
-    langtabs[0].style.display = 'block';
 }
 
 function swapHeaderLangName() {

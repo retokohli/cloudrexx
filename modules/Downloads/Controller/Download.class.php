@@ -662,12 +662,19 @@ class Download {
             $arrSelectLocaleExpressions = array_keys($this->arrAttributes['locale']);
         }
 
-        array_walk($arrSelectLocaleExpressions, array($this, 'walkDownloadQueryFunctions'));
+        if (count($arrSelectLocaleExpressions) && (!isset($filter) || (is_array($filter) && count($filter)))) {
+            array_walk($arrSelectLocaleExpressions, array($this, 'walkDownloadQueryFunctions'));
+        }
 
         $query = 'SELECT DISTINCT tblD.`' . implode('`, tblD.`', $arrSelectCoreExpressions) . '`'
-            . (count($arrSelectLocaleExpressions) ? ', ' . implode(', ', $arrSelectLocaleExpressions) . ' ' : '')
+            . (count($arrSelectLocaleExpressions) && (is_null($filter) || is_array($filter)) ?
+                ', ' . implode(', ', $arrSelectLocaleExpressions) . ' ' :
+                '')
             . 'FROM `' . DBPREFIX . 'module_downloads_download` AS tblD'
-            . (count($arrSelectLocaleExpressions) || $arrQuery['tables']['locale'] ?
+            . ((count($arrSelectLocaleExpressions) && (is_int($filter))) || $arrQuery['tables']['locale'] ?
+                ' INNER JOIN `' . DBPREFIX . 'module_downloads_download_locale` AS tblL ON tblL.`download_id` = tblD.`id` AND tblL.`lang_id` = ' . LANG_ID
+                : '')
+            . (count($arrSelectLocaleExpressions) && (is_null($filter) || (is_array($filter))) ?
                 ' LEFT JOIN `' . DBPREFIX . 'module_downloads_download_locale` AS tblL ON tblL.`download_id` = tblD.`id` AND tblL.`lang_id` = ' . LANG_ID
                 . ' LEFT JOIN `' . DBPREFIX . 'module_downloads_download_locale` AS tblL2 ON tblL2.`download_id` = tblD.`id` AND tblL.`name` IS NULL'
                 : '')
