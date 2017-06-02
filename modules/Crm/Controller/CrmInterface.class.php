@@ -141,7 +141,7 @@ class CrmInterface extends CrmLibrary
         \JS::registerJS('lib/javascript/jquery.tmpl.min.js');
         \JS::registerJS('lib/javascript/jquery.base64.js');
         \JS::registerJS('lib/javascript/jquery.format.js');
-        
+
         $objTpl = $this->_objTpl;
 
         $objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', "module_{$this->moduleNameLC}_interface_import_options.html");
@@ -166,9 +166,9 @@ class CrmInterface extends CrmLibrary
         $redirectUrl = \Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Crm&act=getImportFilename');
         $this->_objTpl->setVariable(array(
             'COMBO_UPLOADER_CODE' => $uploaderCode,
-	    'REDIRECT_URL'        => $redirectUrl
+        'REDIRECT_URL'        => $redirectUrl
         ));
-        
+
         $objTpl->setVariable(array(
             'TXT_CRM_TITLE_IMPORT_CONTACTS'         => $_ARRAYLANG['TXT_CRM_TITLE_IMPORT_CONTACTS'],
             'TXT_CRM_IMPORT_HEADER'                 => $_ARRAYLANG['TXT_CRM_IMPORT_HEADER'],
@@ -213,7 +213,7 @@ class CrmInterface extends CrmLibrary
 
     /**
      * used to fetch the csv data
-     * 
+     *
      * @return csvdata
      */
     function csvImport()
@@ -234,7 +234,7 @@ class CrmInterface extends CrmLibrary
             $first         = true;
             $objCsv        = new CrmCsv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
             $line          = $objCsv->NextLine();
-            while ($line) { 
+            while ($line) {
                 if ($first) {
                     $json['data']['contactHeader'] = $line;
                     $first = false;
@@ -387,12 +387,12 @@ class CrmInterface extends CrmLibrary
                 $where[] = " c.status = 1";
             break;
         }
-        
+
         //  Join where conditions
         $filter = '';
         if (!empty ($where))
             $filter = " WHERE ".implode(' AND ', $where);
-        
+
         $query = "SELECT
                            DISTINCT c.id,
                            c.customer_id,
@@ -506,16 +506,16 @@ class CrmInterface extends CrmLibrary
                     array_push($headerCsv, "{$_ARRAYLANG[$addressValue['lang_variable']]} ({$_ARRAYLANG[$addressType]})");
                 }
             }
-        }        
+        }
         $headerCsv[] = $_ARRAYLANG['TXT_CRM_DESCRIPTION'];
 
         $currDate = date('d_m_Y');
         header("Content-Type: text/comma-separated-values; charset:".CONTREXX_CHARSET, true);
         header("Content-Disposition: attachment; filename=\"Kundenstamm_$currDate.csv\"", true);
-        
+
         foreach ($headerCsv as $field) {
             print $this->_escapeCsvValue($field).$this->_csvSeparator;
-        }        
+        }
         print ("\r\n");
 
         if ($objResult) {
@@ -529,7 +529,7 @@ class CrmInterface extends CrmLibrary
                                 LEFT JOIN `".DBPREFIX."module_{$this->moduleNameLC}_membership_local` AS memloc
                                 ON (memloc.entry_id = mem.membership_id AND memloc.lang_id = {$_LANGID})
                               WHERE c.id = {$objResult->fields['id']}";
-                $objMember = $objDatabase->Execute($query); 
+                $objMember = $objDatabase->Execute($query);
                 while (!$objMember->EOF) {
                     array_push($membership, $objMember->fields['value']);
                     $objMember->MoveNext();
@@ -544,7 +544,7 @@ class CrmInterface extends CrmLibrary
                         print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['customer_id'])).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['cType'])).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['industryType']).$this->_csvSeparator;
-                        print $this->_escapeCsvValue($membership).$this->_csvSeparator;                        
+                        print $this->_escapeCsvValue($membership).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['currency'])).$this->_csvSeparator;
                         print $this->_escapeCsvValue($this->getUserName($objResult->fields['customer_addedby'])).$this->_csvSeparator;
                     break;
@@ -557,7 +557,7 @@ class CrmInterface extends CrmLibrary
                         print ($objResult->fields['contact_type'] == 2 ? $this->_escapeCsvValue($objResult->fields['contactCustomer']) : $this->_escapeCsvValue($objResult->fields['customer_name'])).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['customer_id'])).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['cType'])).$this->_csvSeparator;
-                        print $this->_escapeCsvValue($membership).$this->_csvSeparator;                        
+                        print $this->_escapeCsvValue($membership).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['currency'])).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['language']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($this->getEmail($objResult->fields['user_account'])).$this->_csvSeparator;
@@ -573,7 +573,7 @@ class CrmInterface extends CrmLibrary
                         print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['customer_id'])).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['cType'])).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['industryType']).$this->_csvSeparator;
-                        print $this->_escapeCsvValue($membership).$this->_csvSeparator;                        
+                        print $this->_escapeCsvValue($membership).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['currency'])).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['language']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($this->getEmail($objResult->fields['user_account'])).$this->_csvSeparator;
@@ -633,7 +633,7 @@ class CrmInterface extends CrmLibrary
                 }
                 foreach ($this->websiteProfileOptions as $proKey => $proValue) {
                     print (isset($result['contactwebsite'][$proKey]) ? $this->_escapeCsvValue($result['contactwebsite'][$proKey]) : '').$this->_csvSeparator;
-                } 
+                }
                 foreach ($this->socialProfileOptions as $socialKey => $socValue) {
                     if (!empty ($socValue)) {
                         print (isset($result['contactsocial'][$socialKey]) ? $this->_escapeCsvValue($result['contactsocial'][$socialKey]) : '').$this->_csvSeparator;
@@ -646,7 +646,7 @@ class CrmInterface extends CrmLibrary
                         }
                     }
                 }
-                
+
                 $description = str_replace("&nbsp;", " ", strip_tags(html_entity_decode($objResult->fields['notes'], ENT_QUOTES, CONTREXX_CHARSET)));
                 print $this->_escapeCsvValue(html_entity_decode($description, ENT_QUOTES, CONTREXX_CHARSET)).$this->_csvSeparator;
 
@@ -660,12 +660,13 @@ class CrmInterface extends CrmLibrary
     /**
      * Export all fields can be imported
      *
+     * @global array $_ARRAYLANG
      * @return array return all the import field options
      */
     function getImportOptions()
     {
         global $_ARRAYLANG;
-        
+
         $headerCsv = array(
             array("value" => "", "title"  => $_ARRAYLANG['TXT_CRM_NO_MATCHES_FROM_LIST'], "Header" => false),
             array("value" => "", "title"  => $_ARRAYLANG['TXT_CRM_DONT_IMPORT_FIELD'], "Header" => false),
@@ -680,7 +681,7 @@ class CrmInterface extends CrmLibrary
             array("value" => 'customerGroups', 'title' => $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'], 'Header' => false),
             array("value" => 'currency', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'], 'Header' => false),
             array("value" => 'customerId', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'], 'Header' => false),
-            array("value" => 'language', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'], 'Header' => false),            
+            array("value" => 'language', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'], 'Header' => false),
             array("value" => 'description', 'title' => $_ARRAYLANG['TXT_CRM_DESCRIPTION'], 'Header' => false),
             );
 
@@ -705,13 +706,14 @@ class CrmInterface extends CrmLibrary
                 }
             }
         }
+
         return $headerCsv;
     }
 
     /**
      * Save the data into crm
      *
-     * @global array $_ARRAYLANG     
+     * @global array $_ARRAYLANG
      *
      * @return Save the data into crm
      */
@@ -729,14 +731,14 @@ class CrmInterface extends CrmLibrary
         $objFWUser      = \FWUser::getFWUserObject();
 
         $_SESSION[$fileName] = array();
-        
+
         $importOptions = array_column($this->getImportOptions(), 'value');
         foreach ($_POST['crm_contact_option_base'] as $colId => $value) {
             if (!empty($value) && in_array($value, $importOptions)) {
                 ${$value} = $colId;
             }
         }
-        
+
         if (isset($firstname) || isset($lastname) || isset($company)) {
             $this->contact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
 
@@ -746,18 +748,18 @@ class CrmInterface extends CrmLibrary
             $totalLines    = 0;
             $importedLines = 0;
             $skipedLines   = 0;
-            while ($line) { 
+            while ($line) {
                 session_start();
                 $_SESSION[$fileName]['totalRows'] = $totalLines;
-                if (!$first || !$csvIgnoreFirst) { 
+                if (!$first || !$csvIgnoreFirst) {
                     $this->contact->clean();
                     $this->contact->contactType = !empty($line[$firstname]) || !empty($line[$lastname])
                                                  ? 2
                                                  : (!empty($line[$company]) ? 1 : 0);
-                    if (!empty($this->contact->contactType)) {                        
+                    if (!empty($this->contact->contactType)) {
 
                         $this->contact->datasource       = 3;
-                        
+
                         $this->contact->family_name      = $this->contact->contactType == 2
                                                           ? (isset($line[$lastname]) ? contrexx_input2raw($line[$lastname]) : '')
                                                           : '';
@@ -772,11 +774,11 @@ class CrmInterface extends CrmLibrary
                                                           : 0;
                         $this->contact->contact_gender   = $this->contact->contactType == 2
                                                           ? (isset($line[$gender]) ? (int) ($line[$gender] == 'Female') ? '1' : (($line[$gender] == 'Male') ? '2' : 0) : 0)
-                                                          : 0;                        
+                                                          : 0;
                         $this->contact->customerName     = $this->contact->contactType == 2
                                                           ? (isset($line[$firstname]) ? contrexx_input2raw($line[$firstname]) : '')
                                                           : (isset($line[$company]) ? contrexx_input2raw($line[$company]) : '');
-                        
+
                         $this->contact->customerId   = isset($line[$customerId]) ? contrexx_input2raw($line[$customerId]) : '';
                         $this->contact->customerType = isset($line[$customertype]) ? $this->getCustomerTypeIdByName($line[$customertype]) : 0;
                         $this->contact->addedUser    = $objFWUser->objUser->getId();
@@ -793,7 +795,7 @@ class CrmInterface extends CrmLibrary
 
                         if (in_array($duplicate, array(0, 1))) {
                             $emails = array();
-                            foreach ($this->emailOptions as $key => $emailValue) {                                
+                            foreach ($this->emailOptions as $key => $emailValue) {
                                 if (isset(${"customer_email_$key"})) {
                                     if (!empty($line[${"customer_email_$key"}]) && filter_var($line[${"customer_email_$key"}], FILTER_VALIDATE_EMAIL)) {
                                         $emails[] = $line[${"customer_email_$key"}];
@@ -815,7 +817,7 @@ class CrmInterface extends CrmLibrary
                         case 1:
                             if (!empty ($existingUser)) {
                                 $this->contact->id = $existingUser;
-                            }                                
+                            }
                         case 2:
                                 $this->contact->save();
                             break;
@@ -950,7 +952,7 @@ class CrmInterface extends CrmLibrary
                                     $this->checkRecordStoreTODB($tableName, $values, $fields);
                                 }
                             }
-                        } else { 
+                        } else {
                             $skipedLines++;
                             $_SESSION[$fileName]['skippedRows'] = $skipedLines;
                         }
@@ -974,7 +976,7 @@ class CrmInterface extends CrmLibrary
 
     /**
      * Check the argument and save the field values to corresponding DB
-     * 
+     *
      * @param String $tableName Table name
      * @param Array  $values    Conditions
      * @param Array  $fields    Field values
@@ -1006,7 +1008,7 @@ class CrmInterface extends CrmLibrary
     function getLanguageIdByName($language)
     {
         global $objDatabase;
-        
+
         $objResult = $objDatabase->Execute("SELECT  `id` FROM `".DBPREFIX."languages` WHERE `name` = '". contrexx_raw2db($language)."' LIMIT 0, 1");
 
         return (int) $objResult->fields['id'];
@@ -1030,7 +1032,7 @@ class CrmInterface extends CrmLibrary
 
     /**
      * Get Customer Type id by name
-     * 
+     *
      * @param String $customerType customertype name
      *
      * @return Integer
@@ -1038,9 +1040,9 @@ class CrmInterface extends CrmLibrary
     function getCustomerTypeIdByName($customerType)
     {
         global $objDatabase;
-        
+
         $objResult = $objDatabase->Execute("SELECT `id` FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_types` WHERE `label` = '".contrexx_raw2db($customerType)."' LIMIT 0, 1");
-        
+
         return (int) $objResult->fields['id'];
     }
 
@@ -1054,7 +1056,7 @@ class CrmInterface extends CrmLibrary
     function getCurrencyIdByName($currency)
     {
         global $objDatabase;
-        
+
         $objResult = $objDatabase->Execute("SELECT `id` FROM `".DBPREFIX."module_{$this->moduleNameLC}_currency` WHERE `name` = '". contrexx_raw2db($currency)."' LIMIT 0, 1");
 
         return (int) $objResult->fields['id'];
@@ -1064,7 +1066,7 @@ class CrmInterface extends CrmLibrary
      * Get industry type id by name
      *
      * @param String $industrytype industry type name
-     * 
+     *
      * @return Integer
      */
     function getIndustryTypeIdByName($industrytype)
@@ -1095,7 +1097,7 @@ class CrmInterface extends CrmLibrary
     {
         global $objDatabase;
 
-        $whereEmails = !empty($emails) 
+        $whereEmails = !empty($emails)
                       ? " AND e.email IN (".implode(' , ', array_map(function ($el){ return "'$el'"; }, contrexx_raw2db($emails))).")"
                       : '';
         $query = "SELECT
@@ -1110,7 +1112,7 @@ class CrmInterface extends CrmLibrary
         $objResult = $objDatabase->Execute($query);
 
         return (int) $objResult->fields['id'];
-        
+
     }
 
     /**

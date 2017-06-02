@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * User Management
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
@@ -80,7 +80,7 @@ class AccessLib
      */
     private $attributeNamePrefix = 'access_profile_attribute';
     protected $accountAttributeNamePrefix = 'access_user_';
-    private $modulePrefix = 'ACCESS_';
+    protected $modulePrefix = 'ACCESS_';
 
     private $arrAttributeTypeTemplates;
 
@@ -88,6 +88,14 @@ class AccessLib
 
     private $arrAccountAttributes;
 
+    /**
+     * Static Access id to manage the users(add/edit)
+     */
+    const MANAGE_USER_ACCESS_ID = 202;
+    /**
+     * Static Access id to manage the user groups
+     */
+    const MANAGE_GROUPS_ACCESS_ID = 203;
 
     /**
      * This library can be used to parse/generate the HTML code of a user's
@@ -275,9 +283,15 @@ class AccessLib
         case 'date':
             $value = $objUser->getProfileAttribute($attributeId, $historyId);
             $arrPlaceholders['_VALUE'] = $value !== false && $value !== '' ? htmlentities(date(ASCMS_DATE_FORMAT_DATE, intval($value)), ENT_QUOTES, CONTREXX_CHARSET) : '';
-            $arrPlaceholders['_MONTH'] = $this->getDateMonthMenu($attributeName, date('m', intval($objUser->getProfileAttribute($attributeId, $historyId))));
-            $arrPlaceholders['_DAY'] = $this->getDateDayMenu($attributeName, date('d', intval($objUser->getProfileAttribute($attributeId, $historyId))));
-            $arrPlaceholders['_YEAR'] = $this->getDateYearMenu($attributeName, date('Y', intval($objUser->getProfileAttribute($attributeId, $historyId))));
+            if ($edit) {
+                $arrPlaceholders['_MONTH'] = $this->getDateMonthMenu($attributeName, date('m', intval($objUser->getProfileAttribute($attributeId, $historyId))));
+                $arrPlaceholders['_DAY'] = $this->getDateDayMenu($attributeName, date('d', intval($objUser->getProfileAttribute($attributeId, $historyId))));
+                $arrPlaceholders['_YEAR'] = $this->getDateYearMenu($attributeName, date('Y', intval($objUser->getProfileAttribute($attributeId, $historyId))));
+            } else {
+                $arrPlaceholders['_MONTH'] = date('m', intval($objUser->getProfileAttribute($attributeId, $historyId)));
+                $arrPlaceholders['_DAY'] = date('d', intval($objUser->getProfileAttribute($attributeId, $historyId)));
+                $arrPlaceholders['_YEAR'] = date('Y', intval($objUser->getProfileAttribute($attributeId, $historyId)));
+            }
             break;
         case 'text':
         case 'mail':
@@ -319,7 +333,7 @@ class AccessLib
             $imageRepoPath = $attributeId == 'picture'
                                 ? $cx->getWebsiteImagesAccessProfilePath()
                                 : $cx->getWebsiteImagesAccessPhotoPath();
-            
+
             if (!$edit || file_exists($imageRepoPath .'/'. $image)) {
                 $arrPlaceholders['_VALUE'] = htmlentities($objUser->getProfileAttribute($objAttribute->getId(), $historyId), ENT_QUOTES, CONTREXX_CHARSET);
             }
@@ -1384,7 +1398,7 @@ function SetUrl(data)
     if (data.type === '' || !data.data[0]) {
         return;
     }
-            
+
     switch (data.type) {
         case 'page':
             accessSetWebpage(data.data[0].node);
@@ -1557,7 +1571,7 @@ JSaccessValidatePrimaryGroupAssociation
                 fileName   = data.pop();
             uploaderField.find('.uploader_rel_field_source').val(callback[0]);
             uploaderField.find('.uploader_rel_field').val(fileName);
-            uploaderField.find('.uploader_rel_field_remove_icon').show();            
+            uploaderField.find('.uploader_rel_field_remove_icon').show();
         }
     }
 
@@ -1611,7 +1625,7 @@ JS
             $arrLetters[] = 48;
             $arrLetters = array_merge($arrLetters, range(65, 90)); // ascii codes of characters "A" to "Z"
             $arrLetters[] = '';
-            
+
             $selfUri = \Cx\Core\Routing\Url::fromPage(\Cx\Core\Core\Controller\Cx::instanciate()->getPage());
 
             foreach ($arrLetters as $letter) {
@@ -1632,7 +1646,7 @@ JS
                 if ($letter == '' && $selectedLetter == '' || chr($letter) == $selectedLetter) {
                     $parsedLetter = '<strong>'.$parsedLetter.'</strong>';
                 }
-                
+
                 $uriLetter = null;
                 if (!empty($letter)) {
                     $uriLetter = chr($letter);
@@ -1705,7 +1719,8 @@ JS
     protected function addUploadedImagesToProfile($objUser, &$arrProfile, $arrImages, $uploaderId)
     {
         global $_CORELANG;
-        $objSession = \cmsSession::getInstance();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objSession = $cx->getComponent('Session')->getSession();
         $arrErrorMsg = array();
 
         foreach ($arrImages as $attribute => $arrHistories) {
@@ -2135,7 +2150,7 @@ JS
 
     /**
      * Initialize the access image uploader and get the uploader instance
-     * 
+     *
      * @return \Cx\Core_Modules\Uploader\Model\Entity\Uploader
      */
     public function getImageUploader()
@@ -2150,7 +2165,69 @@ JS
             'data-upload-limit'  => 1,
         ));
         $this->attachJavaScriptFunction('imageUploaderCode');
-        
+
         return $uploader;
     }
+
+    /**
+     * Additional permission check for users with access permission
+     * MANAGE_GROUPS_ACCESS_ID.
+     *
+     * Exists to avoid that the user removes his permission to manage access groups
+     *
+     * Will return false when the group which is edited/deactivated/deleted
+     * is the only group which grants the user the permission to edit groups
+     *
+     * Will return true otherwise (or if the user has administrator privileges)
+     *
+     * @param integer $groupId The id of the group which is edited
+     * @return boolean
+     */
+    public function checkManageGroupAccessPermission($groupId) {
+
+        $fwUser = \FWUser::getFWUserObject();
+
+        // case 1: user is admin, dont bother
+        if ($fwUser->objUser->getAdminStatus()) {
+            return true;
+        }
+
+        // get the active groups associated to the user
+        $userGroups = $fwUser->objUser->getAssociatedGroupIds(true);
+
+        // case 2: user has only one associated group
+        if (count($userGroups) == 1) {
+            // when the edited group is the user's group, return false,
+            // otherwise true
+            return !($groupId == $userGroups[0]);
+        }
+        // case 3: user has multiple associated groups
+        // if the edited group isn't in the user's groups,
+        // don't bother and return true already
+        if (!in_array($groupId, $userGroups)) {
+            return true;
+        }
+        // now we have to check if another group exists,
+        // which gives the user the right to edit groups
+
+        // 1. exclude edited group id from the selection
+        $userGroups = array_diff($userGroups, array($groupId));
+        // 2. check if the remaining groups have the access permission
+        //    AccessLib::MANAGE_GROUPS_ACCESS_ID
+        foreach ($userGroups as $id) {
+            $group = $fwUser->objGroup->getGroup($id);
+            if (
+                in_array(
+                    static::MANAGE_GROUPS_ACCESS_ID,
+                    $group->getStaticPermissionIds()
+                )
+            ) {
+                return true;
+            }
+        }
+        // no other group found, removing of permission not allowed
+        return false;
+    }
+
+
 }

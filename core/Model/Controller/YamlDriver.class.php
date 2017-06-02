@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Wrapper class for Doctrine YAML Driver
  *
@@ -51,7 +51,7 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, \Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $metadata)
     {
         $element = $this->getElement($className, true);
         // Customizing for Cloudrexx: YamlEntity extension
@@ -69,11 +69,10 @@ class YamlDriver extends \Doctrine\ORM\Mapping\Driver\YamlDriver
      */
     public function getElement($className, $raw = false)
     {
-        $result = $this->_loadMappingFile($this->_findMappingFile($className));
+        $result = $this->loadMappingFile($this->locator->findMappingFile($className));
         if (!$raw && $result[$className]['type'] == 'YamlEntity') {
             $result[$className]['type'] = 'entity';
         }
         return $result[$className];
     }
 }
-
