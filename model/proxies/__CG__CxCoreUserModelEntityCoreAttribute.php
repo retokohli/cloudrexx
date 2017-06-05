@@ -73,10 +73,10 @@ class CoreAttribute extends \Cx\Core\User\Model\Entity\CoreAttribute implements 
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'id', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'mandatory', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'sortType', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'orderId', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'accessSpecial', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'accessId', 'validators', 'virtual');
+            return array('__isInitialized__', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'id', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'mandatory', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'sortType', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'orderId', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'accessSpecial', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'accessId', 'readAccessId', 'validators', 'virtual');
         }
 
-        return array('__isInitialized__', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'id', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'mandatory', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'sortType', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'orderId', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'accessSpecial', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'accessId', 'validators', 'virtual');
+        return array('__isInitialized__', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'id', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'mandatory', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'sortType', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'orderId', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'accessSpecial', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\CoreAttribute' . "\0" . 'accessId', 'readAccessId', 'validators', 'virtual');
     }
 
     /**
@@ -316,6 +316,28 @@ class CoreAttribute extends \Cx\Core\User\Model\Entity\CoreAttribute implements 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAccessId', array());
 
         return parent::getAccessId();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setReadAccessId(\Cx\Core_Modules\Access\Model\Entity\ReadAccessId $readAccessId)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setReadAccessId', array($readAccessId));
+
+        return parent::setReadAccessId($readAccessId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getReadAccessId()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getReadAccessId', array());
+
+        return parent::getReadAccessId();
     }
 
     /**

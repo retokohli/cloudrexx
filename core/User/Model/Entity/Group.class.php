@@ -77,11 +77,17 @@ class Group extends \Cx\Model\Base\EntityBase {
      */
     private $accessId;
 
+    /**
+     * @var Cx\Core_Modules\Access\Model\Entity\ReadAccessId
+     */
+    protected $readAccessId;
+
     public function __construct()
     {
         $this->user = new \Doctrine\Common\Collections\ArrayCollection();
     $this->accessId2 = new \Doctrine\Common\Collections\ArrayCollection();
     $this->accessId = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->readAccessId = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -261,5 +267,25 @@ class Group extends \Cx\Model\Base\EntityBase {
     public function getAccessId()
     {
         return $this->accessId;
+    }
+
+    /**
+     * Add readAccessId
+     *
+     * @param Cx\Core_Modules\Access\Model\Entity\ReadAccessId $readAccessId
+     */
+    public function addReadAccessId(\Cx\Core_Modules\Access\Model\Entity\ReadAccessId $readAccessId)
+    {
+        $this->readAccessId[] = $readAccessId;
+    }
+
+    /**
+     * Get readAccessId
+     *
+     * @return Doctrine\Common\Collections\Collection $readAccessId
+     */
+    public function getReadAccessId()
+    {
+        return $this->readAccessId;
     }
 }
