@@ -41,7 +41,6 @@ use Cx\Core\Core\Model\Entity\SystemComponent;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
 use Cx\Core\Json\JsonAdapter;
 use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowserPageTree;
-use Cx\Core\MediaSource\Model\Entity\ThumbnailGenerator;
 
 /**
  * JSON Adapter for Uploader
@@ -145,9 +144,11 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
             ? $params['get']['path'] : '/';
         $mediaType = (strlen($params['get']['mediatype']) > 0)
             ? $params['get']['mediatype'] : 'files';
+        $recursive = (strlen($params['get']['recursive']) > 0)
+            ? $params['get']['recursive'] : false;
 
         $mediaTypes = $this->cx->getMediaSourceManager()->getMediaTypes();
-        return $mediaTypes[$mediaType]->getFileSystem()->getFileList($filePath);
+        return $mediaTypes[$mediaType]->getFileSystem()->getFileList($filePath, $recursive);
     }
 
     /**
@@ -186,11 +187,11 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      * @param $params
      */
     public function createDir($params) {
-        $pathArray                 = explode('/', $params['get']['path']);
-        // Shift off the first element of the array to get the media type.
-        $mediaType = array_shift($pathArray);
+        $pathArray = explode('/', $params['get']['path']);
+        $mediaType = (strlen($params['get']['mediatype']) > 0)
+            ? $params['get']['mediatype'] : 'files';
         $strPath = '/' . utf8_decode(join('/', $pathArray));
-        $dir        = utf8_decode($params['post']['dir']) . '/';
+        $dir = utf8_decode($params['post']['dir']) . '/';
         $this->setMessage(
             $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()->createDirectory(
                 $strPath, $dir
@@ -204,14 +205,13 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
     public function renameFile($params) {
         \Env::get('init')->loadLanguageData('MediaBrowser');
 
-        $path       = !empty($params['get']['path']) ? contrexx_input2raw(utf8_decode($params['get']['path'])) : null;
-        $oldName    = !empty($params['post']['oldName']) ? contrexx_input2raw(utf8_decode($params['post']['oldName'])) : null;
-        $newName    = !empty($params['post']['newName']) ? contrexx_input2raw(utf8_decode($params['post']['newName'])) : null;
+        $path = !empty($params['get']['path']) ? contrexx_input2raw(utf8_decode($params['get']['path'])) : null;
+        $mediaType = !empty($params['get']['mediatype']) ? $params['get']['mediatype'] : 'files';
+        $oldName = !empty($params['post']['oldName']) ? contrexx_input2raw(utf8_decode($params['post']['oldName'])) : null;
+        $newName = !empty($params['post']['newName']) ? contrexx_input2raw(utf8_decode($params['post']['newName'])) : null;
 
         if ($path && $oldName && $newName) {
             $pathArray = explode('/', $path);
-            // Shift off the first element of the array to get the media type.
-            $mediaType  = array_shift($pathArray);
             $strPath    = '/' . join('/', $pathArray);
             $this->setMessage(
                 $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()->moveFile(
@@ -229,13 +229,12 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      */
     public function removeFile($params) {
         \Env::get('init')->loadLanguageData('MediaBrowser');
-        $path     = !empty($params['get']['path']) ? contrexx_input2raw(utf8_decode($params['get']['path'])) : null;
+        $path = !empty($params['get']['path']) ? contrexx_input2raw(utf8_decode($params['get']['path'])) : null;
+        $mediaType = !empty($params['get']['mediatype']) ? $params['get']['mediatype'] : 'files';
         $filename = !empty($params['post']['file']['datainfo']['name']) ? contrexx_input2raw(utf8_decode($params['post']['file']['datainfo']['name'])) : null;
 
         if ($filename && $path) {
             $pathArray = explode('/', $path);
-            // Shift off the first element of the array to get the media type.
-            $mediaType  = array_shift($pathArray);
             $strPath    = '/' . join('/', $pathArray);
             $this->setMessage(
                 $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()->removeFile(

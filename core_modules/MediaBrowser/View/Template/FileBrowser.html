@@ -11,7 +11,8 @@
   <div class="fileOptions">
     <input type="search" class="searchterm"
            placeholder="{{::'TXT_FILEBROWSER_SEARCHTERM_PLACEHOLDER'| translate}}"
-           ng-model="searchConfig.string">
+           ng-model="searchConfig.string"
+           ng-change="updateSourceSearch()">
     <label for="FileSearchIsRegex" id="FileSearchIsRegexLabel"
            data-tooltip-placement="bottom" data-tooltip="{{
              'TXT_FILEBROWSER_EXTENDED_FILE_SEARCH_EXPLANATION' | translate }}">
@@ -30,7 +31,7 @@
           </a>
         </li>
         <li>
-          <a ng-click="updateSource()"><i class="icon-refresh"></i>
+          <a ng-click="updateSource(false, false)"><i class="icon-refresh"></i>
             <span class="fileActions-text">
               {{:: 'TXT_FILEBROWSER_RELOAD' | translate }}
             </span>

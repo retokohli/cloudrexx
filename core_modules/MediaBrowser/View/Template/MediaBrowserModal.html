@@ -18,7 +18,7 @@
       </ul>
       <select class="selectsource"
               ng-options="source as source.name for source in sources"
-              ng-model="selectedSource" ng-change="updateSource()"
+              ng-model="selectedSource" ng-change="updateSource(false, true)"
               ng-show="activeController === 'MediaBrowserListCtrl'"
               ng-class="sources ? '' : 'loading'">
         <option value="files">
