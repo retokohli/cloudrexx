@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,24 +24,24 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
- * @copyright   Comvation AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   Cloudrexx AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  */
 
 namespace Cx\Core_Modules\TemplateEditor\Model;
 
 use Symfony\Component\Yaml\Parser;
-use Symfony\Component\Yaml\ParserException;
+use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class PresetFileStorage
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
@@ -67,7 +67,7 @@ class PresetFileStorage implements Storable
      * @param String $name
      *
      * @return array
-     * @throws ParserException
+     * @throws ParseException
      * @throws PresetRepositoryException
      */
     public function retrieve($name)
@@ -93,14 +93,14 @@ class PresetFileStorage implements Storable
             try {
                 $yaml = new Parser();
                 return $yaml->parse($file);
-            } catch (ParserException $e) {
+            } catch (ParseException $e) {
                 preg_match(
                     "/line (?P<line>[0-9]+)/", $e->getMessage(), $matches
                 );
-                throw new ParserException($e->getMessage(), $matches['line']);
+                throw new ParseException($e->getMessage(), $matches['line']);
             }
         } else {
-            throw new ParserException("File not found");
+            throw new ParseException("File not found");
         }
     }
 

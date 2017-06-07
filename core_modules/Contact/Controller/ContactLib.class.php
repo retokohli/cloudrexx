@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * ContactLib
  *
@@ -92,7 +92,7 @@ class ContactLib
     function initContactForms($order = null)
     {
         global $objDatabase;
-        
+
         $this->arrForms = array();
 
         if ($order) {
@@ -133,7 +133,7 @@ class ContactLib
                     'number'            => 0,
                     'last'              => 0,
                     'crmCustomerGroups' => $objResult->fields['crm_customer_groups'] ? unserialize($objResult->fields['crm_customer_groups']) : array()
-                );                
+                );
                 $objResult->MoveNext();
             }
         }
@@ -200,8 +200,8 @@ class ContactLib
                 'name'      => 'TXT_CONTACT_REGEX_URL',
                 'modifiers' => 'i'
             ),
-	    /*a bit redundant, because we want a minimum of one non-space character.
-	      the query does a [spaceorchar]*[char]+[spaceorchar]* to ensure this. */
+        /*a bit redundant, because we want a minimum of one non-space character.
+          the query does a [spaceorchar]*[char]+[spaceorchar]* to ensure this. */
             4   => array(
                 'regex'     => '^[a-zäàáüâûôñèöéè\ ]*'.
                                '[a-zäàáüâûôñèöéè]+'.
@@ -424,7 +424,7 @@ class ContactLib
                     contrexx_stripslashes($recipient['name']);
             }
         }
-        
+
         return $recipients;
     }
 
@@ -540,7 +540,7 @@ class ContactLib
         global $objDatabase;
 
         $arrFieldNames = array();
-        
+
         if (isset($this->arrForms[$id])) {
             $objFields = $objDatabase->Execute("SELECT `f`.`id`, `l`.`name`
                                                  FROM `".DBPREFIX."module_contact_form_field` as `f`
@@ -761,7 +761,7 @@ class ContactLib
 
     /**
      * Get the form entity
-     * 
+     *
      * @param       int $id
      * @param       string $emails
      * @param       bool $showForm
@@ -1234,7 +1234,7 @@ class ContactLib
                                              `".DBPREFIX."module_contact_form_field` AS `f`
                                         ON
                                             `f`.`id` = `sd`.`id_field`
-                                        AND 
+                                        AND
                                             `f`.`type` IN ('multi_file', 'file')
                                         WHERE `d`.`id`=".$id);
         if ($rs) {
@@ -1276,7 +1276,7 @@ class ContactLib
                 $rs->MoveNext();
             }
         }
-        
+
         $objDatabase->Execute("DELETE `d`, `sd` FROM
                                 `".DBPREFIX."module_contact_form_data` AS `d`
                                LEFT JOIN
@@ -1337,7 +1337,7 @@ class ContactLib
                 $objEntry->MoveNext();
             }
         }
-        
+
         return $arrEntries;
     }
 
@@ -1351,7 +1351,7 @@ class ContactLib
             FROM `'.DBPREFIX.'module_contact_form_data`
             WHERE `id` = '.$entryId
         , 1);
-    
+
         if ($objEntry !== false) {
             $formId = $objEntry->fields['id'];
 
@@ -1407,7 +1407,7 @@ class ContactLib
      */
     function _getJsSourceCode($id, $formFields, $preview = false, $show = false)
     {
-        global $objInit;
+        global $objInit, $_ARRAYLANG;
         $this->initCheckTypes();
 
         \JS::activate('jqueryui');
@@ -1430,10 +1430,12 @@ class ContactLib
             $code .= "\t".(!empty($this->arrCheckTypes[$field['check_type']]['regex']) ? '/'.($this->arrCheckTypes[$field['check_type']]['regex']).'/'.$modifiers : "''").",\n";
             $code .= "\t'". (($field['type'] != 'special') ? $field['type'] : $field['special_type']) ."');\n";
         }
-
+        $captchaValidationCode = \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getJSValidationFn();
+        $captchaErrorMsg = addslashes($_ARRAYLANG['TXT_CONTACT_RECAPTCHA_ERROR']);
         $code .= <<<JS_checkAllFields
 function checkAllFields() {
-    var isOk = true;
+    var isOk = true, isCaptchaOk = true;
+    var captchaError = '$captchaErrorMsg';
 
     for (var field in fields) {
         var type = fields[field][3];
@@ -1472,8 +1474,7 @@ function checkAllFields() {
             }
         } else if (type == 'file' || type == 'multi_file') {
             var required = fields[field][1];
-            var folderWidget = cx.instances.get('uploadWidget' + field, 'upload/folderWidget');
-            if(required && folderWidget.isEmpty()) {
+            if(required && angular.element('#contactFormUpload_'+field+ ' div.mediaBrowserfolderWidget').scope().isEmpty()) {
                 isOk = false;
                 \$J('#contactFormFieldId_'+field).css('outline', '1px solid red');
             } else {
@@ -1486,9 +1487,22 @@ function checkAllFields() {
         }
     }
     }
-
+    $captchaValidationCode
+    document.getElementById('contactFormError').style.display = "none";
     if (!isOk) {
         document.getElementById('contactFormError').style.display = "block";
+    }
+
+    if (\$J('#contactFormCaptchaError').length) {
+        \$J('#contactFormCaptchaError').remove();
+    }
+    if (!isCaptchaOk) {
+        \$J('<div />')
+        .addClass('text-danger')
+        .attr('id', 'contactFormCaptchaError')
+        .text(captchaError)
+        .prependTo('#captcha');
+        return false;
     }
     return isOk;
 }
@@ -1598,7 +1612,7 @@ JS_isRequiredSelect;
 JS_misc;
         return $code;
     }
-    
+
     /*
      * Generates the HTML Source code of the Submission form designed in backend
      * @id      Submission form id
@@ -1634,7 +1648,7 @@ JS_misc;
             if ($arrField['type'] != 'fieldset' && $arrField['type'] != 'hidden') {
                 $sourcecode[] = '<div class="contact row form-group">';
             }
-            
+
             switch ($arrField['type']) {
                 case 'label':
                 case 'hidden':
@@ -1702,7 +1716,7 @@ JS_misc;
                     if ($preview) {
                         $lang = $arrField['lang'][$lang]['name'];
                         $country = \Cx\Core\Country\Controller\Country::getNameArray(true, $lang);
-        
+
                         foreach ($country as $id => $name) {
                             $sourcecode[] = "<option value=\"" . $name . "\" >" . $name . "</option>";
                         }
@@ -1726,10 +1740,10 @@ JS_misc;
 
                 case 'file':
                 case 'multi_file':
-                    $sourcecode[] = '<div class="contactFormUpload"><div class="contactFormClass_uploadWidget" id="contactFormField_uploadWidget_'.$fieldId.'"></div>';
+                    $sourcecode[] = '<div class="contactFormUpload" id="contactFormUpload_'.$fieldId.'">{CONTACT_UPLOADER_FOLDER_WIDGET_'.$fieldId.'}<input type="hidden" name="contactFormUploadId_'.$fieldId.'" value = "{CONTACT_UPLOADER_ID_'.$fieldId.'}"/>';
                     $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="file" name="contactFormField_'.$fieldId.'" disabled="disabled"/></div>';
                     break;
-                
+
                 case 'hidden':
                     $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="hidden" name="contactFormField_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['value']) : "{".$fieldId."_VALUE}").'" />';
                     break;
@@ -1737,7 +1751,7 @@ JS_misc;
                 case 'horizontalLine':
                     $sourcecode[] = '<hr />';
                     break;
-                
+
                 case 'password':
                     $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="password" name="contactFormField_'.$fieldId.'" value="" />';
                     break;
@@ -1847,7 +1861,7 @@ JS_misc;
         if ($show) {
             $sourcecode = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $sourcecode);
         }
-        
+
         return implode("\n", $sourcecode);
     }
 }

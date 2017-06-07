@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
@@ -34,13 +34,13 @@ use Cx\Core_Modules\TemplateEditor\Model\PresetRepositoryException;
 use Cx\Core_Modules\TemplateEditor\Model\Repository\PresetRepository;
 use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
 use Cx\Core\Html\Sigma;
-use Symfony\Component\Yaml\ParserException;
+use Symfony\Component\Yaml\Exception\ParseException;
 
 /**
  * Class ThemeOptionNotFoundException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
@@ -51,8 +51,8 @@ class ThemeOptionNotFoundException extends \Exception
 /**
  * Class ThemeOptions
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
@@ -125,7 +125,7 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
             );
         } catch (PresetRepositoryException $e) {
             $this->activePreset = $this->presetRepository->getByName('Default');
-        } catch (ParserException $e) {
+        } catch (ParseException $e) {
             $this->activePreset = $this->presetRepository->getByName('Default');
         }
 
@@ -172,6 +172,11 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     {
         foreach ($this->options as $option) {
             $option->renderTheme($template);
+            \ContrexxJavascript::getInstance()->setVariable(
+                    $option->getName(),
+                    $option->getValue(),
+                    'TemplateEditor'
+            );
         }
     }
 
@@ -315,8 +320,7 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
 //        $this->options = array();
         foreach ($data['options'] as $option) {
             $optionReflection = new \ReflectionClass($option['type']);
-            if ($optionReflection->getParentClass()->getName()
-                == 'Cx\Core_Modules\TemplateEditor\Model\Entity\Option'
+            if ($optionReflection->isSubclassOf('Cx\Core_Modules\TemplateEditor\Model\Entity\Option')
             ) {
                 if ($this->cx->getMode() == Cx::MODE_BACKEND
                     || (($this->cx->getUser()->getFWUserObject(
@@ -351,4 +355,3 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
         $this->activePreset = $preset;
     }
 }
-

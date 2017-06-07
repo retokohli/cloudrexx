@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -71,7 +71,7 @@ class ViewGenerator {
      * @var FormGenerator $formGenerator
      */
     protected $formGenerator = null;
-    
+
     /**
      *
      * @param mixed $object Array, instance of DataSet, instance of EntityBase, object
@@ -82,15 +82,18 @@ class ViewGenerator {
         $this->componentOptions = $options;
         $this->viewId = static::$increment++;
         try {
-            \JS::registerCSS(\Env::get('cx')->getCoreFolderName() . '/Html/View/Style/Backend.css');
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            \JS::registerCSS($cx->getCoreFolderName() . '/Html/View/Style/Backend.css');
             $entityWithNS = preg_replace('/^\\\/', '', $this->findEntityClass($object));
-            
+
             // this is a temporary "workaround" for combined keys, see todo
-            $entityClassMetadata = \Env::get('em')->getClassMetadata($entityWithNS);
-            if (count($entityClassMetadata->getIdentifierFieldNames()) > 1) {
-                throw new \Exception('Currently, view generator is not able to handle composite keys...');
+            if ($entityWithNS != 'array') {
+                $entityClassMetadata = \Env::get('em')->getClassMetadata($entityWithNS);
+                if (count($entityClassMetadata->getIdentifierFieldNames()) > 1) {
+                    throw new \Exception('Currently, view generator is not able to handle composite keys...');
+                }
             }
-            
+
             $this->options = array();
             if (isset($options[$entityWithNS]) && is_array($options[$entityWithNS])) {
                     $this->options = $options[$entityWithNS];
@@ -105,6 +108,10 @@ class ViewGenerator {
             if (empty($this->options)) {
                 $this->options = $options[''];
             }
+
+            //initialize the row sorting functionality
+            $this->getSortingOption($entityWithNS);
+
             if (
                 (!isset($_POST['vg_increment_number']) || $_POST['vg_increment_number'] != $this->viewId) &&
                 (!isset($_GET['vg_increment_number']) || $_GET['vg_increment_number'] != $this->viewId)
@@ -191,7 +198,8 @@ class ViewGenerator {
             return $this->object->getDataType();
         } else {
             if (!is_object($object)) {
-                $entityClassName = $object;
+                // Resolve proxies
+                $entityClassName = \Env::get('em')->getClassMetadata($object)->name;
                 $entityRepository = \Env::get('em')->getRepository($entityClassName);
                 $entities = $entityRepository->findAll();
                 if (empty($entities)) {
@@ -226,13 +234,33 @@ class ViewGenerator {
         if (empty($entityData)) {
             $entityData = $_POST;
         }
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
         $primaryKeyName = $entityClassMetadata->getSingleIdentifierFieldName(); //get primary key name
         $entityColumnNames = $entityClassMetadata->getColumnNames(); //get the names of all fields
 
+        //If the view is sortable, get the 'sortBy' field name and store it to the variable
+        $sortByFieldName = (    isset($this->options['functions']['sortBy'])
+                            &&  isset($this->options['functions']['sortBy']['field'])
+                            &&  !empty($this->options['functions']['sortBy']['field'])
+                           )
+                           ? key($this->options['functions']['sortBy']['field'])
+                           : '';
+        //check the 'sortBy' field is self-healing or not
+        $isSortSelfHealing = (    isset($this->options['fields'])
+                              &&  isset($this->options['fields'][$sortByFieldName])
+                              &&  isset($this->options['fields'][$sortByFieldName]['showDetail'])
+                              &&  !$this->options['fields'][$sortByFieldName]['showDetail']
+                             )
+                             ? true
+                             : false;
         // Foreach possible attribute in the database we try to find the matching entry in the $entityData array and add it
         // as property to the object
         foreach($entityColumnNames as $column) {
             $name = $entityClassMetadata->getFieldName($column);
+            $fieldSetMethodName = 'set'.preg_replace('/_([a-z])/', '\1', ucfirst($name));
+            $fieldGetMethodName = 'get'.preg_replace('/_([a-z])/', '\1', ucfirst($name));
             if (
                 isset($this->options['fields']) &&
                 isset($this->options['fields'][$name]) &&
@@ -240,7 +268,7 @@ class ViewGenerator {
             ) {
                 $storecallback = $this->options['fields'][$name]['storecallback'];
                 $postedValue = null;
-                if (isset($entityData['field'])) {
+                if (isset($entityData[$name])) {
                     $postedValue = contrexx_input2raw($entityData[$name]);
                 }
                 /* We use json to do the storecallback. The 'else if' is for backwards compatibility so you can declare
@@ -279,7 +307,26 @@ class ViewGenerator {
                     $newValue = contrexx_input2raw($entityData[$name]);
                 }
                 // set the value as property of the current object, so it is ready to be stored in the database
-                $entity->{'set'.preg_replace('/_([a-z])/', '\1', ucfirst($name))}($newValue);
+                $entity->$fieldSetMethodName($newValue);
+            }
+
+            //While adding a new entity, if the view is sortable and 'sortBy' field is disabled in the edit view
+            //then the new entity sort order gets automatically adjusted.
+            if (    $isSortSelfHealing
+                &&  !empty($sortByFieldName)
+                &&  ($sortByFieldName === $name)
+                &&  !$entity->$fieldGetMethodName()
+            ) {
+                $qb = $em->createQueryBuilder();
+                $qb ->select('e')
+                    ->from(get_class($entity), 'e')
+                    ->orderBy('e.' . $name, 'DESC')
+                    ->setMaxResults(1);
+                $result   = $qb->getQuery()->getResult();
+                $newValue = isset($result[0]) ? ($result[0]->$fieldGetMethodName() + 1) : 1;
+                // set the value as property of the current object,
+                // so it is ready to be stored in the database
+                $entity->$fieldSetMethodName($newValue);
             }
         }
         // save singleValuedAssociations
@@ -295,9 +342,9 @@ class ViewGenerator {
             ) {
                 continue;
             }
-            
+
             // save it:
-            
+            $targetEntityMetadata = $em->getClassMetadata($associationMapping['targetEntity']);
             // case a) was open in form directly
             $firstOffset = str_replace('\\', '_', strtolower($associationMapping['sourceEntity']));
             $secondOffset = $associationMapping['fieldName'];
@@ -305,35 +352,127 @@ class ViewGenerator {
                 $this->storeSingleValuedAssociation(
                     $associationMapping['targetEntity'],
                     array(
-                        $associationMapping['joinColumns'][0]['referencedColumnName'] => $entityData[$secondOffset],
+                        $targetEntityMetadata->getFieldName($associationMapping['joinColumns'][0]['referencedColumnName']) => $entityData[$secondOffset],
                     ),
                     $entity,
                     'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $associationMapping['fieldName'])))
                 );
                 continue;
             }
-            
+
             // base b) was open in a modal form
             foreach ($_POST[$firstOffset] as $foreignEntityDataEncoded) {
                 $foreignEntityData = array();
                 parse_str($foreignEntityDataEncoded, $foreignEntityData);
-                
+
                 if (!isset($foreignEntityData[$secondOffset])) {
                     // todo: remove entity!
                     continue;
                 }
-                
+
                 // todo: add/save entity
                 $this->storeSingleValuedAssociation(
                     $associationMapping['targetEntity'],
                     array(
-                        $associationMapping['joinColumns'][0]['referencedColumnName'] => $foreignEntityData[$secondOffset],
+                        $targetEntityMetadata->getFieldName($associationMapping['joinColumns'][0]['referencedColumnName']) => $foreignEntityData[$secondOffset],
                     ),
                     $entity,
                     'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $associationMapping['fieldName'])))
                 );
             }
         }
+    }
+
+    /**
+     * Initialize the row sorting functionality
+     *
+     * @param string $entityNameSpace entity namespace
+     *
+     * @return boolean
+     */
+    protected function getSortingOption($entityNameSpace)
+    {
+        //If the entity namespace is empty or an array then disable the row sorting
+        if (empty($entityNameSpace) && $entityNameSpace === 'array') {
+            return;
+        }
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
+        $sortBy = (     isset($this->options['functions']['sortBy'])
+                    &&  is_array($this->options['functions']['sortBy'])
+                  )
+                  ? $this->options['functions']['sortBy']
+                  : array();
+        //If the option 'sortBy' is not set in the function array
+        // then disable the row sorting.
+        if (empty($sortBy)) {
+            return;
+        }
+
+        //If the function array has 'order' option and the order by field
+        //is not equal to 'sortBy' => 'field' then disable the row sorting
+        $sortField   = key($this->options['functions']['sortBy']['field']);
+        $orderOption = (    isset($this->options['functions']['order'])
+                        &&  is_array($this->options['functions']['order'])
+                       )
+                       ? key($this->options['functions']['order']) : array();
+        if (!empty($orderOption) && stripos($orderOption, $sortField) === false) {
+            return;
+        }
+
+        //get the primary key name
+        $entityObject   = $em->getClassMetadata($entityNameSpace);
+        $primaryKeyName = $entityObject->getSingleIdentifierFieldName();
+
+        //If the 'sortBy' option does not have 'jsonadapter',
+        //we need to get the component name and entity name for updating the sorting order in db
+        $componentName = '';
+        $entityName    = '';
+        if (    !isset($sortBy['jsonadapter'])
+            ||  (    isset($sortBy['jsonadapter'])
+                 &&  (    empty($sortBy['jsonadapter']['object'])
+                      ||  empty($sortBy['jsonadapter']['act'])
+                    )
+                )
+        ) {
+            $split          = explode('\\', $entityNameSpace);
+            $componentName  = isset($split[2]) ? $split[2] : '';
+            $entityName     = isset($split) ? end($split) : '';
+        }
+
+        //If 'sorting' is applied and sorting field is not equal to
+        //'sortBy' => 'field' then disable the row sorting.
+        $orderParamName = $entityName . 'Order';
+        if (    isset($_GET[$orderParamName])
+            &&  stripos($_GET[$orderParamName], $sortField) === false
+        ) {
+            return;
+        }
+
+        //Get the current sorting order
+        $order     = isset($_GET[$orderParamName]) ? explode('/', $_GET[$orderParamName]) : '';
+        $sortOrder = ($sortBy['field'][$sortField] == SORT_ASC) ? 'ASC' : 'DESC';
+        if ($order) {
+            $sortOrder = !empty($order[1]) ? $order[1] : 'ASC';
+        }
+
+        //Get the paging position value
+        $pagingPosName  = $entityName . 'Pos';
+        $pagingPosition = isset($_GET[$pagingPosName])
+                          ? contrexx_input2int($_GET[$pagingPosName])
+                          : 0;
+
+        //set the sorting parameters in the functions 'sortBy' array and
+        //it should be used in the Backend::constructor
+        $this->options['functions']['sortBy']['sortingKey'] = $primaryKeyName;
+        $this->options['functions']['sortBy']['component']  = $componentName;
+        $this->options['functions']['sortBy']['entity']     = $entityName;
+        $this->options['functions']['sortBy']['sortOrder']  = $sortOrder;
+        $this->options['functions']['sortBy']['pagingPosition'] = $pagingPosition;
+
+        //Register the script Backend.js and activate the jqueryui and cx for the row sorting
+        \JS::registerJS(substr($cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
     }
 
     /**
@@ -351,33 +490,44 @@ class ViewGenerator {
             return 0;
         }
         if (isset($_GET['editid'])) {
-            $edits = explode('},{', substr($_GET['editid'], 1, -1));
-            foreach ($edits as $edit) {
-                $edit = explode(',', $edit);
-                if ($edit[0] != $this->viewId) {
-                    continue;
-                }
-                unset($edit[0]);
-                if (count($edit) == 1) {
-                    return current($edit);
-                }
-                return $edit;
-            }
+            return $this->getVgParam($_GET['editid']);
         }
         if (isset($_POST['editid'])) {
-            $edits = explode('},{', substr($_POST['editid'], 1, -1));
-            foreach ($edits as $edit) {
-                $edit = explode(',', $edit);
-                if ($edit[0] != $this->viewId) {
+            return $this->getVgParam($_POST['editid']);
+        }
+    }
+
+    /**
+     * Extracts values for this VG instance from a combined VG-style variable
+     * @see getEntryId() for a description of VG-style variable format
+     * @param string $param VG-style param
+     * @return array|string The relevant contents of the supplied paramater
+     */
+    protected function getVgParam($param) {
+        $inner = preg_replace('/^(?:{|%7B)(.*)(?:}|%7D)$/', '\1', $param);
+        $parts = preg_split('/},{|%7D%2C%7B/', $inner);
+        $value = array();
+        foreach ($parts as $part) {
+            $part = preg_split('/,|%2C/', $part, 2);
+            if ($part[0] != $this->viewId) {
+                continue;
+            }
+            $keyVal = preg_split('/=|%3D/', $part[1], 2);
+            if (count($keyVal) == 1) {
+                if (empty(current($keyVal))) {
                     continue;
                 }
-                unset($edit[0]);
-                if (count($edit) == 1) {
-                    return current($edit);
-                }
-                return $edit;
+                $value[] = current($keyVal);
+            } else {
+                $value[$keyVal[0]] = $keyVal[1];
             }
         }
+        if (count($value) == 1) {
+            if (key($value) === 0) {
+                return current($value);
+            }
+        }
+        return $value;
     }
 
     /**
@@ -386,12 +536,12 @@ class ViewGenerator {
      * @param boolean $isSingle if we only render one entry
      * @access public
      * @return string rendered view
-     * */
+     */
     public function render(&$isSingle = false) {
         global $_ARRAYLANG;
 
         // this case is used to generate the add entry form, where we can create an new entry
-        if (!empty($_GET['add']) 
+        if (!empty($_GET['add'])
             && !empty($this->options['functions']['add'])) {
             $isSingle = true;
             return $this->renderFormForEntry(null);
@@ -416,7 +566,13 @@ class ViewGenerator {
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             if (!empty($this->options['functions']['add'])) {
                 $actionUrl->setParam('add', 1);
-                $addBtn = '<br /><br /><input type="button" name="addEtity" value="'.$_ARRAYLANG['TXT_ADD'].'" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'".'" />'; 
+                //remove the parameter 'vg_increment_number' from actionUrl
+                //if the baseUrl contains the parameter 'vg_increment_number'
+                $params = $actionUrl->getParamArray();
+                if (isset($params['vg_increment_number'])) {
+                    \Html::stripUriParam($actionUrl, 'vg_increment_number');
+                }
+                $addBtn = '<br /><br /><input type="button" name="addEtity" value="'.$_ARRAYLANG['TXT_ADD'].'" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'".'" />';
             }
             if (!count($renderObject) || !count(current($renderObject))) {
                 // make this configurable
@@ -424,7 +580,30 @@ class ViewGenerator {
                 $tpl->loadTemplateFile('NoEntries.html');
                 return $tpl->get().$addBtn;
             }
-            $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController($renderObject, array(), $this->options['functions']);
+
+            // replace foreign key search criteria
+            $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+            $searchCriteria = contrexx_input2raw($this->getVgParam($_GET['search']));
+            $entityClass = $this->findEntityClass($renderObject);
+            if ($entityClass !== 'array') {
+                $metaData = $em->getClassMetadata($entityClass);
+                foreach ($metaData->associationMappings as $relationField => $associationMapping) {
+                    if (!isset($searchCriteria[$relationField])) {
+                        continue;
+                    }
+                    $relationClass = $associationMapping['targetEntity'];
+                    $relationRepo = $em->getRepository($relationClass);
+                    $relationEntity = $relationRepo->find($searchCriteria[$relationField]);
+                    $searchCriteria[$relationField] = $relationEntity;
+                }
+            }
+
+            $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController(
+                $renderObject,
+                $searchCriteria,
+                contrexx_input2raw($this->getVgParam($_GET['term'])),
+                $this->options['functions']
+            );
             $renderObject = $listingController->getData();
             $this->options['functions']['vg_increment_number'] = $this->viewId;
             $backendTable = new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
@@ -443,7 +622,7 @@ class ViewGenerator {
      * @access protected
      * @param int $entityId id of the entity
      * @return string rendered view
-     * */
+     */
     protected function renderFormForEntry($entityId) {
         global $_CORELANG;
 
@@ -461,87 +640,99 @@ class ViewGenerator {
         } else {
             $entityClassWithNS = get_class($this->object);
         }
-        $entityObject = \Env::get('em')->getClassMetadata($entityClassWithNS);
-        $primaryKeyNames = $entityObject->getIdentifierFieldNames(); // get the name of primary key in database table
-        if ($entityId == 0 && !empty($this->options['functions']['add'])) { // load add entry form
-            $this->setProperCancelUrl('add');
-            $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
-            $actionUrl->setParam('add', 1);
-            $title = sprintf($_CORELANG['TXT_CORE_ADD_ENTITY'], $entityTitle);
-            $entityColumnNames = $entityObject->getColumnNames(); // get all database field names
-            if (empty($entityColumnNames)) return false;
-            foreach($entityColumnNames as $column) {
-                $field = $entityObject->getFieldName($column);
-                if (in_array($field, $primaryKeyNames)) {
-                    continue;
+        $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
+        if ($entityClassWithNS != 'array') {
+            $entityObject = \Env::get('em')->getClassMetadata($entityClassWithNS);
+            $primaryKeyNames = $entityObject->getIdentifierFieldNames(); // get the name of primary key in database table
+            if ($entityId == 0 && !empty($this->options['functions']['add'])) { // load add entry form
+                $this->setProperCancelUrl('add');
+                $actionUrl->setParam('add', 1);
+                $title = sprintf($_CORELANG['TXT_CORE_ADD_ENTITY'], $entityTitle);
+                $entityColumnNames = $entityObject->getColumnNames(); // get all database field names
+                if (empty($entityColumnNames)) {
+                    return false;
                 }
-                $fieldDefinition = $entityObject->getFieldMapping($field);
-                $this->options[$field]['type'] = $fieldDefinition['type'];
-                if ($entityObject->getFieldValue($this->object, $field) !== null) {
-                    $renderArray[$field] = $entityObject->getFieldValue($this->object, $field);
-                    continue;
-                }
-                $renderArray[$field] = '';
-            }
-            // load single-valued-associations
-            $associationMappings = \Env::get('em')->getClassMetadata($entityClassWithNS)->getAssociationMappings();
-            $classMethods = get_class_methods($entityObject->newInstance());
-            foreach ($associationMappings as $field => $associationMapping) {
-                if (   \Env::get('em')->getClassMetadata($entityClassWithNS)->isSingleValuedAssociation($field)
-                    && in_array('set'.ucfirst($field), $classMethods)
-                ) {
-                    if ($entityObject->getFieldValue($this->object, $field)) {
+                foreach($entityColumnNames as $column) {
+                    $field = $entityObject->getFieldName($column);
+                    if (in_array($field, $primaryKeyNames)) {
+                        continue;
+                    }
+                    $fieldDefinition = $entityObject->getFieldMapping($field);
+                    $this->options[$field]['type'] = $fieldDefinition['type'];
+                    if ($entityObject->getFieldValue($this->object, $field) !== null) {
                         $renderArray[$field] = $entityObject->getFieldValue($this->object, $field);
                         continue;
                     }
-                    $renderArray[$field]= new $associationMapping['targetEntity']();
-                } elseif (\Env::get('em')->getClassMetadata($entityClassWithNS)->isCollectionValuedAssociation($field)) {
-                    $renderArray[$field]= new $associationMapping['targetEntity']();
+                    $renderArray[$field] = '';
                 }
-            }
-        } elseif ($entityId != 0 && $this->object->entryExists($entityId)) { // load edit entry form
-            $this->setProperCancelUrl('editid');
-            $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
-            $actionUrl->setParam('editid', null);
-            $title = sprintf($_CORELANG['TXT_CORE_EDIT_ENTITY'], $entityTitle);
+                // load single-valued-associations
+                $associationMappings = \Env::get('em')->getClassMetadata($entityClassWithNS)->getAssociationMappings();
+                $classMethods = get_class_methods($entityObject->newInstance());
+                foreach ($associationMappings as $field => $associationMapping) {
+                    if (   \Env::get('em')->getClassMetadata($entityClassWithNS)->isSingleValuedAssociation($field)
+                        && in_array('set'.ucfirst($field), $classMethods)
+                    ) {
+                        if ($entityObject->getFieldValue($this->object, $field)) {
+                            $renderArray[$field] = $entityObject->getFieldValue($this->object, $field);
+                            continue;
+                        }
+                        $renderArray[$field]= new $associationMapping['targetEntity']();
+                    } elseif (\Env::get('em')->getClassMetadata($entityClassWithNS)->isCollectionValuedAssociation($field)) {
+                        $renderArray[$field]= new $associationMapping['targetEntity']();
+                    }
+                }
+            } elseif ($entityId != 0 && $this->object->entryExists($entityId)) { // load edit entry form
+                $this->setProperCancelUrl('editid');
+                $actionUrl->setParam('editid', null);
+                $title = sprintf($_CORELANG['TXT_CORE_EDIT_ENTITY'], $entityTitle);
 
-            // get data of all fields of the entry, except associated fields
-            $renderObject = $this->object->getEntry($entityId);
-            if (empty($renderObject)) return false;
-
-            // get doctrine field name, database field name and type for each field
-            foreach($renderObject as $name => $value) {
-                if ($name == 'virtual' || in_array($name, $primaryKeyNames)) {
-                    continue;
+                // get data of all fields of the entry, except associated fields
+                $renderObject = $this->object->getEntry($entityId);
+                if (empty($renderObject)) {
+                    return false;
                 }
 
-                $fieldDefinition['type'] = null;
-                if (!\Env::get('em')->getClassMetadata($entityClassWithNS)->hasAssociation($name)) {
-                    $fieldDefinition = $entityObject->getFieldMapping($name);
-                }
-                $this->options[$name]['type'] = $fieldDefinition['type'];
-                $renderArray[$name] = $value;
-            }
+                // get doctrine field name, database field name and type for each field
+                foreach($renderObject as $name => $value) {
+                    if ($name == 'virtual' || in_array($name, $primaryKeyNames)) {
+                        continue;
+                    }
 
-            // load single-valued-associations
-            // this is used for those object fields that are associations, but no object has been assigned to yet
-            $associationMappings = \Env::get('em')->getClassMetadata($entityClassWithNS)->getAssociationMappings();
-            $classMethods = get_class_methods($entityObject->newInstance());
-            foreach ($associationMappings as $field => $associationMapping) {
-                if (!empty($renderArray[$field])) {
-                    if (\Env::get('em')->getClassMetadata($entityClassWithNS)->isCollectionValuedAssociation($field)) {
+                    $fieldDefinition['type'] = null;
+                    if (!\Env::get('em')->getClassMetadata($entityClassWithNS)->hasAssociation($name)) {
+                        $fieldDefinition = $entityObject->getFieldMapping($name);
+                    }
+                    $this->options[$name]['type'] = $fieldDefinition['type'];
+                    $renderArray[$name] = $value;
+                }
+
+                // load single-valued-associations
+                // this is used for those object fields that are associations, but no object has been assigned to yet
+                $associationMappings = \Env::get('em')->getClassMetadata($entityClassWithNS)->getAssociationMappings();
+                $classMethods = get_class_methods($entityObject->newInstance());
+                foreach ($associationMappings as $field => $associationMapping) {
+                    if (!empty($renderArray[$field])) {
+                        if (\Env::get('em')->getClassMetadata($entityClassWithNS)->isCollectionValuedAssociation($field)) {
+                            $renderArray[$field] = new $associationMapping['targetEntity']();
+                        }
+                    } elseif (\Env::get('em')->getClassMetadata($entityClassWithNS)->isSingleValuedAssociation($field)
+                        && in_array('set'.ucfirst($field), $classMethods)
+                    ) {
                         $renderArray[$field] = new $associationMapping['targetEntity']();
                     }
-                } elseif (\Env::get('em')->getClassMetadata($entityClassWithNS)->isSingleValuedAssociation($field)
-                    && in_array('set'.ucfirst($field), $classMethods)
-                ) {
-                    $renderArray[$field] = new $associationMapping['targetEntity']();
                 }
+            } else {
+                //var_dump($entityId);
+                //var_dump($this->options['functions']['add']);
+                //var_dump($this->object->entryExists($entityId));
+                throw new ViewGeneratorException('Tried to show form but neither add nor edit view can be shown');
             }
         } else {
-            return false;
+            $renderArray = $this->object->toArray();
+            $entityClassWithNS = '';
+            $title = $entityTitle;
         }
-        
+
         //sets the order of the fields
         if(!empty($this->options['order']['form'])) {
             $sortedData = array();
@@ -606,6 +797,8 @@ class ViewGenerator {
     protected function saveEntry($entityWithNS) {
         global $_ARRAYLANG;
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
         // if entityId is a number the user edited an existing entry. If it is null we create a new one
         $entityId = contrexx_input2raw($this->getEntryId());
         $this->renderFormForEntry($entityId);
@@ -621,12 +814,12 @@ class ViewGenerator {
             return;
         }
 
-        $entityClassMetadata = \Env::get('em')->getClassMetadata($entityWithNS);
+        $entityClassMetadata = $em->getClassMetadata($entityWithNS);
         $associationMappings = $entityClassMetadata->getAssociationMappings();
 
         // if we have a entityId, we came from edit mode and so we try to load the existing entry
         if($entityId != 0) {
-            $entity = \Env::get('em')->getRepository($entityWithNS)->find($entityId);
+            $entity = $em->getRepository($entityWithNS)->find($entityId);
             $entityArray = array(); // This array is used for the existing values
             if ($this->object->entryExists($entityId)) {
                 $entityArray = $this->object->getEntry($entityId);
@@ -645,16 +838,11 @@ class ViewGenerator {
         // but we can not persist them before the main entity, so we need to buffer them
         $associatedEntityToPersist = array ();
         foreach ($associationMappings as $name => $value) {
-            $methodName = 'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
 
             /* if we can not find the class name or the function to save the association we skip the entry, because there
                is now way to store it without these information */
-            if (empty($value["targetEntity"])) {
+            if (empty($value['targetEntity'])) {
                 \Message::add(sprintf($_ARRAYLANG['TXT_CORE_RECORD_CLASS_NOT_FOUND'], $name), \Message::CLASS_ERROR);
-                continue;
-            }
-            if (!in_array($methodName, $classMethods)) {
-                \Message::add(sprintf($_ARRAYLANG['TXT_CORE_RECORD_FUNCTION_NOT_FOUND'], $name, $methodName), \Message::CLASS_ERROR);
                 continue;
             }
 
@@ -664,10 +852,10 @@ class ViewGenerator {
 
             if (!empty($relatedClassInputFieldName)
                 && !empty($_POST[$relatedClassInputFieldName])
-                && \Env::get('em')->getClassMetadata($entityWithNS)->isCollectionValuedAssociation($name)
+                && $em->getClassMetadata($entityWithNS)->isCollectionValuedAssociation($name)
             ) {
                 // store one to many associated entries
-                $associatedEntityClassMetadata = \Env::get('em')->getClassMetadata($value["targetEntity"]);
+                $associatedEntityClassMetadata = $em->getClassMetadata($value["targetEntity"]);
 
                 foreach ($_POST[$relatedClassInputFieldName] as $relatedPostData) {
                     $entityData = array();
@@ -676,7 +864,7 @@ class ViewGenerator {
                     // if we have already an entry (on update) we take the existing one and update it.
                     // Otherwise we create a new one
                     if (isset($entityData['id']) && $entityData['id'] != 0) { // update/edit case
-                        $associatedClassRepo = \Env::get('em')->getRepository($value["targetEntity"]);
+                        $associatedClassRepo = $em->getRepository($value["targetEntity"]);
                         $associatedEntity = $associatedClassRepo->find($entityData['id']);
                     } else { // add case
                         $associatedEntity = $associatedEntityClassMetadata->newInstance();
@@ -684,14 +872,19 @@ class ViewGenerator {
 
                     // if there are any entries which the user wants to delete, we delete them here
                     if (isset($entityData['delete']) && $entityData['delete'] == 1) {
-                        \Env::get('em')->remove($associatedEntity);
+                        $em->remove($associatedEntity);
                     }
 
                     // save the "n" associated class data to its class
                     $this->savePropertiesToClass($associatedEntity, $associatedEntityClassMetadata, $entityData, $entityWithNS);
 
                     // Linking 1: link the associated entity to the main entity for doctrine
-                    $entity->{'add' . preg_replace('/_([a-z])/', '\1', ucfirst(substr($name, 0, -1)))}($associatedEntity);
+                    $methodName = 'add' . str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+                    if (!in_array($methodName, $classMethods)) {
+                        \Message::add(sprintf($_ARRAYLANG['TXT_CORE_RECORD_FUNCTION_NOT_FOUND'], $name, $methodName), \Message::CLASS_ERROR);
+                        continue;
+                    }
+                    $entity->$methodName($associatedEntity);
 
                     // Linking 2: link the main entity to its associated entity. This should normally be done by
                     // 'Linking 1' but because not all components have implemented this, we do it here by ourselves
@@ -699,7 +892,7 @@ class ViewGenerator {
                     if (method_exists($associatedEntity, $method)) {
                         $associatedEntity->{$method}($entity);
                     }
-                    
+
                     // buffer entity, so we can persist it later
                     $associatedEntityToPersist[] = $associatedEntity;
                 }
@@ -721,8 +914,10 @@ class ViewGenerator {
         $showSuccessMessage = false;
         if ($entity instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
             // Save the yaml entities
-            $entityRepository = \Env::get('em')->getRepository($entityWithNS);
-            $entityRepository->add($entity);
+            $entityRepository = $em->getRepository($entityWithNS);
+            if (!$entityRepository->isManaged($entity)) {
+                $entityRepository->add($entity);
+            }
             $entityRepository->flush();
             $showSuccessMessage = true;
         } else if ($entity instanceof \Cx\Model\Base\EntityBase) {
@@ -730,13 +925,13 @@ class ViewGenerator {
                can not be null but was not set in the post request. This cases should be caught here. */
             try{
                 // persist main entity. This must be done first, otherwise saving oneToManyAssociated entities won't work
-                \Env::get('em')->persist($entity);
+                $em->persist($entity);
                 // now we can persist the associated entities. We need to do this, because otherwise it will fail,
                 // if yaml does not contain a cascade option
                 foreach ($associatedEntityToPersist as $associatedEntity) {
-                    \Env::get('em')->persist($associatedEntity);
+                    $em->persist($associatedEntity);
                 }
-                \Env::get('em')->flush();
+                $em->flush();
                 $showSuccessMessage = true;
             } catch(\Cx\Core\Error\Model\Entity\ShinyException $e){
                 /* Display the message from the exception. If this message is empty, we output a general message,
@@ -760,11 +955,11 @@ class ViewGenerator {
             \Message::add($successMessage);
         }
         // get the proper action url and redirect the user
-        $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
+        $actionUrl = clone $cx->getRequest()->getUrl();
         $actionUrl->setParam($param, null);
         \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
     }
-    
+
     /**
      * This function is used to delete an entry
      *
@@ -778,18 +973,20 @@ class ViewGenerator {
     protected function removeEntry($entityWithNS) {
         global $_ARRAYLANG;
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
         $deleteId = !empty($_GET['deleteid']) ? contrexx_input2raw($_GET['deleteid']) : '';
         $entityObject = $this->object->getEntry($deleteId);
         if (empty($entityObject)) {
             \Message::add($_ARRAYLANG['TXT_CORE_RECORD_NO_SUCH_ENTRY'], \Message::CLASS_ERROR);
             return;
         }
-        $entityObj = \Env::get('em')->getClassMetadata($entityWithNS);
+        $entityObj = $em->getClassMetadata($entityWithNS);
         $id = $entityObject[$entityObj->getSingleIdentifierFieldName()]; //get primary key value
 
         // delete all n associated entries, because the are not longer used and we can delete the main entry only if we
         // have no more n associated entries
-        $pageRepo = \Env::get('em')->getRepository($entityWithNS);
+        $pageRepo = $em->getRepository($entityWithNS);
         $associationMappings = $entityObj->getAssociationMappings();
         foreach ($associationMappings as $mapping => $value) {
             // we only need to delete the n associated values, the single associated will be handled by doctrine itself
@@ -799,25 +996,25 @@ class ViewGenerator {
             $mainEntity = $pageRepo->find($id);
             $associatedEntities = $mainEntity->{'get'.preg_replace('/_([a-z])/', '\1', ucfirst($mapping))}();
             foreach ($associatedEntities as $associatedEntity) {
-                \Env::get('em')->remove($associatedEntity);
+                $em->remove($associatedEntity);
             }
         }
 
         if (!empty($id)) {
-            $entityObj = \Env::get('em')->getRepository($entityWithNS)->find($id);
+            $entityObj = $em->getRepository($entityWithNS)->find($id);
             if (!empty($entityObj)) {
                 if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
-                    $ymlRepo = \Env::get('em')->getRepository($entityWithNS);
+                    $ymlRepo = $em->getRepository($entityWithNS);
                     $ymlRepo->remove($entityObj);;
                     $ymlRepo->flush();
                 } else {
-                    \Env::get('em')->remove($entityObj);
-                    \Env::get('em')->flush();
+                    $em->remove($entityObj);
+                    $em->flush();
                 }
                 \Message::add($_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL']);
             }
         }
-        $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
+        $actionUrl = clone $cx->getRequest()->getUrl();
         $actionUrl->setParam('deleteid', null);
         \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
     }
@@ -877,9 +1074,12 @@ class ViewGenerator {
             // cannot save, no such entry
             \Message::add($_ARRAYLANG['TXT_CORE_RECORD_NO_SUCH_ENTRY'], \Message::CLASS_ERROR);
             return false;
-        } else if (!$this->formGenerator->isValid()
-                   || (isset($this->options['validate']) 
-                   && !$this->options['validate']($this->formGenerator))
+        } else if (
+            !$this->formGenerator->isValid() ||
+            (
+                isset($this->options['validate']) &&
+                !$this->options['validate']($this->formGenerator)
+            )
         ) {
             // data validation failed
             \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
@@ -894,17 +1094,17 @@ class ViewGenerator {
      *
      * @access protected
      * @param string $parameterName name of the param
-     * */
+     */
     protected function setProperCancelUrl($parameterName){
         if (!isset($this->options['cancelUrl']) || !is_a($this->options['cancelUrl'], 'Cx\Core\Routing\Url')) {
             $this->options['cancelUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
         }
         $this->options['cancelUrl']->setParam($parameterName, null);
     }
-    
+
     /**
      * Adds/sets a foreign entity (1:1 or n:1)
-     * 
+     *
      * @param string $targetEntity FQCN of foreign entity
      * @param array $criteria Criteria to fetch the entity to set
      * @param object $entity Entity to set foreign entity of
@@ -913,5 +1113,215 @@ class ViewGenerator {
     protected function storeSingleValuedAssociation($targetEntity, $criteria, $entity, $methodName) {
         $association = \Env::get('em')->getRepository($targetEntity)->findOneBy($criteria);
         $entity->$methodName($association);
+    }
+
+    /**
+     * Get the Url to edit an entry of this VG instance
+     * @param int|string|array|object $entryOrId Entity or entity key
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with edit arguments
+     */
+    public function getEditUrl($entryOrId, $url = null) {
+        return static::getVgEditUrl($this->viewId, $entryOrId, $url);
+    }
+
+    /**
+     * Get the Url to delete an entry of this VG instance
+     * @param int|string|array|object $entryOrId Entity or entity key
+     * @return \Cx\Core\Routing\Url URL with delete arguments
+     */
+    public function getDeleteUrl($entryOrId) {
+        return static::getVgDeleteUrl($this->viewId, $entryOrId);
+    }
+
+    /**
+     * Get the Url to create an entry in this VG instance
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with create arguments
+     */
+    public function getCreateUrl($url = null) {
+        return static::getVgCreateUrl($this->viewId, $url);
+    }
+
+    /**
+     * Get the Url to perform search in this VG instance
+     * @param string $term Search term
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with search arguments
+     */
+    public function getSearchUrl($term, $url = null) {
+        return static::getVgSearchUrl($this->viewId, $term, $url);
+    }
+
+    /**
+     * Get the Url to perform extended search in this VG instance
+     * @param array $criteria field=>value type array
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with extended search arguments
+     */
+    public function getExtendedSearchUrl($criteria, $url = null) {
+        return static::getVgExtendedSearchUrl($this->viewId, $criteria, $url);
+    }
+
+    /**
+     * Get the Url to sort entries in this VG instance
+     * @param array $sort field=>SORT_ASC|SORT_DESC type array
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with sort arguments
+     */
+    public function getSortUrl($sort, $url = null) {
+        return static::getVgSortUrl($this->viewId, $sort, $url);
+    }
+
+    /**
+     * Gets the Url object used to build Urls for this VG
+     * @return \Cx\Core\Routing\Url Url object used to build Urls for this VG
+     */
+    protected static function getBaseUrl() {
+        return clone \Cx\Core\Core\Controller\Cx::instanciate()->getRequest()->getUrl();
+    }
+
+    /**
+     * Get the Url to edit an entry of a VG instance
+     * @param int $vgId ViewGenerator id
+     * @param int|string|array|object $entryOrId Entity or entity key
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with edit arguments
+     */
+    public static function getVgEditUrl($vgId, $entryOrId, $url = null) {
+        if (!$url) {
+            $url = static::getBaseUrl();
+        }
+        static::appendVgParam(
+            $url,
+            $vgId,
+            'editid',
+            static::getEditId($entryOrId)
+        );
+        return $url;
+    }
+
+    /**
+     * Parses the mixed type $entryOrId param for all the get...Url methods
+     * @param int|string|array|object $entryOrId Entity or entity key
+     * @return string Entity identifier
+     */
+    protected static function getEditId($entryOrId) {
+        if (is_array($entryOrId)) {
+            return implode('/', $entryOrId);
+        }
+        if (is_object($entryOrId)) {
+            // find id using doctrine or dataset
+        }
+        return $entryOrId;
+    }
+
+    /**
+     * Appends a VG-style parameter to an Url object
+     *
+     * VG-style means:
+     * {<vgIncrementNumber>,(<key>=)<value>}(,...) 
+     * @param \Cx\Core\Routing\Url $url Url object to apply params to
+     * @param int $vgId ID of the VG for the parameter
+     * @param string $name Parameter name
+     * @param string $value Parameter value
+     */
+    protected static function appendVgParam($url, $vgId, $name, $value) {
+        $params = $url->getParamArray();
+        $pre = '';
+        if (isset($params[$name])) {
+            $pre = $params[$name];
+        }
+        if (!empty($pre)) {
+            $pre .= ',';
+        }
+        $url->setParam(
+            $name,
+            $pre . '{' . $vgId . ',' . $value . '}'
+        );
+    }
+
+    /**
+     * Get the Url to delete an entry of a VG instance
+     * @param int $vgId ID of the VG for the parameter
+     * @param int|string|array|object $entryOrId Entity or entity key
+     * @return \Cx\Core\Routing\Url URL with delete arguments
+     */
+    public static function getVgDeleteUrl($vgId, $entryOrId) {
+        $url = static::getBaseUrl();
+        // this is temporary:
+        $url->setParam('deleteid', static::getEditId($entryOrId));
+        $url->setParam('vg_increment_number', $vgId);
+        return $url;
+        // this would be the way to go:
+        static::appendVgParam($url, $vgId, 'deleteid', static::getEditId($entryOrId));
+        return $url;
+    }
+
+    /**
+     * Get the Url to create an entry in a VG instance
+     * @param int $vgId ID of the VG for the parameter
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with create arguments
+     */
+    public static function getVgCreateUrl($vgId, $url = null) {
+        if (!$url) {
+            $url = static::getBaseUrl();
+        }
+        // this is temporary:
+        $url->setParam('add', $vgId);
+        return $url;
+        // this would be the way to go:
+        static::appendVgParam($url, $vgId, 'add', '');
+        return $url;
+    }
+
+    /**
+     * Get the Url to perform search in a VG instance
+     * @param int $vgId ID of the VG for the parameter
+     * @param string $term Search term
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with search arguments
+     */
+    public static function getVgSearchUrl($vgId, $term, $url = null) {
+        if (!$url) {
+            $url = static::getBaseUrl();
+        }
+        static::appendVgParam($url, $vgId, 'term', $term);
+        return $url;
+    }
+
+    /**
+     * Get the Url to perform extended search in a VG instance
+     * @param int $vgId ID of the VG for the parameter
+     * @param array $criteria field=>value type array
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with extended search arguments
+     */
+    public static function getVgExtendedSearchUrl($vgId, $criteria, $url = null) {
+        if (!$url) {
+            $url = static::getBaseUrl();
+        }
+        foreach ($criteria as $field=>$value) {
+            static::appendVgParam($url, $vgId, 'search', $field . '=' . $value);
+        }
+        return $url;
+    }
+
+    /**
+     * Get the Url to sort entries in a VG instance
+     * @param int $vgId ID of the VG for the parameter
+     * @param array $sort field=>SORT_ASC|SORT_DESC type array
+     * @param \Cx\Core\Routing\Url $url (optional) If supplied necessary params are applied
+     * @return \Cx\Core\Routing\Url URL with sort arguments
+     */
+    public static function getVgSortUrl($vgId, $sort, $url = null) {
+        if (!$url) {
+            $url = static::getBaseUrl();
+        }
+        foreach ($sort as $field=>$order) {
+            static::appendVgParam($url, $vgId, 'order', $field . '=' . $order);
+        }
+        return $url;
     }
 }

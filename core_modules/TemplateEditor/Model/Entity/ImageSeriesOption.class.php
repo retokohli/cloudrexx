@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
@@ -35,8 +35,8 @@ use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
 /**
  * Class ImageSeriesOption
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
@@ -48,17 +48,19 @@ class ImageSeriesOption extends Option
      *
      * @var array
      */
-    protected $urls;
+    protected $urls = array();
 
     /**
-     * @param String $name
-     * @param array  $translations
+     * @param String $name Name of the option
+     * @param array  $translations Array with translations for option.
      * @param array  $data
-     *
      */
     public function __construct($name, $translations, $data)
     {
         parent::__construct($name, $translations, $data);
+        if (!is_array($data['urls'])) {
+            return;
+        }
         foreach ($data['urls'] as $key => $url) {
             if (!empty($url)) {
                 $this->urls[$key] = $url;

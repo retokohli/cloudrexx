@@ -38,13 +38,10 @@
 
 namespace Cx\Core_Modules\MediaBrowser\Controller;
 
-use Cx\Core\ContentManager\Model\Entity\Page;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
 use Cx\Core\Html\Sigma;
-use Cx\Core\MediaSource\Model\Entity\ThumbnailGenerator;
 use Cx\Core_Modules\MediaBrowser\Model\Event\MediaBrowserEventListener;
 use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
-use Cx\Lib\FileSystem\FileSystemException;
 
 /**
  * Class ComponentController
@@ -68,9 +65,19 @@ class ComponentController extends
      * {@inheritdoc }
      */
     public function getControllerClasses() {
-        // Return an empty array here to let the component handler know that there
-        // does not exist a backend, nor a frontend controller of this component.
-        return array('Backend');
+        if (
+            in_array(
+            'Workbench',
+                \Cx\Core\ModuleChecker::getInstance(
+                    $this->cx->getDb()->getEntityManager(),
+                    $this->cx->getDb()->getAdoDb(),
+                    $this->cx->getClassLoader()
+                )->getCoreModules()
+            )
+        ) {
+            return array('Backend');
+        }
+        return array();
     }
 
     /**
@@ -90,11 +97,29 @@ class ComponentController extends
         );
     }
 
+    /**
+     * Register your events here
+     *
+     * Do not do anything else here than list statements like
+     * $this->cx->getEvents()->addEvent($eventName);
+     */
+    public function registerEvents()
+    {
+        $eventHandlerInstance = $this->cx->getEvents();
+        $eventHandlerInstance->addEvent('MediaBrowser.Plugin:initialize');
+    }
 
     /**
-     * {@inheritdoc }
+     * Register your event listeners here
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * Keep in mind, that you can also register your events later.
+     * Do not do anything else here than initializing your event listeners and
+     * list statements like
+     * $this->cx->getEvents()->addEventListener($eventName, $listener);
      */
-    public function preContentParse(Page $page) {
+    public function registerEventListeners() {
         $this->cx->getEvents()->addEventListener(
             'mediasource.load', new MediaBrowserEventListener($this->cx)
         );
@@ -151,27 +176,30 @@ class ComponentController extends
             );
             $thumbnailsTemplate->parse('thumbnails');
         }
-
         \ContrexxJavascript::getInstance()->setVariable(
             'thumbnails_template', $thumbnailsTemplate->get(),
             'mediabrowser'
         );
-
         \ContrexxJavascript::getInstance()->setVariable(
-            'chunk_size', floor((\FWSystem::getMaxUploadFileSize()-1000000)/1000000).'mb', 'mediabrowser'
+            'chunk_size', min(floor((\FWSystem::getMaxUploadFileSize()-1000000)/1000000), 20).'mb', 'mediabrowser'
         );
         \ContrexxJavascript::getInstance()->setVariable(
             'languages', \FWLanguage::getActiveFrontendLanguages(), 'mediabrowser'
         );
-
         \ContrexxJavascript::getInstance()->setVariable(
             'language', \FWLanguage::getLanguageCodeById(\FWLanguage::getDefaultLangId()), 'mediabrowser'
         );
-
         \JS::activate('mediabrowser');
+        // Define the module
+        \JS::registerJS('core_modules/MediaBrowser/View/Script/module.js');
+        // Dependencies must be loaded first
+        \JS::registerJS('core_modules/MediaBrowser/View/Script/service/dataTabs.js');
+        // Enable extensions after the dataTabs service, where they plug into
+        $this->cx->getEvents()->triggerEvent(
+            'MediaBrowser.Plugin:initialize'
+        );
+        // Load the dependant main part after extensions have been connected
         \JS::registerJS('core_modules/MediaBrowser/View/Script/MediaBrowser.js');
-
     }
-
 
 }

@@ -72,6 +72,9 @@ $_CONFIG['systemStatus']              = "on";
 $_CONFIG['timezone']                  = "Europe/Zurich";
 $_CONFIG['useCustomizings']           = "on";
 $_CONFIG['xmlSitemapStatus']          = "on";
+$_CONFIG['captchaMethod']             = "contrexxCaptcha";
+$_CONFIG['recaptchaSiteKey']          = "";
+$_CONFIG['recaptchaSecretKey']        = "";
 
 /**
 * -------------------------------------------------------------------------
@@ -136,7 +139,7 @@ $_CONFIG['feedNewsMLStatus']          = 0;
 
 /**
 * -------------------------------------------------------------------------
-* 
+*
 * -------------------------------------------------------------------------
 */
 $_CONFIG['bannerStatus']              = 0;

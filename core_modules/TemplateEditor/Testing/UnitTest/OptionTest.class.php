@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 
 
 namespace Cx\Core_Modules\TemplateEditor\Testing\UnitTest;
@@ -41,8 +41,8 @@ use Cx\Core_Modules\TemplateEditor\Model\Entity\TextOption;
 /**
  * Class OptionTest
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
@@ -93,7 +93,7 @@ class OptionTest extends ContrexxTestCase
         $this->assertTrue((strpos($renderedTemplate, 'checked') !== 0));
     }
 
-    public function testColorOption(){
+    public function testColorOption() {
         $color            = '#efefef';
         $choice            = array('#ededed', '#fefefe');
         $colorOption      = new ColorOption(
@@ -107,13 +107,13 @@ class OptionTest extends ContrexxTestCase
         $backendTemplate->setTemplate($this->template);
         $colorOption->renderOptionField($backendTemplate);
         $renderedTemplate = $backendTemplate->get();
-        foreach ($choice as $colorChoice){
+        foreach ($choice as $colorChoice) {
             $this->assertTrue((strpos($renderedTemplate, $colorChoice) !== 0));
         }
         $this->assertTrue((strpos($renderedTemplate, $color) !== 0));
     }
 
-    public function testImageOption(){
+    public function testImageOption() {
         $url = 'https://placekitten.com/1500/300';
         $imageOption = new ImageOption( 'test', array(1 => 'Unit-Test'),
             array(
@@ -126,7 +126,7 @@ class OptionTest extends ContrexxTestCase
         $this->assertTrue((strpos($renderedTemplate, $url) !== 0));
     }
 
-    public function testImageSeriesOption(){
+    public function testImageSeriesOption() {
         $urls = array('https://placekitten.com/1500/300');
         $imageOption = new ImageSeriesOption( 'test', array(1 => 'Unit-Test'),
             array(

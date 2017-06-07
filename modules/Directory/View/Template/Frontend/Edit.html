@@ -6,7 +6,7 @@
     <!-- BEGIN directoryInputFields -->
     <div class="fields">
         <form name="addForm" enctype="multipart/form-data" method="post" action="index.php?section=Directory&amp;cmd=edit" onSubmit="{DIRECTORY_FORM_ONSUBMIT}">
-            <input type="hidden" name="edit_id" size="10" value="{DIRECTORY_ID}" /> 
+            <input type="hidden" name="edit_id" size="10" value="{DIRECTORY_ID}" />
             <p><label>{TXT_DIRECTORY_CATEGORY}&nbsp;<font color="red">*</font></label></p>
             <div class="categorySelect container-fluid">
                 <div class="row">
@@ -64,9 +64,13 @@
             <!-- BEGIN inputfieldsOutput -->
             <p><label>{FIELD_NAME}&nbsp;{FIELD_REQUIRED}</label>{FIELD_VALUE}</p>
             <!-- END inputfieldsOutput -->
+            <input type="hidden" name="imgUploaderId" value="{DIRECTORY_IMAGE_UPLOADER_ID}"/>
+            <input type="hidden" name="fileUploaderId" value="{DIRECTORY_FILE_UPLOADER_ID}"/>
             <p><input class="btn btn-default" type="submit" name="edit_submit" value="{TXT_DIRECTORY_UPDATE}" /></p>
         </form>
     </div>
     <!-- END directoryInputFields -->
 </div>
 {DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK}
+{DIRECTORY_IMAGE_UPLOADER_CODE}
+{DIRECTORY_FILE_UPLOADER_CODE}

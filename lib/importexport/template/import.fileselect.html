@@ -15,6 +15,19 @@
 			document.getElementById('csv_enclosure').style.display = "none";
 		}
 	}
+    function importUploaderCallback(callback) {
+        if (typeof callback[0] !== 'undefined') {
+            var uploaderField = $J('#importfile'),
+                data       = callback[0].split('/'),
+                fileName   = data.pop();
+            uploaderField.val(fileName);
+        }
+    }
+    $J(function(){
+        $J('.uploader-button, .uploader-modal button.btn').click(function() {
+            return false;
+        });
+    });
 /* ]]> */
 </script>
 
@@ -41,7 +54,9 @@
 		{TXT_CHOOSE_FILE}
 		</td>
 		<td>
-			<input type="file" name="importfile" style="width: 200px;"/>
+            <input type="text" name="importfile" value="" id="importfile" autocomplete="off" style="width: 200px;" onfocus="this.select();" />
+            &nbsp;            
+			{IMPORT_UPLOADER_BUTTON}
 		</td>
 	</tr>
 	<tr style="display: none;" class="row1" id="csv_separator">
@@ -77,6 +92,7 @@
 </script>
 <br /><br />
 
+<input type="hidden" value="{IMPORT_UPLOADER_ID}" name="importUploaderId" />
 <input type="submit" value="{TXT_IMPORT}" name="imported" />
 </form>
 <!-- END import_fileselect.html -->

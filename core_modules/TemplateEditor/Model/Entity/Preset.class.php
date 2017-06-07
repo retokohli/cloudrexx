@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,10 +24,10 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
- * @copyright   Comvation AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   Cloudrexx AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  */
 
@@ -39,8 +39,8 @@ use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
 /**
  * Class Preset
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
@@ -85,7 +85,7 @@ class Preset implements YamlSerializable
     public function yamlSerialize()
     {
         $yml = array('options' => array());
-        foreach ($this->optionValues as $option){
+        foreach ($this->optionValues as $option) {
             $yml['options'][] = array('name' => $option->getName(),
                'specific' => $option->getValue());
         }
@@ -142,6 +142,9 @@ class Preset implements YamlSerializable
      */
     public function getOption($name)
     {
+        if (!isset($this->optionValues[$name])) {
+            return '';
+        }
         return $this->optionValues[$name];
     }
 
@@ -152,7 +155,7 @@ class Preset implements YamlSerializable
      *
      * @return bool
      */
-    public static function isValidPresetName($presetName){
+    public static function isValidPresetName($presetName) {
         if (empty($presetName) || !preg_match("/^[a-z0-9]+$/i",$presetName)){
             return false;
         }

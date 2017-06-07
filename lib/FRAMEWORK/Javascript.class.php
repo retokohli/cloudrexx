@@ -170,7 +170,7 @@ cx.jQuery(document).ready(function(){
                      ),
                 ),
                 '1.6.1' => array(
-            		'jsfiles'       => array(
+                    'jsfiles'       => array(
                         'lib/javascript/jquery/1.6.1/js/jquery.min.js',
                      ),
                 ),
@@ -221,11 +221,10 @@ cx.jQuery(document).ready(function(){
             ),
             'dependencies' => array('jquery'),
         ),
-        'jquery-cookie' => array(
+        'js-cookie' => array(
             'jsfiles'       => array(
-                'lib/javascript/jquery/cookie/jquery.cookie.js',
+                'lib/javascript/js-cookie.min.js',
             ),
-            'dependencies' => array('jquery'),
         ),
         // Required by HTML::getDatepicker() (modules/shop)!
         // (Though other versions will do just as well)
@@ -311,7 +310,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'lib/javascript/jquery/jstree/jquery.jstree.js',
                 'lib/javascript/jquery/hotkeys/jquery.hotkeys.js',
             ),
-            'dependencies' => array('jquery', 'jquery-cookie'),
+            'dependencies' => array('jquery', 'js-cookie'),
         ),
         'ace' => array(
             'jsfiles'  => array(
@@ -435,20 +434,26 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         ),
         'mediabrowser' => array(
             'jsfiles' => array(
-                'lib/javascript/jquery/1.9.1/js/jquery.min.js',
-                'lib/plupload/js/moxie.min.js',
-                'lib/plupload/js/plupload.full.min.js',
-                'lib/javascript/angularjs/angular.js',
-                'lib/javascript/angularjs/angular-route.js',
-                'lib/javascript/angularjs/angular-animate.js',
+                'lib/javascript/jquery/2.0.3/js/jquery.min.js',
+                'lib/plupload/js/moxie.min.js?v=2',
+                'lib/plupload/js/plupload.full.min.js?v=2',
+                'lib/javascript/angularjs/angular.js?v=2',
+                'lib/javascript/angularjs/angular-route.js?v=2',
+                'lib/javascript/angularjs/angular-animate.js?v=2',
                 'lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js',
                 'lib/javascript/angularjs/ui-bootstrap-tpls-0.11.2.min.js',
                 'lib/javascript/bootbox.min.js'
             ),
             'cssfiles' => array(
-                'core_modules/MediaBrowser/View/Style/MediaBrowser.css'
+                'core_modules/MediaBrowser/View/Style/MediaBrowser.css?v=2',
+                'core_modules/MediaBrowser/View/Style/Frontend.css?v=2'
             ),
-            'dependencies' => array('twitter-bootstrap' => '3.2.0', 'cx'),
+            'dependencies' => array(
+                'cx',
+                // Note: loading jQuery as a dependency does not work as it would
+                //       interfere with jQuery plugins
+                //'jquery'    => '^([^1]\..*|1\.[^0-8]*\..*)$', // jquery needs to be version 1.9.0 or higher
+            ),
             'specialcode' => 'if (typeof cx.variables.get(\'jquery\', \'mediabrowser\') == \'undefined\'){
     cx.variables.set({"jquery": jQuery.noConflict(true)},\'mediabrowser\');
 }'
@@ -457,6 +462,18 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             'jsfiles' => array(
                 'lib/javascript/intro/intro.min.js',
             )
+        ),
+        'schedule-publish-tooltip' => array(
+            'jsfiles' => array(
+                'core/Core/View/Script/ScheduledPublishing.js',
+            ),
+            'cssfiles' => array(
+                'core/Core/View/Style/ScheduledPublishing.css'
+            ),
+            'loadcallback' => 'initScheduledPublishing',
+            'dependencies' => array(
+                'cx',
+            ),
         ),
     );
 
@@ -531,7 +548,8 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      * @var array associative array ( '/regexstring/' => 'componentToIncludeInstead' )
      */
     protected static $alternatives = array(
-        '/^jquery([-_]\d\.\d(\.\d)?)?(\.custom)?(\.m(in|ax))?\.js$/i' => 'jquery'
+        '/^jquery([-_]\d\.\d(\.\d)?)?(\.custom)?(\.m(in|ax))?\.js$/i' => 'jquery',
+        '/^contrexxJs\.js$/i' => 'cx',
     );
 
     /**
@@ -593,16 +611,96 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         }
         self::$active[] = $name;
         if (!empty($data['dependencies']) && $dependencies) {
-            foreach ($data['dependencies'] as $dep) {
-                self::activate($dep);
+            foreach ($data['dependencies'] as $dep => $depVersion) {
+                if (is_string($dep)) {
+                    self::activateByVersion($dep, $depVersion, $name);
+                } else {
+                    // dependency does not specify a particular version of the library to load
+                    // -> $depVersion contains the library name
+                    self::activate($depVersion);
+                }
             }
         }
         if (isset($data['loadcallback']) && isset($options)) {
-            self::$data['loadcallback']($options);
+            self::{$data['loadcallback']}($options);
         }
         return true;
     }
 
+    /**
+     * Activate a specific version of an available js file
+     *
+     * @static
+     * @param  string  $name Name of the library to load
+     * @param  string  $version Specific version of the library to load.
+     *                 Specified as 'x.z.y'. Also accepts PCRE wildchars.
+     * @param  string  $dependencyOf is the optional name of the library
+     *                 that triggered the loaded of the specific library version.
+     * @return bool     TRUE if specific version of the library has been loaded. FALSE on failure
+     */
+    public static function activateByVersion($name, $version, $dependencyOf = null) {
+        // abort in case the library is unknown
+        if (!isset(self::$available[$name])) {
+            return false;
+        }
+
+        // fetch the library meta data
+        $library = self::$available[$name];
+
+        // check if a matching library has already been loaded
+        $activatedLibraries = preg_grep('/^'.$name.'-version-/', self::$active);
+        // check if any of the already loaded libraries can be used as an alternativ
+        foreach ($activatedLibraries as $activatedLibrary) {
+            $activatedLibraryVersion = str_replace($name.'-version-', '', $activatedLibrary);
+            if (!preg_match('/'.$version.'/', $activatedLibraryVersion)) {
+                continue;
+            }
+
+            if ($name != 'jquery' || !$dependencyOf) {
+                return true;
+            }
+
+            $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$dependencyOf': jQuery.noConflict()}};";
+            $customAvailableLibrary = $name.'-version-'.$activatedLibraryVersion;
+            self::$available[$customAvailableLibrary]['specialcode'] .= $libraryVersionData;
+
+            // trigger the activate again to push the library up in the dependency chain
+            self::activate($customAvailableLibrary);
+            return true;
+        }
+
+        // abort in case the library does not specify particular versions
+        if (!isset($library['versions'])) {
+            return false;
+        }
+
+        // try to load a matching version of the library
+        foreach ($library['versions'] as $libraryVersion => $libraryVersionData) {
+            if (!preg_match('/'.$version.'/', $libraryVersion)) {
+                continue;
+            }
+
+            // register specific version of the library
+            $customAvailableLibrary = $name.'-version-'.$libraryVersion;
+            if ($name == 'jquery') {
+                if ($dependencyOf) {
+                    $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$dependencyOf': jQuery.noConflict()}};";
+                } else {
+                    $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$libraryVersion': jQuery.noConflict()}};";
+                }
+                // we have to load cx again as we are using cx.libs in the specialcode
+                $libraryVersionData['dependencies'] = array('cx');
+            }
+            self::$available[$customAvailableLibrary] = $libraryVersionData;
+
+            // activate the specific version of the library
+            self::activate($customAvailableLibrary);
+            return true;
+        }
+
+        // no library by the specified version found
+        return false;
+    }
 
     /**
      * Deactivate a previously activated js file
@@ -760,7 +858,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
 
             // set cx.variables with lazy loading file paths
             ContrexxJavascript::getInstance()->setVariable('lazyLoadingFiles', $lazyLoadingFiles, 'contrexx');
-            
+
             // Note the "reverse" here.  Dependencies are at the end of the
             // array, and must be loaded first!
             foreach (array_reverse(self::$active) as $name) {
@@ -783,7 +881,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                     $jsScripts[] = self::makeSpecialCode(array($data['specialcode']));
                 }
                 if (isset($data['makecallback'])) {
-                    self::$data['makecallback']();
+                    self::{$data['makecallback']}();
                 }
                 // Special case cloudrexx-API: fetch specialcode if activated
                 if ($name == 'cx') {
@@ -794,13 +892,13 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         }
 
         $jsScripts[] = self::makeJSFiles(self::$customJS);
-        
+
         // if jquery is activated, do a noConflict
         if (array_search('jquery', self::$active) !== false) {
-        $jsScripts[] = self::makeSpecialCode('$J = cx.jQuery = jQuery.noConflict();');
+            $jsScripts[] = self::makeSpecialCode('if (typeof jQuery != "undefined") { jQuery.noConflict(); }');
         }
         $jsScripts[] = self::makeJSFiles(self::$templateJS);
-        
+
         // no conflict for normal jquery version which has been included in template or by theme dependency
         $jsScripts[] = self::makeSpecialCode('if (typeof jQuery != "undefined") { jQuery.noConflict(); }');
         $retstring .= self::makeCSSFiles($cssfiles);
@@ -905,7 +1003,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         if (empty($code)) {
             return '';
         }
-        
+
         $retcode = "<script type=\"text/javascript\">\n/* <![CDATA[ */\n";
         if (is_array($code)) {
             $retcode .= implode("\r\n", $code);
@@ -950,7 +1048,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         $content = preg_replace_callback('/<script .*?src=(?:"|\')([^"\']*)(?:"|\').*?\/?>(?:<\/script>)?/i', array('JS', 'registerFromRegex'), $content);
         JS::restoreComments($content);
     }
-    
+
     /**
      * Finds all <link>-Tags in the passed HTML content, strips them out
      * and puts them in the internal CSS placeholder store.
@@ -976,7 +1074,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         JS::restoreComments($content);
         return $css;
     }
-    
+
     /**
      * Get an array of libraries which are ready to load in different versions
      * @return array the libraries which are ready to configure for skin
@@ -1029,4 +1127,20 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         return $name;
     }
 
+    /**
+     * Callback function to load related cx variables for "schedule-publish-tooltip" lib
+     *
+     * @param array $options options array
+     */
+    protected static function initScheduledPublishing($options)
+    {
+        global $_CORELANG;
+
+        \ContrexxJavascript::getInstance()->setVariable(array(
+            'active'            => $_CORELANG['TXT_CORE_ACTIVE'],
+            'inactive'          => $_CORELANG['TXT_CORE_INACTIVE'],
+            'scheduledActive'   => $_CORELANG['TXT_CORE_SCHEDULED_ACTIVE'],
+            'scheduledInactive' => $_CORELANG['TXT_CORE_SCHEDULED_INACTIVE'],
+        ), 'core/View');
+    }
 }

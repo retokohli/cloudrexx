@@ -204,10 +204,10 @@ class CrmLibrary
     */
     var $addressValues          = array(
                                         "",
-                                        array('label' => 'address', 'lang_variable' => "TXT_CRM_ADDRESS"), 
-                                        array('label' => 'city', 'lang_variable' => "TXT_CRM_CITY"), 
+                                        array('label' => 'address', 'lang_variable' => "TXT_CRM_ADDRESS"),
+                                        array('label' => 'city', 'lang_variable' => "TXT_CRM_CITY"),
                                         array('label' => 'state', 'lang_variable' => "TXT_CRM_STATE"),
-                                        array('label' => 'zip', 'lang_variable' => "TXT_CRM_ZIP"), 
+                                        array('label' => 'zip', 'lang_variable' => "TXT_CRM_ZIP"),
                                         array('label' => 'country', 'lang_variable' => "TXT_CRM_COUNTRY"),
                                         "type"
                                   );
@@ -726,7 +726,7 @@ class CrmLibrary
                                                 FROM     '.DBPREFIX.'module_'.$this->moduleNameLC.'_company_size
                                                 WHERE    status = "1"
                                                 ORDER BY sorting');
-        
+
         while (!$objResult->EOF) {
             $selected = ($selectedId == $objResult->fields['id']) ? 'selected' : '';
 
@@ -739,7 +739,78 @@ class CrmLibrary
             $objResult->MoveNext();
         }
     }
-    
+
+    /**
+     * Get company size name by id
+     *
+     * @param integer $companySizeId
+     *
+     * @return string name of the company size
+     */
+    public function getCompanySizeNameById($companySizeId)
+    {
+        global $objDatabase;
+
+        if (empty($companySizeId)) {
+            return false;
+        }
+
+        $objResult = $objDatabase->Execute('SELECT `company_size`
+                                                FROM `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_company_size`
+                                                WHERE `id` = "' . contrexx_raw2db($companySizeId) .
+                                                '" LIMIT 0, 1');
+
+        return ($objResult && $objResult->RecordCount()) ? $objResult->fields['company_size'] : '';
+    }
+
+    /**
+     * Get customer type name by id
+     *
+     * @param integer $customerTypeId customer type id
+     *
+     * @return string name of the customer type
+     */
+    public function getCustomerTypeNameById($customerTypeId)
+    {
+        global $objDatabase;
+
+        if (empty($customerTypeId)) {
+            return false;
+        }
+
+        $objResult = $objDatabase->Execute('SELECT `label`
+                                                FROM `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_customer_types`
+                                                WHERE `id` = "' . contrexx_raw2db($customerTypeId) .
+                                                '" LIMIT 0, 1');
+
+        return ($objResult && $objResult->RecordCount()) ? $objResult->fields['label'] : '';
+    }
+
+    /**
+     * Get industry type name by id
+     *
+     * @param integer $industryId industry type id
+     *
+     * @return string name of the industry type
+     */
+    public function getIndustryTypeNameById($industryId)
+    {
+        global $objDatabase;
+
+        if (empty($industryId)) {
+            return false;
+        }
+
+        $query = 'SELECT ind_loc.`value` FROM `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_industry_type_local` As ind_loc
+                    LEFT JOIN `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_industry_types` As ind
+                        ON (ind_loc.entry_id = ind.id)
+                    WHERE ind.id = "' . contrexx_raw2db($industryId) . '" LIMIT 0, 1';
+
+        $objResult = $objDatabase->Execute($query);
+
+        return ($objResult && $objResult->RecordCount()) ? $objResult->fields['value'] : '';
+    }
+
     /**
      * Get Industry Type Dropdown From DB
      *
@@ -1335,15 +1406,15 @@ class CrmLibrary
     function getContactsQuery($filter = array(), $sortField = 'c.id', $sortOrder = 0)
     {
         global $_LANGID, $_ARRAYLANG;
-        
+
         $where = array();
 
         $alphaFilter = isset($filter['companyname_filter']) ? contrexx_input2raw($filter['companyname_filter']) : '';
-        
+
         if (!empty($alphaFilter)) {
             $where[] = " (c.customer_name LIKE '".contrexx_input2raw($alphaFilter)."%')";
         }
-        
+
         $searchContactTypeFilter = isset($filter['contactSearch']) ? (array) $filter['contactSearch'] : array(1,2);
         $searchContactTypeFilter = array_map('intval', $searchContactTypeFilter);
         $where[] = " c.contact_type IN (".implode(',', $searchContactTypeFilter).")";
@@ -1380,42 +1451,49 @@ class CrmLibrary
         if (isset($filter['term']) && !empty($filter['term'])) {
             $gender     = ($filter['term'] == 'male' || $filter['term'] == 'Männlich') ? 2 : (($filter['term'] == 'female' || $filter['term'] == 'Weiblich') ? 1 : '');
             switch (true) {
-            case (preg_match("/(^|[\n ])([a-z0-9&\-_\.]+?)@([\w\-]+\.([\w\-\.]+)+)/i", $filter['term'])):
-                $filter['term'] = '"'.$filter['term'].'"';
-                break;
-            case (preg_match("/(^|[\n ])([\w]*?)((ht|f)tp(s)?:\/\/[\w]+[^ \,\"\n\r\t<]*)/is", $filter['term']) || preg_match("/(^|[\n ])([\w]*?)((www|ftp)\.[^ \,\"\t\n\r<]*)/is", $filter['term'])):
-                $filter['term'] = '"'.$filter['term'].'"';
-                break;
-            case (preg_match('/[^a-z0-9 _]+/i', $filter['term'])):
+            case (   preg_match("/(^|[\n ])([\w]*?)((ht|f)tp(s)?:\/\/[\w]+[^ \,\"\n\r\t<]*)/is", $filter['term'])
+                  || preg_match("/(^|[\n ])([\w]*?)((www|ftp)\.[^ \,\"\t\n\r<]*)/is", $filter['term'])
+                  || preg_match("/(^|[\n ])([a-z0-9&\-_\.]+?)@([\w\-]+\.([\w\-\.]+)+)/i", $filter['term'])
+                 ):
                 $filter['term'] = '"'.$filter['term'].'"';
                 break;
             case (preg_match('/(\w+[+-.]\w+[\w]+[^ \,\"\n\r\t<]*)/is', $filter['term'])):
                 $filter['term'] = preg_replace('/(\w+[+-.]\w+[\w]+[^ \,\"\n\r\t<]*)/is', '+"$0"', $filter['term']);
                 break;
-//            case (!preg_match('/[\+|\-]/', $filter['term'])):
-//                $filter['term'] = preg_replace('/\s+/', ' +', "+".$filter['term']);
-//                break;
-            default:
-                $filter['term'] = '"'.$filter['term'].'"';
+            case preg_match('/[\*|\?]/', $filter['term']):
+                $filter['term'] = preg_replace('/[\*|\?]/', '*', $filter['term']);
                 break;
-            } 
+            case (preg_match('/[^a-z0-9 _~]+/i', $filter['term'])):
+                $filter['term'] = '"'.$filter['term'].'*"';
+                break;
+            case preg_match('/[\~]/', $filter['term']):
+                $filter['term'] = preg_replace('/[\~]/', '', $filter['term']);
+            case (!preg_match('/[\+|\-]/', $filter['term'])):
+                $filter['term'] = preg_replace('/\s+/', ' +', "+".$filter['term']) . '*';
+                break;
+            default:
+                $filter['term'] = '"'.$filter['term'].'*"';
+                break;
+            }
             if (!empty($gender)) {
                 $genderQuery = "OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_contacts` WHERE id = c.id AND gender = '".$gender."' LIMIT 1)";
-            } 
+            }
             $orderBy    = "nameRelevance DESC, familyNameRelevance DESC, c.customer_name ASC";
-            $orderQuery = "MATCH (c.customer_name) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) AS nameRelevance,
-                           MATCH (c.contact_familyname) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) AS familyNameRelevance,";
-            $where[]    = "((SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_emails` WHERE c.id = contact_id AND MATCH (email) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
-                            OR MATCH (c.customer_id, c.customer_name, c.contact_familyname, c.contact_role, c.notes) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) 
-                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_websites` WHERE c.id = contact_id AND MATCH (url) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
-                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_social_network` WHERE c.id = contact_id AND MATCH (url) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
-                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_phone` WHERE c.id = contact_id AND MATCH (phone) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
-                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_comment` WHERE c.id = customer_id AND MATCH (comment) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
-                            OR MATCH (t.label) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) 
-                            OR (select 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_membership` as m JOIN `".DBPREFIX."module_{$this->moduleNameLC}_membership_local` As ml ON (ml.entry_id=m.membership_id AND ml.lang_id = '".$_LANGID."') WHERE c.id = m.contact_id AND MATCH (ml.value) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
-                            OR MATCH (Inloc.value) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) 
-                            OR MATCH (lang.name) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) 
-                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_address` WHERE c.id = contact_id AND MATCH (address, city, state, zip, country) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) {$genderQuery})";
+            $orderQuery = "MATCH (c.customer_name) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) AS nameRelevance,
+                           MATCH (c.contact_familyname) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) AS familyNameRelevance,";
+            $where[]    = "((SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_emails` WHERE c.id = contact_id AND MATCH (email) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) LIMIT 1)
+                            OR MATCH (c.customer_id, c.customer_name, c.contact_familyname, c.contact_role, c.notes) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE)
+                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_websites` WHERE c.id = contact_id AND MATCH (url) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) LIMIT 1)
+                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_social_network` WHERE c.id = contact_id AND MATCH (url) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) LIMIT 1)
+                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_phone` WHERE c.id = contact_id AND MATCH (phone) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) LIMIT 1)
+                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_comment` WHERE c.id = customer_id AND MATCH (comment) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) LIMIT 1)
+                            OR MATCH (t.label) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE)
+                            OR (select 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_membership` as m JOIN `".DBPREFIX."module_{$this->moduleNameLC}_membership_local` As ml ON (ml.entry_id=m.membership_id AND ml.lang_id = '".$_LANGID."') WHERE c.id = m.contact_id AND MATCH (ml.value) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) LIMIT 1)
+                            OR MATCH (Inloc.value) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE)
+                            OR MATCH (lang.name) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE)
+                            OR MATCH (cur.name) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE)
+                            OR MATCH (cmpySize.company_size) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE)
+                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_address` WHERE c.id = contact_id AND MATCH (address, city, state, zip, country) AGAINST ('".contrexx_raw2db($filter['term'])."' IN BOOLEAN MODE) LIMIT 1) {$genderQuery})";
         }
 
         //  Join where conditions
@@ -1427,7 +1505,7 @@ class CrmLibrary
         $sortingFields = array("c.customer_name" ,  "activities", "c.added_date");
         $sortOrder = (isset ($filter['sorto'])) ? (((int) $filter['sorto'] == 0) ? 'DESC' : 'ASC') : 'DESC';
         $sortField = (isset ($filter['sortf']) && $filter['sortf'] != '' && in_array($sortingFields[$filter['sortf']], $sortingFields)) ? $sortingFields[$filter['sortf']] : 'c.id';
-        
+
         $query = "SELECT
                        DISTINCT c.id,
                        c.customer_id,
@@ -1450,10 +1528,12 @@ class CrmLibrary
                    FROM `".DBPREFIX."module_{$this->moduleNameLC}_contacts` AS c
                    LEFT JOIN `".DBPREFIX."module_{$this->moduleNameLC}_contacts` AS con
                      ON c.contact_customer =con.id
-                   LEFT JOIN `".DBPREFIX."module_{$this->moduleNameLC}_currency` As cur 
+                   LEFT JOIN `".DBPREFIX."module_{$this->moduleNameLC}_currency` As cur
                      ON (cur.id=c.customer_currency)
-                   LEFT JOIN `".DBPREFIX."languages` As lang 
-                     ON (lang.id=c.contact_language)  
+                   LEFT JOIN `".DBPREFIX."module_{$this->moduleNameLC}_company_size` As cmpySize
+                     ON (cmpySize.id=c.company_size)
+                   LEFT JOIN `".DBPREFIX."languages` As lang
+                     ON (lang.id=c.contact_language)
                    LEFT JOIN ".DBPREFIX."module_{$this->moduleNameLC}_customer_types AS t
                      ON c.customer_type = t.id
                    LEFT JOIN `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_emails` as email
@@ -1469,16 +1549,16 @@ class CrmLibrary
                    LEFT JOIN `".DBPREFIX."module_{$this->moduleNameLC}_industry_type_local` AS Inloc
                      ON Intype.id = Inloc.entry_id AND Inloc.lang_id = ".$_LANGID."
             $filters";
-                   
+
         if (!empty($orderBy) && empty($sortField) && empty($sortOrder)) {
             $query = $query." ORDER BY $orderBy";
         } else {
             $query = $query." ORDER BY $sortField $sortOrder";
         }
-        
+
         return $query;
     }
-    
+
     /**
      * Delete Industry type
      *
@@ -1536,18 +1616,18 @@ class CrmLibrary
 
     /**
      * Activate / Deactivate company size status
-     * 
-     * @param mixed   $entries  company size id  
+     *
+     * @param mixed   $entries  company size id
      * @param boolean $deactivate
-     * 
+     *
      * @global ADO Connection $objDatabase
      * @global Array          $_ARRAYLANG
-     * 
+     *
      * @return null
      */
     function activateCompanySize($entries, $deactivate = false) {
         global $objDatabase, $_ARRAYLANG;
-        
+
         if (!empty($entries) && is_array($entries)) {
             $ids = implode(',', $entries);
             $setValue = $deactivate ? 0 : 1;
@@ -1557,20 +1637,20 @@ class CrmLibrary
             }
             $query .= "END WHERE id IN ($ids)";
             $objDatabase->Execute($query);
-            $_SESSION['strOkMessage'] = (!$deactivate) ? $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'] 
+            $_SESSION['strOkMessage'] = (!$deactivate) ? $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY']
                                                        : $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
         } else {
             $objDatabase->Execute("UPDATE `".DBPREFIX."module_".$this->moduleNameLC."_company_size` SET `status` = IF(status = 1, 0, 1) WHERE id = $entries");
         }
     }
-    
+
     /**
      * Delete company size
-     * 
-     * @param mixed $companySizeId  companySizeId is either integer or array. 
-     * 
+     *
+     * @param mixed $companySizeId  companySizeId is either integer or array.
+     *
      * @global ADO Connection $objDatabase
-     * 
+     *
      * @return null
      */
     function deleteCompanySize($companySizeId) {
@@ -1581,13 +1661,13 @@ class CrmLibrary
     }
 
     /**
-     * Save the sorting 
-     * 
-     * @param array $entriesSorting  sorting values. 
-     * 
+     * Save the sorting
+     *
+     * @param array $entriesSorting  sorting values.
+     *
      * @global ADO Connection $objDatabase
      * @global Array          $_ARRAYLANG
-     * 
+     *
      * @return null
      */
     function saveSortingCompanySize($entriesSorting)
@@ -2316,7 +2396,7 @@ class CrmLibrary
             'zip'          => array(0 => $zip),
             'country'      => array(0 => $country['id'])
         );
-        
+
         //set profile picture
         $picture = $objDatabase->getOne("SELECT profile_picture FROM `".DBPREFIX."module_{$this->moduleNameLC}_contacts` WHERE id = '".$this->contact->id."'");
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
@@ -2333,13 +2413,13 @@ class CrmLibrary
             }
         }
         //set group ids
-        $defaultUserGroup = $settings['default_user_group'];        
+        $defaultUserGroup = $settings['default_user_group'];
         $groups           = $objUser->getAssociatedGroupIds();
         if (!empty($defaultUserGroup) && !in_array($defaultUserGroup, $groups)) {
             array_push($groups, $defaultUserGroup);
         }
         $objUser->setGroups($groups);
-        
+
         $objUser->setUsername($email);
         $objUser->setEmail($email);
         $objUser->setFrontendLanguage($result['contact_language']);
@@ -2371,8 +2451,8 @@ class CrmLibrary
                 //setting email template lang id
                 $availableMailTempLangAry = $this->getActiveEmailTemLangId('Crm', CRM_EVENT_ON_USER_ACCOUNT_CREATED);
                 $availableLangId          = $this->getEmailTempLang($availableMailTempLangAry, $email);
-                $info['lang_id']          = $availableLangId;  
-                
+                $info['lang_id']          = $availableLangId;
+
                 $dispatcher = CrmEventDispatcher::getInstance();
                 $dispatcher->triggerEvent(CRM_EVENT_ON_USER_ACCOUNT_CREATED, null, $info);
             }
@@ -2404,7 +2484,7 @@ class CrmLibrary
         if (empty($section) || empty($key)) {
             return false;
         }
-        
+
         $activeFrontLangId = \FWLanguage::getActiveFrontendLanguages();
         $query = "SELECT DISTINCT ct.lang_id FROM `".DBPREFIX."core_text` as ct LEFT JOIN
                                 `".DBPREFIX."core_mail_template` as mt ON (ct.id=mt.text_id)
@@ -2438,11 +2518,11 @@ class CrmLibrary
     function getEmailTempLang($availableEmailTemp = array(), $email = '')
     {
         $objFWUser = \FWUser::getFWUserObject();
-        
+
         if (empty($email))
             return false;
         $defaultLangId = \FWLanguage::getDefaultLangId();
-        
+
         /**
          * This IF clause fixes #1799, but there has to be a better solution for this!
          */
@@ -2480,7 +2560,7 @@ class CrmLibrary
         }
         return false;
     }
-    
+
     /**
      * get exist crm account detail
      *
@@ -2610,7 +2690,7 @@ class CrmLibrary
                 $accessZip     = !empty ($fieldValues['access_zip']) ? contrexx_input2db($fieldValues['access_zip']) : '';
                 $accessCountry = !empty ($fieldValues['access_country']) ? contrexx_input2db($fieldValues['access_country']) : '';
                 $accessState   = !empty ($fieldValues['access_state']) ? contrexx_input2db($fieldValues['access_state']) : '';
-                
+
                 if ($accessAddress || $accessCity || $accessZip || $accessCountry) {
 
                     $query = "INSERT INTO `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_address` SET
@@ -2670,7 +2750,7 @@ class CrmLibrary
                 }
                 // notify the staff's
                 $this->notifyStaffOnContactAccModification($this->contact->id, $this->contact->customerName, $this->contact->family_name, $this->contact->contact_gender);
-                
+
                 return $this->contact->id;
             }
         }
@@ -2690,7 +2770,7 @@ class CrmLibrary
             $arrProfile['data'][] = $user->getProfileAttribute($user->objAttribute->getId());
             $user->objAttribute->next();
         }
-        
+
         $arrProfile['fields'][] = array('special_type' => 'access_email');
         $arrProfile['data'][] = $user->getEmail();
         $objCrmLibrary = new self('Crm');
@@ -2963,7 +3043,7 @@ class CrmLibrary
 
         return $imageName;
     }
-    
+
     /**
      * Create thumbnail of image
      *
@@ -2997,7 +3077,7 @@ class CrmLibrary
             );
 
     }
-    
+
     /**
      * Inits the uploader when displaying a contact form.
      *
@@ -3011,15 +3091,15 @@ class CrmLibrary
      */
     function initUploader($callBackFun, $callBackJs, $data, $buttonText, $options = array()) {
         global $_ARRAYLANG;
-        
+
         try {
             //init the uploader
             $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
-            
+
             if (!empty($callBackJs)) {
                 $uploader->setCallback($callBackJs);
             }
-            
+
             if (!empty($callBackFun)) {
                 $uploader->setFinishedCallback(array(
                     \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath().'/Crm/Controller/CrmManager.class.php',
@@ -3029,11 +3109,11 @@ class CrmLibrary
             }
             $uploader->setOptions($options);
             $uploader->setData($data);
-            
+
             if (empty($buttonText)) {
                 $buttonText = $_ARRAYLANG['TXT_MEDIA_UPLOAD_FILES'];
             }
-            return $uploader->getXHtml($buttonText); 
+            return $uploader->getXHtml($buttonText);
         } catch (Exception $e) {
             return '<!-- failed initializing uploader, exception '.get_class($e).' with message "'.$e->getMessage().'" -->';
         }
@@ -3046,10 +3126,9 @@ class CrmLibrary
      * @throws ContactException
      */
     protected static function getTemporaryUploadPath($submissionId, $fieldId, $dir) {
-        global $sessionObj;
+        $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        $sessionObj = $cx->getComponent('Session')->getSession();
 
-        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
-        
         $tempPath = $_SESSION->getTempPath();
         $tempWebPath = $_SESSION->getWebTempPath();
         if($tempPath === false || $tempWebPath === false)
@@ -3082,7 +3161,7 @@ class CrmLibrary
         global $objDatabase, $_ARRAYLANG;
 
         if (empty($customerId)) return false;
-        
+
         $objFWUser = \FWUser::getFWUserObject();
         $settings = $this->getSettings();
         $resources = $this->getResources($settings['emp_default_user_group']);
@@ -3110,7 +3189,7 @@ class CrmLibrary
                 $availableMailTempLangAry = $this->getActiveEmailTemLangId('Crm', CRM_EVENT_ON_ACCOUNT_UPDATED);
                 $availableLangId          = $this->getEmailTempLang($availableMailTempLangAry, $emails);
                 $info['lang_id']          = $availableLangId;
-                
+
                 $dispatcher = CrmEventDispatcher::getInstance();
                 $dispatcher->triggerEvent(CRM_EVENT_ON_ACCOUNT_UPDATED, null, $info);
             }
@@ -3243,15 +3322,19 @@ class CrmLibrary
      */
     function getUserName($userId)
     {
-        if (!empty ($userId)) {
-            $objFWUser  = \FWUser::getFWUserObject();
-            $objUser    = $objFWUser->objUser->getUser($userId);
-            $userName   = $objUser->getRealUsername();
-            if ($userName) {
-                return $userName;
-            } else {
-                return $objUser->getUsername();
-            }
+        if (empty($userId)) {
+            return '';
+        }
+
+        $objUser = \FWUser::getFWUserObject()->objUser->getUser($userId);
+        if (!$objUser) {
+            return '';
+        }
+        $userName = $objUser->getRealUsername();
+        if ($userName) {
+            return $userName;
+        } else {
+            return $objUser->getUsername();
         }
     }
 
@@ -3259,7 +3342,7 @@ class CrmLibrary
      * Checks whether the crm customer is connected with a user account
      *
      * @return int|null user_account of crm user
-     */  
+     */
     public static function getUserIdByCrmUserId($crmId) {
         $db = \Env::get('cx')->getDb()->getAdoDb();
         $result = $db->SelectLimit("SELECT `user_account` FROM `" . DBPREFIX . "module_crm_contacts` WHERE `id` = " . intval($crmId));
@@ -3271,25 +3354,25 @@ class CrmLibrary
 
     /**
      * Get the crm user id by user id
-     * 
+     *
      * @param integer $userId
-     * 
+     *
      * @return boolean|integer
      */
     public function getCrmUserIdByUserId($userId) {
         global $objDatabase;
-        
+
         if (empty($userId)) {
             return false;
         }
-        
+
         $result = $objDatabase->SelectLimit("SELECT `id` FROM `" . DBPREFIX . "module_crm_contacts` WHERE `user_account` = " . intval($userId));
         if ($result->RecordCount() == 0) {
             return null;
         }
         return $result->fields['id'];
     }
-    
+
     /**
      * Get username
      *
@@ -3445,34 +3528,34 @@ class CrmLibrary
 
     /**
      * Get currencyId by crm id
-     * 
+     *
      * @param integer $crmId crm id
-     * 
+     *
      * @return mixed null or currencyId
      */
-    public static function getCurrencyIdByCrmId($crmId) 
+    public static function getCurrencyIdByCrmId($crmId)
     {
         if (\FWValidator::isEmpty($crmId)) {
             return null;
         }
-        
+
         $db = \Env::get('cx')->getDb()->getAdoDb();
         $currencyId = $db->GetOne("SELECT `customer_currency` FROM `" . DBPREFIX . "module_crm_contacts` WHERE `id` = " . intval($crmId));
-        
+
         return $currencyId;
     }
-    
+
     /**
      * Get default currencyId
-     * 
+     *
      * @return integer defaultCurrencyId
      */
     public static function getDefaultCurrencyId()
     {
         $db = \Env::get('cx')->getDb()->getAdoDb();
-        
+
         $defaultCurrencyId = $db->GetOne("SELECT `id` FROM `".DBPREFIX."module_crm_currency` WHERE `default_currency` = 1");
-        
+
         return $defaultCurrencyId;
     }
 

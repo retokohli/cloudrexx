@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,13 +24,13 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * This is the english language file for frontend mode.
  * This file is included by Contrexx and all entries are set as placeholder
  * values for frontent page template by SystemComponentFrontendController
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
  * @subpackage  core_module_templateeditor

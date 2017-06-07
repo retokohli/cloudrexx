@@ -194,6 +194,11 @@ body {
     right: 13px;
 }
 
+
+#content .option.select:after {
+    bottom:15px;
+}
+
 #content .option.saving:after, #content .option .image.saving:after {
     opacity: 1;
     content: '';
