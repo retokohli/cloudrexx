@@ -88,7 +88,7 @@ class UserAttribute extends \Cx\Model\Base\EntityBase {
     private $userProfile;
 
     /**
-     * @var Cx\Core_Modules\Access\Model\Entity\ReadAccessId
+     * @var Cx\Core_Modules\Access\Model\Entity\AccessId
      */
     protected $readAccessId;
 
@@ -312,9 +312,9 @@ class UserAttribute extends \Cx\Model\Base\EntityBase {
     /**
      * Set readAccessId
      *
-     * @param Cx\Core_Modules\Access\Model\Entity\ReadAccessId $readAccessId
+     * @param Cx\Core_Modules\Access\Model\Entity\AccessId $readAccessId
      */
-    public function setReadAccessId(\Cx\Core_Modules\Access\Model\Entity\ReadAccessId $readAccessId)
+    public function setReadAccessId(\Cx\Core_Modules\Access\Model\Entity\AccessId $readAccessId)
     {
         $this->readAccessId = $readAccessId;
     }
@@ -322,7 +322,7 @@ class UserAttribute extends \Cx\Model\Base\EntityBase {
     /**
      * Get readAccessId
      *
-     * @return Cx\Core_Modules\Access\Model\Entity\ReadAccessId $readAccessId
+     * @return Cx\Core_Modules\Access\Model\Entity\AccessId $readAccessId
      */
     public function getReadAccessId()
     {

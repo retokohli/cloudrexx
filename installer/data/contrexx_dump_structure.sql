@@ -15,12 +15,6 @@ CREATE TABLE `contrexx_access_id` (
   `entity_class_id` char(100) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
-CREATE TABLE `contrexx_read_access_id` (
-  `id` int(11) NOT NULL,
-  `entity_class_name` char(100) NOT NULL,
-  `entity_class_id` char(100) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_rel_user_group` (
   `user_id` int(10) unsigned NOT NULL DEFAULT '0',
   `group_id` int(10) unsigned NOT NULL DEFAULT '0',

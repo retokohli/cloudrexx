@@ -50,8 +50,8 @@ Cx\Core\User\Model\Entity\UserAttribute:
         access_id:
           referencedColumnName: id
     readAccessId:
-      targetEntity: Cx\Core_Modules\Access\Model\Entity\ReadAccessId
-      inversedBy: contrexxAccessUserAttribute
+      targetEntity: Cx\Core_Modules\Access\Model\Entity\AccessId
+      inversedBy: contrexxAccessUserAttributeRead
       joinColumns:
         read_access_id:
           referencedColumnName: id

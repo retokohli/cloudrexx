@@ -387,7 +387,7 @@ class Group extends \Cx\Core\User\Model\Entity\Group implements \Doctrine\ORM\Pr
     /**
      * {@inheritDoc}
      */
-    public function addReadAccessId(\Cx\Core_Modules\Access\Model\Entity\ReadAccessId $readAccessId)
+    public function addReadAccessId(\Cx\Core_Modules\Access\Model\Entity\AccessId $readAccessId)
     {
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'addReadAccessId', array($readAccessId));

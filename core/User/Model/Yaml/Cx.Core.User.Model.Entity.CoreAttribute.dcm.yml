@@ -31,8 +31,8 @@ Cx\Core\User\Model\Entity\CoreAttribute:
         access_id:
           referencedColumnName: id
     readAccessId:
-      targetEntity: Cx\Core_Modules\Access\Model\Entity\ReadAccessId
-      inversedBy: coreAttribute
+      targetEntity: Cx\Core_Modules\Access\Model\Entity\AccessId
+      inversedBy: coreAttributeRead
       joinColumns:
         read_access_id:
           referencedColumnName: id

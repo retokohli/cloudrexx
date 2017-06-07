@@ -420,7 +420,7 @@ class UserAttribute extends \Cx\Core\User\Model\Entity\UserAttribute implements 
     /**
      * {@inheritDoc}
      */
-    public function setReadAccessId(\Cx\Core_Modules\Access\Model\Entity\ReadAccessId $readAccessId)
+    public function setReadAccessId(\Cx\Core_Modules\Access\Model\Entity\AccessId $readAccessId)
     {
 
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'setReadAccessId', array($readAccessId));

@@ -78,7 +78,7 @@ class Group extends \Cx\Model\Base\EntityBase {
     private $accessId;
 
     /**
-     * @var Cx\Core_Modules\Access\Model\Entity\ReadAccessId
+     * @var Cx\Core_Modules\Access\Model\Entity\AccessId
      */
     protected $readAccessId;
 
@@ -272,9 +272,9 @@ class Group extends \Cx\Model\Base\EntityBase {
     /**
      * Add readAccessId
      *
-     * @param Cx\Core_Modules\Access\Model\Entity\ReadAccessId $readAccessId
+     * @param Cx\Core_Modules\Access\Model\Entity\AccessId $readAccessId
      */
-    public function addReadAccessId(\Cx\Core_Modules\Access\Model\Entity\ReadAccessId $readAccessId)
+    public function addReadAccessId(\Cx\Core_Modules\Access\Model\Entity\AccessId $readAccessId)
     {
         $this->readAccessId[] = $readAccessId;
     }
