@@ -365,17 +365,26 @@ function adjustLanguages() {
 }
 
 function setActiveLanguage() {
-    var langmenues = document.getElementsByClassName('langmenu');
-    for (var i = 0; i < langmenues.length; i++) {
-        var languages = langmenues[i].querySelectorAll('li a');
-        for (var j = 0; j < languages.length; j++) {
-            if (languages[j].style.display !== 'none') {
-                languages[j].className += ' active';
-                languages[j].click();
-                break;
-            }
+    var langmenu = document.getElementsByClassName('langmenu')[0];
+    var languages = langmenu.querySelectorAll('li a');
+    for (var j = 0; j < languages.length; j++) {
+        if (languages[j].style.display !== 'none') {
+            languages[j].className += ' active';
+            languages[j].click();
+            return;
         }
     }
+
+    var languageId = cx.variables.get('currentLanguage', 'Download');
+    var checkbox = document.getElementById('downloads_download_language_' + languageId);
+    var tab = document.getElementById('downloadsLanguage_downloadLanguage' + languageId);
+    if (!checkbox || !tab) {
+        return;
+    }
+    checkbox.checked = true;
+    tab.style.display = 'block';
+    tab.className += ' active';
+    tab.click();
 }
 
 function swapHeaderLangName() {

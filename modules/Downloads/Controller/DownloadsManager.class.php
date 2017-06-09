@@ -1755,6 +1755,10 @@ class DownloadsManager extends DownloadsLibrary
             'DOWNLOADS_PARENT_CATEGORY_ID'              => $this->parentCategoryId,
             'DOWNLOADS_MEDIA_BROWSER_BUTTON'            => self::getMediaBrowserButton('mediabrowser_button', 'filebrowser')
         ));
+
+        // sets javascript variable for current language
+        \ContrexxJavascript::getInstance()->setVariable('currentLanguage', $_LANGID, 'Download');
+
         return true;
     }
 
