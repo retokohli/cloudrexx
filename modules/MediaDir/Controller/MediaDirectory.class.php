@@ -764,7 +764,6 @@ class MediaDirectory extends MediaDirectoryLibrary
                         if ($inputfieldValue) {
                             $this->metaKeys = $inputfieldValue;
                         }
-                        $contentChanged = true;
                         break;
                     default:
                         break;
