@@ -1811,30 +1811,34 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
     protected function checkUserModifyPermission(\User $objUser)
     {
         $objFWUser = \FWUser::getFWUserObject();
+        // Check if the logged-in user has super admin permission
         if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
             return true;
         }
 
-        $manageUserAccess = \Permission::checkAccess(
-            static::MANAGE_USER_ACCESS_ID,
-            'static',
-            true
-        );
-        if ($manageUserAccess && $objUser->getAdminStatus()) {
-            return false;
-        }
-
+        // Check if the logged-in user has MANAGE_USER_ACCESS_ID permission and
+        // editing non-admin user account
         if (
-            !$manageUserAccess &&
-            (
-                $objUser->getId() != $objFWUser->objUser->getId() ||
-                !\Permission::checkAccess(31, 'static', true)
-            )
+            \Permission::checkAccess(
+                static::MANAGE_USER_ACCESS_ID,
+                'static',
+                true
+            ) &&
+            !$objUser->getAdminStatus()
         ) {
-            return false;
+            return true;
         }
 
-        return true;
+        // Check if the logged-in user has '31' permission and
+        // editing their own user account
+        if (
+           $objUser->getId() == $objFWUser->objUser->getId() &&
+           \Permission::checkAccess(31, 'static', true)
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     private function parseModuleSpecificExtensions()
