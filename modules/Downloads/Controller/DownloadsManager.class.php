@@ -1757,7 +1757,7 @@ class DownloadsManager extends DownloadsLibrary
         ));
 
         // sets javascript variable for current language
-        \ContrexxJavascript::getInstance()->setVariable('currentLanguage', $_LANGID, 'Download');
+        \ContrexxJavascript::getInstance()->setVariable('currentLanguage', $_LANGID, 'Downloads');
 
         return true;
     }
