@@ -1,6 +1,9 @@
 <!-- START module_mediadir_settings_global.html -->
 <script language="JavaScript" type="text/javascript">
 $J(function(){
+    $J(".inputfieldType").live("change", function() {
+       handleKeywordAbility($J(this));
+    });
    $J( ".inputfieldContext" ).live('change', function(){
        resetContextFields();
    });
@@ -9,6 +12,9 @@ $J(function(){
       var inputId = $J(this).data('inputId');
       mediaBrowseInputBox = $J('#' + inputId);
    });
+   $J(".inputfieldType").each(function() {
+       handleKeywordAbility($J(this));
+   })
 });
 
 function resetContextFields() {
@@ -112,6 +118,19 @@ function ExpandMinimizeForm(toggle){
 
     elm1.style.display = (elm1.style.display=='none') ? 'block' : 'none';
     elm2.style.display = (elm2.style.display=='none') ? 'block' : 'none';
+}
+
+function handleKeywordAbility(typeSelect) {
+    var compatibleTypes = [1, 2, 3, 4, 5];
+    var keywordsOption = typeSelect
+      .closest("tr")
+      .find(".inputfieldContext option[value='keywords'");
+    if (compatibleTypes.indexOf(parseInt(typeSelect.val())) != -1) {
+        keywordsOption.prop("disabled", false);
+    } else {
+        keywordsOption.prop("disabled", true);
+    }
+    resetContextFields();
 }
 var mediaBrowseInputBox;
 var mediaBrowserCallback = function(data) {
