@@ -842,6 +842,7 @@ cx.ready(function() {
               };
             } catch (e) {
               return [];
+            }
             if (searchArray[key] instanceof Object) {
                 resultArray = resultArray.concat(recursiveSearch(searchObject, searchArray[key], level + 1));
             }
