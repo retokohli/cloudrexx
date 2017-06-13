@@ -365,23 +365,23 @@ function adjustLanguages() {
 }
 
 function setActiveLanguage() {
-    var langmenu = document.getElementsByClassName('langmenu')[0];
-    var languages = langmenu.querySelectorAll('li a');
-    for (var j = 0; j < languages.length; j++) {
-        if (languages[j].style.display !== 'none') {
-            languages[j].className += ' active';
-            languages[j].click();
-            return;
-        }
-    }
-
-    var languageId = cx.variables.get('currentLanguage', 'Downloads');
-    var checkbox = document.getElementById('downloads_download_language_' + languageId);
-    var tab = document.getElementById('downloadsLanguage_downloadLanguage' + languageId);
-    if (!checkbox || !tab) {
+    var langId = cx.variables.get('currentLanguage', 'Downloads');
+    var checkbox = document.getElementById('downloads_download_language_' + langId);
+    var tab = document.getElementById('downloadsLanguage_downloadLanguage' + langId);
+    if (checkbox && checkbox.checked && tab) {
+        tab.style.display = 'block';
+        tab.className += ' active';
+        tab.click();
         return;
     }
-    checkbox.checked = true;
+
+    var langMenu = document.getElementsByClassName('downloads_download_language')[0];
+    var firstId = langMenu.querySelector('td input[id^=downloads_download_language_][checked=checked]').id;
+    if (!firstId) {
+        return;
+    }
+    var langId = firstId.substr(firstId.length - 1);
+    var tab = document.getElementById('downloadsLanguage_downloadLanguage' + langId);
     tab.style.display = 'block';
     tab.className += ' active';
     tab.click();
