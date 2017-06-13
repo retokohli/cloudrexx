@@ -662,22 +662,22 @@ class Download {
             $arrSelectLocaleExpressions = array_keys($this->arrAttributes['locale']);
         }
 
-        if (count($arrSelectLocaleExpressions) && ((is_null($filter) && is_int($offset)) || (is_array($filter)))) {
+        if (count($arrSelectLocaleExpressions) && (is_null($filter) || is_array($filter))) {
             array_walk($arrSelectLocaleExpressions, array($this, 'walkDownloadQueryFunctions'));
         }
 
         $query = 'SELECT DISTINCT tblD.`' . implode('`, tblD.`', $arrSelectCoreExpressions) . '`'
-            . (count($arrSelectLocaleExpressions) ?
+            . (count($arrSelectLocaleExpressions) && (is_null($filter) || is_array($filter)) ?
                 ', ' . implode(', ', $arrSelectLocaleExpressions) . ' ' :
                 '')
             . 'FROM `' . DBPREFIX . 'module_downloads_download` AS tblD'
             . ((count($arrSelectLocaleExpressions) && is_int($filter) && is_int($offset)) || $arrQuery['tables']['locale'] ?
                 ' INNER JOIN `' . DBPREFIX . 'module_downloads_download_locale` AS tblL ON tblL.`download_id` = tblD.`id` AND tblL.`lang_id` = ' . LANG_ID
                 : '')
-            . (count($arrSelectLocaleExpressions) && is_int($filter) && is_null($offset) ?
-                ' INNER JOIN `' . DBPREFIX . 'module_downloads_download_locale` AS tblL ON tblL.`download_id` = tblD.`id` AND tblD.`id` = ' . $filter
+            . (is_int($filter) && is_null($offset) ?
+                ' WHERE tblD.`id` = ' . $filter
                 : '')
-            . (count($arrSelectLocaleExpressions) && ((is_null($filter) && is_int($offset)) || (is_array($filter))) ?
+            . (count($arrSelectLocaleExpressions) && (is_null($filter) || is_array($filter)) ?
                 ' LEFT JOIN `' . DBPREFIX . 'module_downloads_download_locale` AS tblL ON tblL.`download_id` = tblD.`id` AND tblL.`lang_id` = ' . LANG_ID
                 . ' LEFT JOIN `' . DBPREFIX . 'module_downloads_download_locale` AS tblL2 ON tblL2.`download_id` = tblD.`id` AND tblL.`name` IS NULL'
                 : '')
