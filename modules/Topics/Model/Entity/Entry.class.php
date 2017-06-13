@@ -40,6 +40,7 @@ implements \Gedmo\Translatable\Translatable
      * @var string $href
      */
     protected $href;
+
     /**
      * @var string $description
      */

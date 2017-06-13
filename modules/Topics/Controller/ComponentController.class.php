@@ -56,7 +56,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     public function getCommandDescription($command, $short = false) {
-        $short = null; // Ignored
+        $short = false; // Ignored
         switch ($command) {
             case 'TopicsEntries':
                 return 'Send Topics Entries parsed into HTML'
