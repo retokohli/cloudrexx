@@ -954,6 +954,16 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_ONSUBMIT_PUBLICATIONS'  => $onsubmitPublications,
         ));
 
+        // parse invite crm memberships
+        $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
+        $crmMemberships = array_keys($objCrmLibrary->getMemberships());
+        $objCrmLibrary->getMembershipDropdown($this->_objTpl, $crmMemberships, 'calendar_event_invite_crm_membership', $objEvent->invitedCrmGroups);
+        $this->_objTpl->setVariable(array(
+            'TXT_CALENDAR_CRM_MEMBERSHIPS'          => $_ARRAYLANG['TXT_CALENDAR_CRM_MEMBERSHIPS'],
+            'TXT_CALENDAR_CHOOSE_CRM_MEMBERSHIPS'   => $_ARRAYLANG['TXT_CALENDAR_CHOOSE_CRM_MEMBERSHIPS'],
+        ));
+        \JS::activate('chosen');
+
         $forcedLanguage = null;
         if (isset($_GET['langId']) && in_array(contrexx_input2raw($_GET['langId']), \FWLanguage::getIdArray())) {
             $forcedLanguage = contrexx_input2raw($_GET['langId']);
