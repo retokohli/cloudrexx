@@ -433,28 +433,78 @@ class CalendarMailManager extends CalendarLibrary {
         }
 
         switch ($actionId) {
-            case 1:
+            case static::MAIL_INVITATION:
+                // fetch manually invited users
                 $invitedMails = explode(",", $objEvent->invitedMails);
                 foreach ($invitedMails as $mail) {
                     if (!empty($mail)) {
                         $recipients[$mail] = $_LANGID;
                     }
                 }
-                $invitedGroups = array();
-                if ($objUser = \FWUser::getFWUserObject()->objUser->getUsers()) {
-                    while (!$objUser->EOF) {
-                        foreach ($objUser->getAssociatedGroupIds() as $groupId) {
-                            if (in_array($groupId, $objEvent->invitedGroups))  {
-                             $invitedGroups[$objUser->getEmail()] = $objUser->getFrontendLanguage();
-                            }
+
+                // fetch users from Crm groups
+                $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
+                $result = $db->Execute('
+                    SELECT
+                         crm_contact.id
+                    FROM '.
+                        // select CRM Person (contact_type = 2)
+                        '`'.DBPREFIX.'module_crm_contacts` AS `crm_contact` '.
+
+                        // join the CRM Memberships of the CRM Person
+                        'LEFT JOIN `'.DBPREFIX.'module_crm_customer_membership` AS `crm_contact_membership`
+                            ON `crm_contact_membership`.`contact_id` = `crm_contact`.`id` '.
+
+                        // join with CRM Company (contact_type = 1)
+                        'LEFT JOIN `'.DBPREFIX.'module_crm_contacts` AS `crm_company`
+                            ON `crm_company`.`id` = `crm_contact`.`contact_customer`
+                            AND `crm_company`.`contact_type` = 1 '.
+
+                        // join the CRM Memberships of the CRM Company
+                        'LEFT JOIN `'.DBPREFIX.'module_crm_customer_membership` AS `crm_company_membership`
+                            ON `crm_company_membership`.`contact_id` = `crm_company`.`id` '.
+
+                        // only select users of which the associated CRM Person or CRM Company has the selected CRM membership
+                    'WHERE
+                       `crm_contact`.`contact_type` = 2
+                    AND
+                         (   `crm_contact_membership`.`membership_id` IN ('.join(',', $objEvent->invitedCrmGroups).')
+                          OR `crm_company_membership`.`membership_id` IN ('.join(',', $objEvent->invitedCrmGroups).'))');
+                if ($result !== false) {
+                    $crmContact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+                    while (!$result->EOF) {
+                        if (!$crmContact->load($result->fields['id'])) {
+                            $result->MoveNext();
+                            continue;
                         }
-                        $objUser->next();
+
+                        $recipients[$crmContact->email] = $crmContact->contact_language;
+                        $result->MoveNext();
                     }
                 }
 
-                $recipients = array_merge($recipients, $invitedGroups);
+                // fetch users from Access groups, if any are set
+                if (!count($objEvent->invitedGroups)) {
+                    break;
+                }
+
+                // only fetch active users
+                $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array('active' => 1));
+                if (!$objUser) {
+                    break;
+                }
+
+                while (!$objUser->EOF) {
+                    foreach ($objUser->getAssociatedGroupIds() as $groupId) {
+                        if (in_array($groupId, $objEvent->invitedGroups))  {
+                            $recipients[$objUser->getEmail()] = $objUser->getFrontendLanguage();
+                        }
+                    }
+                    $objUser->next();
+                }
                 break;
-            case 3:
+
+            case static::MAIL_ALERT_REG:
                 $notificationEmails = explode(",", $objEvent->notificationTo);
 
                 foreach ($notificationEmails as $mail) {
