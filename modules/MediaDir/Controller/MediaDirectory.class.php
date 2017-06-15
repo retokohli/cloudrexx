@@ -760,7 +760,7 @@ class MediaDirectory extends MediaDirectoryLibrary
                         }
                         break;
                     case 'keywords':
-                        $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE'];
+                        $inputfieldValue = $objInputfield->getRawData($entry['entryId'], $arrInputfield, $arrTranslationStatus, true);
                         if ($inputfieldValue) {
                             $this->metaKeys = $inputfieldValue;
                         }
@@ -1538,25 +1538,9 @@ class MediaDirectory extends MediaDirectoryLibrary
 
     /**
      * Returns the metakeys
-     *
-     * If the metakeys come from an inputfield type like checkbox,
-     * which generate html code around the actual keywords,
-     * the html tags will be stripped and the keywords will be
-     * separated by comma
-     *
      * @return string The meta keywords separated by comma
      */
     public function getMetaKeys() {
-        if ($this->metaKeys == strip_tags($this->metaKeys)) {
-            return $this->metaKeys;
-        }
-        // contains html code, actual values must be excluded
-        return preg_replace(
-            '/\s+/',
-            ', ',
-            trim(
-                preg_replace('/<[^>]+>/', ' ', $this->metaKeys)
-            )
-        );
+        return $this->metaKeys;
     }
 }
