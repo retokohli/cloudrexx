@@ -90,7 +90,7 @@ class CalendarManager extends CalendarLibrary
     */
     function getCalendarPage()
     {
-        global $objTemplate, $objDatabase, $_ARRAYLANG;
+        global $objTemplate, $_ARRAYLANG;
 
         switch ($_GET['act']) {
             case 'settings':
@@ -140,7 +140,7 @@ class CalendarManager extends CalendarLibrary
      * @return null
      */
     function showOverview(){
-        global $objDatabase, $_ARRAYLANG, $_CORELANG;
+        global $_ARRAYLANG, $_CORELANG;
 
         $this->_objTpl->loadTemplateFile('module_calendar_overview.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW'];
@@ -361,7 +361,7 @@ class CalendarManager extends CalendarLibrary
      * @return null
      */
     function modifyEvent($eventId){
-        global $objDatabase, $_ARRAYLANG, $_CORELANG, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $_LANGID;
 
         $this->_objTpl->loadTemplateFile('module_calendar_modify_event.html');
         \JS::registerJS("modules/{$this->moduleName}/View/Script/jquery.pagination.js");
@@ -374,7 +374,6 @@ class CalendarManager extends CalendarLibrary
         $this->getFrontendLanguages();
         if(isset($_POST['submitModifyEvent']) || isset($_POST['save_and_publish'])) {
             $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent();
-
             if($objEvent->save($_POST)) {
                     $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'];
 
@@ -394,11 +393,11 @@ class CalendarManager extends CalendarLibrary
                     $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_SAVED'];
             }
 
-                if($this->arrSettings['rssFeedStatus'] == 1) {
-                    $objFeedEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager(time(),null,null,null,true);
-                    $objFeed = new \Cx\Modules\Calendar\Controller\CalendarFeed($objFeedEventManager);
-                    $objFeed->creatFeed();
-                }
+            if($this->arrSettings['rssFeedStatus'] == 1) {
+                $objFeedEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager(time(),null,null,null,true);
+                $objFeed = new \Cx\Modules\Calendar\Controller\CalendarFeed($objFeedEventManager);
+                $objFeed->creatFeed();
+            }
         }
 
         $objCategoryManager = new \Cx\Modules\Calendar\Controller\CalendarCategoryManager(true);
@@ -1121,14 +1120,13 @@ class CalendarManager extends CalendarLibrary
         \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Home');
     }
 
-
     /**
      * Category overview
      *
      * @return null
      */
     function showCategories(){
-        global $objDatabase, $_ARRAYLANG, $_CORELANG;
+        global $_ARRAYLANG, $_CORELANG;
 
         if (isset($_GET['tpl'])) {
             switch ($_GET['tpl']) {
@@ -1253,7 +1251,7 @@ class CalendarManager extends CalendarLibrary
      * @return null
      */
     function modifyCategory($categoryId){
-        global $objDatabase, $_ARRAYLANG, $_CORELANG, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $_LANGID;
 
         $this->_objTpl->loadTemplateFile('module_calendar_modify_category.html');
 
@@ -1347,7 +1345,7 @@ class CalendarManager extends CalendarLibrary
      * @return null
      */
     function showSettings() {
-        global $objDatabase, $_ARRAYLANG, $_CORELANG;
+        global $_ARRAYLANG, $_CORELANG;
 
         $this->_objTpl->loadTemplateFile('module_calendar_settings.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_CALENDAR_MENU_SETTINGS'];
@@ -1732,7 +1730,7 @@ class CalendarManager extends CalendarLibrary
      */
     function modifyRegistration($eventId, $regId)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $this->_objTpl->loadTemplateFile('module_calendar_modify_registration.html');
 
