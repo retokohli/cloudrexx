@@ -121,6 +121,13 @@ function ExpandMinimizeForm(toggle){
 }
 
 function handleKeywordAbility(typeSelect) {
+    /* compatible field types for meta keywords:
+    1: text
+    2: textarea
+    3: dropdown
+    4: radio
+    5: checkbox
+     */
     var compatibleTypes = [1, 2, 3, 4, 5];
     var keywordsOption = typeSelect
       .closest("tr")
