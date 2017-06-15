@@ -245,24 +245,31 @@ class CalendarRegistration extends CalendarLibrary
                     $objResult->fields['submission_date']
                 );
             }
-            foreach ($this->form->inputfields as $key => $arrInputfield) {         
-                $name = $arrInputfield['name'][$_LANGID];
-                $default = $arrInputfield['default_value'][$_LANGID];
-                
-                $queryField = 'SELECT field.`value` AS `value`
-                                 FROM '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value AS field
-                                WHERE field.`reg_id` = "'.$regId.'" AND
-                                      field.`field_id` = "'.intval($arrInputfield['id']).'"
-                                LIMIT 1';
-                $objResultField = $objDatabase->Execute($queryField);          
-                
-                if($objResultField !== false) {
-                     $this->fields[$arrInputfield['id']]['name']    =  $name;
-                     $this->fields[$arrInputfield['id']]['type']    =  $arrInputfield['type'];
-                     $this->fields[$arrInputfield['id']]['value']   =  htmlentities($objResultField->fields['value'], ENT_QUOTES, CONTREXX_CHARSET);
-                     $this->fields[$arrInputfield['id']]['default'] =  $default;  
-                }   
-            } 
+
+            $fieldsQuery = '
+                SELECT
+                    `field`.`field_id`,
+                    `field`.`value`
+                FROM
+                    `' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_registration_form_field_value` AS `field`
+                WHERE
+                    `field`.`reg_id` = "' . $regId . '" AND
+                    `field`.`field_id` IN (' . implode(',', array_column($this->getForm()->inputfields, 'id')) . ')
+            ';
+            $fieldsQueryResult = $objDatabase->Execute($fieldsQuery);
+            if ($fieldsQueryResult === false) {
+                return;
+            }
+            while (!$fieldsQueryResult->EOF) {
+                $id = $fieldsQueryResult->fields['field_id'];
+                $this->fields[$id] = array(
+                    'name' => $this->getForm()->inputfields[$id]['name'][$_LANGID],
+                    'type' => $this->getForm()->inputfields[$id]['type'],
+                    'value' => contrexx_raw2xhtml($fieldsQueryResult->fields['value']),
+                    'default' => $this->getForm()->inputfields[$id]['default_value'][$_LANGID],
+                );
+                $fieldsQueryResult->MoveNext();
+            }
         }       
     }
     
