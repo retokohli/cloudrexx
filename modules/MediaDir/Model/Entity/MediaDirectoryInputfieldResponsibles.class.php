@@ -321,6 +321,36 @@ EOF;
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
+        $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+
+        if(!empty($strValue)) {
+            $arrParents = array();
+            $arrParents = explode("||", $strValue);
+            $strValue = null;
+
+            foreach($arrParents as $intKey => $strChildes) {
+                $arrChildes = array();
+                $arrChildes = explode("##", $strChildes);
+
+                $strName = '<span class="'.$this->moduleNameLC.'ResponsibleName">'.$arrChildes[0].' '.$arrChildes[1].'</span>';
+                $strFunction = '<span class="'.$this->moduleNameLC.'ResponsibleFunction">'.$arrChildes[2].'</span>';
+                $strPhone = '<span class="'.$this->moduleNameLC.'ResponsiblePhone">'.$_ARRAYLANG['TXT_MEDIADIR_PHONE'].': '.$arrChildes[3].'</span>';
+                $strFax = '<span class="'.$this->moduleNameLC.'ResponsibleFax">'.$_ARRAYLANG['TXT_MEDIADIR_FAX'].': '.$arrChildes[4].'</span>';
+                $strMail = '<span class="'.$this->moduleNameLC.'ResponsibleMail"><a href="mailto:'.$arrChildes[5].'">'.$arrChildes[5].'</a></span>';
+
+                $strValue .= '<div class="'.$this->moduleNameLC.'Responsible">'.$strName.$strFunction.$strPhone.$strFax.$strMail.'</div>';
+            }
+
+            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValue;
+        } else {
+            $arrContent = null;
+        }
+
+        return $arrContent;
+    }
+
+    function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
         global $objDatabase, $_LANGID, $_ARRAYLANG;
 
         $intId = intval($arrInputfield['id']);
@@ -367,34 +397,7 @@ EOF;
             ");
         }
 
-        $strValue = strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
-
-
-        if(!empty($strValue)) {
-            $arrParents = array();
-            $arrParents = explode("||", $strValue);
-            $strValue = null;
-
-            foreach($arrParents as $intKey => $strChildes) {
-                $arrChildes = array();
-                $arrChildes = explode("##", $strChildes);
-
-                $strName = '<span class="'.$this->moduleNameLC.'ResponsibleName">'.$arrChildes[0].' '.$arrChildes[1].'</span>';
-                $strFunction = '<span class="'.$this->moduleNameLC.'ResponsibleFunction">'.$arrChildes[2].'</span>';
-                $strPhone = '<span class="'.$this->moduleNameLC.'ResponsiblePhone">'.$_ARRAYLANG['TXT_MEDIADIR_PHONE'].': '.$arrChildes[3].'</span>';
-                $strFax = '<span class="'.$this->moduleNameLC.'ResponsibleFax">'.$_ARRAYLANG['TXT_MEDIADIR_FAX'].': '.$arrChildes[4].'</span>';
-                $strMail = '<span class="'.$this->moduleNameLC.'ResponsibleMail"><a href="mailto:'.$arrChildes[5].'">'.$arrChildes[5].'</a></span>';
-
-                $strValue .= '<div class="'.$this->moduleNameLC.'Responsible">'.$strName.$strFunction.$strPhone.$strFax.$strMail.'</div>';
-            }
-
-            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValue;
-        } else {
-            $arrContent = null;
-        }
-
-        return $arrContent;
+        return strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
     }
 
 

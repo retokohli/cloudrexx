@@ -199,24 +199,9 @@ class MediaDirectoryInputfieldProductAttributes extends \Cx\Modules\MediaDir\Con
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-        global $objDatabase;
-
-        $intId = intval($arrInputfield['id']);
-        $objInputfieldValue = $objDatabase->Execute("
-            SELECT
-                `value`
-            FROM
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
-            WHERE
-                field_id=".$intId."
-            AND
-                entry_id=".$intEntryId."
-            LIMIT 1
-        ");
-
+        $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
 
         $arrValues = explode(",", $arrInputfield['default_value'][0]);
-        $strValue = strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
 
         //explode elements
         $arrElements = explode(",", $strValue);
@@ -241,6 +226,26 @@ class MediaDirectoryInputfieldProductAttributes extends \Cx\Modules\MediaDir\Con
         }
 
         return $arrContent;
+    }
+
+    function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
+        global $objDatabase;
+
+        $intId = intval($arrInputfield['id']);
+        $objInputfieldValue = $objDatabase->Execute("
+            SELECT
+                `value`
+            FROM
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+            WHERE
+                field_id=".$intId."
+            AND
+                entry_id=".$intEntryId."
+            LIMIT 1
+        ");
+
+
+        return strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
     }
 
 

@@ -509,22 +509,7 @@ EOF;
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-        global $objDatabase, $_LANGID, $_ARRAYLANG;
-
-        $intId = intval($arrInputfield['id']);
-        $objInputfieldValue = $objDatabase->Execute("
-            SELECT
-                `value`
-            FROM
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
-            WHERE
-                field_id=".$intId."
-            AND
-                entry_id=".$intEntryId."
-            LIMIT 1
-        ");
-
-        $strValue = strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
+        $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
 
         if(!empty($strValue)) {
             //get seperator
@@ -627,6 +612,25 @@ EOF;
         }
 
         return $arrContent;
+    }
+
+    function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
+        global $objDatabase, $_LANGID, $_ARRAYLANG;
+
+        $intId = intval($arrInputfield['id']);
+        $objInputfieldValue = $objDatabase->Execute("
+            SELECT
+                `value`
+            FROM
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+            WHERE
+                field_id=".$intId."
+            AND
+                entry_id=".$intEntryId."
+            LIMIT 1
+        ");
+
+        return strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
     }
 
 

@@ -303,6 +303,33 @@ EOF;
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
+        $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+
+        if(!empty($strValue)) {
+            $arrParents = array();
+            $arrParents = explode("||", $strValue);
+            $strValue = null;
+
+            foreach($arrParents as $intKey => $strChildes) {
+                $arrChildes = array();
+                $arrChildes = explode("##", $strChildes);
+
+                $strTitle = '<span class="'.$this->moduleNameLC.'ReferenceTitle">'.$arrChildes[0].'</span>';
+                $strDesc = '<span class="'.$this->moduleNameLC.'ReferenceDescription">'.$arrChildes[1].'</span>';
+
+                $strValue .= '<div class="'.$this->moduleNameLC.'Reference">'.$strTitle.$strDesc.'</div>';
+            }
+
+            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValue;
+        } else {
+            $arrContent = null;
+        }
+
+        return $arrContent;
+    }
+
+    function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
         global $objDatabase, $_LANGID;
 
         $intId = intval($arrInputfield['id']);
@@ -349,33 +376,8 @@ EOF;
             ");
         }
 
-        $strValue = strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
-
-
-        if(!empty($strValue)) {
-            $arrParents = array();
-            $arrParents = explode("||", $strValue);
-            $strValue = null;
-
-            foreach($arrParents as $intKey => $strChildes) {
-                $arrChildes = array();
-                $arrChildes = explode("##", $strChildes);
-
-                $strTitle = '<span class="'.$this->moduleNameLC.'ReferenceTitle">'.$arrChildes[0].'</span>';
-                $strDesc = '<span class="'.$this->moduleNameLC.'ReferenceDescription">'.$arrChildes[1].'</span>';
-
-                $strValue .= '<div class="'.$this->moduleNameLC.'Reference">'.$strTitle.$strDesc.'</div>';
-            }
-
-            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValue;
-        } else {
-            $arrContent = null;
-        }
-
-        return $arrContent;
+        return strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
     }
-
 
     function getJavascriptCheck()
     {

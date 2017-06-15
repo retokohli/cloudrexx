@@ -295,6 +295,24 @@ class MediaDirectoryInputfieldRelation extends \Cx\Modules\MediaDir\Controller\M
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
+        $intEntryId = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+
+        $objEntry = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry;
+        $objEntry->getEntries($intEntryId);
+        $strEntryValue = $objEntry->arrEntries[$intEntryId]['entryFields'][0];
+
+        if(!empty($strEntryValue)) {
+            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = '<a href="index.php?section='.$this->moduleName.'&cmd=detail&amp;eid='.$intEntryId.'">'.$strEntryValue.'</a>';
+
+        } else {
+            $arrContent = null;
+        }
+
+        return $arrContent;
+    }
+
+    function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
         global $objDatabase, $_LANGID;
 
         $intId = intval($arrInputfield['id']);
@@ -311,7 +329,7 @@ class MediaDirectoryInputfieldRelation extends \Cx\Modules\MediaDir\Controller\M
             $intLangId = $_LANGID;
         }
 
-       $objInputfield = $objDatabase->Execute("
+        $objInputfield = $objDatabase->Execute("
           SELECT
              `value`
           FROM
@@ -321,21 +339,7 @@ class MediaDirectoryInputfieldRelation extends \Cx\Modules\MediaDir\Controller\M
           AND
              ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields.field_id = '".$intId."'");
 
-           $intEntryId = intval($objInputfield->fields['value']);
-
-        $objEntry = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry;
-        $objEntry->getEntries($intEntryId);
-        $strEntryValue = $objEntry->arrEntries[$intEntryId]['entryFields'][0];
-
-        if(!empty($strEntryValue)) {
-            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = '<a href="index.php?section='.$this->moduleName.'&cmd=detail&amp;eid='.$intEntryId.'">'.$strEntryValue.'</a>';
-
-        } else {
-            $arrContent = null;
-        }
-
-        return $arrContent;
+        return intval($objInputfield->fields['value']);
     }
 
 
