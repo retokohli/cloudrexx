@@ -271,23 +271,7 @@ EOF;
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-         global $objDatabase, $_CONFIG, $_ARRAYLANG;
-
-        $intId = intval($arrInputfield['id']);
-
-        $objInputfieldValue = $objDatabase->Execute("
-            SELECT
-                `value`
-            FROM
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
-            WHERE
-                field_id=".$intId."
-            AND
-                entry_id=".$intEntryId."
-            LIMIT 1
-        ");
-
-        $strValue  = htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET);
+        $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
         $arrValues = explode(',', $strValue);
 
         $strValueLat = $arrValues[0];
@@ -318,6 +302,25 @@ EOF;
         return $arrContent;
     }
 
+    function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
+        global $objDatabase, $_CONFIG, $_ARRAYLANG;
+
+        $intId = intval($arrInputfield['id']);
+
+        $objInputfieldValue = $objDatabase->Execute("
+            SELECT
+                `value`
+            FROM
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+            WHERE
+                field_id=".$intId."
+            AND
+                entry_id=".$intEntryId."
+            LIMIT 1
+        ");
+
+        return htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET);
+    }
 
 
     function getJavascriptCheck()
