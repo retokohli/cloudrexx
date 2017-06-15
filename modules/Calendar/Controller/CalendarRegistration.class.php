@@ -175,7 +175,17 @@ class CalendarRegistration extends CalendarLibrary
      * @access private
      * @var object 
      */
-    private $form;
+    private $form = null;
+
+    /**
+     * @var int Associated form's ID
+     */
+    protected $formId;
+
+    /**
+     * @var array Cached forms
+     */
+    protected static $forms = array();
     
     /**
      * Constructor for registration class
@@ -187,13 +197,28 @@ class CalendarRegistration extends CalendarLibrary
      * @param integer $id     Registration id
      */
     function __construct($formId, $id=null){              
-        $objForm = new \Cx\Modules\Calendar\Controller\CalendarForm(intval($formId));
-        $this->form = $objForm;     
+        $this->formId = intval($formId);
         
         if ($id != null) {
             self::get($id);
         }
         $this->init();
+    }
+
+    /**
+     * Returns the form of this registration
+     * @return \Cx\Modules\Calendar\Controller\CalendarForm Associated form object
+     */
+    protected function getForm() {
+        if ($this->form) {
+            return $this->form;
+        }
+        if (isset(static::$forms[$this->formId])) {
+            $this->form = static::$forms[$this->formId];
+            return $this->getForm();
+        }
+        static::$forms[$this->formId] = new \Cx\Modules\Calendar\Controller\CalendarForm($this->formId);
+        return $this->getForm();
     }
     
     /**
@@ -284,13 +309,13 @@ class CalendarRegistration extends CalendarLibrary
     {
         global $objDatabase, $objInit, $_LANGID;
         
-        /* foreach ($this->form->inputfields as $key => $arrInputfield) {
+        /* foreach ($this->getForm()->inputfields as $key => $arrInputfield) {
             if($arrInputfield['type'] == 'selectBillingAddress') { 
                 $affiliationStatus = $data['registrationField'][$arrInputfield['id']];
             }
         } */
         
-        foreach ($this->form->inputfields as $key => $arrInputfield) {
+        foreach ($this->getForm()->inputfields as $key => $arrInputfield) {
             /* if($affiliationStatus == 'sameAsContact') {
                 if($arrInputfield['required'] == 1 && empty($data['registrationField'][$arrInputfield['id']]) && $arrInputfield['affiliation'] != 'billing') {
                     return false;
@@ -421,7 +446,7 @@ class CalendarRegistration extends CalendarLibrary
             
             if ($objResult !== false) {
                 $this->id = $objDatabase->Insert_ID();
-                $registration = $this->getRegistrationEntity($this->id);
+                $registration = $this->getRegistrationEntity($this->id, $formData);
             } else {
                 return false;
             }
@@ -562,7 +587,7 @@ class CalendarRegistration extends CalendarLibrary
         }
 
         $formFieldValues = array();
-        foreach ($this->form->inputfields as $key => $arrInputfield) {
+        foreach ($this->getForm()->inputfields as $key => $arrInputfield) {
             $value = $data['registrationField'][$arrInputfield['id']];
             $id    = $arrInputfield['id'];
 
