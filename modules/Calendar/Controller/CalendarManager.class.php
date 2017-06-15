@@ -547,6 +547,7 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_SHOW_END_DATE'                    => $_ARRAYLANG['TXT_CALENDAR_SHOW_END_DATE'],
             'TXT_'.$this->moduleLangVar.'_STATUS'                           => $_ARRAYLANG['TXT_CALENDAR_STATUS'],
             'TXT_'.$this->moduleLangVar.'_PUBLISHED'                        => $_ARRAYLANG['TXT_CALENDAR_PUBLISHED'],
+            'TXT_'.$this->moduleLangVar.'_USE_CUSTOM_FORMAT'                => $_ARRAYLANG['TXT_CALENDAR_USE_CUSTOM_FORMAT'],
             'TXT_'.$this->moduleLangVar.'_SHOW_TIME_TYPE'                   => $_ARRAYLANG['TXT_CALENDAR_SHOW_TIME_TYPE'],
             'TXT_'.$this->moduleLangVar.'_SHOW_START_TIME'                  => $_ARRAYLANG['TXT_CALENDAR_SHOW_START_TIME'],
             'TXT_'.$this->moduleLangVar.'_SHOW_END_TIME'                    => $_ARRAYLANG['TXT_CALENDAR_SHOW_END_TIME'],
