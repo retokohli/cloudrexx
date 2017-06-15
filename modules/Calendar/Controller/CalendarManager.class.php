@@ -545,6 +545,8 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_EVENT_NUM_SEATING_INFO'           => $_ARRAYLANG['TXT_CALENDAR_EVENT_NUM_SEATING_INFO'],
             'TXT_'.$this->moduleLangVar.'_SHOW_START_DATE'                  => $_ARRAYLANG['TXT_CALENDAR_SHOW_START_DATE'],
             'TXT_'.$this->moduleLangVar.'_SHOW_END_DATE'                    => $_ARRAYLANG['TXT_CALENDAR_SHOW_END_DATE'],
+            'TXT_'.$this->moduleLangVar.'_STATUS'                           => $_ARRAYLANG['TXT_CALENDAR_STATUS'],
+            'TXT_'.$this->moduleLangVar.'_PUBLISHED'                        => $_ARRAYLANG['TXT_CALENDAR_PUBLISHED'],
             'TXT_'.$this->moduleLangVar.'_SHOW_TIME_TYPE'                   => $_ARRAYLANG['TXT_CALENDAR_SHOW_TIME_TYPE'],
             'TXT_'.$this->moduleLangVar.'_SHOW_START_TIME'                  => $_ARRAYLANG['TXT_CALENDAR_SHOW_START_TIME'],
             'TXT_'.$this->moduleLangVar.'_SHOW_END_TIME'                    => $_ARRAYLANG['TXT_CALENDAR_SHOW_END_TIME'],
@@ -769,6 +771,7 @@ class CalendarManager extends CalendarLibrary
 
         //time type placeholders
         $this->_objTpl->setVariable(array(
+                $this->moduleLangVar.'_EVENT_ACTIVE'                    => ($objEvent->status) ? 'checked="checked"' :'',
                 $this->moduleLangVar.'_USE_CUSTOM_DATE_DISPLAY'         => ($objEvent->useCustomDateDisplay) ? 'checked="checked"' :'',
                 $this->moduleLangVar.'_START_DATE_CHECKED_LIST'         => ($showStartDateList) ? 'checked="checked"' :'',
                 $this->moduleLangVar.'_START_DATE_VALUE_LIST'           => 1,
