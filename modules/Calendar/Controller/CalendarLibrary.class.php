@@ -685,25 +685,6 @@ EOF;
     }
     
     /**
-     * Returns the escaped value for processing csv
-     * 
-     * @param string &$value string to be send to the csv
-     * 
-     * @return string escaped value for csv
-     */
-    function escapeCsvValue(&$value)
-    {
-        $value = preg_replace('/\r\n/', "\n", $value);
-        $valueModified = str_replace('"', '""', $value);
-
-        if ($valueModified != $value || preg_match('/['.$this->csvSeparator.'\n]+/', $value)) {
-            $value = '"'.$valueModified.'"';
-        }
-        
-        return strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_decode($value) : $value;
-    }
-
-    /**
      * Loads datepicker
      *      
      * @param object  &$datePicker
