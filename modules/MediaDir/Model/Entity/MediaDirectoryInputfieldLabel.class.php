@@ -97,6 +97,11 @@ class MediaDirectoryInputfieldLabel implements Inputfield
         return null;
     }
 
+    function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus)
+    {
+        return null;
+    }
+
 
     function getJavascriptCheck()
     {

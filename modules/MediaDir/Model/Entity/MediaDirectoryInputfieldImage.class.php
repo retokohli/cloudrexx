@@ -440,34 +440,8 @@ INPUT;
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-        global $objDatabase, $_LANGID;
+        $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
 
-        $intId = intval($arrInputfield['id']);
-        $intEntryDefaultLang = $objDatabase->getOne("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");
-
-        if($this->arrSettings['settingsTranslationStatus'] == 1) {
-            $intLangId = in_array($_LANGID, $arrTranslationStatus) ? $_LANGID : contrexx_input2int($intEntryDefaultLang);
-        } else {
-            $intLangId = $_LANGID;
-        }
-        $objResult = $objDatabase->Execute("
-            SELECT `value`
-              FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields
-             WHERE field_id=$intId
-               AND entry_id=$intEntryId
-               AND lang_id=$intLangId
-             LIMIT 1 ");
-
-        if(empty($objResult->fields['value'])) {
-            $objResult = $objDatabase->Execute("
-                SELECT `value`
-                  FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields
-                 WHERE field_id=$intId
-                   AND entry_id=$intEntryId
-                   AND lang_id=$intEntryDefaultLang
-                 LIMIT 1 ");
-        }
-        $strValue = strip_tags(htmlspecialchars($objResult->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
         if (empty($strValue) || $strValue == 'new_image') {
             return null;
         }
@@ -502,6 +476,37 @@ INPUT;
                 ' title="'.$arrInputfield['name'][0].'"'.
                 ' alt="'.$arrInputfield['name'][0].'" />',
         );
+    }
+
+    function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
+        global $objDatabase, $_LANGID;
+
+        $intId = intval($arrInputfield['id']);
+        $intEntryDefaultLang = $objDatabase->getOne("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");
+
+        if($this->arrSettings['settingsTranslationStatus'] == 1) {
+            $intLangId = in_array($_LANGID, $arrTranslationStatus) ? $_LANGID : contrexx_input2int($intEntryDefaultLang);
+        } else {
+            $intLangId = $_LANGID;
+        }
+        $objResult = $objDatabase->Execute("
+            SELECT `value`
+              FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields
+             WHERE field_id=$intId
+               AND entry_id=$intEntryId
+               AND lang_id=$intLangId
+             LIMIT 1 ");
+
+        if(empty($objResult->fields['value'])) {
+            $objResult = $objDatabase->Execute("
+                SELECT `value`
+                  FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                 WHERE field_id=$intId
+                   AND entry_id=$intEntryId
+                   AND lang_id=$intEntryDefaultLang
+                 LIMIT 1 ");
+        }
+        return strip_tags(htmlspecialchars($objResult->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
     }
 
 

@@ -191,6 +191,41 @@ class MediaDirectoryInputfieldLink extends \Cx\Modules\MediaDir\Controller\Media
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
+        $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+
+        // replace the links
+        $strValue = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $strValue);
+        \LinkGenerator::parseTemplate($strValue, true);
+
+        //make link name without protocol
+        $strValueName = preg_replace('#^.*://#', '', $strValue);
+
+        if (strlen($strValueName) >= 55 ) {
+            $strValueName = substr($strValueName, 0, 55)." [...]";
+        }
+
+        //make link href with "http://"
+        $strValueHref = $strValue;
+        if (!preg_match('#^.*://#', $strValueHref)) {
+            $strValueHref = "http://".$strValueHref;
+        }
+
+        //make hyperlink with <a> tag
+        $strValueLink = '<a href="'.$strValueHref.'" class="'.$this->moduleNameLC.'InputfieldLink" target="_blank">'.$strValueName.'</a>';
+
+        if(!empty($strValue)) {
+            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValueLink;
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_HREF'] = $strValueHref;
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_NAME'] = $strValueName;
+        } else {
+            $arrContent = null;
+        }
+
+        return $arrContent;
+    }
+
+    function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
         global $objDatabase, $_LANGID;
 
         $intId = intval($arrInputfield['id']);
@@ -233,38 +268,7 @@ class MediaDirectoryInputfieldLink extends \Cx\Modules\MediaDir\Controller\Media
             ");
         }
 
-        $strValue = strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
-
-        // replace the links
-        $strValue = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $strValue);
-        \LinkGenerator::parseTemplate($strValue, true);
-
-        //make link name without protocol
-        $strValueName = preg_replace('#^.*://#', '', $strValue);
-
-        if (strlen($strValueName) >= 55 ) {
-            $strValueName = substr($strValueName, 0, 55)." [...]";
-        }
-
-        //make link href with "http://"
-        $strValueHref = $strValue;
-        if (!preg_match('#^.*://#', $strValueHref)) {
-            $strValueHref = "http://".$strValueHref;
-        }
-
-        //make hyperlink with <a> tag
-        $strValueLink = '<a href="'.$strValueHref.'" class="'.$this->moduleNameLC.'InputfieldLink" target="_blank">'.$strValueName.'</a>';
-
-        if(!empty($strValue)) {
-            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValueLink;
-            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_HREF'] = $strValueHref;
-            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_NAME'] = $strValueName;
-        } else {
-            $arrContent = null;
-        }
-
-        return $arrContent;
+        return strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
     }
 
 
