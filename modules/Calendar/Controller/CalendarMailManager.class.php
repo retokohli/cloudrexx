@@ -198,134 +198,137 @@ class CalendarMailManager extends CalendarLibrary {
      */
     function sendMail(CalendarEvent $event, $actionId, $regId=null, $mailTemplate = null)
     {
-        global $objDatabase,$_ARRAYLANG, $_CONFIG ;
+        global $_ARRAYLANG, $_CONFIG ;
 
+        $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
         $this->mailList = array();
 
         // Loads the mail template which needs for this action
         $this->loadMailList($actionId, $mailTemplate);
 
-        if (!empty($this->mailList)) {
+        if (empty($this->mailList)) {
+            return;
+        }
 
-            $objRegistration = null;
-            if(!empty($regId)) {
-                $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration($event->registrationForm, $regId);
+        $objRegistration = null;
+        if(!empty($regId)) {
+            $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration($event->registrationForm, $regId);
 
-                list($registrationDataText, $registrationDataHtml) = $this->getRegistrationData($objRegistration);
+            list($registrationDataText, $registrationDataHtml) = $this->getRegistrationData($objRegistration);
 
-                $query = 'SELECT `v`.`value`, `n`.`default`, `f`.`type`
-                          FROM '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value AS `v`
-                          INNER JOIN '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name AS `n`
-                          ON `v`.`field_id` = `n`.`field_id`
-                          INNER JOIN '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field AS `f`
-                          ON `v`.`field_id` = `f`.`id`
-                          WHERE `v`.`reg_id` = '.$regId.'
-                          AND (
-                                 `f`.`type` = "salutation"
-                              OR `f`.`type` = "firstname"
-                              OR `f`.`type` = "lastname"
-                              OR `f`.`type` = "mail"
-                          )';
-                $objResult = $objDatabase->Execute($query);
+            $query = 'SELECT `v`.`value`, `n`.`default`, `f`.`type`
+                      FROM '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value AS `v`
+                      INNER JOIN '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name AS `n`
+                      ON `v`.`field_id` = `n`.`field_id`
+                      INNER JOIN '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field AS `f`
+                      ON `v`.`field_id` = `f`.`id`
+                      WHERE `v`.`reg_id` = '.$regId.'
+                      AND (
+                             `f`.`type` = "salutation"
+                          OR `f`.`type` = "firstname"
+                          OR `f`.`type` = "lastname"
+                          OR `f`.`type` = "mail"
+                      )';
+            $objResult = $db->Execute($query);
 
-                $arrDefaults = array();
-                $arrValues   = array();
-                if ($objResult !== false) {
-                    while (!$objResult->EOF) {
-                        if (!empty($objResult->fields['default'])) {
-                            $arrDefaults[$objResult->fields['type']] = explode(',', $objResult->fields['default']);
-                        }
-                        $arrValues[$objResult->fields['type']] = $objResult->fields['value'];
-                        $objResult->MoveNext();
+            $arrDefaults = array();
+            $arrValues   = array();
+            if ($objResult !== false) {
+                while (!$objResult->EOF) {
+                    if (!empty($objResult->fields['default'])) {
+                        $arrDefaults[$objResult->fields['type']] = explode(',', $objResult->fields['default']);
                     }
-                }
-
-                $regSalutation = !empty($arrValues['salutation']) ? $arrDefaults['salutation'][$arrValues['salutation'] - 1] : '';
-                $regFirstname  = !empty($arrValues['firstname'])  ? $arrValues['firstname'] : '';
-                $regLastname   = !empty($arrValues['lastname'])   ? $arrValues['lastname']  : '';
-                $regMail       = !empty($arrValues['mail'])       ? $arrValues['mail']      : '';
-                $regType       = $objRegistration->type == 1 ? $_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'] : $_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'];
-
-                $regSearch     = array('[[REGISTRATION_TYPE]]', '[[REGISTRATION_SALUTATION]]', '[[REGISTRATION_FIRSTNAME]]', '[[REGISTRATION_LASTNAME]]', '[[REGISTRATION_EMAIL]]');
-                $regReplace    = array(      $regType,                 $regSalutation,                $regFirstname,                $regLastname,                $regMail);
-            }
-
-            $domain     = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/";
-            $date       = $this->format2userDateTime(new \DateTime());
-            $startDate  = $event->startDate;
-            $endDate    = $event->endDate;
-
-            $eventTitle = $event->title;
-            $eventStart = $event->all_day ? $this->format2userDate($startDate) : $this->formatDateTime2user($startDate, $this->getDateFormat() . ' (H:i:s)');
-            $eventEnd   = $event->all_day ? $this->format2userDate($endDate) : $this->formatDateTime2user($endDate, $this->getDateFormat() . ' (H:i:s)');
-
-            $placeholder = array('[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[LINK_EVENT]]', '[[LINK_REGISTRATION]]', '[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[URL]]', '[[DATE]]');
-
-            $recipients = $this->getSendMailRecipients($actionId, $event, $regId, $objRegistration);
-
-            $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
-            $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
-
-            foreach ($recipients as $mailAdress => $langId) {
-                if (!empty($mailAdress)) {
-
-                    $langId = $this->getSendMailLangId($actionId, $mailAdress, $langId);
-
-                    if ($objUser = \FWUser::getFWUserObject()->objUser->getUsers($filter = array('email' => $mailAdress, 'is_active' => true))) {
-                        $userNick      = $objUser->getUsername();
-                        $userFirstname = $objUser->getProfileAttribute('firstname');
-                        $userLastname  = $objUser->getProfileAttribute('lastname');
-                    } else {
-                        $userNick = $mailAdress;
-                        if (!empty($regId) && $mailAdress == $regMail) {
-                            $userFirstname = $regFirstname;
-                            $userLastname  = $regLastname;
-                        } else {
-                            $userFirstname = '';
-                            $userLastname  = '';
-                        }
-                    }
-
-                    $mailTitle       = $this->mailList[$langId]['mail']->title;
-                    $mailContentText = !empty($this->mailList[$langId]['mail']->content_text) ? $this->mailList[$langId]['mail']->content_text : strip_tags($this->mailList[$langId]['mail']->content_html);
-                    $mailContentHtml = !empty($this->mailList[$langId]['mail']->content_html) ? $this->mailList[$langId]['mail']->content_html : $this->mailList[$langId]['mail']->content_text;
-
-                    // actual language of selected e-mail template
-                    $contentLanguage = $this->mailList[$langId]['lang_id'];
-
-                    if ($actionId == self::MAIL_NOTFY_NEW_APP && $event->arrSettings['confirmFrontendEvents'] == 1) {
-                        $eventLink = $domain."/cadmin/index.php?cmd={$this->moduleName}&act=modify_event&id={$event->id}&confirm=1";
-                    } else {
-                        $eventLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail', $contentLanguage, array('id' => $event->id, 'date' => $event->startDate->getTimestamp()))->toString();
-                    }
-                    $regLink   = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', $contentLanguage, array('id' => $event->id, 'date' => $event->startDate->getTimestamp()))->toString();
-
-                    $replaceContent  = array($eventTitle, $eventStart, $eventEnd, $eventLink, $regLink, $userNick, $userFirstname, $userLastname, $domain, $date);
-
-                    $mailTitle       = str_replace($placeholder, array_map('contrexx_xhtml2raw', $replaceContent), $mailTitle);
-                    $mailContentText = str_replace($placeholder, array_map('contrexx_xhtml2raw', $replaceContent), $mailContentText);
-                    $mailContentHtml = str_replace($placeholder, $replaceContent, $mailContentHtml);
-
-                    if (!empty($regId)) {
-                        $mailTitle       = str_replace($regSearch, array_map('contrexx_xhtml2raw', $regReplace), $mailTitle);
-                        $mailContentText = str_replace($regSearch, array_map('contrexx_xhtml2raw', $regReplace), $mailContentText);
-                        $mailContentHtml = str_replace($regSearch, $regReplace, $mailContentHtml);
-
-                        $mailContentText = str_replace('[[REGISTRATION_DATA]]', $registrationDataText, $mailContentText);
-                        $mailContentHtml = str_replace('[[REGISTRATION_DATA]]', $registrationDataHtml, $mailContentHtml);
-                    }
-
-                    /*echo "send to: ".$mailAdress."<br />";
-                    echo "send title: ".$mailTitle."<br />";*/
-
-                    $objMail->Subject = $mailTitle;
-                    $objMail->Body    = $mailContentHtml;
-                    $objMail->AltBody = $mailContentText;
-                    $objMail->AddAddress($mailAdress);
-                    $objMail->Send();
-                    $objMail->ClearAddresses();
+                    $arrValues[$objResult->fields['type']] = $objResult->fields['value'];
+                    $objResult->MoveNext();
                 }
             }
+
+            $regSalutation = !empty($arrValues['salutation']) ? $arrDefaults['salutation'][$arrValues['salutation'] - 1] : '';
+            $regFirstname  = !empty($arrValues['firstname'])  ? $arrValues['firstname'] : '';
+            $regLastname   = !empty($arrValues['lastname'])   ? $arrValues['lastname']  : '';
+            $regMail       = !empty($arrValues['mail'])       ? $arrValues['mail']      : '';
+            $regType       = $objRegistration->type == 1 ? $_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'] : $_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'];
+
+            $regSearch     = array('[[REGISTRATION_TYPE]]', '[[REGISTRATION_SALUTATION]]', '[[REGISTRATION_FIRSTNAME]]', '[[REGISTRATION_LASTNAME]]', '[[REGISTRATION_EMAIL]]');
+            $regReplace    = array(      $regType,                 $regSalutation,                $regFirstname,                $regLastname,                $regMail);
+        }
+
+        $domain     = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/";
+        $date       = $this->format2userDateTime(new \DateTime());
+        $startDate  = $event->startDate;
+        $endDate    = $event->endDate;
+
+        $eventTitle = $event->title;
+        $eventStart = $event->all_day ? $this->format2userDate($startDate) : $this->formatDateTime2user($startDate, $this->getDateFormat() . ' (H:i:s)');
+        $eventEnd   = $event->all_day ? $this->format2userDate($endDate) : $this->formatDateTime2user($endDate, $this->getDateFormat() . ' (H:i:s)');
+
+        $placeholder = array('[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[LINK_EVENT]]', '[[LINK_REGISTRATION]]', '[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[URL]]', '[[DATE]]');
+
+        $recipients = $this->getSendMailRecipients($actionId, $event, $regId, $objRegistration);
+
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
+        $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
+
+        foreach ($recipients as $mailAdress => $langId) {
+            if (empty($mailAdress)) {
+                continue;
+            }
+
+            $langId = $this->getSendMailLangId($actionId, $mailAdress, $langId);
+
+            if ($objUser = \FWUser::getFWUserObject()->objUser->getUsers($filter = array('email' => $mailAdress, 'is_active' => true))) {
+                $userNick      = $objUser->getUsername();
+                $userFirstname = $objUser->getProfileAttribute('firstname');
+                $userLastname  = $objUser->getProfileAttribute('lastname');
+            } else {
+                $userNick = $mailAdress;
+                if (!empty($regId) && $mailAdress == $regMail) {
+                    $userFirstname = $regFirstname;
+                    $userLastname  = $regLastname;
+                } else {
+                    $userFirstname = '';
+                    $userLastname  = '';
+                }
+            }
+
+            $mailTitle       = $this->mailList[$langId]['mail']->title;
+            $mailContentText = !empty($this->mailList[$langId]['mail']->content_text) ? $this->mailList[$langId]['mail']->content_text : strip_tags($this->mailList[$langId]['mail']->content_html);
+            $mailContentHtml = !empty($this->mailList[$langId]['mail']->content_html) ? $this->mailList[$langId]['mail']->content_html : $this->mailList[$langId]['mail']->content_text;
+
+            // actual language of selected e-mail template
+            $contentLanguage = $this->mailList[$langId]['lang_id'];
+
+            if ($actionId == self::MAIL_NOTFY_NEW_APP && $event->arrSettings['confirmFrontendEvents'] == 1) {
+                $eventLink = $domain."/cadmin/index.php?cmd={$this->moduleName}&act=modify_event&id={$event->id}&confirm=1";
+            } else {
+                $eventLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail', $contentLanguage, array('id' => $event->id, 'date' => $event->startDate->getTimestamp()))->toString();
+            }
+            $regLink   = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', $contentLanguage, array('id' => $event->id, 'date' => $event->startDate->getTimestamp()))->toString();
+
+            $replaceContent  = array($eventTitle, $eventStart, $eventEnd, $eventLink, $regLink, $userNick, $userFirstname, $userLastname, $domain, $date);
+
+            $mailTitle       = str_replace($placeholder, array_map('contrexx_xhtml2raw', $replaceContent), $mailTitle);
+            $mailContentText = str_replace($placeholder, array_map('contrexx_xhtml2raw', $replaceContent), $mailContentText);
+            $mailContentHtml = str_replace($placeholder, $replaceContent, $mailContentHtml);
+
+            if (!empty($regId)) {
+                $mailTitle       = str_replace($regSearch, array_map('contrexx_xhtml2raw', $regReplace), $mailTitle);
+                $mailContentText = str_replace($regSearch, array_map('contrexx_xhtml2raw', $regReplace), $mailContentText);
+                $mailContentHtml = str_replace($regSearch, $regReplace, $mailContentHtml);
+
+                $mailContentText = str_replace('[[REGISTRATION_DATA]]', $registrationDataText, $mailContentText);
+                $mailContentHtml = str_replace('[[REGISTRATION_DATA]]', $registrationDataHtml, $mailContentHtml);
+            }
+
+            /*echo "send to: ".$mailAdress."<br />";
+            echo "send title: ".$mailTitle."<br />";*/
+
+            $objMail->Subject = $mailTitle;
+            $objMail->Body    = $mailContentHtml;
+            $objMail->AltBody = $mailContentText;
+            $objMail->AddAddress($mailAdress);
+            $objMail->Send();
+            $objMail->ClearAddresses();
         }
     }
 
@@ -430,28 +433,78 @@ class CalendarMailManager extends CalendarLibrary {
         }
 
         switch ($actionId) {
-            case 1:
+            case static::MAIL_INVITATION:
+                // fetch manually invited users
                 $invitedMails = explode(",", $objEvent->invitedMails);
                 foreach ($invitedMails as $mail) {
                     if (!empty($mail)) {
                         $recipients[$mail] = $_LANGID;
                     }
                 }
-                $invitedGroups = array();
-                if ($objUser = \FWUser::getFWUserObject()->objUser->getUsers()) {
-                    while (!$objUser->EOF) {
-                        foreach ($objUser->getAssociatedGroupIds() as $groupId) {
-                            if (in_array($groupId, $objEvent->invitedGroups))  {
-                             $invitedGroups[$objUser->getEmail()] = $objUser->getFrontendLanguage();
-                            }
+
+                // fetch users from Crm groups
+                $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
+                $result = $db->Execute('
+                    SELECT
+                         crm_contact.id
+                    FROM '.
+                        // select CRM Person (contact_type = 2)
+                        '`'.DBPREFIX.'module_crm_contacts` AS `crm_contact` '.
+
+                        // join the CRM Memberships of the CRM Person
+                        'LEFT JOIN `'.DBPREFIX.'module_crm_customer_membership` AS `crm_contact_membership`
+                            ON `crm_contact_membership`.`contact_id` = `crm_contact`.`id` '.
+
+                        // join with CRM Company (contact_type = 1)
+                        'LEFT JOIN `'.DBPREFIX.'module_crm_contacts` AS `crm_company`
+                            ON `crm_company`.`id` = `crm_contact`.`contact_customer`
+                            AND `crm_company`.`contact_type` = 1 '.
+
+                        // join the CRM Memberships of the CRM Company
+                        'LEFT JOIN `'.DBPREFIX.'module_crm_customer_membership` AS `crm_company_membership`
+                            ON `crm_company_membership`.`contact_id` = `crm_company`.`id` '.
+
+                        // only select users of which the associated CRM Person or CRM Company has the selected CRM membership
+                    'WHERE
+                       `crm_contact`.`contact_type` = 2
+                    AND
+                         (   `crm_contact_membership`.`membership_id` IN ('.join(',', $objEvent->invitedCrmGroups).')
+                          OR `crm_company_membership`.`membership_id` IN ('.join(',', $objEvent->invitedCrmGroups).'))');
+                if ($result !== false) {
+                    $crmContact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+                    while (!$result->EOF) {
+                        if (!$crmContact->load($result->fields['id'])) {
+                            $result->MoveNext();
+                            continue;
                         }
-                        $objUser->next();
+
+                        $recipients[$crmContact->email] = $crmContact->contact_language;
+                        $result->MoveNext();
                     }
                 }
 
-                $recipients = array_merge($recipients, $invitedGroups);
+                // fetch users from Access groups, if any are set
+                if (!count($objEvent->invitedGroups)) {
+                    break;
+                }
+
+                // only fetch active users
+                $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array('active' => 1));
+                if (!$objUser) {
+                    break;
+                }
+
+                while (!$objUser->EOF) {
+                    foreach ($objUser->getAssociatedGroupIds() as $groupId) {
+                        if (in_array($groupId, $objEvent->invitedGroups))  {
+                            $recipients[$objUser->getEmail()] = $objUser->getFrontendLanguage();
+                        }
+                    }
+                    $objUser->next();
+                }
                 break;
-            case 3:
+
+            case static::MAIL_ALERT_REG:
                 $notificationEmails = explode(",", $objEvent->notificationTo);
 
                 foreach ($notificationEmails as $mail) {
