@@ -269,25 +269,54 @@ class CalendarMailManager extends CalendarLibrary {
         $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
         $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
 
-        foreach ($recipients as $mailAdress => $langId) {
+        // In case we're about to send out event invitations,
+        // do check if any have been sent already and do load
+        // them in such case.
+        if ($actionId == self::MAIL_INVITATION) {
+            $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+
+            $eventRepo = $em->getRepository('Cx\Modules\Calendar\Model\Entity\Event');
+            $eventByDoctrine = $eventRepo->findOneById($event->id);
+
+            $inviteRepo = $em->getRepository('Cx\Modules\Calendar\Model\Entity\Invite');
+            $invites = $inviteRepo->findBy(array('event' => $eventByDoctrine));
+
+            // this should not happen!
+            if (!$eventByDoctrine) {
+                return;
+            }
+        }
+
+        // send out mail for each recipient
+        foreach ($recipients as $mailAdress => $recipient) {
             if (empty($mailAdress)) {
                 continue;
             }
 
-            $langId = $this->getSendMailLangId($actionId, $mailAdress, $langId);
+            // URL pointing to the event subscription page
+            $regLink = '';
 
-            if ($objUser = \FWUser::getFWUserObject()->objUser->getUsers($filter = array('email' => $mailAdress, 'is_active' => true))) {
-                $userNick      = $objUser->getUsername();
-                $userFirstname = $objUser->getProfileAttribute('firstname');
-                $userLastname  = $objUser->getProfileAttribute('lastname');
-            } else {
-                $userNick = $mailAdress;
-                if (!empty($regId) && $mailAdress == $regMail) {
-                    $userFirstname = $regFirstname;
-                    $userLastname  = $regLastname;
+            // find existing locale of notification mail
+            // that best fits recipient
+            $langId = $this->getSendMailLangId($actionId, $mailAdress, $recipient->getLang());
+
+            // let's see if there exists a user account by the provided e-mail address
+            if ($recipient->getType() == MailRecipient::RECIPIENT_TYPE_MAIL) {
+                $objUser = \FWUser::getFWUserObject()->objUser->getUsers($filter = array('email' => $mailAdress, 'is_active' => true));
+                if ($objUser) {
+                    $recipient->setLang($objUser->getFrontendLanguage());
+                    $recipient->setType(MailRecipient::RECIPIENT_TYPE_ACCESS_USER);
+                    $recipient->setId($objUser->getId());
+                    $recipient->setFirstname($objUser->getProfileAttribute('firstname'));
+                    $recipient->setLastname($objUser->getProfileAttribute('lastname'));
+                    $recipient->setUsername($objUser->getUsername());
                 } else {
-                    $userFirstname = '';
-                    $userLastname  = '';
+                    $recipient->setUsername($mailAdress);
+
+                    if (!empty($regId) && $mailAdress == $regMail) {
+                        $recipient->setFirstname($regFirstname);
+                        $recipient->setLastname($regLastname);
+                    }
                 }
             }
 
@@ -295,17 +324,59 @@ class CalendarMailManager extends CalendarLibrary {
             $mailContentText = !empty($this->mailList[$langId]['mail']->content_text) ? $this->mailList[$langId]['mail']->content_text : strip_tags($this->mailList[$langId]['mail']->content_html);
             $mailContentHtml = !empty($this->mailList[$langId]['mail']->content_html) ? $this->mailList[$langId]['mail']->content_html : $this->mailList[$langId]['mail']->content_text;
 
-            // actual language of selected e-mail template
-            $contentLanguage = $this->mailList[$langId]['lang_id'];
+            switch ($actionId) {
+                case self::MAIL_INVITATION:
+                    // check if an invitation to the recipient
+                    // has been sent before
+                    $invite = $inviteRepo->findOneBy(array(
+                        'event'        => $eventByDoctrine,
+                        'inviteeType'  => $recipient->getType(),
+                        'inviteeId'    => $recipient->getId(),
+                    ));
 
-            if ($actionId == self::MAIL_NOTFY_NEW_APP && $event->arrSettings['confirmFrontendEvents'] == 1) {
-                $eventLink = $domain."/cadmin/index.php?cmd={$this->moduleName}&act=modify_event&id={$event->id}&confirm=1";
-            } else {
-                $eventLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail', $contentLanguage, array('id' => $event->id, 'date' => $event->startDate->getTimestamp()))->toString();
+                    // store invitation to db, in case no intivation
+                    // has been sent before
+                    if (!$invite) {
+                        $invite = new \Cx\Modules\Calendar\Model\Entity\Invite();
+                        $invite->setEvent($eventByDoctrine);
+                        // note: we need to use $event->startDate here,
+                        // instead of $eventByDoctrine->getStartDate(),
+                        // as $eventByDoctrine->getStartDate() does not use UTC as timezone
+                        $invite->setDate($event->startDate);
+                        $invite->setInviteeType($recipient->getType());
+                        $invite->setInviteeId($recipient->getId());
+                        $invite->setToken(bin2hex(openssl_random_pseudo_bytes(16)));
+                        $em->persist($invite);
+                        $em->flush();
+                    }
+
+                    $params = array(
+                        'id'    => $invite->getEvent()->getId(),
+                        'date'  => $invite->getDate()->getTimestamp(),
+                        'i'     => $invite->getId(),
+                        't'     => $invite->getToken(),
+                    );
+                    $eventLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail', $langId, $params)->toString();
+                    $regLink   = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', $langId, $params)->toString();
+                    break;
+
+                case self::MAIL_NOTFY_NEW_APP:
+                    if ($event->arrSettings['confirmFrontendEvents'] == 1) {
+                        $eventLink = $domain."/cadmin/index.php?cmd={$this->moduleName}&act=modify_event&id={$event->id}&confirm=1";
+                        break;
+                    }
+
+                    // intentinally no break here
+                default:
+                    $eventLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail', $langId, array('id' => $event->id, 'date' => $event->startDate->getTimestamp()))->toString();
+                    break;
             }
-            $regLink   = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', $contentLanguage, array('id' => $event->id, 'date' => $event->startDate->getTimestamp()))->toString();
 
-            $replaceContent  = array($eventTitle, $eventStart, $eventEnd, $eventLink, $regLink, $userNick, $userFirstname, $userLastname, $domain, $date);
+            if (empty($regLink)) {
+                $regLink   = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', $langId, array('id' => $event->id, 'date' => $event->startDate->getTimestamp()))->toString();
+            }
+
+            $replaceContent  = array($eventTitle, $eventStart, $eventEnd, $eventLink, $regLink, $recipient->getUsername(), $recipient->getFirstname(), $recipient->getLastname(), $domain, $date);
 
             $mailTitle       = str_replace($placeholder, array_map('contrexx_xhtml2raw', $replaceContent), $mailTitle);
             $mailContentText = str_replace($placeholder, array_map('contrexx_xhtml2raw', $replaceContent), $mailContentText);
@@ -411,22 +482,25 @@ class CalendarMailManager extends CalendarLibrary {
         $recipients = array();
 
         if (array_key_exists('admin', $this->mailList[0]['default_recipient'])) {
-            $recipients[$_CONFIG['coreAdminEmail']] = $_LANGID;
+            $recipients[$_CONFIG['coreAdminEmail']] = (new MailRecipient())->setLang($_LANGID);
         } elseif (array_key_exists('author', $this->mailList[$_LANGID]['default_recipient']) || array_key_exists('author', $this->mailList[0]['default_recipient'])) {
             if (!empty($regId) && !empty($objRegistration)) {
                 if (!empty($objRegistration->userId)) {
                     $objFWUser = \FWUser::getFWUserObject();
                     if ($objUser = $objFWUser->objUser->getUser($id = intval($objRegistration->userId))) {
-                        $userMail = $objUser->getEmail();
-                        $userLang = $objUser->getFrontendLanguage();
-
-                        $recipients[$userMail] = $userLang;
+                        $recipients[$objUser->getEmail()] = (new MailRecipient())
+                            ->setLang($objUser->getFrontendLanguage())
+                            ->setType(MailRecipient::RECIPIENT_TYPE_ACCESS_USER)
+                            ->setId($objUser->getId())
+                            ->setFirstname($objUser->getProfileAttribute('firstname'))
+                            ->setLastname($objUser->getProfileAttribute('lastname'))
+                            ->setUsername($objUser->getUsername());
                     }
                 }
 
                 foreach ($objRegistration->fields as $arrField) {
                     if ($arrField['type'] == 'mail' && !empty($arrField['value'])) {
-                        $recipients[$arrField['value']] = isset($this->mailList[$_LANGID]) ? $_LANGID : 0;
+                        $recipients[$arrField['value']] = (new MailRecipient())->setLang(isset($this->mailList[$_LANGID]) ? $_LANGID : 0);
                     }
                 }
             }
@@ -438,7 +512,7 @@ class CalendarMailManager extends CalendarLibrary {
                 $invitedMails = explode(",", $objEvent->invitedMails);
                 foreach ($invitedMails as $mail) {
                     if (!empty($mail)) {
-                        $recipients[$mail] = $_LANGID;
+                        $recipients[$mail] = (new MailRecipient())->setLang($_LANGID);
                     }
                 }
 
@@ -469,7 +543,8 @@ class CalendarMailManager extends CalendarLibrary {
                        `crm_contact`.`contact_type` = 2
                     AND
                          (   `crm_contact_membership`.`membership_id` IN ('.join(',', $objEvent->invitedCrmGroups).')
-                          OR `crm_company_membership`.`membership_id` IN ('.join(',', $objEvent->invitedCrmGroups).'))');
+                          OR `crm_company_membership`.`membership_id` IN ('.join(',', $objEvent->invitedCrmGroups).'))'
+                );
                 if ($result !== false) {
                     $crmContact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
                     while (!$result->EOF) {
@@ -478,7 +553,12 @@ class CalendarMailManager extends CalendarLibrary {
                             continue;
                         }
 
-                        $recipients[$crmContact->email] = $crmContact->contact_language;
+                        $recipients[$crmContact->email] = (new MailRecipient())
+                            ->setLang($crmContact->contact_language)
+                            ->setType(MailRecipient::RECIPIENT_TYPE_CRM_CONTACT)
+                            ->setId($crmContact->id)
+                            ->setFirstname($crmContact->customerName)
+                            ->setLastname($crmContact->family_name);
                         $result->MoveNext();
                     }
                 }
@@ -497,7 +577,13 @@ class CalendarMailManager extends CalendarLibrary {
                 while (!$objUser->EOF) {
                     foreach ($objUser->getAssociatedGroupIds() as $groupId) {
                         if (in_array($groupId, $objEvent->invitedGroups))  {
-                            $recipients[$objUser->getEmail()] = $objUser->getFrontendLanguage();
+                            $recipients[$objUser->getEmail()] = (new MailRecipient())
+                                ->setLang($objUser->getFrontendLanguage())
+                                ->setType(MailRecipient::RECIPIENT_TYPE_ACCESS_USER)
+                                ->setId($objUser->getId())
+                                ->setFirstname($objUser->getProfileAttribute('firstname'))
+                                ->setLastname($objUser->getProfileAttribute('lastname'))
+                                ->setUsername($objUser->getUsername());
                         }
                     }
                     $objUser->next();
@@ -508,7 +594,7 @@ class CalendarMailManager extends CalendarLibrary {
                 $notificationEmails = explode(",", $objEvent->notificationTo);
 
                 foreach ($notificationEmails as $mail) {
-                    $recipients[$mail] = $_LANGID;
+                    $recipients[$mail] = (new MailRecipient())->setLang($_LANGID);
                 }
                 break;
             default:
@@ -516,7 +602,7 @@ class CalendarMailManager extends CalendarLibrary {
 
         foreach ($this->mailList as $langId => $mailList) {
             foreach ($mailList['recipients'] as $email => $langId) {
-                $recipients[$email] = $langId;
+                $recipients[$email] = (new MailRecipient())->setLang($langId);
             }
         }
 
@@ -527,7 +613,13 @@ class CalendarMailManager extends CalendarLibrary {
         }
 
         if (isset($this->mailList[$langId]) && is_array($this->mailList[$langId]['default_recipient'])) {
-            $recipients = array_merge($recipients, $this->mailList[$langId]['default_recipient']);
+            foreach ($this->mailList[$langId]['default_recipient'] as $mail => $recipientLang) {
+                if (isset($recipients[$mail])) {
+                    continue;
+                }
+
+                $recipients[$mail] = (new MailRecipient())->setLang($recipientLang);
+            }
         }
 
         return $recipients;
@@ -633,5 +725,85 @@ class CalendarMailManager extends CalendarLibrary {
         $registrationDataHtml .= '</table>';
 
         return array($registrationDataText, $registrationDataHtml);
+    }
+}
+
+/**
+ * This class represents a notification mail recipient.
+ *
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Thomas Däppen <thomas.daeppen@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  module_calendar
+ * @todo    Add DocBlocks
+ */
+class MailRecipient {
+    protected $id;
+    protected $lang;
+    protected $type;
+    protected $firstname = '';
+    protected $lastname = '';
+    protected $username = '';
+
+    const RECIPIENT_TYPE_MAIL = '-';
+    const RECIPIENT_TYPE_ACCESS_USER = 'AccessUser';
+    const RECIPIENT_TYPE_CRM_CONTACT = 'CrmContact';
+
+    public function __construct() {
+        $this->type = static::RECIPIENT_TYPE_MAIL;
+    }
+
+    public function setId($id) {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function getId() {
+        return $this->id;
+    }
+
+    public function setLang($lang) {
+        $this->lang = $lang;
+        return $this;
+    }
+
+    public function getLang() {
+        return $this->lang;
+    }
+
+    public function setType($type) {
+        $this->type = $type;
+        return $this;
+    }
+
+    public function getType() {
+        return $this->type;
+    }
+
+    public function setFirstname($firstname) {
+        $this->firstname = $firstname;
+        return $this;
+    }
+
+    public function getFirstname() {
+        return $this->firstname;
+    }
+
+    public function setLastname($lastname) {
+        $this->lastname = $lastname;
+        return $this;
+    }
+
+    public function getLastname() {
+        return $this->lastname;
+    }
+
+    public function setUsername($username) {
+        $this->username = $username;
+        return $this;
+    }
+
+    public function getUsername() {
+        return $this->username;
     }
 }

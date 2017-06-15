@@ -792,6 +792,16 @@ CREATE TABLE `contrexx_module_calendar_event_field` (
   KEY `fk_contrexx_module_calendar_note_field_contrexx_module_calend1` (`event_id`),
   FULLTEXT KEY `eventIndex` (`title`,`teaser`,`description`)
 ) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_calendar_invite` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `event_id` int(11) NOT NULL,
+  `date` bigint unsigned NOT NULL,
+  `invitee_type` enum('AccessUser','CrmContact') NOT NULL,
+  `invitee_id` int(11) NOT NULL,
+  `token` varchar(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `invite` (`event_id`,`date`,`invitee_type`,`invitee_id`)
+) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_calendar_host` (
   `id` int(1) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
@@ -824,7 +834,7 @@ CREATE TABLE `contrexx_module_calendar_mail_action` (
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_calendar_registration` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
-  `event_id` int(7) NOT NULL,
+  `event_id` int(11) NOT NULL,
   `date` int(15) NOT NULL,
   `submission_date` timestamp NULL DEFAULT '0000-00-00 00:00:00',
   `host_name` varchar(255) NOT NULL,
