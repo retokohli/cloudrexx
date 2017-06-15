@@ -446,7 +446,7 @@ class CalendarRegistration extends CalendarLibrary
             
             if ($objResult !== false) {
                 $this->id = $objDatabase->Insert_ID();
-                $registration = $this->getRegistrationEntity($this->id, $formData);
+                $registration = $this->getRegistrationEntity($this->id);
             } else {
                 return false;
             }
