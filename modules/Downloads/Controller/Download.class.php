@@ -422,7 +422,7 @@ class Download {
     public function getName($langId = LANG_ID)
     {
         // name of interface language (-> LANG_ID) might be cached in $this->name
-        if ($langId == LANG_ID && isset($this->name)) {
+        if ($langId == LANG_ID && !empty($this->name)) {
             return $this->name;
         }
 
@@ -440,7 +440,7 @@ class Download {
     public function getDescription($langId = LANG_ID)
     {
         // description of interface language (-> LANG_ID) might be cached in $this->description
-        if ($langId == LANG_ID && isset($this->description)) {
+        if ($langId == LANG_ID && !empty($this->description)) {
             return $this->description;
         }
 
@@ -453,7 +453,7 @@ class Download {
     public function getMetakeys($langId = LANG_ID)
     {
         // metakeys of interface language (-> LANG_ID) might be cached in $this->metakey
-        if ($langId == LANG_ID && isset($this->metakey)) {
+        if ($langId == LANG_ID && !empty($this->metakey)) {
             return $this->metakey;
         }
 
@@ -666,7 +666,7 @@ class Download {
             array_walk($arrSelectLocaleExpressions, array($this, 'walkDownloadQueryFunctions'));
         }
 
-        $query = 'SELECT DISTINCT tblD.`' . implode('`, tblD.`', $arrSelectCoreExpressions) . '`'
+        $query = 'SELECT tblD.`' . implode('`, tblD.`', $arrSelectCoreExpressions) . '`'
             . (count($arrSelectLocaleExpressions) && (is_null($filter) || is_array($filter)) ?
                 ', ' . implode(', ', $arrSelectLocaleExpressions) . ' ' :
                 '')
@@ -714,7 +714,7 @@ class Download {
 
     protected function walkDownloadQueryFunctions(&$item, &$key)
     {
-        $item = 'IF(tblL.' . $item . ' IS NULL, tblL2.' . $item . ', tblL.' . $item . ') AS ' . $item;
+        $item = 'IF(tblL.' . $item . ' IS NULL, tblL2.' . $item . ', tblL.' . $item . ') AS `' . $item . '`';
     }
 
     private function getFilteredIdList($arrFilter = null, $search = null, $subCategories = false)
@@ -1543,7 +1543,7 @@ class Download {
     public function getSource($langId = LANG_ID)
     {
         // source of interface language (-> LANG_ID) might be cached in $this->source
-        if ($langId == LANG_ID && isset($this->source)) {
+        if ($langId == LANG_ID && !empty($this->source)) {
             return $this->source;
         }
 
@@ -1556,7 +1556,7 @@ class Download {
     public function getSourceName($langId = LANG_ID)
     {
         // source-name of interface language (-> LANG_ID) might be cached in $this->source_name
-        if ($langId == LANG_ID && isset($this->source_name)) {
+        if ($langId == LANG_ID && !empty($this->source_name)) {
             return $this->source_name;
         }
 
