@@ -190,6 +190,7 @@ class MediaDirectoryInputfieldLinkGroup extends \Cx\Modules\MediaDir\Controller\
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
         $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+        $strValue = strip_tags(htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET));
 
         if(!empty($strValue)) {
             //get seperator
@@ -280,7 +281,7 @@ class MediaDirectoryInputfieldLinkGroup extends \Cx\Modules\MediaDir\Controller\
             ");
         }
 
-        return strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
+        return $objInputfieldValue->fields['value'];
     }
 
 

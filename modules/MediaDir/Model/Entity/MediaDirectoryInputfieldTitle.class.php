@@ -102,6 +102,7 @@ class MediaDirectoryInputfieldTitle extends \Cx\Modules\MediaDir\Controller\Medi
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
         $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+        $strValue = htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET);
 
         $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = '<h2>'.$strValue.'</h2>';
         $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = '';
@@ -110,7 +111,7 @@ class MediaDirectoryInputfieldTitle extends \Cx\Modules\MediaDir\Controller\Medi
     }
 
     function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
-        return htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
+        return $arrInputfield['name'][0];
     }
 
     function getJavascriptCheck()

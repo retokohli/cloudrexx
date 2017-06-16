@@ -295,7 +295,8 @@ class MediaDirectoryInputfieldRelation extends \Cx\Modules\MediaDir\Controller\M
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-        $intEntryId = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+        $entryId = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+        $intEntryId = intval($entryId);
 
         $objEntry = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry;
         $objEntry->getEntries($intEntryId);
@@ -339,7 +340,7 @@ class MediaDirectoryInputfieldRelation extends \Cx\Modules\MediaDir\Controller\M
           AND
              ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields.field_id = '".$intId."'");
 
-        return intval($objInputfield->fields['value']);
+        return $objInputfield->fields['value'];
     }
 
 

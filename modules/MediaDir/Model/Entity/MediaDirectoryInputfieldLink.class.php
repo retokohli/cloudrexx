@@ -192,6 +192,7 @@ class MediaDirectoryInputfieldLink extends \Cx\Modules\MediaDir\Controller\Media
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
         $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+        $strValue = strip_tags(htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET));
 
         // replace the links
         $strValue = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $strValue);
@@ -268,7 +269,7 @@ class MediaDirectoryInputfieldLink extends \Cx\Modules\MediaDir\Controller\Media
             ");
         }
 
-        return strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
+        return $objInputfieldValue->fields['value'];
     }
 
 

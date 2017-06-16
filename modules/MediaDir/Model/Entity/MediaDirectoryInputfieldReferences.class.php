@@ -304,6 +304,7 @@ EOF;
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
         $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+        $strValue = strip_tags(htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET));
 
         if(!empty($strValue)) {
             $arrParents = array();
@@ -376,7 +377,7 @@ EOF;
             ");
         }
 
-        return strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
+        return $objInputfieldValue->fields['value'];
     }
 
     function getJavascriptCheck()

@@ -512,6 +512,8 @@ EOF;
         $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
 
         if(!empty($strValue)) {
+            $strValue = strip_tags(htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET));
+
             //get seperator
             $strSeperator = ',';
 
@@ -630,7 +632,7 @@ EOF;
             LIMIT 1
         ");
 
-        return strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
+        return $objInputfieldValue->fields['value'];
     }
 
 

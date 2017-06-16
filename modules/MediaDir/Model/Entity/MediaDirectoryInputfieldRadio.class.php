@@ -181,6 +181,7 @@ class MediaDirectoryInputfieldRadio extends \Cx\Modules\MediaDir\Controller\Medi
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
         $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+        $strValue = strip_tags(htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET));
 
         if(!empty($strValue)) {
             $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
@@ -210,7 +211,7 @@ class MediaDirectoryInputfieldRadio extends \Cx\Modules\MediaDir\Controller\Medi
 
         $intValueKey = intval($objInputfieldValue->fields['value'])-1;
         $arrValues = explode(",", $arrInputfield['default_value'][0]);
-        return strip_tags(htmlspecialchars($arrValues[$intValueKey], ENT_QUOTES, CONTREXX_CHARSET));
+        return $arrValues[$intValueKey];
     }
 
 

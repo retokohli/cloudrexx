@@ -140,6 +140,7 @@ class MediaDirectoryInputfieldGoogleWeather extends \Cx\Modules\MediaDir\Control
         $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
 
         if(!empty($strValue)) {
+            $strValue = strip_tags($strValue);
             $objGoogleWeather = new \googleWeather();
             $objGoogleWeather->setWeatherLanguage($_LANGID);
             $objGoogleWeather->setWeatherLocation($strValue);
@@ -170,7 +171,7 @@ class MediaDirectoryInputfieldGoogleWeather extends \Cx\Modules\MediaDir\Control
                 entry_id=".$intEntryId."
             LIMIT 1
         ");
-        return strip_tags($objInputfieldValue->fields['value']);
+        return $objInputfieldValue->fields['value'];
     }
 
 

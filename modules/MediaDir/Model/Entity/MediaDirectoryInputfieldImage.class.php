@@ -441,6 +441,7 @@ INPUT;
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
         $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+        $strValue = strip_tags(htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET));
 
         if (empty($strValue) || $strValue == 'new_image') {
             return null;
@@ -506,7 +507,7 @@ INPUT;
                    AND lang_id=$intEntryDefaultLang
                  LIMIT 1 ");
         }
-        return strip_tags(htmlspecialchars($objResult->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
+        return $objResult->fields['value'];
     }
 
 

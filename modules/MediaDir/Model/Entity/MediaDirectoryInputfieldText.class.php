@@ -189,6 +189,7 @@ class MediaDirectoryInputfieldText extends \Cx\Modules\MediaDir\Controller\Media
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
         $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+        $strValue = strip_tags(htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET));
 
         if(!empty($strValue)) {
             $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
@@ -247,7 +248,7 @@ class MediaDirectoryInputfieldText extends \Cx\Modules\MediaDir\Controller\Media
             ");
         }
 
-        return strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
+        return $objInputfieldValue->fields['value'];
     }
 
 

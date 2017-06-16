@@ -272,6 +272,8 @@ EOF;
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
         $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+        $strValue = htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET);
+
         $arrValues = explode(',', $strValue);
 
         $strValueLat = $arrValues[0];
@@ -319,7 +321,7 @@ EOF;
             LIMIT 1
         ");
 
-        return htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET);
+        return $objInputfieldValue->fields['value'];
     }
 
 

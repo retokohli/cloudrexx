@@ -219,7 +219,9 @@ EOF;
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-        $intValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+        $value = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+        $intValue = intval($value);
+
         $pathImgClassificationOn = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getWebFilePath(
             \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath().'/'.$this->moduleName.'/View/Media/classification_on.png'
         );
@@ -264,7 +266,7 @@ EOF;
             LIMIT 1
         ");
 
-        return intval($objInputfieldValue->fields['value']);
+        return $objInputfieldValue->fields['value'];
     }
 
 

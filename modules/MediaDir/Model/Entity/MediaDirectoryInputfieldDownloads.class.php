@@ -468,6 +468,7 @@ EOF;
         $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
 
         if(!empty($strValue)) {
+            $strValue = strip_tags(htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET));
             $arrParents = array();
             $arrParents = explode("||", $strValue);
             $strValue = null;
@@ -541,7 +542,7 @@ EOF;
             ");
         }
 
-        return strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
+        return $objInputfieldValue->fields['value'];
     }
 
 
