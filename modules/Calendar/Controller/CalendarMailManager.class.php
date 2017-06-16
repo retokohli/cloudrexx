@@ -78,6 +78,7 @@ class CalendarMailManager extends CalendarLibrary {
     function __construct()
     {
         $this->getFrontendLanguages();
+        $this->init();
     }
 
     /**
@@ -273,12 +274,10 @@ class CalendarMailManager extends CalendarLibrary {
         // do check if any have been sent already and do load
         // them in such case.
         if ($actionId == self::MAIL_INVITATION) {
-            $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
-
-            $eventRepo = $em->getRepository('Cx\Modules\Calendar\Model\Entity\Event');
+            $eventRepo = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Event');
             $eventByDoctrine = $eventRepo->findOneById($event->id);
 
-            $inviteRepo = $em->getRepository('Cx\Modules\Calendar\Model\Entity\Invite');
+            $inviteRepo = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Invite');
             $invites = $inviteRepo->findBy(array('event' => $eventByDoctrine));
 
             // this should not happen!
@@ -346,8 +345,8 @@ class CalendarMailManager extends CalendarLibrary {
                         $invite->setInviteeType($recipient->getType());
                         $invite->setInviteeId($recipient->getId());
                         $invite->setToken($this->generateKey());
-                        $em->persist($invite);
-                        $em->flush();
+                        $this->em->persist($invite);
+                        $this->em->flush();
                     }
 
                     $params = array(
@@ -725,85 +724,5 @@ class CalendarMailManager extends CalendarLibrary {
         $registrationDataHtml .= '</table>';
 
         return array($registrationDataText, $registrationDataHtml);
-    }
-}
-
-/**
- * This class represents a notification mail recipient.
- *
- * @copyright   CLOUDREXX CMS - CLOUDREXX AG
- * @author      Thomas Däppen <thomas.daeppen@cloudrexx.com>
- * @package     cloudrexx
- * @subpackage  module_calendar
- * @todo    Add DocBlocks
- */
-class MailRecipient {
-    protected $id;
-    protected $lang;
-    protected $type;
-    protected $firstname = '';
-    protected $lastname = '';
-    protected $username = '';
-
-    const RECIPIENT_TYPE_MAIL = '-';
-    const RECIPIENT_TYPE_ACCESS_USER = 'AccessUser';
-    const RECIPIENT_TYPE_CRM_CONTACT = 'CrmContact';
-
-    public function __construct() {
-        $this->type = static::RECIPIENT_TYPE_MAIL;
-    }
-
-    public function setId($id) {
-        $this->id = $id;
-        return $this;
-    }
-
-    public function getId() {
-        return $this->id;
-    }
-
-    public function setLang($lang) {
-        $this->lang = $lang;
-        return $this;
-    }
-
-    public function getLang() {
-        return $this->lang;
-    }
-
-    public function setType($type) {
-        $this->type = $type;
-        return $this;
-    }
-
-    public function getType() {
-        return $this->type;
-    }
-
-    public function setFirstname($firstname) {
-        $this->firstname = $firstname;
-        return $this;
-    }
-
-    public function getFirstname() {
-        return $this->firstname;
-    }
-
-    public function setLastname($lastname) {
-        $this->lastname = $lastname;
-        return $this;
-    }
-
-    public function getLastname() {
-        return $this->lastname;
-    }
-
-    public function setUsername($username) {
-        $this->username = $username;
-        return $this;
-    }
-
-    public function getUsername() {
-        return $this->username;
     }
 }
