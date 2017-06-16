@@ -345,7 +345,7 @@ class CalendarMailManager extends CalendarLibrary {
                         $invite->setDate($event->startDate);
                         $invite->setInviteeType($recipient->getType());
                         $invite->setInviteeId($recipient->getId());
-                        $invite->setToken(bin2hex(openssl_random_pseudo_bytes(16)));
+                        $invite->setToken($this->generateKey());
                         $em->persist($invite);
                         $em->flush();
                     }
