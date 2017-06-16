@@ -108,7 +108,7 @@ class MediaDirectoryInputfieldAddStep extends \Cx\Modules\MediaDir\Controller\Me
         return null;
     }
 
-    function getContent($intEntryId, $arrInputfield, $arrTranslationStatus) {
+    function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
         return null;
     }
 
