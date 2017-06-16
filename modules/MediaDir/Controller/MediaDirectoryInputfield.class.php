@@ -1258,6 +1258,7 @@ EOF;
           'city'    => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_CITY"],
           'country' => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_COUNTRY"],
           'image'   => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_IMAGE"],
+          'slug'    => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_SLUG"],
         );
 
         return $arrContexts;

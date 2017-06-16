@@ -50,6 +50,7 @@ class MediaDirectory extends MediaDirectoryLibrary
     var $metaTitle;
     var $metaDescription;
     var $metaImage;
+    var $slug;
 
 
     var $arrNavtree = array();
@@ -725,7 +726,7 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         foreach ($inputFields as $arrInputfield) {
             $contextType = isset($arrInputfield['context_type']) ? $arrInputfield['context_type'] : '';
-            if (!in_array($contextType, array('title', 'content', 'image'))) {
+            if (!in_array($contextType, array('title', 'content', 'image', 'slug'))) {
                 continue;
             }
             $strType = isset($arrInputfield['type_name']) ? $arrInputfield['type_name'] : '';
@@ -1527,5 +1528,9 @@ class MediaDirectory extends MediaDirectoryLibrary
 
     public function getMetaImage() {
         return $this->metaImage;
+    }
+
+    public function getSlug() {
+        return $this->slug;
     }
 }
