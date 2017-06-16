@@ -1026,7 +1026,31 @@ UPLOADER;
         $userLogin      = $objUser->login();
         $captchaCheck   = true;
 
-        if(!$userLogin && isset($_POST['submitRegistration'])) {
+        // note: the associated event has been loaded in Calendar::loadEventManager()
+        $objEvent = $this->objEventManager->eventList[0];
+
+        // abort in case no associated event exists
+        if (empty($objEvent)) {
+            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
+            return;
+        }
+
+        // abort in case the associated event has not been published
+        if(!$objEvent->status) {
+            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
+            return;
+        }
+
+        // Abort in case the associated event is protected and the requestee has
+        // not sufficient access rights.
+        if ($objEvent->access == 1 && !\FWUser::getFWUserObject()->objUser->login()) {
+            $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
+            \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
+            return;
+        }
+
+        // verify CAPTCHA
+        if (!$userLogin && isset($_POST['submitRegistration'])) {
             $captchaCheck =  \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->check();
             if (!$captchaCheck) {
                 $this->_objTpl->setVariable(array(
@@ -1035,127 +1059,13 @@ UPLOADER;
             }
         }
 
-        $objEvent = $this->objEventManager->eventList[0];
-
-        if (empty($objEvent)) {
-            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
-            return;
-        }
-
-        if(!$objEvent->status) {
-            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
-            return;
-        }
-
-        if($objEvent->access == 1 && !\FWUser::getFWUserObject()->objUser->login()){
-            $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-            \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
-            return;
-        }
-
+        // set page title based on requested event
         $dateForPageTitle = $objEvent->startDate;
         $this->pageTitle = $this->format2userDate($dateForPageTitle)
                             . ": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
 
         // Only show registration form if event lies in the future
-        if(time() <= $objEvent->startDate->getTimestamp()) {
-            // Only show registration form if event accepts registrations.
-            // Event accepts registrations, if registration is set up and
-            //     - no attendee limit is set
-            //     - or if there are still free places available
-            if (   $objEvent->registration == CalendarEvent::EVENT_REGISTRATION_INTERNAL
-                && (   empty($objEvent->numSubscriber)
-                    || !\FWValidator::isEmpty($objEvent->getFreePlaces())
-                )
-            ) {
-                $this->_objTpl->setVariable(array(
-                    $this->moduleLangVar.'_EVENT_ID'                   =>  intval($_REQUEST['id']),
-                    $this->moduleLangVar.'_FORM_ID'                    =>  intval($objEvent->registrationForm),
-                    $this->moduleLangVar.'_EVENT_DATE'                 =>  intval($_REQUEST['date']),
-                    $this->moduleLangVar.'_USER_ID'                    =>  $userId,
-                    'TXT_'.$this->moduleLangVar.'_REGISTRATION_SUBMIT' =>  $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUBMIT'],
-                ));
-
-                $objFormManager = new \Cx\Modules\Calendar\Controller\CalendarFormManager();
-                $objFormManager->setEvent($objEvent);
-                $objFormManager->getFormList();
-                //$objFormManager->showForm($this->_objTpl,intval($objEvent->registrationForm), 2, $objEvent->ticketSales);
-                // Made the ticket sales always true, because ticket functionality currently not implemented
-                $objFormManager->showForm($this->_objTpl, intval($objEvent->registrationForm), 2, true);
-
-                /* if ($this->arrSettings['paymentStatus'] == '1' && $objEvent->ticketSales && ($this->arrSettings['paymentBillStatus'] == '1' || $this->arrSettings['paymentYellowpayStatus'] == '1')) {
-                    $paymentMethods  = '<select class="calendarSelect" name="paymentMethod">';
-                    $paymentMethods .= $this->arrSettings['paymentBillStatus'] == '1' || $objEvent->price == 0 ? '<option value="1">'.$_ARRAYLANG['TXT_CALENDAR_PAYMENT_BILL'].'</option>'  : '';
-                    $paymentMethods .= $this->arrSettings['paymentYellowpayStatus'] == '1' && $objEvent->price > 0 ? '<option value="2">'.$_ARRAYLANG['TXT_CALENDAR_PAYMENT_YELLOWPAY'].'</option>' : '';
-                    $paymentMethods .= '</select>';
-
-                    $this->_objTpl->setVariable(array(
-                        'TXT_'.$this->moduleLangVar.'_PAYMENT_METHOD' => $_ARRAYLANG['TXT_CALENDAR_PAYMENT_METHOD'],
-                        $this->moduleLangVar.'_PAYMENT_METHODS'       => $paymentMethods,
-                    ));
-                    $this->_objTpl->parse('calendarRegistrationPayment');
-                } else {
-                    $this->_objTpl->hideBlock('calendarRegistrationPayment');
-                } */
-
-                if(!$userLogin) {
-
-                    $this->_objTpl->setVariable(array(
-                        'TXT_'.$this->moduleLangVar.'_CAPTCHA' => $_CORELANG['TXT_CORE_CAPTCHA'],
-                        $this->moduleLangVar.'_CAPTCHA_CODE'   => \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getCode(),
-                    ));
-                    $this->_objTpl->parse('calendarRegistrationCaptcha');
-                } else {
-                    $this->_objTpl->hideBlock('calendarRegistrationCaptcha');
-                }
-
-                if(isset($_POST['submitRegistration']) && $captchaCheck) {
-                    $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration(intval($_POST['form']));
-
-                    if($objRegistration->save($_POST)) {
-                        if ($objRegistration->saveIn == 2) {
-                            $status = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED_WAITLIST'];
-                        } else if ($objRegistration->saveIn == 0) {
-                            $status =$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED_SIGNOFF'];
-                        } else {
-                            $status = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED'];
-                            /* if($_POST["paymentMethod"] == 2) {
-                                $objRegistration->get($objRegistration->id);
-                                $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($objRegistration->eventId);
-                                $this->getSettings();
-                                $amount  = (int) $objEvent->price * 100;
-                                $status .= \Cx\Modules\Calendar\Controller\CalendarPayment::_yellowpay(array("orderID" => $objRegistration->id, "amount" => $amount, "currency" => $this->arrSettings["paymentCurrency"], "language" => "DE"));
-                            } */
-                        }
-                        $this->_objTpl->setVariable(array(
-                            $this->moduleLangVar.'_LINK_BACK' =>  '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'">'.$_ARRAYLANG['TXT_CALENDAR_BACK'].'</a>',
-                            $this->moduleLangVar.'_REGISTRATION_STATUS' =>  $status,
-                        ));
-
-                        $this->_objTpl->touchBlock('calendarRegistrationStatus');
-                        $this->_objTpl->hideBlock('calendarRegistrationForm');
-                    } else {
-                        $this->_objTpl->setVariable(array(
-                            'TXT_'.$this->moduleLangVar.'_ERROR' => '<span class="text-danger">'.$_ARRAYLANG['TXT_CALENDAR_CHECK_REQUIRED'].'</span>',
-                        ));
-
-                        $this->_objTpl->parse('calendarRegistrationForm');
-                        $this->_objTpl->hideBlock('calendarRegistrationStatus');
-                    }
-                } else {
-                    $this->_objTpl->parse('calendarRegistrationForm');
-                    $this->_objTpl->hideBlock('calendarRegistrationStatus');
-                }
-            } else {
-                $this->_objTpl->setVariable(array(
-                    $this->moduleLangVar.'_LINK_BACK' =>  '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'">'.$_ARRAYLANG['TXT_CALENDAR_BACK'].'</a>',
-                    $this->moduleLangVar.'_REGISTRATION_STATUS' =>  $_ARRAYLANG['TXT_CALENDAR_EVENT_FULLY_BLOCKED'],
-                ));
-
-                $this->_objTpl->touchBlock('calendarRegistrationStatus');
-                $this->_objTpl->hideBlock('calendarRegistrationForm');
-            }
-        } else {
+        if(time() > $objEvent->startDate->getTimestamp()) {
             $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_LINK_BACK' =>  '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'">'.$_ARRAYLANG['TXT_CALENDAR_BACK'].'</a>',
                 $this->moduleLangVar.'_REGISTRATION_STATUS' =>  $_ARRAYLANG['TXT_CALENDAR_EVENT_IN_PAST'],
@@ -1163,7 +1073,112 @@ UPLOADER;
 
             $this->_objTpl->touchBlock('calendarRegistrationStatus');
             $this->_objTpl->hideBlock('calendarRegistrationForm');
+
+            return;
         }
+
+        // Only show registration form if event accepts registrations.
+        // Event accepts registrations, if registration is set up and
+        //     - no attendee limit is set
+        //     - or if there are still free places available
+        if (
+            !(   $objEvent->registration == CalendarEvent::EVENT_REGISTRATION_INTERNAL
+                && (   empty($objEvent->numSubscriber)
+                    || !\FWValidator::isEmpty($objEvent->getFreePlaces())
+                )
+            )
+        ) {
+            $this->_objTpl->setVariable(array(
+                $this->moduleLangVar.'_LINK_BACK' =>  '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'">'.$_ARRAYLANG['TXT_CALENDAR_BACK'].'</a>',
+                $this->moduleLangVar.'_REGISTRATION_STATUS' =>  $_ARRAYLANG['TXT_CALENDAR_EVENT_FULLY_BLOCKED'],
+            ));
+
+            $this->_objTpl->touchBlock('calendarRegistrationStatus');
+            $this->_objTpl->hideBlock('calendarRegistrationForm');
+
+            return;
+        }
+
+        $this->_objTpl->setVariable(array(
+            $this->moduleLangVar.'_EVENT_ID'                   =>  intval($_REQUEST['id']),
+            $this->moduleLangVar.'_FORM_ID'                    =>  intval($objEvent->registrationForm),
+            $this->moduleLangVar.'_EVENT_DATE'                 =>  intval($_REQUEST['date']),
+            $this->moduleLangVar.'_USER_ID'                    =>  $userId,
+            'TXT_'.$this->moduleLangVar.'_REGISTRATION_SUBMIT' =>  $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUBMIT'],
+        ));
+
+        $objFormManager = new \Cx\Modules\Calendar\Controller\CalendarFormManager();
+        $objFormManager->setEvent($objEvent);
+        $objFormManager->getFormList();
+        //$objFormManager->showForm($this->_objTpl,intval($objEvent->registrationForm), 2, $objEvent->ticketSales);
+        // Made the ticket sales always true, because ticket functionality currently not implemented
+        $objFormManager->showForm($this->_objTpl, intval($objEvent->registrationForm), 2, true);
+
+        /* if ($this->arrSettings['paymentStatus'] == '1' && $objEvent->ticketSales && ($this->arrSettings['paymentBillStatus'] == '1' || $this->arrSettings['paymentYellowpayStatus'] == '1')) {
+            $paymentMethods  = '<select class="calendarSelect" name="paymentMethod">';
+            $paymentMethods .= $this->arrSettings['paymentBillStatus'] == '1' || $objEvent->price == 0 ? '<option value="1">'.$_ARRAYLANG['TXT_CALENDAR_PAYMENT_BILL'].'</option>'  : '';
+            $paymentMethods .= $this->arrSettings['paymentYellowpayStatus'] == '1' && $objEvent->price > 0 ? '<option value="2">'.$_ARRAYLANG['TXT_CALENDAR_PAYMENT_YELLOWPAY'].'</option>' : '';
+            $paymentMethods .= '</select>';
+
+            $this->_objTpl->setVariable(array(
+                'TXT_'.$this->moduleLangVar.'_PAYMENT_METHOD' => $_ARRAYLANG['TXT_CALENDAR_PAYMENT_METHOD'],
+                $this->moduleLangVar.'_PAYMENT_METHODS'       => $paymentMethods,
+            ));
+            $this->_objTpl->parse('calendarRegistrationPayment');
+        } else {
+            $this->_objTpl->hideBlock('calendarRegistrationPayment');
+        } */
+
+        if(!$userLogin) {
+            $this->_objTpl->setVariable(array(
+                'TXT_'.$this->moduleLangVar.'_CAPTCHA' => $_CORELANG['TXT_CORE_CAPTCHA'],
+                $this->moduleLangVar.'_CAPTCHA_CODE'   => \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getCode(),
+            ));
+            $this->_objTpl->parse('calendarRegistrationCaptcha');
+        } else {
+            $this->_objTpl->hideBlock('calendarRegistrationCaptcha');
+        }
+
+        if(!isset($_POST['submitRegistration']) || !$captchaCheck) {
+            $this->_objTpl->parse('calendarRegistrationForm');
+            $this->_objTpl->hideBlock('calendarRegistrationStatus');
+            return;
+        }
+
+        $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration(intval($_POST['form']));
+
+        if (!$objRegistration->save($_POST)) {
+            $this->_objTpl->setVariable(array(
+                'TXT_'.$this->moduleLangVar.'_ERROR' => '<span class="text-danger">'.$_ARRAYLANG['TXT_CALENDAR_CHECK_REQUIRED'].'</span>',
+            ));
+
+            $this->_objTpl->parse('calendarRegistrationForm');
+            $this->_objTpl->hideBlock('calendarRegistrationStatus');
+
+            return;
+        }
+
+        if ($objRegistration->saveIn == 2) {
+            $status = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED_WAITLIST'];
+        } else if ($objRegistration->saveIn == 0) {
+            $status =$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED_SIGNOFF'];
+        } else {
+            $status = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED'];
+            /* if($_POST["paymentMethod"] == 2) {
+                $objRegistration->get($objRegistration->id);
+                $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($objRegistration->eventId);
+                $this->getSettings();
+                $amount  = (int) $objEvent->price * 100;
+                $status .= \Cx\Modules\Calendar\Controller\CalendarPayment::_yellowpay(array("orderID" => $objRegistration->id, "amount" => $amount, "currency" => $this->arrSettings["paymentCurrency"], "language" => "DE"));
+            } */
+        }
+        $this->_objTpl->setVariable(array(
+            $this->moduleLangVar.'_LINK_BACK' =>  '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'">'.$_ARRAYLANG['TXT_CALENDAR_BACK'].'</a>',
+            $this->moduleLangVar.'_REGISTRATION_STATUS' =>  $status,
+        ));
+
+        $this->_objTpl->touchBlock('calendarRegistrationStatus');
+        $this->_objTpl->hideBlock('calendarRegistrationForm');
     }
 
     /**
