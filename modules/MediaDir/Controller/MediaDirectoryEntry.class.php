@@ -339,7 +339,26 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
     }
 
     public function findOneBySlug($slug) {
-        return $this->findOneByName($this->getNameFromSlug($slug));
+        $query = "
+            SELECT DISTINCT entry_id
+            FROM
+              ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS r
+            JOIN
+              ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS i
+              ON r.field_id = i.id
+            WHERE
+              r.value = '".$slug."'
+              AND r.lang_id = ".FRONTEND_LANG_ID."
+              AND i.context_type = 'slug'
+            LIMIT 1
+        ";
+
+        $objResult = $this->cx->getDb()->getAdoDb()->Execute($query);
+        if (!$objResult || $objResult->EOF) {
+            return $this->findOneByName($this->getNameFromSlug($slug));
+        }
+
+        return $objResult->fields['entry_id'];
     }
 
     public function findOneByName($name, $formId = null, $catId = null, $levelId = null, $autoload = false) {
