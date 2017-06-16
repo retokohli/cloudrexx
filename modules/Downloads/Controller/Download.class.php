@@ -639,10 +639,10 @@ class Download {
         }
 
         // set sort order
-//        if (!($arrQuery = $this->setSortedIdList($arrSort, $sqlCondition, $limit, $offset))) {
-//            $this->clean();
-//            return false;
-//        }
+        if (!($arrQuery = $this->setSortedIdList($arrSort, $sqlCondition, $limit, $offset))) {
+            $this->clean();
+            return false;
+        }
 
         // set field list
         if (is_array($arrAttributes)) {
@@ -672,10 +672,7 @@ class Download {
                 '')
             . 'FROM `' . DBPREFIX . 'module_downloads_download` AS tblD'
             . ((count($arrSelectLocaleExpressions) && is_int($filter) && is_int($offset)) || $arrQuery['tables']['locale'] ?
-                ' INNER JOIN `' . DBPREFIX . 'module_downloads_download_locale` AS tblL ON tblL.`download_id` = tblD.`id` AND tblL.`lang_id` = ' . LANG_ID
-                : '')
-            . (is_int($filter) && is_null($offset) ?
-                ' WHERE tblD.`id` = ' . $filter
+                ' INNER JOIN `' . DBPREFIX . 'module_downloads_download_locale` AS tblL ON tblL.`download_id` = tblD.`id`'
                 : '')
             . (count($arrSelectLocaleExpressions) && (is_null($filter) || is_array($filter)) ?
                 ' LEFT JOIN `' . DBPREFIX . 'module_downloads_download_locale` AS tblL ON tblL.`download_id` = tblD.`id` AND tblL.`lang_id` = ' . LANG_ID
