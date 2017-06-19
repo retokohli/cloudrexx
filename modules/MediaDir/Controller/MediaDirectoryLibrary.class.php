@@ -1031,7 +1031,9 @@ EOF;
             $entryId = $arrEntry['entryId'];
         }
 
-        if (isset($arrEntry['entryFields'][0])) {
+        if (isset($arrEntry['slug'])) {
+            $entryName = $arrEntry['slug'];
+        } else if (isset($arrEntry['entryFields'][0])) {
             $entryName = $arrEntry['entryFields'][0];
         }
 
