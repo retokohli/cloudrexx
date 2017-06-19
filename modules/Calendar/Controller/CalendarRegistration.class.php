@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,10 +24,10 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Calendar
- *  
+ *
  * @package    cloudrexx
  * @subpackage module_calendar
  * @author     Cloudrexx <info@cloudrexx.com>
@@ -38,33 +38,33 @@
 namespace Cx\Modules\Calendar\Controller;
 /**
  * Calendar
- * 
+ *
  * Calendar Class Registration
- * 
+ *
  * @package    cloudrexx
  * @subpackage module_calendar
  * @author     Cloudrexx <info@cloudrexx.com>
  * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
- */ 
+ */
 class CalendarRegistration extends CalendarLibrary
 {
     /**
      * Registration id
      *
      * @access public
-     * @var integer 
+     * @var integer
      */
-    public $id; 
-    
+    public $id;
+
     /**
      * Event Id
      *
      * @access public
-     * @var integer 
+     * @var integer
      */
-    public $eventId;  
-    
+    public $eventId;
+
     /**
      * Submission date
      *
@@ -72,47 +72,47 @@ class CalendarRegistration extends CalendarLibrary
      * @var integer Timestamp of Registration submission date
      */
     public $submissionDate;
-    
+
     /**
      * Event date
      *
      * @access public
      * @var integer Timestamp of Event date
      */
-    public $eventDate; 
-    
+    public $eventDate;
+
     /**
      * User id
      *
      * @access public
-     * @var interger 
+     * @var interger
      */
-    public $userId;   
-    
+    public $userId;
+
     /**
      * Language Id
      *
      * @access public
      * @var integer
      */
-    public $langId; 
-    
+    public $langId;
+
     /**
      * Type
      *
      * @access public
      * @var integer
      */
-    public $type; 
-    
+    public $type;
+
     /**
      * Host name
      *
      * @access public
      * @var string
      */
-    public $hostName; 
-    
+    public $hostName;
+
     /**
      * User Ip address
      *
@@ -120,23 +120,23 @@ class CalendarRegistration extends CalendarLibrary
      * @var string
      */
     public $ipAddress;
-    
+
     /**
      * Reg Key
      *
      * @access public
-     * @var string 
+     * @var string
      */
-    public $key;     
-    
+    public $key;
+
     /**
      * First Export time
      *
      * @access public
-     * @var integer 
+     * @var integer
      */
     public $firstExport;
-    
+
     /**
      * Paymend method
      *
@@ -144,7 +144,7 @@ class CalendarRegistration extends CalendarLibrary
      * @var integer
      */
     public $paymentMethod;
-    
+
     /**
      * Payment status
      *
@@ -152,60 +152,60 @@ class CalendarRegistration extends CalendarLibrary
      * @var interger
      */
     public $paid;
-    
+
     /**
      * Save In
      *
      * @access public
-     * @var integer 
+     * @var integer
      */
     public $saveIn;
-    
+
     /**
      * Fields
      *
      * @access public
-     * @var array 
+     * @var array
      */
-    public $fields = array(); 
-    
+    public $fields = array();
+
     /**
      * Registration form object
      *
      * @access private
-     * @var object 
+     * @var object
      */
     private $form;
-    
+
     /**
      * Constructor for registration class
-     * 
+     *
      * Loads the form object from CalendarForm class
      * IF the $id is not null load the register object for the given id
-     * 
+     *
      * @param integer $formId Registration Form Id
      * @param integer $id     Registration id
      */
-    function __construct($formId, $id=null){              
+    function __construct($formId, $id=null){
         $objForm = new \Cx\Modules\Calendar\Controller\CalendarForm(intval($formId));
-        $this->form = $objForm;     
-        
+        $this->form = $objForm;
+
         if ($id != null) {
             self::get($id);
         }
         $this->init();
     }
-    
+
     /**
      * Loads the registration by id
-     *      
+     *
      * @param integer $regId Registration id
-     * 
+     *
      * @return null
      */
     function get($regId) {
-        global $objDatabase, $_LANGID;    
-        
+        global $objDatabase, $_LANGID;
+
         $query = 'SELECT registration.`id` AS `id`,
                          registration.`event_id` AS `event_id`,
                          registration.`submission_date` AS `submission_date`,
@@ -219,104 +219,104 @@ class CalendarRegistration extends CalendarLibrary
                          registration.`export` AS `first_export`,
                          registration.`payment_method` AS `payment_method`,
                          registration.`paid` AS `paid`
-                   FROM '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration AS registration
+                   FROM '.DBPREFIX.'module_'.self::TABLE_PREFIX.'_registration AS registration
                    WHERE registration.`id` = "'.$regId.'"
-                   LIMIT 1';   
-        
-        $objResult = $objDatabase->Execute($query);  
-        
+                   LIMIT 1';
+
+        $objResult = $objDatabase->Execute($query);
+
         if($objResult !== false) {
             $this->id = intval($objResult->fields['id']);
-            $this->eventId = intval($objResult->fields['event_id']);           
-            $this->eventDate = intval($objResult->fields['date']);        
-            $this->userId= intval($objResult->fields['user_id']);        
-            $this->langId= intval($objResult->fields['lang_id']);        
-            $this->type = intval($objResult->fields['type']);        
-            $this->hostName = htmlentities($objResult->fields['host_name'], ENT_QUOTES, CONTREXX_CHARSET);      
-            $this->ipAddress = htmlentities($objResult->fields['ip_address'], ENT_QUOTES, CONTREXX_CHARSET);        
-            $this->key = htmlentities($objResult->fields['key'], ENT_QUOTES, CONTREXX_CHARSET);          
+            $this->eventId = intval($objResult->fields['event_id']);
+            $this->eventDate = intval($objResult->fields['date']);
+            $this->userId= intval($objResult->fields['user_id']);
+            $this->langId= intval($objResult->fields['lang_id']);
+            $this->type = intval($objResult->fields['type']);
+            $this->hostName = htmlentities($objResult->fields['host_name'], ENT_QUOTES, CONTREXX_CHARSET);
+            $this->ipAddress = htmlentities($objResult->fields['ip_address'], ENT_QUOTES, CONTREXX_CHARSET);
+            $this->key = htmlentities($objResult->fields['key'], ENT_QUOTES, CONTREXX_CHARSET);
             $this->firstExport = intval($objResult->fields['first_export']);
             $this->paymentMethod = intval($objResult->fields['payment_method']);
             $this->paid = intval($objResult->fields['paid']);
-            
+
             $this->submissionDate = '';
             if ($objResult->fields['submission_date'] !== '0000-00-00 00:00:00') {
                 $this->submissionDate = $this->getInternDateTimeFromDb(
                     $objResult->fields['submission_date']
                 );
             }
-            foreach ($this->form->inputfields as $key => $arrInputfield) {         
+            foreach ($this->form->inputfields as $key => $arrInputfield) {
                 $name = $arrInputfield['name'][$_LANGID];
                 $default = $arrInputfield['default_value'][$_LANGID];
-                
+
                 $queryField = 'SELECT field.`value` AS `value`
-                                 FROM '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value AS field
+                                 FROM '.DBPREFIX.'module_'.self::TABLE_PREFIX.'_registration_form_field_value AS field
                                 WHERE field.`reg_id` = "'.$regId.'" AND
                                       field.`field_id` = "'.intval($arrInputfield['id']).'"
                                 LIMIT 1';
-                $objResultField = $objDatabase->Execute($queryField);          
-                
+                $objResultField = $objDatabase->Execute($queryField);
+
                 if($objResultField !== false) {
                      $this->fields[$arrInputfield['id']]['name']    =  $name;
                      $this->fields[$arrInputfield['id']]['type']    =  $arrInputfield['type'];
                      $this->fields[$arrInputfield['id']]['value']   =  htmlentities($objResultField->fields['value'], ENT_QUOTES, CONTREXX_CHARSET);
-                     $this->fields[$arrInputfield['id']]['default'] =  $default;  
-                }   
-            } 
-        }       
+                     $this->fields[$arrInputfield['id']]['default'] =  $default;
+                }
+            }
+        }
     }
-    
+
     /**
      * Save the registration
-     *      
+     *
      * @param array $data posted data from the form
-     * 
+     *
      * @return boolean true if the registration saved, false otherwise
      */
     function save($data)
     {
         global $objDatabase, $objInit, $_LANGID;
-        
+
         /* foreach ($this->form->inputfields as $key => $arrInputfield) {
-            if($arrInputfield['type'] == 'selectBillingAddress') { 
+            if($arrInputfield['type'] == 'selectBillingAddress') {
                 $affiliationStatus = $data['registrationField'][$arrInputfield['id']];
             }
         } */
-        
+
         foreach ($this->form->inputfields as $key => $arrInputfield) {
             /* if($affiliationStatus == 'sameAsContact') {
                 if($arrInputfield['required'] == 1 && empty($data['registrationField'][$arrInputfield['id']]) && $arrInputfield['affiliation'] != 'billing') {
                     return false;
-                } 
-            
+                }
+
                 if($arrInputfield['required'] == 1 && $arrInputfield['type'] == 'mail' && $arrInputfield['affiliation'] != 'billing') {
                     $objValidator = new FWValidator();
-                    
+
                     if(!$objValidator->isEmail($data['registrationField'][$arrInputfield['id']])) {
-                        return false;    
+                        return false;
                     }
                 }
             } else { */
                 if($arrInputfield['required'] == 1 && empty($data['registrationField'][$arrInputfield['id']])) {
                     return false;
-                } 
-            
+                }
+
                 if($arrInputfield['required'] == 1 && $arrInputfield['type'] == 'mail') {
                     $objValidator = new \FWValidator();
-                    
+
                     if(!$objValidator->isEmail($data['registrationField'][$arrInputfield['id']])) {
-                        return false;    
+                        return false;
                     }
                 }
             /* } */
         }
-        
+
         $regId = intval($data['regid']);
         $eventId = intval($data['id']);
         $formId = intval($data['form']);
         $eventDate = intval($data['date']);
         $userId = intval($data['userid']);
-        
+
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
 
         if (   $objEvent->seriesStatus
@@ -339,7 +339,7 @@ class CalendarRegistration extends CalendarLibrary
             SELECT
                 `id`
             FROM
-                `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field`
+                `'.DBPREFIX.'module_'.self::TABLE_PREFIX.'_registration_form_field`
             WHERE
                 `form` = '. $formId .'
             AND
@@ -347,7 +347,7 @@ class CalendarRegistration extends CalendarLibrary
             LIMIT 1
         ';
         $objResult = $objDatabase->Execute($query);
-        
+
         $numSeating = intval($data['registrationField'][$objResult->fields['id']]);
         $type       =   empty($regId) && intval($objEvent->getFreePlaces() - $numSeating) < 0
                       ? 2 : (isset($data['registrationType']) ? intval($data['registrationType']) : 1);
@@ -397,7 +397,7 @@ class CalendarRegistration extends CalendarLibrary
                 ), true
             );
             $submissionDate = $this->getDbDateTimeFromIntern($this->getInternDateTimeFromUser());
-            $query = 'INSERT INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration
+            $query = 'INSERT INTO '.DBPREFIX.'module_'.self::TABLE_PREFIX.'_registration
                         SET `event_id`         = ' . $eventId . ',
                             `submission_date`  = "' . $submissionDate->format('Y-m-d H:i:s') .'",
                             `date`             = ' . $eventDate . ',
@@ -411,7 +411,7 @@ class CalendarRegistration extends CalendarLibrary
                             `payment_method`   = ' . $paymentMethod . ',
                             `paid`             = ' . $paid . ' ';
             $objResult = $objDatabase->Execute($query);
-            
+
             if ($objResult !== false) {
                 $this->id = $objDatabase->Insert_ID();
                 $registration = $this->getRegistrationEntity($this->id);
@@ -436,7 +436,7 @@ class CalendarRegistration extends CalendarLibrary
                     )
                 ), true
             );
-            $query = 'UPDATE `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration`
+            $query = 'UPDATE `'.DBPREFIX.'module_'.self::TABLE_PREFIX.'_registration`
                          SET `event_id` = '.$eventId.',
                              `date` = '.$eventDate.',
                              `host_name` = '.$hostName.',
@@ -448,7 +448,7 @@ class CalendarRegistration extends CalendarLibrary
                              `payment_method` = '.$paymentMethod.',
                              `paid` = '.$paid.'
                        WHERE `id` = '.$regId;
-            
+
             $objResult = $objDatabase->Execute($query);
 
             if ($objResult === false) {
@@ -463,11 +463,11 @@ class CalendarRegistration extends CalendarLibrary
                 //Trigger preRemove event for RegistrationFormFieldValue Entity
                 $this->triggerEvent('model/preRemove', $formFieldValueEntity);
             }
-            $deleteQuery = 'DELETE FROM '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value
+            $deleteQuery = 'DELETE FROM '.DBPREFIX.'module_'.self::TABLE_PREFIX.'_registration_form_field_value
                             WHERE `reg_id` = '.$this->id;
-            
+
             $objDeleteResult = $objDatabase->Execute($deleteQuery);
-            
+
             if ($objDeleteResult === false) {
                 return false;
             }
@@ -503,7 +503,7 @@ class CalendarRegistration extends CalendarLibrary
                 ), true
             );
 
-            $query = 'INSERT INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value
+            $query = 'INSERT INTO '.DBPREFIX.'module_'.self::TABLE_PREFIX.'_registration_form_field_value
                         (`reg_id`, `field_id`, `value`)
                         VALUES (' . $this->id . ', ' . $formFieldId . ', "' . $formFieldValue . '")';
             $objResult = $objDatabase->Execute($query);
@@ -531,13 +531,13 @@ class CalendarRegistration extends CalendarLibrary
 
         if ($objInit->mode == 'frontend') {
             $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();
-            
+
             $templateId     = $objEvent->emailTemplate[FRONTEND_LANG_ID];
             $objMailManager->sendMail($objEvent, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_CONFIRM_REG, $this->id, $templateId);
-            
+
             $objMailManager->sendMail($objEvent, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_ALERT_REG, $this->id);
         }
-        
+
         return true;
     }
 
@@ -582,14 +582,14 @@ class CalendarRegistration extends CalendarLibrary
 
     /**
      * Delete the registration
-     *      
+     *
      * @param integer $regId Registration id
-     * 
+     *
      * @return boolean true if data deleted, false otherwise
      */
     function delete($regId)
     {
-        global $objDatabase; 
+        global $objDatabase;
 
         if (!empty($regId)) {
             $registration = $this->getRegistrationEntity($regId);
@@ -612,10 +612,10 @@ class CalendarRegistration extends CalendarLibrary
             );
 
             $query = '
-                DELETE FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration`
+                DELETE FROM `'.DBPREFIX.'module_'.self::TABLE_PREFIX.'_registration`
                 WHERE `id` = '.intval($regId);
             $objResult = $objDatabase->Execute($query);
-            
+
             if ($objResult !== false) {
                 $formFieldValueEntities = $registration->getRegistrationFormFieldValues();
                 foreach ($formFieldValueEntities as $formFieldValueEntity) {
@@ -633,11 +633,11 @@ class CalendarRegistration extends CalendarLibrary
                     );
                 }
                 $query = '
-                    DELETE FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value`
+                    DELETE FROM `'.DBPREFIX.'module_'.self::TABLE_PREFIX.'_registration_form_field_value`
                     WHERE `reg_id` = '.intval($regId)
                 ;
                 $objResult = $objDatabase->Execute($query);
-                
+
                 if ($objResult !== false) {
                     foreach ($formFieldValueEntities as $formFieldValueEntity) {
                         //Trigger postRemove event for RegistrationFormFieldValue Entity
@@ -657,13 +657,13 @@ class CalendarRegistration extends CalendarLibrary
             return false;
         }
     }
-    
+
     /**
      * Update the registration to the given type
-     *      
+     *
      * @param integer $regId  Registration id
      * @param integer $typeId Type Id
-     * 
+     *
      * @return boolean true if registration updated, false otherwise
      */
     function move($regId, $typeId)
@@ -695,7 +695,7 @@ class CalendarRegistration extends CalendarLibrary
                 ), true
             );
             $query = '
-                UPDATE `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration`
+                UPDATE `'.DBPREFIX.'module_'.self::TABLE_PREFIX.'_registration`
                 SET `type` = '.$typeId.'
                 WHERE `id` = '.$regId.'
                 AND `lang_id` = '.$_LANGID
@@ -714,10 +714,10 @@ class CalendarRegistration extends CalendarLibrary
             return false;
         }
     }
-    
+
     /**
      * Update the export date into the registration
-     *      
+     *
      * @return boolean true if date updated sucessfully, false otherwise
      */
     function tagExport()
@@ -747,25 +747,25 @@ class CalendarRegistration extends CalendarLibrary
                     )
                 ), true
             );
-            $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_registration SET `export` = '".intval($now)."' WHERE `id` = '".intval($this->id)."'";              
-            $objResult = $objDatabase->Execute($query);     
+            $query = "UPDATE ".DBPREFIX."module_".self::TABLE_PREFIX."_registration SET `export` = '".intval($now)."' WHERE `id` = '".intval($this->id)."'";
+            $objResult = $objDatabase->Execute($query);
             if($objResult !== false) {
                 $this->firstExport = $now;
                 //Trigger postUpdate event for Registration Entity
                 $this->triggerEvent('model/postUpdate', $registration);
                 $this->triggerEvent('model/postFlush');
-                return true;  
+                return true;
             } else {
                 return false;
-            }  
+            }
         }
     }
 
     /**
      * Updatete the payment status
-     *      
+     *
      * @param integer $payStatus payment status
-     * 
+     *
      * @return null
      */
     function setPaid($payStatus = 0)
