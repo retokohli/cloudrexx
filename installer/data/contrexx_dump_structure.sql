@@ -796,11 +796,10 @@ CREATE TABLE `contrexx_module_calendar_invite` (
   `id` int NOT NULL AUTO_INCREMENT,
   `event_id` int(11) NOT NULL,
   `date` bigint unsigned NOT NULL,
-  `invitee_type` enum('AccessUser','CrmContact') NOT NULL,
+  `invitee_type` enum('-', 'AccessUser','CrmContact') NOT NULL,
   `invitee_id` int(11) NOT NULL,
   `token` varchar(32) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `invite` (`event_id`,`date`,`invitee_type`,`invitee_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_calendar_host` (
   `id` int(1) NOT NULL AUTO_INCREMENT,
@@ -840,7 +839,7 @@ CREATE TABLE `contrexx_module_calendar_registration` (
   `host_name` varchar(255) NOT NULL,
   `ip_address` varchar(15) NOT NULL,
   `type` int(1) NOT NULL,
-  `key` varchar(32) NOT NULL,
+  `invite_id` int NOT NULL DEFAULT '0',
   `user_id` int(7) NOT NULL,
   `lang_id` int(11) NOT NULL,
   `export` int(11) NOT NULL,

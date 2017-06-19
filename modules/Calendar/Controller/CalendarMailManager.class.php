@@ -211,6 +211,9 @@ class CalendarMailManager extends CalendarLibrary {
             return;
         }
 
+        // event invitation
+        $invite = null;
+
         $objRegistration = null;
         if ($actionId == self::MAIL_CONFIRM_REG) {
             if (empty($regId)) {
@@ -325,6 +328,13 @@ class CalendarMailManager extends CalendarLibrary {
             $mailContentText = !empty($this->mailList[$langId]['mail']->content_text) ? $this->mailList[$langId]['mail']->content_text : strip_tags($this->mailList[$langId]['mail']->content_html);
             $mailContentHtml = !empty($this->mailList[$langId]['mail']->content_html) ? $this->mailList[$langId]['mail']->content_html : $this->mailList[$langId]['mail']->content_text;
 
+            // default params
+            $params = array(
+                \CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_EVENT  => $event->id,
+                \CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_DATE   => $event->startDate->getTimestamp(),
+                \CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_RANDOM => time(),
+            );
+
             switch ($actionId) {
                 case self::MAIL_INVITATION:
                     // check if an invitation to the recipient
@@ -351,14 +361,35 @@ class CalendarMailManager extends CalendarLibrary {
                         $this->em->flush();
                     }
 
-                    $params = array(
-                        'id'    => $invite->getEvent()->getId(),
-                        'date'  => $invite->getDate()->getTimestamp(),
-                        'i'     => $invite->getId(),
-                        't'     => $invite->getToken(),
-                    );
+                    $params[\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_ID] = $invite->getId();
+                    $params[\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_TOKEN] = $invite->getToken();
                     $eventLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail', $langId, $params)->toString();
                     $regLink   = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', $langId, $params)->toString();
+                    break;
+
+                case self::MAIL_CONFIRM_REG:
+                    // id of the invite
+                    $inviteId = $objRegistration->getInvite()->getId();
+
+                    // token of the invite
+                    $inviteToken = $objRegistration->getInvite()->getToken();
+
+                    if (!empty($inviteId) && !empty($inviteToken)) {
+                        // fetch the invitation
+                        $inviteRepo = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Invite');
+                        $invite = $inviteRepo->findOneBy(array(
+                            'event' => $eventByDoctrine,
+                            'id'    => $inviteId,
+                            'token' => $inviteToken,
+                        ));
+                    }
+
+                    if ($invite) {
+                        $params[\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_ID] = $invite->getId();
+                        $params[\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_TOKEN] = $invite->getToken();
+                    }
+
+                    $eventLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail', $langId, $params)->toString();
                     break;
 
                 case self::MAIL_NOTFY_NEW_APP:
@@ -369,12 +400,12 @@ class CalendarMailManager extends CalendarLibrary {
 
                     // intentinally no break here
                 default:
-                    $eventLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail', $langId, array('id' => $event->id, 'date' => $event->startDate->getTimestamp()))->toString();
+                    $eventLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail', $langId, $params)->toString();
                     break;
             }
 
             if (empty($regLink)) {
-                $regLink   = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', $langId, array('id' => $event->id, 'date' => $event->startDate->getTimestamp()))->toString();
+                $regLink   = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', $langId, $params)->toString();
             }
 
             $replaceContent  = array($eventTitle, $eventStart, $eventEnd, $eventLink, $regLink, $recipient->getUsername(), $recipient->getFirstname(), $recipient->getLastname(), $domain, $date);

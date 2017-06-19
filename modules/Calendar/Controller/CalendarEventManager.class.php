@@ -662,25 +662,88 @@ class CalendarEventManager extends CalendarLibrary
 
         $this->getSettings();
 
+        // legacy db event object
+        $objEvent = null;
+
+        // id of the invite (if provided by the HTTP request)
+        $inviteId = 0;
+
+        // token of the invite (if provided by the HTTP request)
+        $inviteToken = '';
+
+        $request = $this->cx->getRequest();
+
+        // fetch arguments from HTTP request
+        try {
+            $inviteId = $request->getParam(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_ID);
+        } catch (\Exception $e) {}
+        try { 
+            $inviteToken = $request->getParam(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_TOKEN);
+        } catch (\Exception $e) {}
+
+        // Doctrine entity event that is associated to the requested registration form
+        $event = null;
+
+        // invite of an invitee
+        $invite = null;
+
         if ($objInit->mode != 'frontend' || $eventId == null || $eventStartDate == null) {
             return;
         }
 
-        $objEvent = $this->eventList[0];
+        // in case the registration form was requested by an invitee
+        // and the start-date of the event has changed meanwhile,
+        // we shall try to load the event based on the invitation data
+        if (empty($this->eventList[0])) {
+            // abort in case the registration form has not been requested by an invitee
+            if (empty($inviteId) || empty($inviteToken)) {
+                return;
+            }
+        } else {
+            // note: the associated event has been loaded in Calendar::loadEventManager()
+            $objEvent = $this->eventList[0];
+        }
 
-        if (empty($objEvent)) {
-            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
+        // Fetch requested event.
+        // Note: In contrary to Calendar::loadEventManager(), the following
+        // does not take the requested event-date into consideration.
+        $eventRepo = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Event');
+        $event = $eventRepo->findOneBy(array(
+            'id'     => $eventId,
+            'status' => 1,
+        ));
+
+        // abort in case the event of the invitation is not published
+        if (!$event) {
             return;
         }
 
-        if (!$objEvent->status) {
+        if (!$objEvent) { 
+            $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
+            $this->eventList = array($objEvent);
+        }
+
+        // load invitation
+        if (!empty($inviteId) && !empty($inviteToken)) {
+            $inviteRepo = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Invite');
+            $invite = $inviteRepo->findOneBy(array(
+                'event' => $event,
+                'id'    => $inviteId,
+                'token' => $inviteToken,
+            ));
+        }
+
+        // abort in case the specific event date (or its iteration) isn't valid
+        // and no valid invitation has been supplied
+        if (!$objEvent && !$invite) {
             \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
             return;
         }
 
         // Abort in case the associated event is protected and the requestee has
         // not sufficient access rights.
-        if ($objEvent->access == 1 && !\FWUser::getFWUserObject()->objUser->login()) {
+        // Note: access to invitees is always granted
+        if (!$invite && $objEvent->access == 1 && !\FWUser::getFWUserObject()->objUser->login()) {
             $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
             \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
             return;
@@ -1057,6 +1120,39 @@ class CalendarEventManager extends CalendarLibrary
                     'id'    => $event->id,
                     'date'  => $event->startDate->getTimestamp(),
                 );
+
+                // id of the invite (if provided by the HTTP request)
+                $inviteId = 0;
+
+                // token of the invite (if provided by the HTTP request)
+                $inviteToken = '';
+
+                // random hash of the invite to prevent browser caching (if
+                // provided by the HTTP request)
+                $inviteRandom = '';
+
+                $request = $this->cx->getRequest();
+
+                // fetch arguments from HTTP request
+                try {
+                    $inviteId = $request->getParam(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_ID);
+                } catch (\Exception $e) {}
+                try {
+                    $inviteToken = $request->getParam(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_TOKEN);
+                } catch (\Exception $e) {}
+                try {
+                    $inviteRandom = $request->getParam(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_RANDOM);
+                } catch (\Exception $e) {}
+
+                // pass invitation info to registration form
+                if (!empty($inviteId) && !empty($inviteToken)) {
+                    $params[\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_ID] = $inviteId;
+                    $params[\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_TOKEN] = $inviteToken;
+                }
+                if (!empty($inviteRandom)) {
+                    $params[\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_RANDOM] = $inviteRandom;
+                }
+
                 $regLinkSrc = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', FRONTEND_LANG_ID, $params)->toString();
             }
             $regLink = '<a href="'.$regLinkSrc.'" '.$hostTarget.'>'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION'].'</a>';

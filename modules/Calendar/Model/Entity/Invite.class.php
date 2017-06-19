@@ -79,6 +79,17 @@ class Invite extends \Cx\Model\Base\EntityBase {
      */
     protected $event;
 
+    const HTTP_REQUEST_PARAM_ID = 'i';
+    const HTTP_REQUEST_PARAM_TOKEN = 't';
+    const HTTP_REQUEST_PARAM_EVENT = 'id';
+    const HTTP_REQUEST_PARAM_DATE = 'date';
+    const HTTP_REQUEST_PARAM_RANDOM = 'r';
+
+    public function __construct() {
+        $this->inviteeType = \Cx\Modules\Calendar\Controller\MailRecipient::RECIPIENT_TYPE_MAIL;
+        $this->inviteeId = 0;
+    }
+
     /**
      * Set id
      *
