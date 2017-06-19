@@ -70,6 +70,11 @@ class Invite extends \Cx\Model\Base\EntityBase {
     protected $token;
 
     /**
+     * @var Cx\Modules\Calendar\Model\Entity\Registration
+     */
+    protected $registration;
+
+    /**
      * @var Cx\Modules\Calendar\Model\Entity\Event
      */
     protected $event;
@@ -196,6 +201,26 @@ class Invite extends \Cx\Model\Base\EntityBase {
     public function getToken()
     {
         return $this->token;
+    }
+
+    /**
+     * Set registration
+     *
+     * @param Cx\Modules\Calendar\Model\Entity\Registration $registration
+     */
+    public function setRegistration(\Cx\Modules\Calendar\Model\Entity\Registration $registration)
+    {
+        $this->registration = $registration;
+    }
+
+    /**
+     * Get registration
+     *
+     * @return Cx\Modules\Calendar\Model\Entity\Registration $registration
+     */
+    public function getRegistration()
+    {
+        return $this->registration;
     }
 
     /**

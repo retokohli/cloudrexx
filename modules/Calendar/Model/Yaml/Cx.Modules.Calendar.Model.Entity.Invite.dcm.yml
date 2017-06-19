@@ -24,6 +24,10 @@ Cx\Modules\Calendar\Model\Entity\Invite:
       type: string
       length: 32
       column: token
+  oneToOne:
+    registration:
+      targetEntity: Cx\Modules\Calendar\Model\Entity\Registration
+      mappedBy: invite
   manyToOne:
     event:
       targetEntity: Cx\Modules\Calendar\Model\Entity\Event
