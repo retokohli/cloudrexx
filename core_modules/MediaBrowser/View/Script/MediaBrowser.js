@@ -857,7 +857,17 @@ cx.ready(function() {
               return true;
             };
           }
-          return recursiveSearch(searchObject, array, 0);
+          if (typeof(this.cache) === 'undefined') {
+            this.cache = {
+              'term': '',
+              'files': []
+            };
+          }
+          if (this.cache.term !== searchFile) {
+            this.cache.files = recursiveSearch(searchObject, array, 0);
+            this.cache.term = searchFile;
+          }
+          return this.cache.files;
         }
         return array;
       };
