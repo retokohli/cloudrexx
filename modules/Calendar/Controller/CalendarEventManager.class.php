@@ -236,6 +236,7 @@ class CalendarEventManager extends CalendarLibrary
         $this->onlyConfirmed = $onlyConfirmed;
         $this->author = $author;
         $this->listType = $listType;
+        $this->init();
     }
 
     /**

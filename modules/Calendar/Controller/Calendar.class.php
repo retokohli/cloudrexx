@@ -458,12 +458,12 @@ class Calendar extends CalendarLibrary
                 $eventDate = 0;
 
                 // fetch arguments from HTTP request
-                if ($request->hasParam(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_EVENT, $isGetRequest)) {
+                try {
                     $eventId = $request->getParam(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_EVENT, $isGetRequest);
-                }
-                if ($request->hasParam(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_DATE, $isGetRequest)) {
+                } catch (\Exception $e) {}
+                try {
                     $eventDate = $request->getParam(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_DATE, $isGetRequest);
-                }
+                } catch (\Exception $e) {}
 
                 $this->objEventManager->getEvent($eventId, $eventDate);
 
@@ -962,31 +962,9 @@ UPLOADER;
      */
     function showEvent($page, &$start = null)
     {
-        global $_ARRAYLANG, $_CORELANG, $_LANGID;
-
-        if (empty($this->objEventManager->eventList)) {
-            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName));
-            exit;
-        }
+        global $_ARRAYLANG, $_CORELANG;
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
-
-        $this->pageTitle = html_entity_decode($this->objEventManager->eventList[0]->title, ENT_QUOTES, CONTREXX_CHARSET);
-
-        // Set the meta page description to the teaser text if displaying calendar details
-        $teaser = html_entity_decode($this->objEventManager->eventList[0]->teaser, ENT_QUOTES, CONTREXX_CHARSET);
-        if ($teaser) {
-            $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags($teaser)));
-        } else {
-            $description = html_entity_decode($this->objEventManager->eventList[0]->description, ENT_QUOTES, CONTREXX_CHARSET);
-            $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags($description)));
-        }
-
-        // Set the meta page image to event picture if displaying calendar details
-        $picture = $this->objEventManager->eventList[0]->pic;
-        if ($picture) {
-            $page->setMetaimage($picture);
-        }
 
         $this->_objTpl->setVariable(array(
             'TXT_'.$this->moduleLangVar.'_ATTACHMENT'        =>  $_ARRAYLANG['TXT_CALENDAR_ATTACHMENT'],
@@ -1025,6 +1003,24 @@ UPLOADER;
             intval($_GET['date']),
             $start
         );
+
+        $this->pageTitle = html_entity_decode($this->objEventManager->eventList[0]->title, ENT_QUOTES, CONTREXX_CHARSET);
+
+        // Set the meta page description to the teaser text if displaying calendar details
+        $teaser = html_entity_decode($this->objEventManager->eventList[0]->teaser, ENT_QUOTES, CONTREXX_CHARSET);
+        if ($teaser) {
+            $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags($teaser)));
+        } else {
+            $description = html_entity_decode($this->objEventManager->eventList[0]->description, ENT_QUOTES, CONTREXX_CHARSET);
+            $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags($description)));
+        }
+
+        // Set the meta page image to event picture if displaying calendar details
+        $picture = $this->objEventManager->eventList[0]->pic;
+        if ($picture) {
+            $page->setMetaimage($picture);
+        }
+
     }
 
     /**
