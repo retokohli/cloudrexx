@@ -212,9 +212,12 @@ class CalendarMailManager extends CalendarLibrary {
         }
 
         $objRegistration = null;
-        if(!empty($regId)) {
-            $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration($event->registrationForm, $regId);
+        if ($actionId == self::MAIL_CONFIRM_REG) {
+            if (empty($regId)) {
+                return;
+            }
 
+            $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration($event->registrationForm, $regId);
             list($registrationDataText, $registrationDataHtml) = $this->getRegistrationData($objRegistration);
 
             $query = 'SELECT `v`.`value`, `n`.`default`, `f`.`type`
@@ -273,12 +276,11 @@ class CalendarMailManager extends CalendarLibrary {
         // In case we're about to send out event invitations,
         // do check if any have been sent already and do load
         // them in such case.
-        if ($actionId == self::MAIL_INVITATION) {
+        if ($actionId == self::MAIL_INVITATION || $actionId == self::MAIL_CONFIRM_REG) {
             $eventRepo = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Event');
             $eventByDoctrine = $eventRepo->findOneById($event->id);
 
             $inviteRepo = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Invite');
-            $invites = $inviteRepo->findBy(array('event' => $eventByDoctrine));
 
             // this should not happen!
             if (!$eventByDoctrine) {

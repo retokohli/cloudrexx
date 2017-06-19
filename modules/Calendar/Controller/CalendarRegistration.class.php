@@ -341,7 +341,7 @@ class CalendarRegistration extends CalendarLibrary
             /* } */
         }
         
-        $regId = intval($data['regid']);
+        $regId = empty($data['regid']) ? 0 : intval($data['regid']);
         $eventId = intval($data['id']);
         $formId = intval($data['form']);
         $eventDate = intval($data['date']);
@@ -378,12 +378,17 @@ class CalendarRegistration extends CalendarLibrary
         ';
         $objResult = $objDatabase->Execute($query);
         
-        $numSeating = intval($data['registrationField'][$objResult->fields['id']]);
+        $seatingId = 0;
+        if ($objResult !== false && !$objResult->EOF) {
+            $seatingId = $objResult->fields['id'];
+        }
+        
+        $numSeating = isset($data['registrationField'][$seatingId]) ? intval($data['registrationField'][$seatingId]) : 0;
         $type       =   empty($regId) && intval($objEvent->getFreePlaces() - $numSeating) < 0
                       ? 2 : (isset($data['registrationType']) ? intval($data['registrationType']) : 1);
         $this->saveIn = intval($type);
-        $paymentMethod = intval($data['paymentMethod']);
-        $paid = intval($data['paid']);
+        $paymentMethod = empty($data['paymentMethod']) ? 0 : intval($data['paymentMethod']);
+        $paid = empty($data['paid']) ? 0 : intval($data['paid']);
         $hostName = 0;
         $ipAddress = 0;
 
@@ -609,9 +614,9 @@ class CalendarRegistration extends CalendarLibrary
                 }
                 $value = join(',', $subvalue);
             } else {
-                $additionalField = $data['registrationFieldAdditional'][$id][$value-1];
-                if (isset($additionalField)) {
-                    $value = $value . '[[' . $additionalField . ']]';
+                // additional field
+                if (isset($data['registrationFieldAdditional'][$id][$value-1])) {
+                    $value = $value . '[[' . $data['registrationFieldAdditional'][$id][$value-1] . ']]';
                 }
             }
 
@@ -853,7 +858,7 @@ class CalendarRegistration extends CalendarLibrary
      *
      * @return \Cx\Modules\Calendar\Model\Entity\Registration
      */
-    public function getRegistrationEntity($id, $formDatas)
+    public function getRegistrationEntity($id, $formDatas = array())
     {
         if (empty($id)) {
             $registration = new \Cx\Modules\Calendar\Model\Entity\Registration();

@@ -221,9 +221,7 @@ class CalendarFormManager extends CalendarLibrary
             $arrOptions[$objForm->id] = $objForm->title;
         }
 
-        $options .= $this->buildDropdownmenu($arrOptions, $selectedId);
-
-        return $options;
+        return $this->buildDropdownmenu($arrOptions, $selectedId);
     }
 
     /**

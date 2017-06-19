@@ -445,10 +445,28 @@ class Calendar extends CalendarLibrary
             /* if($_GET['external'] == 1 && $this->arrSettings['publicationStatus'] == 1) {
                 $this->objEventManager->getExternalEvent(intval($_GET['id']), intval($_GET['date']));
             } else { */
-                $eventId = isset($_REQUEST['id']) ? contrexx_input2int($_REQUEST['id']) : 0;
-                $date    = isset($_REQUEST['date']) ? contrexx_input2int($_REQUEST['date']) : 0;
 
-                $this->objEventManager->getEvent($eventId, $date);
+                $request = $this->cx->getRequest();
+
+                // whether the HTTP request method was GET
+                $isGetRequest = $request->getHttpRequestMethod() == 'get';
+
+                // id of the associated event (provided by HTTP request)
+                $eventId = 0;
+
+                // date of the associated event (provided by HTTP request)
+                $eventDate = 0;
+
+                // fetch arguments from HTTP request
+                if ($request->hasParam(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_EVENT, $isGetRequest)) {
+                    $eventId = $request->getParam(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_EVENT, $isGetRequest);
+                }
+                if ($request->hasParam(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_DATE, $isGetRequest)) {
+                    $eventDate = $request->getParam(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_DATE, $isGetRequest);
+                }
+
+                $this->objEventManager->getEvent($eventId, $eventDate);
+
             /* } */
         }
     }

@@ -661,7 +661,7 @@ class CalendarEventManager extends CalendarLibrary
 
         $this->getSettings();
 
-        if(!($objInit->mode == 'frontend' && ($eventId != null && $eventStartDate != null))) {
+        if ($objInit->mode != 'frontend' || $eventId == null || $eventStartDate == null) {
             return;
         }
 

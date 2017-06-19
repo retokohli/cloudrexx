@@ -912,8 +912,9 @@ EOF;
         if ($isDetach) {
             if (!empty($relations) && $relations['relations']) {
                 $this->detachJoinedEntity(
-                    $entity, $relations['relations'],
-                    $relations['joinEntityRelations']
+                    $entity,
+                    $relations['relations'],
+                    isset($relations['joinEntityRelations']) ? $relations['joinEntityRelations'] : array()
                 );
             }
             $this->em->detach($entity);
@@ -955,7 +956,7 @@ EOF;
 
         if ($relation == 'oneToMany') {
             foreach ($entity->$methodName() as $subEntity) {
-                if ($joinEntityRelation[$methodName]) {
+                if (isset($joinEntityRelation[$methodName])) {
                     $this->detachJoinedEntity(
                         $subEntity,
                         $joinEntityRelation[$methodName],
@@ -965,7 +966,7 @@ EOF;
                 $this->em->detach($subEntity);
             }
         } else if ($relation == 'manyToOne') {
-            if ($joinEntityRelation[$methodName]) {
+            if (isset($joinEntityRelation[$methodName])) {
                 $this->detachJoinedEntity(
                     $entity->$methodName(),
                     $joinEntityRelation[$methodName],
@@ -997,16 +998,20 @@ EOF;
         foreach ($relations as $relation => $methodName) {
             if (!is_array($methodName)) {
                 $this->detachEntity(
-                    $entity, $methodName,
-                    $relation, $joinEntityRelation
+                    $entity,
+                    $methodName,
+                    $relation,
+                    $joinEntityRelation
                 );
                 continue;
             }
 
             foreach ($methodName as $functionName) {
                 $this->detachEntity(
-                    $entity, $functionName,
-                    $relation, $joinEntityRelation
+                    $entity,
+                    $functionName,
+                    $relation,
+                    $joinEntityRelation
                 );
             }
         }

@@ -103,7 +103,7 @@ class CalendarManager extends CalendarLibrary
                 break;
             case 'modify_event':
                 \Permission::checkAccess(180, 'static');
-                $this->modifyEvent(intval($_GET['id']));
+                $this->modifyEvent(empty($_GET['id']) ? 0 : intval($_GET['id']));
                 break;
             case 'export_registrations':
                 \Permission::checkAccess(182, 'static');
@@ -230,12 +230,12 @@ class CalendarManager extends CalendarLibrary
             }
         }
 
-        $categoryId = intval($_REQUEST['categoryId']) != 0 ? $categoryId = intval($_REQUEST['categoryId']) : $categoryId = null;
+        $categoryId = !empty($_REQUEST['categoryId']) ? $categoryId = intval($_REQUEST['categoryId']) : $categoryId = null;
         $searchTerm =  isset($_REQUEST['term']) ? $_REQUEST['term'] : $searchTerm = $_ARRAYLANG['TXT_CALENDAR_KEYWORD'];
         $startPos =  isset($_REQUEST['pos']) ? $_REQUEST['pos'] : 0;
 
         $listType = 'all';
-        if($_GET['list'] == 'actual' || !isset($_GET['list'])) {
+        if (!isset($_GET['list']) || $_GET['list'] == 'actual') {
             $styleListActual = 'underline';
             $styleListAll = '';
             $startDate = new \DateTime();
@@ -280,8 +280,6 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_CONFIRM_DELETE_DATA'      => $_ARRAYLANG['TXT_CALENDAR_CONFIRM_DELETE_DATA'],
             'TXT_'.$this->moduleLangVar.'_ACTION_IS_IRREVERSIBLE'   => $_ARRAYLANG['TXT_CALENDAR_ACTION_IS_IRREVERSIBLE'],
             'TXT_'.$this->moduleLangVar.'_MAKE_SELECTION'           => $_ARRAYLANG['TXT_CALENDAR_MAKE_SELECTION'],
-            'TXT_'.$this->moduleLangVar.'_LIST_ACTUAL'              => $_ARRAYLANG['TXT_CALENDAR_LIST_ACTUAL'],
-            'TXT_'.$this->moduleLangVar.'_LIST_ALL'                 => $_ARRAYLANG['TXT_CALENDAR_LIST_ALL'],
             $this->moduleLangVar.'_LINKSTYLE_LIST_ACTUAL'           => $styleListActual,
             $this->moduleLangVar.'_LINKSTYLE_LIST_ALL'              => $styleListAll,
         ));
@@ -302,7 +300,7 @@ class CalendarManager extends CalendarLibrary
            $this->_objTpl->hideBlock('showConfirmList');
         }
 
-        if($this->arrSettings['rssFeedStatus'] == 1) {
+        if (!empty($this->arrSettings['rssFeedStatus'])) {
             $objFeedEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager(time(),null,null,null,true);
             $objFeed = new \Cx\Modules\Calendar\Controller\CalendarFeed($objFeedEventManager);
             $objFeed->creatFeed();
@@ -372,8 +370,10 @@ class CalendarManager extends CalendarLibrary
 
         $this->getSettings();
         $this->getFrontendLanguages();
+
+        $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent();
+
         if(isset($_POST['submitModifyEvent']) || isset($_POST['save_and_publish'])) {
-            $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent();
             if($objEvent->save($_POST)) {
                     $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'];
 
@@ -428,6 +428,7 @@ class CalendarManager extends CalendarLibrary
             "0000001" => $_ARRAYLANG['TXT_CALENDAR_DAYS_SUNDAY'],
         );
 
+        $weekdays = '';
         foreach ($arrWeekdays as $value => $name) {
             $selectedWeekday = $value == $objEvent->seriesData['seriesPatternWeekday'] ? 'selected="selected"' : '';
             $weekdays .= '<option value="'.$value.'" '.$selectedWeekday.'>'.$name.'</option>';
@@ -442,6 +443,7 @@ class CalendarManager extends CalendarLibrary
             5 => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_LAST'],
         );
 
+        $count = '';
         foreach ($arrCount as $value => $name) {
             $selectedCount = $value == $objEvent->seriesData['seriesPatternCount'] ? 'selected="selected"' : '';
             $count .= '<option value="'.$value.'" '.$selectedCount.'>'.$name.'</option>';
@@ -728,10 +730,10 @@ class CalendarManager extends CalendarLibrary
             $showStartTimeList      = ($this->arrSettings['showStartTimeList'] == 1);
             $showEndTimeList        = ($this->arrSettings['showEndTimeList'] == 1);
             // check if start- or endtime is selected in settings to set type "show time" by default
-            if(!$_POST['showTimeTypeList'] && ($showStartTimeList == 1 || $showEndTimeList == 1)) {
+            if(empty($_POST['showTimeTypeList']) && ($showStartTimeList == 1 || $showEndTimeList == 1)) {
                 $showTimeTypeList       = 1;
             } else {
-                $showTimeTypeList       = $_POST['showTimeTypeList'];
+                $showTimeTypeList       = empty($_POST['showTimeTypeList']) ? 0 : intval($_POST['showTimeTypeList']);
             }
             // detail view
             $showStartDateDetail    = ($this->arrSettings['showStartDateDetail'] == 1);
@@ -739,10 +741,10 @@ class CalendarManager extends CalendarLibrary
             $showStartTimeDetail    = ($this->arrSettings['showStartTimeDetail'] == 1);
             $showEndTimeDetail      = ($this->arrSettings['showEndTimeDetail'] == 1);
             // check if start- or endtime is selected in settings to set type "show time" by default
-            if(!$_POST['showTimeTypeDetail'] && ($showStartTimeDetail == 1 || $showEndTimeDetail == 1)) {
+            if(empty($_POST['showTimeTypeDetail']) && ($showStartTimeDetail == 1 || $showEndTimeDetail == 1)) {
                 $showTimeTypeDetail       = 1;
             } else {
-                $showTimeTypeDetail       = $_POST['showTimeTypeDetail'];
+                $showTimeTypeDetail       = empty($_POST['showTimeTypeDetail']) ? 0 : intval($_POST['showTimeTypeDetail']);
             }
         }
 
@@ -805,6 +807,22 @@ class CalendarManager extends CalendarLibrary
         $seriesPatternMonthl1     = 1;
         $seriesPatternMonthl2     = 1;
         $seriesPatternEndsEvents  = 5;
+
+        $seriesPatternWeekly = '';
+        $seriesPatternMonthly = '';
+        $seriesPatternDaily2 = '';
+        $seriesPatternMonthly2 = '';
+        $seriesPatternDourance2 = '';
+        $seriesPatternDourance3 = '';
+        $seriesPatternEndsDate = '';
+        $seriesPatternWeeklyMon = '';
+        $seriesPatternWeeklyTue = '';
+        $seriesPatternWeeklyWed = '';
+        $seriesPatternWeeklyThu = '';
+        $seriesPatternWeeklyFri = '';
+        $seriesPatternWeeklySat = '';
+        $seriesPatternWeeklySun = '';
+
         if($eventId != 0 && $objEvent->seriesStatus == 1) {
             $seriesPatternDaily = $objEvent->seriesData['seriesType'] == 1 ? 'selected="selected"' : '';
             $seriesPatternWeekly = $objEvent->seriesData['seriesType'] == 2 ? 'selected="selected"' : '';
@@ -903,7 +921,6 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_SERIES_PATTERN_DOURANCE_3'       => $seriesPatternDourance3,
             $this->moduleLangVar.'_SERIES_PATTERN_ENDS_EVENTS'      => $seriesPatternEndsEvents,
             $this->moduleLangVar.'_SERIES_PATTERN_ENDS_DATE'        => $seriesPatternEndsDate,
-            $this->moduleLangVar.'_SERIES_PATTERN_ENDS_INPUT_ID'    => $seriesPatternEndsInputId,
             $this->moduleLangVar.'_SERIES_PATTERN_WEEKLY_WEEKS'     => $seriesPatternWeeklyWeeks,
             $this->moduleLangVar.'_SERIES_PATTERN_WEEKLY_MONDAY'    => $seriesPatternWeeklyMon,
             $this->moduleLangVar.'_SERIES_PATTERN_WEEKLY_TUESDAY'   => $seriesPatternWeeklyTue,
@@ -919,6 +936,8 @@ class CalendarManager extends CalendarLibrary
         $objHostManager = new \Cx\Modules\Calendar\Controller\CalendarHostManager(null,true);
         $objHostManager->getHostList();
 
+        $selectetHosts = '';
+        $deselectetHosts = '';
         foreach ($objHostManager->hostList as $key => $objHost) {
             if(in_array($objHost->id, $objEvent->relatedHosts)) {
                 $selectetHosts .= '<option value="'.$objHost->id.'">'.$objHost->title.'</option>';
@@ -943,6 +962,8 @@ class CalendarManager extends CalendarLibrary
         }
 
         //parse ivited groups
+        $selectedGroups = '';
+        $deselectedGroups = '';
         $this->getCommunityGroups();
         foreach ($this->arrCommunityGroups as $key => $arrGroup) {
              if(in_array($arrGroup['id'], $objEvent->invitedGroups)) {
@@ -1085,11 +1106,6 @@ class CalendarManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_TAB_DISPLAY'   => $arrLang['is_default'] == 'true' ? 'block' : 'none',
                 $this->moduleLangVar.'_EVENT_TITLE'         => !empty($objEvent->arrData['title'][$arrLang['id']]) ? $objEvent->arrData['title'][$arrLang['id']] : $objEvent->title,
                 $this->moduleLangVar.'_EVENT_TEASER'        => !empty($objEvent->arrData['teaser'][$arrLang['id']]) ? $objEvent->arrData['teaser'][$arrLang['id']] : $objEvent->teaser,
-        ));
-
-        //parse eventTabMenuDescTab
-            $this->_objTpl->setVariable(array(
-                $this->moduleLangVar.'_EVENT_TAB_CLASS'  => $defaultLang ? 'active' : '',
             ));
 
             $this->_objTpl->parse('eventTabMenuDescTab');
@@ -1100,7 +1116,7 @@ class CalendarManager extends CalendarLibrary
                 'TXT_'.$this->moduleLangVar.'_EVENT_REDIRECT'           => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
                 $this->moduleLangVar.'_EVENT_TAB_DISPLAY'               => $arrLang['is_default'] == 'true' ? 'block' : 'none',
                 $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg('description['.$arrLang['id'].']', !empty($objEvent->arrData['description'][$arrLang['id']]) ? contrexx_raw2xhtml($objEvent->arrData['description'][$arrLang['id']]) : contrexx_raw2xhtml($objEvent->description), 'full'),
-                $this->moduleLangVar.'_EVENT_REDIRECT'                  => !empty($objEvent->arrData['redirect'][$arrLang['id']]) ? $objEvent->arrData['redirect'][$arrLang['id']] : $objEvent->arrData['redirect'][$_LANGID],
+                $this->moduleLangVar.'_EVENT_REDIRECT'                  => isset($objEvent->arrData['redirect']) ? (!empty($objEvent->arrData['redirect'][$arrLang['id']]) ? $objEvent->arrData['redirect'][$arrLang['id']] : $objEvent->arrData['redirect'][$_LANGID]) : '',
                 $this->moduleLangVar.'_EVENT_TYPE_EVENT_DISPLAY'        => $objEvent->type == 0 ? 'block' : 'none',
                 $this->moduleLangVar.'_EVENT_TYPE_REDIRECT_DISPLAY'     => $objEvent->type == 1 ? 'block' : 'none',
                 $this->moduleLangVar.'_ONSUBMIT_PUBLICATION'            => $onsubmitPublications,
