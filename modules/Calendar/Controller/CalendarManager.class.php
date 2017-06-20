@@ -298,17 +298,19 @@ class CalendarManager extends CalendarLibrary
         } else {
            $this->_objTpl->hideBlock('showConfirmList');
         }
-
-        if($this->arrSettings['rssFeedStatus'] == 1) {
-            $objFeedEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager(time(),null,null,null,true);
-            $objFeed = new \Cx\Modules\Calendar\Controller\CalendarFeed($objFeedEventManager);
+// TODO: It's pointless to recreate the feed each time the overview is shown.
+// See comment in modifyEvent() below.
+        if (!empty($this->arrSettings['rssFeedStatus'])) {
+            $objFeedEventManager =
+                new \Cx\Modules\Calendar\Controller\CalendarEventManager(
+                    time(), null, null, null, true);
+            $objFeed = new \Cx\Modules\Calendar\Controller\CalendarFeed(
+                $objFeedEventManager);
             $objFeed->creatFeed();
         }
-
         $showSeries = ($listType == 'upcoming');
         $objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($startDate, null,$categoryId,$searchTerm,$showSeries,null,null,$startPos,$this->arrSettings['numPaging'], 'ASC', true, null, $listType);
         $objEventManager->getEventList();
-
         if ($objEventManager->countEvents > $this->arrSettings['numPaging']) {
             $pagingCategory = !empty($categoryId) ? '&amp;categoryId='.$categoryId : '';
             $pagingTerm = !empty($searchTerm) ? '&amp;term='.$searchTerm : '';
@@ -383,22 +385,24 @@ class CalendarManager extends CalendarLibrary
             } else {
                 $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_SAVED'];
             }
-                if($this->arrSettings['rssFeedStatus'] == 1) {
-                    $objFeedEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager(time(),null,null,null,true);
-                    $objFeed = new \Cx\Modules\Calendar\Controller\CalendarFeed($objFeedEventManager);
+// TODO: Some of the settings apparently are unset!
+            if (!empty($this->arrSettings['rssFeedStatus'])) {
+// TODO: So the feed is only created here when storing fails???
+                $objFeedEventManager =
+                    new \Cx\Modules\Calendar\Controller\CalendarEventManager(
+                        time(), null, null, null, true);
+                $objFeed =
+                    new \Cx\Modules\Calendar\Controller\CalendarFeed(
+                        $objFeedEventManager);
                 $objFeed->creatFeed();
             }
         }
-
         $objCategoryManager = new \Cx\Modules\Calendar\Controller\CalendarCategoryManager(true);
         $objCategoryManager->getCategoryList();
-
         $objFormManager = new \Cx\Modules\Calendar\Controller\CalendarFormManager(true);
         $objFormManager->getFormList();
-
         $objMail = new \Cx\Modules\Calendar\Controller\CalendarMail();
         $objMail->getTemplateList();
-
         $copy = isset($_REQUEST['copy']) && !empty($_REQUEST['copy']);
         $this->_pageTitle = $copy || empty($eventId)
             ? $_ARRAYLANG['TXT_CALENDAR_INSERT_EVENT']
