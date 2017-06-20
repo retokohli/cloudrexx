@@ -60,8 +60,10 @@ cx.ready(function() {
     .controller('MainCtrl', [
       '$scope', '$modalInstance', '$timeout', '$q',
       'mediabrowserConfig', 'mediabrowserFiles', 'dataTabs',
+      'mediabrowserLoadingScreen',
       function($scope, $modalInstance, $timeout, $q,
-        mediabrowserConfig, mediabrowserFiles, dataTabs) {
+        mediabrowserConfig, mediabrowserFiles, dataTabs,
+        mediabrowserLoadingScreen) {
         $scope.sourcesLoaded = $q.defer();
         $scope.searchString = '';
         $scope.sorting = 'name';
@@ -71,6 +73,7 @@ cx.ready(function() {
           path: '',
           standard: true
         }];
+        $scope.allFiles = {};
         $scope.go = go;
         $scope.ok = ok;
         $scope.cancel = cancel;
@@ -222,10 +225,10 @@ cx.ready(function() {
             path: '',
             standard: true
           }];
-          $scope.loadingSources = true;
+          mediabrowserLoadingScreen.set(true);
           mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, '', recursive).then(
             function getFiles(data) {
-              $scope.loadingSources = false;
+              mediabrowserLoadingScreen.set(false);
               $scope.allFiles = data;
               $scope.files = getValueByPath($scope.allFiles, $scope.path);
               var oldPath = $scope.path;
@@ -283,10 +286,10 @@ cx.ready(function() {
           $scope.searchString = '';
           refreshBrowser();
           if (objectSize(potentialValue) < 3) {
-            $scope.loadingSources = true;
+            mediabrowserLoadingScreen.set(true);
             return mediabrowserFiles.getByMediaTypeAndPath($scope.selectedSource.value, getPathAsString(), false).then(
               function getFiles(data) {
-                $scope.loadingSources = false;
+                mediabrowserLoadingScreen.set(false);
                 $scope.allFiles = addValueByPath($scope.allFiles, $scope.path, data);
                 $scope.files = getValueByPath($scope.allFiles, $scope.path);
                 $timeout(function () {
@@ -331,7 +334,7 @@ cx.ready(function() {
           } else if (path.length === 0) {
             return obj;
           } else {
-            obj[path[0]] = setDatainfoAttributeByPath(obj[path[0]], path.slice(1), attribute, value);
+            obj[path[0]] = $scope.setDatainfoAttributeByPath(obj[path[0]], path.slice(1), attribute, value);
             return obj;
           }
         };
@@ -474,8 +477,8 @@ cx.ready(function() {
         };
       }])
     .controller('MediaBrowserListCtrl', [
-      '$scope', '$http', 'mediabrowserConfig',
-      function($scope, $http, mediabrowserConfig) {
+      '$scope', '$http', 'mediabrowserConfig', 'mediabrowserLoadingScreen',
+      function($scope, $http, mediabrowserConfig, mediabrowserLoadingScreen) {
         $scope.lastActiveFile = {};
         $scope.noFileSelected = true;
         $scope.selectedFiles = [];
@@ -483,6 +486,7 @@ cx.ready(function() {
           isRegex: false,
           string: ""
         };
+        $scope.loadingScreen = mediabrowserLoadingScreen;
         $scope.length = length;
         $scope.changeSorting = changeSorting;
         $scope.getPathString = getPathString;
@@ -916,6 +920,19 @@ cx.ready(function() {
         return key in config;
       }
     })
+    .factory('mediabrowserLoadingScreen', ['$rootScope', function($rootScope) {
+      var status = false;
+      return {
+        set: set,
+        get: get
+      };
+      function set(value) {
+        status = value;
+      }
+      function get() {
+        return status;
+      }
+    }])
     .filter('findPage', function() {
       return function(items, search, activeLanguage) {
         if (!items) {
