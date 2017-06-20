@@ -954,12 +954,11 @@ class CalendarEvent extends CalendarLibrary
      *
      * @return null
      */
-    function getData() {
-        global $objDatabase, $_LANGID;
-
+    function getData()
+    {
+        global $objDatabase;
         $activeLangs = explode(",", $this->showIn);
         $this->arrData = array();
-
         foreach ($activeLangs as $langId) {
             $query = "SELECT field.title AS title,
                              field.teaser AS teaser,
