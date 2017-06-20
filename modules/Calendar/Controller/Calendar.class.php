@@ -378,7 +378,7 @@ class Calendar extends CalendarLibrary
         // ID of a category and switch to category-mode
         if (!empty($cmd) && (string)intval($cmd) == $cmd) {
             $catid = intval($cmd);
-            $cmd == 'category';
+            $cmd = 'category';
             $this->simulateCategoryView = true;
         }
 
