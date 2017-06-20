@@ -889,16 +889,13 @@ class CalendarEvent extends CalendarLibrary
         $this->org_link     = contrexx_raw2xhtml($objResult->fields['org_link']);
         $this->org_phone    = contrexx_raw2xhtml($objResult->fields['org_phone']);
         $this->org_email    = contrexx_raw2xhtml($objResult->fields['org_email']);
-                                
         $this->showIn = htmlentities($objResult->fields['show_in'], ENT_QUOTES, CONTREXX_CHARSET);
         $this->availableLang = intval($langId);
         $this->status = intval($objResult->fields['status']);
         $this->showDetailView = intval($objResult->fields['show_detail_view']);
-                $this->catId = intval($objResult->fields['catid']);
         $this->google = intval($objResult->fields['google']);
         $this->seriesStatus = intval($objResult->fields['series_status']);
         $this->independentSeries = intval($objResult->fields['independent_series']);
-                     
         if ($this->seriesStatus == 1) {
             $this->seriesData['seriesPatternCount'] = intval($objResult->fields['series_pattern_count']);
             $this->seriesData['seriesType'] = intval($objResult->fields['series_type']);
@@ -1695,10 +1692,7 @@ class CalendarEvent extends CalendarLibrary
         $seriesPatternType              = 0;
         $seriesPatternDouranceType      = 0;
         $seriesPatternEnd               = 0;
-        $seriesExeptions = '';
-
-        if($seriesStatus == 1) {
-
+        if ($seriesStatus == 1) {
             switch($seriesType) {
                 case 1;
                     if ($seriesStatus == 1) {
@@ -2018,6 +2012,7 @@ class CalendarEvent extends CalendarLibrary
     function _handleUpload($id)
     {
         $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+// TODO: $sessionObj is unused. Any side effects?
         $sessionObj = $cx->getComponent('Session')->getSession();
         $tmpUploadDir     = $_SESSION->getTempPath().'/'.$id.'/'; //all the files uploaded are in here
         $depositionTarget = $this->uploadImgPath; //target folder

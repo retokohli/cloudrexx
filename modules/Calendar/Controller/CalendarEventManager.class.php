@@ -384,16 +384,11 @@ class CalendarEventManager extends CalendarLibrary
         global $objInit, $_LANGID, $_CONFIG;
         if ($objInit->mode == 'frontend') {
             $this->getSettings();
-
             $objHostManager = new \Cx\Modules\Calendar\Controller\CalendarHostManager($this->categoryId, true, true);
             $objHostManager->getHostList();
-
-
             foreach ($objHostManager->hostList as $key => $objHost) {
                 $id = $objHost->id;
-                $name = $objHost->title;
                 $key = $objHost->key;
-
                 if(substr($objHost->uri,-1) != '/') {
                     $uri = $objHost->uri.'/';
                 } else {
@@ -421,15 +416,10 @@ class CalendarEventManager extends CalendarLibrary
                         if(substr($myHost,-1) != '/') {
                             $myHost = $myHost.'/';
                         }
-
-                        $catId = $objHost->catId;
                         $key = $objHost->key;
-
                         $foreignHostData = $objWebserviceClient->verifyHost($myHost,$key);
-
                         if ($foreignHostData != false) {
                             $arrEvents = $objWebserviceClient->getEventList($this->startDate->getTimestamp(), $this->endDate->getTimestamp(), $this->needAuth, $this->searchTerm, $_LANGID, $foreignHostData['id'], $id, $this->arrSettings['showEventsOnlyInActiveLanguage']);
-
                             if (!empty($arrEvents[0])) {
                                 foreach ($arrEvents as $key => $objExternalEvent) {
                                     /*$objExternalEvent->showStartDateList = intval($this->arrSettings['showStartDateList']);
@@ -1876,9 +1866,6 @@ class CalendarEventManager extends CalendarLibrary
             $address .= $city;
             $address .= ', ';
             $address .= $zipcode;
-
-            $key = $_CONFIG['googleMapsAPIKey'];
-
             $url='http://maps.google.com/maps/geo?output=xml&q=';
             $urlcontent = file_get_contents($url . urlencode($address));
             $urlcontent = utf8_encode($urlcontent);

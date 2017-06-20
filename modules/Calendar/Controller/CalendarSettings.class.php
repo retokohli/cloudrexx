@@ -832,8 +832,8 @@ class CalendarSettings extends CalendarLibrary
                         case 'getPlaceDataDorpdown':
                             $objMediadirForms = new \Cx\Modules\MediaDir\Controller\MediaDirectoryForm(null, 'MediaDir');
                             $objMediadirForms->getForms();
+// TODO: $objTpl is undefined (2x)!
                             $objMediadirForms->listForms($objTpl,4);
-
                             $output  = $_ARRAYLANG['TXT_CALENDAR_SELECT_FORM_MEDIADIR'].": <br />";
                             $output .= '<select style="width: 252px;" name="settings['.$name.']" >';
                             $output .= $objMediadirForms->listForms($objTpl,4,intval($value));

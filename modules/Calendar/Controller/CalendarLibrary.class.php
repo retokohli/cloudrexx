@@ -248,33 +248,27 @@ class CalendarLibrary
     {
         global $objInit;
 
-        if($objInit->mode == 'backend') {
+        if ($objInit->mode == 'backend') {
             //backend access
         } else {
             //frontend access
-
             $strStatus = '';
             $objFWUser  = \FWUser::getFWUserObject();
-
             //get user attributes
-            $objUser         = $objFWUser->objUser;
-            $intUserId      = intval($objUser->getId());
-            $intUserName    = $objUser->getUsername();
-            $bolUserLogin   = $objUser->login();
-            $intUserIsAdmin = $objUser->getAdminStatus();
-
-            $accessId = 0; //used to remember which access id the user needs to have. this is passed to Permission::checkAccess() later.
-
+            $objUser = $objFWUser->objUser;
+            $intUserId = intval($objUser->getId());
+            $bolUserLogin = $objUser->login();
+// TODO: Pointless assignment. Any other case missing below?
+//            $intUserIsAdmin = $objUser->getAdminStatus();
             $intUserIsAdmin = false;
-
-            if(!$intUserIsAdmin) {
+            if (!$intUserIsAdmin) {
                 self::getSettings();
-
-                switch($strAction) {
+                switch ($strAction) {
                     case 'add_event':
-                       if($this->arrSettings['addEventsFrontend'] == 1 || $this->arrSettings['addEventsFrontend'] == 2) {
-                            if($this->arrSettings['addEventsFrontend'] == 2) {
-                                if($bolUserLogin) {
+                       if ($this->arrSettings['addEventsFrontend'] == 1
+                           || $this->arrSettings['addEventsFrontend'] == 2) {
+                            if ($this->arrSettings['addEventsFrontend'] == 2) {
+                                if ($bolUserLogin) {
                                     $bolAdd = true;
                                 } else {
                                     $bolAdd = false;

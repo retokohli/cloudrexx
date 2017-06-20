@@ -195,24 +195,11 @@ class CalendarWebserviceServer
         while ($row = mysql_fetch_array($result)) {
             $objEvent = new \Cx\Modules\Calendar\Controller\CalendarWebserviceEvent($row['id'], $langId, $showEventsOnlyInActiveLanguage);
             $objEvent->hostId = $foreignHostId;
-
             $eventList[] = $objEvent;
         }
-
         return $eventList;
     }
 
-    /**
-     * addiere
-     *
-     * @param integer $a number value
-     * @param integer $b number value
-     *
-     * @return integer sum of the numbers
-     */
-    public function addiere($a, $b) {
-        return $a + $b + $a;
-    }
 }
 
 /**

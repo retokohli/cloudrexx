@@ -285,7 +285,7 @@ class CalendarForm extends CalendarLibrary
                                                        '".$objResultOldFields->fields['order']."',
                                                        '".$objResultOldFields->fields['affiliation']."')";
 
-                        $objResultNewField = $objDatabase->Execute($queryNewField);
+                        $objDatabase->Execute($queryNewField);
                         $newFieldId = intval($objDatabase->Insert_ID());
 
                         $queryOldNames =  "SELECT `lang_id`,`name`,`default`
@@ -316,7 +316,7 @@ class CalendarForm extends CalendarLibrary
                                                                '".$objResultOldNames->fields['name']."',
                                                                '".$objResultOldNames->fields['default']."')";
 
-                                $objResultNewName = $objDatabase->Execute($queryNewName);
+                                $objDatabase->Execute($queryNewName);
                                 //Trigger postPersist event for FormFieldName Entity
                                 $this->triggerEvent('model/postPersist', $newFormFieldName);
                                 $objResultOldNames->MoveNext();

@@ -224,10 +224,10 @@ class CalendarFormManager extends CalendarLibrary
     /**
      * Sets placeholders for the form view.
      *
-     * @param object $objTpl         Template object
-     * @param integer $formId        Form id
-     * @param integer $intView       request mode frontend or backend
-     * @param integer $arrNumSeating number of seating
+     * @param   object  $objTpl     Template object
+     * @param   integer $formId     Form id
+     * @param   integer $intView    request mode frontend or backend
+     * @param   boolean $ticketSales
      *
      * @return null
      */
