@@ -191,6 +191,12 @@ class CalendarEvent extends CalendarLibrary
     public $showTimeTypeDetail;
 
     /**
+     * Event lasts all day if true
+     * @var boolean
+     */
+    public $all_day;
+
+    /**
      * Event price
      *
      * @access public
