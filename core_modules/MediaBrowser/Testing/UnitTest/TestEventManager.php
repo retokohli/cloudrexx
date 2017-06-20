@@ -39,7 +39,8 @@ namespace Cx\Core_Modules\MediaBrowser\Testing\UnitTest;
  *
  * @package Cx\Core_Modules\MediaBrowser\Testing\UnitTest
  */
-class TestEventManager {
+class TestEventManager
+{
 
     private $mediaSources = array();
 
@@ -47,10 +48,11 @@ class TestEventManager {
      * @param $name
      * @param $callback
      */
-    function triggerEvent($name,$callback){
+    function triggerEvent($name, $callback)
+    {
         $mediaManager = current($callback);
-        foreach ($this->mediaSources as $mediaSource){
-           $mediaManager->addMediaType($mediaSource);
+        foreach ($this->mediaSources as $mediaSource) {
+            $mediaManager->addMediaType($mediaSource);
         }
     }
 
@@ -59,7 +61,8 @@ class TestEventManager {
      *
      * @return array
      */
-    public function addMediaSource($mediaSource) {
+    public function addMediaSource($mediaSource)
+    {
         $this->mediaSources[] = $mediaSource;
     }
 }

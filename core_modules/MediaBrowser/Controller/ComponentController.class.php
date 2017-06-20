@@ -40,8 +40,8 @@ namespace Cx\Core_Modules\MediaBrowser\Controller;
 
 use Cx\Core\Core\Model\Entity\SystemComponentController;
 use Cx\Core\Html\Sigma;
-use Cx\Core_Modules\MediaBrowser\Model\Event\MediaBrowserEventListener;
 use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
+use Cx\Core_Modules\MediaBrowser\Model\Event\MediaBrowserEventListener;
 
 /**
  * Class ComponentController
@@ -64,16 +64,17 @@ class ComponentController extends
     /**
      * {@inheritdoc }
      */
-    public function getControllerClasses() {
+    public function getControllerClasses()
+    {
         if (
-            in_array(
+        in_array(
             'Workbench',
-                \Cx\Core\ModuleChecker::getInstance(
-                    $this->cx->getDb()->getEntityManager(),
-                    $this->cx->getDb()->getAdoDb(),
-                    $this->cx->getClassLoader()
-                )->getCoreModules()
-            )
+            \Cx\Core\ModuleChecker::getInstance(
+                $this->cx->getDb()->getEntityManager(),
+                $this->cx->getDb()->getAdoDb(),
+                $this->cx->getClassLoader()
+            )->getCoreModules()
+        )
         ) {
             return array('Backend');
         }
@@ -84,14 +85,16 @@ class ComponentController extends
      * Register a mediabrowser instance
      * @param MediaBrowser $mediaBrowser
      */
-    public function addMediaBrowser(MediaBrowser $mediaBrowser) {
+    public function addMediaBrowser(MediaBrowser $mediaBrowser)
+    {
         $this->mediaBrowserInstances[] = $mediaBrowser;
     }
 
     /**
      * {@inheritdoc }
      */
-    public function getControllersAccessableByJson() {
+    public function getControllersAccessableByJson()
+    {
         return array(
             'JsonMediaBrowser',
         );
@@ -119,7 +122,8 @@ class ComponentController extends
      * list statements like
      * $this->cx->getEvents()->addEventListener($eventName, $listener);
      */
-    public function registerEventListeners() {
+    public function registerEventListeners()
+    {
         $this->cx->getEvents()->addEventListener(
             'mediasource.load', new MediaBrowserEventListener($this->cx)
         );
@@ -128,7 +132,8 @@ class ComponentController extends
     /**
      * @param Sigma $template
      */
-    public function preFinalize(Sigma $template) {
+    public function preFinalize(Sigma $template)
+    {
         if (count($this->mediaBrowserInstances) == 0) {
             return;
         }
@@ -165,8 +170,7 @@ class ComponentController extends
             $thumbnailsTemplate->setVariable(
                 array(
                     'THUMBNAIL_NAME' => sprintf(
-                        $_ARRAYLANG[
-                        'TXT_FILEBROWSER_THUMBNAIL_' . strtoupper(
+                        $_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_' . strtoupper(
                             $thumbnail['name']
                         ) . '_SIZE'], $thumbnail['size']
                     ),
@@ -181,7 +185,7 @@ class ComponentController extends
             'mediabrowser'
         );
         \ContrexxJavascript::getInstance()->setVariable(
-            'chunk_size', min(floor((\FWSystem::getMaxUploadFileSize()-1000000)/1000000), 20).'mb', 'mediabrowser'
+            'chunk_size', min(floor((\FWSystem::getMaxUploadFileSize() - 1000000) / 1000000), 20) . 'mb', 'mediabrowser'
         );
         \ContrexxJavascript::getInstance()->setVariable(
             'languages', \FWLanguage::getActiveFrontendLanguages(), 'mediabrowser'

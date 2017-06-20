@@ -69,7 +69,7 @@ class FolderWidget extends \Cx\Model\Base\EntityBase
     /**
      * Init the folder widget
      *
-     * @param string  $folder
+     * @param string $folder
      * @param boolean $viewOnly
      */
     public function __construct($folder, $viewOnly = false)
@@ -80,7 +80,7 @@ class FolderWidget extends \Cx\Model\Base\EntityBase
         if (!isset($_SESSION['MediaBrowser']['FolderWidget'])) {
             $_SESSION['MediaBrowser']['FolderWidget'] = array();
         }
-        $lastKey  = count($_SESSION['MediaBrowser']['FolderWidget']);
+        $lastKey = count($_SESSION['MediaBrowser']['FolderWidget']);
         $widgetId = ++$lastKey;
 
         $this->id = $widgetId;
@@ -93,17 +93,8 @@ class FolderWidget extends \Cx\Model\Base\EntityBase
 
         $_SESSION['MediaBrowser']['FolderWidget'][$this->id] = array(
             'folder' => $this->folder,
-            'mode'   => $this->mode
+            'mode' => $this->mode
         );
-    }
-
-    /**
-     * Set the folder widget id
-     *
-     * @param integer $id
-     */
-    public function setId($id) {
-        $this->id = $id;
     }
 
     /**
@@ -111,8 +102,19 @@ class FolderWidget extends \Cx\Model\Base\EntityBase
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
+    }
+
+    /**
+     * Set the folder widget id
+     *
+     * @param integer $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
     }
 
     /**
@@ -120,8 +122,19 @@ class FolderWidget extends \Cx\Model\Base\EntityBase
      *
      * @param string $folder
      */
-    public function setFolder($folder) {
+    public function setFolder($folder)
+    {
         $this->folder = $folder;
+    }
+
+    /**
+     * Php magic method. calls the $this->getXhtml()
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getXhtml();
     }
 
     /**
@@ -133,24 +146,14 @@ class FolderWidget extends \Cx\Model\Base\EntityBase
         \JS::registerJS('core_modules/MediaBrowser/View/Script/FolderWidget.js');
         \JS::registerCSS('core_modules/MediaBrowser/View/Style/FolderWidget.css');
 
-        $tpl = new \Cx\Core\Html\Sigma(\Cx\Core\Core\Controller\Cx::instanciate()->getCoreModuleFolderName().'/MediaBrowser/View/Template/');
+        $tpl = new \Cx\Core\Html\Sigma(\Cx\Core\Core\Controller\Cx::instanciate()->getCoreModuleFolderName() . '/MediaBrowser/View/Template/');
 
         $tpl->loadTemplateFile('FolderWidget.html');
         $tpl->setVariable(array(
-            'MEDIABROWSER_FOLDER_WIDGET_ID'          => $this->id,
+            'MEDIABROWSER_FOLDER_WIDGET_ID' => $this->id,
             'MEDIABROWSER_FOLDER_WIDGET_IS_EDITABLE' => ($this->mode != self::MODE_VIEW_ONLY) ? 'true' : 'false',
         ));
 
         return $tpl->get();
-    }
-
-    /**
-     * Php magic method. calls the $this->getXhtml()
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->getXhtml();
     }
 }

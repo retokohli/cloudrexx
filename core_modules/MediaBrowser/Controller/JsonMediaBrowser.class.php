@@ -64,9 +64,10 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      * Instantiates the object
      *
      * @param SystemComponent $systemComponent
-     * @param Cx              $cx
+     * @param Cx $cx
      */
-    function __construct(SystemComponent $systemComponent, Cx $cx) {
+    function __construct(SystemComponent $systemComponent, Cx $cx)
+    {
         $this->cx = $cx;
     }
 
@@ -75,7 +76,8 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      *
      * @return String Name of this adapter
      */
-    public function getName() {
+    public function getName()
+    {
         return 'MediaBrowser';
     }
 
@@ -84,11 +86,12 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      *
      * @return array List of method names
      */
-    public function getAccessableMethods() {
+    public function getAccessableMethods()
+    {
         return array(
             'getFiles', 'getSites', 'getSources', 'createThumbnails',
             'createDir', 'renameFile', 'removeFile',
-            'removeFileFromFolderWidget'=> new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false),
+            'removeFileFromFolderWidget' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false),
             'folderWidget' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false)
         );
     }
@@ -98,7 +101,8 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      *
      * @return String HTML encoded error messages
      */
-    public function getMessagesAsString() {
+    public function getMessagesAsString()
+    {
         return $this->message;
     }
 
@@ -107,9 +111,10 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      *
      * @return array
      */
-    public function getSources() {
+    public function getSources()
+    {
         $mediaSourceManager = $this->cx->getMediaSourceManager();
-        $sources            = array();
+        $sources = array();
         foreach (
             $mediaSourceManager->getMediaTypes() as $type =>
             $mediaSource
@@ -139,8 +144,9 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      *
      * @return array
      */
-    public function getFiles($params) {
-        $filePath  = (strlen($params['get']['path']) > 0)
+    public function getFiles($params)
+    {
+        $filePath = (strlen($params['get']['path']) > 0)
             ? $params['get']['path'] : '/';
         $mediaType = (strlen($params['get']['mediatype']) > 0)
             ? $params['get']['mediatype'] : 'files';
@@ -156,7 +162,8 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      *
      * @return array
      */
-    public function getSites() {
+    public function getSites()
+    {
         $pageTree = new MediaBrowserPageTree(
             $this->cx->getDb()->getEntityManager(), $this->cx->getLicense(), 0, null, FRONTEND_LANG_ID,
             null, false, true, false
@@ -173,7 +180,8 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      *
      * @return bool
      */
-    public function createThumbnails($params) {
+    public function createThumbnails($params)
+    {
         if (isset($params['get']['file'])) {
             $this->cx->getMediaSourceManager()
                 ->getThumbnailGenerator()
@@ -186,7 +194,8 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
     /**
      * @param $params
      */
-    public function createDir($params) {
+    public function createDir($params)
+    {
         $pathArray = explode('/', $params['get']['path']);
         $mediaType = (strlen($params['get']['mediatype']) > 0)
             ? $params['get']['mediatype'] : 'files';
@@ -200,9 +209,18 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
     }
 
     /**
+     * @param mixed $message
+     */
+    public function setMessage($message)
+    {
+        $this->message = $message;
+    }
+
+    /**
      * @param $params
      */
-    public function renameFile($params) {
+    public function renameFile($params)
+    {
         \Env::get('init')->loadLanguageData('MediaBrowser');
 
         $path = !empty($params['get']['path']) ? contrexx_input2raw(utf8_decode($params['get']['path'])) : null;
@@ -212,7 +230,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
 
         if ($path && $oldName && $newName) {
             $pathArray = explode('/', $path);
-            $strPath    = '/' . join('/', $pathArray);
+            $strPath = '/' . join('/', $pathArray);
             $this->setMessage(
                 $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()->moveFile(
                     new \Cx\Core\MediaSource\Model\Entity\LocalFile(
@@ -227,7 +245,8 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
     /**
      * @param $params
      */
-    public function removeFile($params) {
+    public function removeFile($params)
+    {
         \Env::get('init')->loadLanguageData('MediaBrowser');
         $path = !empty($params['get']['path']) ? contrexx_input2raw(utf8_decode($params['get']['path'])) : null;
         $mediaType = !empty($params['get']['mediatype']) ? $params['get']['mediatype'] : 'files';
@@ -235,7 +254,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
 
         if ($filename && $path) {
             $pathArray = explode('/', $path);
-            $strPath    = '/' . join('/', $pathArray);
+            $strPath = '/' . join('/', $pathArray);
             $this->setMessage(
                 $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()->removeFile(
                     new \Cx\Core\MediaSource\Model\Entity\LocalFile(
@@ -247,16 +266,15 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
         }
     }
 
-
     /**
      * Returns default permission as object
      *
      * @return Object
      */
-    public function getDefaultPermissions() {
+    public function getDefaultPermissions()
+    {
         // TODO: Implement getDefaultPermissions() method.
     }
-
 
     /**
      * Folder widget
@@ -265,11 +283,12 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      *
      * @return boolean|array
      */
-    public function folderWidget($params) {
+    public function folderWidget($params)
+    {
         $this->getComponent('Session')->getSession();
 
         $folderWidgetId = isset($params['get']['id']) ? contrexx_input2int($params['get']['id']) : 0;
-        if (   empty($folderWidgetId)
+        if (empty($folderWidgetId)
             || empty($_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId])
         ) {
             return false;
@@ -311,7 +330,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
         $this->getComponent('Session')->getSession();
 
         $folderWidgetId = isset($params['get']['widget']) ? contrexx_input2int($params['get']['widget']) : 0;
-        if (   empty($folderWidgetId)
+        if (empty($folderWidgetId)
             || empty($_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId])
             || $_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId]['mode'] == \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget::MODE_VIEW_ONLY
         ) {
@@ -322,22 +341,15 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
         if (empty($path)) {
             return false;
         }
-        $folder          = $_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId]['folder'];
+        $folder = $_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId]['folder'];
         $localFileSystem = new \Cx\Core\MediaSource\Model\Entity\LocalFileSystem($folder);
 
-        $file    = '/' . $path;
+        $file = '/' . $path;
         $objFile = new \Cx\Core\MediaSource\Model\Entity\LocalFile($file, $localFileSystem);
 
         $this->setMessage($localFileSystem->removeFile($objFile));
 
         return array();
-    }
-
-    /**
-     * @param mixed $message
-     */
-    public function setMessage($message) {
-        $this->message = $message;
     }
 
 }

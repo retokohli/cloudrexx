@@ -40,11 +40,13 @@ namespace Cx\Core_Modules\MediaBrowser\Testing\UnitTest;
  * @author Robin Glauser <robin.glauser@comvation.com>
  * @package     cloudrexx
  */
-class TestCx {
+class TestCx
+{
     private $testEventManager;
 
-    public function getEvents(){
-        if (!$this->testEventManager){
+    public function getEvents()
+    {
+        if (!$this->testEventManager) {
             $this->testEventManager = new TestEventManager();
         }
         return $this->testEventManager;
