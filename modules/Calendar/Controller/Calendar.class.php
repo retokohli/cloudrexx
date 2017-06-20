@@ -680,26 +680,24 @@ UPLOADER;
                 \DBG::msg("Error in initializing uploader");
             }
         }
-
         $this->_objTpl->setGlobalVariable(array(
             $this->moduleLangVar . '_EVENT_LANG_ID' => $_LANGID,
             $this->moduleLangVar . '_JAVASCRIPT' => $javascript,
         ));
-
         $objCategoryManager = new \Cx\Modules\Calendar\Controller\CalendarCategoryManager(true);
         $objCategoryManager->getCategoryList();
-
         if ($eventId) {
             $startDate = $objEvent->startDate;
             $endDate = $objEvent->endDate;
-        } else {
-            $startDate = new \DateTime();
-            $endDate   = new \DateTime();
         }
-
+        if (!$startDate) {
+            $startDate = new \DateTime();
+        }
+        if (!$endDate) {
+            $endDate = new \DateTime();
+        }
         $eventStartDate = $this->format2userDateTime($startDate);
         $eventEndDate   = $this->format2userDateTime($endDate);
-
         $this->_objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_EVENT'                    => $_ARRAYLANG['TXT_CALENDAR_EVENT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_DETAILS'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAILS'],
