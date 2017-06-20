@@ -932,7 +932,8 @@ EOF;
             if (!empty($relations) && $relations['relations']) {
                 $this->detachJoinedEntity(
                     $entity, $relations['relations'],
-                    $relations['joinEntityRelations']
+                    isset($relations['joinEntityRelations'])
+                        ? $relations['joinEntityRelations'] : []
                 );
             }
             $this->em->detach($entity);
@@ -974,7 +975,7 @@ EOF;
 
         if ($relation == 'oneToMany') {
             foreach ($entity->$methodName() as $subEntity) {
-                if ($joinEntityRelation[$methodName]) {
+                if (isset($joinEntityRelation[$methodName])) {
                     $this->detachJoinedEntity(
                         $subEntity,
                         $joinEntityRelation[$methodName],
