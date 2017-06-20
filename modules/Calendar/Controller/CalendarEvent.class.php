@@ -830,6 +830,8 @@ class CalendarEvent extends CalendarLibrary
             if ($objResult->RecordCount() == 0) {
                 $langIdsToFetch = array_diff(array_keys(\FWLanguage::getActiveFrontendLanguages()), $this->fetchedLangIds);
                 if ($langIdsToFetch) {
+// TODO: This makes no sense, when anything retrieved there may be
+// overwritten with the (potentially incomplete) record below instead...?!
                     $this->get($eventId,$eventStartDate,current($langIdsToFetch));
                 }
             }
