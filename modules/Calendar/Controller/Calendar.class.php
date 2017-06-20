@@ -572,30 +572,23 @@ EOF;
         global $_ARRAYLANG, $_LANGID;
         \JS::activate('cx');
         \JS::activate('jqueryui');
-
+        \JS::activate('chosen');
         \JS::registerJS('modules/Calendar/View/Script/Frontend.js');
-
         $this->getFrontendLanguages();
         $this->getSettings();
         $this->_objTpl->setTemplate($this->pageContent, true, true);
-
         $showFrom = true;
-
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent();
         $isEventLoaded = false;
-
         if (isset($_POST['submitFormModifyEvent'])) {
             $arrData = array();
             $arrData = $_POST;
-
             $arrData['access'] = 0;
             $arrData['priority'] = 3;
-
-            if($objEvent->save($arrData)) {
+            if ($objEvent->save($arrData)) {
                 $showFrom = false;
                 $this->_objTpl->hideBlock('calendarEventModifyForm');
                 $this->_objTpl->touchBlock('calendarEventOkMessage');
-
                 // refresh event data after save
                 $objEvent->get($objEvent->id);
                 $objEvent->getData();
@@ -689,8 +682,8 @@ UPLOADER;
         }
 
         $this->_objTpl->setGlobalVariable(array(
-            $this->moduleLangVar.'_EVENT_LANG_ID'               => $_LANGID,
-            $this->moduleLangVar.'_JAVASCRIPT'                  => $javascript,
+            $this->moduleLangVar . '_EVENT_LANG_ID' => $_LANGID,
+            $this->moduleLangVar . '_JAVASCRIPT' => $javascript,
         ));
 
         $objCategoryManager = new \Cx\Modules\Calendar\Controller\CalendarCategoryManager(true);
@@ -698,7 +691,7 @@ UPLOADER;
 
         if ($eventId) {
             $startDate = $objEvent->startDate;
-            $endDate   = $objEvent->endDate;
+            $endDate = $objEvent->endDate;
         } else {
             $startDate = new \DateTime();
             $endDate   = new \DateTime();
@@ -826,13 +819,13 @@ UPLOADER;
             ));
             $this->_objTpl->parse('eventTabMenuDescTab');
             //parse eventDescTab
-            $eventTitle       = !empty($objEvent->arrData['title'][$arrLang['id']])
+            $eventTitle = !empty($objEvent->arrData['title'][$arrLang['id']])
                 ? $objEvent->arrData['title'][$arrLang['id']]
                                 : (!empty($objEvent->arrData['redirect'][$_LANGID]) ? $objEvent->arrData['redirect'][$_LANGID] : '');
             $eventDescription = !empty($objEvent->arrData['description'][$arrLang['id']])
                 ? $objEvent->arrData['description'][$arrLang['id']]
                 : '';
-            $eventRedirect    = !empty($objEvent->arrData['redirect'][$arrLang['id']])
+            $eventRedirect = !empty($objEvent->arrData['redirect'][$arrLang['id']])
                 ? $objEvent->arrData['redirect'][$arrLang['id']]
                                 : (!empty($objEvent->arrData['redirect'][$_LANGID]) ? $objEvent->arrData['redirect'][$_LANGID] : '');
             $this->_objTpl->setVariable(array(
