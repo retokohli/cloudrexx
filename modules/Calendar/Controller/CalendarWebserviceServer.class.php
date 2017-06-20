@@ -663,13 +663,13 @@ class CalendarWebserviceEvent
                 }
             } else {
                 if ($langId == null) {
+// TODO: $_LANGID is undefined. Use global?
                     $langId = $_LANGID;
                 }
             }
         } else {
             $langId = $_LANGID;
         }
-
         while ($row = mysql_fetch_array($result)) {
             if (!empty($row['title'])) {
                 $this->id = intval($eventId);
