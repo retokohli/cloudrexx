@@ -505,6 +505,7 @@ class CalendarCategory extends CalendarLibrary
      */
     public function getCategoryEntity($id, $formData = array())
     {
+        global $_LANGID;
         if (empty($id)) {
             $category = new \Cx\Modules\Calendar\Model\Entity\Category();
         } else {
@@ -514,15 +515,12 @@ class CalendarCategory extends CalendarLibrary
                 ->findOneById($id);
         }
         $category->setVirtual(true);
-
         if (!$category) {
             return null;
         }
-
         if (!$formData) {
             return $category;
         }
-
         foreach ($formData as $fieldName => $fieldValue) {
             if ($fieldName == 'categoryNames' && is_array($fieldValue)) {
                 foreach ($fieldValue as $langId => $value) {
@@ -545,7 +543,6 @@ class CalendarCategory extends CalendarLibrary
                 $category->{'set'.ucfirst($fieldName)}($fieldValue);
             }
         }
-
         return $category;
     }
 
