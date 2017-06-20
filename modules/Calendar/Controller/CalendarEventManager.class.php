@@ -394,8 +394,7 @@ class CalendarEventManager extends CalendarLibrary
      */
     function _importEvents()
     {
-        global $objDatabase, $objInit, $_LANGID, $_CONFIG;
-
+        global $objInit, $_LANGID, $_CONFIG;
         if ($objInit->mode == 'frontend') {
             $this->getSettings();
 
@@ -628,17 +627,14 @@ class CalendarEventManager extends CalendarLibrary
      *
      * @return null
      */
-    function getExternalEvent($eventId, $eventStartDate) {
-        global $objInit;
-
+    function getExternalEvent($eventId, $eventStartDate)
+    {
         self::_importEvents();
-
         foreach ($this->eventList as $tmpKey => $tmpObjEvent) {
             if ($tmpObjEvent->startDate->getTimestamp() != $eventStartDate) {
                 unset($this->eventList[$tmpKey]);
             }
         }
-
         sort($this->eventList);
     }
 
@@ -652,10 +648,8 @@ class CalendarEventManager extends CalendarLibrary
      * @return null
      */
     function showEvent($objTpl, $eventId, $eventStartDate, &$start = null) {
-        global $objInit, $_ARRAYLANG, $_LANGID, $_CONFIG;
-
+        global $objInit, $_ARRAYLANG, $_LANGID;
         $this->getSettings();
-
         if($objInit->mode == 'frontend' && ($eventId != null && $eventStartDate != null)) {
             $objEvent = $this->eventList[0];
 
@@ -1889,9 +1883,8 @@ class CalendarEventManager extends CalendarLibrary
      *
      * @return boolean true or false
      */
-    function _getCoorinates($street,$zipcode,$city) {
-        global $_CONFIG;
-
+    function _getCoorinates($street,$zipcode,$city)
+    {
         if (!ini_get('allow_url_fopen')) {
             ini_set('allow_url_fopen', 'On');
         }

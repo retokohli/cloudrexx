@@ -98,7 +98,7 @@ class CalendarHostManager extends CalendarLibrary
      * @return null
      */
     function getHostList() {
-        global $objDatabase,$_ARRAYLANG,$_LANGID;
+        global $objDatabase;
 
         if($this->catId != null) {
             $catId_where = "AND cat_id = '".$this->catId."' ";

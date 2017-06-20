@@ -79,7 +79,7 @@ class CalendarCategoryManager extends CalendarLibrary
      * @return array Returns all calendar categories
      */
     function getCategoryList() {
-        global $objDatabase,$_LANGID;
+        global $objDatabase;
 
         $onlyActive_where = ($this->onlyActive == true ? ' WHERE status=1' : '');
 
@@ -108,7 +108,7 @@ class CalendarCategoryManager extends CalendarLibrary
      * @param integer $categoryId
      */
     function showCategory($objTpl, $categoryId) {
-        global $objInit, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $objCategory = new \Cx\Modules\Calendar\Controller\CalendarCategory(intval($categoryId));
         $this->categoryList[$categoryId] = $objCategory;

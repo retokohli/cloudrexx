@@ -196,9 +196,9 @@ class CalendarForm extends CalendarLibrary
      *
      * @return integer new form id
      */
-    function copy() {
-        global $objDatabase, $_LANGID;
-
+    function copy()
+    {
+        global $objDatabase;
         $queryOldForm = "SELECT id,title,status,`order`
                            FROM ".DBPREFIX."module_".self::TABLE_PREFIX."_registration_form
                           WHERE id = '".intval($this->id)."'

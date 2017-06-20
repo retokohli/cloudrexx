@@ -59,9 +59,9 @@ class CalendarFeed extends CalendarLibrary {
      * @global object $objDatabase
      * @param object $objEventManager
      */
-    function __construct($objEventManager){
-        global $_CONFIG, $objDatabase;
-
+    function __construct($objEventManager)
+    {
+        global $_CONFIG;
         $this->objEventManager = $objEventManager;
         $this->domainUrl = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/";
     }
@@ -72,14 +72,12 @@ class CalendarFeed extends CalendarLibrary {
      * @global array $_CONFIG
      * @global object $objDatabase
      */
-    function creatFeed(){
-        global $_CONFIG, $objDatabase;
-
+    function creatFeed()
+    {
+        global $_CONFIG;
         $this->getFrontendLanguages();
         $this->getSettings();
-
         $this->objEventManager->getEventlist();
-
         foreach($this->arrFrontendLanguages as $langKey => $arrFrontendLanguage) {
             $objRSSWriter = new \RSSWriter();
             $objRSSWriter->characterEncoding = CONTREXX_CHARSET;

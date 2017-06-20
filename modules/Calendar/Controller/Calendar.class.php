@@ -167,11 +167,8 @@ class Calendar extends CalendarLibrary
      */
     function __construct($pageContent)
     {
-        global $_ARRAYLANG, $objTemplate;
-
         parent::__construct('.');
         $this->getSettings();
-
         $this->pageContent = $pageContent;
     }
 
@@ -538,7 +535,7 @@ EOF;
      */
     function myEvents(&$firstEndDate = null)
     {
-        global $_ARRAYLANG, $_CORELANG;
+        global $_ARRAYLANG;
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
@@ -573,7 +570,7 @@ EOF;
      */
     function modifyEvent($eventId = null)
     {
-        global $_ARRAYLANG, $_CORELANG, $_LANGID;
+        global $_ARRAYLANG, $_LANGID;
         \JS::activate('cx');
         \JS::activate('jqueryui');
 
@@ -944,8 +941,7 @@ UPLOADER;
      */
     function showEvent($page, &$start = null)
     {
-        global $_ARRAYLANG, $_CORELANG, $_LANGID;
-
+        global $_ARRAYLANG, $_CORELANG;
         if (empty($this->objEventManager->eventList)) {
             \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName));
             exit;
@@ -1173,8 +1169,7 @@ UPLOADER;
      */
     function showCategoryView(&$firstEndDate = null)
     {
-        global $_ARRAYLANG, $_CORELANG;
-
+        global $_ARRAYLANG;
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         // load source code if cmd value is integer

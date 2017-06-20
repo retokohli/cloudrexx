@@ -716,7 +716,7 @@ class CalendarEvent extends CalendarLibrary
      * @return null
      */
     function get($eventId, $eventStartDate=null, $langId=null) {
-        global $objDatabase, $_ARRAYLANG, $_LANGID, $objInit;
+        global $objDatabase, $_LANGID;
 
         $this->getSettings();
 
@@ -951,7 +951,7 @@ class CalendarEvent extends CalendarLibrary
      * @return null
      */
     function getData() {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_LANGID;
 
         $activeLangs = explode(",", $this->showIn);
         $this->arrData = array();
@@ -999,11 +999,10 @@ class CalendarEvent extends CalendarLibrary
      *
      * @return boolean true if saved successfully, false otherwise
      */
-    function save($data){
-        global $objDatabase, $_LANGID, $_CONFIG, $objInit;
-        
+    function save($data)
+    {
+        global $objDatabase, $_LANGID, $objInit;
         $this->getSettings();
-
         if(empty($data['startDate']) || empty($data['endDate']) || empty($data['category']) || ($data['seriesStatus'] == 1 && $data['seriesType'] == 2 && empty($data['seriesWeeklyDays']))) {
             return false;
         }

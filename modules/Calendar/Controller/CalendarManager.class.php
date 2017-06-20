@@ -90,9 +90,8 @@ class CalendarManager extends CalendarLibrary
     */
     function getCalendarPage()
     {
-        global $objTemplate, $objDatabase, $_ARRAYLANG;
-
-        switch ($_GET['act']) {
+        global $objTemplate;
+        switch ($this->act) {
             case 'settings':
                 \Permission::checkAccess(181, 'static');
                 $this->showSettings();
@@ -140,7 +139,7 @@ class CalendarManager extends CalendarLibrary
      * @return null
      */
     function showOverview(){
-        global $objDatabase, $_ARRAYLANG, $_CORELANG;
+        global $_ARRAYLANG, $_CORELANG;
 
         $this->_objTpl->loadTemplateFile('module_calendar_overview.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW'];
@@ -337,19 +336,16 @@ class CalendarManager extends CalendarLibrary
      */
     public static function showMediaBrowserButton($name, $type = 'filebrowser')
     {
+        global $_ARRAYLANG;
         if (empty($name)) {
             return;
         }
-
-        global $_ARRAYLANG;
-
         $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions(array(
                     'type'             => 'button',
-                    'data-cx-mb-views' => $type
+            'data-cx-mb-views' => $type,
         ));
         $mediaBrowser->setCallback('setSelected' . ucfirst($name));
-
         return $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CALENDAR_BROWSE']);
     }
 
@@ -360,9 +356,9 @@ class CalendarManager extends CalendarLibrary
      *
      * @return null
      */
-    function modifyEvent($eventId){
-        global $objDatabase, $_ARRAYLANG, $_CORELANG, $_LANGID;
-
+    function modifyEvent($eventId)
+    {
+        global $_ARRAYLANG, $_CORELANG, $_LANGID;
         $this->_objTpl->loadTemplateFile('module_calendar_modify_event.html');
         \JS::registerJS("modules/{$this->moduleName}/View/Script/jquery.pagination.js");
 
@@ -1127,9 +1123,9 @@ class CalendarManager extends CalendarLibrary
      *
      * @return null
      */
-    function showCategories(){
-        global $objDatabase, $_ARRAYLANG, $_CORELANG;
-
+    function showCategories()
+    {
+        global $_ARRAYLANG;
         if (isset($_GET['tpl'])) {
             switch ($_GET['tpl']) {
                 case 'modify_category':
@@ -1252,11 +1248,10 @@ class CalendarManager extends CalendarLibrary
      *
      * @return null
      */
-    function modifyCategory($categoryId){
-        global $objDatabase, $_ARRAYLANG, $_CORELANG, $_LANGID;
-
+    function modifyCategory($categoryId)
+    {
+        global $_ARRAYLANG, $_LANGID;
         $this->_objTpl->loadTemplateFile('module_calendar_modify_category.html');
-
         if($categoryId != 0) {
             $this->_pageTitle = $_ARRAYLANG['TXT_CALENDAR_CATEGORY']." ".$_ARRAYLANG['TXT_CALENDAR_EDIT'];
         } else {
@@ -1346,12 +1341,11 @@ class CalendarManager extends CalendarLibrary
      *
      * @return null
      */
-    function showSettings() {
-        global $objDatabase, $_ARRAYLANG, $_CORELANG;
-
+    function showSettings()
+    {
+        global $_ARRAYLANG;
         $this->_objTpl->loadTemplateFile('module_calendar_settings.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_CALENDAR_MENU_SETTINGS'];
-
         $this->_objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_GLOBAL'               => $_ARRAYLANG['TXT_CALENDAR_GLOBAL'],
             'TXT_'.$this->moduleLangVar.'_REGISTRATION_FORMS'   => $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_FORMS'],
@@ -1732,10 +1726,8 @@ class CalendarManager extends CalendarLibrary
      */
     function modifyRegistration($eventId, $regId)
     {
-        global $objDatabase, $_ARRAYLANG;
-
+        global $_ARRAYLANG;
         $this->_objTpl->loadTemplateFile('module_calendar_modify_registration.html');
-
         if (isset($_POST['submitModifyRegistration'])) {
             $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration(intval($_POST['form']));
             if ($objRegistration->save($_POST)) {

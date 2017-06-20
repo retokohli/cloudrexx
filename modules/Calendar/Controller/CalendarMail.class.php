@@ -146,9 +146,9 @@ class CalendarMail extends CalendarLibrary
      *
      * @return null
      */
-    function get($mailId) {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
-
+    function get($mailId)
+    {
+        global $objDatabase;
         $query = "SELECT id,title,recipients,content_text,content_html,lang_id,action_id,is_default,status
                     FROM ".DBPREFIX."module_".self::TABLE_PREFIX."_mail
                    WHERE id = '".intval($mailId)."'

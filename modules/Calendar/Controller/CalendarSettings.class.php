@@ -91,14 +91,10 @@ class CalendarSettings extends CalendarLibrary
      */
     function general($objTpl)
     {
-        global $objDatabase, $_ARRAYLANG, $_CORELANG;
-
         $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_calendar_settings_general.html');
-
-        if(isset($_POST['submitSettingsGeneral'])){
-           $this->_saveSettings();
+        if (isset($_POST['submitSettingsGeneral'])) {
+            $this->_saveSettings();
         }
-
         $this->_getSettingElements($objTpl, 1);
     }
 
@@ -111,14 +107,11 @@ class CalendarSettings extends CalendarLibrary
      */
     function dateDisplay($objTpl)
     {
-        global $objDatabase, $_ARRAYLANG, $_CORELANG;
-
+        global $_ARRAYLANG;
         $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_calendar_settings_date.html');
-
-        if(isset($_POST['submitSettingsDate'])){
-           $this->_saveSettings();
+        if (isset($_POST['submitSettingsDate'])) {
+            $this->_saveSettings();
         }
-
         $this->_getDateSeparators();
         $objTpl->setVariable(array(
             $this->moduleLangVar."_SEPARATOR_DATE_LIST"           => json_encode($this->getDateSeparatorByName('separatorDateList')),
@@ -144,15 +137,14 @@ class CalendarSettings extends CalendarLibrary
      */
     function _getDateSeparators()
     {
-        global $_ARRAYLANG, $objDatabase;
-
+        global $objDatabase;
         $arrDateSettings =  array(
-                            'separatorDateList','separatorDateTimeList', 'separatorSeveralDaysList', 'separatorTimeList',
-                            'separatorDateDetail','separatorDateTimeDetail', 'separatorSeveralDaysDetail', 'separatorTimeDetail',
-                            );
-
+            'separatorDateList','separatorDateTimeList',
+            'separatorSeveralDaysList', 'separatorTimeList',
+            'separatorDateDetail','separatorDateTimeDetail',
+            'separatorSeveralDaysDetail', 'separatorTimeDetail',
+        );
         $where = " WHERE `name` IN (". implode(',', array_map(function($val) { return "'$val'"; }, $arrDateSettings)).")" ;
-
         $this->arrSeparatorValue = array();
         $objSettings = $objDatabase->Execute("SELECT name,value,options, type FROM  ".DBPREFIX."module_".self::TABLE_PREFIX."_settings $where ORDER BY name ASC");
         if ($objSettings !== false) {
@@ -195,16 +187,12 @@ class CalendarSettings extends CalendarLibrary
      */
     function payment($objTpl)
     {
-        global $objDatabase, $_ARRAYLANG, $_CORELANG;
-
-        $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_calendar_settings_payment.html');
-
-        if(isset($_POST['submitSettingsPayment'])){
-           $this->_saveSettings();
+        $objTpl->addBlockfile($this->moduleLangVar . '_SETTINGS_CONTENT',
+            'settings_content', 'module_calendar_settings_payment.html');
+        if (isset($_POST['submitSettingsPayment'])) {
+            $this->_saveSettings();
         }
-
         $this->_getSettingElements($objTpl, 9);
-
     }
 
     /**
@@ -216,14 +204,11 @@ class CalendarSettings extends CalendarLibrary
      */
     function forms($objTpl)
     {
-        global $objDatabase, $_ARRAYLANG, $_CORELANG;
-
+        global $_ARRAYLANG, $_CORELANG;
         $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_calendar_settings_forms.html');
-
-        if(isset($_POST['submitModifyForm'])){
+        if (isset($_POST['submitModifyForm'])) {
             $objForm = new \Cx\Modules\Calendar\Controller\CalendarForm(intval($_POST['formId']));
-
-            if($objForm->save($_POST)) {
+            if ($objForm->save($_POST)) {
                 \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
                 if(intval($_POST['formId']) == 0 || intval($_POST['copy']) == 1) {
                     $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_FORM_SUCCESSFULLY_ADDED'];
@@ -362,13 +347,11 @@ class CalendarSettings extends CalendarLibrary
      */
     function mails($objTpl)
     {
-        global $objDatabase, $_ARRAYLANG, $_CORELANG;
-
+        global $_ARRAYLANG, $_CORELANG;
         $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_calendar_settings_mails.html');
-
-        if(isset($_GET['switch_status'])) {
+        if (isset($_GET['switch_status'])) {
             $objMail = new \Cx\Modules\Calendar\Controller\CalendarMail(intval($_GET['switch_status']));
-            if($objMail->switchStatus()) {
+            if ($objMail->switchStatus()) {
                 $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_MAIL_SUCCESSFULLY_EDITED'];
             } else {
                 $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_MAIL_CORRUPT_EDITED'];
@@ -519,12 +502,10 @@ class CalendarSettings extends CalendarLibrary
      */
     function hosts($objTpl)
     {
-        global $_ARRAYLANG, $_CORELANG;
-
+        global $_ARRAYLANG;
         $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_calendar_settings_hosts.html');
-
-        if(isset($_POST['submitSettingsHosts'])){
-           $this->_saveSettings();
+        if (isset($_POST['submitSettingsHosts'])) {
+            $this->_saveSettings();
         }
 
         if(isset($_POST['submitModifyHost'])){
@@ -625,11 +606,9 @@ class CalendarSettings extends CalendarLibrary
      */
     function modifyHost($objTpl, $hostId)
     {
-        global $_ARRAYLANG, $_CORELANG;
-
+        global $_ARRAYLANG;
         $objTpl->addBlockfile('CALENDAR_SETTINGS_CONTENT', 'settings_content', 'module_calendar_settings_modify_host.html');
-
-        if($hostId != 0) {
+        if ($hostId != 0) {
             $this->_pageTitle = $_ARRAYLANG['TXT_CALENDAR_HOST']." ".$_ARRAYLANG['TXT_CALENDAR_EDIT'];
         } else {
             $this->_pageTitle = $_ARRAYLANG['TXT_CALENDAR_INSERT_HOST'];
@@ -784,23 +763,19 @@ class CalendarSettings extends CalendarLibrary
      *
      * @return string Html of the setting field
      */
-    function _getSettingProperties($id,$name,$title,$value,$info,$type,$options,$special)
+    function _getSettingProperties($id, $name, $title, $value, $info, $type,
+        $options, $special)
     {
-        global $_ARRAYLANG, $_CORELANG;
-
+        global $_ARRAYLANG;
         $arrSetting = array();
-
         switch (intval($type)) {
             case 1:
-                //input text
                 $output = '<input type="text" style="width: 250px;" name="settings['.$name.']" value="'.$value.'" />';
                 break;
             case 2:
-                //textarea
                 $output = '<textarea style="width: 250px; height: 60px;" name="settings['.$name.']">'.$value.'"</textarea>';
                 break;
             case 3:
-                //radio
                 switch ($name) {
                     case 'placeData':
                     case 'placeDataHost':
@@ -810,7 +785,6 @@ class CalendarSettings extends CalendarLibrary
                         $addBreak = false;
                         break;
                 }
-
                 $arrOptions = array();
                 if(!empty($options)) {
                     $arrOptions = explode(",",$options);
@@ -824,7 +798,6 @@ class CalendarSettings extends CalendarLibrary
                 }
                 break;
             case 4:
-                //checkbox
                 $arrOptions = array();
                 if(!empty($options)) {
                     $arrOptions = explode(",",$options);
@@ -838,7 +811,6 @@ class CalendarSettings extends CalendarLibrary
                 }
                 break;
             case 5:
-                //dropdown
                 if(!empty($options)) {
                     $options = explode(",",$options);
                     $output = '<select style="width: 252px;" name="settings['.$name.']" >';

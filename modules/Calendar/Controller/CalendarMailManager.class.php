@@ -90,8 +90,7 @@ class CalendarMailManager extends CalendarLibrary {
      */
     function getMailList()
     {
-        global $objDatabase,$_ARRAYLANG,$_LANGID;
-
+        global $objDatabase;
         $query = "SELECT id
                     FROM ".DBPREFIX."module_".self::TABLE_PREFIX."_mail
                 ORDER BY action_id ASC, title ASC";
@@ -172,8 +171,6 @@ class CalendarMailManager extends CalendarLibrary {
      */
     function showMail($objTpl, $mailId)
     {
-        global $objInit, $_ARRAYLANG;
-
         $objMail = new \Cx\Modules\Calendar\Controller\CalendarMail(intval($mailId));
         $this->mailList[$mailId] = $objMail;
 
@@ -198,7 +195,7 @@ class CalendarMailManager extends CalendarLibrary {
      */
     function sendMail(CalendarEvent $event, $actionId, $regId=null, $mailTemplate = null)
     {
-        global $objDatabase,$_ARRAYLANG, $_CONFIG ;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         $this->mailList = array();
 

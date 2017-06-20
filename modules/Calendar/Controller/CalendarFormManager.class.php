@@ -177,7 +177,7 @@ class CalendarFormManager extends CalendarLibrary
      */
     function showFormList($objTpl)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $i=0;
         foreach ($this->formList as $key => $objForm) {
@@ -211,9 +211,8 @@ class CalendarFormManager extends CalendarLibrary
      *
      * @return string HTML drop down menu
      */
-    function getFormDorpdown($selectedId=null) {
-        global $_ARRAYLANG;
-
+    function getFormDorpdown($selectedId=null)
+    {
         $this->getSettings();
         $arrOptions = array();
 

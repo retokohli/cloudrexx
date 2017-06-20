@@ -124,7 +124,7 @@ class CalendarHost extends CalendarLibrary
      * @return null
      */
     function get($hostId) {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $query = "SELECT  id,title,uri,cat_id,`key`,confirmed,status
                     FROM ".DBPREFIX."module_".self::TABLE_PREFIX."_host
