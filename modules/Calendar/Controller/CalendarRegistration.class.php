@@ -175,7 +175,17 @@ class CalendarRegistration extends CalendarLibrary
      * @access private
      * @var object 
      */
-    private $form;
+    private $form = null;
+
+    /**
+     * @var int Associated form's ID
+     */
+    protected $formId;
+
+    /**
+     * @var array Cached forms
+     */
+    protected static $forms = array();
     
     /**
      * Constructor for registration class
@@ -187,13 +197,28 @@ class CalendarRegistration extends CalendarLibrary
      * @param integer $id     Registration id
      */
     function __construct($formId, $id=null){              
-        $objForm = new \Cx\Modules\Calendar\Controller\CalendarForm(intval($formId));
-        $this->form = $objForm;     
+        $this->formId = intval($formId);
         
         if ($id != null) {
             self::get($id);
         }
         $this->init();
+    }
+
+    /**
+     * Returns the form of this registration
+     * @return \Cx\Modules\Calendar\Controller\CalendarForm Associated form object
+     */
+    protected function getForm() {
+        if ($this->form) {
+            return $this->form;
+        }
+        if (isset(static::$forms[$this->formId])) {
+            $this->form = static::$forms[$this->formId];
+            return $this->getForm();
+        }
+        static::$forms[$this->formId] = new \Cx\Modules\Calendar\Controller\CalendarForm($this->formId);
+        return $this->getForm();
     }
     
     /**
@@ -245,24 +270,31 @@ class CalendarRegistration extends CalendarLibrary
                     $objResult->fields['submission_date']
                 );
             }
-            foreach ($this->form->inputfields as $key => $arrInputfield) {         
-                $name = $arrInputfield['name'][$_LANGID];
-                $default = $arrInputfield['default_value'][$_LANGID];
-                
-                $queryField = 'SELECT field.`value` AS `value`
-                                 FROM '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value AS field
-                                WHERE field.`reg_id` = "'.$regId.'" AND
-                                      field.`field_id` = "'.intval($arrInputfield['id']).'"
-                                LIMIT 1';
-                $objResultField = $objDatabase->Execute($queryField);          
-                
-                if($objResultField !== false) {
-                     $this->fields[$arrInputfield['id']]['name']    =  $name;
-                     $this->fields[$arrInputfield['id']]['type']    =  $arrInputfield['type'];
-                     $this->fields[$arrInputfield['id']]['value']   =  htmlentities($objResultField->fields['value'], ENT_QUOTES, CONTREXX_CHARSET);
-                     $this->fields[$arrInputfield['id']]['default'] =  $default;  
-                }   
-            } 
+
+            $fieldsQuery = '
+                SELECT
+                    `field`.`field_id`,
+                    `field`.`value`
+                FROM
+                    `' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_registration_form_field_value` AS `field`
+                WHERE
+                    `field`.`reg_id` = "' . $regId . '" AND
+                    `field`.`field_id` IN (' . implode(',', array_column($this->getForm()->inputfields, 'id')) . ')
+            ';
+            $fieldsQueryResult = $objDatabase->Execute($fieldsQuery);
+            if ($fieldsQueryResult === false) {
+                return;
+            }
+            while (!$fieldsQueryResult->EOF) {
+                $id = $fieldsQueryResult->fields['field_id'];
+                $this->fields[$id] = array(
+                    'name' => $this->getForm()->inputfields[$id]['name'][$_LANGID],
+                    'type' => $this->getForm()->inputfields[$id]['type'],
+                    'value' => contrexx_raw2xhtml($fieldsQueryResult->fields['value']),
+                    'default' => $this->getForm()->inputfields[$id]['default_value'][$_LANGID],
+                );
+                $fieldsQueryResult->MoveNext();
+            }
         }       
     }
     
@@ -277,13 +309,13 @@ class CalendarRegistration extends CalendarLibrary
     {
         global $objDatabase, $objInit, $_LANGID;
         
-        /* foreach ($this->form->inputfields as $key => $arrInputfield) {
+        /* foreach ($this->getForm()->inputfields as $key => $arrInputfield) {
             if($arrInputfield['type'] == 'selectBillingAddress') { 
                 $affiliationStatus = $data['registrationField'][$arrInputfield['id']];
             }
         } */
         
-        foreach ($this->form->inputfields as $key => $arrInputfield) {
+        foreach ($this->getForm()->inputfields as $key => $arrInputfield) {
             /* if($affiliationStatus == 'sameAsContact') {
                 if($arrInputfield['required'] == 1 && empty($data['registrationField'][$arrInputfield['id']]) && $arrInputfield['affiliation'] != 'billing') {
                     return false;
@@ -555,7 +587,7 @@ class CalendarRegistration extends CalendarLibrary
         }
 
         $formFieldValues = array();
-        foreach ($this->form->inputfields as $key => $arrInputfield) {
+        foreach ($this->getForm()->inputfields as $key => $arrInputfield) {
             $value = $data['registrationField'][$arrInputfield['id']];
             $id    = $arrInputfield['id'];
 

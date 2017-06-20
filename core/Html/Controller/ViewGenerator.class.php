@@ -198,7 +198,8 @@ class ViewGenerator {
             return $this->object->getDataType();
         } else {
             if (!is_object($object)) {
-                $entityClassName = $object;
+                // Resolve proxies
+                $entityClassName = \Env::get('em')->getClassMetadata($object)->name;
                 $entityRepository = \Env::get('em')->getRepository($entityClassName);
                 $entities = $entityRepository->findAll();
                 if (empty($entities)) {
