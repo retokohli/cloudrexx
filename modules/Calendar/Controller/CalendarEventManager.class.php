@@ -1184,15 +1184,11 @@ class CalendarEventManager extends CalendarLibrary
         global $objInit, $_ARRAYLANG, $_LANGID;
 
         $this->getFrontendLanguages();
-
-        //if($objInit->mode == 'backend') {
         $i = 0;
-            foreach ($this->eventList as $key => $objEvent) {
-
-                $objCategory = new \Cx\Modules\Calendar\Controller\CalendarCategory(intval($objEvent->catId));
-
-                $showIn = explode(",",$objEvent->showIn);
-
+        foreach ($this->eventList as $objEvent) {
+            $objCategory = CalendarCategory::getCurrentCategory(
+                $this->categoryId, $objEvent);
+            $showIn = explode(',', $objEvent->showIn);
             $languages = '';
             if (count(\FWLanguage::getActiveFrontendLanguages()) > 1) {
                 $langState = array();
@@ -1546,7 +1542,6 @@ class CalendarEventManager extends CalendarLibrary
 
             $objTpl->parse('emptyEventList');
         }
-        //}
     }
 
     /**

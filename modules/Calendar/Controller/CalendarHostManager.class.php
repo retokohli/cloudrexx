@@ -139,7 +139,7 @@ class CalendarHostManager extends CalendarLibrary
         global $_ARRAYLANG;
 
         $i=0;
-        foreach ($this->hostList as $key => $objHost) {
+        foreach ($this->hostList as $objHost) {
             $objCategory = new \Cx\Modules\Calendar\Controller\CalendarCategory(intval($objHost->catId));
 
             $objTpl->setVariable(array(

@@ -133,7 +133,7 @@ class CalendarCategoryManager extends CalendarLibrary
         global $_ARRAYLANG;
 
         $i=0;
-        foreach ($this->categoryList as $key => $objCategory) {
+        foreach ($this->categoryList as $objCategory) {
             $objTpl->setVariable(array(
                 $this->moduleLangVar.'_CATEGORY_ROW'     => $i%2==0 ? 'row1' : 'row2',
                 $this->moduleLangVar.'_CATEGORY_ID'      => $objCategory->id,

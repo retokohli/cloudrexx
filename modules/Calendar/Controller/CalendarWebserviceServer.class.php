@@ -99,19 +99,19 @@ class CalendarWebserviceServer
      * @return mixed host details on success, false otherwise
      */
     public function verifyHost($foreignHost,$foreignKey) {
-        if(substr($foreignHost,0,7) == 'http://') {
-            $foreignHost = substr($foreignHost,7);
+        if (substr($foreignHost, 0, 7) == 'http://') {
+            $foreignHost = substr($foreignHost, 7);
         }
 
-        if(substr($foreignHost,0,4) == 'www.') {
-            $foreignHost = substr($foreignHost,4);
+        if (substr($foreignHost, 0, 4) == 'www.') {
+            $foreignHost = substr($foreignHost, 4);
         }
 
         $query = "SELECT `id`,`key`,`cat_id` FROM ".$this->tablePrefix."module_calendar_host WHERE uri LIKE '%".$foreignHost."' LIMIT 1";
         $result = mysql_query($query);
         $row = mysql_fetch_array($result);
 
-        if($row['key'] == $foreignKey) {
+        if ($row['key'] == $foreignKey) {
             $hostData = array();
             $hostData['id'] = intval($row['id']);
             $hostData['cat_id'] = intval($row['cat_id']);
@@ -143,7 +143,7 @@ class CalendarWebserviceServer
         $needAuth_where = ($auth == false ? ' AND event.access=0' : '');
         //$showIn_where = "AND event.show_in LIKE '%".intval($langId)."%' ";
 
-        if($showEventsOnlyInActiveLanguage == 1) {
+        if ($showEventsOnlyInActiveLanguage == 1) {
             $showIn_where = "AND FIND_IN_SET('".intval($langId)."',event.show_in)>0 ";
         } else {
             $showIn_where = "";
@@ -151,24 +151,24 @@ class CalendarWebserviceServer
 
         if (intval($end_date) != 0) {
             $dateScope_where = '((
-                ((event.startdate <= '.$start_date.') AND ('.$end_date.' <= event.enddate)) OR
-                ((('.$start_date.' <= event.startdate) AND ('.$end_date.' <= event.enddate)) AND ((event.startdate <= '.$start_date.') AND ('.$end_date.' <= event.enddate))) OR
-                (((event.startdate <= '.$start_date.') AND (event.enddate <= '.$end_date.')) AND (('.$start_date.' <= event.enddate) AND (event.enddate <= '.$end_date.'))) OR
-                (('.$start_date.' <= event.startdate) AND (event.enddate <= '.$end_date.'))
-            ) OR (
-                (event.series_status = 1) AND (event.startdate <= '.$end_date.')
-            ))';
+                    ((event.startdate <= '.$start_date.') AND ('.$end_date.' <= event.enddate)) OR
+                    ((('.$start_date.' <= event.startdate) AND ('.$end_date.' <= event.enddate)) AND ((event.startdate <= '.$start_date.') AND ('.$end_date.' <= event.enddate))) OR
+                    (((event.startdate <= '.$start_date.') AND (event.enddate <= '.$end_date.')) AND (('.$start_date.' <= event.enddate) AND (event.enddate <= '.$end_date.'))) OR
+                    (('.$start_date.' <= event.startdate) AND (event.enddate <= '.$end_date.'))
+                ) OR (
+                    (event.series_status = 1) AND (event.startdate <= '.$end_date.')
+                ))';
 
         } else {
             $dateScope_where = '((
-                ((event.enddate >= '.$start_date.') AND (event.startdate <= '.$start_date.')) OR
-                ((event.startdate >= '.$start_date.') AND (event.enddate >= '.$start_date.'))
-            ) OR (
-                (event.series_status = 1)
-            ))';
+                    ((event.enddate >= '.$start_date.') AND (event.startdate <= '.$start_date.')) OR
+                    ((event.startdate >= '.$start_date.') AND (event.enddate >= '.$start_date.'))
+                ) OR (
+                    (event.series_status = 1)
+                ))';
         }
 
-        if(!empty($term)) {
+        if (!empty($term)) {
             $searchTerm_DB = ", ".$this->tablePrefix."module_calendar_event_field AS field";
             $searchTerm_where = " AND ((field.title LIKE '%".$term."%' OR field.description LIKE '%".$term."%' OR field.place LIKE '%".$term."%') AND field.event_id = event.id)";
         } else {
@@ -176,17 +176,17 @@ class CalendarWebserviceServer
         }
 
         $query = "SELECT event.id AS id
-                    FROM ".$this->tablePrefix."module_calendar_event AS event,
-                         ".$this->tablePrefix."module_calendar_rel_event_host AS host
+            FROM ".$this->tablePrefix."module_calendar_event AS event,
+                 ".$this->tablePrefix."module_calendar_rel_event_host AS host
                          ".$searchTerm_DB."
                    WHERE ".$dateScope_where."
-                         AND event.status=1
+                 AND event.status=1
                          ".$needAuth_where."
                          ".$searchTerm_where."
                          ".$showIn_where."
                      AND (host.event_id = event.id AND host.host_id = '".$hostId."')
-                GROUP BY event.id
-                ORDER BY event.startdate";
+            GROUP BY event.id
+            ORDER BY event.startdate";
 
         $result = mysql_query($query);
 
@@ -413,7 +413,7 @@ class CalendarWebserviceEvent
     /**
      * Event category id
      *
-     * @access public
+     * @access  public
      * @var integer
      */
     public $catId;
@@ -583,7 +583,7 @@ class CalendarWebserviceEvent
         \Env::get('ClassLoader')->loadFile($this->dirPath.'/config/configuration.php');
 
         mysql_connect($_DBCONFIG['host'], $_DBCONFIG['user'], $_DBCONFIG['password']);
-        mysql_select_db ($_DBCONFIG['database']);
+        mysql_select_db($_DBCONFIG['database']);
         mysql_set_charset($_DBCONFIG['charset']);
 
         $this->tablePrefix = $_DBCONFIG['tablePrefix'];
@@ -609,10 +609,10 @@ class CalendarWebserviceEvent
         \Env::get('ClassLoader')->loadFile($this->dirPath . '/config/configuration.php');
 
 
-        if($langId == null) {
-            $lang_where = "AND field.lang_id = '".intval($this->langId)."' ";
+        if ($langId == null) {
+            $lang_where = "AND field.lang_id = '" . intval($this->langId) . "' ";
         } else {
-            $lang_where = "AND field.lang_id = '".intval($langId)."' ";
+            $lang_where = "AND field.lang_id = '" . intval($langId) . "' ";
         }
 
         //$lang_where = "AND field.lang_id = '".intval($this->langId)."' ";
@@ -661,38 +661,38 @@ class CalendarWebserviceEvent
                          event.series_pattern_exceptions AS series_pattern_exceptions,
                          field.title AS title,
                          field.description AS description,
-                         field.place AS place
-                    FROM ".$this->tablePrefix."module_calendar_event AS event,
-                         ".$this->tablePrefix."module_calendar_event_field AS field
-                   WHERE event.id = '".intval($eventId)."'
+                field.place AS place
+            FROM ".$this->tablePrefix."module_calendar_event AS event,
+                 ".$this->tablePrefix."module_calendar_event_field AS field
+            WHERE event.id = '" . intval($eventId) . "'
                      AND (event.id = field.event_id ".$lang_where.")
-                   LIMIT 1";
+            LIMIT 1";
 
         $result = mysql_query($query);
         $count = mysql_num_rows($result);
 
-        if($this->showEventsOnlyInActiveLanguage == 2) {
-            if($count == 0) {
-                if($langId == null) {
+        if ($this->showEventsOnlyInActiveLanguage == 2) {
+            if ($count == 0) {
+                if ($langId == null) {
                     $langId = 1;
                 } else {
                     $langId++;
                 }
 
-                if($langId <= 99) {
-                    self::get($eventId,$langId);
+                if ($langId <= 99) {
+                    self::get($eventId, $langId);
                 }
             } else {
-                if($langId == null) {
+                if ($langId == null) {
                     $langId = $_LANGID;
                 }
             }
         } else {
-           $langId = $_LANGID;
+            $langId = $_LANGID;
         }
 
         while ($row = mysql_fetch_array($result)) {
-            if(!empty($row['title'])) {
+            if (!empty($row['title'])) {
                 $this->id = intval($eventId);
                 $this->type = intval($row['type']);
                 $this->title = htmlentities(stripslashes($row['title']),ENT_QUOTES,$this->coreCharacterEncoding);
@@ -722,7 +722,7 @@ class CalendarWebserviceEvent
                 $this->map = intval($row['google']);
                 $this->seriesStatus = intval($row['series_status']);
 
-                if($this->seriesStatus == 1) {
+                if ($this->seriesStatus == 1) {
                     $this->seriesData['seriesPatternCount'] = intval($row['series_pattern_count']);
                     $this->seriesData['seriesType'] = intval($row['series_type']);
                     $this->seriesData['seriesPatternCount'] = intval($row['series_pattern_count']);
@@ -780,22 +780,20 @@ class CalendarWebserviceEvent
     {
         $activeLangs = explode(",", $this->showIn);
         $this->arrData = array();
-
-        foreach ($activeLangs as $key => $langId) {
-            $query2 = "SELECT field.title AS title3,
-                             field.place AS place,
-                             field.place_street AS place_street,
-                             field.place_zip AS place_zip,
-                             field.place_city AS place_city,
-                             field.place_country AS place_country,
-                             field.description AS description
-                        FROM ".$this->tablePrefix."module_calendar_event_field AS field
-                       WHERE field.event_id = '".intval($this->id)."'
-                         AND field.lang_id = '".intval($langId)."'
-                       LIMIT 1";
-
+        foreach ($activeLangs as $langId) {
+            $query2 = "
+                SELECT field.title,
+                    field.place,
+                    field.place_street,
+                    field.place_zip,
+                    field.place_city,
+                    field.place_country,
+                    field.description AS description
+                FROM ".$this->tablePrefix."module_calendar_event_field AS field
+                WHERE field.event_id = '" . intval($this->id) . "'
+                AND field.lang_id = '" . intval($langId) . "'
+                LIMIT 1";
             $result2 = mysql_query($query2);
-
             while ($row2 = mysql_fetch_array($result2)) {
                 $this->arrData['title'][intval($langId)] = htmlentities(stripslashes($row2['title']),ENT_QUOTES, $this->coreCharacterEncoding);
                 $this->arrData['place'][intval($langId)] = htmlentities(stripslashes($row2['place']),ENT_QUOTES, $this->coreCharacterEncoding);

@@ -358,7 +358,7 @@ class CalendarCategory extends CalendarLibrary
                 $this->triggerEvent('model/postFlush');
 
                 //hosts
-                foreach ($arrHosts as $key => $hostId) {
+                foreach ($arrHosts as $hostId) {
                     $query = "UPDATE ".DBPREFIX."module_".self::TABLE_PREFIX."_host
                                  SET cat_id = '".intval($this->id)."'
                                WHERE id = '".intval($hostId)."'";

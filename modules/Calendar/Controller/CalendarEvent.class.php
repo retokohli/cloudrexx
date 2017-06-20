@@ -956,7 +956,7 @@ class CalendarEvent extends CalendarLibrary
         $activeLangs = explode(",", $this->showIn);
         $this->arrData = array();
 
-        foreach ($activeLangs as $key => $langId) {
+        foreach ($activeLangs as $langId) {
             $query = "SELECT field.title AS title,
                              field.teaser AS teaser,
                              field.description AS description,
@@ -1006,8 +1006,7 @@ class CalendarEvent extends CalendarLibrary
         if(empty($data['startDate']) || empty($data['endDate']) || empty($data['category']) || ($data['seriesStatus'] == 1 && $data['seriesType'] == 2 && empty($data['seriesWeeklyDays']))) {
             return false;
         }
-        
-        foreach ($_POST['showIn'] as $key => $langId) {
+        foreach ($_POST['showIn'] as $langId) {
             if (empty($_POST['title'][$langId]) && empty($_POST['title'][$_LANGID])) {
                 return false;
             }
@@ -1276,7 +1275,7 @@ class CalendarEvent extends CalendarLibrary
             if (!empty($data['seriesExeptions'])) {
                 $exeptions = array();
                                 
-                foreach($data['seriesExeptions'] as $key => $exeptionDate)  {
+                foreach($data['seriesExeptions'] as $exeptionDate)  {
                     $exeptions[] = $this->getDbDateTimeFromIntern($this->getDateTime($exeptionDate, 23, 59))->format('Y-m-d');
                 }
                 
@@ -1553,7 +1552,7 @@ class CalendarEvent extends CalendarLibrary
                 }
             }
             if (!empty($related_hosts)) {
-                foreach ($related_hosts as $key => $hostId) {
+                foreach ($related_hosts as $hostId) {
                     $query = "INSERT INTO ".DBPREFIX."module_".self::TABLE_PREFIX."_rel_event_host
                                       (`host_id`,`event_id`)
                                VALUES ('".intval($hostId)."','".intval($id)."')";
@@ -1600,7 +1599,7 @@ class CalendarEvent extends CalendarLibrary
         }
 
         $eventFields = array();
-        foreach ($data['showIn'] as $key => $langId) {
+        foreach ($data['showIn'] as $langId) {
             $title  = contrexx_strip_tags($data['title'][$langId]);
             $teaser = contrexx_strip_tags($data['teaser'][$langId]);
             $description = $data['description'][$langId];

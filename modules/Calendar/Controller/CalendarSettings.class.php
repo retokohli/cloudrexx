@@ -480,7 +480,7 @@ class CalendarSettings extends CalendarLibrary
             }
         }
 
-        foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+        foreach ($this->arrFrontendLanguages as $arrLang) {
             $checked = $arrLang['id'] == $objMail->lang_id ? 'selected="selected"' : '';
             $lang .= '<option value="'.intval($arrLang['id']).'" '.$checked.'>'.$arrLang['name'].'</option>';
             $objResult->MoveNext();
@@ -539,7 +539,7 @@ class CalendarSettings extends CalendarLibrary
             $status = true;
             $messageVar = 'EDITED';
 
-            foreach($_POST['selectedHostId'] as $key => $hostId) {
+            foreach ($_POST['selectedHostId'] as $hostId) {
                 $objHost = new \Cx\Modules\Calendar\Controller\CalendarHost(intval($hostId));
 
                 switch($_GET['multi']) {

@@ -245,7 +245,7 @@ class CalendarRegistration extends CalendarLibrary
                     $objResult->fields['submission_date']
                 );
             }
-            foreach ($this->form->inputfields as $key => $arrInputfield) {
+            foreach ($this->form->inputfields as $arrInputfield) {
                 $name = $arrInputfield['name'][$_LANGID];
                 $default = $arrInputfield['default_value'][$_LANGID];
 

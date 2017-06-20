@@ -180,7 +180,7 @@ class CalendarFormManager extends CalendarLibrary
         global $_ARRAYLANG;
 
         $i=0;
-        foreach ($this->formList as $key => $objForm) {
+        foreach ($this->formList as $objForm) {
             $objTpl->setVariable(array(
                 $this->moduleLangVar.'_FORM_ROW'           => $i%2==0 ? 'row1' : 'row2',
                 $this->moduleLangVar.'_FORM_ID'            => $objForm->id,
@@ -215,8 +215,7 @@ class CalendarFormManager extends CalendarLibrary
     {
         $this->getSettings();
         $arrOptions = array();
-
-        foreach ($this->formList as $key => $objForm) {
+        foreach ($this->formList as $objForm) {
             $arrOptions[$objForm->id] = $objForm->title;
         }
 

@@ -166,7 +166,7 @@ class CalendarForm extends CalendarLibrary
                     //$arrFieldDefaults[0] = htmlentities($objResultInputfield->fields['default'], ENT_QUOTES, CONTREXX_CHARSET);
                     $arrFieldDefaults[0] = $objResultInputfield->fields['default'];
 
-                    foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+                    foreach ($this->arrFrontendLanguages as $arrLang) {
                         $queryName = "SELECT name.`name` AS `name`,
                                          name.`default` AS `default`
                                     FROM ".DBPREFIX."module_".self::TABLE_PREFIX."_registration_form_field_name AS name
@@ -619,7 +619,7 @@ class CalendarForm extends CalendarLibrary
             );
 
             $formFieldNames = array();
-            foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+            foreach ($this->arrFrontendLanguages as $arrLang) {
                 if (empty($arrField['name'][0])) {
                     $arrField['name'][0] = '';
                 }

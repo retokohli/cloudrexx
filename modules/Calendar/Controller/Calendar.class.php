@@ -1214,7 +1214,7 @@ UPLOADER;
 
             $this->_objTpl->parse('categoryList');
         } else {
-            foreach ($objCategoryManager->categoryList as $key => $objCategory) {
+            foreach ($objCategoryManager->categoryList as $objCategory) {
                 $objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($this->startDate,$this->endDate,$objCategory->id,$this->searchTerm,true,$this->needAuth,true,$this->startPos,$this->numEvents);
                 $objEventManager->getEventList();
 

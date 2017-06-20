@@ -78,35 +78,25 @@ class CalendarFeed extends CalendarLibrary {
         $this->getFrontendLanguages();
         $this->getSettings();
         $this->objEventManager->getEventlist();
-        foreach($this->arrFrontendLanguages as $langKey => $arrFrontendLanguage) {
+        foreach ($this->arrFrontendLanguages as $arrFrontendLanguage) {
             $objRSSWriter = new \RSSWriter();
             $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
             $objRSSWriter->channelTitle = contrexx_raw2xml($this->arrSettings['rssFeedTitle']);
-            $objRSSWriter->channelLink = contrexx_raw2xml($this->domainUrl.'index.php?section='.$this->moduleName);
+            $objRSSWriter->channelLink = contrexx_raw2xml($this->domainUrl . 'index.php?section=' . $this->moduleName);
             $objRSSWriter->channelDescription = contrexx_raw2xml($this->arrSettings['rssFeedDescription']);
             $objRSSWriter->channelLanguage = contrexx_raw2xml($arrFrontendLanguage['lang']);
-            $objRSSWriter->channelCopyright = contrexx_raw2xml('Copyright '.date('Y').', '.$this->domainUrl);
-
+            $objRSSWriter->channelCopyright = contrexx_raw2xml('Copyright ' . date('Y') . ', ' . $this->domainUrl);
             if (!empty($this->arrSettings['rssFeedImage'])) {
                 $objRSSWriter->channelImageUrl = $this->arrSettings['rssFeedImage'];
                 $objRSSWriter->channelImageTitle = $objRSSWriter->channelTitle;
                 $objRSSWriter->channelImageLink = $objRSSWriter->channelLink;
             }
-
             $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
             $objRSSWriter->channelLastBuildDate = date('r', time());
-
-            foreach($this->objEventManager->eventList as $eventKey => $objEvent) {
+            foreach($this->objEventManager->eventList as $objEvent) {
                 $objFWUser = \FWUser::getFWUserObject();
-
-
-
-
                 $showIn = explode(',', $objEvent->showIn);
-
-
-                if(in_array($arrFrontendLanguage['id'], $showIn)) {
-
+                if (in_array($arrFrontendLanguage['id'], $showIn)) {
                     $itemTitle = contrexx_raw2xml(html_entity_decode($objEvent->arrData['title'][$arrFrontendLanguage['id']], ENT_QUOTES, CONTREXX_CHARSET));
                     $itemLink = $objEvent->type==0 ? $this->domainUrl.$this->objEventManager->_getDetailLink($objEvent) : $objEvent->arrData['redirect'][$arrFrontendLanguage['id']];
                     $itemLink = contrexx_raw2xml(html_entity_decode($itemLink));
@@ -115,7 +105,7 @@ class CalendarFeed extends CalendarLibrary {
                     if ($objUser = $objFWUser->objUser->getUser(intval($objEvent->author))) {
                         $itemAuthor = $objUser->getEmail();
                     } else {
-                        $itemAuthor = "unknown";
+                    $itemAuthor = "unknown";
                     }
 
                     $itemAuthor = contrexx_raw2xml($itemAuthor);

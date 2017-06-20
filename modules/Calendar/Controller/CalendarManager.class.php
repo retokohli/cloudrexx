@@ -196,7 +196,7 @@ class CalendarManager extends CalendarLibrary
             $status = true;
             $messageVar = 'EDITED';
 
-            foreach($_POST['selectedEventId'] as $key => $eventId) {
+            foreach($_POST['selectedEventId'] as $eventId) {
                 $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($eventId));
 
                 switch($_GET['multi']) {
@@ -295,7 +295,7 @@ class CalendarManager extends CalendarLibrary
         $objConfirmEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager(null,null,null,null,null,null,true,null,null,false,null);
         $objConfirmEventManager->getEventList();
 
-        if(count($objConfirmEventManager->eventList) > 0) {
+        if (count($objConfirmEventManager->eventList) > 0) {
             $objConfirmEventManager->showEventList($this->_objTpl, 'confirm');
         } else {
            $this->_objTpl->hideBlock('showConfirmList');
@@ -311,7 +311,7 @@ class CalendarManager extends CalendarLibrary
         $objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($startDate, null,$categoryId,$searchTerm,$showSeries,null,null,$startPos,$this->arrSettings['numPaging'], 'ASC', true, null, $listType);
         $objEventManager->getEventList();
 
-        if($objEventManager->countEvents > $this->arrSettings['numPaging']) {
+        if ($objEventManager->countEvents > $this->arrSettings['numPaging']) {
             $pagingCategory = !empty($categoryId) ? '&amp;categoryId='.$categoryId : '';
             $pagingTerm = !empty($searchTerm) ? '&amp;term='.$searchTerm : '';
             $pagingList = !empty($_GET['list']) ? '&amp;list='.$_GET['list'] : '';
@@ -342,7 +342,7 @@ class CalendarManager extends CalendarLibrary
         }
         $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions(array(
-                    'type'             => 'button',
+            'type' => 'button',
             'data-cx-mb-views' => $type,
         ));
         $mediaBrowser->setCallback('setSelected' . ucfirst($name));
@@ -368,33 +368,33 @@ class CalendarManager extends CalendarLibrary
 
         $this->getSettings();
         $this->getFrontendLanguages();
-        if(isset($_POST['submitModifyEvent']) || isset($_POST['save_and_publish'])) {
+        if (isset($_POST['submitModifyEvent']) || isset($_POST['save_and_publish'])) {
             $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent();
 
-            if($objEvent->save($_POST)) {
-                    $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'];
+            if ($objEvent->save($_POST)) {
+                $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'];
 
-                    if (isset($_POST['save_and_publish'])) {
-                        \Permission::checkAccess(180, 'static');
+                if (isset($_POST['save_and_publish'])) {
+                    \Permission::checkAccess(180, 'static');
 
-                        if($objEvent->confirm()) {
-                            // do nothing
-                        } else {
-                            $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_EDITED'];
-                        }
+                    if ($objEvent->confirm()) {
+                        // do nothing
+                    } else {
+                        $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_EDITED'];
                     }
+                }
 
-                    $this->showOverview();
-                    return;
+                $this->showOverview();
+                return;
             } else {
-                    $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_SAVED'];
+                $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_SAVED'];
             }
 
                 if($this->arrSettings['rssFeedStatus'] == 1) {
                     $objFeedEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager(time(),null,null,null,true);
                     $objFeed = new \Cx\Modules\Calendar\Controller\CalendarFeed($objFeedEventManager);
-                    $objFeed->creatFeed();
-                }
+                $objFeed->creatFeed();
+            }
         }
 
         $objCategoryManager = new \Cx\Modules\Calendar\Controller\CalendarCategoryManager(true);
@@ -446,16 +446,16 @@ class CalendarManager extends CalendarLibrary
 
         if ($eventId) {
             $startDate = $objEvent->startDate;
-            $endDate   = $objEvent->endDate;
+            $endDate = $objEvent->endDate;
         } else {
             $startDate = new \DateTime();
-            $startMin  = (int) $startDate->format('i');
+            $startMin = (int)$startDate->format('i');
             // Adjust the time to next half hour
             if (!in_array($startMin, array(0, 30))) {
                 $minAdj = (60 - $startMin) > 30 ? (30 - $startMin) : (60 - $startMin);
                 $startDate->setTime($startDate->format('H'), $startDate->format('i') + $minAdj, 00);
             }
-            $endDate   = clone $startDate;
+            $endDate = clone $startDate;
             $endDate->modify("+30 mins");
         }
 
@@ -647,15 +647,15 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_HOST_TYPE_MEDIADIR'                => $eventId != 0 ? ($objEvent->hostType == 2 ? "checked='checked'" : '') : "",
             $this->moduleLangVar.'_EVENT_COPY'                              => $copy ? 1 : 0,
             $this->moduleLangVar.'_EVENT_REGISTRATION_NONE_SELECTED'        => !empty($eventId)
-                                                                              ? ($objEvent->registration == CalendarEvent::EVENT_REGISTRATION_NONE ? 'selected="selected"' : '')
-                                                                              : 'selected="selected"',
+                ? ($objEvent->registration == CalendarEvent::EVENT_REGISTRATION_NONE ? 'selected="selected"' : '')
+                : 'selected="selected"',
             $this->moduleLangVar.'_EVENT_REGISTRATION_INTERNAL_SELECTED'    => !empty($eventId) && $objEvent->registration == CalendarEvent::EVENT_REGISTRATION_INTERNAL
-                                                                              ? 'selected="selected"' : '',
+                ? 'selected="selected"' : '',
             $this->moduleLangVar.'_EVENT_REGISTRATION_EXTERNAL_SELECTED'    => !empty($eventId) && $objEvent->registration == CalendarEvent::EVENT_REGISTRATION_EXTERNAL
-                                                                              ? 'selected="selected"' : '',
+                ? 'selected="selected"' : '',
             $this->moduleLangVar.'_EVENT_REGISTRATION_EXTERNAL_LINK'        => !empty($eventId) ? $objEvent->registrationExternalLink : '',
             $this->moduleLangVar.'_EVENT_REGISTRATION_EXTERNAL_FULL_BOOKED' => !empty($eventId)
-                                                                              ? ($objEvent->registrationExternalFullyBooked ? 'checked="checked"' : '') : '',
+                ? ($objEvent->registrationExternalFullyBooked ? 'checked="checked"' : '') : '',
         ));
 
         // parse invitation E-mail template
@@ -739,57 +739,65 @@ class CalendarManager extends CalendarLibrary
                 $showTimeTypeDetail       = $_POST['showTimeTypeDetail'];
             }
         }
-
         //time type dropdown for list
         $c = 0;
-        $arrListOptions = array($_ARRAYLANG['TXT_CALENDAR_TIME_TYPE_NOTHING'], $_ARRAYLANG['TXT_CALENDAR_TIME_TYPE_TIME'], $_ARRAYLANG['TXT_CALENDAR_TIME_TYPE_FULLTIME']);
-        $strTimeTypeListDropdown     =  '<select id="showTimeTypeList" name="showTimeTypeList" onchange="showTimeListSelection();" >';
-                                        foreach( $arrListOptions as $key => $option )
-                                        {
-                                            ($c == $showTimeTypeList) ? $selected = 'selected="selected"' : $selected = '';
-                                            $strTimeTypeListDropdown .= '<option value="'.$c.'" '.$selected.'  >'.$arrListOptions[$c].'</option>';
-                                            $c++;
-                                        }
-        $strTimeTypeListDropdown    .=  '</select>';
-
+        $arrListOptions = array(
+            $_ARRAYLANG['TXT_CALENDAR_TIME_TYPE_NOTHING'],
+            $_ARRAYLANG['TXT_CALENDAR_TIME_TYPE_TIME'],
+            $_ARRAYLANG['TXT_CALENDAR_TIME_TYPE_FULLTIME']);
+        $strTimeTypeListDropdown =
+            '<select id="showTimeTypeList" name="showTimeTypeList"'
+            . ' onchange="showTimeListSelection();" >';
+        foreach ($arrListOptions as $option) {
+            $strTimeTypeListDropdown .= '<option value="' . $c . '" '
+                . ($c == $showTimeTypeList ? 'selected="selected"'  : '')
+                . '>' . $arrListOptions[$c] . '</option>';
+            ++$c;
+        }
+        $strTimeTypeListDropdown .= '</select>';
         //time type dropdown for detail
         $c = 0;
-        $arrDetailOptions = array($_ARRAYLANG['TXT_CALENDAR_TIME_TYPE_NOTHING'], $_ARRAYLANG['TXT_CALENDAR_TIME_TYPE_TIME'], $_ARRAYLANG['TXT_CALENDAR_TIME_TYPE_FULLTIME']);
-        $strTimeTypeDetailDropdown     =  '<select id="showTimeTypeDetail" name="showTimeTypeDetail" onchange="showTimeDetailSelection();" >';
-                                        foreach( $arrDetailOptions as $key => $option )
-                                        {
-                                            ($c == $showTimeTypeDetail) ? $selected = 'selected="selected"' : $selected = '';
-                                            $strTimeTypeDetailDropdown .= '<option value="'.$c.'" '.$selected.'  >'.$arrDetailOptions[$c].'</option>';
-                                            $c++;
-                                        }
-        $strTimeTypeDetailDropdown    .=  '</select>';
-
+        $arrDetailOptions = array(
+            $_ARRAYLANG['TXT_CALENDAR_TIME_TYPE_NOTHING'],
+            $_ARRAYLANG['TXT_CALENDAR_TIME_TYPE_TIME'],
+            $_ARRAYLANG['TXT_CALENDAR_TIME_TYPE_FULLTIME']);
+        $strTimeTypeDetailDropdown =
+            '<select id="showTimeTypeDetail" name="showTimeTypeDetail"'
+            . ' onchange="showTimeDetailSelection();" >';
+        foreach ($arrDetailOptions as $option) {
+            $strTimeTypeDetailDropdown .=
+                '<option value="' . $c . '" '
+                . ($c == $showTimeTypeDetail ? 'selected="selected"' : '')
+                . '>' . $arrDetailOptions[$c] . '</option>';
+            ++$c;
+        }
+        $strTimeTypeDetailDropdown .= '</select>';
         //time type placeholders
         $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_USE_CUSTOM_DATE_DISPLAY'         => ($objEvent->useCustomDateDisplay) ? 'checked="checked"' :'',
                 $this->moduleLangVar.'_START_DATE_CHECKED_LIST'         => ($showStartDateList) ? 'checked="checked"' :'',
-                $this->moduleLangVar.'_START_DATE_VALUE_LIST'           => 1,
+            $this->moduleLangVar . '_START_DATE_VALUE_LIST' => 1,
                 $this->moduleLangVar.'_END_DATE_CHECKED_LIST'           => ($showEndDateList) ? 'checked="checked"' :'',
-                $this->moduleLangVar.'_END_DATE_VALUE_LIST'             => 1,
+            $this->moduleLangVar . '_END_DATE_VALUE_LIST' => 1,
                 $this->moduleLangVar.'_SHOW_TIME_TYPE_DROPDOWN_LIST'    => $strTimeTypeListDropdown,
                 $this->moduleLangVar.'_START_TIME_CHECKED_LIST'         => ($showStartTimeList) ? 'checked="checked"' :'',
-                $this->moduleLangVar.'_START_TIME_VALUE_LIST'           => 1,
+            $this->moduleLangVar . '_START_TIME_VALUE_LIST' => 1,
                 $this->moduleLangVar.'_END_TIME_CHECKED_LIST'           => ($showEndTimeList) ? 'checked="checked"' :'',
-                $this->moduleLangVar.'_END_TIME_VALUE_LIST'             => 1,
+            $this->moduleLangVar . '_END_TIME_VALUE_LIST' => 1,
                 $this->moduleLangVar.'_START_DATE_CHECKED_DETAIL'       => ($showStartDateDetail) ? 'checked="checked"' :'',
-                $this->moduleLangVar.'_START_DATE_VALUE_DETAIL'         => 1,
+            $this->moduleLangVar . '_START_DATE_VALUE_DETAIL' => 1,
                 $this->moduleLangVar.'_END_DATE_CHECKED_DETAIL'         => ($showEndDateDetail) ? 'checked="checked"' :'',
-                $this->moduleLangVar.'_END_DATE_VALUE_DETAIL'           => 1,
+            $this->moduleLangVar . '_END_DATE_VALUE_DETAIL' => 1,
                 $this->moduleLangVar.'_SHOW_TIME_TYPE_DROPDOWN_DETAIL'  => $strTimeTypeDetailDropdown,
                 $this->moduleLangVar.'_START_TIME_CHECKED_DETAIL'       => ($showStartTimeDetail) ? 'checked="checked"' :'',
-                $this->moduleLangVar.'_START_TIME_VALUE_DETAIL'         => 1,
+            $this->moduleLangVar . '_START_TIME_VALUE_DETAIL' => 1,
                 $this->moduleLangVar.'_END_TIME_CHECKED_DETAIL'         => ($showEndTimeDetail) ? 'checked="checked"' :'',
-                $this->moduleLangVar.'_END_TIME_VALUE_DETAIL'           => 1,
+            $this->moduleLangVar . '_END_TIME_VALUE_DETAIL' => 1,
         ));
 
         //parse series
         $lastExeptionId    = 4;
-        $seriesStatus      = $objEvent->seriesStatus == 1 ? 'checked="checked"' : '';
+        $seriesStatus = $objEvent->seriesStatus == 1 ? 'checked="checked"' : '';
         $seriesIndependent = empty($eventId) || $objEvent->independentSeries == 1 ? 'checked="checked"' : '';
 
         $seriesPatternDailyDays   = 1;
@@ -798,13 +806,13 @@ class CalendarManager extends CalendarLibrary
         $seriesPatternMonthl1     = 1;
         $seriesPatternMonthl2     = 1;
         $seriesPatternEndsEvents  = 5;
-        if($eventId != 0 && $objEvent->seriesStatus == 1) {
+        if ($eventId != 0 && $objEvent->seriesStatus == 1) {
             $seriesPatternDaily = $objEvent->seriesData['seriesType'] == 1 ? 'selected="selected"' : '';
             $seriesPatternWeekly = $objEvent->seriesData['seriesType'] == 2 ? 'selected="selected"' : '';
             $seriesPatternMonthly = $objEvent->seriesData['seriesType'] == 3 ? 'selected="selected"' : '';
 
             //daily
-            if($objEvent->seriesData['seriesType'] == 1) {
+            if ($objEvent->seriesData['seriesType'] == 1) {
                 $seriesPatternDaily1 = $objEvent->seriesData['seriesPatternType'] == 1 ? 'checked="checked"' : '';
                 $seriesPatternDaily2 = $objEvent->seriesData['seriesPatternType'] == 2 ? 'checked="checked"' : '';
 
@@ -812,7 +820,7 @@ class CalendarManager extends CalendarLibrary
             }
 
             //weekly
-            if($objEvent->seriesData['seriesType'] == 2) {
+            if ($objEvent->seriesData['seriesType'] == 2) {
                 $seriesPatternWeeklyWeeks = $objEvent->seriesData['seriesPatternWeek'];
 
                 $seriesPatternWeeklyMon = substr($objEvent->seriesData['seriesPatternWeekday'],0,1) == 1 ?  'checked="checked"' : '';
@@ -825,16 +833,16 @@ class CalendarManager extends CalendarLibrary
             }
 
             //monthly
-            if($objEvent->seriesData['seriesType'] == 3) {
+            if ($objEvent->seriesData['seriesType'] == 3) {
                 $seriesPatternMonthly1 = $objEvent->seriesData['seriesPatternType'] == 1 ? 'checked="checked"' : '';
                 $seriesPatternMonthly2 = $objEvent->seriesData['seriesPatternType'] == 2 ? 'checked="checked"' : '';
 
-                if($objEvent->seriesData['seriesPatternType'] == 1) {
+                if ($objEvent->seriesData['seriesPatternType'] == 1) {
                     $seriesPatternMonthlyDay = $objEvent->seriesData['seriesPatternDay'];
                     $seriesPatternMonthl1    = $objEvent->seriesData['seriesPatternMonth'];
                 }
 
-                if($objEvent->seriesData['seriesPatternType'] == 2) {
+                if ($objEvent->seriesData['seriesPatternType'] == 2) {
                     $seriesPatternMonthl2    = $objEvent->seriesData['seriesPatternMonth'];
                 }
             }
@@ -849,13 +857,11 @@ class CalendarManager extends CalendarLibrary
 
 
 
-            foreach ($objEvent->seriesData['seriesPatternExceptions'] as $key => $seriesExceptionDate) {
-
-                if($seriesExceptionDate != null) {
+            foreach ($objEvent->seriesData['seriesPatternExceptions'] as $seriesExceptionDate) {
+                if ($seriesExceptionDate != null) {
                     $this->_objTpl->setVariable(array(
                         $this->moduleLangVar.'_SERIES_EXEPTION_DATE' => $this->format2userDate($seriesExceptionDate),
                     ));
-
                     $this->_objTpl->parse('eventExeptions');
                 }
             }
@@ -906,43 +912,38 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_SERIES_PATTERN_WEEKLY_SATURDAY'  => $seriesPatternWeeklySat,
             $this->moduleLangVar.'_SERIES_PATTERN_WEEKLY_SUNDAY'    => $seriesPatternWeeklySun,
         ));
-
-
         //parse publicate
         $objHostManager = new \Cx\Modules\Calendar\Controller\CalendarHostManager(null,true);
         $objHostManager->getHostList();
-
-        foreach ($objHostManager->hostList as $key => $objHost) {
-            if(in_array($objHost->id, $objEvent->relatedHosts)) {
+        $selectetHosts = $deselectetHosts = '';
+        foreach ($objHostManager->hostList as $objHost) {
+            if (in_array($objHost->id, $objEvent->relatedHosts)) {
                 $selectetHosts .= '<option value="'.$objHost->id.'">'.$objHost->title.'</option>';
             } else {
                 $deselectetHosts .= '<option value="'.$objHost->id.'">'.$objHost->title.'</option>';
             }
         }
-
         $this->_objTpl->setVariable(array(
-            $this->moduleLangVar.'_EVENT_DESELECTED_HOSTS'    => $deselectetHosts,
-            $this->moduleLangVar.'_EVENT_SELECTED_HOSTS'      => $selectetHosts,
+            $this->moduleLangVar . '_EVENT_DESELECTED_HOSTS' => $deselectetHosts,
+            $this->moduleLangVar . '_EVENT_SELECTED_HOSTS' => $selectetHosts,
         ));
-
-        if($this->arrSettings['publicationStatus'] == 1 && !empty($objHostManager->hostList)) {
+        $deselectedGroups = $selectedGroups = $onsubmitPublications = '';
+        if ($this->arrSettings['publicationStatus'] == 1 && !empty($objHostManager->hostList)) {
             $onsubmitPublications = "selectAll(document.formModifyEvent.elements['selectedHosts[]']);";
             $this->_objTpl->touchBlock('eventPublicateMenu');
             $this->_objTpl->touchBlock('eventPublicateTab');
         } else {
-            $onsubmitPublications = "";
             $this->_objTpl->hideBlock('eventPublicateMenu');
             $this->_objTpl->hideBlock('eventPublicateTab');
         }
-
         //parse ivited groups
         $this->getCommunityGroups();
-        foreach ($this->arrCommunityGroups as $key => $arrGroup) {
-             if(in_array($arrGroup['id'], $objEvent->invitedGroups)) {
-                 $selectedGroups .=  '<option value="'.$arrGroup['id'].'">'.htmlentities($arrGroup['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
-             } else {
-                 $deselectedGroups .=  '<option value="'.$arrGroup['id'].'">'.htmlentities($arrGroup['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
-             }
+        foreach ($this->arrCommunityGroups as $arrGroup) {
+            if (in_array($arrGroup['id'], $objEvent->invitedGroups)) {
+                $selectedGroups .=  '<option value="'.$arrGroup['id'].'">'.htmlentities($arrGroup['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
+            } else {
+                $deselectedGroups .=  '<option value="'.$arrGroup['id'].'">'.htmlentities($arrGroup['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
+            }
         }
 
         $this->_objTpl->setVariable(array(
@@ -957,13 +958,13 @@ class CalendarManager extends CalendarLibrary
         }
 
         //parse placeSelect
-        if ((int) $this->arrSettings['placeData'] > 1) {
+        if ((int)$this->arrSettings['placeData'] > 1) {
             $objMediadirEntries = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry('MediaDir');
             $objMediadirEntries->getEntries(null,null,null,null,null,null,true,0,'n',null,null,intval($this->arrSettings['placeDataForm']));
 
             $placeOptions = '<option value="">'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>';
 
-            foreach($objMediadirEntries->arrEntries as $key => $arrEntry) {
+            foreach($objMediadirEntries->arrEntries as $arrEntry) {
                 $selectedPlace = ($arrEntry['entryId'] == $objEvent->place_mediadir_id) ? 'selected="selected"' : '';
                 $placeOptions .= '<option '.$selectedPlace.' value="'.$arrEntry['entryId'].'">'.$arrEntry['entryFields'][0].'</option>';
             }
@@ -987,13 +988,13 @@ class CalendarManager extends CalendarLibrary
         }
 
         //parse placeHostSelect
-        if ((int) $this->arrSettings['placeDataHost'] > 1) {
+        if ((int)$this->arrSettings['placeDataHost'] > 1) {
             $objMediadirEntries = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry('MediaDir');
             $objMediadirEntries->getEntries(null,null,null,null,null,null,true,0,'n',null,null,intval($this->arrSettings['placeDataHostForm']));
 
             $placeOptions = '<option value="">'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>';
 
-            foreach($objMediadirEntries->arrEntries as $key => $arrEntry) {
+            foreach($objMediadirEntries->arrEntries as $arrEntry) {
                 $selectedPlace = ($arrEntry['entryId'] == $objEvent->host_mediadir_id) ? 'selected="selected"' : '';
                 $placeOptions .= '<option '.$selectedPlace.' value="'.$arrEntry['entryId'].'">'.$arrEntry['entryFields'][0].'</option>';
             }
@@ -1003,7 +1004,7 @@ class CalendarManager extends CalendarLibrary
             ));
             $this->_objTpl->parse('eventHostSelect');
 
-            if ((int) $this->arrSettings['placeDataHost'] == 2) {
+            if ((int)$this->arrSettings['placeDataHost'] == 2) {
                 $this->_objTpl->hideBlock('eventHostInput');
                 $this->_objTpl->hideBlock('eventHostTypeRadio');
             } else {
@@ -1031,7 +1032,7 @@ class CalendarManager extends CalendarLibrary
                 $this->_objTpl->touchBlock('calendar_event_'. $inputField .'_expand');
             }
         }
-        foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+        foreach ($this->arrFrontendLanguages as $arrLang) {
             //parse globals
             $this->_objTpl->setGlobalVariable(array(
                 $this->moduleLangVar.'_EVENT_LANG_SHORTCUT'     => $arrLang['lang'],
@@ -1043,7 +1044,7 @@ class CalendarManager extends CalendarLibrary
             $arrShowIn = explode(",", $objEvent->showIn);
 
             $langChecked = false;
-            if($eventId != 0) {
+            if ($eventId != 0) {
                 $langChecked = in_array($arrLang['id'], $arrShowIn);
                 if ($forcedLanguage && !$langChecked) {
                     $langChecked = $forcedLanguage == $arrLang['id'];
@@ -1068,9 +1069,9 @@ class CalendarManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_TAB_DISPLAY'   => $arrLang['is_default'] == 'true' ? 'block' : 'none',
                 $this->moduleLangVar.'_EVENT_TITLE'         => !empty($objEvent->arrData['title'][$arrLang['id']]) ? $objEvent->arrData['title'][$arrLang['id']] : $objEvent->title,
                 $this->moduleLangVar.'_EVENT_TEASER'        => !empty($objEvent->arrData['teaser'][$arrLang['id']]) ? $objEvent->arrData['teaser'][$arrLang['id']] : $objEvent->teaser,
-        ));
+            ));
 
-        //parse eventTabMenuDescTab
+            //parse eventTabMenuDescTab
             $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_TAB_CLASS'  => $defaultLang ? 'active' : '',
             ));
@@ -1099,8 +1100,8 @@ class CalendarManager extends CalendarLibrary
                 );
                 $this->_objTpl->setVariable(array(
                     $this->moduleLangVar.'_EVENT_VALUE' => !empty($objEvent->arrData[$inputField][$arrLang['id']])
-                                                          ? $objEvent->arrData[$inputField][$arrLang['id']]
-                                                          : ($eventId != 0 ? $objEvent->{$inputField} : ''),
+                        ? $objEvent->arrData[$inputField][$arrLang['id']]
+                        : ($eventId != 0 ? $objEvent->{$inputField} : ''),
                 ));
                 $this->_objTpl->parse('calendar_event_'. $inputField);
             }
@@ -1112,7 +1113,7 @@ class CalendarManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_DELETE' => "<input type='button' name='delete' value='{$_ARRAYLANG['TXT_CALENDAR_DELETE']}' onClick='if (confirm(\"{$_ARRAYLANG['TXT_CALENDAR_CONFIRM_DELETE_DATA']}\\n{$_ARRAYLANG['TXT_CALENDAR_ACTION_IS_IRREVERSIBLE']}\")) { window.location.href = \"index.php?cmd={$this->moduleName}&delete=$eventId&".\Cx\Core\Csrf\Controller\Csrf::param()."\"} return false;'>",
             ));
         }
-        
+
         \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
         \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Home');
     }
@@ -1151,14 +1152,11 @@ class CalendarManager extends CalendarLibrary
                  $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_CATEGORY_CORRUPT_DELETED'];
             }
         }
-
-        if(isset($_GET['multi'])) {
+        if (isset($_GET['multi'])) {
             $status = true;
             $messageVar = 'EDITED';
-
-            foreach($_POST['selectedCategoryId'] as $key => $catId) {
+            foreach ($_POST['selectedCategoryId'] as $catId) {
                 $objCategory = new \Cx\Modules\Calendar\Controller\CalendarCategory(intval($catId));
-
                 switch($_GET['multi']) {
                     case 'delete':
                         $status = $objCategory->delete() ? true : false;
@@ -1177,32 +1175,32 @@ class CalendarManager extends CalendarLibrary
                 }
             }
 
-            if($status) {
+            if ($status) {
                 $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_CATEGORY_SUCCESSFULLY_'.$messageVar];
             } else {
-                 $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_CATEGORY_CORRUPT_'.$messageVar];
+                $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_CATEGORY_CORRUPT_'.$messageVar];
             }
         }
 
-        if(isset($_GET['switch_status'])) {
+        if (isset($_GET['switch_status'])) {
             $objCategory = new \Cx\Modules\Calendar\Controller\CalendarCategory(intval($_GET['switch_status']));
-            if($objCategory->switchStatus()) {
+            if ($objCategory->switchStatus()) {
                 $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_CATEGORY_SUCCESSFULLY_EDITED'];
             } else {
-                 $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_CATEGORY_CORRUPT_EDITED'];
+                $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_CATEGORY_CORRUPT_EDITED'];
             }
         }
 
-        if(isset($_POST['submitCategoryList'])) {
+        if (isset($_POST['submitCategoryList'])) {
             $status = true;
-            foreach($_POST['categoryOrder'] as $catId => $order) {
+            foreach ($_POST['categoryOrder'] as $catId => $order) {
                 $objCategory = new \Cx\Modules\Calendar\Controller\CalendarCategory(intval($catId));
-                if(!$objCategory->saveOrder(intval($order))) {
+                if (!$objCategory->saveOrder(intval($order))) {
                     $status = false;
                 }
             }
 
-            if($status) {
+            if ($status) {
                 $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_CATEGORY_SUCCESSFULLY_EDITED'];
             } else {
                  $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_CATEGORY_CORRUPT_EDITED'];
@@ -1282,7 +1280,7 @@ class CalendarManager extends CalendarLibrary
             if($categoryId != 0){
                 $categoryName = empty($objCategory->arrData['name'][$arrLang['id']]) ? $objCategory->arrData['name'][0] : $objCategory->arrData['name'][$arrLang['id']];
             } else {
-                $categoryName = '';
+            $categoryName = '';
             }
 
             $this->_objTpl->setVariable(array(
@@ -1292,7 +1290,7 @@ class CalendarManager extends CalendarLibrary
                 $this->moduleLangVar.'_CATEGORY_NAME'                   => $categoryName,
             ));
 
-            if(($key+1) == count($this->arrFrontendLanguages)) {
+            if (($key + 1) == count($this->arrFrontendLanguages)) {
                 $this->_objTpl->setVariable(array(
                     $this->moduleLangVar.'_MINIMIZE' =>  '<a href="javascript:ExpandMinimize(\'name\');">&laquo;&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_MINIMIZE'].'</a>',
                 ));
@@ -1311,7 +1309,7 @@ class CalendarManager extends CalendarLibrary
             $objHostManager = new \Cx\Modules\Calendar\Controller\CalendarHostManager(null,true);
             $objHostManager->getHostList();
 
-            foreach ($objHostManager->hostList as $key => $objHost) {
+            foreach ($objHostManager->hostList as $objHost) {
                 if($objHost->catId == $categoryId || $objHost->catId == 0) {
                     if($objHost->catId == $categoryId && $objHost->catId != 0) {
                         $selectetHosts .= '<option value="'.$objHost->id.'">'.$objHost->title.'</option>';
@@ -1328,9 +1326,9 @@ class CalendarManager extends CalendarLibrary
 
             $this->_objTpl->parse('hostSelector');
         } else { */
-            $this->_objTpl->hideBlock('hostSelector');
+        $this->_objTpl->hideBlock('hostSelector');
         /* } */
-        
+
         \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
         \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Home');
     }
@@ -1478,9 +1476,8 @@ class CalendarManager extends CalendarLibrary
 
             print ("\r\n");
 
-            foreach ($objRegistrationManager->registrationList as $key => $objRegistration) {
-
-                if(intval($objRegistration->firstExport) == 0) {
+            foreach ($objRegistrationManager->registrationList as $objRegistration) {
+                if (intval($objRegistration->firstExport) == 0) {
                     $objRegistration->tagExport();
                 }
 
@@ -1532,7 +1529,7 @@ class CalendarManager extends CalendarLibrary
                             $options = explode(",", $arrField['default']);
                             $values = explode(",", $arrField['value']);
 
-                            foreach ($values as $key => $value) {
+                            foreach ($values as $value) {
                                 $arrValue = explode('[[', $value);
                                 $value = $arrValue[0];
                                 $input = str_replace(']]','', $arrValue[1]);
@@ -1799,7 +1796,7 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_DATE'                   => $objEvent->startDate->getTimestamp(),
             $this->moduleLangVar.'_USER_ID'                      => $userId,
         ));
-        
+
         \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Calendar');
         \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Home');
     }
