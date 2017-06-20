@@ -297,12 +297,14 @@ class CalendarEvent extends CalendarLibrary
     public $author;
     
     /**
-     * Event category id
-     *
+     * Category IDs
      * @access public
-     * @var integer 
+     * @var     array
+     * @todo Better replace all Event properties
+     *      with one single doctrine Event instance...
+     *      ...and drop this class.
      */
-    public $catId;
+    public $category_ids = null;
     
     /**
      * Event series status
@@ -977,7 +979,7 @@ class CalendarEvent extends CalendarLibrary
                 $this->ticketSales = intval($objResult->fields['ticket_sales']);
                 $this->arrNumSeating = json_decode($objResult->fields['num_seating']);
                 $this->numSeating = !empty($this->arrNumSeating) ? implode(',', $this->arrNumSeating) : '';
-                
+        $this->category_ids = CalendarCategory::getIdsByEventId($eventId);
                 $queryHosts = '
                     SELECT host_id                            
                     FROM '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_event_host
@@ -1195,7 +1197,8 @@ class CalendarEvent extends CalendarLibrary
         $link                      = isset($data['link']) ? contrexx_strip_tags($data['link']) : '';
         $pic                       = isset($data['picture']) ? contrexx_addslashes(contrexx_strip_tags($data['picture'])) : '';
         $attach                    = isset($data['attachment']) ? contrexx_addslashes(contrexx_strip_tags($data['attachment'])) : '';     
-        $catId                     = isset($data['category']) ? intval($data['category']) : '';   
+        $category_ids = isset($data['category_ids'])
+            ? contrexx_input2raw($data['category_ids']) : '';
         $showIn                    = isset($data['showIn']) ? contrexx_addslashes(contrexx_strip_tags(join(",",$data['showIn']))) : '';
         $invited_groups            = isset($data['selectedGroups']) ? join(',', $data['selectedGroups']) : ''; 
         $invitedCrmGroups          = isset($data['calendar_event_invite_crm_memberships']) ? join(',', $data['calendar_event_invite_crm_memberships']) : ''; 
@@ -1458,7 +1461,6 @@ class CalendarEvent extends CalendarLibrary
             'price'                         => $price,
             'link'                          => $link,
             'pic'                           => $pic,
-            'catid'                         => $catId,
             'attach'                        => $attach,
             'place_mediadir_id'             => $placeMediadir,
             'host_mediadir_id'              => $hostMediadir,            
@@ -1591,7 +1593,9 @@ class CalendarEvent extends CalendarLibrary
                 return false; 
             }
         }
-        
+        if (!CalendarCategory::updateEventRelation($this->id, $category_ids)) {
+            return false;
+        }
         if ($id != 0) {
             if (!empty($eventFields)) {
                 foreach ($eventFields as $eventField) {
@@ -2530,27 +2534,22 @@ class CalendarEvent extends CalendarLibrary
                 ->findOneById($id);
         }
         $event->setVirtual(true);
-
         if (!$event) {
             return null;
         }
-
         if (!$formDatas) {
             return $event;
         }
-
         $classMetaData = $this
             ->em
             ->getClassMetadata('Cx\Modules\Calendar\Model\Entity\Event');
         foreach ($formDatas['fields'] as $columnName => $columnValue) {
             $fieldName  = $classMetaData->getFieldName($columnName);
-            if ($fieldName == 'catid') {
-                $fieldName   = 'category';
-                $columnValue = $this
-                    ->em
-                    ->getRepository('Cx\Modules\Calendar\Model\Entity\Category')
-                    ->findOneById($columnValue);
+// TODO: Test! Can Events be synchronized by using the categories collection?
+            if ($fieldName === 'categories') {
+                $columnValue = $event->getCategories();
                 $columnValue->setVirtual(true);
+                continue;
             } elseif ($fieldName == 'registration_form') {
                 $fieldName = 'registrationForm';
                 $columnValue = $this
@@ -2567,17 +2566,14 @@ class CalendarEvent extends CalendarLibrary
                 $event->{$methodName}($columnValue);
             }
         }
-
         $relations = $formDatas['relation'];
         if (empty($relations) || empty($relations['eventFields'])) {
             return $event;
         }
-
         //Add event fields
         foreach ($relations['eventFields'] as $eventFieldValues) {
             $this->getEventFieldEntity($event, $eventFieldValues);
         }
-
         return $event;
     }
 
