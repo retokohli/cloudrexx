@@ -1046,19 +1046,10 @@ class CalendarManager extends CalendarLibrary
             } else {
                 $langChecked = $arrLang['is_default'] == 'true';
             }
-
-            if ($langChecked) {
-                $langChecked = 'checked="checked"';
-            } else {
-                $langChecked =  '';
-            }
-
-            $this->_objTpl->setVariable(array(
-                $this->moduleLangVar.'_EVENT_LANG_CHECKED'  => $langChecked,
-            ));
-
+            $this->_objTpl->setVariable(
+                $this->moduleLangVar.'_EVENT_LANG_CHECKED',
+                    ($langChecked ? 'checked="checked"' : ''));
             $this->_objTpl->parse('eventShowIn');
-
             $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_TAB_DISPLAY'   => $arrLang['is_default'] == 'true' ? 'block' : 'none',
                 $this->moduleLangVar.'_EVENT_TITLE'         => !empty($objEvent->arrData['title'][$arrLang['id']]) ? $objEvent->arrData['title'][$arrLang['id']] : $objEvent->title,

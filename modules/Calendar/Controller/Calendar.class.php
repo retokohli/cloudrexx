@@ -811,25 +811,20 @@ UPLOADER;
                 $this->moduleLangVar.'_EVENT_LANG_ID'           => $arrLang['id'],
                 'TXT_'.$this->moduleLangVar.'_EVENT_LANG_NAME'  => $arrLang['name'],
             ));
-
             //parse "show in" checkboxes
             $arrShowIn = explode(",", $objEvent->showIn);
-
             $langChecked = false;
             if($eventId != 0) {
-                $langChecked = in_array($arrLang['id'], $arrShowIn) ? true : false;
+                $langChecked = in_array($arrLang['id'], $arrShowIn);
             } else {
                 $langChecked = $arrLang['is_default'] == 'true';
             }
-
             //parse eventTabMenuDescTab
             $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_TAB_DISPLAY' => $langChecked ? 'block' : 'none',
                 $this->moduleLangVar.'_EVENT_TAB_CLASS'   => '',
             ));
-
             $this->_objTpl->parse('eventTabMenuDescTab');
-
             //parse eventDescTab
             $eventTitle       = !empty($objEvent->arrData['title'][$arrLang['id']])
                 ? $objEvent->arrData['title'][$arrLang['id']]
@@ -865,15 +860,11 @@ UPLOADER;
                 ));
                 $this->_objTpl->parse('calendar_event_'. $inputField);
             }
-
-            $langChecked = $langChecked ? 'checked="checked"' : '';
-
-            $this->_objTpl->setVariable(array(
-                $this->moduleLangVar.'_EVENT_LANG_CHECKED'  => $langChecked,
-            ));
-
+            $this->_objTpl->setVariable(
+                $this->moduleLangVar.'_EVENT_LANG_CHECKED',
+                ($langChecked ? 'checked="checked"' : '')
+            );
             $this->_objTpl->parse('eventShowIn');
-
         }
         //parse placeSelect
         if ((int)$this->arrSettings['placeData'] > 1) {
