@@ -1018,34 +1018,31 @@ class CalendarEvent extends CalendarLibrary
                 return false;
             }
         }
-        
-        list($startDate, $strStartTime) = explode(' ', $data['startDate']);
+        $startHour = $startMin = $endHour = $endMin = null;
+        list($startDate, $strStartTime) = explode(' ', $data['startDate'] . ' ');
+        list($endDate, $strEndTime) = explode(' ', $data['endDate'] . ' ');
+        if ($strStartTime) {
             list($startHour, $startMin) = explode(':', $strStartTime);
-        
-        list($endDate, $strEndTime)     = explode(' ', $data['endDate']);
-            list($endHour, $endMin) = explode(':', $strEndTime);
-        
-        if ($data['all_day']) {
-            list($startHour, $startMin) = array(0, 0);
-            list($endHour, $endMin)     = array(23, 59);;
         }
-        
+        if ($strEndTime) {
+            list($endHour, $endMin) = explode(':', $strEndTime);
+        }
+        if (isset($data['all_day']) && $data['all_day']) {
+            list($startHour, $startMin) = array(0, 0);
+            list($endHour, $endMin)     = array(23, 59);
+        }
         //event data
         $id            = isset($data['copy']) && !empty($data['copy']) ? 0 : (isset($data['id']) ? intval($data['id']) : 0);
         $type          = isset($data['type']) ? intval($data['type']) : 0;
-
         $startDate = $this->getDbDateTimeFromIntern($this->getDateTime($startDate, intval($startHour), intval($startMin)))->format('Y-m-d H:i:s');
         $endDate   = $this->getDbDateTimeFromIntern($this->getDateTime($endDate, intval($endHour), intval($endMin)))->format('Y-m-d H:i:s');
-
         $google        = isset($data['google']) ? intval($data['google']) : 0;
         $allDay        = isset($data['all_day']) ? 1 : 0;
         $convertBBCode = ($objInit->mode == 'frontend' && empty($id));
         $showDetailView= isset($data['show-detail-view']) ? 1 : 0;
-        
         $useCustomDateDisplay = isset($data['showDateSettings']) ? 1 : 0;
         $showStartDateList    = isset($data['showStartDateList']) ? $data['showStartDateList'] : 0;
         $showEndDateList      = isset($data['showEndDateList']) ? $data['showEndDateList'] : 0;
-        
         if ($objInit->mode == 'backend') {
             // reset time values if "no time" is selected
             if ($data['showTimeTypeList'] == 0) {
