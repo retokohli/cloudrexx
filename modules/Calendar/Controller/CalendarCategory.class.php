@@ -583,6 +583,12 @@ class CalendarCategory extends CalendarLibrary
 
     /**
      * Return all Category IDs associated with the given Event ID
+     *
+     * Returns false on error.
+     * If the return value is the empty array, there was no error per se,
+     * but no Category is associated with the Event.
+     * This should not happen, however, and indicates that the Event
+     * was not properly verified before storing.
      * @param   integer         $event_id   The Event ID
      * @return  array|boolean               The Category IDs on success,
      *                                      false otherwise
@@ -596,7 +602,7 @@ class CalendarCategory extends CalendarLibrary
             FROM `'.DBPREFIX.'module_'.self::TABLE_PREFIX.'_events_categories`
             WHERE `event_id`=?';
         $objResult = $objDatabase->Execute($query, array($event_id));
-        if (!$objResult || $objResult->EOF) {
+        if (!$objResult) {
             return false;
         }
         $category_ids = [];
