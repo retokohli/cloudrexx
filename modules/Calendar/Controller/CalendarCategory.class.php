@@ -95,8 +95,9 @@ class CalendarCategory extends CalendarLibrary
      *
      * @param integer $id category id
      */
-    function __construct($id=null){
-        if($id != null) {
+    function __construct($id = null)
+    {
+        if ($id) {
             self::get($id);
         }
         $this->init();

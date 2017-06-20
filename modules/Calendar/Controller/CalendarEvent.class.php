@@ -696,14 +696,13 @@ class CalendarEvent extends CalendarLibrary
      *
      * @param integer $id Event id
      */
-    function __construct($id=null){
-        if($id != null) {
+    function __construct($id = null)
+    {
+        if ($id) {
             $this->get($id);
         }
-        
         $this->uploadImgPath    = \Env::get('cx')->getWebsiteImagesPath().'/'.$this->moduleName.'/';
         $this->uploadImgWebPath = \Env::get('cx')->getWebsiteImagesWebPath().'/'.$this->moduleName.'/';
-        
         $this->getSettings();
         $this->init();
     }
@@ -717,15 +716,13 @@ class CalendarEvent extends CalendarLibrary
      *
      * @return null
      */
-    function get($eventId, $eventStartDate=null, $langId=null) {
+    function get($eventId, $eventStartDate = null, $langId = null)
+    {
         global $objDatabase, $_LANGID;
-
         $this->getSettings();
-
-        if ($langId == null) {
+        if (!$langId) {
             $langId = $_LANGID;
         }
-
         $query = "
             SELECT event.id,
                 event.type,
@@ -831,8 +828,9 @@ class CalendarEvent extends CalendarLibrary
                 }
             }
         }
-        
-            if(!empty($objResult->fields['title'])) {
+        if (!$objResult->fields['title']) {
+            return;
+        }
         $this->id = intval($eventId);
         $this->type = intval($objResult->fields['type']);
         $this->title = htmlentities(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET);

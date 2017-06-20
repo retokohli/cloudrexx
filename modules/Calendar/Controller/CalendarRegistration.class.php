@@ -186,11 +186,11 @@ class CalendarRegistration extends CalendarLibrary
      * @param integer $formId Registration Form Id
      * @param integer $id     Registration id
      */
-    function __construct($formId, $id=null){
+    function __construct($formId, $id = null)
+    {
         $objForm = new \Cx\Modules\Calendar\Controller\CalendarForm(intval($formId));
         $this->form = $objForm;
-
-        if ($id != null) {
+        if ($id) {
             self::get($id);
         }
         $this->init();

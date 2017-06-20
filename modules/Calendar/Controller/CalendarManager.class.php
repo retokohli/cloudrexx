@@ -102,7 +102,8 @@ class CalendarManager extends CalendarLibrary
                 break;
             case 'modify_event':
                 \Permission::checkAccess(180, 'static');
-                $this->modifyEvent(intval($_GET['id']));
+                $id = isset($_GET['id']) ? intval($_GET['id']) : null;
+                $this->modifyEvent($id);
                 break;
             case 'export_registrations':
                 \Permission::checkAccess(182, 'static');
@@ -399,13 +400,14 @@ class CalendarManager extends CalendarLibrary
         $objMail->getTemplateList();
 
         $copy = isset($_REQUEST['copy']) && !empty($_REQUEST['copy']);
-        $this->_pageTitle = $copy || empty($eventId) ? $_ARRAYLANG['TXT_CALENDAR_INSERT_EVENT'] : $_ARRAYLANG['TXT_CALENDAR_EVENT']." ".$_ARRAYLANG['TXT_CALENDAR_EDIT'];
-
-        if($eventId != 0) {
+        $this->_pageTitle = $copy || empty($eventId)
+            ? $_ARRAYLANG['TXT_CALENDAR_INSERT_EVENT']
+            : $_ARRAYLANG['TXT_CALENDAR_EVENT']
+                . ' ' . $_ARRAYLANG['TXT_CALENDAR_EDIT'];
+        if ($eventId) {
             $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
             $objEvent->getData();
         }
-
         //parse weekdays
         $arrWeekdays = array(
             "1000000" => $_ARRAYLANG['TXT_CALENDAR_DAYS_MONDAY'],

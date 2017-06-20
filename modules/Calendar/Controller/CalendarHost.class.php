@@ -110,8 +110,9 @@ class CalendarHost extends CalendarLibrary
      *
      * @param integer $id Host id
      */
-    function __construct($id=null){
-        if($id != null) {
+    function __construct($id = null)
+    {
+        if ($id) {
             self::get($id);
         }
     }

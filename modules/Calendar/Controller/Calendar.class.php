@@ -181,20 +181,18 @@ class Calendar extends CalendarLibrary
     {
         $this->loadEventManager();
         $id = !empty($_GET['id']) ? $_GET['id'] : 0 ;
-
-        if(isset($_GET['export'])) {
-            $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($_GET['export']));
+        if (isset($_GET['export'])) {
+            $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(
+                intval($_GET['export']));
             $objEvent->export();
         }
-
         $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : null;
         if ($this->simulateCategoryView) {
             $cmd = 'category';
         }
-
         switch ($cmd) {
             case 'detail':
-                if( $id!= null && $_GET['date'] != null) {
+                if ($id && !empty($_GET['date'])) {
                     // cache timeout: this event's start date (registrations!)
                     $start = null;
                     self::showEvent($page, $start);
@@ -264,7 +262,6 @@ class Calendar extends CalendarLibrary
                 $response->setExpirationDate($firstEndDate);
                 break;
         }
-
         return $this->_objTpl->get();
     }
 
@@ -435,7 +432,7 @@ class Calendar extends CalendarLibrary
         }
 
         $this->objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($this->startDate,$this->endDate,$this->categoryId,$this->searchTerm,true,$this->needAuth,true,$this->startPos,$this->numEvents,$this->sortDirection,true,$this->author);
-        
+
         if (!in_array($cmd, array('detail', 'register'))) {
             $this->objEventManager->getEventList();
         } else {
@@ -509,7 +506,7 @@ EOF;
                     CalendarCategoryManager::DROPDOWN_TYPE_FILTER),
             $this->moduleLangVar.'_JAVASCRIPT'  => $javascript
         ));
-         self::showThreeBoxes();
+        self::showThreeBoxes();
         if($this->objEventManager->countEvents > $this->arrSettings['numPaging'] && (isset($_GET['search']) || $_GET['cmd'] == 'list' || $_GET['cmd'] == 'eventlist' || $_GET['cmd'] == 'archive')) {
             $pagingCmd = !empty($cmd) ? '&amp;cmd='.  contrexx_raw2xhtml($cmd) : '';
             $pagingCategory = !empty($catid) ? '&amp;catid='.intval($catid) : '';
@@ -835,20 +832,20 @@ UPLOADER;
 
             //parse eventDescTab
             $eventTitle       = !empty($objEvent->arrData['title'][$arrLang['id']])
-                                ? $objEvent->arrData['title'][$arrLang['id']]
+                ? $objEvent->arrData['title'][$arrLang['id']]
                                 : (!empty($objEvent->arrData['redirect'][$_LANGID]) ? $objEvent->arrData['redirect'][$_LANGID] : '');
             $eventDescription = !empty($objEvent->arrData['description'][$arrLang['id']])
-                                ? $objEvent->arrData['description'][$arrLang['id']]
-                                : '';
+                ? $objEvent->arrData['description'][$arrLang['id']]
+                : '';
             $eventRedirect    = !empty($objEvent->arrData['redirect'][$arrLang['id']])
-                                ? $objEvent->arrData['redirect'][$arrLang['id']]
+                ? $objEvent->arrData['redirect'][$arrLang['id']]
                                 : (!empty($objEvent->arrData['redirect'][$_LANGID]) ? $objEvent->arrData['redirect'][$_LANGID] : '');
             $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_TAB_DISPLAY'               => $langChecked ? 'block' : 'none',
                 $this->moduleLangVar.'_EVENT_TITLE'                     => contrexx_raw2xhtml($eventTitle),
                 $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg("description[{$arrLang['id']}]",
-                                                                                                        contrexx_raw2xhtml($eventDescription),
-                                                                                                        $eventId != 0 ? 'small' : 'bbcode'),
+                        contrexx_raw2xhtml($eventDescription),
+                        $eventId != 0 ? 'small' : 'bbcode'),
                 $this->moduleLangVar.'_EVENT_REDIRECT'                  => contrexx_raw2xhtml($eventRedirect),
                 $this->moduleLangVar.'_EVENT_TYPE_EVENT_DISPLAY'        => $objEvent->type == 0 ? 'block' : 'none',
                 $this->moduleLangVar.'_EVENT_TYPE_REDIRECT_DISPLAY'     => $objEvent->type == 1 ? 'block' : 'none',
@@ -863,8 +860,8 @@ UPLOADER;
                 );
                 $this->_objTpl->setVariable(array(
                     $this->moduleLangVar.'_EVENT_VALUE' => !empty($objEvent->arrData[$inputField][$arrLang['id']])
-                                                          ? $objEvent->arrData[$inputField][$arrLang['id']]
-                                                          : ($eventId != 0 ? $objEvent->{$inputField} : ''),
+                            ? $objEvent->arrData[$inputField][$arrLang['id']]
+                            : ($eventId != 0 ? $objEvent->{$inputField} : ''),
                 ));
                 $this->_objTpl->parse('calendar_event_'. $inputField);
             }
@@ -879,7 +876,7 @@ UPLOADER;
 
         }
         //parse placeSelect
-        if ((int) $this->arrSettings['placeData'] > 1) {
+        if ((int)$this->arrSettings['placeData'] > 1) {
             $objMediadirEntries = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry('MediaDir');
             $objMediadirEntries->getEntries(null,null,null,null,null,null,true,0,'n',null,null,intval($this->arrSettings['placeDataForm']));
 
@@ -1397,11 +1394,9 @@ JAVASCRIPT;
             $objEventManager->calendarBoxUrl         = \Cx\Core\Routing\Url::fromModuleAndCmd('Calendar', '')->toString()."?act=list";
             $objEventManager->calendarBoxMonthNavUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Calendar', '')->toString();
         }
-
-        if (empty($_GET['catid'])) {
-            $catid = 0;
-        } else {
-            $catid = $_GET['catid'];
+        $catid = 0;
+        if (isset($_GET['catid'])) {
+            $catid = intval($_GET['catid']);
         }
 
         if (isset($_GET['yearID']) && isset($_GET['monthID']) &&  isset($_GET['dayID'])) {
