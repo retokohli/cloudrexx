@@ -900,7 +900,8 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_SERIES_PATTERN_DOURANCE_3'       => $seriesPatternDourance3,
             $this->moduleLangVar.'_SERIES_PATTERN_ENDS_EVENTS'      => $seriesPatternEndsEvents,
             $this->moduleLangVar.'_SERIES_PATTERN_ENDS_DATE'        => $seriesPatternEndsDate,
-            $this->moduleLangVar.'_SERIES_PATTERN_ENDS_INPUT_ID'    => $seriesPatternEndsInputId,
+// TODO: $seriesPatternEndsInputId is undefined
+//            $this->moduleLangVar.'_SERIES_PATTERN_ENDS_INPUT_ID'    => $seriesPatternEndsInputId,
             $this->moduleLangVar.'_SERIES_PATTERN_WEEKLY_WEEKS'     => $seriesPatternWeeklyWeeks,
             $this->moduleLangVar.'_SERIES_PATTERN_WEEKLY_MONDAY'    => $seriesPatternWeeklyMon,
             $this->moduleLangVar.'_SERIES_PATTERN_WEEKLY_TUESDAY'   => $seriesPatternWeeklyTue,
@@ -1059,14 +1060,12 @@ class CalendarManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_TITLE'         => !empty($objEvent->arrData['title'][$arrLang['id']]) ? $objEvent->arrData['title'][$arrLang['id']] : $objEvent->title,
                 $this->moduleLangVar.'_EVENT_TEASER'        => !empty($objEvent->arrData['teaser'][$arrLang['id']]) ? $objEvent->arrData['teaser'][$arrLang['id']] : $objEvent->teaser,
             ));
-
             //parse eventTabMenuDescTab
             $this->_objTpl->setVariable(array(
-                $this->moduleLangVar.'_EVENT_TAB_CLASS'  => $defaultLang ? 'active' : '',
+// TODO: $defaultLang is undefined
+//                $this->moduleLangVar.'_EVENT_TAB_CLASS'  => $defaultLang ? 'active' : '',
             ));
-
             $this->_objTpl->parse('eventTabMenuDescTab');
-
             //parse eventDescTab
             $this->_objTpl->setVariable(array(
                 'TXT_'.$this->moduleLangVar.'_EVENT_DESCRIPTION'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_DESCRIPTION'],
