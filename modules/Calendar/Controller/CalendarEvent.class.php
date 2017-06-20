@@ -868,7 +868,6 @@ class CalendarEvent extends CalendarLibrary
         $this->link = htmlentities(stripslashes($objResult->fields['link']), ENT_QUOTES, CONTREXX_CHARSET);
         $this->priority = intval($objResult->fields['priority']);
         $this->description = $objResult->fields['description'];
-                
         $this->locationType = (int) $objResult->fields['location_type'];
         $this->place_mediadir_id = (int) $objResult->fields['place_mediadir_id'];
         $this->place        = htmlentities(stripslashes($objResult->fields['place']), ENT_QUOTES, CONTREXX_CHARSET);
@@ -922,8 +921,6 @@ class CalendarEvent extends CalendarLibrary
             }
             $this->seriesData['seriesAdditionalRecurrences'] = $seriesAdditionalRecurrences;
         }
-                  
-                
         $this->invitedGroups = explode(',', $objResult->fields['invited_groups']);
         $this->invitedMails =  htmlentities($objResult->fields['invited_mails'], ENT_QUOTES, CONTREXX_CHARSET);
         $this->registration = intval($objResult->fields['registration']);
@@ -1008,7 +1005,11 @@ class CalendarEvent extends CalendarLibrary
     {
         global $objDatabase, $_LANGID, $objInit;
         $this->getSettings();
-        if(empty($data['startDate']) || empty($data['endDate']) || empty($data['category']) || ($data['seriesStatus'] == 1 && $data['seriesType'] == 2 && empty($data['seriesWeeklyDays']))) {
+        if (empty($data['startDate']) || empty($data['endDate'])
+            || empty($data['category_ids'])
+            || (isset($data['seriesStatus']) && $data['seriesStatus'] == 1
+                && isset($data['seriesType']) && $data['seriesType'] == 2
+                && empty($data['seriesWeeklyDays']))) {
             return false;
         }
         foreach ($_POST['showIn'] as $langId) {
@@ -1050,7 +1051,6 @@ class CalendarEvent extends CalendarLibrary
                 $showStartTimeList = isset($data['showStartTimeList']) ? $data['showStartTimeList'] : '';
                 $showEndTimeList   = isset($data['showEndTimeList']) ? $data['showEndTimeList'] : '';
             }
-            
             $showTimeTypeList    = isset($data['showTimeTypeList']) ? $data['showTimeTypeList'] : '';
             $showStartDateDetail = isset($data['showStartDateDetail']) ? $data['showStartDateDetail'] : '';
             $showEndDateDetail   = isset($data['showEndDateDetail']) ? $data['showEndDateDetail'] : '';
@@ -1069,7 +1069,6 @@ class CalendarEvent extends CalendarLibrary
             $showEndDateList   = ($this->arrSettings['showEndDateList'] == 1) ? 1 : 0;
             $showStartTimeList = ($this->arrSettings['showStartTimeList'] == 1) ? 1 : 0;
             $showEndTimeList   = ($this->arrSettings['showEndTimeList'] == 1) ? 1 : 0;
-            
             // reset time values if "no time" is selected
             if ($showStartTimeList == 1 || $showEndTimeList == 1) {
                 $showTimeTypeList = 1;
@@ -1078,12 +1077,10 @@ class CalendarEvent extends CalendarLibrary
                 $showEndTimeList   = 0;
                 $showTimeTypeList  = 0;
             }
-            
             $showStartDateDetail = ($this->arrSettings['showStartDateDetail'] == 1) ? 1 : 0;
             $showEndDateDetail   = ($this->arrSettings['showEndDateDetail'] == 1) ? 1 : 0;
             $showStartTimeDetail = ($this->arrSettings['showStartTimeDetail'] == 1) ? 1 : 0;
             $showEndTimeDetail   = ($this->arrSettings['showEndTimeDetail'] == 1) ? 1 : 0;
-            
             // reset time values if "no time" is selected
             if ($showStartTimeDetail == 1 || $showEndTimeDetail == 1) {
                 $showTimeTypeDetail = 1;
@@ -1125,7 +1122,6 @@ class CalendarEvent extends CalendarLibrary
                 isset($data['organizerCountry']) ? $data['organizerCountry'] : ''
             );
         }
-                
         $access                    = isset($data['access']) ? intval($data['access']) : 0;
         $priority                  = isset($data['priority']) ? intval($data['priority']) : 0;
         $placeMediadir             = isset($data['placeMediadir']) ? intval($data['placeMediadir']) : 0;
@@ -1161,23 +1157,19 @@ class CalendarEvent extends CalendarLibrary
         $placePhone                = isset($data['placePhone']) ? contrexx_input2raw($data['placePhone']) : '';
         $placeMap                  = isset($data['placeMap']) ? contrexx_input2raw($data['placeMap']) : '';
         $update_invitation_sent    = ($send_invitation == 1);
-        
         if (!empty($placeWebsite)) {
             if (!preg_match('%^(?:ftp|http|https):\/\/%', $placeWebsite)) {
                 $placeWebsite = "http://".$placeWebsite;
             }
         }
-
         if (!empty($placeLink)) {
             if (!preg_match('%^(?:ftp|http|https):\/\/%', $placeLink)) {
                 $placeLink = "http://".$placeLink;
             }
         }
-        
         if ($objInit->mode == 'frontend') {
             $mapUploaderId = isset($_REQUEST[self::MAP_FIELD_KEY])
-                             ? contrexx_input2raw($_REQUEST[self::MAP_FIELD_KEY])
-                             : '';
+                ? contrexx_input2raw($_REQUEST[self::MAP_FIELD_KEY]) : '';
             if (!empty($mapUploaderId)) {
                 $picture = $this->_handleUpload($mapUploaderId);
                 if (!empty($picture)) {
@@ -1185,59 +1177,49 @@ class CalendarEvent extends CalendarLibrary
                 }
             }
         }
-
         $orgStreet = isset($data['organizerStreet']) ? contrexx_input2raw($data['organizerStreet']) : '';
         $orgZip    = isset($data['organizerZip']) ? contrexx_input2raw($data['organizerZip']) : '';
         $orgWebsite= isset($data['organizerWebsite']) ? contrexx_input2raw($data['organizerWebsite']) : '';
         $orgLink   = isset($data['organizerLink']) ? contrexx_input2raw($data['organizerLink']) : '';
         $orgPhone  = isset($data['organizerPhone']) ? contrexx_input2raw($data['organizerPhone']) : '';
         $orgEmail  = isset($data['organizerEmail']) ? contrexx_input2raw($data['organizerEmail']) : '';
-
         if (!empty($orgWebsite)) {
             if (!preg_match('%^(?:ftp|http|https):\/\/%', $orgWebsite)) {
                 $orgWebsite = "http://".$orgWebsite;
             }
         }
-
         if (!empty($orgLink)) {
             if (!preg_match('%^(?:ftp|http|https):\/\/%', $orgLink)) {
                 $orgLink = "http://".$orgLink;
             }
         }
-        
         // create thumb if not exists
         if (!file_exists(\Env::get('cx')->getWebsitePath()."$placeMap.thumb")) {
             $objImage = new \ImageManager();
-            $objImage->_createThumb(dirname(\Env::get('cx')->getWebsitePath()."$placeMap")."/", '', basename($placeMap), 180);
+            $objImage->_createThumb(
+                dirname(\Env::get('cx')->getWebsitePath()."$placeMap"),
+                '', basename($placeMap), 180);
         }
-
         //frontend picture upload & thumbnail creation
         if ($objInit->mode == 'frontend') {
             $pictureUploaderId    = isset($_REQUEST[self::PICTURE_FIELD_KEY])
-                                    ? contrexx_input2raw($_REQUEST[self::PICTURE_FIELD_KEY])
-                                    : '';
+                ? contrexx_input2raw($_REQUEST[self::PICTURE_FIELD_KEY]) : '';
             $attachmentUploaderId = isset($_REQUEST[self::ATTACHMENT_FIELD_KEY])
-                                    ? contrexx_input2raw($_REQUEST[self::ATTACHMENT_FIELD_KEY])
-                                    : '';
-            
+                ? contrexx_input2raw($_REQUEST[self::ATTACHMENT_FIELD_KEY]) : '';
             if (!empty($pictureUploaderId)) {
                 $picture = $this->_handleUpload($pictureUploaderId);
-
                 if (!empty($picture)) {
                     //delete thumb
                     if (file_exists("{$this->uploadImgPath}$pic.thumb")) {
                         \Cx\Lib\FileSystem\FileSystem::delete_file($this->uploadImgPath."/.$pic.thumb");
                     }
-
                     //delete image
                     if (file_exists("{$this->uploadImgPath}$pic")) {
                         \Cx\Lib\FileSystem\FileSystem::delete_file($this->uploadImgPath."/.$pic");
                     }
-
                     $pic = $picture;
                 }
             }
-            
             if (!empty($attachmentUploaderId)) {
                 $attachment = $this->_handleUpload($attachmentUploaderId);
                 if ($attachment) {
@@ -1248,7 +1230,6 @@ class CalendarEvent extends CalendarLibrary
                     $attach = $attachment;
                 }
             }
-            
         } else {
             // create thumb if not exists
             if (!file_exists(\Env::get('cx')->getWebsitePath()."$pic.thumb")) {
@@ -1273,20 +1254,15 @@ class CalendarEvent extends CalendarLibrary
         $seriesExeptions                = '';
         $seriesAdditionalRecurrences    = '';
         $seriesPatternEndDate           = '0000-00-00 00:00:00';
-        
         if ($seriesStatus == 1) {
             if (!empty($data['seriesExeptions'])) {
                 $exeptions = array();
-                                
                 foreach($data['seriesExeptions'] as $exeptionDate)  {
                     $exeptions[] = $this->getDbDateTimeFromIntern($this->getDateTime($exeptionDate, 23, 59))->format('Y-m-d');
                 }
-                
                 sort($exeptions);
-                
                 $seriesExeptions = join(",", $exeptions);
             }
-        
             if (!empty($data['additionalRecurrences'])) {
                 $additionalRecurrenceDates = array();
                 foreach ($data['additionalRecurrences'] as $additionalRecurrence) {
@@ -1315,17 +1291,14 @@ class CalendarEvent extends CalendarLibrary
                 case 2;
                     if ($seriesStatus == 1) {
                         $seriesPatternWeek          = isset($data['seriesWeeklyWeeks']) ? intval($data['seriesWeeklyWeeks']) : 0;
-
-                        for($i=1; $i <= 7; $i++) {
+                        for ($i = 1; $i <= 7; ++$i) {
                             if (isset($data['seriesWeeklyDays'][$i])) {
                                 $weekdayPattern .= "1";
                             } else {
                                 $weekdayPattern .= "0";
                             }
                         }
-
                         $seriesPatternWeekday       = $weekdayPattern;
-
                         $seriesPatternCount         = 0;
                         $seriesPatternDay           = 0;
                         $seriesPatternMonth         = 0;
@@ -1342,7 +1315,6 @@ class CalendarEvent extends CalendarLibrary
                         } else {
                             $seriesPatternCount     = isset($data['seriesMonthlyDayCount']) ? intval($data['seriesMonthlyDayCount']) : 0;
                             $seriesPatternMonth     = isset($data['seriesMonthlyMonth_2']) ? intval($data['seriesMonthlyMonth_2']) : 0;
-                            
                             if ($seriesPatternMonth < 1) {
                                 // the increment must be at least once a month, otherwise we will end up in a endless loop in the presence
                                 $seriesPatternMonth = 1;
@@ -1355,7 +1327,6 @@ class CalendarEvent extends CalendarLibrary
                     }
                     break;
             }
-                
             $seriesPatternDouranceType  = isset($data['seriesDouranceType']) ? intval($data['seriesDouranceType']) : 0;
             switch($seriesPatternDouranceType) {
                 case 1:
@@ -1369,7 +1340,6 @@ class CalendarEvent extends CalendarLibrary
                     break;
             }
         }
-                
         $formData = array(
             'type'                          => $type,
             'startdate'                     => $startDate,
@@ -2002,7 +1972,6 @@ class CalendarEvent extends CalendarLibrary
         }
     }
 
-   
     /**
      * Handle the calendar image upload
      *

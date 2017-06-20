@@ -97,17 +97,22 @@ class CalendarFeed extends CalendarLibrary {
                 $objFWUser = \FWUser::getFWUserObject();
                 $showIn = explode(',', $objEvent->showIn);
                 if (in_array($arrFrontendLanguage['id'], $showIn)) {
-                    $itemTitle = contrexx_raw2xml(html_entity_decode($objEvent->arrData['title'][$arrFrontendLanguage['id']], ENT_QUOTES, CONTREXX_CHARSET));
-                    $itemLink = $objEvent->type==0 ? $this->domainUrl.$this->objEventManager->_getDetailLink($objEvent) : $objEvent->arrData['redirect'][$arrFrontendLanguage['id']];
+                    $itemTitle = contrexx_raw2xml(html_entity_decode(
+                        $objEvent->arrData['title'][$arrFrontendLanguage['id']],
+                            ENT_QUOTES, CONTREXX_CHARSET));
+                    $itemLink = $objEvent->type == 0
+                        ? $this->domainUrl
+                            . $this->objEventManager->_getDetailLink($objEvent)
+                        : $objEvent->arrData['redirect'][$arrFrontendLanguage['id']];
                     $itemLink = contrexx_raw2xml(html_entity_decode($itemLink));
-                    $itemDescription = contrexx_raw2xml($objEvent->arrData['description'][$arrFrontendLanguage['id']]);
-
-                    if ($objUser = $objFWUser->objUser->getUser(intval($objEvent->author))) {
-                        $itemAuthor = $objUser->getEmail();
-                    } else {
+                    $itemDescription = contrexx_raw2xml(
+                        $objEvent->arrData['description'][$arrFrontendLanguage['id']]);
                     $itemAuthor = "unknown";
+                    $objUser = $objFWUser->objUser->getUser(
+                        intval($objEvent->author));
+                    if ($objUser) {
+                        $itemAuthor = $objUser->getEmail();
                     }
-
                     $itemAuthor = contrexx_raw2xml($itemAuthor);
                     $itemCategory = array();
                     $itemComments = null;
@@ -115,18 +120,19 @@ class CalendarFeed extends CalendarLibrary {
                     $itemGuid = array();
                     $itemPubDate = $objEvent->startDate->getTimestamp();
                     $itemSource = array();
-
-
-
-                    $objRSSWriter->addItem($itemTitle,$itemLink,$itemDescription,$itemAuthor,$itemCategory,$itemComments,$itemEnclosure,$itemGuid,$itemPubDate,$itemSource);
+                    $objRSSWriter->addItem($itemTitle, $itemLink,
+                        $itemDescription, $itemAuthor, $itemCategory,
+                        $itemComments, $itemEnclosure, $itemGuid, $itemPubDate,
+                        $itemSource);
                 }
             }
-
             $objRSSWriter->feedType = 'xml';
-            $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/calendar_all_'.$arrFrontendLanguage['lang'].'.'.$objRSSWriter->feedType;
+            $objRSSWriter->xmlDocumentPath =
+                \Env::get('cx')->getWebsiteFeedPath()
+                . '/calendar_all_' . $arrFrontendLanguage['lang']
+                . '.' . $objRSSWriter->feedType;
             $objRSSWriter->write();
         }
-
-
     }
+
 }

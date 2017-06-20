@@ -819,24 +819,31 @@ UPLOADER;
             //parse eventDescTab
             $eventTitle = !empty($objEvent->arrData['title'][$arrLang['id']])
                 ? $objEvent->arrData['title'][$arrLang['id']]
-                                : (!empty($objEvent->arrData['redirect'][$_LANGID]) ? $objEvent->arrData['redirect'][$_LANGID] : '');
+                : (!empty($objEvent->arrData['redirect'][$_LANGID])
+                    ? $objEvent->arrData['redirect'][$_LANGID] : '');
             $eventDescription = !empty($objEvent->arrData['description'][$arrLang['id']])
                 ? $objEvent->arrData['description'][$arrLang['id']]
                 : '';
             $eventRedirect = !empty($objEvent->arrData['redirect'][$arrLang['id']])
                 ? $objEvent->arrData['redirect'][$arrLang['id']]
-                                : (!empty($objEvent->arrData['redirect'][$_LANGID]) ? $objEvent->arrData['redirect'][$_LANGID] : '');
+                : (!empty($objEvent->arrData['redirect'][$_LANGID])
+                    ? $objEvent->arrData['redirect'][$_LANGID] : '');
             $this->_objTpl->setVariable(array(
-                $this->moduleLangVar.'_EVENT_TAB_DISPLAY'               => $langChecked ? 'block' : 'none',
-                $this->moduleLangVar.'_EVENT_TITLE'                     => contrexx_raw2xhtml($eventTitle),
-                $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg("description[{$arrLang['id']}]",
+                $this->moduleLangVar.'_EVENT_TAB_DISPLAY' =>
+                    $langChecked ? 'block' : 'none',
+                $this->moduleLangVar.'_EVENT_TITLE' =>
+                    contrexx_raw2xhtml($eventTitle),
+                $this->moduleLangVar.'_EVENT_DESCRIPTION' =>
+                    new \Cx\Core\Wysiwyg\Wysiwyg("description[{$arrLang['id']}]",
                         contrexx_raw2xhtml($eventDescription),
                         $eventId != 0 ? 'small' : 'bbcode'),
-                $this->moduleLangVar.'_EVENT_REDIRECT'                  => contrexx_raw2xhtml($eventRedirect),
-                $this->moduleLangVar.'_EVENT_TYPE_EVENT_DISPLAY'        => $objEvent->type == 0 ? 'block' : 'none',
-                $this->moduleLangVar.'_EVENT_TYPE_REDIRECT_DISPLAY'     => $objEvent->type == 1 ? 'block' : 'none',
+                $this->moduleLangVar.'_EVENT_REDIRECT' =>
+                    contrexx_raw2xhtml($eventRedirect),
+                $this->moduleLangVar.'_EVENT_TYPE_EVENT_DISPLAY' =>
+                    $objEvent->type == 0 ? 'block' : 'none',
+                $this->moduleLangVar.'_EVENT_TYPE_REDIRECT_DISPLAY' =>
+                    $objEvent->type == 1 ? 'block' : 'none',
             ));
-
             $this->_objTpl->parse('eventDescTab');
             //parse eventLingualFields
             foreach ($multiLingualFields as $inputField) {
@@ -845,7 +852,8 @@ UPLOADER;
                     $eventId != 0 ? $objEvent->{$inputField} : ''
                 );
                 $this->_objTpl->setVariable(array(
-                    $this->moduleLangVar.'_EVENT_VALUE' => !empty($objEvent->arrData[$inputField][$arrLang['id']])
+                    $this->moduleLangVar.'_EVENT_VALUE' =>
+                        !empty($objEvent->arrData[$inputField][$arrLang['id']])
                             ? $objEvent->arrData[$inputField][$arrLang['id']]
                             : ($eventId != 0 ? $objEvent->{$inputField} : ''),
                 ));

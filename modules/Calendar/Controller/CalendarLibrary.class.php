@@ -276,14 +276,14 @@ class CalendarLibrary
                             } else {
                                 $bolAdd = true;
                             }
-
-                            if($bolAdd) {
+                            if ($bolAdd) {
                                 //get groups attributes
                                 $arrUserGroups  = array();
-                                $objGroup = $objFWUser->objGroup->getGroups($filter = array('is_active' => true, 'type' => 'frontend'));
-
+                                $objGroup = $objFWUser->objGroup->getGroups(
+                                    array('is_active' => true, 'type' => 'frontend'));
                                 while (!$objGroup->EOF) {
-                                    if(in_array($objGroup->getId(), $objUser->getAssociatedGroupIds())) {
+                                    if (in_array($objGroup->getId(),
+                                            $objUser->getAssociatedGroupIds())) {
                                         $arrUserGroups[] = $objGroup->getId();
                                     }
                                     $objGroup->next();
@@ -294,20 +294,18 @@ class CalendarLibrary
                         } else {
                             $strStatus = 'redirect';
                         }
-
                         break;
                     case 'edit_event':
-                        if($this->arrSettings['addEventsFrontend'] == 1 || $this->arrSettings['addEventsFrontend'] == 2) {
-                            if($bolUserLogin) {
-                                if(isset($_POST['submitFormModifyEvent'])) {
+                        if ($this->arrSettings['addEventsFrontend'] == 1
+                            || $this->arrSettings['addEventsFrontend'] == 2) {
+                            if ($bolUserLogin) {
+                                if (isset($_POST['submitFormModifyEvent'])) {
                                     $eventId = intval($_POST['id']);
                                 } else {
                                     $eventId = intval($_GET['id']);
                                 }
-
                                 $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
-
-                                if($objEvent->author != $intUserId) {
+                                if ($objEvent->author != $intUserId) {
                                     $strStatus = 'no_access';
                                 }
                             } else {
@@ -317,10 +315,10 @@ class CalendarLibrary
                             $strStatus = 'redirect';
                         }
                         break;
-
                     case 'my_events':
-                        if($this->arrSettings['addEventsFrontend'] == 1 || $this->arrSettings['addEventsFrontend'] == 2) {
-                            if(!$bolUserLogin) {
+                        if ($this->arrSettings['addEventsFrontend'] == 1
+                            || $this->arrSettings['addEventsFrontend'] == 2) {
+                            if (!$bolUserLogin) {
                                 $strStatus = 'login';
                             }
                         } else {
@@ -328,21 +326,17 @@ class CalendarLibrary
                         }
                         break;
                 }
-
-                switch($strStatus) {
+                switch ($strStatus) {
                     case 'no_access':
-                        \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH.'?section=Login&cmd=noaccess');
+                        \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH . '?section=Login&cmd=noaccess');
                         exit();
-                        break;
                     case 'login':
-                        $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-                        \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
+                        $link = base64_encode(CONTREXX_SCRIPT_PATH . '?' . $_SERVER['QUERY_STRING']);
+                        \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH . "?section=Login&redirect=" . $link);
                         exit();
-                        break;
                     case 'redirect':
-                        \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH.'?section='.$this->moduleName);
+                        \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH . '?section=' . $this->moduleName);
                         exit();
-                        break;
                 }
             }
         }

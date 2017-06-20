@@ -865,17 +865,12 @@ class CalendarSettings extends CalendarLibrary
                 }
                 break;
         }
-
+        $infobox = '';
         if (!empty($info)) {
             $infobox = '&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">' . $_ARRAYLANG[$info] . '</span>';
-        } else {
-            $infobox = '';
         }
-
         $arrSetting['output'] = $output;
         $arrSetting['infobox'] = $infobox;
-
-
         return $arrSetting;
     }
 

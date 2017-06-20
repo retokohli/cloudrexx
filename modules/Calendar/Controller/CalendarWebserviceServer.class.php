@@ -78,15 +78,14 @@ class CalendarWebserviceServer
     /**
      * CalendarWebserviceServer Constructor
      */
-    public function __construct() {
-
+    public function __construct()
+    {
+        global $_DBCONFIG;
         $this->dirPath = str_replace("/modules/Calendar/Controller","", dirname($_SERVER['SCRIPT_FILENAME']));
         \Env::get('ClassLoader')->loadFile($this->dirPath.'/config/configuration.php');
-
         mysql_connect($_DBCONFIG['host'], $_DBCONFIG['user'], $_DBCONFIG['password']);
         mysql_select_db ($_DBCONFIG['database']);
         mysql_set_charset($_DBCONFIG['charset']);
-
         $this->tablePrefix = $_DBCONFIG['tablePrefix'];
     }
 
@@ -98,29 +97,29 @@ class CalendarWebserviceServer
      *
      * @return mixed host details on success, false otherwise
      */
-    public function verifyHost($foreignHost,$foreignKey) {
+    public function verifyHost($foreignHost,$foreignKey)
+    {
         if (substr($foreignHost, 0, 7) == 'http://') {
             $foreignHost = substr($foreignHost, 7);
         }
-
         if (substr($foreignHost, 0, 4) == 'www.') {
             $foreignHost = substr($foreignHost, 4);
         }
-
-        $query = "SELECT `id`,`key`,`cat_id` FROM ".$this->tablePrefix."module_calendar_host WHERE uri LIKE '%".$foreignHost."' LIMIT 1";
+        $query = "
+            SELECT `id`, `key`, `cat_id`
+            FROM " . $this->tablePrefix . "module_calendar_host
+            WHERE uri LIKE '%$foreignHost'
+            LIMIT 1";
         $result = mysql_query($query);
         $row = mysql_fetch_array($result);
-
         if ($row['key'] == $foreignKey) {
             $hostData = array();
             $hostData['id'] = intval($row['id']);
             $hostData['cat_id'] = intval($row['cat_id']);
             $hostData['key'] = $row['key'];
-
             return $hostData;
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
@@ -141,16 +140,14 @@ class CalendarWebserviceServer
     public function getEventList($start_date, $end_date, $auth, $term, $langId, $hostId, $foreignHostId, $showEventsOnlyInActiveLanguage)
     {
         $needAuth_where = ($auth == false ? ' AND event.access=0' : '');
-        //$showIn_where = "AND event.show_in LIKE '%".intval($langId)."%' ";
-
+        $showIn_where = '';
         if ($showEventsOnlyInActiveLanguage == 1) {
-            $showIn_where = "AND FIND_IN_SET('".intval($langId)."',event.show_in)>0 ";
-        } else {
-            $showIn_where = "";
+            $showIn_where = "
+                AND FIND_IN_SET('" . intval($langId) . "', event.show_in)>0 ";
         }
-
         if (intval($end_date) != 0) {
-            $dateScope_where = '((
+            $dateScope_where = '
+                ((
                     ((event.startdate <= '.$start_date.') AND ('.$end_date.' <= event.enddate)) OR
                     ((('.$start_date.' <= event.startdate) AND ('.$end_date.' <= event.enddate)) AND ((event.startdate <= '.$start_date.') AND ('.$end_date.' <= event.enddate))) OR
                     (((event.startdate <= '.$start_date.') AND (event.enddate <= '.$end_date.')) AND (('.$start_date.' <= event.enddate) AND (event.enddate <= '.$end_date.'))) OR
@@ -158,42 +155,39 @@ class CalendarWebserviceServer
                 ) OR (
                     (event.series_status = 1) AND (event.startdate <= '.$end_date.')
                 ))';
-
         } else {
-            $dateScope_where = '((
+            $dateScope_where = '
+                ((
                     ((event.enddate >= '.$start_date.') AND (event.startdate <= '.$start_date.')) OR
                     ((event.startdate >= '.$start_date.') AND (event.enddate >= '.$start_date.'))
                 ) OR (
                     (event.series_status = 1)
                 ))';
         }
-
+        $searchTerm_DB = '';
         if (!empty($term)) {
             $searchTerm_DB = ", ".$this->tablePrefix."module_calendar_event_field AS field";
             $searchTerm_where = " AND ((field.title LIKE '%".$term."%' OR field.description LIKE '%".$term."%' OR field.place LIKE '%".$term."%') AND field.event_id = event.id)";
-        } else {
-            $searchTerm_DB = "";
         }
-
-        $query = "SELECT event.id AS id
+        $query = "
+            SELECT event.id
             FROM ".$this->tablePrefix."module_calendar_event AS event,
                  ".$this->tablePrefix."module_calendar_rel_event_host AS host
-                         ".$searchTerm_DB."
-                   WHERE ".$dateScope_where."
+                 $searchTerm_DB
+            WHERE $dateScope_where
                  AND event.status=1
-                         ".$needAuth_where."
-                         ".$searchTerm_where."
-                         ".$showIn_where."
-                     AND (host.event_id = event.id AND host.host_id = '".$hostId."')
+                 $needAuth_where
+                 $searchTerm_where
+                 $showIn_where
+            AND (host.event_id=event.id AND host.host_id='$hostId')
             GROUP BY event.id
             ORDER BY event.startdate";
-
         $result = mysql_query($query);
-
         $eventList = array();
-
         while ($row = mysql_fetch_array($result)) {
-            $objEvent = new \Cx\Modules\Calendar\Controller\CalendarWebserviceEvent($row['id'], $langId, $showEventsOnlyInActiveLanguage);
+            $objEvent =
+                new \Cx\Modules\Calendar\Controller\CalendarWebserviceEvent(
+                    $row['id'], $langId, $showEventsOnlyInActiveLanguage);
             $objEvent->hostId = $foreignHostId;
             $eventList[] = $objEvent;
         }
@@ -499,6 +493,7 @@ class CalendarWebserviceEvent
      * @var array
      */
     public $relatedHosts = array();
+
     /**
      * Event data
      *
@@ -558,27 +553,24 @@ class CalendarWebserviceEvent
      * Constructor
      *
      * Loads the event object of given id
-     *
      * @param integer $id                             Event id
      * @param integer $langId                         Language id
      * @param boolean $showEventsOnlyInActiveLanguage get event only active
      *                                                frontend language
      */
-    public function __construct($id=null, $langId=null, $showEventsOnlyInActiveLanguage){
+    public function __construct($id, $langId, $showEventsOnlyInActiveLanguage)
+    {
+        global $_DBCONFIG, $_CONFIG;
         $this->dirPath = str_replace("/modules/Calendar/Controller/","", dirname($_SERVER['SCRIPT_FILENAME']));
         \Env::get('ClassLoader')->loadFile($this->dirPath.'/config/configuration.php');
-
         mysql_connect($_DBCONFIG['host'], $_DBCONFIG['user'], $_DBCONFIG['password']);
         mysql_select_db($_DBCONFIG['database']);
         mysql_set_charset($_DBCONFIG['charset']);
-
         $this->tablePrefix = $_DBCONFIG['tablePrefix'];
         $this->coreCharacterEncoding = $_CONFIG['coreCharacterEncoding'];
         $this->langId = $langId;
         $this->showEventsOnlyInActiveLanguage = $showEventsOnlyInActiveLanguage;
-
-
-        if($id != null) {
+        if ($id) {
             self::get($id, null);
         }
     }
@@ -674,9 +666,12 @@ class CalendarWebserviceEvent
             if (!empty($row['title'])) {
                 $this->id = intval($eventId);
                 $this->type = intval($row['type']);
-                $this->title = htmlentities(stripslashes($row['title']),ENT_QUOTES,$this->coreCharacterEncoding);
-                $this->pic = htmlentities(stripslashes($row['pic']),ENT_QUOTES,$this->coreCharacterEncoding);
-                $this->attach = htmlentities(stripslashes($row['attach']),ENT_QUOTES,$this->coreCharacterEncoding);
+                $this->title = htmlentities(stripslashes($row['title']),
+                    ENT_QUOTES, $this->coreCharacterEncoding);
+                $this->pic = htmlentities(stripslashes($row['pic']),
+                    ENT_QUOTES, $this->coreCharacterEncoding);
+                $this->attach = htmlentities(stripslashes($row['attach']),
+                    ENT_QUOTES, $this->coreCharacterEncoding);
                 $this->startDate = intval($row['startdate']);
                 $this->endDate = intval($row['enddate']);
                 $this->showStartDateList = intval($row['showStartDateList']);
@@ -693,8 +688,10 @@ class CalendarWebserviceEvent
                 $this->access = intval($row['access']);
                 $this->priority = intval($row['priority']);
                 $this->description = stripslashes($row['description']);
-                $this->place = htmlentities(stripslashes($row['place']),ENT_QUOTES,$this->coreCharacterEncoding);
-                $this->showIn = htmlentities(stripslashes($row['show_in']),ENT_QUOTES,$this->coreCharacterEncoding);
+                $this->place = htmlentities(stripslashes($row['place']),
+                    ENT_QUOTES, $this->coreCharacterEncoding);
+                $this->showIn = htmlentities(stripslashes($row['show_in']),
+                    ENT_QUOTES, $this->coreCharacterEncoding);
                 $this->availableLang = intval($langId);
                 $this->status = intval($row['status']);
                 $this->map = intval($row['google']);
@@ -775,14 +772,28 @@ class CalendarWebserviceEvent
                 LIMIT 1";
             $result2 = mysql_query($query2);
             while ($row2 = mysql_fetch_array($result2)) {
-                $this->arrData['title'][intval($langId)] = htmlentities(stripslashes($row2['title']),ENT_QUOTES, $this->coreCharacterEncoding);
-                $this->arrData['place'][intval($langId)] = htmlentities(stripslashes($row2['place']),ENT_QUOTES, $this->coreCharacterEncoding);
-                $this->arrData['place_street'][intval($langId)] = htmlentities(stripslashes($row2['place_street']), ENT_QUOTES, $this->coreCharacterEncoding);
-                $this->arrData['place_zip'][intval($langId)] = htmlentities(stripslashes($row2['place_zip']),ENT_QUOTES, $this->coreCharacterEncoding);
-                $this->arrData['place_city'][intval($langId)] = htmlentities(stripslashes($row2['place_city']),ENT_QUOTES, $this->coreCharacterEncoding);
-                $this->arrData['place_country'][intval($langId)] = htmlentities(stripslashes($row2['place_country']),ENT_QUOTES, $this->coreCharacterEncoding);
-                $this->arrData['description'][intval($langId)] = $row2['description'];
+                $this->arrData['title'][intval($langId)] =
+                    htmlentities(stripslashes($row2['title']),
+                        ENT_QUOTES, $this->coreCharacterEncoding);
+                $this->arrData['place'][intval($langId)] =
+                    htmlentities(stripslashes($row2['place']),
+                        ENT_QUOTES, $this->coreCharacterEncoding);
+                $this->arrData['place_street'][intval($langId)] =
+                    htmlentities(stripslashes($row2['place_street']),
+                        ENT_QUOTES, $this->coreCharacterEncoding);
+                $this->arrData['place_zip'][intval($langId)] =
+                    htmlentities(stripslashes($row2['place_zip']),
+                        ENT_QUOTES, $this->coreCharacterEncoding);
+                $this->arrData['place_city'][intval($langId)] =
+                    htmlentities(stripslashes($row2['place_city']),
+                        ENT_QUOTES, $this->coreCharacterEncoding);
+                $this->arrData['place_country'][intval($langId)] =
+                    htmlentities(stripslashes($row2['place_country']),
+                        ENT_QUOTES, $this->coreCharacterEncoding);
+                $this->arrData['description'][intval($langId)] =
+                    $row2['description'];
             }
         }
     }
+
 }

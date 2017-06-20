@@ -723,7 +723,7 @@ class CalendarRegistration extends CalendarLibrary
     function tagExport()
     {
         global $objDatabase;
-       $now = time();
+        $now = time();
         if (intval($this->id) != 0) {
             $registration = $this->getRegistrationEntity(
                 $this->id, array('fields' => array('export' => $now))
