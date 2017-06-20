@@ -771,6 +771,10 @@
             cx.jQuery('.event_minimized_block').find('input').trigger('keyup');
         }
     }
+
+    cx.ready(function() {
+        cx.jQuery("#calendar_event_invite_crm_memberships").chosen({ width: '250px' });
+    });
 </script>
 
 
@@ -1274,12 +1278,24 @@
                 </td>
             </tr>
             <tr class="row2">
+                <td width="180" valign="top">{TXT_CALENDAR_CRM_MEMBERSHIPS}</td>
+                <td colspan="2">
+                    <div>
+                        <select tabindex="7" data-placeholder="{TXT_CALENDAR_CHOOSE_CRM_MEMBERSHIPS}" name="calendar_event_invite_crm_memberships[]" id="calendar_event_invite_crm_memberships" size="1" multiple autocomplete="off">
+                            <!-- BEGIN calendar_event_invite_crm_membership -->
+                            <option value="{CRM_MEMBERSHIP_ID}" {CRM_MEMBERSHIP_SELECTED}>{CRM_MEMBERSHIP_VALUE}</option>
+                            <!-- END calendar_event_invite_crm_membership -->
+                        </select>
+                    </div>
+                </td>
+            </tr>
+            <tr class="row1">
                 <td valign="top">{TXT_CALENDAR_EVENT_MORE_INVITATIONS}</td>
                 <td colspan="2">
                     <textarea name="invitedMails" style="width: 250px; height: 60px;" />{CALENDAR_EVENT_MORE_INVITATIONS}</textarea>&nbsp;&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_MORE_INVITATIONS_INFO}</span>
                 </td>
             </tr>
-            <tr class="row1">
+            <tr class="row2">
                 <td valign="top">{TXT_CALENDAR_EVENT_SEND_INVITATION}</td>
                 <td width="1%">
                     <input name="sendInvitation" class="sendInvitation" type="checkbox" value="1" {CALENDAR_EVENT_SEND_INVITATION}/>
