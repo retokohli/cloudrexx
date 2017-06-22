@@ -409,8 +409,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             if (isset($params['eid'])) {
                 // set correct canonical url for detail pages
                 $this->setCanonicalUrlByEntryId(intval($params['eid']));
-            } else {
+            } elseif ($this->canonicalPage) {
                 $this->canonicalUrl = \Cx\Core\Routing\Url::fromPage($this->canonicalPage, $params);
+            } else {
+                return;
             }
         }
 
