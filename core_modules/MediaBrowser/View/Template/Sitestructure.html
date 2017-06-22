@@ -4,12 +4,12 @@
                placeholder="{{::'TXT_FILEBROWSER_SEARCHTERM_PLACEHOLDER'| translate}}"
                ng-model="searchSites">
         <span ng-repeat="language in activeLanguages">
-      <button ng-click="setLang(language.lang)"
-              class="btn"
-              ng-class="isActive(language.lang) ? 'btn-primary' : 'btn-default'">
-        {{::language.name}}
-      </button>
-    </span>
+            <button ng-click="setLang(language.lang)"
+                  class="btn"
+                  ng-class="isActive(language.lang) ? 'btn-primary' : 'btn-default'">
+                {{::language.name}}
+            </button>
+        </span>
     </div>
     <div class="tabMediaBrowserContent">
         <div class="sitestructureCtrl">

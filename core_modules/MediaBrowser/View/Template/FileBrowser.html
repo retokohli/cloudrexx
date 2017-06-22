@@ -26,15 +26,15 @@
                     <a ng-click="createFolder()">
                         <i class="icon-addfolder"></i>
                         <span class="fileActions-text">
-              {{:: 'TXT_FILEBROWSER_CREATE_DIRECTORY' | translate }}
-            </span>
+                            {{:: 'TXT_FILEBROWSER_CREATE_DIRECTORY' | translate }}
+                        </span>
                     </a>
                 </li>
                 <li>
                     <a ng-click="updateSource(false, false)"><i class="icon-refresh"></i>
                         <span class="fileActions-text">
-              {{:: 'TXT_FILEBROWSER_RELOAD' | translate }}
-            </span>
+                            {{:: 'TXT_FILEBROWSER_RELOAD' | translate }}
+                        </span>
                     </a>
                 </li>
             </ul>
@@ -86,9 +86,9 @@
                         </a>
                     </td>
                     <td class="fileSize col_4" width="18%">
-              <span ng-hide="file.datainfo.extension == 'Dir'">
-                {{file.datainfo.size}}
-              </span>
+                        <span ng-hide="file.datainfo.extension == 'Dir'">
+                            {{file.datainfo.size}}
+                        </span>
                     </td>
                     <td class="actions col_3" width="5%">
                         <div ng-hide="file.datainfo.readonly">

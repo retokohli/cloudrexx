@@ -1,6 +1,5 @@
 <div id="uploader" ng-controller="UploaderCtrl">
     <div class="tabMediaBrowserBreadcrumbs">
-        {{path}}
         <ul>
             <li ng-repeat="pathpart in path">
                 <a ng-click="clickPath($index)" href="#uploader">{{pathpart.name}}</a>
