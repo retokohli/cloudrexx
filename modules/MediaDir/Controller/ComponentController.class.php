@@ -52,6 +52,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     protected $canonicalPage = null;
 
+    /**
+     * @var \Cx\Core\Routing\Url Canonical url
+     */
+    protected $canonicalUrl = null;
+
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
@@ -294,6 +299,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // detect entry
         $entryId = $objMediaDirectoryEntry->findOneBySlug($slug);
         if ($entryId) {
+            // set canonical url
+            $this->setCanonicalUrlByEntryId(intval($entryId));
+
             if (substr($cmd,0,6) != 'detail') {
                 $formId = null;
                 $formData = $objMediaDirectoryEntry->getFormData();
@@ -377,29 +385,49 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\Routing\Model\Entity\Response $response Response object to adjust
      */
     public function adjustResponse(\Cx\Core\Routing\Model\Entity\Response $response) {
-        $canonicalUrlArguments = array('eid', 'cid', 'lid', 'preview', 'pos');
-        if (in_array('eid', array_keys($response->getRequest()->getUrl()->getParamArray()))) {
-            $canonicalUrlArguments = array_filter($canonicalUrlArguments, function($key) {return !in_array($key, array('cid', 'lid'));});
-        }
-
-        // filter out all non-relevant URL arguments
-        /*$params = array_filter(
-            $this->cx->getRequest()->getUrl()->getParamArray(),
-            function($key) {return in_array($key, $canonicalUrlArguments);},
-            \ARRAY_FILTER_USE_KEY
-        );*/
-
-        foreach ($response->getRequest()->getUrl()->getParamArray() as $key => $value) {
-            if (!in_array($key, $canonicalUrlArguments)) {
-                continue;
+        if (!$this->canonicalUrl) {
+            $canonicalUrlArguments = array('eid', 'cid', 'lid', 'preview', 'pos');
+            if (in_array('eid', array_keys($response->getRequest()->getUrl()->getParamArray()))) {
+                $canonicalUrlArguments = array_filter($canonicalUrlArguments, function($key) {return !in_array($key, array('cid', 'lid'));});
             }
-            $params[$key] = $value;
+
+            // filter out all non-relevant URL arguments
+            /*$params = array_filter(
+                $this->cx->getRequest()->getUrl()->getParamArray(),
+                function($key) {return in_array($key, $canonicalUrlArguments);},
+                \ARRAY_FILTER_USE_KEY
+            );*/
+
+            $params = array();
+            foreach ($response->getRequest()->getUrl()->getParamArray() as $key => $value) {
+                if (!in_array($key, $canonicalUrlArguments)) {
+                    continue;
+                }
+                $params[$key] = $value;
+            }
+
+            if (isset($params['eid'])) {
+                // set correct canonical url for detail pages
+                $this->setCanonicalUrlByEntryId(intval($params['eid']));
+            } else {
+                $this->canonicalUrl = \Cx\Core\Routing\Url::fromPage($this->canonicalPage, $params);
+            }
         }
 
-        $canonicalUrl = \Cx\Core\Routing\Url::fromPage($this->canonicalPage, $params);
         $response->setHeader(
             'Link',
-            '<' . $canonicalUrl->toString() . '>; rel="canonical"'
+            '<' . $this->canonicalUrl->toString() . '>; rel="canonical"'
         );
+    }
+
+    /**
+     * Gets the slug path from a mediadir entry and sets it as canonical url
+     * @param int $entryId The ID of the entry
+     */
+    protected function setCanonicalUrlByEntryId($entryId) {
+        $entry = new MediaDirectoryEntry($this->getName());
+        $entry->getEntries($entryId, null, null, null, null, null, 1, null, 1);
+
+        $this->canonicalUrl = $entry->getAutoSlugPath($entry->arrEntries[$entryId]);
     }
 }
