@@ -1442,6 +1442,7 @@ class CalendarEvent extends CalendarLibrary
             'series_pattern_end_date'       => $seriesPatternEndDate,
             'series_pattern_exceptions'     => $seriesExeptions,
             'series_additional_recurrences' => $seriesAdditionalRecurrences,
+            'status'                        => intval(!empty($data['eventState'])),
             'independent_series'            => $seriesIndependent,
             'all_day'                       => $allDay,
             'location_type'                 => $locationType,
@@ -1514,7 +1515,7 @@ class CalendarEvent extends CalendarLibrary
                 $confirmed = $this->arrSettings['confirmFrontendEvents'] == 1 ? 0 : 1;
                 $author    = $objUser->login() ? intval($objUser->getId()) : 0;
             } else {
-                $status    = 0;
+                $status    = intval(!empty($data['eventState']));
                 $confirmed = 1;
                 $author    = intval($objUser->getId());
             }
