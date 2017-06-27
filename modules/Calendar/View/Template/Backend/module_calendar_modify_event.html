@@ -851,7 +851,7 @@
         </table>
         <ul id="tabmenu" class="language_tab" style="{CALENDAR_HIDE_ON_SINGLE_LANG} margin-top: 15px;">
             <!-- BEGIN eventTabMenuDescTab -->
-            <li><a id="eventDescTab_{CALENDAR_EVENT_LANG_ID}_desc" class="{CALENDAR_EVENT_TAB_CLASS}" href="javascript:{}" onclick="selectTab('{CALENDAR_EVENT_LANG_ID}_desc');" title="">{TXT_CALENDAR_EVENT_LANG_NAME}</a></li>
+            <li><a id="eventDescTab_{CALENDAR_EVENT_LANG_ID}_desc" href="javascript:{}" onclick="selectTab('{CALENDAR_EVENT_LANG_ID}_desc');" title="">{TXT_CALENDAR_EVENT_LANG_NAME}</a></li>
             <!-- END eventTabMenuDescTab -->
         </ul>
         <!-- BEGIN eventDescTab -->
@@ -1193,7 +1193,7 @@
             </tr>
             <tr class="row1">
                 <td>{TXT_CALENDAR_SHOW_TIME_TYPE}</td>
-                <td colspan="2"><input name="showDateSettings" id="showDateSettings" value="1" type="checkbox" onchange="showSelection();" {CALENDAR_USE_CUSTOM_DATE_DISPLAY} /></td>
+                <td colspan="2"><input name="showDateSettings" id="showDateSettings" value="1" type="checkbox" onchange="showSelection();" {CALENDAR_USE_CUSTOM_DATE_DISPLAY} /><label for="showDateSettings">{TXT_CALENDAR_USE_CUSTOM_FORMAT}</label></td>
             </tr>
             <tr class="row2" style="height: 30px !important;" id="listformat">
                 <td style="height: 30px !important;">{TXT_CALENDAR_LIST}</td>
@@ -1497,7 +1497,7 @@
                     <label style="width: 100px;float:left;"><input type="radio" name='seriesDouranceType' value="2" {CALENDAR_SERIES_PATTERN_DOURANCE_2}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS_AFTER}&nbsp;</label>
                     <input type="text" name='seriesDouranceEvents' id="seriesDouranceEvents" maxlength="3" value="{CALENDAR_SERIES_PATTERN_ENDS_EVENTS}" style="width: 20px;" onkeypress="return modifyEvent._isNumber(event);" />&nbsp;{TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS}<br />
                     <label style="width: 100px;float:left;"><input type="radio" name='seriesDouranceType' value="3" {CALENDAR_SERIES_PATTERN_DOURANCE_3}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS}&nbsp;</label>
-                    <input type="text" name="seriesDouranceDate"  id="{CALENDAR_SERIES_PATTERN_ENDS_INPUT_ID}" class="event_date" style="width: 140px;" value="{CALENDAR_SERIES_PATTERN_ENDS_DATE}" />
+                    <input type="text" name="seriesDouranceDate"  id="" class="event_date" style="width: 140px;" value="{CALENDAR_SERIES_PATTERN_ENDS_DATE}" />
                 </td>
             </tr>
             <tr class="row1">
