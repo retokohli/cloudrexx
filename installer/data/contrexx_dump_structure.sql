@@ -825,13 +825,6 @@ CREATE TABLE `contrexx_module_calendar_mail` (
   `status` int(1) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_calendar_mail_action` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `default_recipient` enum('empty','admin','author') NOT NULL,
-  `need_auth` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_calendar_registration` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
   `event_id` int(11) NOT NULL,

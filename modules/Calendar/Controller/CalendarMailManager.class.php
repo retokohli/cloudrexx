@@ -54,31 +54,54 @@ class CalendarMailManager extends CalendarLibrary {
 
     /**
      * Mail action Invitation
+     *
+     * Default recipient: none
      */
     const MAIL_INVITATION    = 1;
 
     /**
      * Mail Action Confirm registration
+     *
+     * Default recipient: author
      */
     const MAIL_CONFIRM_REG   = 2;
 
     /**
      * Mail Action Alert registration
+     *
+     * Default recipient: none
      */
     const MAIL_ALERT_REG     = 3;
 
     /**
      * mail action notify new appoinment
+     *
+     * Default recipient: admin
      */
     const MAIL_NOTFY_NEW_APP = 4;
+
+    protected $mailActions = array();
 
     /**
      * Constructor
      */
     function __construct()
     {
+        global $_ARRAYLANG;
+
+        $this->mailActions = array(
+            static::MAIL_INVITATION     => $_ARRAYLANG['TXT_CALENDAR_MAIL_ACTION_INVITATIONTEMPLATE'],
+            static::MAIL_CONFIRM_REG    => $_ARRAYLANG['TXT_CALENDAR_MAIL_ACTION_CONFIRMATIONREGISTRATION'],
+            static::MAIL_ALERT_REG      => $_ARRAYLANG['TXT_CALENDAR_MAIL_ACTION_NOTIFICATIONREGISTRATION'],
+            static::MAIL_NOTFY_NEW_APP  => $_ARRAYLANG['TXT_CALENDAR_MAIL_ACTION_NOTIFICATIONNEWENTRYFE'],
+        );
+
         $this->getFrontendLanguages();
         $this->init();
+    }
+
+    public function getMailActions() {
+        return $this->mailActions;
     }
 
     /**
@@ -126,10 +149,7 @@ class CalendarMailManager extends CalendarLibrary {
                 }
             }
 
-            $objResult = $objDatabase->Execute("SELECT `name` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_mail_action WHERE id='".$objMail->action_id."' LIMIT 1 ");
-            if ($objResult !== false) {
-                $action = $_ARRAYLANG['TXT_CALENDAR_MAIL_ACTION_'.strtoupper($objResult->fields['name'])];
-            }
+            $action = $this->mailActions[$objMail->action_id];
 
             if($objMail->is_default == 1) {
                 $isDefault = 'checked="checked"';
@@ -476,12 +496,11 @@ class CalendarMailManager extends CalendarLibrary {
             $whereId = "";
         }
 
-        $query = "SELECT mail.id, action.default_recipient, mail.lang_id, mail.is_default, mail.recipients
-                    FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_mail AS mail,
-                         ".DBPREFIX."module_".$this->moduleTablePrefix."_mail_action AS action
-                   WHERE mail.action_id='".intval($actionId)."'
+        $query = "SELECT id, lang_id, is_default, recipients
+                    FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_mail
+                   WHERE action_id='".intval($actionId)."'
                      AND status='1'
-                     AND action.id = mail.action_id$whereId
+                         $whereId
                 ORDER BY is_default DESC";
 
         $objResult = $objDatabase->Execute($query);
@@ -537,31 +556,6 @@ class CalendarMailManager extends CalendarLibrary {
         global $_CONFIG, $_LANGID;
 
         $recipients = array();
-
-        if (array_key_exists('admin', $this->mailList[0]['default_recipient'])) {
-            $recipients[$_CONFIG['coreAdminEmail']] = (new MailRecipient())->setLang($_LANGID);
-        } elseif (array_key_exists('author', $this->mailList[$_LANGID]['default_recipient']) || array_key_exists('author', $this->mailList[0]['default_recipient'])) {
-            if (!empty($regId) && !empty($objRegistration)) {
-                if (!empty($objRegistration->userId)) {
-                    $objFWUser = \FWUser::getFWUserObject();
-                    if ($objUser = $objFWUser->objUser->getUser($id = intval($objRegistration->userId))) {
-                        $recipients[$objUser->getEmail()] = (new MailRecipient())
-                            ->setLang($objUser->getFrontendLanguage())
-                            ->setType(MailRecipient::RECIPIENT_TYPE_ACCESS_USER)
-                            ->setId($objUser->getId())
-                            ->setFirstname($objUser->getProfileAttribute('firstname'))
-                            ->setLastname($objUser->getProfileAttribute('lastname'))
-                            ->setUsername($objUser->getUsername());
-                    }
-                }
-
-                foreach ($objRegistration->fields as $arrField) {
-                    if ($arrField['type'] == 'mail' && !empty($arrField['value'])) {
-                        $recipients[$arrField['value']] = (new MailRecipient())->setLang(isset($this->mailList[$_LANGID]) ? $_LANGID : 0);
-                    }
-                }
-            }
-        }
 
         switch ($actionId) {
             case static::MAIL_INVITATION:
@@ -647,27 +641,59 @@ class CalendarMailManager extends CalendarLibrary {
                 }
                 break;
 
+            case static::MAIL_CONFIRM_REG:
+                // abort in case no registration-data is present
+                if (empty($regId) || empty($objRegistration)) {
+                    break;
+                }
+
+                // add currently signed-in user as recipient
+                if (!empty($objRegistration->userId)) {
+                    $objFWUser = \FWUser::getFWUserObject();
+                    if ($objUser = $objFWUser->objUser->getUser($id = intval($objRegistration->userId))) {
+                        $recipients[$objUser->getEmail()] = (new MailRecipient())
+                            ->setLang($objUser->getFrontendLanguage())
+                            ->setType(MailRecipient::RECIPIENT_TYPE_ACCESS_USER)
+                            ->setId($objUser->getId())
+                            ->setFirstname($objUser->getProfileAttribute('firstname'))
+                            ->setLastname($objUser->getProfileAttribute('lastname'))
+                            ->setUsername($objUser->getUsername());
+                    }
+                }
+
+                // add recipient based on form data (field 'mail')
+                foreach ($objRegistration->fields as $arrField) {
+                    if ($arrField['type'] == 'mail' && !empty($arrField['value'])) {
+                        $recipients[$arrField['value']] = (new MailRecipient())->setLang(isset($this->mailList[$_LANGID]) ? $_LANGID : 0);
+                    }
+                }
+                break;
+
             case static::MAIL_ALERT_REG:
+                // add recipients specifically set to be notified by the current event
                 $notificationEmails = explode(",", $objEvent->notificationTo);
 
                 foreach ($notificationEmails as $mail) {
                     $recipients[$mail] = (new MailRecipient())->setLang($_LANGID);
                 }
                 break;
+
+            case static::MAIL_NOTFY_NEW_APP:
+                // add website-administrator as recipient
+                $recipients[$_CONFIG['coreAdminEmail']] = (new MailRecipient())->setLang($_LANGID);
+                break;
+
             default:
         }
 
+        // add recipients specified by option 'Additional recipients' of each loaded mail template
         foreach ($this->mailList as $langId => $mailList) {
             foreach ($mailList['recipients'] as $email => $langId) {
                 $recipients[$email] = (new MailRecipient())->setLang($langId);
             }
         }
 
-        if(isset($this->mailList[$_LANGID]) && $this->mailList[$_LANGID]['mail']->title == '') {
-            $langId = 0;
-        } else {
-            $langId = $_LANGID;
-        }
+        //return $recipients;
 
         if (isset($this->mailList[$langId]) && is_array($this->mailList[$langId]['default_recipient'])) {
             foreach ($this->mailList[$langId]['default_recipient'] as $mail => $recipientLang) {
