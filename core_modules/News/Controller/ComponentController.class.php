@@ -187,7 +187,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'TOP_NEWS_FILE'   => true,
             'NEWS_CATEGORIES' => false,
             'NEWS_ARCHIVES'   => true,
-            'NEWS_RECENT_COMMENTS_FILE' => false
+            'NEWS_RECENT_COMMENTS_FILE' => false,
+            'NEWS_TAG_CLOUD' => false,
         );
         foreach ($widgetNames as $widgetName => $esiVariable) {
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(

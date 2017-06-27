@@ -73,6 +73,12 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
         $theme           = $themeRepository->findById($this->currentThemeId);
 
+        if ($name == 'NEWS_TAG_CLOUD') {
+            $newsLib = new NewsLibrary();
+            $template->setVariable($name, $newsLib->getTagCloudContent()->get());
+            return;
+        }
+
         // Parse Headlines
         $matches = null;
         if (preg_match('/^HEADLINES(\d{1,2}|)_FILE/', $name, $matches)) {
