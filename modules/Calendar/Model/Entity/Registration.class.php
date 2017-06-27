@@ -75,9 +75,9 @@ class Registration extends \Cx\Model\Base\EntityBase {
     protected $type;
 
     /**
-     * @var string $key
+     * @var Cx\Modules\Calendar\Model\Entity\Invite
      */
-    protected $key;
+    protected $invite;
 
     /**
      * @var integer $userId
@@ -230,23 +230,23 @@ class Registration extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set key
+     * Set invite
      *
-     * @param string $key
+     * @param Cx\Modules\Calendar\Model\Entity\Invite $invite
      */
-    public function setKey($key)
+    public function setInvite($invite)
     {
-        $this->key = $key;
+        $this->invite = $invite;
     }
 
     /**
-     * Get key
+     * Get invite
      *
-     * @return string $key
+     * @return Cx\Modules\Calendar\Model\Entity\Invite $invite
      */
-    public function getKey()
+    public function getInvite()
     {
-        return $this->key;
+        return $this->invite;
     }
 
     /**
