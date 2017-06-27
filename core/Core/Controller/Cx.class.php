@@ -1910,9 +1910,18 @@ namespace Cx\Core\Core\Controller {
                 $themeFolderName  = \Env::get('init')->getCurrentThemesPath();
 
                 // use application template for all output channels
-                if ($page->getUseCustomApplicationTemplateForAllChannels() && $page->getSkin()) {
-                    $themeRepo       = new \Cx\Core\View\Model\Repository\ThemeRepository();
-                    $themeFolderName = $themeRepo->findById($page->getSkin())->getFoldername();
+                if ($page->getUseCustomApplicationTemplateForAllChannels()) {
+                    $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
+                    // Skin is '0' if set to "default"
+                    if (!$page->getSkin()) {
+                        $theme = $themeRepo->getDefaultTheme(
+                            \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB,
+                            $page->getLang()
+                        );
+                    } else {
+                        $theme = $themeRepo->findById($page->getSkin());
+                    }
+                    $themeFolderName = $theme->getFoldername();
                 }
 
                 // use default theme in case a custom set theme is no longer available
