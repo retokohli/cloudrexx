@@ -579,8 +579,10 @@ class CalendarRegistration extends CalendarLibrary
             $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();
             
             $templateId     = $objEvent->emailTemplate[FRONTEND_LANG_ID];
+            // send notification mail about successful registration to user
             $objMailManager->sendMail($objEvent, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_CONFIRM_REG, $this->id, $templateId);
             
+            // send notification mail about new registration to admin
             $objMailManager->sendMail($objEvent, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_ALERT_REG, $this->id);
         }
         

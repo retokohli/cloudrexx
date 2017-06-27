@@ -724,6 +724,7 @@ class CalendarEventManager extends CalendarLibrary
 
         // abort in case the event of the invitation is not published
         if (!$event) {
+            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
             return;
         }
 

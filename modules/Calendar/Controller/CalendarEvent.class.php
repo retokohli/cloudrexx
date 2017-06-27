@@ -1201,7 +1201,7 @@ class CalendarEvent extends CalendarLibrary
         $invitedCrmGroups          = isset($data['calendar_event_invite_crm_memberships']) ? join(',', $data['calendar_event_invite_crm_memberships']) : ''; 
         $invited_mails             = isset($data['invitedMails']) ? contrexx_addslashes(contrexx_strip_tags($data['invitedMails'])) : '';   
         $send_invitation           = isset($data['sendInvitation']) ? intval($data['sendInvitation']) : 0;        
-        $invitationTemplate        = isset($data['invitationEmailTemplate']) ? contrexx_input2raw($data['invitationEmailTemplate']) : 0;        
+        $invitationTemplate        = isset($data['invitationEmailTemplate']) ? contrexx_input2raw($data['invitationEmailTemplate']) : array();
         $registration              =   isset($data['registration']) && in_array($data['registration'], array(self::EVENT_REGISTRATION_NONE, self::EVENT_REGISTRATION_INTERNAL, self::EVENT_REGISTRATION_EXTERNAL))
                                      ? intval($data['registration']) : 0;
         $registration_form         = isset($data['registrationForm']) ? intval($data['registrationForm']) : 0;      

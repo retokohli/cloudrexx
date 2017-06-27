@@ -211,11 +211,8 @@ class CalendarMailManager extends CalendarLibrary {
             return;
         }
 
-        // event invitation
-        $invite = null;
-
         $objRegistration = null;
-        if ($actionId == self::MAIL_CONFIRM_REG) {
+        if ($actionId == self::MAIL_CONFIRM_REG || $actionId == self::MAIL_ALERT_REG) {
             if (empty($regId)) {
                 return;
             }
@@ -299,17 +296,19 @@ class CalendarMailManager extends CalendarLibrary {
 
         // send out mail for each recipient
         foreach ($recipients as $mailAdress => $recipient) {
-            if (empty($mailAdress)) {
+            // event invitation
+            $invite = null;
+
+            // abort in case recipient's mail address is invalid
+            if (\FWValidator::isEmpty($recipient->getAddress()) || !\FWValidator::isEmail($recipient->getAddress())) {
                 continue;
             }
-
-            // URL pointing to the event subscription page
-            $regLink = '';
 
             // let's see if there exists a user account by the provided e-mail address
             if ($recipient->getType() == MailRecipient::RECIPIENT_TYPE_MAIL) {
                 $objUser = \FWUser::getFWUserObject()->objUser->getUsers($filter = array('email' => $mailAdress, 'is_active' => true));
                 if ($objUser) {
+                    // convert recipient to an Access User recipient
                     $recipient->setLang($objUser->getFrontendLanguage());
                     $recipient->setType(MailRecipient::RECIPIENT_TYPE_ACCESS_USER);
                     $recipient->setId($objUser->getId());
@@ -326,12 +325,15 @@ class CalendarMailManager extends CalendarLibrary {
                 }
             }
 
-            $mailTitle       = $this->mailList[$langId]['mail']->title;
-            $mailContentText = !empty($this->mailList[$langId]['mail']->content_text) ? $this->mailList[$langId]['mail']->content_text : strip_tags($this->mailList[$langId]['mail']->content_html);
-            $mailContentHtml = !empty($this->mailList[$langId]['mail']->content_html) ? $this->mailList[$langId]['mail']->content_html : $this->mailList[$langId]['mail']->content_text;
             // find existing locale of notification mail
             // that best fits recipient
             $langId = $this->getSendMailLangId($actionId, $recipient);
+
+            // fetch mail template data
+            $template = $this->mailList[$langId]['mail'];
+            $mailTitle = $template->title;
+            $mailContentText = !empty($template->content_text) ? $template->content_text : strip_tags($template->content_html);
+            $mailContentHtml = !empty($template->content_html) ? $template->content_html : $template->content_text;
 
             // re-fetch recipient's prefered language,
             // in case it was not available as mail template
@@ -347,6 +349,7 @@ class CalendarMailManager extends CalendarLibrary {
             ) {
                 $langId = FRONTEND_LANG_ID;
             }
+
             // default params
             $params = array(
                 \CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_EVENT  => $event->id,
@@ -354,6 +357,13 @@ class CalendarMailManager extends CalendarLibrary {
                 \CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_RANDOM => time(),
             );
 
+            // URL pointing to the event subscription page
+            $regLink = '';
+
+            // URL pointing to the event's detail page
+            $eventLink = '';
+
+            // generate event and registration link based on requested mail action
             switch ($actionId) {
                 case self::MAIL_INVITATION:
                     // check if an invitation to the recipient
@@ -395,7 +405,6 @@ class CalendarMailManager extends CalendarLibrary {
 
                     if (!empty($inviteId) && !empty($inviteToken)) {
                         // fetch the invitation
-                        $inviteRepo = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Invite');
                         $invite = $inviteRepo->findOneBy(array(
                             'event' => $eventByDoctrine,
                             'id'    => $inviteId,
@@ -413,7 +422,7 @@ class CalendarMailManager extends CalendarLibrary {
 
                 case self::MAIL_NOTFY_NEW_APP:
                     if ($event->arrSettings['confirmFrontendEvents'] == 1) {
-                        $eventLink = $domain."/cadmin/index.php?cmd={$this->moduleName}&act=modify_event&id={$event->id}&confirm=1";
+                        $eventLink = $domain."cadmin/index.php?cmd={$this->moduleName}&act=modify_event&id={$event->id}&confirm=1";
                         break;
                     }
 
@@ -441,9 +450,6 @@ class CalendarMailManager extends CalendarLibrary {
                 $mailContentText = str_replace('[[REGISTRATION_DATA]]', $registrationDataText, $mailContentText);
                 $mailContentHtml = str_replace('[[REGISTRATION_DATA]]', $registrationDataHtml, $mailContentHtml);
             }
-
-            /*echo "send to: ".$mailAdress."<br />";
-            echo "send title: ".$mailTitle."<br />";*/
 
             $objMail->Subject = $mailTitle;
             $objMail->Body    = $mailContentHtml;
@@ -482,34 +488,34 @@ class CalendarMailManager extends CalendarLibrary {
 
         if ($objResult !== false) {
             while (!$objResult->EOF) {
+                $langId = $objResult->fields['lang_id'];
+
                 $objMail = new \Cx\Modules\Calendar\Controller\CalendarMail(intval($objResult->fields['id']));
-                if($objResult->fields['is_default'] == 1) {
-                    $supRecipients = explode(",", $objResult->fields['recipients']);
-                    $this->mailList[0]['recipients'] = array();
-                    foreach ($supRecipients as $mail) {
-                        if (!empty($mail)) {
-                            $this->mailList[0]['recipients'][$mail] = intval($objResult->fields['lang_id']);
-                        }
+
+                // load additional recipients of mail template
+                $supRecipients = explode(",", $objResult->fields['recipients']);
+                $this->mailList[$langId]['recipients'] = array();
+                foreach ($supRecipients as $mail) {
+                    if (empty($mail) || !\FWValidator::isEmail($mail)) {
+                        continue;
                     }
-                    $this->mailList[0]['default_recipient'] = array();
+
+                    $this->mailList[$langId]['default_recipient'] = array();
                     if ($objResult->fields['default_recipient'] != 'empty') {
-                        $this->mailList[0]['default_recipient'][$objResult->fields['default_recipient']] = intval($objResult->fields['lang_id']);
+                        $this->mailList[$langId]['default_recipient'][$objResult->fields['default_recipient']] = $langId;
                     }
-                    $this->mailList[0]['mail'] = $objMail;
+
+                    $this->mailList[$langId]['recipients'][$mail] = $langId;
                 }
 
-                $supRecipients = explode(",", $objResult->fields['recipients']);
-                $this->mailList[intval($objResult->fields['lang_id'])]['recipients'] = array();
-                foreach ($supRecipients as $mail) {
-                    if (!empty($mail)) {
-                        $this->mailList[intval($objResult->fields['lang_id'])]['recipients'][$mail] = intval($objResult->fields['lang_id']);
-                    }
+                // store mail template in list of loaded mail templates
+                $this->mailList[$langId]['mail'] = $objMail;
+
+                // in case mail template is set as default template for the current action,
+                // then it shall be set for fallback language '0'
+                if($objResult->fields['is_default'] == 1) {
+                    $this->mailList[0] = $this->mailList[$langId];
                 }
-                $this->mailList[intval($objResult->fields['lang_id'])]['default_recipient'] = array();
-                if ($objResult->fields['default_recipient'] != 'empty') {
-                    $this->mailList[intval($objResult->fields['lang_id'])]['default_recipient'][$objResult->fields['default_recipient']] = intval($objResult->fields['lang_id']);
-                }
-                $this->mailList[intval($objResult->fields['lang_id'])]['mail'] = $objMail;
 
                 $objResult->MoveNext();
             }

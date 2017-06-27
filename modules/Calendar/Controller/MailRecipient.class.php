@@ -58,6 +58,7 @@ class MailRecipient {
 
     public function __construct() {
         $this->type = static::RECIPIENT_TYPE_MAIL;
+        $this->id = 0;
     }
 
     public function setId($id) {
