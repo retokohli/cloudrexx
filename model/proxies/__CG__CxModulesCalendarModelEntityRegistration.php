@@ -73,10 +73,10 @@ class Registration extends \Cx\Modules\Calendar\Model\Entity\Registration implem
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', 'id', 'date', 'submissionDate', 'hostName', 'ipAddress', 'type', 'key', 'invite', 'userId', 'langId', 'export', 'paymentMethod', 'paid', 'registrationFormFieldValues', 'event', 'validators', 'virtual');
+            return array('__isInitialized__', 'id', 'date', 'submissionDate', 'hostName', 'ipAddress', 'type', 'invite', 'userId', 'langId', 'export', 'paymentMethod', 'paid', 'registrationFormFieldValues', 'event', 'validators', 'virtual');
         }
 
-        return array('__isInitialized__', 'id', 'date', 'submissionDate', 'hostName', 'ipAddress', 'type', 'key', 'invite', 'userId', 'langId', 'export', 'paymentMethod', 'paid', 'registrationFormFieldValues', 'event', 'validators', 'virtual');
+        return array('__isInitialized__', 'id', 'date', 'submissionDate', 'hostName', 'ipAddress', 'type', 'invite', 'userId', 'langId', 'export', 'paymentMethod', 'paid', 'registrationFormFieldValues', 'event', 'validators', 'virtual');
     }
 
     /**
@@ -305,28 +305,6 @@ class Registration extends \Cx\Modules\Calendar\Model\Entity\Registration implem
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getType', array());
 
         return parent::getType();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setKey($key)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setKey', array($key));
-
-        return parent::setKey($key);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getKey()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getKey', array());
-
-        return parent::getKey();
     }
 
     /**
