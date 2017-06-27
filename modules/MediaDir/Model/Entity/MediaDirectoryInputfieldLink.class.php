@@ -266,7 +266,7 @@ class MediaDirectoryInputfieldLink extends \Cx\Modules\MediaDir\Controller\Media
 
         //make link href with "http://"
         $strValueHref = $strValue;
-        if (substr($strValueHref, 0, 1) !== '/' && !preg_match('#^.*:\/\/#', $strValueHref)) {
+        if (substr($strValueHref, 0, 1) !== '/' && !preg_match('#^.*://#', $strValueHref)) {
             $strValueHref = 'http://' . $strValueHref;
         }
 
