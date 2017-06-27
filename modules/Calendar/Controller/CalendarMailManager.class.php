@@ -397,11 +397,22 @@ class CalendarMailManager extends CalendarLibrary {
                 case self::MAIL_INVITATION:
                     // check if an invitation to the recipient
                     // has been sent before
-                    $invite = $inviteRepo->findOneBy(array(
+                    $findCriteria = array(
                         'event'        => $eventByDoctrine,
                         'inviteeType'  => $recipient->getType(),
-                        'inviteeId'    => $recipient->getId(),
-                    ));
+                    );
+
+                    // Virtual recipients (identified only by email address) will
+                    // be looked up only by their email address.
+                    // Physical recipients (origin from a component) will be looked
+                    // up by their entity ID.
+                    if ($recipient->getType() == MailRecipient::RECIPIENT_TYPE_MAIL) {
+                        $findCriteria['email'] = $recipient->getAddress();
+                    } else {
+                        $findCriteria['inviteeId'] = $recipient->getId();
+                    }
+
+                    $invite = $inviteRepo->findOneBy($findCriteria);
 
                     // store invitation to db, in case no intivation
                     // has been sent before
@@ -414,6 +425,7 @@ class CalendarMailManager extends CalendarLibrary {
                         $invite->setDate($event->startDate);
                         $invite->setInviteeType($recipient->getType());
                         $invite->setInviteeId($recipient->getId());
+                        $invite->setEmail($recipient->getAddress());
                         $invite->setToken($this->generateKey());
                         $this->em->persist($invite);
                         $this->em->flush();
@@ -673,6 +685,16 @@ class CalendarMailManager extends CalendarLibrary {
                     if ($arrField['type'] == 'mail' && !empty($arrField['value'])) {
                         $recipients[$arrField['value']] = (new MailRecipient())->setLang(isset($this->mailList[$_LANGID]) ? $_LANGID : 0)->setAddress($arrField['value']);
                     }
+                }
+
+                // set user that submitted the registration as such
+                if (   $objRegistration->getInvite()->getInviteeType() == MailRecipient::RECIPIENT_TYPE_MAIL
+                    && \FWValidator::isEmpty($objRegistration->getInvite()->getAddress())
+                    && count($recipients)
+                ) {
+                    $participant = end($recipients);
+                    $objRegistration->getInvite()->setAddress($participant->getAddress());
+                    $this->em->flush();
                 }
                 break;
 
