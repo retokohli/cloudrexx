@@ -65,6 +65,11 @@ class Invite extends \Cx\Model\Base\EntityBase {
     protected $inviteeId;
 
     /**
+     * @var string aemail$
+     */
+    protected $email;
+
+    /**
      * @var string token$
      */
     protected $token;
@@ -192,6 +197,26 @@ class Invite extends \Cx\Model\Base\EntityBase {
     public function getInviteeId()
     {
         return $this->inviteeId;
+    }
+
+    /**
+     * Set email
+     *
+     * @param string $email
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string $email
+     */
+    public function getEmail()
+    {
+        return $this->email;
     }
 
     /**

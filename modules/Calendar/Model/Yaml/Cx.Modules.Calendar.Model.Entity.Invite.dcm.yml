@@ -20,6 +20,10 @@ Cx\Modules\Calendar\Model\Entity\Invite:
     inviteeId:
       type: integer
       column: invitee_id
+    email:
+      type: string
+      length: 255
+      column: email
     token:
       type: string
       length: 32

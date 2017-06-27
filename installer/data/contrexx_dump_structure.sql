@@ -798,6 +798,7 @@ CREATE TABLE `contrexx_module_calendar_invite` (
   `date` bigint unsigned NOT NULL,
   `invitee_type` enum('-', 'AccessUser','CrmContact') NOT NULL,
   `invitee_id` int(11) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
   `token` varchar(32) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB ;
