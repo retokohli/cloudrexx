@@ -326,7 +326,7 @@ class CalendarMailManager extends CalendarLibrary {
         $publishedLanguages = explode(',',$objEvent->showIn);
 
         // send out mail for each recipient
-        foreach ($recipients as $mailAdress => $recipient) {
+        foreach ($recipients as $recipient) {
             // event invitation
             $invite = null;
 
@@ -337,7 +337,7 @@ class CalendarMailManager extends CalendarLibrary {
 
             // let's see if there exists a user account by the provided e-mail address
             if ($recipient->getType() == MailRecipient::RECIPIENT_TYPE_MAIL) {
-                $objUser = \FWUser::getFWUserObject()->objUser->getUsers($filter = array('email' => $mailAdress, 'is_active' => true));
+                $objUser = \FWUser::getFWUserObject()->objUser->getUsers($filter = array('email' => $recipient->getAddress(), 'is_active' => true));
                 if ($objUser) {
                     // convert recipient to an Access User recipient
                     $recipient->setLang($objUser->getFrontendLanguage());
@@ -347,9 +347,7 @@ class CalendarMailManager extends CalendarLibrary {
                     $recipient->setLastname($objUser->getProfileAttribute('lastname'));
                     $recipient->setUsername($objUser->getUsername());
                 } else {
-                    $recipient->setUsername($mailAdress);
-
-                    if (!empty($regId) && $mailAdress == $regMail) {
+                    if (!empty($regId) && $recipient->getAddress() == $regMail) {
                         $recipient->setFirstname($regFirstname);
                         $recipient->setLastname($regLastname);
                     }
@@ -485,7 +483,7 @@ class CalendarMailManager extends CalendarLibrary {
             $objMail->Subject = $mailTitle;
             $objMail->Body    = $mailContentHtml;
             $objMail->AltBody = $mailContentText;
-            $objMail->AddAddress($mailAdress);
+            $objMail->AddAddress($recipient->getAddress());
             $objMail->Send();
             $objMail->ClearAddresses();
         }
@@ -569,7 +567,7 @@ class CalendarMailManager extends CalendarLibrary {
                 $invitedMails = explode(",", $objEvent->invitedMails);
                 foreach ($invitedMails as $mail) {
                     if (!empty($mail)) {
-                        $recipients[$mail] = (new MailRecipient())->setLang($_LANGID);
+                        $recipients[$mail] = (new MailRecipient())->setLang($_LANGID)->setAddress($mail);
                     }
                 }
 
@@ -612,6 +610,7 @@ class CalendarMailManager extends CalendarLibrary {
 
                         $recipients[$crmContact->email] = (new MailRecipient())
                             ->setLang($crmContact->contact_language)
+                            ->setAddress($crmContact->email)
                             ->setType(MailRecipient::RECIPIENT_TYPE_CRM_CONTACT)
                             ->setId($crmContact->id)
                             ->setFirstname($crmContact->customerName)
@@ -636,6 +635,7 @@ class CalendarMailManager extends CalendarLibrary {
                         if (in_array($groupId, $objEvent->invitedGroups))  {
                             $recipients[$objUser->getEmail()] = (new MailRecipient())
                                 ->setLang($objUser->getFrontendLanguage())
+                                ->setAddress($objUser->getEmail())
                                 ->setType(MailRecipient::RECIPIENT_TYPE_ACCESS_USER)
                                 ->setId($objUser->getId())
                                 ->setFirstname($objUser->getProfileAttribute('firstname'))
@@ -659,6 +659,7 @@ class CalendarMailManager extends CalendarLibrary {
                     if ($objUser = $objFWUser->objUser->getUser($id = intval($objRegistration->userId))) {
                         $recipients[$objUser->getEmail()] = (new MailRecipient())
                             ->setLang($objUser->getFrontendLanguage())
+                            ->setAddress($objUser->getEmail())
                             ->setType(MailRecipient::RECIPIENT_TYPE_ACCESS_USER)
                             ->setId($objUser->getId())
                             ->setFirstname($objUser->getProfileAttribute('firstname'))
@@ -670,7 +671,7 @@ class CalendarMailManager extends CalendarLibrary {
                 // add recipient based on form data (field 'mail')
                 foreach ($objRegistration->fields as $arrField) {
                     if ($arrField['type'] == 'mail' && !empty($arrField['value'])) {
-                        $recipients[$arrField['value']] = (new MailRecipient())->setLang(isset($this->mailList[$_LANGID]) ? $_LANGID : 0);
+                        $recipients[$arrField['value']] = (new MailRecipient())->setLang(isset($this->mailList[$_LANGID]) ? $_LANGID : 0)->setAddress($arrField['value']);
                     }
                 }
                 break;
@@ -680,13 +681,13 @@ class CalendarMailManager extends CalendarLibrary {
                 $notificationEmails = explode(",", $objEvent->notificationTo);
 
                 foreach ($notificationEmails as $mail) {
-                    $recipients[$mail] = (new MailRecipient())->setLang($_LANGID);
+                    $recipients[$mail] = (new MailRecipient())->setLang($_LANGID)->setAddress($mail);
                 }
                 break;
 
             case static::MAIL_NOTFY_NEW_APP:
                 // add website-administrator as recipient
-                $recipients[$_CONFIG['coreAdminEmail']] = (new MailRecipient())->setLang($_LANGID);
+                $recipients[$_CONFIG['coreAdminEmail']] = (new MailRecipient())->setLang($_LANGID)->setAddress($_CONFIG['coreAdminEmail']);
                 break;
 
             default:
@@ -695,7 +696,7 @@ class CalendarMailManager extends CalendarLibrary {
         // add recipients specified by option 'Additional recipients' of each loaded mail template
         foreach ($this->mailList as $langId => $mailList) {
             foreach ($mailList['recipients'] as $email => $langId) {
-                $recipients[$email] = (new MailRecipient())->setLang($langId);
+                $recipients[$email] = (new MailRecipient())->setLang($langId)->setAddress($email);
             }
         }
 

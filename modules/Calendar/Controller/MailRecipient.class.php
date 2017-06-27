@@ -48,6 +48,7 @@ class MailRecipient {
     protected $id;
     protected $lang;
     protected $type;
+    protected $address;
     protected $firstname = '';
     protected $lastname = '';
     protected $username = '';
@@ -86,6 +87,18 @@ class MailRecipient {
 
     public function getType() {
         return $this->type;
+    }
+
+    public function setAddress($address) {
+        $this->address = $address;
+        if (empty($this->username)) {
+            $this->username = $address;
+        }
+        return $this;
+    }
+
+    public function getAddress() {
+        return $this->address;
     }
 
     public function setFirstname($firstname) {
