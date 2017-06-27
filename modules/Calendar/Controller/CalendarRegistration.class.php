@@ -383,10 +383,25 @@ class CalendarRegistration extends CalendarLibrary
             $seatingId = $objResult->fields['id'];
         }
         
-        $numSeating = isset($data['registrationField'][$seatingId]) ? intval($data['registrationField'][$seatingId]) : 0;
-        $type       =   empty($regId) && intval($objEvent->getFreePlaces() - $numSeating) < 0
-                      ? 2 : (isset($data['registrationType']) ? intval($data['registrationType']) : 1);
+        $numSeating = isset($data['registrationField'][$seatingId]) ? intval($data['registrationField'][$seatingId]) : 1;
+
+        // set registration type
+        if (
+            (
+                empty($regId) ||
+                \Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND
+            ) &&
+            !empty($objEvent->numSubscriber) &&
+            intval($objEvent->getFreePlaces() - $numSeating) < 0
+        ) {
+            $type = 2;
+        } elseif (isset($data['registrationType'])) {
+            $type = intval($data['registrationType']);
+        } else {
+            $type = 1;
+        }
         $this->saveIn = intval($type);
+
         $paymentMethod = empty($data['paymentMethod']) ? 0 : intval($data['paymentMethod']);
         $paid = empty($data['paid']) ? 0 : intval($data['paid']);
         $hostName = 0;
