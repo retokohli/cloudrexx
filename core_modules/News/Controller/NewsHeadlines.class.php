@@ -79,12 +79,13 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
     }
 
 
-    function getHomeHeadlines($catId = 0, $langId = 0)
+    function getHomeHeadlines($catId = 0, $langId = 0, $includeSubCategories = false)
     {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
         $i = 0;
         $catId= intval($catId);
+        $catIds = array();
 
         if (empty($langId)) {
             $langId = \Env::get('init')->getDefaultFrontendLangId();
@@ -107,6 +108,13 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
         if ($newsLimit<1) { //do not get any news if 0 was specified as the limit.
             $objResult=false;
         } else {//fetch news
+
+            if ($catId && $includeSubCategories) {
+                $catIds = $this->getCatIdsFromNestedSetArray($this->getNestedSetCategories($catId));
+            } elseif ($catId) {
+                $catIds = array($catId);
+            }
+
             $objResult = $objDatabase->SelectLimit("
                 SELECT DISTINCT(tblN.id) AS newsid,
                        tblN.`date` AS newsdate,
@@ -132,7 +140,7 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
             INNER JOIN ".DBPREFIX."module_news_locale AS tblL ON tblL.news_id=tblN.id
             INNER JOIN ".DBPREFIX."module_news_rel_categories AS tblC ON tblC.news_id=tblL.news_id
                   WHERE tblN.status=1".
-                   ($catId > 0 ? " AND tblC.category_id=$catId" : '')."
+                   ($catIds ? " AND tblC.category_id IN (" . join(',', $catIds) . ')' : '')."
                    AND tblN.teaser_only='0'
                    AND tblL.lang_id=".$langId."
                    AND tblL.is_active=1
