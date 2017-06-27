@@ -701,44 +701,52 @@ class CalendarMailManager extends CalendarLibrary {
         }
 
         return $recipients;
+    }
 
-                }
-
-
-
-    private function getSendMailLangId($actionId, $receiverEmail, $language_id)
+    private function getSendMailLangId($actionId, $recipient)
     {
-        $langId = 0; // default template
-
-        // language selection process 1
-        if (   $actionId == self::MAIL_CONFIRM_REG
-            && \FWUser::getFWUserObject()->objUser->getEmail() == $receiverEmail
-            && isset($this->mailList[$language_id])
-           ) {
-            $langId = $language_id;
-        } else {
-            // language selection process 2
-            if ($objUser = \FWUser::getFWUserObject()->objUser->getUsers($filter = array('email' => $receiverEmail, 'is_active' => true))) {
-                switch (true) {
-                    case (isset($this->mailList[$objUser->getBackendLanguage()])):
-                        $langId = $objUser->getBackendLanguage();
-                        break;
-                    case (isset($this->mailList[$objUser->getFrontendLanguage()])):
-                        $langId = $objUser->getFrontendLanguage();
-                        break;
-                    default:
-                        break;
+        switch ($actionId) {
+            // MAIL_ALERT_REG and MAIL_NOTFY_NEW_APP are mail notifications
+            // that target backend users. Therefore, we shall check if
+            // the recipient is a backend user and if so, we shall check if
+            // there is a mail template available in the user's prefered
+            // backend language.
+            case static::MAIL_ALERT_REG:
+            case static::MAIL_NOTFY_NEW_APP:
+                // backend users are of type MailRecipient::RECIPIENT_TYPE_ACCESS_USER
+                if ($recipient->getType() != MailRecipient::RECIPIENT_TYPE_ACCESS_USER) {
+                    break;
                 }
-            }
+
+                // abort in case the backend user is not active
+                $objUser = \FWUser::getFWUserObject()->objUser->getUsers($filter = array('id' => $recipient->getId(), 'is_active' => true));
+                if (!$objUser) {
+                    break;
+                }
+
+                // try to use prefered backend language
+                if (isset($this->mailList[$objUser->getBackendLanguage()])) {
+                    return $objUser->getBackendLanguage();
+                }
+
+                // try to use prefered frontend language as fallback
+                if (isset($this->mailList[$objUser->getFrontendLanguage()])) {
+                    return $objUser->getFrontendLanguage();
+                }
+
+            default:
+                break;
         }
 
-        if (isset($this->mailList[$langId])) {
-            return $langId;
-        } else {
-            reset($this->mailList);
-            return key($this->mailList);
+        // check if prefered language of recipient exists as a mail template
+        if (isset($this->mailList[$recipient->getLang()])) {
+            return $recipient->getLang();
         }
 
+        // use fallback mail template, in case none exists in the recipient's
+        // prefered language
+        reset($this->mailList);
+        return key($this->mailList);
     }
 
     /**
