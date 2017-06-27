@@ -291,6 +291,12 @@ class CalendarMailManager extends CalendarLibrary {
             }
         }
 
+        // fetch active frontend languages
+        $this->getFrontendLanguages();
+
+        // fetch published locales of event
+        $publishedLanguages = explode(",",$objEvent->showIn);
+
         // send out mail for each recipient
         foreach ($recipients as $mailAdress => $recipient) {
             if (empty($mailAdress)) {
@@ -299,10 +305,6 @@ class CalendarMailManager extends CalendarLibrary {
 
             // URL pointing to the event subscription page
             $regLink = '';
-
-            // find existing locale of notification mail
-            // that best fits recipient
-            $langId = $this->getSendMailLangId($actionId, $mailAdress, $recipient->getLang());
 
             // let's see if there exists a user account by the provided e-mail address
             if ($recipient->getType() == MailRecipient::RECIPIENT_TYPE_MAIL) {
@@ -327,7 +329,24 @@ class CalendarMailManager extends CalendarLibrary {
             $mailTitle       = $this->mailList[$langId]['mail']->title;
             $mailContentText = !empty($this->mailList[$langId]['mail']->content_text) ? $this->mailList[$langId]['mail']->content_text : strip_tags($this->mailList[$langId]['mail']->content_html);
             $mailContentHtml = !empty($this->mailList[$langId]['mail']->content_html) ? $this->mailList[$langId]['mail']->content_html : $this->mailList[$langId]['mail']->content_text;
+            // find existing locale of notification mail
+            // that best fits recipient
+            $langId = $this->getSendMailLangId($actionId, $recipient);
 
+            // re-fetch recipient's prefered language,
+            // in case it was not available as mail template
+            if (empty($langId)) {
+                $langId = $recipient->getLang();
+            }
+
+            // verify that prefered language is available as content in frontend
+            if (   !isset($this->arrFrontendLanguages[$langId])
+                || (   $this->arrSettings['showEventsOnlyInActiveLanguage'] == 1
+                    && !in_array($langId, $publishedLanguages)
+                )
+            ) {
+                $langId = FRONTEND_LANG_ID;
+            }
             // default params
             $params = array(
                 \CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_EVENT  => $event->id,

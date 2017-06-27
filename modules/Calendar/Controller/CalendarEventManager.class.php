@@ -713,6 +713,15 @@ class CalendarEventManager extends CalendarLibrary
             'status' => 1,
         ));
 
+        // check if event has been published in currently requrested locale region
+        if ($this->arrSettings['showEventsOnlyInActiveLanguage'] == 1) {
+            $publishedLanguages = explode(',', $event->getShowIn());
+            if (!in_array(FRONTEND_LANG_ID, $publishedLanguages)) {
+                \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
+                return;
+            }
+        }
+
         // abort in case the event of the invitation is not published
         if (!$event) {
             return;
