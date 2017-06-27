@@ -80,6 +80,11 @@ class CalendarMailManager extends CalendarLibrary {
      */
     const MAIL_NOTFY_NEW_APP = 4;
 
+    /**
+     * Notification mail types
+     *
+     * @var array
+     */
     protected $mailActions = array();
 
     /**
@@ -100,6 +105,12 @@ class CalendarMailManager extends CalendarLibrary {
         $this->init();
     }
 
+    /**
+     * Get list (as array) of available notification mail types
+     *
+     * @return array Returns the list ($this->mailActions) of available
+     *               notification mail types
+     */
     public function getMailActions() {
         return $this->mailActions;
     }
@@ -519,11 +530,6 @@ class CalendarMailManager extends CalendarLibrary {
                         continue;
                     }
 
-                    $this->mailList[$langId]['default_recipient'] = array();
-                    if ($objResult->fields['default_recipient'] != 'empty') {
-                        $this->mailList[$langId]['default_recipient'][$objResult->fields['default_recipient']] = $langId;
-                    }
-
                     $this->mailList[$langId]['recipients'][$mail] = $langId;
                 }
 
@@ -693,20 +699,11 @@ class CalendarMailManager extends CalendarLibrary {
             }
         }
 
-        //return $recipients;
+        return $recipients;
 
-        if (isset($this->mailList[$langId]) && is_array($this->mailList[$langId]['default_recipient'])) {
-            foreach ($this->mailList[$langId]['default_recipient'] as $mail => $recipientLang) {
-                if (isset($recipients[$mail])) {
-                    continue;
                 }
 
-                $recipients[$mail] = (new MailRecipient())->setLang($recipientLang);
-            }
-        }
 
-        return $recipients;
-    }
 
     private function getSendMailLangId($actionId, $receiverEmail, $language_id)
     {

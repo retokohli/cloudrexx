@@ -1098,7 +1098,7 @@ UPLOADER;
         // Note: In contrary to Calendar::loadEventManager(), the following
         // does not take the requested event-date into consideration.
         // This will make it possible to change the event's startdate
-        // event after invitations have been sent out already.
+        // even after invitations have been sent out already.
         $eventRepo = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Event');
         $event = $eventRepo->findOneBy(array(
             'id'     => $eventId,
