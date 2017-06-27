@@ -869,6 +869,10 @@ class CalendarRegistration extends CalendarLibrary
                 ->getRepository('Cx\Modules\Calendar\Model\Entity\Registration')
                 ->findOneById($id);
         }
+        if ($registration->getInvite()) {
+            $registration->getInvite()->setVirtual(true);
+            $this->em->detach($registration->getInvite());
+        }
         $registration->setVirtual(true);
 
         if (!$registration) {

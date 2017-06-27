@@ -689,11 +689,11 @@ class CalendarMailManager extends CalendarLibrary {
 
                 // set user that submitted the registration as such
                 if (   $objRegistration->getInvite()->getInviteeType() == MailRecipient::RECIPIENT_TYPE_MAIL
-                    && \FWValidator::isEmpty($objRegistration->getInvite()->getAddress())
+                    && \FWValidator::isEmpty($objRegistration->getInvite()->getEmail())
                     && count($recipients)
                 ) {
                     $participant = end($recipients);
-                    $objRegistration->getInvite()->setAddress($participant->getAddress());
+                    $objRegistration->getInvite()->setEmail($participant->getAddress());
                     $this->em->flush();
                 }
                 break;
