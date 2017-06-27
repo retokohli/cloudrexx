@@ -292,7 +292,7 @@ class CalendarMailManager extends CalendarLibrary {
         $this->getFrontendLanguages();
 
         // fetch published locales of event
-        $publishedLanguages = explode(",",$objEvent->showIn);
+        $publishedLanguages = explode(',',$objEvent->showIn);
 
         // send out mail for each recipient
         foreach ($recipients as $mailAdress => $recipient) {
