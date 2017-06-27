@@ -1653,9 +1653,7 @@ class CalendarEvent extends CalendarLibrary
             // TO-DO set form data into $this
             $event          = new CalendarEvent($this->id);
             $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();    
-            foreach ($invitationTemplate as $templateId) {
-                $objMailManager->sendMail($event, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_INVITATION, null, $templateId);
-            }
+            $objMailManager->sendMail($event, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_INVITATION, null, $invitationTemplate);
         }
         //Clear cache
         $this->triggerEvent('clearEsiCache');

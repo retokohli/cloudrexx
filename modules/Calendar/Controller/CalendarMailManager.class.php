@@ -224,11 +224,11 @@ class CalendarMailManager extends CalendarLibrary {
      * Initialize the mail functionality to the recipient
      *
      * @param \Cx\Modules\Calendar\Controller\CalendarEvent $event          Event instance
-     * @param integer                                       $actionId       Mail action id
-     * @param integer                                       $regId          Registration id
-     * @param string                                        $mailTemplate   Mail template id
+     * @param integer $actionId       Mail action id
+     * @param integer $regId          Registration id
+     * @param array $arrMailTemplateIds   Prefered templates of the specified action to be sent
      */
-    function sendMail(CalendarEvent $event, $actionId, $regId=null, $mailTemplate = null)
+    function sendMail(CalendarEvent $event, $actionId, $regId=null, $arrMailTemplateIds = array())
     {
         global $_ARRAYLANG, $_CONFIG ;
 
@@ -236,7 +236,7 @@ class CalendarMailManager extends CalendarLibrary {
         $this->mailList = array();
 
         // Loads the mail template which needs for this action
-        $this->loadMailList($actionId, $mailTemplate);
+        $this->loadMailList($actionId, $arrMailTemplateIds);
 
         if (empty($this->mailList)) {
             return;
@@ -505,16 +505,16 @@ class CalendarMailManager extends CalendarLibrary {
      * Loads the mail template for the give action
      *
      * @param integer $actionId     Mail action see CalendarMailManager:: const vars
-     * @param integer $mailTemplate Specific Mail template id to load
+     * @param array $arrMailTemplateIds Specific Mail template ids to load
      */
-    private function loadMailList($actionId, $mailTemplate)
+    private function loadMailList($actionId, $arrMailTemplateIds)
     {
         global $objDatabase;
 
-        if($mailTemplate) {
-            $whereId = " AND mail.id = " . intval($mailTemplate);
-        } else {
-            $whereId = "";
+        $whereId = '';
+
+        if (!empty($arrMailTemplateIds)) {
+            $whereId = 'AND id IN (' . join(',', $arrMailTemplateIds) . ')';
         }
 
         $query = "SELECT id, lang_id, is_default, recipients
