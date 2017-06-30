@@ -416,7 +416,11 @@ class MediaDirectory extends MediaDirectoryLibrary
             if (!$this->arrSettings['legacyBehavior']) {
                 $this->pageTitle = $objCategory->arrCategories[$intCategoryId]['catName'][0];
             }
-            $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catDescription'][0];
+            if (empty($objCategory->arrCategories[$intCategoryId]['catMetaDesc'][0])) {
+                $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catDescription'][0];
+            } else {
+                $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catMetaDesc'][0];
+            }
             $this->metaImage = $objCategory->arrCategories[$intCategoryId]['catPicture'];
         }
 

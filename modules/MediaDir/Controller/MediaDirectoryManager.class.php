@@ -796,6 +796,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             'TXT_'.$this->moduleLangVar.'_DEACTIVATE' =>  $_ARRAYLANG['TXT_MEDIADIR_DEAVTIVATE'],
             'TXT_'.$this->moduleLangVar.'_NAME' =>  $_CORELANG['TXT_NAME'],
             'TXT_'.$this->moduleLangVar.'_DESCRIPTION' =>  $_CORELANG['TXT_DESCRIPTION'],
+            'TXT_'.$this->moduleLangVar.'_META_DESCRIPTION' =>  $_CORELANG['TXT_META_DESCRIPTION'],
             'TXT_'.$this->moduleLangVar.'_PICTURE' =>  $_CORELANG['TXT_IMAGE'],
             'TXT_'.$this->moduleLangVar.'_SHOW_SUBCATEGORIES' =>  $_ARRAYLANG['TXT_MEDIADIR_SHOW_SUBCATEGORIES'],
             'TXT_'.$this->moduleLangVar.'_SHOW_ENTRIES' =>  $_ARRAYLANG['TXT_MEDIADIR_SHOW_ENTRIES'],
@@ -839,11 +840,18 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             } else {
                 $strCategoryDescription = '';
             }
+            //category meta description
+            if (isset($intCategoryId)) {
+                $categoryMetaDescription = empty($objCategory->arrCategories[$intCategoryId]['catMetaDesc'][$arrLang['id']]) ? $objCategory->arrCategories[$intCategoryId]['catMetaDesc'][0] : $objCategory->arrCategories[$intCategoryId]['catMetaDesc'][$arrLang['id']];
+            } else {
+                $categoryMetaDescription = '';
+            }
 
             $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_CATEGORY_LANG_ID' => $arrLang['id'],
                 $this->moduleLangVar.'_CATEGORY_NAME' => $strCategoryName,
                 $this->moduleLangVar.'_CATEGORY_DESCRIPTION' => new \Cx\Core\Wysiwyg\Wysiwyg("categoryDescription[{$arrLang['id']}]", $strCategoryDescription),
+                $this->moduleLangVar.'_CATEGORY_META_DESCRIPTION' => $categoryMetaDescription,
                 $this->moduleLangVar.'_CATEGORY_BLOCK_DISPLAY' => $first ? 'display:block;' : 'display:none;'
             ));
 

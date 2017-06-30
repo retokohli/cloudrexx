@@ -2375,6 +2375,7 @@ CREATE TABLE `contrexx_module_mediadir_categories_names` (
   `category_id` int(7) NOT NULL,
   `category_name` varchar(255) NOT NULL,
   `category_description` mediumtext NOT NULL,
+  `category_metadesc` text DEFAULT NULL,
   KEY `lang_id` (`lang_id`),
   KEY `category_id` (`category_id`)
 ) ENGINE=MyISAM;
