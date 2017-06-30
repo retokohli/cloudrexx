@@ -1789,7 +1789,6 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
             $this->applicationTemplate = $page->getApplicationTemplate();
             $this->cssName = $page->getCssName();
         }
-        $this->cssNavName = $page->getCssNavName();
 
         $this->type = $page->getType();
         $this->target = $page->getTarget();

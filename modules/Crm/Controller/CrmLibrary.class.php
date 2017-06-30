@@ -730,6 +730,77 @@ class CrmLibrary
     }
 
     /**
+     * Get company size name by id
+     *
+     * @param integer $companySizeId
+     *
+     * @return string name of the company size
+     */
+    public function getCompanySizeNameById($companySizeId)
+    {
+        global $objDatabase;
+
+        if (empty($companySizeId)) {
+            return false;
+        }
+
+        $objResult = $objDatabase->Execute('SELECT `company_size`
+                                                FROM `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_company_size`
+                                                WHERE `id` = "' . contrexx_raw2db($companySizeId) .
+                                                '" LIMIT 0, 1');
+
+        return ($objResult && $objResult->RecordCount()) ? $objResult->fields['company_size'] : '';
+    }
+
+    /**
+     * Get customer type name by id
+     *
+     * @param integer $customerTypeId customer type id
+     *
+     * @return string name of the customer type
+     */
+    public function getCustomerTypeNameById($customerTypeId)
+    {
+        global $objDatabase;
+
+        if (empty($customerTypeId)) {
+            return false;
+        }
+
+        $objResult = $objDatabase->Execute('SELECT `label`
+                                                FROM `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_customer_types`
+                                                WHERE `id` = "' . contrexx_raw2db($customerTypeId) .
+                                                '" LIMIT 0, 1');
+
+        return ($objResult && $objResult->RecordCount()) ? $objResult->fields['label'] : '';
+    }
+
+    /**
+     * Get industry type name by id
+     *
+     * @param integer $industryId industry type id
+     *
+     * @return string name of the industry type
+     */
+    public function getIndustryTypeNameById($industryId)
+    {
+        global $objDatabase;
+
+        if (empty($industryId)) {
+            return false;
+        }
+
+        $query = 'SELECT ind_loc.`value` FROM `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_industry_type_local` As ind_loc
+                    LEFT JOIN `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_industry_types` As ind
+                        ON (ind_loc.entry_id = ind.id)
+                    WHERE ind.id = "' . contrexx_raw2db($industryId) . '" LIMIT 0, 1';
+
+        $objResult = $objDatabase->Execute($query);
+
+        return ($objResult && $objResult->RecordCount()) ? $objResult->fields['value'] : '';
+    }
+
+    /**
      * Get Industry Type Dropdown From DB
      *
      * @param Object  $objTpl

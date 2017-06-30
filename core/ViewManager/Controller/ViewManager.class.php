@@ -1650,6 +1650,10 @@ CODE;
                $objFile->touch();
             }
             $objFile->write($pageContent);
+
+            // temporary hotfix for google chrome
+            // remove in case google chrome will no longer throw an ERR_BLOCKED_BY_XSS_AUDITOR exception
+            header('X-XSS-Protection: 0');
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
         }

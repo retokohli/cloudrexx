@@ -1423,11 +1423,40 @@ class MediaDirectory extends MediaDirectoryLibrary
             foreach ($this->arrNavtree as $key => $strName) {
                 $strClass = $i == $count -1 ? 'last' : '';
                 $strSeparator = $i == 0 ? '' : '&gt;';
+                $url = '';
+                $title = '';
 
+                // Note: the following is a workaround as the array
+                // $this->arrNavtree does not contain normalized data,
+                // but instead already the processed HTML-links.
+                //
+                // Load HTML code of navtree element into a DOMDocument
+                $domDocument = \DOMDocument::loadHTML($strName);
+                if ($domDocument) {
+                    // fetch link tags
+                    $nodeList = $domDocument->getElementsByTagName('a');
+
+                    // check if the navtree element was an actual HTML-link
+                    if ($nodeList->length) {
+                        // as the HTML-code did only contain one link element,
+                        // the first one (index 0) will be our navtree element
+                        $item = $nodeList->item(0);
+                        if ($item) {
+                            $url = $item->getAttribute('href');
+                            $title = $item->textContent;
+                        }
+                    } else {
+                        // in case the navtree element was not a HTML-link,
+                        // we shall only set the TITLE placeholder
+                        $title = $strName;
+                    }
+                }
                 $template->setVariable(array(
-                    $this->moduleLangVar.'_NAVTREE_LINK'    =>  $strName,
-                    $this->moduleLangVar.'_NAVTREE_LINK_CLASS'    =>  $strClass,
-                    $this->moduleLangVar.'_NAVTREE_SEPARATOR'    =>  $strSeparator
+                    $this->moduleLangVar.'_NAVTREE_LINK'        =>  $strName,
+                    $this->moduleLangVar.'_NAVTREE_LINK_SRC'    =>  $url,
+                    $this->moduleLangVar.'_NAVTREE_LINK_TITLE'  =>  $title,
+                    $this->moduleLangVar.'_NAVTREE_LINK_CLASS'  =>  $strClass,
+                    $this->moduleLangVar.'_NAVTREE_SEPARATOR'   =>  $strSeparator
                 ));
 
                 $i++;

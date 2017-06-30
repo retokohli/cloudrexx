@@ -206,8 +206,12 @@ class PageLogRepository extends LogEntryRepository
                     if (!in_array($page->getLang(), $activeLangs)) {
                         continue;
                     }
-
-                    $result[$page->getNodeIdShadowed()][$page->getLang()] = $log;
+                    if (!$page->getNodeIdShadowed()) {
+                        \DBG::msg('Page #' . $page->getId() . '\'s shadowed node ID is NULL<br />');
+                        $result[][$page->getLang()] = $log;
+                    } else {
+                        $result[$page->getNodeIdShadowed()][$page->getLang()] = $log;
+                    }
                 }
                 break;
             default: // create, update and unvalidated

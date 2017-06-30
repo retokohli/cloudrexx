@@ -1045,11 +1045,30 @@ cx.cm.loadApplicationTemplate = function(application, area, template) {
                     }).text(templateFile[i]));
                 }
             }
+
+            var page = cx.cm.page;
             cx.jQuery('span.area').text(response.data.area);
             cx.jQuery('span.folderPath').text(response.data.path);
-            cx.cm.pageApplicationTemplate = '';
-            cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('disabled', 'disabled');
-            cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
+            cx.jQuery('#page select[name="page[customContent]"]').val(page.customContent);
+            cx.cm.pageContentTemplate = page.customContent;
+
+            if (page.useCustomContentForAllChannels == '1') {
+                cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').attr('checked', 'checked');
+            } else {
+                cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').removeAttr('checked');
+            }
+            cx.jQuery('#page select[name="page[customContent]"]').trigger('change');
+
+
+            cx.jQuery('#page select[name="page[applicationTemplate]"]').val(page.applicationTemplate);
+            cx.cm.pageApplicationTemplate = page.applicationTemplate;
+
+            if (page.useCustomApplicationTemplateForAllChannels == '1') {
+                cx.jQuery('#page input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('checked', 'checked');
+            } else {
+                cx.jQuery('#page input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
+            }
+            cx.jQuery('#page select[name="page[applicationTemplate]"]').trigger('change');
         }
     }).always(function(response) {
         if(response.hasOwnProperty('area')){
@@ -2731,6 +2750,7 @@ cx.cm.loadPage = function(pageId, nodeId, historyId, selectTab, reloadHistory) {
 };
 cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     cx.cm.showEditView();
+    cx.cm.page = page;
 
     // make sure history tab is shown
     cx.jQuery('.tab.page_history').show();
@@ -2826,27 +2846,6 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
         cx.jQuery('#page input[name="page[useSkinForAllChannels]"]').removeAttr('checked');
     }
     cx.jQuery('#page select[name="page[skin]"]').trigger('change');
-
-    cx.jQuery('#page select[name="page[customContent]"]').val(page.customContent);
-    cx.cm.pageContentTemplate = page.customContent;
-
-    if (page.useCustomContentForAllChannels == '1') {
-        cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').attr('checked', 'checked');
-    } else {
-        cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').removeAttr('checked');
-    }
-    cx.jQuery('#page select[name="page[customContent]"]').trigger('change');
-
-
-    cx.jQuery('#page select[name="page[applicationTemplate]"]').val(page.applicationTemplate);
-    cx.cm.pageApplicationTemplate = page.applicationTemplate;
-
-    if (page.useCustomApplicationTemplateForAllChannels == '1') {
-        cx.jQuery('#page input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('checked', 'checked');
-    } else {
-        cx.jQuery('#page input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
-    }
-    cx.jQuery('#page select[name="page[applicationTemplate]"]').trigger('change');
 
     cx.jQuery('#page input[name="page[cssName]"]').val(page.cssName);
 

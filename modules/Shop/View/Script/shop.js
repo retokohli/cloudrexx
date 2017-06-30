@@ -351,4 +351,14 @@ function productOptionsUploaderCallback(data) {
            $jq(this).data( 'price', $jq(this).text() );
         });
     });
+
+    // empty autocompleted password-field
+    $jq('input[name=bsubmit]').closest('form').each(function() {
+        $jq(this).bind('submit', function() {
+            $jq('#dont_register:checked').each(function() {
+                $jq('input[name=password]').val('');
+            });
+        });
+    });
 })(cx.jQuery);
+
