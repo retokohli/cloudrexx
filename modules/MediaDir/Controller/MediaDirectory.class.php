@@ -397,7 +397,11 @@ class MediaDirectory extends MediaDirectoryLibrary
             if (!$this->arrSettings['legacyBehavior']) {
                 $this->pageTitle = $objLevel->arrLevels[$intLevelId]['levelName'][0];
             }
-            $this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelDescription'][0];
+            if (empty($objLevel->arrLevels[$intLevelId]['levelMetaDesc'][0])) {
+                $this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelDescription'][0];
+            } else {
+                $this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelMetaDesc'][0];
+            }
             $this->metaImage = $objLevel->arrLevels[$intLevelId]['levelPicture'];
         }
 
