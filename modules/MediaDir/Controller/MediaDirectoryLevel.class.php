@@ -618,6 +618,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
         $arrName = $arrData['levelName'];
         $arrDescription = $arrData['levelDescription'];
+        $arrMetaDesc = $arrData['levelMetaDesc'];
 
         if(empty($intId)) {
             //insert new category
@@ -640,12 +641,15 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                     if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
                     if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[$_LANGID]) ? $arrDescription[$_LANGID] : '';
+                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[$_LANGID]) ? $arrMetaDesc[$_LANGID] : '';
 
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
+                    $metaDesc = $arrMetaDesc[$arrLang['id']];
 
                     if(empty($strName)) $strName = $arrName[0];
                     if(empty($strDescription)) $strDescription = $arrDescription[0];
+                    if(empty($metaDesc)) $metaDesc = $arrMetaDesc[0];
 
                     $objInsertNames = $objDatabase->Execute("
                         INSERT INTO
@@ -654,7 +658,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                             `lang_id`='".intval($arrLang['id'])."',
                             `level_id`='".intval($intId)."',
                             `level_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
-                            `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."'
+                            `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."',
+                            `level_metadesc`='".contrexx_raw2db(contrexx_input2raw($metaDesc))."'
                     ");
                 }
 
@@ -695,12 +700,15 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                     if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
                     if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[$_LANGID]) ? $arrDescription[$_LANGID] : '';
+                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[$_LANGID]) ? $arrMetaDesc[$_LANGID] : '';
 
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
+                    $metaDesc = $arrMetaDesc[$arrLang['id']];
 
                     if(empty($strName)) $strName = $arrName[0];
                     if(empty($strDescription)) $strDescription = $arrDescription[0];
+                    if(empty($metaDesc)) $metaDesc = $arrMetaDesc[0];
 
                     $objInsertNames = $objDatabase->Execute("
                         INSERT INTO
@@ -709,7 +717,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                             `lang_id`='".intval($arrLang['id'])."',
                             `level_id`='".intval($intId)."',
                             `level_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
-                            `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."'
+                            `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."',
+                            `level_metadesc`='".contrexx_raw2db(contrexx_input2raw($metaDesc))."'
                     ");
                 }
 
