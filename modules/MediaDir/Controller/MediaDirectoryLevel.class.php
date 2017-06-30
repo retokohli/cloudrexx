@@ -195,7 +195,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     SELECT
                         `lang_id` AS `lang_id`,
                         `level_name` AS `name`,
-                        `level_description` AS `description`
+                        `level_description` AS `description`,
                         `level_metadesc` AS `metadesc`
                     FROM
                         ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names
