@@ -53,4 +53,37 @@ use Doctrine\ORM\EntityRepository;
  */
 class LocaleRepository extends EntityRepository
 {
+    /**
+     * Finds all locale entities and orders them by their orderNo
+     * @todo: After doctrine update, use findBy instead of the queryBuilder
+     * @return array The locales
+     */
+    public function findAll()
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('l')
+            ->from('\Cx\Core\Locale\Model\Entity\Locale', 'l')
+            ->orderBy('l.orderNo', 'ASC');
+        $query = $qb->getQuery();
+        return $query->getResult();
+    }
+
+    /**
+     * Finds all locales according to the criteria
+     * and orders them by their orderNo
+     *
+     * @todo: After doctrine update, use second param of findBy for ordering
+     * @param array $criteria The criteria
+     * @return array The locales
+     */
+    public function findBy(
+        array $criteria, array $orderBy = NULL, $limit = NULL, $offset = NULL
+    ) {
+        $locales = parent::findBy($criteria);
+        // order locales by orderNo
+        usort($locales, function($a, $b) {
+           return $a->getOrderNo() - $b->getOrderNo();
+        });
+        return $locales;
+    }
 }

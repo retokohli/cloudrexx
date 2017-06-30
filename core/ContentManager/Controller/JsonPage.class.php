@@ -307,11 +307,6 @@ class JsonPage implements JsonAdapter {
 
             if (!empty($pageArray)) {
                 $page->updateFromArray($validatedPageArray);
-                if ($newPage) {
-                    // Make sure page has an ID
-                    $this->em->persist($page);
-                    $this->em->flush();
-                }
             }
 
             if (!empty($action)) {
@@ -350,6 +345,12 @@ class JsonPage implements JsonAdapter {
 
             $page->setUpdatedAtToNow();
             $page->validate();
+
+            if (!empty($pageArray) && $newPage) {
+                // Make sure page has an ID
+                $this->em->persist($page);
+                $this->em->flush();
+            }
 
             // Permissions are only updated in the editing mode.
             if (!empty($pageArray)) {
@@ -773,7 +774,10 @@ class JsonPage implements JsonAdapter {
     public function multipleSetShutdown() {
         if ($this->multipleSetState) {
             $this->multipleSetState['state'] = 'timeout';
-            echo \Cx\Core\Json\JsonData::json($this->multipleSetState, true);
+            $jd = new \Cx\Core\Json\JsonData();
+            echo $jd->json(
+                new \Cx\Core\Routing\Model\Entity\Response($this->multipleSetState)
+            );
         }
     }
 

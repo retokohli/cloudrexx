@@ -3302,7 +3302,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $overviewUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
                 'News',
                 $cmdOverview,
-                $LangId,
+                $langId,
                 array(
                     'category' => $newsCategoryId,
                 )

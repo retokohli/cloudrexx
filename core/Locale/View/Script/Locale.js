@@ -10,8 +10,19 @@ cx.jQuery(document).ready(function() {
     });
     cx.jQuery('.localeFallback select').width(maxFallbackSelectWidth);
 
+    //  hide delete function for default locale
+    cx.jQuery(".localeDefault input:checked").parent().parent("tr").find('.functions a.delete').hide();
+
     cx.jQuery("#content form :input").change(function() {
        cx.jQuery("#content form input[name=\"updateLocales\"").show();
+    });
+
+    cx.jQuery(".localeFallback select").change(function() {
+        if (cx.jQuery(this).val() == "NULL") {
+            cx.jQuery(this).parent().parent("tr").find(".functions").find(".copyLink, .linkLink").hide();
+        } else {
+            cx.jQuery(this).parent().parent("tr").find(".functions").find(".copyLink, .linkLink").show();
+        }
     });
 });
 
@@ -38,37 +49,29 @@ function updateCurrent(init) {
 }
 
 function copyPages(toLangId) {
-    performLanguageAction("copy", toLangId, function(json) {
-        cx.ui.dialog({
-            content: cx.variables.get("copySuccess", "Locale/Locale"),
-            modal: true,
-            autoOpen: true
-        });
-    });
+    performLanguageAction("copy", toLangId);
 }
 
 function linkPages(toLangId) {
-    performLanguageAction("link", toLangId, function(json) {
-        cx.ui.dialog({
-            content: cx.variables.get("linkSuccess", "Locale/Locale"),
-            modal: true,
-            autoOpen: true
-        });
-    });
+    performLanguageAction("link", toLangId);
 }
 
 function performLanguageAction(actionName, toLangId, action) {
     var defaultLangId = cx.jQuery(".localeDefault input:checked").parent("tr").children('.localeId').text();
-    var toLangRow = cx.jQuery(".localeId:contains(" + toLangId + ")").parent("tr");
+    var toLangRow = cx.jQuery(".localeId").filter(function() {
+        return cx.jQuery.trim(cx.jQuery(this).text()) == toLangId;
+    }).parent("tr");
     var fromLangId = toLangRow.children(".localeFallback").children("select").val();
     if (fromLangId === "") {
         return;
     } else if (fromLangId == 0) {
         fromLangId = defaultLangId;
     }
-    var fromLangRow = cx.jQuery(".localeId:contains(" + fromLangId + ")").parent("tr");
-    var fromLangName = fromLangRow.children(".localeLabel").text();
-    var toLangName = toLangRow.children(".localeLabel").text();
+    var fromLangRow = cx.jQuery(".localeId").filter(function() {
+        return cx.jQuery.trim(cx.jQuery(this).text()) == fromLangId;
+    }).parent("tr");
+    var fromLangName = cx.jQuery.trim(fromLangRow.children(".localeLabel").text());
+    var toLangName = cx.jQuery.trim(toLangRow.children(".localeLabel").text());
     showActionDialog(actionName, fromLangName, toLangName, function() {
         var waitDialog = cx.ui.dialog({
             title: cx.variables.get("waitTitle", "Locale/Locale"),
@@ -79,43 +82,56 @@ function performLanguageAction(actionName, toLangId, action) {
                 cx.jQuery(".ui-dialog-titlebar-close").hide();
             }
         });
-        var offset = 0;
-        var count = 0;
-        while ((offset < count) || offset == 0) {
-            cx.ajax(
-                "cm",
-                actionName,
-                {
-                    data: {
-                        to: toLangId,
-                        offset: offset,
-                        limit: 1,
-                    },
-                    async: false,
-                    dataType: "json",
-                    type: "GET",
-                    success: function(json) {
-                        if (json.status != "success") {
-                            cx.ui.dialog({
-                                title: json.status,
-                                content: json.message,
-                                modal: true,
-                                autoOpen: true
-                            });
-                            return;
+        performLanguageRequest(actionName, toLangId, 0, waitDialog, function() {
+            waitDialog.close();
+            cx.ui.dialog({
+                content: cx.variables.get(actionName + "Success", "Locale/Locale"),
+                modal: true,
+                autoOpen: true,
+                buttons: [
+                    {
+                        text: "Ok",
+                        icons: {
+                            primary: "ui-icon-heart"
+                        },
+                        click: function() {
+                            cx.jQuery(this).dialog("close");
                         }
-                        offset = json.data.offset;
-                        count = json.data.count;
-                        var newText = cx.variables.get("waitText", "Locale/Locale") + "\n\n" + offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)";
-                        //console.log(offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)");
-                        waitDialog.getElement().html(newText);
                     }
-                }
-            );
+                ]
+            });
+        });
+    }, cx.variables.get("warningText", "Locale/Locale").replace("%1",  "<b>" + fromLangName + "</b>").replace("%2",  "<b>" + toLangName + "</b>"));
+}
+
+function performLanguageRequest(actionName, toLangId, offset, dialog, doneFunc) {
+    var url = "index.php?cmd=JsonData&object=cm&act=" + actionName + "&to=" + toLangId + "&offset=" + offset + "&limit=1";
+    cx.jQuery.ajax({
+        url: url,
+        dataType: "json",
+        type: "GET",
+        success: function(json) {
+            if (json.status != "success") {
+                cx.ui.dialog({
+                    title: json.status,
+                    content: json.message,
+                    modal: true,
+                    autoOpen: true
+                });
+                return;
+            }
+            offset = json.data.offset;
+            count = json.data.count;
+            var newText = cx.variables.get("waitText", "Locale/Locale") + "<br /><br />" + offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)";
+            //console.log(offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)");
+            dialog.getElement().html(newText);
+            if (offset < count) {
+                performLanguageRequest(actionName, toLangId, offset, dialog, doneFunc);
+            } else {
+                doneFunc();
+            }
         }
-        waitDialog.close();
-        action();
-    }, cx.variables.get("warningText", "Locale/Locale").replace("%1", fromLangName).replace("%2", toLangName));
+    });
 }
 
 /**
@@ -142,10 +158,11 @@ function showActionDialog(action, fromLang, toLang, yesAction, checkboxText) {
     buttons[noOption] = function() {cx.jQuery(this).dialog("close");}
     var content = "<p>" + cx.variables.get(action + "Text", "Locale/Locale");
     if (action == 'link') {
-        content = content.replace("%1", toLang).replace("%2", fromLang);
+        content = content.replace("%1",  "<b>" + toLang + "</b>").replace("%2", "<b>" + fromLang + "</b>");
     } else {
-        content = content.replace("%1", fromLang).replace("%2", toLang);
+        content = content.replace("%1",  "<b>" + fromLang + "</b>").replace("%2",  "<b>" + toLang + "</b>");
     }
+    cx.jQuery("#really").remove();
     if (checkboxText) {
         content += "<br /><br /><input type=\"checkbox\" id=\"really\" class=\"really\" value=\"true\" /> <label for=\"really\" class=\"really\">" + checkboxText + "</label>";
     }
