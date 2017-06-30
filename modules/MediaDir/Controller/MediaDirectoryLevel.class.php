@@ -126,7 +126,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 level.`picture` AS `picture`,
                 level.`active` AS `active`,
                 level_names.`level_name` AS `name`,
-                level_names.`level_description` AS `description`
+                level_names.`level_description` AS `description`,
+                level_names.`level_metadesc` AS `metadesc`
             FROM
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_levels AS level,
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names AS level_names
@@ -182,17 +183,20 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $arrLevel = array();
                 $arrLevelName = array();
                 $arrLevelDesc = array();
+                $arrLevelMetaDesc = array();
                 $this->intNumEntries = 0;
 
                 //get lang attributes
                 $arrLevelName[0] = $objLevels->fields['name'];
                 $arrLevelDesc[0] = $objLevels->fields['description'];
+                $arrLevelMetaDesc[0] = $objLevels->fields['metadesc'];
 
                 $objLevelAttributes = $objDatabase->Execute("
                     SELECT
                         `lang_id` AS `lang_id`,
                         `level_name` AS `name`,
                         `level_description` AS `description`
+                        `level_metadesc` AS `metadesc`
                     FROM
                         ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names
                     WHERE
@@ -203,6 +207,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     while (!$objLevelAttributes->EOF) {
                         $arrLevelName[$objLevelAttributes->fields['lang_id']] = htmlspecialchars($objLevelAttributes->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
                         $arrLevelDesc[$objLevelAttributes->fields['lang_id']] = $objLevelAttributes->fields['description'];
+                        $arrLevelMetaDesc[$objLevelAttributes->fields['lang_id']] = $objLevelAttributes->fields['metadesc'];
 
                         $objLevelAttributes->MoveNext();
                     }
@@ -213,6 +218,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $arrLevel['levelParentId'] = intval($objLevels->fields['parent_id']);
                 $arrLevel['levelName'] = $arrLevelName;
                 $arrLevel['levelDescription'] = $arrLevelDesc;
+                $arrLevel['levelMetaDesc'] = $arrLevelMetaDesc;
                 $arrLevel['levelPicture'] = htmlspecialchars($objLevels->fields['picture'], ENT_QUOTES, CONTREXX_CHARSET);
                 if($weAreCountingEntries) {
                     $arrLevel['levelNumEntries'] = isset($arrEntryCounts[$arrLevel['levelId']]) ? $arrEntryCounts[$arrLevel['levelId']] : 0;
