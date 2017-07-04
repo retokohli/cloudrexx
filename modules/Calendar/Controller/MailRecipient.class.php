@@ -90,6 +90,7 @@ class MailRecipient {
     }
 
     public function setAddress($address) {
+        $address = trim($address);
         $this->address = $address;
         if (empty($this->username)) {
             $this->username = $address;
