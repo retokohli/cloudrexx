@@ -391,7 +391,7 @@ class Theme extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget
      */
     public function getPreviewImage()
     {
-        $filePath = $this->getFilePath($this->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE);
+        $filePath = $this->getFilePath('/' . $this->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE);
         if ($filePath && file_exists($filePath)) {
             return $this->cx->getWebsiteThemesWebPath() . '/' . $this->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE;
         }
