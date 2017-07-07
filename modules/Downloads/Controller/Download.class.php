@@ -710,6 +710,11 @@ class Download {
             $arrSelectLocaleExpressions = array_keys($this->arrAttributes['locale']);
         }
 
+        // locale field values fetched by the following way:
+        // If the locale field values do not exist in the current language
+        // then try to take it from fallback language
+        // If fallback language is empty then take it from the default language,
+        // If default language is empty, then take it any available language
         $availableLangIds = array(LANG_ID);
         if (\FWLanguage::getFallbackLanguageIdById(LANG_ID)) {
             $availableLangIds[] = \FWLanguage::getFallbackLanguageIdById(LANG_ID);
@@ -942,7 +947,9 @@ class Download {
                 : '');
         }
 
-        // parse search
+        // If the settings option "Only list Downloads in current language" is set,
+        // then parse the search within the current language
+        // Otherwise parse the search within all the languages
         if (!empty($search)) {
             $arrSearchConditions = $this->parseSearchConditions(
                 $search,
@@ -1165,7 +1172,7 @@ class Download {
                     contrexx_input2db($search) . '%"';
             }
         }
-        foreach ($availableLangIds as $alias => $langId) {
+        foreach ($availableLangIds as $langId) {
             $arrConditions[] =
                 '(SELECT 1 FROM `' . DBPREFIX . 'module_downloads_download_locale`
                     WHERE `download_id` = `tblD`.`id`
