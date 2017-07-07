@@ -1333,9 +1333,10 @@ class DownloadsManager extends DownloadsLibrary
     {
         global $_ARRAYLANG, $_LANGID;
 
+        $id = isset($_REQUEST['id']) ? contrexx_input2int($_REQUEST['id']) : 0;
         $objFWUser = \FWUser::getFWUserObject();
         $objDownload = new Download();
-        $objDownload->load(isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
+        $objDownload->load($id);
 
         if ($objDownload->getId()
             && !\Permission::checkAccess(143, 'static', true)
@@ -1462,18 +1463,23 @@ class DownloadsManager extends DownloadsLibrary
         // parse name and description attributres
         $arrLanguages = \FWLanguage::getActiveFrontendLanguages();
         foreach ($arrLanguages as $langId => $arrLanguage) {
+            $isSelectedLang = !empty($objDownload->getName($langId));
+            if (empty($id) && $_LANGID == $langId) {
+                $isSelectedLang = true;
+            }
+
             $this->objTemplate->setVariable(array(
                 'DOWNLOADS_DOWNLOAD_LANGUAGE_ID' => $langId,
                 'DOWNLOADS_DOWNLOAD_LANGUAGE_NAME' => contrexx_raw2xhtml($arrLanguage['name']),
                 'DOWNLOADS_DOWNLOAD_LANGUAGE_SHORT' => contrexx_raw2xhtml($arrLanguage['lang']),
-                'DOWNLOADS_DOWNLOAD_LANGUAGE_CHECKED' => !empty($objDownload->getName($langId)) ? 'checked="checked"' : '',
+                'DOWNLOADS_DOWNLOAD_LANGUAGE_CHECKED' => $isSelectedLang ? 'checked="checked"' : '',
             ));
             $this->objTemplate->parse('downloads_download_language_list');
 
             $this->objTemplate->setVariable(array(
                 'DOWNLOADS_DOWNLOAD_LANGUAGE_ID' => $langId,
                 'DOWNLOADS_DOWNLOAD_LANGUAGE_NAME' => contrexx_raw2xhtml($arrLanguage['name']),
-                'DOWNLOADS_DOWNLOAD_LANGUAGE_ACTIVE' => empty($objDownload->getName($langId)) ? 'style="display:none;"' : '',
+                'DOWNLOADS_DOWNLOAD_LANGUAGE_ACTIVE' => !$isSelectedLang ? 'style="display:none;"' : '',
             ));
             $this->objTemplate->parse('downloads_download_language_tab');
 
@@ -2676,6 +2682,7 @@ class DownloadsManager extends DownloadsLibrary
             $this->arrConfig['use_attr_version']            = !empty($_POST['downloads_settings_attribute_version']) ? intval($_POST['downloads_settings_attribute_version']) : 0;
             $this->arrConfig['use_attr_author']             = !empty($_POST['downloads_settings_attribute_author']) ? intval($_POST['downloads_settings_attribute_author']) : 0;
             $this->arrConfig['use_attr_website']            = !empty($_POST['downloads_settings_attribute_website']) ? intval($_POST['downloads_settings_attribute_website']) : 0;
+            $this->arrConfig['list_downloads_current_lang'] = !empty($_POST['downloads_settings_list_downloads_current_lang']) ? contrexx_input2int($_POST['downloads_settings_list_downloads_current_lang']) : 0;
             $this->arrConfig['most_viewed_file_count']      = !empty($_POST['downloads_settings_most_viewed_file_count']) ? intval($_POST['downloads_settings_most_viewed_file_count']) : $this->arrConfig['most_viewed_file_count'];
             $this->arrConfig['most_downloaded_file_count']  = !empty($_POST['downloads_settings_most_downloaded_file_count']) ? intval($_POST['downloads_settings_most_downloaded_file_count']) : $this->arrConfig['most_downloaded_file_count'];
             $this->arrConfig['most_popular_file_count']     = !empty($_POST['downloads_settings_most_popular_file_count']) ? intval($_POST['downloads_settings_most_popular_file_count']) : $this->arrConfig['most_popular_file_count'];
@@ -2765,6 +2772,8 @@ class DownloadsManager extends DownloadsLibrary
             'TXT_DOWNLOADS_SETTINGS_ALPHABETIC_LABEL'       => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_ALPHABETIC_LABEL'],
             'TXT_DOWNLOADS_SETTINGS_NEWEST_TO_OLDEST_LABEL' => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_NEWEST_TO_OLDEST_LABEL'],
             'TXT_DOWNLOADS_SETTINGS_OLDEST_TO_NEWEST_LABEL' => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_OLDEST_TO_NEWEST_LABEL'],
+            'TXT_DOWNLOADS_LIST_DOWNLOADS_CURRENT_LANG'     => $_ARRAYLANG['TXT_DOWNLOADS_LIST_DOWNLOADS_CURRENT_LANG'],
+            'TXT_DOWNLOADS_LIST_DOWNLOADS_CURRENT_LANG_DESC'=> $_ARRAYLANG['TXT_DOWNLOADS_LIST_DOWNLOADS_CURRENT_LANG_DESC'],
             'DOWNLOADS_SETTINGS_COL_COUNT'                  => $this->arrConfig['overview_cols_count'],
             'DOWNLOADS_SETTINGS_SUBCAT_COUNT'               => $this->arrConfig['overview_max_subcats'],
             'DOWNLOADS_SETTINGS_ATTRIBUTE_METAKEYS_CHECKED' => $this->arrConfig['use_attr_metakeys'] ? 'checked="checked"' : '',
@@ -2773,6 +2782,7 @@ class DownloadsManager extends DownloadsLibrary
             'DOWNLOADS_SETTINGS_ATTRIBUTE_VERSION_CHECKED'  => $this->arrConfig['use_attr_version'] ? 'checked="checked"' : '',
             'DOWNLOADS_SETTINGS_ATTRIBUTE_AUTHOR_CHECKED'   => $this->arrConfig['use_attr_author'] ? 'checked="checked"' : '',
             'DOWNLOADS_SETTINGS_ATTRIBUTE_WEBSITE_CHECKED'  => $this->arrConfig['use_attr_website'] ? 'checked="checked"' : '',
+            'DOWNLOADS_SETTINGS_LIST_DOWNLOADS_CURRENT_LANG'=> $this->arrConfig['list_downloads_current_lang'] ? 'checked="checked"' : '',
             'DOWNLOADS_SETTINGS_MOST_VIEWED_FILE_COUNT'     => $this->arrConfig['most_viewed_file_count'],
             'DOWNLOADS_SETTINGS_MOST_DOWNLOADED_FILE_COUNT' => $this->arrConfig['most_downloaded_file_count'],
             'DOWNLOADS_SETTINGS_MOST_POPULAR_FILE_COUNT'    => $this->arrConfig['most_popular_file_count'],
