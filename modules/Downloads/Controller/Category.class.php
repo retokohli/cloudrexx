@@ -381,7 +381,7 @@ class Category
         $localeCondition = '';
         if ($listDownloadsOfCurrentLanguage) {
             $localeJoinQry =
-                ' LEFT JOIN `' . DBPREFIX . 'module_downloads_download_locale` as tblL
+                ' INNER JOIN `' . DBPREFIX . 'module_downloads_download_locale` as tblL
                 ON tblL.`download_id` = tblD.`id` ';
             $localeCondition = ' AND tblL.`lang_id` = ' . LANG_ID . ' ';
         }

@@ -419,10 +419,21 @@ class Download {
         exit;
     }
 
-    public function getName($langId = LANG_ID)
+    /**
+     * Get name
+     *
+     * @param integer $langId Lang ID
+     * @param boolean $force  If true force to get downloads name
+     *                        from $names based on $langId
+     *                        Otherwise $langId is current lang
+     *                        then taken from $name else taken from $names
+     *
+     * @return string
+     */
+    public function getName($langId = LANG_ID, $force = false)
     {
         // name of interface language (-> LANG_ID) might be cached in $this->name
-        if ($langId == LANG_ID && !empty($this->name)) {
+        if ($langId == LANG_ID && !empty($this->name) && !$force) {
             return $this->name;
         }
 
@@ -1152,13 +1163,14 @@ class Download {
     ) {
         $arrConditions = array();
 
-        $availableLangIds = array_keys(\FWLanguage::getActiveBackendLanguages());
-        if ($this->isFrontendMode) {
-            $availableLangIds =
-                array_keys(\FWLanguage::getActiveFrontendLanguages());
-        }
         if ($listDownloadsOfCurrentLanguage) {
             $availableLangIds = array(LANG_ID);
+        } else {
+            $availableLangIds = array_keys(\FWLanguage::getActiveBackendLanguages());
+            if ($this->isFrontendMode) {
+                $availableLangIds =
+                    array_keys(\FWLanguage::getActiveFrontendLanguages());
+            }
         }
 
         $searchConditions = array();
