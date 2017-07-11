@@ -64,8 +64,8 @@ cx.ready(function() {
         mediabrowserConfig, mediabrowserFiles, dataTabs) {
         $scope.sourcesLoaded = $q.defer();
         $scope.searchString = '';
-        $scope.sorting = 'cleansize';
-        $scope.reverse = false;
+        $scope.sorting = 'name';
+        $scope.reverse = true;
         $scope.path = [{
             name: cx.variables.get('TXT_FILEBROWSER_FILES', 'mediabrowser'),
             path: 'files',
@@ -857,7 +857,17 @@ cx.ready(function() {
               return true;
             };
           }
-          return recursiveSearch(searchObject, array, 0);
+          if (typeof(this.cache) === 'undefined') {
+            this.cache = {
+              'term': '',
+              'files': []
+            };
+          }
+          if (this.cache.term !== searchFile) {
+            this.cache.files = recursiveSearch(searchObject, array, 0);
+            this.cache.term = searchFile;
+          }
+          return this.cache.files;
         }
         return array;
       };

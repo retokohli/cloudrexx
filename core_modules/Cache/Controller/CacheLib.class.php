@@ -211,7 +211,9 @@ class CacheLib
         if ($this->isInstalled(self::CACHE_ENGINE_ZEND_OPCACHE)) {
             ini_set('opcache.save_comments', 1);
             ini_set('opcache.load_comments', 1);
-            @ini_set('opcache.enable', 1);
+            if (!ini_get('opcache.enable')) {
+                @ini_set('opcache.enable', 1);
+            }
 
             if (
                 !$this->isActive(self::CACHE_ENGINE_ZEND_OPCACHE) ||

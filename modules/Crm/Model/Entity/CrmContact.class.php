@@ -334,7 +334,7 @@ class CrmContact
         $this->datasource       = 0;
         $this->contact_gender   = 0;
         $this->profile_picture  = '';
-        $this->emailDelivery    = 0;
+        $this->emailDelivery    = 1;
 
         $this->email            = '';
         $this->phone            = '';
