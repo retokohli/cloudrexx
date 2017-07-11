@@ -231,7 +231,7 @@ class CalendarFormManager extends CalendarLibrary
      *
      * @return null
      */
-    function showForm($objTpl, $formId, $intView, $ticketSales=false) {
+    function showForm($objTpl, $formId, $intView, $ticketSales=false, $invite = null) {
         global $_ARRAYLANG, $_LANGID;
 
         $objForm = new \Cx\Modules\Calendar\Controller\CalendarForm(intval($formId));
@@ -240,6 +240,7 @@ class CalendarFormManager extends CalendarLibrary
         }
 
         switch($intView) {
+            // backend
                 case 1:
                     $this->getFrontendLanguages();
 
@@ -331,18 +332,99 @@ class CalendarFormManager extends CalendarLibrary
                     ));
 
                 break;
+
+        // frontend
             case 2:
+            // $selectBillingAddressStatus = false;
+
+            $invitee = false;
+            $inviteeMail = '';
+            $inviteeFirstname = '';
+            $inviteeLastname = '';
+            $registration = null;
+
+            if ($invite) {
+                if ($invite->getRegistration()) {
+                    // load data of previously submitted form data
+                    $registration = $invite->getRegistration();
+
+                    // add registration-Id to submission form
+                    $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_FIELD', \Html::getHidden('regid', $registration->getId()));
+                    $objTpl->parse('calendarRegistrationField');
+                }
+
+                // add invitation-Id to submission form
+                $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_FIELD', \Html::getHidden(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_ID, $invite->getId()));
+                $objTpl->parse('calendarRegistrationField');
+
+                // add invitation-Id to submission form
+                $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_FIELD', \Html::getHidden(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_ID, $invite->getId()));
+                $objTpl->parse('calendarRegistrationField');
+
+                // add invitation-token to submission form
+                $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_FIELD', \Html::getHidden(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_TOKEN, $invite->getToken()));
+                $objTpl->parse('calendarRegistrationField');
+
+                switch ($invite->getInviteeType()) {
+                    case MailRecipient::RECIPIENT_TYPE_ACCESS_USER:
+                        $objUser = \FWUser::getFWUserObject()->objUser->getUser($invite->getInviteeId());
+                        if (!$objUser) {
+                            break;
+                        }
+
+                        $invitee = true;
+                        $inviteeMail = $objUser->getEmail();
+                        $inviteeFirstname = $objUser->getProfileAttribute('firstname');
+                        $inviteeLastname = $objUser->getProfileAttribute('lastname');
+                        break;
+
+                    case MailRecipient::RECIPIENT_TYPE_CRM_CONTACT:
+                        $crmContact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+                        if (!$crmContact->load($invite->getInviteeId())) {
+                            break;
+                        }
+
+                        $invitee = true;
+                        $inviteeMail = $crmContact->email;
+                        $inviteeFirstname = $crmContact->customerName;
+                        $inviteeLastname = $crmContact->family_name;
+                        break;
+
+                    default:
+                        break;
+                }
+            } elseif (\FWUser::getFWUserObject()->objUser->login()) {
+                $invitee = true;
+                $inviteeMail = \FWUser::getFWUserObject()->objUser->getEmail();
+                $inviteeFirstname = \FWUser::getFWUserObject()->objUser->getProfileAttribute('firstname');
+                $inviteeLastname = \FWUser::getFWUserObject()->objUser->getProfileAttribute('lastname');
+            }
+
+            // parse registration type dropdown
                 $objFieldTemplate = new \Cx\Core\Html\Sigma('.');
                 $objFieldTemplate->setTemplate(self::frontendFieldTemplate, true, true);
+
+            $registrationTypeOptions = array(
+                1 => $_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'],
+                0 => $_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'],
+            );
+
+            // set registration type
+            if ($registration) {
+                $registrationType = $registration->getType();
+            } else {
+                $registrationType = key($registrationTypeOptions);
+            }
+
+            $registrationTypeSelect = \Html::getSelect('registrationType', $registrationTypeOptions, $registrationType, false, '', 'style="calendarSelect affiliateForm"');
                 $objFieldTemplate->setVariable(array(
                     'TXT_'.$this->moduleLangVar.'_FIELD_NAME'   => $_ARRAYLANG['TXT_CALENDAR_TYPE'].'<font class="calendarRequired"> *</font>',
-                    $this->moduleLangVar.'_FIELD_INPUT'         => '<select class="calendarSelect affiliateForm" name="registrationType"><option value="1" selected="selected"/>'.$_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'].'</option><option value="0"/>'.$_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'].'</option></select>',
+                $this->moduleLangVar.'_FIELD_INPUT'         => $registrationTypeSelect,
                     $this->moduleLangVar.'_FIELD_CLASS'         => 'affiliationForm',
                 ));
                 $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_FIELD', $objFieldTemplate->get());
                 $objTpl->parse('calendarRegistrationField');
 
-                // $selectBillingAddressStatus = false;
 
                 foreach ($objForm->inputfields as $key => $arrInputfield) {
                     $objFieldTemplate->setTemplate(self::frontendFieldTemplate, true, true);
@@ -356,20 +438,25 @@ class CalendarFormManager extends CalendarLibrary
 
                     if(isset($_POST['registrationField'][$arrInputfield['id']])) {
                         $value = $_POST['registrationField'][$arrInputfield['id']];
+                } elseif ($registration) {
+                    $formFieldValue = $registration->getRegistrationFormFieldValueByFieldId($arrInputfield['id']);
+                    if ($formFieldValue) {
+                        $value = $formFieldValue->getValue();
+                    }
                     } elseif (
-                         \FWUser::getFWUserObject()->objUser->login() &&
+                     $invitee &&
                          in_array ($arrInputfield['type'], array('mail', 'firstname', 'lastname'))
                         ) {
                         $value = '';
                         switch ($arrInputfield['type']) {
                             case 'mail':
-                                $value = \FWUser::getFWUserObject()->objUser->getEmail();
+                            $value = $inviteeMail;
                                 break;
                             case 'firstname':
-                                $value = \FWUser::getFWUserObject()->objUser->getProfileAttribute('firstname');
+                            $value = $inviteeFirstname;
                                 break;
                             case 'lastname':
-                                $value = \FWUser::getFWUserObject()->objUser->getProfileAttribute('lastname');
+                            $value = $inviteeLastname;
                                 break;
                             default :
                                 $value = $arrInputfield['default_value'][$_LANGID];

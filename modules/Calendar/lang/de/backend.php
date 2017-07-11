@@ -653,6 +653,11 @@ $_ARRAYLANG['TXT_CALENDAR_EXPORT_CSV_FOR_MS_EXCEL'] = 'CSV für MS Excel';
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SERIES_ADDITIONAL_RECURRENCES'] = "Zusätzliche Wiederholungen";
 $_ARRAYLANG['TXT_CALENDAR_SELECT_ADDITIONAL_RECURRENCES_TITLE'] = "Zusätzliche Wiederholung hinzufügen";
 $_ARRAYLANG['TXT_CALENDAR_SELECT_ADDITIONAL_RECURRENCES_INFO'] = "Wählen Sie ein zusätzliches Wiederholungsdatum für die Veranstaltung aus";
+$_ARRAYLANG['TXT_CALENDAR_CRM_MEMBERSHIPS'] = 'CRM Kundengruppen';
+$_ARRAYLANG['TXT_CALENDAR_CHOOSE_CRM_MEMBERSHIPS'] = 'Kundengruppen wählen';
+$_ARRAYLANG['TXT_CALENDAR_PUBLISHED'] = 'Veröffentlicht';
+$_ARRAYLANG['TXT_CALENDAR_USE_CUSTOM_FORMAT'] = 'Individuelles Format verwenden';
+$_ARRAYLANG['TXT_CALENDAR_SELECT_ADDITIONAL_RECURRENCES_INFO'] = "Wählen Sie ein zusätzliches Wiederholungsdatum für die Veranstaltung aus";
 // Missing -- copied from frontend.php
 $_ARRAYLANG['TXT_CALENDAR_NOT_SPECIFIED'] = "Keine Angabe";
 // Missing -- TODO: complete

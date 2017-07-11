@@ -461,29 +461,20 @@ class CalendarSettings extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_COMMENT'                  =>  $_ARRAYLANG['TXT_CALENDAR_COMMENT'],
         ));
 
+        $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();
         if($mailId != 0) {
-            $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();
             $objMailManager->showMail($objTpl, $mailId);
             $objMail = $objMailManager->mailList[$mailId];
         }
 
-        $query = "SELECT  id,name
-                    FROM ".DBPREFIX."module_".self::TABLE_PREFIX."_mail_action
-                ORDER BY `id` ASC";
-
-        $objResult = $objDatabase->Execute($query);
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $checked = $objResult->fields['id'] == $objMail->action_id ? 'selected="selected"' : '';
-                $action .= '<option value="'.intval($objResult->fields['id']).'" '.$checked.'>'.$_ARRAYLANG['TXT_CALENDAR_MAIL_ACTION_'.strtoupper($objResult->fields['name'])].'</option>';
-                $objResult->MoveNext();
+        foreach ($objMailManager->getMailActions() as $id => $name) {
+            $checked = $id == $objMail->action_id ? 'selected="selected"' : '';
+            $action .= '<option value="'.$id.'" '.$checked.'>'.$name.'</option>';
             }
-        }
 
         foreach ($this->arrFrontendLanguages as $arrLang) {
             $checked = $arrLang['id'] == $objMail->lang_id ? 'selected="selected"' : '';
             $lang .= '<option value="'.intval($arrLang['id']).'" '.$checked.'>'.$arrLang['name'].'</option>';
-            $objResult->MoveNext();
         }
 
         $objTpl->setVariable(array(

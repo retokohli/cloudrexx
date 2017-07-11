@@ -216,9 +216,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     //    mediadirList_level_5
                     $block = 'mediadirList_'.$objectType.'_'.$objectId;
                     if ($objTemplate->blockExists($block)) {
-                        $filter = MediaDirectoryLibrary::fetchMediaDirListFiltersFromTemplate($block, $objTemplate);
-                        $filter[$objectType] = $objectId;
-                        $objMediadir->parseEntries($objTemplate, $block, $filter);
+                        $config = MediaDirectoryLibrary::fetchMediaDirListConfigFromTemplate($block, $objTemplate);
+                        $config['filter'][$objectType] = $objectId;
+                        $objMediadir->parseEntries($objTemplate, $block, $config);
                         $foundOne = true;
                     }
                 }
