@@ -415,6 +415,11 @@ class Event extends \Cx\Model\Base\EntityBase {
     protected $eventFields;
 
     /**
+     * @var Cx\Modules\Calendar\Model\Entity\Invite
+     */
+    protected $invite;
+
+    /**
      * @var Cx\Modules\Calendar\Model\Entity\Registration
      */
     protected $registrations;
@@ -1914,9 +1919,29 @@ class Event extends \Cx\Model\Base\EntityBase {
      *
      * @param Doctrine\Common\Collections\Collection $eventFields
      */
-    function setEventFields($eventFields)
+    public function setEventFields($eventFields)
     {
         $this->eventFields = $eventFields;
+    }
+
+    /**
+     * Set invite
+     *
+     * @param Cx\Modules\Calendar\Model\Entity\Invite $invite
+     */
+    public function setInvite($invite)
+    {
+        $this->invite= $invite;
+    }
+
+    /**
+     * Get invite
+     *
+     * @return Cx\Modules\Calendar\Model\Entity\Invite
+     */
+    public function getInvite()
+    {
+        return $this->invite;
     }
 
     /**

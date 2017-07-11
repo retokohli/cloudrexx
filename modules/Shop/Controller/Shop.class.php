@@ -2266,7 +2266,7 @@ die("Failed to update the Cart!");
         \ContrexxJavascript::getInstance()->setVariable('TXT_SHOP_PRODUCT_ADDED_TO_CART', $_ARRAYLANG['TXT_SHOP_PRODUCT_ADDED_TO_CART'], 'shop');
         \ContrexxJavascript::getInstance()->setVariable('TXT_SHOP_CONFIRM_DELETE_PRODUCT', $_ARRAYLANG['TXT_SHOP_CONFIRM_DELETE_PRODUCT'], 'shop');
         \ContrexxJavascript::getInstance()->setVariable('TXT_MAKE_DECISION_FOR_OPTIONS', $_ARRAYLANG['TXT_MAKE_DECISION_FOR_OPTIONS'], 'shop');
-        \JS::registerJS(substr(\Cx\Core\Core\Controller\Cx::instanciate()->getModuleFolderName() . '/Shop/View/Script/shop.js', 1));
+        \JS::registerJS(substr(\Cx\Core\Core\Controller\Cx::instanciate()->getModuleFolderName() . '/Shop/View/Script/shop.js?v1', 1));
     }
 
 
@@ -2556,7 +2556,16 @@ die("Shop::processRedirect(): This method is obsolete!");
 //\DBG::log("Shop::view_account(): Mandatory/None -> div password");
                 $block_password = true;
             }
+            if (self::$objTemplate->blockExists('shop_account_password')) {
+                self::$objTemplate->touchBlock('shop_account_password');
+            }
         } else {
+            // Hide password input field if customer is signed-in.
+            // This is required to prevent the autocomplete feature
+            // of modern browsers to reset the password
+            if (self::$objTemplate->blockExists('shop_account_password')) {
+                self::$objTemplate->hideBlock('shop_account_password');
+            }
 //\DBG::log("Shop::view_account(): Got Customer -> no block");
         }
 //\DBG::log("Shop::view_account(): block_password ".var_export($block_password, true));
@@ -2623,6 +2632,12 @@ die("Shop::processRedirect(): This method is obsolete!");
             $_SESSION['shop'][$key] =
                 trim(strip_tags(contrexx_input2raw($value)));
         }
+
+        // clear password in case it wasn't provided in the account-form
+        if (isset($_POST['email']) && !isset($_POST['password'])) {
+            $_SESSION['shop']['password'] = '';
+        }
+
         if (   empty($_SESSION['shop']['gender2'])
             || empty($_SESSION['shop']['lastname2'])
             || empty($_SESSION['shop']['firstname2'])

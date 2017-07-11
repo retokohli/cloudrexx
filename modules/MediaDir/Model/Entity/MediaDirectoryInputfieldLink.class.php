@@ -120,7 +120,17 @@ class MediaDirectoryInputfieldLink extends \Cx\Modules\MediaDir\Controller\Media
                 $countFrontendLang = count($this->arrFrontendLanguages);
 
                 if ($objInit->mode == 'backend') {
-                    $strInputfield = '<div id="' . $this->moduleNameLC . 'Inputfield_' . $intId . '_Minimized" style="display: block;"><input type="text" data-id="' . $intId . '" class="' . $this->moduleNameLC . 'InputfieldDefault" name="' . $this->moduleNameLC . 'Inputfield[' . $intId . '][0]" id="' . $this->moduleNameLC . 'Inputfield_' . $intId . '_0" value="' . $arrValue[0] . '" style="width: 300px" onfocus="this.select();" />&nbsp;<a href="javascript:ExpandMinimize(\'' . $intId . '\');">' . $_ARRAYLANG['TXT_MEDIADIR_MORE'] . '&nbsp;&raquo;</a></div>';
+                    $strInputfield = '<div id="' . $this->moduleNameLC . 'Inputfield_' . $intId . '_Minimized" style="display: block;">';
+                    $strInputfield .= '<input type="text" data-id="' . $intId . '" class="' . $this->moduleNameLC . 'InputfieldDefault" name="' . $this->moduleNameLC . 'Inputfield[' . $intId . '][0]" id="' . $this->moduleNameLC . 'Inputfield_' . $intId . '_0" value="' . $arrValue[0] . '" style="width: 300px" onfocus="this.select();" />';
+                    $strInputfield .= '&nbsp;&nbsp;<input type="button" 
+                        onClick="getMediaBrowser($J(this));"
+                        data-input-id="' . $this->moduleNameLC . 'Inputfield_' . $intId . '_0"
+                        data-views="filebrowser,sitestructure"
+                        data-startmediatype="' . $this->moduleNameLC . '"
+                        value="' . $_ARRAYLANG['TXT_BROWSE'] . '"
+                    />';
+                    $strInputfield .= '&nbsp;<a href="javascript:ExpandMinimize(\'' . $intId . '\');">' . $_ARRAYLANG['TXT_MEDIADIR_MORE'] . '&nbsp;&raquo;</a>';
+                    $strInputfield .= '</div>';
 
                     $strInputfield .= '<div id="' . $this->moduleNameLC . 'Inputfield_' . $intId . '_Expanded" style="display: none;">';
                     foreach ($this->arrFrontendLanguages as $key => $arrLang) {
@@ -132,7 +142,15 @@ class MediaDirectoryInputfieldLink extends \Cx\Modules\MediaDir\Controller\Media
                         }
 
                         $value = isset($arrValue[$intLangId]) ? $arrValue[$intLangId] : '';
-                        $strInputfield .= '<input type="text" data-id="' . $intId . '" name="' . $this->moduleNameLC . 'Inputfield[' . $intId . '][' . $intLangId . ']" id="' . $this->moduleNameLC . 'Inputfield_' . $intId . '_' . $intLangId . '" value="' . $value . '" style="width: 279px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url(\'' . \Env::get('cx')->getCodeBaseOffsetPath() . \Env::get('cx')->getCoreFolderName() . '/Country/View/Media/Flag/flag_' . $arrLang['lang'] . '.gif\') no-repeat 3px 3px;" onfocus="this.select();" />&nbsp;' . $arrLang['name'] . '&nbsp;' . $minimize . '<br />';
+                        $strInputfield .= '<input type="text" data-id="' . $intId . '" name="' . $this->moduleNameLC . 'Inputfield[' . $intId . '][' . $intLangId . ']" id="' . $this->moduleNameLC . 'Inputfield_' . $intId . '_' . $intLangId . '" value="' . $value . '" style="width: 279px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url(\'' . \Env::get('cx')->getCodeBaseOffsetPath() . \Env::get('cx')->getCoreFolderName() . '/Country/View/Media/Flag/flag_' . $arrLang['lang'] . '.gif\') no-repeat 3px 3px;" onfocus="this.select();" />';
+                        $strInputfield .= '&nbsp;&nbsp;<input type="button" 
+                            onClick="getMediaBrowser($J(this));"
+                            data-input-id="' . $this->moduleNameLC . 'Inputfield_' . $intId . '_' . $intLangId . '"
+                            data-views="filebrowser,sitestructure"
+                            data-startmediatype="' . $this->moduleNameLC . '"
+                            value="' . $_ARRAYLANG['TXT_BROWSE'] . '"
+                        />';
+                        $strInputfield .= '&nbsp;' . $minimize . '<br />';
                     }
                     $strInputfield .= '</div>';
                 } else {
@@ -207,8 +225,8 @@ class MediaDirectoryInputfieldLink extends \Cx\Modules\MediaDir\Controller\Media
 
         //make link href with "http://"
         $strValueHref = $strValue;
-        if (!preg_match('#^.*://#', $strValueHref)) {
-            $strValueHref = "http://".$strValueHref;
+        if (substr($strValueHref, 0, 1) !== '/' && !preg_match('#^.*://#', $strValueHref)) {
+            $strValueHref = 'http://' . $strValueHref;
         }
 
         //make hyperlink with <a> tag
