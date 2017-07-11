@@ -184,7 +184,7 @@ class CalendarRegistration extends CalendarLibrary
      * @var \Cx\Modules\Calendar\Model\Entity\Invite
      */
     protected $invite;
-    
+
     /**
      * Constructor for registration class
      *
@@ -218,7 +218,7 @@ class CalendarRegistration extends CalendarLibrary
         static::$forms[$this->formId] = new \Cx\Modules\Calendar\Controller\CalendarForm($this->formId);
         return $this->getForm();
     }
-    
+
     /**
      * Loads the registration by id
      *
@@ -274,7 +274,7 @@ class CalendarRegistration extends CalendarLibrary
                     `field`.`field_id`,
                     `field`.`value`
                 FROM
-                    `' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_registration_form_field_value` AS `field`
+                    `' . DBPREFIX . 'module_' . self::TABLE_PREFIX . '_registration_form_field_value` AS `field`
                 WHERE
                     `field`.`reg_id` = "' . $regId . '" AND
                     `field`.`field_id` IN (' . implode(',', array_column($this->getForm()->inputfields, 'id')) . ')
@@ -382,7 +382,7 @@ class CalendarRegistration extends CalendarLibrary
         if ($objResult !== false && !$objResult->EOF) {
             $seatingId = $objResult->fields['id'];
         }
-        
+
         $numSeating = isset($data['registrationField'][$seatingId]) ? intval($data['registrationField'][$seatingId]) : 1;
 
         // set registration type
@@ -497,7 +497,7 @@ class CalendarRegistration extends CalendarLibrary
                 ), true
             );
 
-            $query = 'UPDATE `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration`
+            $query = 'UPDATE `'.DBPREFIX.'module_'.self::TABLE_PREFIX.'_registration`
                          SET `event_id` = '.$eventId.',
                              `date` = '.$eventDate.',
                              `host_name` = '.$hostName.',

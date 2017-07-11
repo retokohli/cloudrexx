@@ -515,8 +515,8 @@ class CalendarMailManager extends CalendarLibrary {
         }
 
         $query = "SELECT id, lang_id, is_default, recipients
-                    FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_mail
-                   WHERE action_id='".intval($actionId)."'
+                    FROM " . DBPREFIX . "module_" . self::TABLE_PREFIX . "_mail
+                   WHERE action_id='" . intval($actionId) . "'
                      AND status='1'
                          $whereId
                 ORDER BY is_default DESC";
