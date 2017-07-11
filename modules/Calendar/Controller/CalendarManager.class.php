@@ -1129,19 +1129,6 @@ class CalendarManager extends CalendarLibrary
             $this->_objTpl->parse('eventTabMenuDescTab');
             //parse eventDescTab
             $this->_objTpl->setVariable(array(
-TODO: Unify
----- Cloudrexx
-                'TXT_'.$this->moduleLangVar.'_EVENT_DESCRIPTION'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_DESCRIPTION'],
-                'TXT_'.$this->moduleLangVar.'_EVENT_REDIRECT'           => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
-                $this->moduleLangVar.'_EVENT_TAB_DISPLAY'               => $arrLang['is_default'] == 'true' ? 'block' : 'none',
-                $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg('description['.$arrLang['id'].']', !empty($objEvent->arrData['description'][$arrLang['id']]) ? contrexx_raw2xhtml($objEvent->arrData['description'][$arrLang['id']]) : contrexx_raw2xhtml($objEvent->description), 'full'),
-                $this->moduleLangVar.'_EVENT_REDIRECT'                  => isset($objEvent->arrData['redirect']) ? (!empty($objEvent->arrData['redirect'][$arrLang['id']]) ? $objEvent->arrData['redirect'][$arrLang['id']] : $objEvent->arrData['redirect'][$_LANGID]) : '',
-                $this->moduleLangVar.'_EVENT_TYPE_EVENT_DISPLAY'        => $objEvent->type == 0 ? 'block' : 'none',
-                $this->moduleLangVar.'_EVENT_TYPE_REDIRECT_DISPLAY'     => $objEvent->type == 1 ? 'block' : 'none',
-                $this->moduleLangVar.'_ONSUBMIT_PUBLICATION'            => $onsubmitPublications,
----- /Cloudrexx
----- RK
-
                 'TXT_' . $this->moduleLangVar . '_EVENT_DESCRIPTION' =>
                     $_ARRAYLANG['TXT_CALENDAR_EVENT_DESCRIPTION'],
                 'TXT_' . $this->moduleLangVar . '_EVENT_REDIRECT' =>
@@ -1164,8 +1151,6 @@ TODO: Unify
                     $objEvent->type == 1 ? 'block' : 'none',
                 $this->moduleLangVar . '_ONSUBMIT_PUBLICATION' =>
                     $onsubmitPublications,
----- /RK
-
             ));
             $this->_objTpl->parse('eventDescTab');
             //parse eventLingualFields
