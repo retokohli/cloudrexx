@@ -112,11 +112,11 @@ class CalendarEvent extends CalendarLibrary
 
     /**
      * Whether or not if the event shall use its own custom date format
-     * 
+     *
      * @var boolean
      */
     public $useCustomDateDisplay;
-    
+
     /**
      * Event show start date on list view
      *
@@ -344,7 +344,7 @@ class CalendarEvent extends CalendarLibrary
         'seriesPatternDouranceType' => 0,
         'seriesPatternEnd' => 0,
         'seriesPatternEndDate' => '',
-        'seriesPatternBegin' => 0, 
+        'seriesPatternBegin' => 0,
         'seriesPatternExceptions' => array(),
         'seriesAdditionalRecurrences' => array(),
     );
@@ -387,7 +387,7 @@ class CalendarEvent extends CalendarLibrary
      * @var array
      */
     public $invitedCrmGroups = array();
-    
+
     /**
      * Event invited mail
      *
@@ -959,7 +959,7 @@ class CalendarEvent extends CalendarLibrary
                     $this->seriesData['seriesPatternDouranceType'] = 0;
                     $this->seriesData['seriesPatternEnd'] = 0;
                     $this->seriesData['seriesPatternEndDate'] = '';
-                    $this->seriesData['seriesPatternBegin'] = 0; 
+                    $this->seriesData['seriesPatternBegin'] = 0;
                     $this->seriesData['seriesPatternExceptions'] = array();
                     $this->seriesData['seriesAdditionalRecurrences'] = array();
         }
@@ -1068,7 +1068,7 @@ class CalendarEvent extends CalendarLibrary
         }
         if ($strEndTime) {
             list($endHour, $endMin) = explode(':', $strEndTime);
-        
+        }
         if (!empty($data['all_day'])) {
             list($startHour, $startMin) = array(0, 0);
             list($endHour, $endMin)     = array(23, 59);
@@ -1177,7 +1177,7 @@ class CalendarEvent extends CalendarLibrary
             ? contrexx_input2raw($data['category_ids']) : '';
         $showIn                    = isset($data['showIn']) ? contrexx_addslashes(contrexx_strip_tags(join(",",$data['showIn']))) : '';
         $invited_groups            = isset($data['selectedGroups']) ? join(',', $data['selectedGroups']) : '';
-        $invitedCrmGroups          = isset($data['calendar_event_invite_crm_memberships']) ? join(',', $data['calendar_event_invite_crm_memberships']) : ''; 
+        $invitedCrmGroups          = isset($data['calendar_event_invite_crm_memberships']) ? join(',', $data['calendar_event_invite_crm_memberships']) : '';
         $invited_mails             = isset($data['invitedMails']) ? contrexx_addslashes(contrexx_strip_tags($data['invitedMails'])) : '';
         $send_invitation           = isset($data['sendInvitation']) ? intval($data['sendInvitation']) : 0;
         $invitationTemplate        = isset($data['invitationEmailTemplate']) ? contrexx_input2raw($data['invitationEmailTemplate']) : array();
