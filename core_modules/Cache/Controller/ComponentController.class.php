@@ -117,6 +117,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'Cx\Core\Routing\Model\Entity\RewriteRule',
             new \Cx\Core_Modules\Cache\Model\Event\RewriteRuleEventListener($this->cx)
         );
+
+        // TODO: This is a workaround for Doctrine's result query cache.
+        //       Proper handling of ResultCache must be implemented.
+        $evm->addModelListener(
+            'postFlush',
+            'Cx\Core\Model\Entity\EntityBase',
+            new \Cx\Core_Modules\Cache\Model\Event\CoreEntityBaseEventListener($this->cx)
+        );
     }
 
     /**
