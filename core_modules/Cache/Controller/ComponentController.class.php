@@ -470,4 +470,14 @@ Cache clear all';
         }
         $this->cache->forceUserbasedPageCache();
     }
+
+    /**
+     * Overwrite the automatically set CachePrefix
+     *                          Setting an empty string will reset
+     *                          the CachePrefix to its initial value.
+     * @param   $prefix String  The new CachePrefix to be used
+     */
+    public function setCachePrefix($prefix = '') {
+        $this->cache->setCachePrefix($prefix);
+    }
 }

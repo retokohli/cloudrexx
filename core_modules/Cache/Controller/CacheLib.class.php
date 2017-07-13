@@ -981,9 +981,11 @@ class CacheLib
 
     /**
      * Overwrite the automatically set CachePrefix
-     * @param   $prefix String  The new CachePrefix to be used
+     * @param   $prefix String  The new CachePrefix to be used.
+     *                          Setting an empty string will reset
+     *                          the CachePrefix to its initial value.
      */
-    public function setCachePrefix($prefix) {
+    public function setCachePrefix($prefix = '') {
         $this->cachePrefix = $prefix;
     }
 
