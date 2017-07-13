@@ -543,15 +543,47 @@ class Download {
         }
     }
 
-    public function getDownloads($filter = null, $search = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = null)
-    {
+    /**
+     * Get related downloads
+     *
+     * @param mixed   $filter                         Filter option, it should be array or integer
+     * @param string  $search                         Search term
+     * @param array   $arrSort                        Array of sorting fields and its order
+     * @param array   $arrAttributes                  Array of fields list
+     * @param integer $limit                          Entries per page
+     * @param integer $offset                         Offset value
+     * @param boolean $listDownloadsOfCurrentLanguage If true get Related Downloads of current language
+     *                                                otherwise get Related Downloads of all language
+     *
+     * @return \Cx\Modules\Downloads\Controller\Download
+     */
+    public function getDownloads(
+        $filter = null,
+        $search = null,
+        $arrSort = null,
+        $arrAttributes = null,
+        $limit = null,
+        $offset = null,
+        $listDownloadsOfCurrentLanguage = false
+    ) {
         $objDownload = clone $this;
         $objDownload->arrCachedDownloads = &$this->arrCachedDownloads;
 
-        if ($objDownload->loadDownloads($filter, $search, $arrSort, $arrAttributes, $limit, $offset)) {
+        if (
+            $objDownload->loadDownloads(
+                $filter,
+                $search,
+                $arrSort,
+                $arrAttributes,
+                $limit,
+                $offset,
+                false,
+                $listDownloadsOfCurrentLanguage
+            )
+        ) {
             return $objDownload;
         } else {
-            return false;
+            return null;
         }
     }
 

@@ -1344,7 +1344,12 @@ JS_CODE;
         }
     }
 
-
+    /**
+     * Parse a related downloads
+     *
+     * @param \Cx\Modules\Downloads\Controller\Download $objDownload        Download object
+     * @param integer                                   $currentCategoryId  Category ID
+     */
     private function parseRelatedDownloads($objDownload, $currentCategoryId)
     {
         global $_LANGID, $_ARRAYLANG;
@@ -1354,7 +1359,16 @@ JS_CODE;
         }
 
         $sortOrder          = $this->downloadsSortingOptions[$this->arrConfig['downloads_sorting_order']];
-        $objRelatedDownload = $objDownload->getDownloads(array('download_id' => $objDownload->getId()), null, $sortOrder);
+        $objRelatedDownload =
+            $objDownload->getDownloads(
+                array('download_id' => $objDownload->getId()),
+                null,
+                $sortOrder,
+                null,
+                null,
+                null,
+                $this->arrConfig['list_downloads_current_lang']
+            );
 
         if ($objRelatedDownload) {
             $row = 1;

@@ -1463,7 +1463,7 @@ class DownloadsManager extends DownloadsLibrary
         // parse name and description attributres
         $arrLanguages = \FWLanguage::getActiveFrontendLanguages();
         foreach ($arrLanguages as $langId => $arrLanguage) {
-            $isSelectedLang = !empty($objDownload->getName($langId));
+            $isSelectedLang = !empty($objDownload->getName($langId, true));
             if (empty($id) && $_LANGID == $langId) {
                 $isSelectedLang = true;
             }
