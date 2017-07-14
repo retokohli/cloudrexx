@@ -84,16 +84,21 @@ class PageLogRepository extends LogEntryRepository
     }
 
     /**
-     * Loads all log entries for the
-     * given $entity
+     * Loads all log entries for the given $entity
      *
-     * @param object $entity
+     * @param object  $entity   Entity object
+     * @param boolean $useCache If true then take entries from cache otherwise from DB
+     * @param integer $limit    Entries count
+     *
      * @return array
      */
-    public function getLogEntries($entity, $useCache = true)
+    public function getLogEntries($entity, $useCache = true, $limit = 0)
     {
         $q = $this->getLogEntriesQuery($entity);
         $q->useResultCache($useCache);
+        if ($limit) {
+            $q->setMaxResults($limit);
+        }
         return $q->getResult();
     }
 

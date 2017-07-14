@@ -165,7 +165,7 @@ class JsonPage implements JsonAdapter {
             else if ($page->getEditingStatus() == 'hasDraft' || $page->getEditingStatus() == 'hasDraftWaiting') {
                 $this->logRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
 
-                $availableRevisions = $this->logRepo->getLogEntries($page);
+                $availableRevisions = $this->logRepo->getLogEntries($page, true, 2);
                 $this->logRepo->revert($page, $availableRevisions[1]->getVersion());
             }
 
@@ -403,7 +403,7 @@ class JsonPage implements JsonAdapter {
                 }
 
                 if ($page->getEditingStatus() != '') {
-                    $logEntries = $this->logRepo->getLogEntries($page, false);
+                    $logEntries = $this->logRepo->getLogEntries($page, false, 1);
                     $this->em->remove($logEntries[0]);
                 }
 
@@ -434,8 +434,7 @@ class JsonPage implements JsonAdapter {
                 // Gedmo hooks in on persist/flush, so we unfortunately need to flush our em in
                 // order to get a clean set of logEntries.
                 $this->em->flush();
-                $logEntries = $this->logRepo->getLogEntries($page, false);
-
+                $logEntries = $this->logRepo->getLogEntries($page, false, 2);
                 // Revert to the published version.
                 $cachedEditingStatus = $page->getEditingStatus();
                 $this->logRepo->revert($page, $logEntries[1]->getVersion());
@@ -475,7 +474,7 @@ class JsonPage implements JsonAdapter {
                 if ($updatingDraft) {
                     $this->em->flush();
 
-                    $logEntries = $this->logRepo->getLogEntries($page);
+                    $logEntries = $this->logRepo->getLogEntries($page, true, 3);
                     $currentLog = $logEntries[1];
                     $currentLogData = $currentLog->getData();
                     $currentLogData['editingStatus'] = $page->getEditingStatus();
@@ -554,8 +553,7 @@ class JsonPage implements JsonAdapter {
 
             // this fixes log version number skipping
             $this->em->clear();
-            $logs = $this->logRepo->getLogEntries($page);
-
+            $logs = $this->logRepo->getLogEntries($page, true, 2);
             $this->em->persist($logs[0]);
 
             if ($updatingDraft) {
