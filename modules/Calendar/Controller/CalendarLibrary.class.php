@@ -400,7 +400,7 @@ class CalendarLibrary
                         // This is for the preview in settings > Date
                         $arrSettings["{$objSettings->fields['name']}_value"] = isset($_ARRAYLANG["{$value}_VALUE"]) ? htmlspecialchars($_ARRAYLANG["{$value}_VALUE"], ENT_QUOTES, CONTREXX_CHARSET) : '';
                     }
-                    $value = isset($_ARRAYLANG[$value]) ? isset($_ARRAYLANG[$value]) : '';
+                    $value = isset($_ARRAYLANG[$value]) ? $_ARRAYLANG[$value] : '';
                     $arrSettings[$objSettings->fields['name']] = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
                 } else {
                     //return all exept date settings
