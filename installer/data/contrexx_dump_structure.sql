@@ -833,7 +833,7 @@ CREATE TABLE `contrexx_module_calendar_registration` (
   `host_name` varchar(255) NOT NULL,
   `ip_address` varchar(15) NOT NULL,
   `type` int(1) NOT NULL,
-  `invite_id` int NOT NULL DEFAULT '0',
+  `invite_id` int NULL DEFAULT NULL,
   `user_id` int(7) NOT NULL,
   `lang_id` int(11) NOT NULL,
   `export` int(11) NOT NULL,

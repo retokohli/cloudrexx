@@ -1773,7 +1773,7 @@ class CalendarManager extends CalendarLibrary
         $this->_objTpl->loadTemplateFile('module_calendar_modify_registration.html');
 
         if (isset($_POST['submitModifyRegistration'])) {
-            $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration(intval($_POST['form']));
+            $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration(intval($_POST['form']), $regId);
             if ($objRegistration->save($_POST)) {
                     switch ($_POST['registrationType']) {
                         case 0:
