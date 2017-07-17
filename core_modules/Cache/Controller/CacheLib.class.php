@@ -124,6 +124,14 @@ class CacheLib
     protected $jsonData = null;
 
     /**
+     * Prefix to be used to identify cache entries in shared caching
+     * environments.
+     *
+     * @var string
+     */
+    protected $cachePrefix;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -961,7 +969,24 @@ class CacheLib
     protected function getCachePrefix()
     {
         global $_DBCONFIG;
-        return $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'];
+
+        // TODO: check if the initialization of the prefix could be moved into
+        //       the constructor
+        if (empty($this->cachePrefix)) {
+            $this->cachePrefix = $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'];
+        }
+
+        return $this->cachePrefix;
+    }
+
+    /**
+     * Overwrite the automatically set CachePrefix
+     * @param   $prefix String  The new CachePrefix to be used.
+     *                          Setting an empty string will reset
+     *                          the CachePrefix to its initial value.
+     */
+    public function setCachePrefix($prefix = '') {
+        $this->cachePrefix = $prefix;
     }
 
     /**
