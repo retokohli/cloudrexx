@@ -117,6 +117,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'Cx\Core\Routing\Model\Entity\RewriteRule',
             new \Cx\Core_Modules\Cache\Model\Event\RewriteRuleEventListener($this->cx)
         );
+
+        // TODO: This is a workaround for Doctrine's result query cache.
+        //       Proper handling of ResultCache must be implemented.
+        $evm->addModelListener(
+            'postFlush',
+            'Cx\Core\Model\Entity\EntityBase',
+            new \Cx\Core_Modules\Cache\Model\Event\CoreEntityBaseEventListener($this->cx)
+        );
     }
 
     /**
@@ -461,5 +469,15 @@ Cache clear all';
             return;
         }
         $this->cache->forceUserbasedPageCache();
+    }
+
+    /**
+     * Overwrite the automatically set CachePrefix
+     *                          Setting an empty string will reset
+     *                          the CachePrefix to its initial value.
+     * @param   $prefix String  The new CachePrefix to be used
+     */
+    public function setCachePrefix($prefix = '') {
+        $this->cache->setCachePrefix($prefix);
     }
 }
