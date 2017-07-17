@@ -1512,9 +1512,18 @@ class CalendarEvent extends CalendarLibrary
         );
 
         $eventFields = $this->getEventFieldsAsArray($data, $convertBBCode, $type);
-        $formDatas   = array(
-            'fields'    => $formData,
-            'relation'  => array('eventFields' => $eventFields)
+        $categories = $this->em
+                ->getRepository('Cx\Modules\Calendar\Model\Entity\Category')
+                ->findBy(array('id' => $category_ids));
+        foreach ($categories as $category) {
+            $category->setVirtual(true);
+        }
+        $formDatas = array(
+            'fields' => $formData,
+            'relation' => array(
+                'eventFields' => $eventFields,
+                'categories' => $categories,
+            ),
         );
         $event       = $this->getEventEntity($id, $formDatas);
         $eId         = $id;
@@ -2544,12 +2553,7 @@ class CalendarEvent extends CalendarLibrary
             ->getClassMetadata('Cx\Modules\Calendar\Model\Entity\Event');
         foreach ($formDatas['fields'] as $columnName => $columnValue) {
             $fieldName  = $classMetaData->getFieldName($columnName);
-// TODO: Test! Can Events be synchronized by using the categories collection?
-            if ($fieldName === 'categories') {
-                $columnValue = $event->getCategories();
-                $columnValue->setVirtual(true);
-                continue;
-            } elseif ($fieldName == 'registration_form') {
+            if ($fieldName == 'registration_form') {
                 $fieldName = 'registrationForm';
                 $columnValue = $this
                     ->em
