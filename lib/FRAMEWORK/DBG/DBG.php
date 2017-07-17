@@ -804,6 +804,13 @@ class DBG
             } else {
                 self::_log("PHP: <strong>$type</strong>$suppressed: $errstr in <strong>$errfile</strong> on line <strong>$errline</strong>");
             }
+
+            // Catch infinite loop produced by var_export()
+            if ($errstr == 'var_export does not handle circular references') {
+                self::log('Cancelled script execution to prevent memory overflow caused by var_export()');
+                self::stack();
+                exit;
+            }
         }
     }
 
