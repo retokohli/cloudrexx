@@ -84,17 +84,53 @@ class PageLogRepository extends LogEntryRepository
     }
 
     /**
-     * Loads all log entries for the
-     * given $entity
+     * Loads all log entries for the given $entity
      *
-     * @param object $entity
+     * @param object  $entity   Entity object
+     * @param boolean $useCache If true then take entries from cache otherwise from DB
+     * @param integer $offset   Offset value
+     * @param integer $limit    Entries count
+     *
      * @return array
      */
-    public function getLogEntries($entity, $useCache = true)
+    public function getLogEntries(
+        $entity,
+        $useCache = true,
+        $offset = 0,
+        $limit = 0
+    )
     {
         $q = $this->getLogEntriesQuery($entity);
         $q->useResultCache($useCache);
+        if ($limit) {
+            $q->setFirstResult($offset);
+            $q->setMaxResults($limit);
+        }
         return $q->getResult();
+    }
+
+    /**
+     * Get Log entries count
+     *
+     * @param object $entity Entity object
+     *
+     * @return integer
+     */
+    public function getLogEntriesCount($entity)
+    {
+        $wrapped = new \Gedmo\Tool\Wrapper\EntityWrapper($entity, $this->_em);
+        $objectClass = $wrapped->getMetadata()->name;
+        $meta = $this->getClassMetadata();
+        $dql = "SELECT count(log) as logCount FROM {$meta->name} log";
+        $dql .= " WHERE log.objectId = :objectId";
+        $dql .= " AND log.objectClass = :objectClass";
+
+        $objectId = $wrapped->getIdentifier();
+        $q = $this->_em->createQuery($dql);
+        $q->setParameters(compact('objectId', 'objectClass'));
+        $result = $q->getResult();
+
+        return $result[0]['logCount'];
     }
 
     /**

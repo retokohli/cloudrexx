@@ -897,7 +897,15 @@ class JsonPage implements JsonAdapter {
         return $output;
     }
 
-    public function getHistoryTable($params) {
+    /**
+     * Get the page logs
+     *
+     * @param array $params
+     *
+     * @throws \Exception
+     */
+    public function getHistoryTable($params)
+    {
         global $_CORELANG, $_CONFIG;
 
         if (empty($params['get']['page'])) {
@@ -924,31 +932,34 @@ class JsonPage implements JsonAdapter {
         //(III) collect page informations - path, virtual language directory
         $path         = $this->pageRepo->getPath($page);
         $langDir      = \FWLanguage::getLanguageCodeById($page->getLang());
-        $logs         = $this->logRepo->getLogEntries($page);
-
         //(V) add the history entries
         // Paging:
-        $offset = !empty($params['get']['pos']) ? $params['get']['pos'] : 0;
-        $numberOfEntries = !empty($params['get']['limit']) ? $params['get']['limit'] : $_CONFIG['corePagingLimit'];
+        $offset          =  0;
+        $numberOfEntries = $_CONFIG['corePagingLimit'];
+        if (!empty($params['get']['pos'])) {
+            $offset = $params['get']['pos'];
+        }
+        if (!empty($params['get']['limit'])) {
+            $numberOfEntries = $params['get']['limit'];
+        }
+        $logs = $this->logRepo->getLogEntries(
+            $page,
+            true,
+            $offset,
+            $numberOfEntries
+        );
+        $logsCount  = $this->logRepo->getLogEntriesCount($page);
         $tableRowId = 1;
-        $i = 0;
-        $first = true;
+        $i          = 0;
+        $first      = true;
         session_write_close();
-        foreach ($logs as $key => $log){
-            // check whether the current index is between the range which should be displayed
-            if ( $i >= ($numberOfEntries + $offset)){
-                break;
-            }
-            if ($i < $offset) {
-                $i++;
-                continue;
-            }
+        foreach ($logs as $log) {
             $version = $log->getVersion();
             $this->logRepo->revert($page, $version);
 
             // is a log of a draft state
             if ($page->isDraft()) {
-                if ($first) {
+                if ($offset == 0 && $first) {
                     // skip first draft log
                     // set flag to false
                     $first = false;
@@ -974,7 +985,14 @@ class JsonPage implements JsonAdapter {
             $i++;
         }
         // Add paging widget:
-        $paging = '<div id="history_paging">' . getPaging(count($logs), $offset, '?cmd=ContentManager&page=' . $page->getId() . '&tab=history', $_CORELANG['TXT_CORE_CM_HISTORY_ENTRIES'], true, $numberOfEntries) . '</div>';
+        $paging = '<div id="history_paging">' . getPaging(
+            $logsCount,
+            $offset,
+            '?cmd=ContentManager&page=' . $page->getId() . '&tab=history',
+            $_CORELANG['TXT_CORE_CM_HISTORY_ENTRIES'],
+            true,
+            $numberOfEntries
+        ) . '</div>';
 
         //(VI) render
         die($table->toHtml() . $paging);
