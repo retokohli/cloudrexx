@@ -2014,7 +2014,7 @@ class Event extends \Cx\Model\Base\EntityBase {
      */
     public function setCategories(\Doctrine\Common\Collections\Collection $categories)
     {
-        $this->categories[] = $categories;
+        $this->categories = $categories;
         return $this;
     }
 
