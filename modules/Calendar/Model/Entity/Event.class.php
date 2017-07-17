@@ -2009,13 +2009,11 @@ class Event extends \Cx\Model\Base\EntityBase {
     /**
      * Set categories
      * @param \Doctrine\Common\Collections\Collection $categories
-     * @return Event
      * @author Reto Kohli <reto.kohli@comvation.com>
      */
     public function setCategories(\Doctrine\Common\Collections\Collection $categories)
     {
         $this->categories = $categories;
-        return $this;
     }
 
     /**
