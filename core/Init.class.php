@@ -885,14 +885,14 @@ class InitCMS
             //load english language file first...
             $path = $this->getLangFilePath($module, 2);
             if (!empty($path)) {
-                $this->loadLangFile($path, $loadFromYaml);
+                $this->loadLangFile($path, $loadFromYaml, $module);
             }
             //...and overwrite with actual language where translated.
             //...but only if $langId is set (otherwise it will overwrite English by the default language
             if($langId && $langId != 2) { //don't do it for english, already loaded.
                 $path = $this->getLangFilePath($module, $langId);
                 if (!empty($path)) {
-                    $this->loadLangFile($path, $loadFromYaml);
+                    $this->loadLangFile($path, $loadFromYaml, $module);
                 }
             }
             return $_ARRAYLANG;
@@ -998,7 +998,7 @@ class InitCMS
             throw new \Exception($arrayLangBackup['TXT_CORE_LOCALE_LANGUAGEFILE_NOT_FOUND']);
         }
 
-        $componentSpecificLanguageData = $this->loadLangFile($path, $loadFromYaml);
+        $componentSpecificLanguageData = $this->loadLangFile($path, $loadFromYaml, $componentName);
 
         // restore $_ARRAYLANG
         $_ARRAYLANG = $arrayLangBackup;
@@ -1045,8 +1045,9 @@ class InitCMS
      *
      * @param string $path The path of the language file
      * @param boolean $loadFromYaml Wether to load customized placeholders from yaml or not
+     * @param string $componentName The name of the language file's component
      */
-    protected function loadLangFile($path, $loadFromYaml=true)
+    protected function loadLangFile($path, $loadFromYaml=true, $componentName='Core')
     {
         global $_ARRAYLANG;
 
@@ -1059,26 +1060,35 @@ class InitCMS
             require $customizedPath;
         }
 
-        // if mode isn't frontend or we don't want to load from yaml
-        // return language data already
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        if (
-            $cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND ||
-            !$loadFromYaml
-        ) {
+        // if we don't want to load from yaml return language data already
+        if (!$loadFromYaml) {
             return $_ARRAYLANG;
         }
 
         // load customized language placeholders from yaml
-        // get locale by frontend locale id
-        $locale = $cx->getDb()->getEntityManager()->find(
-            'Cx\Core\Locale\Model\Entity\Locale',
-            $this->frontendLangId
-        );
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
+        $frontend = $cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND;
+        if ($frontend) {
+            // get language by frontend locale
+            $locale = $cx->getDb()->getEntityManager()->find(
+                'Cx\Core\Locale\Model\Entity\Locale',
+                $this->frontendLangId
+            );
+            $language = $locale->getSourceLanguage();
+        } else {
+            $backend = $em->find(
+                'Cx\Core\Locale\Model\Entity\Backend',
+                $this->backendLangId
+            );
+            $language = $backend->getIso1();
+        }
 
         try {
             // get the language file of the locale
-            $languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale->getSourceLanguage());
+            $languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile(
+                $language, $componentName, $frontend
+            );
 
         } catch (\Cx\Core\Locale\Model\Entity\LanguageFileException $e) {
             \Message::add($e->getMessage(), \Message::CLASS_ERROR);
