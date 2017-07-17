@@ -968,6 +968,44 @@ class InitCMS
         return $this->moduleSpecificLanguageData[$languageId][$frontend][$componentName];
     }
 
+    /**
+     * Get component specific language data directly by language code
+     * State of arraylang will be backedup and restored while loading the language
+     * data
+     *
+     * @param string $componentName Name of the desired component
+     * @param bool|true $frontend true if desired mode is frontend false otherwise
+     * @param string $languageCode iso1 code  of the desired language i.e. 'de' for german
+     * @param boolean $loadFromYaml Wether to load customized placeholders from yaml or not
+     * @return array The language data which has been loaded
+     */
+    public function getComponentSpecificLanguageDataByCode($componentName, $frontend = true, $langCode, $loadFromYaml = true) {
+        global $_ARRAYLANG;
+
+        $arrayLangBackup = $_ARRAYLANG;
+        $_ARRAYLANG = array();
+
+        $mode = $frontend ? 'frontend' : 'backend';
+
+        if ($componentName == 'Core') {
+            $componentName = lcfirst($componentName);
+        }
+
+        // build path from component name, mode and code directly
+        $path = \Env::get('ClassLoader')->getFilePath($this->arrModulePath[$componentName].$langCode.'/'.$mode.'.php');
+
+        if (!$path) {
+            throw new \Exception($arrayLangBackup['TXT_CORE_LOCALE_LANGUAGEFILE_NOT_FOUND']);
+        }
+
+        $componentSpecificLanguageData = $this->loadLangFile($path, $loadFromYaml);
+
+        // restore $_ARRAYLANG
+        $_ARRAYLANG = $arrayLangBackup;
+
+        return $componentSpecificLanguageData;
+    }
+
     protected function getLangFilePath($module, $langId) {
         // check whether the language file exists
         $mode = in_array($this->mode, array('backend', 'update')) ? 'backend' : 'frontend';
@@ -1015,10 +1053,10 @@ class InitCMS
         $isCustomized = false;
         $customizedPath = \Env::get('ClassLoader')->getFilePath($path, $isCustomized);
         if (file_exists($path) || !file_exists($customizedPath)) {
-            require_once $path;
+            require $path;
         }
         if ($isCustomized) {
-            require_once $customizedPath;
+            require $customizedPath;
         }
 
         // if mode isn't frontend or we don't want to load from yaml
@@ -1040,7 +1078,7 @@ class InitCMS
 
         try {
             // get the language file of the locale
-            $languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale);
+            $languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile($locale->getSourceLanguage());
 
         } catch (\Cx\Core\Locale\Model\Entity\LanguageFileException $e) {
             \Message::add($e->getMessage(), \Message::CLASS_ERROR);

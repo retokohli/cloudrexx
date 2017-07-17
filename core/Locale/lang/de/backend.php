@@ -92,6 +92,7 @@ $_ARRAYLANG['TXT_CORE_LOCALE_SAVE'] = 'Änderungen übernehmen';
 // Messages
 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_SUCCESSFULLY_UPDATED'] = 'Die Sprachplatzhalter wurden erfolgreich aktualisiert.';
 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_NOTHING_CHANGED'] = 'Es wurde kein Sprachplatzhalter bearbeitet.';
-$_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_LOCALE_NOT_SET'] = 'Die Sprachdatei kann nicht geladen werden, weil das Locale-Objekt nicht gesetzt ist.';
+$_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_LANGUAGE_NOT_SET'] = 'Die Sprachdatei kann nicht geladen werden, weil die Quellsprache nicht gesetzt ist.';
 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_EXPORT_FAILED'] = 'Exportieren der angepassten Sprachplatzhalter in die YAML-Datei schlug fehl!';
 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_IMPORT_FAILED'] = 'Importieren der Sprachplatzhalter aus der YAML-Datei schlug fehl!';
+$_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_NOT_FOUND'] = 'Sprachdatei nicht gefunden.';

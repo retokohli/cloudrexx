@@ -62,6 +62,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     protected $localeRepo;
 
     /**
+     * The doctrine repository of the language entities
+     * @var \Cx\Core\Locale\Model\Repository\LanguageRepository
+     */
+    protected $languageRepo;
+
+    /**
      * Returns a list of available commands (?act=XY)
      * @return array List of acts
      */
@@ -160,24 +166,35 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 $frontend = !in_array('Backend', $cmd);
 
                 // load the language file's locale
-                if (isset($_GET) && isset($_GET['localeId'])) {
-                    // use locale selected by user
-                    $localeId = $_GET['localeId'];
+                if (isset($_GET) && isset($_GET['languageCode'])) {
+                    // use language selected by user
+                    $languageCode = $_GET['languageCode'];
                 } elseif (
-                    $userLocaleId = \FWUser::getFWUserObject()->objUser->getFrontendLanguage()
+                    $userLanguageId =
+                        $frontend ?
+                            \FWUser::getFWUserObject()->objUser->getFrontendLanguage() :
+                            \FWUser::getFWUserObject()->objUser->getBackendLanguage()
                 ) {
                     // use user's default locale
-                    $localeId = $userLocaleId;
+                    $languageId = $userLanguageId;
                 } else {
                     // use system's default locale
-                    $localeId = \Cx\Core\Setting\Controller\Setting::getValue('defaultLocaleId');
+                    $languageId = \Cx\Core\Setting\Controller\Setting::getValue('defaultLanguageId');
                 }
-                $locale = $this->getLocaleRepo()->find($localeId);
+
+                if (!isset($languageCode)) {
+                    if ($frontend) {
+                        $languageCode = $this->getLocaleRepo()->find($languageId)->getIso1()->getIso1();
+                    } else {
+                        $languageCode = $this->cx->getDb()->getEntityManager()->find('Cx\Core\Locale\Model\Entity\Backend', $languageId)->getIso1();
+                    }
+                }
+                $language = $this->getLanguageRepository()->find($languageCode);
 
                 try {
                     // set language file by source language
                     $this->languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile(
-                        $locale,
+                        $language,
                         'Core',
                         $frontend,
                         false
@@ -191,7 +208,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     $this->updateLanguageFile($_POST['placeholders']);
                 }
                 // parse locale select
-                $this->parseLocaleSelect($template);
+                $this->parseLanguageSelect($template);
 
                 // set entity class name (equal to identifier of LanguageFile)
                 $entityClassName = 'Cx\Core\Locale\Model\Entity\LanguageFile';
@@ -744,36 +761,40 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     }
 
     /**
-     * Parses the select with the locales to choose language file
+     * Parses the select with the source languages to choose language file
      * @param \Cx\Core\Html\Sigma $template The template to parse the view with
      */
-    protected function parseLocaleSelect($template) {
+    protected function parseLanguageSelect($template) {
         // check if template block exists
-        if ($template->blockExists('locale_dropdown')) {
+        if ($template->blockExists('language_dropdown')) {
 
-            // load all locales
-            $locales = $this->getLocaleRepo()->findAll();
+            // load all source languages
+            $em = $this->cx->getDb()->getEntityManager();
+            $languageRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Language');
+            $languages = $languageRepo->findBy(
+                array('source' => true)
+            );
 
             // build html select
             $select = new \Cx\Core\Html\Model\Entity\DataElement(
-                'localeId',
+                'languageCode',
                 '',
                 \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
             );
 
             // set locales as options
-            foreach($locales as $locale) {
+            foreach($languages as $language) {
                 $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
 
                 // set id as value
-                $option->setAttribute('value', $locale->getId());
+                $option->setAttribute('value', $language->getIso1());
 
                 // set label as option content
-                $option->addChild(new \Cx\Core\Html\Model\Entity\TextElement($locale->getLabel()));
+                $option->addChild(new \Cx\Core\Html\Model\Entity\TextElement($language->__toString()));
 
                 if (
                     // mark option of selected locale as selected
-                    $locale->getId() == $this->languageFile->getLocale()->getId()
+                    $language->getIso1() == $this->languageFile->getLanguage()->getIso1()
                 ) {
                     $option->setAttribute('selected');
                 }
@@ -781,8 +802,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 $select->addChild($option);
             }
 
-            $template->setVariable('LOCALE_SELECT', $select);
-            $template->touchBlock('locale_dropdown');
+            $template->setVariable('LANGUAGE_SELECT', $select);
+            $template->touchBlock('language_dropdown');
         }
     }
 
@@ -799,5 +820,20 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $em = $this->cx->getDb()->getEntityManager();
         $this->localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
         return $this->localeRepo;
+    }
+
+    /**
+     * Gets the language repository from the entity manager
+     * @return \Cx\Core\Locale\Model\Repository\LanguageRepository
+     */
+    protected function getLanguageRepository() {
+        // return directly if language repo is already set
+        if (isset($this->languageRepo)) {
+            return $this->languageRepo;
+        }
+        // load language repo from entity manager
+        $em = $this->cx->getDb()->getEntityManager();
+        $this->languageRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Language');
+        return $this->languageRepo;
     }
 }

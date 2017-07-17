@@ -65,10 +65,10 @@ class LanguageFileException extends \Exception {}
 class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
 
     /**
-     * The locale which defines the language of the language file
-     * @var \Cx\Core\Locale\Model\Entity\Locale
+     * The source language which defines the language file
+     * @var \Cx\Core\Locale\Model\Entity\Language
      */
-    protected $locale;
+    protected $language;
 
     /**
      * An Array containing the overwritten placeholders
@@ -88,20 +88,20 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
      * Creates new instance of \Cx\Core\Locale\Model\Entity\LanguageFile
      * Loads component specific language data according to params
      *
-     * @param \Cx\Core\Locale\Model\Entity\Locale $locale Defines the language
+     * @param \Cx\Core\Locale\Model\Entity\Language $language Defines the language
      * @param string $componentName Defines the component
      * @param boolean $frontend Defines wether to open the frontend or the backend specific file
      * @param boolean $onlyCustomized Defines wether to load only the customized language placeholders or all
      * @throws \Cx\Core\Locale\Model\Entity\LanguageFileException
      */
-    public function __construct(\Cx\Core\Locale\Model\Entity\Locale $locale, $componentName='Core', $frontend=true, $onlyCustomized=true) {
+    public function __construct(\Cx\Core\Locale\Model\Entity\Language $language, $componentName='Core', $frontend=true, $onlyCustomized=true) {
         global $_ARRAYLANG;
 
-        // set the locale
-        $this->locale = $locale;
-        if (!isset($this->locale)) {
+        // set the language
+        $this->language = $language;
+        if (!isset($this->language)) {
             throw new LanguageFileException(
-                $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_LOCALE_NOT_SET']
+                $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_LANGUAGE_NOT_SET']
             );
         }
 
@@ -110,18 +110,20 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
 
         // load component specific language data from init
         if (!$onlyCustomized) {
-            $this->data = \Env::get('init')->getComponentSpecificLanguageData($componentName, $frontend, $locale->getId(), false);
+            $this->data = \Env::get('init')->getComponentSpecificLanguageDataByCode($componentName, $frontend, $language->getIso1(), false);
         }
 
         // set path to yaml file
         $mode = $frontend ? 'frontend' : 'backend';
-        $this->path = ASCMS_CUSTOMIZING_PATH . '/lang/' . $locale->getSourceLanguage()->getIso1() . '/' . $mode . '.yaml';
+        $this->path = ASCMS_CUSTOMIZING_PATH . '/lang/' . $language->getIso1() . '/' . $mode . '.yaml';
 
         // check if yaml with customized placeholders exists
-        if (\Cx\Lib\FileSystem\FileSystem::exists($this->getPath())) {
-            // load placeholders from yaml
-            $this->placeholders = $this->load($this->getPath());
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($this->getPath())) {
+            return;
         }
+
+        // load placeholders from yaml
+        $this->placeholders = $this->load($this->getPath());
 
         // update the language data
         $this->updateLanguageData();
@@ -201,21 +203,21 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     }
 
     /**
-     * Returns the locale
-     * @return Locale The locale object
+     * Returns the language
+     * @return Language The language object
      */
-    public function getLocale()
+    public function getLanguage()
     {
-        return $this->locale;
+        return $this->language;
     }
 
     /**
-     * Sets the locale
-     * @param Locale $locale The locale object
+     * Sets the language
+     * @param Language $language The language object
      */
-    public function setLocale($locale)
+    public function setLanguage($language)
     {
-        $this->locale = $locale;
+        $this->language = $language;
     }
 
     /**

@@ -92,6 +92,7 @@ $_ARRAYLANG['TXT_CORE_LOCALE_SAVE'] = 'Apply changes';
 // Messages
 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_SUCCESSFULLY_UPDATED'] = 'The language placeholders were succesfully updated.';
 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_NOTHING_CHANGED'] = 'No language placeholder was edited.';
-$_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_LOCALE_NOT_SET'] = 'The language file cannot be loaded, because the locale object is not set.';
+$_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_LANGUAGE_NOT_SET'] = 'The language file cannot be loaded, because the source language is not set.';
 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_EXPORT_FAILED'] = 'Exporting the overwritten language placeholders to the YAML file failed!';
 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_IMPORT_FAILED'] = 'Importing the language placeholders from the YAML file failed!';
+$_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_NOT_FOUND'] = 'Language file not found.';

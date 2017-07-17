@@ -1,17 +1,17 @@
 cx.jQuery(document).ready(function() {
 
-    var localeSelectForm = cx.jQuery('#form-locale-select');
-    // reload page automatically when changing locale
-    localeSelectForm.change(function() {
+    var languageSelectForm = cx.jQuery('#form-language-select');
+    // reload page automatically when changing language
+    languageSelectForm.change(function() {
         cx.jQuery(this).submit();
     });
 
     // add hidden field for selected language to placeholder form
     cx.jQuery('#form-0').append(function() {
         var hiddenInput = cx.jQuery("<input type='hidden' />");
-        var localeSelect = localeSelectForm.find('select');
-        hiddenInput.attr('name', localeSelect.attr('name'));
-        hiddenInput.val(localeSelect.val());
+        var languageSelect = languageSelectForm.find('select');
+        hiddenInput.attr('name', languageSelect.attr('name'));
+        hiddenInput.val(languageSelect.val());
         return hiddenInput;
     });
 
