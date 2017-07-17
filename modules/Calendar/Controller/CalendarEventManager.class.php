@@ -205,7 +205,7 @@ class CalendarEventManager extends CalendarLibrary
      * @var array List of indexData of calendar events synced from a remote location
      */
     protected static $syncedIds;
-    
+
     /**
      * Loads the event manager configuration
      *
@@ -261,7 +261,7 @@ class CalendarEventManager extends CalendarLibrary
             $categoryId_where = '
                 AND rel_categories.category_id='.intval($this->categoryId);
             $joins = '
-                JOIN '.DBPREFIX.'module_'.self::TABLE_PREFIX.'_events_categories AS rel_categories
+                JOIN ' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_events_categories AS rel_categories
                 ON event.id=rel_categories.event_id';
         }
         if ($objInit->mode === 'frontend') {
@@ -323,21 +323,21 @@ class CalendarEventManager extends CalendarLibrary
             $author_where =' AND (event.author = '.intval($this->author).')';
         }
 
-        $query = "SELECT event.id AS id
-                    FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event AS event
-                         ".$searchTerm_DB."
-                   WHERE ".$dateScope_where."
-                         ".$onlyActive_where."
-                         ".$categoryId_where."
-                         ".$searchTerm_where."
-                         ".$showIn_where."
-                         ".$confirmed_where."
-                         ".$author_where."
-                GROUP BY event.id
-                ORDER BY event.startdate";
-
+        $query = "
+            SELECT event.id AS id
+            FROM " . DBPREFIX . "module_" . $this->moduleTablePrefix . "_event AS event
+                $searchTerm_DB
+                $joins
+            WHERE $dateScope_where
+                $onlyActive_where
+                $categoryId_where
+                $searchTerm_where
+                $showIn_where
+                $confirmed_where
+                $author_where
+            GROUP BY event.id
+            ORDER BY event.startdate";
         $objResult = $objDatabase->Execute($query);
-
         if ($objResult !== false) {
             $objFWUser = \FWUser::getFWUserObject();
             while (!$objResult->EOF) {
@@ -494,7 +494,7 @@ class CalendarEventManager extends CalendarLibrary
                 $result->MoveNext();
             }
         }
-        
+
          foreach($this->eventList as $key => $objEvent) {
              if(empty($objEvent->title)) {
                 unset($this->eventList[$key]);
@@ -664,7 +664,7 @@ class CalendarEventManager extends CalendarLibrary
         try {
             $inviteId = $request->getParam(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_ID);
         } catch (\Exception $e) {}
-        try { 
+        try {
             $inviteToken = $request->getParam(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_TOKEN);
         } catch (\Exception $e) {}
 
@@ -715,7 +715,7 @@ class CalendarEventManager extends CalendarLibrary
             return;
         }
 
-        if (!$objEvent) { 
+        if (!$objEvent) {
             $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
             $this->eventList = array($objEvent);
         }
@@ -1156,7 +1156,7 @@ class CalendarEventManager extends CalendarLibrary
             $regLinkSrc       = '';
             $registrationOpen = false;
         }
-         
+
         $regLinkSrc = str_replace(
             '[[SERIES_ELEMENT_STARTDATE]]',
             $event->startDate->getTimestamp(),
@@ -1296,7 +1296,8 @@ class CalendarEventManager extends CalendarLibrary
             $i=0;
             foreach ($this->eventList as $key => $objEvent) {
 
-                $objCategory = new \Cx\Modules\Calendar\Controller\CalendarCategory(intval($objEvent->catId));
+                $category = CalendarCategory::getCurrentCategory(null, $objEvent);
+                $objCategory = new \Cx\Modules\Calendar\Controller\CalendarCategory($category->id);
 
                 $showIn = explode(",",$objEvent->showIn);
 

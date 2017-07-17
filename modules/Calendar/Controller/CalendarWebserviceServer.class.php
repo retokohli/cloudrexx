@@ -736,7 +736,8 @@ class CalendarWebserviceEvent
                 $this->notificationTo = htmlentities(
                     stripslashes($row['registration_notification']),
                     ENT_QUOTES, $this->coreCharacterEncoding);
-                $this->category_ids = CalendarCategory::getIdsByEventId($eventId);
+                $calendarCategory = new CalendarCategory();
+                $this->category_ids = $calendarCategory->getIdsByEventId($eventId);
                 $this->getData();
             }
         }
