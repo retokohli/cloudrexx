@@ -900,7 +900,7 @@ class JsonPage implements JsonAdapter {
     /**
      * Get the page logs
      *
-     * @param array $params
+     * @param array $params Arguments passed from JsonData
      *
      * @throws \Exception
      */
