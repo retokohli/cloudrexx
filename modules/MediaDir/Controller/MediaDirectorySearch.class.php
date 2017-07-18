@@ -411,7 +411,7 @@ EOF;
                     // Range Slider
                     $intMin = (int)$strExpTerm[0];
                     $intMax = (int)$strExpTerm[1];
-                    $arrWhere[] = '('.$strTableName.'.`field_id` = '.intval($intInputfieldId).' AND '.$strTableName.'.`value` BETWEEN '.$intMin.' AND '.$intMax.')';
+                    $whereExp = '('.$strTableName.'.`field_id` = '.intval($intInputfieldId).' AND '.$strTableName.'.`value` BETWEEN '.$intMin.' AND '.$intMax.')';
                 } else {
                     $whereExp = $strTableName.'.`value` LIKE "%'.$strExpTerm.'%"';
                 }
