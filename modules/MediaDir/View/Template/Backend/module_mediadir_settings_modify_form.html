@@ -134,8 +134,11 @@ function handleKeywordAbility() {
           .closest("tr")
           .find(".inputfieldContext option[value='keywords']");
         if (
-          compatibleTypes.indexOf(parseInt(cx.jQuery(this).val())) != -1 &&
-          !cx.jQuery(".inputfieldContext option[value='keywords']:selected").length
+          (
+            compatibleTypes.indexOf(parseInt(cx.jQuery(this).val())) != -1 &&
+            !cx.jQuery(".inputfieldContext option[value='keywords']:selected").length
+          ) ||
+          keywordsOption.is(":selected")
         ) {
             keywordsOption.prop("disabled", false);
         } else {
