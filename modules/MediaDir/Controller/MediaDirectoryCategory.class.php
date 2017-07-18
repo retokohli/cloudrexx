@@ -321,7 +321,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
 
                 $intNumCategories = count($arrCategories);
 
-                if($intNumCategories%$intNumBlocks != 0) {
+                if($intNumBlocks && $intNumCategories%$intNumBlocks != 0) {
                 	$intNumCategories = $intNumCategories+($intNumCategories%$intNumBlocks);
                 }
 
@@ -639,7 +639,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                             `category_id`='".intval($intId)."',
                             `category_name`='".contrexx_raw2db($strName)."',
                             `category_description`='".contrexx_raw2db($strDescription)."',
-                            `category_metadesc`='".contrexx_raw2db(contrexx_input2raw($metaDesc))."'
+                            `category_metadesc`='".contrexx_input2db($metaDesc)."'
                     ");
                 }
 
@@ -696,7 +696,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                                 `category_id`='".intval($intId)."',
                                 `category_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
                                 `category_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."',
-                                `category_metadesc`='".contrexx_raw2db(contrexx_input2raw($metaDesc))."'
+                                `category_metadesc`='".contrexx_input2db($metaDesc)."'
                         ");
                     }
 

@@ -659,7 +659,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                             `level_id`='".intval($intId)."',
                             `level_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
                             `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."',
-                            `level_metadesc`='".contrexx_raw2db(contrexx_input2raw($metaDesc))."'
+                            `level_metadesc`='".contrexx_input2db($metaDesc)."'
                     ");
                 }
 
@@ -718,7 +718,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                             `level_id`='".intval($intId)."',
                             `level_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
                             `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."',
-                            `level_metadesc`='".contrexx_raw2db(contrexx_input2raw($metaDesc))."'
+                            `level_metadesc`='".contrexx_input2db($metaDesc)."'
                     ");
                 }
 
