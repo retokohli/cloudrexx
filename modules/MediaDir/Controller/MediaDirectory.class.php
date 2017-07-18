@@ -50,6 +50,7 @@ class MediaDirectory extends MediaDirectoryLibrary
     var $metaTitle;
     var $metaDescription;
     var $metaImage;
+    var $metaKeys;
 
 
     var $arrNavtree = array();
@@ -733,7 +734,7 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         foreach ($inputFields as $arrInputfield) {
             $contextType = isset($arrInputfield['context_type']) ? $arrInputfield['context_type'] : '';
-            if (!in_array($contextType, array('title', 'content', 'image'))) {
+            if (!in_array($contextType, array('title', 'content', 'image', 'keywords'))) {
                 continue;
             }
             $strType = isset($arrInputfield['type_name']) ? $arrInputfield['type_name'] : '';
@@ -764,6 +765,12 @@ class MediaDirectory extends MediaDirectoryLibrary
                         $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE_SRC'];
                         if ($inputfieldValue) {
                             $this->metaImage = $inputfieldValue;
+                        }
+                        break;
+                    case 'keywords':
+                        $inputfieldValue = $objInputfield->getRawData($entry['entryId'], $arrInputfield, $arrTranslationStatus, true);
+                        if ($inputfieldValue) {
+                            $this->metaKeys = $inputfieldValue;
                         }
                         break;
                     default:
@@ -1535,5 +1542,13 @@ class MediaDirectory extends MediaDirectoryLibrary
 
     public function getMetaImage() {
         return $this->metaImage;
+    }
+
+    /**
+     * Returns the metakeys
+     * @return string The meta keywords separated by comma
+     */
+    public function getMetaKeys() {
+        return $this->metaKeys;
     }
 }
