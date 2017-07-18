@@ -184,7 +184,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     $languageId = $userLanguageId;
                 } else {
                     // use system's default locale
-                    $languageId = \Cx\Core\Setting\Controller\Setting::getValue('defaultLanguageId');
+                    $languageId = $frontend ?
+                        \Cx\Core\Setting\Controller\Setting::getValue('defaultLocaleId') :
+                        \Cx\Core\Setting\Controller\Setting::getValue('defaultLanguageId');
                 }
 
                 if (!isset($languageCode)) {
