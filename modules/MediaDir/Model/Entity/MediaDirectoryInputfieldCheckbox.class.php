@@ -62,13 +62,13 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
         global $objDatabase, $_LANGID, $objInit;
-        
+
         $intId = intval($arrInputfield['id']);
-        
+
         switch ($intView) {
             default:
             case 1:
-                //modify (add/edit) View                
+                //modify (add/edit) View
                 if(isset($intEntryId) && $intEntryId != 0) {
                     $objInputfieldValue = $objDatabase->Execute("
                         SELECT
@@ -92,7 +92,7 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
 
                 $strOptions = empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID];
                 $arrOptions = explode(",", $strOptions);
-                
+
                 if(!empty($arrInputfield['info'][0])){
                     $strInfoValue = empty($arrInputfield['info'][$_LANGID]) ? 'title="'.$arrInputfield['info'][0].'"' : 'title="'.$arrInputfield['info'][$_LANGID].'"';
                     $strInfoClass = 'mediadirInputfieldHint';
@@ -141,10 +141,10 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
                 //search View
                 $strOptions = empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID];
                 $arrOptions = explode(",", $strOptions);
-                
+
                 $arrSelected = isset($_GET[$intId]) ? $_GET[$intId] : array();
                 $strChecked = '';
-                
+
                 $strInputfield = '<div class="checkboxes_' . $intId . '">';
                 foreach($arrOptions as $intKey => $strDefaultValue) {
                     $intKey++;
@@ -191,24 +191,8 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-        global $objDatabase;
-
-        $intId = intval($arrInputfield['id']);
-        $objInputfieldValue = $objDatabase->Execute("
-            SELECT
-                `value`
-            FROM
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
-            WHERE
-                field_id=".$intId."
-            AND
-                entry_id=".$intEntryId."
-            LIMIT 1
-        ");
-
-
         $arrValues = explode(",", $arrInputfield['default_value'][0]);
-        $strValue = strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
+        $strValue = strip_tags(htmlspecialchars(static::getDataFromDb($intEntryId, $arrInputfield), ENT_QUOTES, CONTREXX_CHARSET));
 
         //explode elements
         $arrElements = explode(",", $strValue);
@@ -233,6 +217,40 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
         }
 
         return $arrContent;
+    }
+
+    function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
+        $strValue = static::getDataFromDb($intEntryId, $arrInputfield);
+
+        //explode elements
+        $arrElements = explode(",", $strValue);
+
+        $arrValues = explode(",", $arrInputfield['default_value'][0]);
+        $strValues = array();
+        foreach ($arrElements as $strElement) {
+            $strValues[] = $arrValues[$strElement - 1];
+        }
+
+        return implode(',', $strValues);
+    }
+
+    function getDataFromDb($intEntryId, $arrInputfield) {
+        global $objDatabase;
+
+        $intId = intval($arrInputfield['id']);
+        $objInputfieldValue = $objDatabase->Execute("
+            SELECT
+                `value`
+            FROM
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+            WHERE
+                field_id=".$intId."
+            AND
+                entry_id=".$intEntryId."
+            LIMIT 1
+        ");
+
+        return $objInputfieldValue->fields['value'];
     }
 
 
@@ -265,8 +283,8 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
 EOF;
         return $strJavascriptCheck;
     }
-    
-    
+
+
     function getFormOnSubmit($intInputfieldId)
     {
         return null;

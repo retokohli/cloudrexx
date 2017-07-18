@@ -400,7 +400,7 @@ class Forum extends ForumLibrary {
      */
     function showForum($intForumId)
     {
-        global $objDatabase, $_ARRAYLANG, $objCache, $_LANGID, $_CORELANG;
+        global $objDatabase, $_ARRAYLANG, $_LANGID, $_CORELANG;
 
         if ($intForumId == 0) {
             //wrong id, redirect
@@ -617,7 +617,7 @@ class Forum extends ForumLibrary {
      */
     function showThread($intThreadId)
     {
-        global $objDatabase, $_ARRAYLANG, $objCache;
+        global $objDatabase, $_ARRAYLANG;
 
         $objFWUser = \FWUser::getFWUserObject();
         $this->_communityLogin();
@@ -723,7 +723,7 @@ class Forum extends ForumLibrary {
             $this->_objTpl->touchBlock('previewNewPost');
             $this->_objTpl->hideBlock('previewEditPost');
         }
-        
+
         if($_REQUEST['act'] == 'quote'){
             $quoteContent = $this->_getPostingData($intPostId);
             $subject = 'RE: '.addcslashes(htmlentities($quoteContent['subject'], ENT_QUOTES, CONTREXX_CHARSET), '\\');
@@ -1292,14 +1292,13 @@ class Forum extends ForumLibrary {
      */
     function _sendNotifications($intThreadId, $strSubject, $strContent){
         global $objDatabase, $_CONFIG;
-        require_once(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php');
 
         $arrTempSubcribers = array();
         $arrSubscribers = array();
 
         $intCategoryId = $this->_getCategoryIdFromThread($intThreadId);
 
-        $mail =new \PHPMailer();
+        $mail  = new \Cx\Core\MailTemplate\Model\Entity\Mail();
         $query = '    SELECT `subject`, `user_id` FROM `'.DBPREFIX.'module_forum_postings`
                     WHERE `thread_id` = '.$intThreadId.'
                     AND `prev_post_id` = 0';
@@ -1344,10 +1343,8 @@ class Forum extends ForumLibrary {
         }
 
         if(!empty($arrSubscribers)){
-            $mail->CharSet = CONTREXX_CHARSET;
             $mail->IsHTML(false);
-            $mail->From     = $this->_arrSettings['notification_from_email'];
-            $mail->FromName = $this->_arrSettings['notification_from_name'];
+            $mail->SetFrom($this->_arrSettings['notification_from_email'], $this->_arrSettings['notification_from_name']);
             $strThreadURL = 'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Forum&cmd=thread&id='.$intThreadId;
             $arrSearch      = array('[[FORUM_THREAD_SUBJECT]]', '[[FORUM_THREAD_STARTER]]', '[[FORUM_LATEST_SUBJECT]]',    '[[FORUM_LATEST_MESSAGE]]',    '[[FORUM_THREAD_URL]]');
             $arrReplace     = array($strFirstPostSubject,         $strFirstPostAuthor,         $strSubject,                $strContent,                 $strThreadURL);
@@ -1718,7 +1715,7 @@ class Forum extends ForumLibrary {
                             offset = document.documentElement.scrollTop;
                         }
                         if(document.getElementById("scrollpos")){
-                        	document.getElementById("scrollpos").value = offset;
+                            document.getElementById("scrollpos").value = offset;
                         }
                     }
                 //]]>
