@@ -33,4 +33,4 @@
  * @subpackage  module_mediadir
  */
 $_ARRAYLANG['TXT_MEDIADIR_ENTRIES'] = "Запись";
-?>
+
