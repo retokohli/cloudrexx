@@ -398,7 +398,11 @@ class MediaDirectory extends MediaDirectoryLibrary
             if (!$this->arrSettings['legacyBehavior']) {
                 $this->pageTitle = $objLevel->arrLevels[$intLevelId]['levelName'][0];
             }
-            $this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelDescription'][0];
+            if (empty($objLevel->arrLevels[$intLevelId]['levelMetaDesc'][0])) {
+                $this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelDescription'][0];
+            } else {
+                $this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelMetaDesc'][0];
+            }
             $this->metaImage = $objLevel->arrLevels[$intLevelId]['levelPicture'];
         }
 
@@ -413,7 +417,11 @@ class MediaDirectory extends MediaDirectoryLibrary
             if (!$this->arrSettings['legacyBehavior']) {
                 $this->pageTitle = $objCategory->arrCategories[$intCategoryId]['catName'][0];
             }
-            $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catDescription'][0];
+            if (empty($objCategory->arrCategories[$intCategoryId]['catMetaDesc'][0])) {
+                $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catDescription'][0];
+            } else {
+                $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catMetaDesc'][0];
+            }
             $this->metaImage = $objCategory->arrCategories[$intCategoryId]['catPicture'];
         }
 
