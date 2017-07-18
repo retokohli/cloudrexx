@@ -17,6 +17,9 @@ body #content input[type="submit"] {
     color: #fff;
     border: none;
     text-shadow: none;
-    background: #4eaa09;
+    background: rgba(78,170,9,0.5);
     cursor: pointer;
+}
+body #content input[type="submit"]:hover {
+    background: rgba(78,170,9,1);
 }
