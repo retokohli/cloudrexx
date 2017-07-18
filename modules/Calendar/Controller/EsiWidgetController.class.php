@@ -98,7 +98,9 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             return;
         }
 
-        $content = file_get_contents($fileSystem->getFullPath($file));
+        $content = file_get_contents(
+            $fileSystem->getFullPath($file) . $file->getFullName()
+        );
         if (
             preg_match(
                 '/\{CALENDAR_CATEGORY_([0-9]+)\}/',
