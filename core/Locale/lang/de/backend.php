@@ -97,3 +97,5 @@ $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_LANGUAGE_NOT_SET'] = 'Die Sprachdatei 
 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_EXPORT_FAILED'] = 'Exportieren der angepassten Sprachplatzhalter in die YAML-Datei schlug fehl!';
 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_IMPORT_FAILED'] = 'Importieren der Sprachplatzhalter aus der YAML-Datei schlug fehl!';
 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_NOT_FOUND'] = 'Sprachdatei nicht gefunden.';
+$_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_RESET_SUCCESS'] = 'Standardwert erfolgreich geladen.';
+$_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_RESET_ERROR'] = 'Standardwert nicht gefunden.';

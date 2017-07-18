@@ -37,7 +37,7 @@ cx.jQuery(document).ready(function() {
     // add reset button to each placeholder
     cx.jQuery("#form-0 .group").append(
       "<input type=\"button\" class=\"reset-placeholder\" value=\"" +
-      cx.variables.get("resetText", "Locale/Locale") +
+      cx.variables.get("resetText", "Locale/LanguageFile") +
       "\" />"
     );
 
@@ -65,8 +65,15 @@ cx.jQuery(document).ready(function() {
               success: function(json) {
                   if (json.data) {
                       cx.jQuery(button).siblings(".controls").children("input").val(json.data);
+                      cx.ui.messages.add(
+                        cx.variables.get("resetSuccess", "Locale/LanguageFile"),
+                        "success"
+                      );
                   } else {
-                      alert("default value not found.");
+                      cx.ui.messages.add(
+                        cx.variables.get("resetError", "Locale/LanguageFile"),
+                        "error"
+                      );
                   }
               }
           }

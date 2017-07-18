@@ -160,7 +160,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/LanguageFile.js', 1));
                 // set js variables
                 $cxjs = \ContrexxJavascript::getInstance();
-                $cxjs->setVariable('resetText', $_ARRAYLANG['TXT_CORE_LOCALE_RESET'], 'Locale/Locale');
+                $cxjs->setVariable('resetText', $_ARRAYLANG['TXT_CORE_LOCALE_RESET'], 'Locale/LanguageFile');
+                $cxjs->setVariable('resetSuccess', $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_RESET_SUCCESS'], 'Locale/LanguageFile');
+                $cxjs->setVariable('resetError', $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_RESET_ERROR'], 'Locale/LanguageFile');
 
                 // register css
                 \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/LanguageFile.css', 1));
