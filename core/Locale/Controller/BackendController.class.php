@@ -191,7 +191,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
                 if (!isset($languageCode)) {
                     if ($frontend) {
-                        $languageCode = $this->getLocaleRepo()->find($languageId)->getIso1()->getIso1();
+                        $languageCode = $this->getLocaleRepo()->find($languageId)->getSourceLanguage()->getIso1();
                     } else {
                         $languageCode = $this->cx->getDb()->getEntityManager()->find('Cx\Core\Locale\Model\Entity\Backend', $languageId)->getIso1();
                     }
