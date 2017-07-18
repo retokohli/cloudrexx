@@ -119,6 +119,19 @@ class CacheLib
     protected $ssiProxy;
 
     /**
+     * @var \Cx\Core\Json\JsonData
+     */
+    protected $jsonData = null;
+
+    /**
+     * Prefix to be used to identify cache entries in shared caching
+     * environments.
+     *
+     * @var string
+     */
+    protected $cachePrefix;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -206,7 +219,9 @@ class CacheLib
         if ($this->isInstalled(self::CACHE_ENGINE_ZEND_OPCACHE)) {
             ini_set('opcache.save_comments', 1);
             ini_set('opcache.load_comments', 1);
-            @ini_set('opcache.enable', 1);
+            if (!ini_get('opcache.enable')) {
+                @ini_set('opcache.enable', 1);
+            }
 
             if (
                 !$this->isActive(self::CACHE_ENGINE_ZEND_OPCACHE) ||
@@ -445,7 +460,11 @@ class CacheLib
                 $settings['internalSsiCache'] != 'on'
             )
         ) {
-            return $this->getApiResponseForUrl($url);
+            try {
+                return $this->getApiResponseForUrl($url);
+            } catch (\Exception $e) {
+                return '';
+            }
         }
         return $this->getSsiProxy()->getSsiProcessor()->getIncludeCode($url->toString());
     }
@@ -471,7 +490,11 @@ class CacheLib
                 $settings['internalSsiCache'] != 'on'
             )
         ) {
-            return $this->getApiResponseForUrl($urls[rand(0, (count($urls) - 1))]);
+            try {
+                return $this->getApiResponseForUrl($urls[rand(0, (count($urls) - 1))]);
+            } catch (\Exception $e) {
+                return '';
+            }
         }
         return $this->getSsiProxy()->getSsiProcessor()->getRandomizedIncludeCode($urls);
     }
@@ -480,6 +503,7 @@ class CacheLib
      * Returns the content of the API response for an API URL
      * This gets data internally and does not do a HTTP request!
      * @param string $url API URL
+     * @throws \Exception If JsonAdapter request did not succeed
      * @return string API content or empty string
      */
     protected function getApiResponseForUrl($url) {
@@ -507,16 +531,31 @@ class CacheLib
         unset($params['object']);
         unset($params['act']);
         $arguments = array('get' => contrexx_input2raw($params));
-        
-        $json = new \Cx\Core\Json\JsonData();
-        $response = $json->data($adapter, $method, $arguments);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $arguments['response'] = new \Cx\Core\Routing\Model\Entity\Response(
+            null,
+            200,
+            new \Cx\Core\Routing\Model\Entity\Request(
+                'get',
+                new \Cx\Core\Routing\Url($url),
+                array(
+                    'Referer' => $cx->getRequest()->getUrl()->toString(),
+                )
+            )
+        );
+        $arguments['response']->setPage($cx->getPage());
+
+        if (!$this->jsonData) {
+            $this->jsonData = new \Cx\Core\Json\JsonData();
+        }
+        $response = $this->jsonData->data($adapter, $method, $arguments);
         if (
             !isset($response['status']) ||
             $response['status'] != 'success' ||
             !isset($response['data']) ||
             !isset($response['data']['content'])
         ) {
-            return '';
+            throw new \Exception('JsonAdapter returned with an error');
         }
         return $response['data']['content'];
     }
@@ -547,7 +586,19 @@ class CacheLib
         }
         $url = \Cx\Core\Routing\Url::fromApi('Data', array('Plain', $adapterName, $adapterMethod), $params);
         // make sure params are in correct order:
-        $correctIndexOrder = array('page', 'lang', 'user', 'theme', 'country', 'currency');
+        $correctIndexOrder = array(
+            'page',
+            'lang',
+            'user',
+            'theme',
+            'channel',
+            'country',
+            'currency',
+            'ref',
+            'targetComponent',
+            'targetEntity',
+            'targetId',
+        );
         $params = $url->getParamArray();
         uksort($params, function($a, $b) use ($correctIndexOrder) {
             return array_search($a, $correctIndexOrder) - array_search($b, $correctIndexOrder);
@@ -560,7 +611,10 @@ class CacheLib
     /**
      * Drops all cached ESI/SSI elements
      */
-    public function clearSsiCache() {
+    public function clearSsiCache($urlPattern = '') {
+        if (!empty($urlPattern)) {
+            $this->getSsiProxy()->clearCachePage($urlPattern, $this->getDomainsAndPorts());
+        }
         $this->getSsiProxy()->clearCache($this->getDomainsAndPorts());
     }
 
@@ -622,7 +676,10 @@ class CacheLib
                 }
                 return true;
             case self::CACHE_ENGINE_ZEND_OPCACHE:
-                return ini_get('opcache.save_comments') && ini_get('opcache.load_comments');
+                // opcache.load_comments no longer exists since PHP7
+                // therefore, ini_get() will return FALSE in case the
+                // php directive does not exist
+                return ini_get('opcache.save_comments') && (ini_get('opcache.load_comments') === false || ini_get('opcache.load_comments'));
             case self::CACHE_ENGINE_MEMCACHE:
                 return $this->memcache ? true : false;
             case self::CACHE_ENGINE_MEMCACHED:
@@ -912,7 +969,24 @@ class CacheLib
     protected function getCachePrefix()
     {
         global $_DBCONFIG;
-        return $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'];
+
+        // TODO: check if the initialization of the prefix could be moved into
+        //       the constructor
+        if (empty($this->cachePrefix)) {
+            $this->cachePrefix = $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'];
+        }
+
+        return $this->cachePrefix;
+    }
+
+    /**
+     * Overwrite the automatically set CachePrefix
+     * @param   $prefix String  The new CachePrefix to be used.
+     *                          Setting an empty string will reset
+     *                          the CachePrefix to its initial value.
+     */
+    public function setCachePrefix($prefix = '') {
+        $this->cachePrefix = $prefix;
     }
 
     /**
@@ -982,27 +1056,45 @@ class CacheLib
     /**
      * Returns the validated file search parts of the URL
      * @param string $url URL to parse
+     * @param string $originalUrl URL of the page that ESI is parsed for
      * @return array <fileNamePrefix>=><parsedValue> type array
      */
-    public function getCacheFileNameSearchPartsFromUrl($url) {
-        $url = new \Cx\Lib\Net\Model\Entity\Url($url);
-        $params = $url->getParsedQuery();
+    public function getCacheFileNameSearchPartsFromUrl($url, $originalUrl) {
+        try {
+            $url = new \Cx\Lib\Net\Model\Entity\Url($url);
+            $params = $url->getParsedQuery();
+        } catch (\Cx\Lib\Net\Model\Entity\UrlException $e) {
+            parse_str(substr($url, 1), $params);
+        }
         $searchParams = array(
             'p' => 'page',
             'l' => 'lang',
             'u' => 'user',
             't' => 'theme',
+            'ch' => 'channel',
             'g' => 'country',
             'c' => 'currency',
+            'r' => 'ref',
+            'tc' => 'targetComponent',
+            'te' => 'targetEntity',
+            'ti' => 'targetId',
         );
         $fileNameSearchParts = array();
         foreach ($searchParams as $short=>$long) {
             if (!isset($params[$long])) {
                 continue;
             }
-            // security: abort if any mystirius characters are found
+            // security: abort if any mysterious characters are found
             if (!preg_match('/^[a-zA-Z0-9-]+$/', $params[$long])) {
                 return array();
+            }
+            if ($long == 'ref') {
+                $params[$long] = str_replace(
+                    '$(HTTP_REFERER)',
+                    $originalUrl,
+                    $params[$long]
+                );
+                $params[$long] = md5($params[$long]);
             }
             $fileNameSearchParts[$short] = '_' . $short . $params[$long];
         }
@@ -1012,19 +1104,51 @@ class CacheLib
     /**
      * Gets the local cache file name for an URL
      * @param string $url URL to get file name for
-     * @return string File name
+     * @param string $originalUrl URL of the page that ESI is parsed for
+     * @param boolean $withCacheInfoPart (optional) Adds info part (default true)
+     * @return string File name (without path)
      */
-    public function getCacheFileNameFromUrl($url, $withCacheInfoPart = true) {
-        $cacheInfoParts = $this->getCacheFileNameSearchPartsFromUrl($url);
-        $url = new \Cx\Lib\Net\Model\Entity\Url($url);
-        $params = $url->getParsedQuery();
-        $correctIndexOrder = array('page', 'lang', 'user', 'theme', 'country', 'currency');
+    public function getCacheFileNameFromUrl($url, $originalUrl, $withCacheInfoPart = true) {
+        $cacheInfoParts = $this->getCacheFileNameSearchPartsFromUrl($url, $originalUrl);
+        try {
+            $url = new \Cx\Lib\Net\Model\Entity\Url($url);
+            $params = $url->getParsedQuery();
+        } catch (\Cx\Lib\Net\Model\Entity\UrlException $e) {
+            parse_str(substr($url, 1), $params);
+        }
+        $correctIndexOrder = array(
+            'page',
+            'lang',
+            'user',
+            'theme',
+            'channel',
+            'country',
+            'currency',
+            'ref',
+            'targetComponent',
+            'targetEntity',
+            'targetId',
+        );
         foreach ($correctIndexOrder as $paramName) {
             unset($params[$paramName]);
         }
-        $url->setParsedQuery($params);
-        $url = $url->toString();
-        $fileName = md5($url);
+        // Make sure placeholders are replaced before generating filename.
+        // Otherwise the filename will be non-unique.
+        if (isset($params['ref'])) {
+            $params['ref'] = str_replace(
+                '$(HTTP_REFERER)',
+                $originalUrl,
+                $params['ref']
+            );
+        }
+        $fileName = '';
+        if (is_object($url)) {
+            $url->setParsedQuery($params);
+            $url = $url->toString();
+            $fileName = md5($url);
+        } else {
+            $url = http_build_query($params);
+        }
         if ($withCacheInfoPart) {
             $fileName .= implode('', $cacheInfoParts);
         }
@@ -1037,7 +1161,7 @@ class CacheLib
     function deleteSingleFile($intPageId) {
         $intPageId = intval($intPageId);
         if ( 0 < $intPageId ) {
-            $files = glob($this->strCachePath . '*_{,h}' . $intPageId, GLOB_BRACE);
+            $files = glob($this->strCachePath . '*_{,h}' . $intPageId . '*', GLOB_BRACE);
             if ( count( $files ) ) {
                 foreach ( $files as $file ) {
                     @unlink( $file );
@@ -1064,7 +1188,7 @@ class CacheLib
             $pages[$page->getId()] = $page;
             // get all fallbacks to them
             // get all symlinks to them
-            $pages += $this->getPagesPointingTo($page);
+            $pages += $pageRepo->getPagesPointingTo($page);
         }
         // foreach of the above
         foreach ($pages as $pageId=>$page) {
@@ -1084,84 +1208,5 @@ class CacheLib
                 @unlink($file);
             }
         }
-    }
-    
-    /**
-     * Generates a list of pages pointing to $page
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page to get referencing pages for
-     * @param array $subPages (optional, by reference) Do not use, internal
-     * @return array List of pages (ID as key, page object as value)
-     */
-    protected function getPagesPointingTo($page, &$subPages = array()) {
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $em = $cx->getDb()->getEntityManager();
-        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-        $fallback_lang_codes = \FWLanguage::getFallbackLanguageArray();
-        $active_langs = \FWLanguage::getActiveFrontendLanguages();
-
-        // get all active languages and their fallbacks
-        // $fallbacks[<langId>] = <fallsBackToLangId>
-        // if <langId> has no fallback <fallsBackToLangId> will be null
-        $fallbacks = array();
-        foreach ($active_langs as $lang) {
-            $fallbacks[\FWLanguage::getLanguageCodeById($lang['id'])] = ((array_key_exists($lang['id'], $fallback_lang_codes)) ? \FWLanguage::getLanguageCodeById($fallback_lang_codes[$lang['id']]) : null);
-        }
-
-        // get all symlinks and fallbacks to it
-        $query = '
-            SELECT
-                p
-            FROM
-                Cx\Core\ContentManager\Model\Entity\Page p
-            WHERE
-                (
-                    p.type = ?1 AND
-                    (
-                        p.target LIKE ?2';
-        if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION) {
-            $query .= ' OR
-                        p.target LIKE ?3';
-        }
-        $query .= '
-                    )
-                ) OR
-                (
-                    p.type = ?4 AND
-                    p.node = ' . $page->getNode()->getId() . '
-                )
-        ';
-        $q = $em->createQuery($query);
-        $q->setParameter(1, 'symlink');
-        $q->setParameter('2', '%NODE_' . $page->getNode()->getId() . '%');
-        if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION) {
-            $q->setParameter('3', '%NODE_' . strtoupper($page->getModule()) . '%');
-        }
-        $q->setParameter(4, 'fallback');
-
-        $result = $q->getResult(); 
-
-        if (!$result) {
-            return $subPages;
-        }
-
-        foreach ($result as $subPage) {
-            if ($subPage->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_SYMLINK) {
-                $subPages[$subPage->getId()] = $subPage;
-            } else if ($subPage->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK) {
-                // check if $subPage is a fallback to $page
-                $targetLang = \FWLanguage::getLanguageCodeById($page->getLang());
-                $currentLang = \FWLanguage::getLanguageCodeById($subPage->getLang());
-                while ($currentLang && $currentLang != $targetLang) {
-                    $currentLang = $fallbacks[$currentLang];
-                }
-                if ($currentLang && !isset($subPages[$subPage->getId()])) {
-                    $subPages[$subPage->getId()] = $subPage;
-
-                    // recurse!
-                    $this->getPagesPointingTo($subPage, $subPages);
-                }
-            }
-        }
-        return $subPages;
     }
 }

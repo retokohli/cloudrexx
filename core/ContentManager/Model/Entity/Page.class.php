@@ -71,7 +71,7 @@ class PageException extends \Exception {
  * @package     cloudrexx
  * @subpackage  core_contentmanager
  */
-class Page extends \Cx\Model\Base\EntityBase implements \Serializable
+class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implements \Serializable
 {
     const TYPE_CONTENT = 'content';
     const TYPE_APPLICATION = 'application';
@@ -1271,7 +1271,10 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             }
             if (in_array($this->getSlug(), $invalidAliasNames)) {
                 $lang = \Env::get('lang');
-                throw new PageException('Cannot use name of existing files, folders or languages as alias.', $lang['TXT_CORE_CANNOT_USE_AS_ALIAS']);
+                $error = array(
+                    'slug' => array($lang['TXT_CORE_CANNOT_USE_AS_ALIAS'])
+                );
+                throw new \Cx\Model\Base\ValidationException($error);
             }
         }
         //workaround, this method is regenerated each time
@@ -1785,7 +1788,6 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             $this->applicationTemplate = $page->getApplicationTemplate();
             $this->cssName = $page->getCssName();
         }
-        $this->cssNavName = $page->getCssNavName();
 
         $this->type = $page->getType();
         $this->target = $page->getTarget();
@@ -1862,8 +1864,8 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
 
         // merge both resultsets
         $aliases = array_merge(
-                $pageRepo->findBy($crit1, true),
-                $pageRepo->findBy($crit2, true)
+                $pageRepo->findBy($crit1, null, null, null, true),
+                $pageRepo->findBy($crit2, null, null, null, true)
         );
         return $aliases;
     }
@@ -2144,5 +2146,13 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         $this->metadesc = $unserialized[34];
         $this->metakeys = $unserialized[35];
         $this->metaimage = $unserialized[36];
+    }
+
+    /**
+     * Returns the name of the attribute used to parse Widget named $widgetName
+     * @return string Attribute name used as getter name
+     */
+    public function getWidgetContentAttributeName($widgetName) {
+        return 'content';
     }
 }

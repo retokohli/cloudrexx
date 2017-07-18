@@ -51,6 +51,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array();
     }
 
+    /**
+     * Do something after all active components are loaded
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     */
+    public function postComponentLoad() {
+        // initial load of all config settings
+        \Cx\Core\Setting\Controller\Setting::init('Config', null, 'Yaml', null, \Cx\Core\Setting\Controller\Setting::REPOPULATE);
+    }
+
      /**
      * Load your component.
      *
@@ -71,8 +81,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $this->cx->getTemplate()->setRoot($cachedRoot);
     }
 
-    public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        self::registerYamlSettingEventListener($this->cx);
+    public function registerEventListeners() {
+        static::registerYamlSettingEventListener($this->cx);
     }
 
     public static function registerYamlSettingEventListener($cx) {

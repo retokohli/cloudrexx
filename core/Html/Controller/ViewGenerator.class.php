@@ -87,9 +87,11 @@ class ViewGenerator {
             $entityWithNS = preg_replace('/^\\\/', '', $this->findEntityClass($object));
 
             // this is a temporary "workaround" for combined keys, see todo
-            $entityClassMetadata = \Env::get('em')->getClassMetadata($entityWithNS);
-            if (count($entityClassMetadata->getIdentifierFieldNames()) > 1) {
-                throw new \Exception('Currently, view generator is not able to handle composite keys...');
+            if ($entityWithNS != 'array') {
+                $entityClassMetadata = \Env::get('em')->getClassMetadata($entityWithNS);
+                if (count($entityClassMetadata->getIdentifierFieldNames()) > 1) {
+                    throw new \Exception('Currently, view generator is not able to handle composite keys...');
+                }
             }
 
             $this->options = array();
@@ -196,7 +198,8 @@ class ViewGenerator {
             return $this->object->getDataType();
         } else {
             if (!is_object($object)) {
-                $entityClassName = $object;
+                // Resolve proxies
+                $entityClassName = \Env::get('em')->getClassMetadata($object)->name;
                 $entityRepository = \Env::get('em')->getRepository($entityClassName);
                 $entities = $entityRepository->findAll();
                 if (empty($entities)) {
@@ -341,7 +344,7 @@ class ViewGenerator {
             }
 
             // save it:
-
+            $targetEntityMetadata = $em->getClassMetadata($associationMapping['targetEntity']);
             // case a) was open in form directly
             $firstOffset = str_replace('\\', '_', strtolower($associationMapping['sourceEntity']));
             $secondOffset = $associationMapping['fieldName'];
@@ -349,7 +352,7 @@ class ViewGenerator {
                 $this->storeSingleValuedAssociation(
                     $associationMapping['targetEntity'],
                     array(
-                        $associationMapping['joinColumns'][0]['referencedColumnName'] => $entityData[$secondOffset],
+                        $targetEntityMetadata->getFieldName($associationMapping['joinColumns'][0]['referencedColumnName']) => $entityData[$secondOffset],
                     ),
                     $entity,
                     'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $associationMapping['fieldName'])))
@@ -371,7 +374,7 @@ class ViewGenerator {
                 $this->storeSingleValuedAssociation(
                     $associationMapping['targetEntity'],
                     array(
-                        $associationMapping['joinColumns'][0]['referencedColumnName'] => $foreignEntityData[$secondOffset],
+                        $targetEntityMetadata->getFieldName($associationMapping['joinColumns'][0]['referencedColumnName']) => $foreignEntityData[$secondOffset],
                     ),
                     $entity,
                     'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $associationMapping['fieldName'])))
@@ -582,15 +585,17 @@ class ViewGenerator {
             $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
             $searchCriteria = contrexx_input2raw($this->getVgParam($_GET['search']));
             $entityClass = $this->findEntityClass($renderObject);
-            $metaData = $em->getClassMetadata($entityClass);
-            foreach ($metaData->associationMappings as $relationField => $associationMapping) {
-                if (!isset($searchCriteria[$relationField])) {
-                    continue;
+            if ($entityClass !== 'array') {
+                $metaData = $em->getClassMetadata($entityClass);
+                foreach ($metaData->associationMappings as $relationField => $associationMapping) {
+                    if (!isset($searchCriteria[$relationField])) {
+                        continue;
+                    }
+                    $relationClass = $associationMapping['targetEntity'];
+                    $relationRepo = $em->getRepository($relationClass);
+                    $relationEntity = $relationRepo->find($searchCriteria[$relationField]);
+                    $searchCriteria[$relationField] = $relationEntity;
                 }
-                $relationClass = $associationMapping['targetEntity'];
-                $relationRepo = $em->getRepository($relationClass);
-                $relationEntity = $relationRepo->find($searchCriteria[$relationField]);
-                $searchCriteria[$relationField] = $relationEntity;
             }
 
             $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController(
@@ -635,92 +640,97 @@ class ViewGenerator {
         } else {
             $entityClassWithNS = get_class($this->object);
         }
-        $entityObject = \Env::get('em')->getClassMetadata($entityClassWithNS);
-        $primaryKeyNames = $entityObject->getIdentifierFieldNames(); // get the name of primary key in database table
-        if ($entityId == 0 && !empty($this->options['functions']['add'])) { // load add entry form
-            $this->setProperCancelUrl('add');
-            $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
-            $actionUrl->setParam('add', 1);
-            $title = sprintf($_CORELANG['TXT_CORE_ADD_ENTITY'], $entityTitle);
-            $entityColumnNames = $entityObject->getColumnNames(); // get all database field names
-            if (empty($entityColumnNames)) {
-                return false;
-            }
-            foreach($entityColumnNames as $column) {
-                $field = $entityObject->getFieldName($column);
-                if (in_array($field, $primaryKeyNames)) {
-                    continue;
+        $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
+        if ($entityClassWithNS != 'array') {
+            $entityObject = \Env::get('em')->getClassMetadata($entityClassWithNS);
+            $primaryKeyNames = $entityObject->getIdentifierFieldNames(); // get the name of primary key in database table
+            if ($entityId == 0 && !empty($this->options['functions']['add'])) { // load add entry form
+                $this->setProperCancelUrl('add');
+                $actionUrl->setParam('add', 1);
+                $title = sprintf($_CORELANG['TXT_CORE_ADD_ENTITY'], $entityTitle);
+                $entityColumnNames = $entityObject->getColumnNames(); // get all database field names
+                if (empty($entityColumnNames)) {
+                    return false;
                 }
-                $fieldDefinition = $entityObject->getFieldMapping($field);
-                $this->options[$field]['type'] = $fieldDefinition['type'];
-                if ($entityObject->getFieldValue($this->object, $field) !== null) {
-                    $renderArray[$field] = $entityObject->getFieldValue($this->object, $field);
-                    continue;
-                }
-                $renderArray[$field] = '';
-            }
-            // load single-valued-associations
-            $associationMappings = \Env::get('em')->getClassMetadata($entityClassWithNS)->getAssociationMappings();
-            $classMethods = get_class_methods($entityObject->newInstance());
-            foreach ($associationMappings as $field => $associationMapping) {
-                if (   \Env::get('em')->getClassMetadata($entityClassWithNS)->isSingleValuedAssociation($field)
-                    && in_array('set'.ucfirst($field), $classMethods)
-                ) {
-                    if ($entityObject->getFieldValue($this->object, $field)) {
+                foreach($entityColumnNames as $column) {
+                    $field = $entityObject->getFieldName($column);
+                    if (in_array($field, $primaryKeyNames)) {
+                        continue;
+                    }
+                    $fieldDefinition = $entityObject->getFieldMapping($field);
+                    $this->options[$field]['type'] = $fieldDefinition['type'];
+                    if ($entityObject->getFieldValue($this->object, $field) !== null) {
                         $renderArray[$field] = $entityObject->getFieldValue($this->object, $field);
                         continue;
                     }
-                    $renderArray[$field]= new $associationMapping['targetEntity']();
-                } elseif (\Env::get('em')->getClassMetadata($entityClassWithNS)->isCollectionValuedAssociation($field)) {
-                    $renderArray[$field]= new $associationMapping['targetEntity']();
+                    $renderArray[$field] = '';
                 }
-            }
-        } elseif ($entityId != 0 && $this->object->entryExists($entityId)) { // load edit entry form
-            $this->setProperCancelUrl('editid');
-            $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
-            $actionUrl->setParam('editid', null);
-            $title = sprintf($_CORELANG['TXT_CORE_EDIT_ENTITY'], $entityTitle);
+                // load single-valued-associations
+                $associationMappings = \Env::get('em')->getClassMetadata($entityClassWithNS)->getAssociationMappings();
+                $classMethods = get_class_methods($entityObject->newInstance());
+                foreach ($associationMappings as $field => $associationMapping) {
+                    if (   \Env::get('em')->getClassMetadata($entityClassWithNS)->isSingleValuedAssociation($field)
+                        && in_array('set'.ucfirst($field), $classMethods)
+                    ) {
+                        if ($entityObject->getFieldValue($this->object, $field)) {
+                            $renderArray[$field] = $entityObject->getFieldValue($this->object, $field);
+                            continue;
+                        }
+                        $renderArray[$field]= new $associationMapping['targetEntity']();
+                    } elseif (\Env::get('em')->getClassMetadata($entityClassWithNS)->isCollectionValuedAssociation($field)) {
+                        $renderArray[$field]= new $associationMapping['targetEntity']();
+                    }
+                }
+            } elseif ($entityId != 0 && $this->object->entryExists($entityId)) { // load edit entry form
+                $this->setProperCancelUrl('editid');
+                $actionUrl->setParam('editid', null);
+                $title = sprintf($_CORELANG['TXT_CORE_EDIT_ENTITY'], $entityTitle);
 
-            // get data of all fields of the entry, except associated fields
-            $renderObject = $this->object->getEntry($entityId);
-            if (empty($renderObject)) {
-                return false;
-            }
-
-            // get doctrine field name, database field name and type for each field
-            foreach($renderObject as $name => $value) {
-                if ($name == 'virtual' || in_array($name, $primaryKeyNames)) {
-                    continue;
+                // get data of all fields of the entry, except associated fields
+                $renderObject = $this->object->getEntry($entityId);
+                if (empty($renderObject)) {
+                    return false;
                 }
 
-                $fieldDefinition['type'] = null;
-                if (!\Env::get('em')->getClassMetadata($entityClassWithNS)->hasAssociation($name)) {
-                    $fieldDefinition = $entityObject->getFieldMapping($name);
-                }
-                $this->options[$name]['type'] = $fieldDefinition['type'];
-                $renderArray[$name] = $value;
-            }
+                // get doctrine field name, database field name and type for each field
+                foreach($renderObject as $name => $value) {
+                    if ($name == 'virtual' || in_array($name, $primaryKeyNames)) {
+                        continue;
+                    }
 
-            // load single-valued-associations
-            // this is used for those object fields that are associations, but no object has been assigned to yet
-            $associationMappings = \Env::get('em')->getClassMetadata($entityClassWithNS)->getAssociationMappings();
-            $classMethods = get_class_methods($entityObject->newInstance());
-            foreach ($associationMappings as $field => $associationMapping) {
-                if (!empty($renderArray[$field])) {
-                    if (\Env::get('em')->getClassMetadata($entityClassWithNS)->isCollectionValuedAssociation($field)) {
+                    $fieldDefinition['type'] = null;
+                    if (!\Env::get('em')->getClassMetadata($entityClassWithNS)->hasAssociation($name)) {
+                        $fieldDefinition = $entityObject->getFieldMapping($name);
+                    }
+                    $this->options[$name]['type'] = $fieldDefinition['type'];
+                    $renderArray[$name] = $value;
+                }
+
+                // load single-valued-associations
+                // this is used for those object fields that are associations, but no object has been assigned to yet
+                $associationMappings = \Env::get('em')->getClassMetadata($entityClassWithNS)->getAssociationMappings();
+                $classMethods = get_class_methods($entityObject->newInstance());
+                foreach ($associationMappings as $field => $associationMapping) {
+                    if (!empty($renderArray[$field])) {
+                        if (\Env::get('em')->getClassMetadata($entityClassWithNS)->isCollectionValuedAssociation($field)) {
+                            $renderArray[$field] = new $associationMapping['targetEntity']();
+                        }
+                    } elseif (\Env::get('em')->getClassMetadata($entityClassWithNS)->isSingleValuedAssociation($field)
+                        && in_array('set'.ucfirst($field), $classMethods)
+                    ) {
                         $renderArray[$field] = new $associationMapping['targetEntity']();
                     }
-                } elseif (\Env::get('em')->getClassMetadata($entityClassWithNS)->isSingleValuedAssociation($field)
-                    && in_array('set'.ucfirst($field), $classMethods)
-                ) {
-                    $renderArray[$field] = new $associationMapping['targetEntity']();
                 }
+            } else {
+                //var_dump($entityId);
+                //var_dump($this->options['functions']['add']);
+                //var_dump($this->object->entryExists($entityId));
+                throw new ViewGeneratorException('Tried to show form but neither add nor edit view can be shown');
             }
         } else {
-            //var_dump($entityId);
-            //var_dump($this->options['functions']['add']);
-            //var_dump($this->object->entryExists($entityId));
-            throw new ViewGeneratorException('Tried to show form but neither add nor edit view can be shown');
+            $renderArray = $this->object->toArray();
+            $entityClassWithNS = '';
+            $title = $entityTitle;
         }
 
         //sets the order of the fields

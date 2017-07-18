@@ -273,6 +273,9 @@ class Config
             case 'Settings':
                 $wysiwygBackendController->parsePage($objTpl, array('Settings'));
                 break;
+            case 'Functions':
+                $wysiwygBackendController->parsePage($objTpl, array('Functions'));
+                break;
             case '':
             default:
                 $objTpl->addBlockfile('WYSIWYG_CONFIG_TEMPLATE', 'wysiwyg_template', 'Default.html');
@@ -328,7 +331,8 @@ class Config
             'TXT_RADIO_ON'                              => $_ARRAYLANG['TXT_ACTIVATED'],
             'TXT_RADIO_OFF'                             => $_ARRAYLANG['TXT_DEACTIVATED']
             ));
-        if (in_array('SystemInfo', \Env::get('cx')->getLicense()->getLegalComponentsList())) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (in_array('SystemInfo', $cx->getLicense()->getLegalComponentsList())) {
             if (isset($_POST['debugging'])) {
                 $this->updateDebugSettings($_POST['debugging']);
             }
@@ -373,7 +377,7 @@ class Config
                 'TXT_CORE_CONFIG_',
                 !$this->isWritable()
                 );
-        if (in_array('SystemInfo', \Env::get('cx')->getLicense()->getLegalComponentsList())) {
+        if (in_array('SystemInfo', $cx->getLicense()->getLegalComponentsList())) {
             \Cx\Core\Setting\Controller\Setting::show_external(
                 $template,
                 $_ARRAYLANG['TXT_SETTINGS_TITLE_DEVELOPMENT'],
@@ -392,7 +396,7 @@ class Config
 
 
         // show also hidden settins
-        if (   in_array('SystemInfo', \Env::get('cx')->getLicense()->getLegalComponentsList())
+        if (   in_array('SystemInfo', $cx->getLicense()->getLegalComponentsList())
             && \Permission::hasAllAccess()
             && isset($_GET['all'])
         ) {
@@ -442,6 +446,9 @@ class Config
                     true
                     );
         }
+        $scriptPath = $cx->getCodeBaseCoreWebPath() . '/Config/View/Script/Backend.js';
+        \JS::registerJS(substr($scriptPath, 1));
+
         $this->checkFtpAccess();
         $objTemplate->setVariable('SETTINGS_TABLE', $template->get());
         $objTemplate->parse('settings_system');
@@ -482,6 +489,21 @@ class Config
         return implode(',', $options);
     }
 
+    /**
+     * Returns captcha options
+     *
+     * @return string captcha options as string
+     */
+    public static function getCaptchaOptions()
+    {
+        global $_ARRAYLANG;
+
+        $options = array(
+            'contrexxCaptcha:' .  $_ARRAYLANG['TXT_CORE_CONFIG_CONTREXX_CAPTCHA_LABEL'],
+            'reCaptcha:' .  $_ARRAYLANG['TXT_CORE_CONFIG_RECAPTCHA_LABEL']
+        );
+        return implode(',', $options);
+    }
 
     /**
      * Sets debugging related template variables according to session state.
@@ -660,7 +682,7 @@ class Config
         }
 
         //get values from ymlsetting
-        \Cx\Core\Setting\Controller\Setting::init('Config', NULL,'Yaml');
+        \Cx\Core\Setting\Controller\Setting::init('Config', NULL,'Yaml', null, \Cx\Core\Setting\Controller\Setting::REPOPULATE);
         $ymlArray = \Cx\Core\Setting\Controller\Setting::getArray('Config', null);
         $intMaxLen = 0;
         $ymlArrayValues = array();
@@ -723,6 +745,10 @@ class Config
         try {
             $objFile = new \Cx\Lib\FileSystem\File(self::getSettingsFile());
             $objFile->write($data);
+
+            // Drop complete cache (page and ESI)
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $cx->getComponent('Cache')->clearCache();
             return true;
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
@@ -1339,6 +1365,54 @@ class Config
                 && !\Cx\Core\Setting\Controller\Setting::add('passwordComplexity', isset($existingConfig['passwordComplexity']) ? $existingConfig['passwordComplexity'] : 'off', 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'security')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Passwords must meet the complexity requirements");
+            }
+            if (
+                !\Cx\Core\Setting\Controller\Setting::isDefined('captchaMethod') &&
+                !\Cx\Core\Setting\Controller\Setting::add(
+                    'captchaMethod',
+                    (isset($existingConfig['captchaMethod'])
+                        ? $existingConfig['captchaMethod']
+                        : 'contrexxCaptcha'
+                    ),
+                    3,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
+                    '{src:\\'.__CLASS__.'::getCaptchaOptions()}',
+                    'security'
+                )
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Security check Captcha");
+            }
+            if (
+                !\Cx\Core\Setting\Controller\Setting::isDefined('recaptchaSiteKey') &&
+                !\Cx\Core\Setting\Controller\Setting::add(
+                    'recaptchaSiteKey',
+                    (isset($existingConfig['recaptchaSiteKey'])
+                        ? $existingConfig['recaptchaSiteKey']
+                        : ''
+                    ),
+                    4,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT,
+                    null,
+                    'security'
+                )
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for reCAPTCHA site key");
+            }
+            if (
+                !\Cx\Core\Setting\Controller\Setting::isDefined('recaptchaSecretKey') &&
+                !\Cx\Core\Setting\Controller\Setting::add(
+                    'recaptchaSecretKey',
+                    (isset($existingConfig['recaptchaSecretKey'])
+                        ? $existingConfig['recaptchaSecretKey']
+                        : ''
+                    ),
+                    5,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT,
+                    null,
+                    'security'
+                )
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for reCAPTCHA secret key");
             }
 
             //contactInformation group
