@@ -111,6 +111,13 @@ class CalendarEvent extends CalendarLibrary
     public $endDate;
     
     /**
+     * Whether or not if the event shall use its own custom date format
+     * 
+     * @var boolean
+     */
+    public $useCustomDateDisplay;
+    
+    /**
      * Event show start date on list view
      * 
      * @access public
@@ -318,7 +325,21 @@ class CalendarEvent extends CalendarLibrary
      * @access public
      * @var array
      */
-    public $seriesData = array();
+    public $seriesData = array(
+        'seriesType' => 0,
+        'seriesPatternCount' => 0,
+        'seriesPatternWeekday' => '',
+        'seriesPatternDay' => 0,
+        'seriesPatternWeek' => 0,
+        'seriesPatternMonth' => 0,
+        'seriesPatternType' => 0,
+        'seriesPatternDouranceType' => 0,
+        'seriesPatternEnd' => 0,
+        'seriesPatternEndDate' => '',
+        'seriesPatternBegin' => 0, 
+        'seriesPatternExceptions' => array(),
+        'seriesAdditionalRecurrences' => array(),
+    );
     
     /**
      * Event languages to show
@@ -905,7 +926,6 @@ class CalendarEvent extends CalendarLibrary
                 $this->independentSeries = intval($objResult->fields['independent_series']);
                      
                 if($this->seriesStatus == 1) {
-                    $this->seriesData['seriesPatternCount'] = intval($objResult->fields['series_pattern_count']); 
                     $this->seriesData['seriesType'] = intval($objResult->fields['series_type']); 
                     $this->seriesData['seriesPatternCount'] = intval($objResult->fields['series_pattern_count']); 
                     $this->seriesData['seriesPatternWeekday'] = htmlentities($objResult->fields['series_pattern_weekday'], ENT_QUOTES, CONTREXX_CHARSET);     
@@ -927,7 +947,21 @@ class CalendarEvent extends CalendarLibrary
                         $seriesAdditionalRecurrences = array_map(array($this, 'getInternDateTimeFromDb'), (array) explode(",", $objResult->fields['series_additional_recurrences']));
                     }
                     $this->seriesData['seriesAdditionalRecurrences'] = $seriesAdditionalRecurrences;
-                }    
+                } else {
+                    $this->seriesData['seriesType'] = 0;
+                    $this->seriesData['seriesPatternCount'] = 0;
+                    $this->seriesData['seriesPatternWeekday'] = '';
+                    $this->seriesData['seriesPatternDay'] = 0;
+                    $this->seriesData['seriesPatternWeek'] = 0;
+                    $this->seriesData['seriesPatternMonth'] = 0;
+                    $this->seriesData['seriesPatternType'] = 0;
+                    $this->seriesData['seriesPatternDouranceType'] = 0;
+                    $this->seriesData['seriesPatternEnd'] = 0;
+                    $this->seriesData['seriesPatternEndDate'] = '';
+                    $this->seriesData['seriesPatternBegin'] = 0; 
+                    $this->seriesData['seriesPatternExceptions'] = array();
+                    $this->seriesData['seriesAdditionalRecurrences'] = array();
+                }
                   
                 
                 $this->invitedGroups = preg_grep('/^$/', explode(',', $objResult->fields['invited_groups']), PREG_GREP_INVERT);
@@ -1023,7 +1057,15 @@ class CalendarEvent extends CalendarLibrary
         
         $this->getSettings();
 
-        if(empty($data['startDate']) || empty($data['endDate']) || empty($data['category']) || ($data['seriesStatus'] == 1 && $data['seriesType'] == 2 && empty($data['seriesWeeklyDays']))) {
+        if (   empty($data['startDate'])
+            || empty($data['endDate'])
+            || empty($data['category'])
+            || (   isset($data['seriesStatus'])
+                && $data['seriesStatus'] == 1
+                && $data['seriesType'] == 2
+                && empty($data['seriesWeeklyDays'])
+            )
+        ) {
             return false;
         }
         
@@ -1039,7 +1081,7 @@ class CalendarEvent extends CalendarLibrary
         list($endDate, $strEndTime)     = explode(' ', $data['endDate']);
         list($endHour, $endMin)         = explode(':', $strEndTime);
         
-        if ($data['all_day']) {
+        if (!empty($data['all_day'])) {
             list($startHour, $startMin) = array(0, 0);
             list($endHour, $endMin)     = array(23, 59);;
         }
@@ -1159,7 +1201,7 @@ class CalendarEvent extends CalendarLibrary
         $invitedCrmGroups          = isset($data['calendar_event_invite_crm_memberships']) ? join(',', $data['calendar_event_invite_crm_memberships']) : ''; 
         $invited_mails             = isset($data['invitedMails']) ? contrexx_addslashes(contrexx_strip_tags($data['invitedMails'])) : '';   
         $send_invitation           = isset($data['sendInvitation']) ? intval($data['sendInvitation']) : 0;        
-        $invitationTemplate        = isset($data['invitationEmailTemplate']) ? contrexx_input2raw($data['invitationEmailTemplate']) : 0;        
+        $invitationTemplate        = isset($data['invitationEmailTemplate']) ? contrexx_input2raw($data['invitationEmailTemplate']) : array();
         $registration              =   isset($data['registration']) && in_array($data['registration'], array(self::EVENT_REGISTRATION_NONE, self::EVENT_REGISTRATION_INTERNAL, self::EVENT_REGISTRATION_EXTERNAL))
                                      ? intval($data['registration']) : 0;
         $registration_form         = isset($data['registrationForm']) ? intval($data['registrationForm']) : 0;      
@@ -1225,7 +1267,10 @@ class CalendarEvent extends CalendarLibrary
         }
         
         // create thumb if not exists
-        if (!file_exists(\Env::get('cx')->getWebsitePath()."$placeMap.thumb")) {                    
+        if (   !empty($placeMap)
+            && file_exists(\Env::get('cx')->getWebsitePath().$placeMap)
+            && !file_exists(\Env::get('cx')->getWebsitePath()."$placeMap.thumb")
+        ) {
             $objImage = new \ImageManager();
             $objImage->_createThumb(dirname(\Env::get('cx')->getWebsitePath()."$placeMap")."/", '', basename($placeMap), 180);
         }
@@ -1270,7 +1315,10 @@ class CalendarEvent extends CalendarLibrary
             
         } else {
             // create thumb if not exists
-            if (!file_exists(\Env::get('cx')->getWebsitePath()."$pic.thumb")) {
+            if (   !empty($pic)
+                && file_exists(\Env::get('cx')->getWebsitePath().$pic)
+                && !file_exists(\Env::get('cx')->getWebsitePath()."$pic.thumb")
+            ) {
                 $objImage = new \ImageManager();
                 $objImage->_createThumb(dirname(\Env::get('cx')->getWebsitePath()."$pic")."/", '', basename($pic), 180);
             }
@@ -1442,6 +1490,7 @@ class CalendarEvent extends CalendarLibrary
             'series_pattern_end_date'       => $seriesPatternEndDate,
             'series_pattern_exceptions'     => $seriesExeptions,
             'series_additional_recurrences' => $seriesAdditionalRecurrences,
+            'status'                        => intval(!empty($data['eventState'])),
             'independent_series'            => $seriesIndependent,
             'all_day'                       => $allDay,
             'location_type'                 => $locationType,
@@ -1514,7 +1563,7 @@ class CalendarEvent extends CalendarLibrary
                 $confirmed = $this->arrSettings['confirmFrontendEvents'] == 1 ? 0 : 1;
                 $author    = $objUser->login() ? intval($objUser->getId()) : 0;
             } else {
-                $status    = 0;
+                $status    = intval(!empty($data['eventState']));
                 $confirmed = 1;
                 $author    = intval($objUser->getId());
             }
@@ -1604,9 +1653,7 @@ class CalendarEvent extends CalendarLibrary
             // TO-DO set form data into $this
             $event          = new CalendarEvent($this->id);
             $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();    
-            foreach ($invitationTemplate as $templateId) {
-                $objMailManager->sendMail($event, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_INVITATION, null, $templateId);
-            }
+            $objMailManager->sendMail($event, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_INVITATION, null, $invitationTemplate);
         }
         //Clear cache
         $this->triggerEvent('clearEsiCache');
@@ -2472,7 +2519,7 @@ class CalendarEvent extends CalendarLibrary
      *
      * @return \Cx\Modules\Calendar\Model\Entity\Event
      */
-    public function getEventEntity($id, $formDatas)
+    public function getEventEntity($id, $formDatas= array())
     {
         if (empty($id)) {
             $event = new \Cx\Modules\Calendar\Model\Entity\Event();

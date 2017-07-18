@@ -658,30 +658,7 @@ EOF;
      */
     function generateKey()
     {
-        $arrRandom = array();
-        $arrChars = array ('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'); 
-        $arrNumerics =  array (0,1,2,3,4,5,6,7,8,9); 
-        
-        for ($i = 0; $i <= rand(15,40); $i++) {
-            $charOrNum = rand(0,1);
-            if($charOrNum == 1) {
-                $posChar = rand(0,25);
-                $upOrLow = rand(0,1);
-
-                if($upOrLow == 0) {
-                    $arrRandom[$i] = strtoupper($arrChars[$posChar]);
-                } else {
-                    $arrRandom[$i] = strtolower($arrChars[$posChar]);
-                }
-            } else {
-                $posNum = rand(0,9);
-                $arrRandom[$i] = $arrNumerics[$posNum];
-            }
-        }
-        
-        $key = join($arrRandom);
-            
-        return $key;
+        return bin2hex(openssl_random_pseudo_bytes(16));
     }
     
     /**
@@ -935,8 +912,9 @@ EOF;
         if ($isDetach) {
             if (!empty($relations) && $relations['relations']) {
                 $this->detachJoinedEntity(
-                    $entity, $relations['relations'],
-                    $relations['joinEntityRelations']
+                    $entity,
+                    $relations['relations'],
+                    isset($relations['joinEntityRelations']) ? $relations['joinEntityRelations'] : array()
                 );
             }
             $this->em->detach($entity);
@@ -978,7 +956,7 @@ EOF;
 
         if ($relation == 'oneToMany') {
             foreach ($entity->$methodName() as $subEntity) {
-                if ($joinEntityRelation[$methodName]) {
+                if (isset($joinEntityRelation[$methodName])) {
                     $this->detachJoinedEntity(
                         $subEntity,
                         $joinEntityRelation[$methodName],
@@ -988,7 +966,7 @@ EOF;
                 $this->em->detach($subEntity);
             }
         } else if ($relation == 'manyToOne') {
-            if ($joinEntityRelation[$methodName]) {
+            if (isset($joinEntityRelation[$methodName])) {
                 $this->detachJoinedEntity(
                     $entity->$methodName(),
                     $joinEntityRelation[$methodName],
@@ -1020,16 +998,20 @@ EOF;
         foreach ($relations as $relation => $methodName) {
             if (!is_array($methodName)) {
                 $this->detachEntity(
-                    $entity, $methodName,
-                    $relation, $joinEntityRelation
+                    $entity,
+                    $methodName,
+                    $relation,
+                    $joinEntityRelation
                 );
                 continue;
             }
 
             foreach ($methodName as $functionName) {
                 $this->detachEntity(
-                    $entity, $functionName,
-                    $relation, $joinEntityRelation
+                    $entity,
+                    $functionName,
+                    $relation,
+                    $joinEntityRelation
                 );
             }
         }

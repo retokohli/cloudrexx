@@ -91,6 +91,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 if ($objMediaDirectory->getMetaImage() != '') {
                     \Env::get('cx')->getPage()->setMetaimage($objMediaDirectory->getMetaImage());
                 }
+                if ($objMediaDirectory->getMetaKeys() != '') {
+                    \Env::get('cx')->getPage()->setMetakeys($objMediaDirectory->getMetaKeys());
+                }
 
                 break;
 

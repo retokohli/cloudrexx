@@ -655,3 +655,5 @@ $_ARRAYLANG['TXT_CALENDAR_SELECT_ADDITIONAL_RECURRENCES_TITLE'] = "Zusätzliche 
 $_ARRAYLANG['TXT_CALENDAR_SELECT_ADDITIONAL_RECURRENCES_INFO'] = "Wählen Sie ein zusätzliches Wiederholungsdatum für die Veranstaltung aus";
 $_ARRAYLANG['TXT_CALENDAR_CRM_MEMBERSHIPS'] = 'CRM Kundengruppen';
 $_ARRAYLANG['TXT_CALENDAR_CHOOSE_CRM_MEMBERSHIPS'] = 'Kundengruppen wählen';
+$_ARRAYLANG['TXT_CALENDAR_PUBLISHED'] = 'Veröffentlicht';
+$_ARRAYLANG['TXT_CALENDAR_USE_CUSTOM_FORMAT'] = 'Individuelles Format verwenden';

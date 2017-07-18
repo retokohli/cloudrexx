@@ -50,6 +50,7 @@ class MediaDirectory extends MediaDirectoryLibrary
     var $metaTitle;
     var $metaDescription;
     var $metaImage;
+    var $metaKeys;
     var $slug;
 
 
@@ -398,7 +399,11 @@ class MediaDirectory extends MediaDirectoryLibrary
             if (!$this->arrSettings['legacyBehavior']) {
                 $this->pageTitle = $objLevel->arrLevels[$intLevelId]['levelName'][0];
             }
-            $this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelDescription'][0];
+            if (empty($objLevel->arrLevels[$intLevelId]['levelMetaDesc'][0])) {
+                $this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelDescription'][0];
+            } else {
+                $this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelMetaDesc'][0];
+            }
             $this->metaImage = $objLevel->arrLevels[$intLevelId]['levelPicture'];
         }
 
@@ -413,7 +418,11 @@ class MediaDirectory extends MediaDirectoryLibrary
             if (!$this->arrSettings['legacyBehavior']) {
                 $this->pageTitle = $objCategory->arrCategories[$intCategoryId]['catName'][0];
             }
-            $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catDescription'][0];
+            if (empty($objCategory->arrCategories[$intCategoryId]['catMetaDesc'][0])) {
+                $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catDescription'][0];
+            } else {
+                $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catMetaDesc'][0];
+            }
             $this->metaImage = $objCategory->arrCategories[$intCategoryId]['catPicture'];
         }
 
@@ -726,7 +735,7 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         foreach ($inputFields as $arrInputfield) {
             $contextType = isset($arrInputfield['context_type']) ? $arrInputfield['context_type'] : '';
-            if (!in_array($contextType, array('title', 'content', 'image', 'slug'))) {
+            if (!in_array($contextType, array('title', 'content', 'image', 'keywords', 'slug'))) {
                 continue;
             }
             $strType = isset($arrInputfield['type_name']) ? $arrInputfield['type_name'] : '';
@@ -757,6 +766,12 @@ class MediaDirectory extends MediaDirectoryLibrary
                         $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE_SRC'];
                         if ($inputfieldValue) {
                             $this->metaImage = $inputfieldValue;
+                        }
+                        break;
+                    case 'keywords':
+                        $inputfieldValue = $objInputfield->getRawData($entry['entryId'], $arrInputfield, $arrTranslationStatus, true);
+                        if ($inputfieldValue) {
+                            $this->metaKeys = $inputfieldValue;
                         }
                         break;
                     default:
@@ -1528,6 +1543,14 @@ class MediaDirectory extends MediaDirectoryLibrary
 
     public function getMetaImage() {
         return $this->metaImage;
+    }
+
+    /**
+     * Returns the metakeys
+     * @return string The meta keywords separated by comma
+     */
+    public function getMetaKeys() {
+        return $this->metaKeys;
     }
 
     public function getSlug() {
