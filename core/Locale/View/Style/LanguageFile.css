@@ -1,9 +1,6 @@
 form#form-language-select {
     margin-bottom: 15px;
 }
-#form-0 {
-    position: relative;
-}
 #form-0 .group > label {
     width: auto;
     padding-right: 8px;
