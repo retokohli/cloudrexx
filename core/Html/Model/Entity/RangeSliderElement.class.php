@@ -44,7 +44,7 @@ namespace Cx\Core\Html\Model\Entity;
  * @package     cloudrexx
  * @subpackage  core_html
  */
-class RangeSliderElement extends DataElement {
+class RangeSliderElement extends HtmlElement {
     private $content;
     
     public function __construct($name, $id, $rangeMin, $rangeMax, $currentMin, $currentMax, $rounding) {
