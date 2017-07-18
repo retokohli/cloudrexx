@@ -191,8 +191,8 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-        $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
-        $strValue = strip_tags(htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET));
+        $arrValues = explode(",", $arrInputfield['default_value'][0]);
+        $strValue = strip_tags(htmlspecialchars(static::getDataFromDb($intEntryId, $arrInputfield), ENT_QUOTES, CONTREXX_CHARSET));
 
         //explode elements
         $arrElements = explode(",", $strValue);
@@ -201,8 +201,9 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
         $strValue = '<ul class="'.$this->moduleNameLC.'InputfieldCheckbox">';
 
         //make element list
-        foreach ($arrElements as $strElement) {
-            $strValue .= '<li>'.$strElement.'</li>';
+        foreach ($arrElements as $intKey => $strElement) {
+            $strElement = $strElement-1;
+            $strValue .= '<li>'.$arrValues[$strElement].'</li>';
         }
 
         //close </ul> list
@@ -219,6 +220,21 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
     }
 
     function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
+        $strValue = static::getDataFromDb($intEntryId, $arrInputfield);
+
+        //explode elements
+        $arrElements = explode(",", $strValue);
+
+        $arrValues = explode(",", $arrInputfield['default_value'][0]);
+        $strValues = array();
+        foreach ($arrElements as $intKey => $strElement) {
+            $strValues[] = $arrValues[$strElement - 1];
+        }
+
+        return implode(',', $strValues);
+    }
+
+    function getDataFromDb($intEntryId, $arrInputfield) {
         global $objDatabase;
 
         $intId = intval($arrInputfield['id']);
@@ -234,18 +250,7 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
             LIMIT 1
         ");
 
-        $strValue = $objInputfieldValue->fields['value'];
-
-        //explode elements
-        $arrElements = explode(",", $strValue);
-
-        $arrValues = explode(",", $arrInputfield['default_value'][0]);
-        $strValues = array();
-        foreach ($arrElements as $intKey => $strElement) {
-            $strValues[] = $arrValues[$strElement - 1];
-        }
-
-        return implode(',', $strValues);
+        return $objInputfieldValue->fields['value'];
     }
 
 
