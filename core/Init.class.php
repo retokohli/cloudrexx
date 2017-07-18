@@ -1076,12 +1076,14 @@ class InitCMS
                 $this->frontendLangId
             );
             $language = $locale->getSourceLanguage();
-        } else {
+        } elseif ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
             $backend = $em->find(
                 'Cx\Core\Locale\Model\Entity\Backend',
                 $this->backendLangId
             );
             $language = $backend->getIso1();
+        } else {
+            return $_ARRAYLANG;
         }
 
         try {

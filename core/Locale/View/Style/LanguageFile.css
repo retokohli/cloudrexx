@@ -5,3 +5,6 @@ form#form-language-select {
     width: auto;
     padding-right: 8px;
 }
+#form-0 > fieldset > .group > .controls, #form-0 > fieldset > .group > .controls .row {
+    display: inline-block;
+}

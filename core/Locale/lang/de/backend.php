@@ -88,6 +88,7 @@ $_ARRAYLANG['TXT_NO'] = 'Nein';
 $_ARRAYLANG['TXT_CORE_LOCALE_LABEL_LANG_REMOVAL'] = 'Bitte bestätigen Sie das Entfernen der Sprachdaten!';
 $_ARRAYLANG['TXT_CORE_LOCALE_LANG_REMOVAL_CONTENT'] = 'Sprachbezogene Daten der deaktivieren Sprachen in allen Anwendungen löschen.';
 $_ARRAYLANG['TXT_CORE_LOCALE_SAVE'] = 'Änderungen übernehmen';
+$_ARRAYLANG['TXT_CORE_LOCALE_RESET'] = 'Zurücksetzen';
 
 // Messages
 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_SUCCESSFULLY_UPDATED'] = 'Die Sprachplatzhalter wurden erfolgreich aktualisiert.';

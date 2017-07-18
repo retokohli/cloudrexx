@@ -33,4 +33,44 @@ cx.jQuery(document).ready(function() {
         var wrappedName = "placeholders[" + placeholderName + "]";
         cx.jQuery(this).attr('name', wrappedName);
     });
+
+    // add reset button to each placeholder
+    cx.jQuery("#form-0 .group").append(
+      "<input type=\"button\" class=\"reset-placeholder\" value=\"" +
+      cx.variables.get("resetText", "Locale/Locale") +
+      "\" />"
+    );
+
+    cx.jQuery("input.reset-placeholder").click(function() {
+        resetPlaceholder(this);
+    });
+
+    function resetPlaceholder(button) {
+        var placeholderName = cx.jQuery(button).siblings("label").html();
+        var languageCode = cx.jQuery("input[name='languageCode'").val();
+        var frontend = cx.jQuery("#subnavbar_level2 ul li a[title='Frontend']").hasClass("active");
+        // @TODO: get component name dynamically
+        var componentName = "Core";
+
+        cx.ajax(
+          "Locale",
+          "getPlaceholderDefaultValue",
+          {
+              data: {
+                  placeholderName: placeholderName,
+                  languageCode: languageCode,
+                  frontend: frontend,
+                  componentName: componentName
+              },
+              success: function(json) {
+                  if (json.data) {
+                      cx.jQuery(button).siblings(".controls").children("input").val(json.data);
+                  } else {
+                      alert("default value not found.");
+                  }
+              }
+          }
+        );
+
+    }
 });
