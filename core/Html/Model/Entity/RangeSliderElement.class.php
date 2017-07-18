@@ -44,7 +44,7 @@ namespace Cx\Core\Html\Model\Entity;
  * @package     cloudrexx
  * @subpackage  core_html
  */
-class RangeSliderElement extends HtmlElement {
+class RangeSliderElement extends DataElement {
     private $content;
     
     public function __construct($name, $id, $rangeMin, $rangeMax, $currentMin, $currentMax, $rounding) {
@@ -120,8 +120,9 @@ class RangeSliderElement extends HtmlElement {
         \JS::activate('jquery-nstslider');
 
         // load RangeSliderElement javascript code and CSS styles
-        \JS::registerJS('core/Html/View/Script/RangeSliderElement.js');
-        \JS::registerCSS('core/Html/View/Style/RangeSliderElement.css');
+        $directory = $this->getComponentController()->getDirectory(true, true);
+        \JS::registerJS($directory . '/View/Script/RangeSliderElement.js');
+        \JS::registerCSS($directory . '/View/Style/RangeSliderElement.css');
 
         return parent::render();
     }
