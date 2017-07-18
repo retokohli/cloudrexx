@@ -60,6 +60,11 @@ class RangeSliderElement extends DataElement {
         $sliderTrack->setAttribute('data-range_max', $rangeMax);
         $sliderTrack->setAttribute('data-cur_min', $currentMin);
         $sliderTrack->setAttribute('data-cur_max', $currentMax);
+
+        // rounding must be > 0
+        if (!$rounding) {
+            $rounding = 1;
+        }
         $sliderTrack->setAttribute('data-rounding', $rounding);
 
         // slider bar
