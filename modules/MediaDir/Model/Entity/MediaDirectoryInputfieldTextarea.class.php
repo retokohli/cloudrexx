@@ -190,7 +190,6 @@ class MediaDirectoryInputfieldTextarea extends \Cx\Modules\MediaDir\Controller\M
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-
         $strValueAllowTags = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
         $strValue = strip_tags($strValueAllowTags);
 

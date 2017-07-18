@@ -245,7 +245,6 @@ class MediaDirectoryInputfieldProductAttributes extends \Cx\Modules\MediaDir\Con
             LIMIT 1
         ");
 
-
         return $objInputfieldValue->fields['value'];
     }
 

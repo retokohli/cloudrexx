@@ -227,7 +227,7 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
 
         $arrValues = explode(",", $arrInputfield['default_value'][0]);
         $strValues = array();
-        foreach ($arrElements as $intKey => $strElement) {
+        foreach ($arrElements as $strElement) {
             $strValues[] = $arrValues[$strElement - 1];
         }
 

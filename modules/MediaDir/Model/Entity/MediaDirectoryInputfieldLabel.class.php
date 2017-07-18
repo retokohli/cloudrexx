@@ -47,16 +47,12 @@ class MediaDirectoryInputfieldLabel implements Inputfield
 {
     public $arrPlaceholders = array('MEDIADIR_INPUTFIELD_VALUE');
 
-
-
     /**
      * Constructor
      */
     function __construct()
     {
     }
-
-
 
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
@@ -77,20 +73,15 @@ class MediaDirectoryInputfieldLabel implements Inputfield
         }
     }
 
-
-
     function saveInputfield($strValue)
     {
         return true;
     }
 
-
     function deleteContent($intEntryId, $intIputfieldId)
     {
         return true;
     }
-
-
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
@@ -102,12 +93,10 @@ class MediaDirectoryInputfieldLabel implements Inputfield
         return null;
     }
 
-
     function getJavascriptCheck()
     {
          return null;
     }
-
 
     function getFormOnSubmit($intInputfieldId)
     {
