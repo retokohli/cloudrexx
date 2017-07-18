@@ -2,7 +2,7 @@
 <script language="JavaScript" type="text/javascript">
 $J(function(){
     $J(".inputfieldType").live("change", function() {
-       handleKeywordAbility($J(this));
+       handleKeywordAbility();
     });
    $J( ".inputfieldContext" ).live('change', function(){
        resetContextFields();
@@ -12,9 +12,7 @@ $J(function(){
       var inputId = $J(this).data('inputId');
       mediaBrowseInputBox = $J('#' + inputId);
    });
-   $J(".inputfieldType").each(function() {
-       handleKeywordAbility($J(this));
-   })
+   handleKeywordAbility();
 });
 
 function resetContextFields() {
@@ -31,6 +29,8 @@ function resetContextFields() {
     $J.each(contexts, function(i, context){
         $J(".inputfieldContext option[value="+ context +"]").removeAttr('disabled');
     });
+
+    handleKeywordAbility();
 }
 
 cx.jQuery.removeFromArray = function(value, arr) {
@@ -120,7 +120,7 @@ function ExpandMinimizeForm(toggle){
     elm2.style.display = (elm2.style.display=='none') ? 'block' : 'none';
 }
 
-function handleKeywordAbility(typeSelect) {
+function handleKeywordAbility() {
     /* compatible field types for meta keywords:
     1: text
     2: textarea
@@ -129,15 +129,19 @@ function handleKeywordAbility(typeSelect) {
     5: checkbox
      */
     var compatibleTypes = [1, 2, 3, 4, 5];
-    var keywordsOption = typeSelect
-      .closest("tr")
-      .find(".inputfieldContext option[value='keywords'");
-    if (compatibleTypes.indexOf(parseInt(typeSelect.val())) != -1) {
-        keywordsOption.prop("disabled", false);
-    } else {
-        keywordsOption.prop("disabled", true);
-    }
-    resetContextFields();
+    cx.jQuery(".inputfieldType").each(function() {
+        var keywordsOption = cx.jQuery(this)
+          .closest("tr")
+          .find(".inputfieldContext option[value='keywords']");
+        if (
+          compatibleTypes.indexOf(parseInt(cx.jQuery(this).val())) != -1 &&
+          !cx.jQuery(".inputfieldContext option[value='keywords']:selected").length
+        ) {
+            keywordsOption.prop("disabled", false);
+        } else {
+            keywordsOption.prop("disabled", true);
+        }
+    });
 }
 var mediaBrowseInputBox;
 var mediaBrowserCallback = function(data) {
