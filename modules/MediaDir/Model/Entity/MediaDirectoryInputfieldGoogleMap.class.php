@@ -271,6 +271,8 @@ EOF;
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
+		global $_ARRAYLANG;
+
         $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
         $strValue = htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET);
 
@@ -305,7 +307,7 @@ EOF;
     }
 
     function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
-        global $objDatabase, $_CONFIG, $_ARRAYLANG;
+        global $objDatabase;
 
         $intId = intval($arrInputfield['id']);
 

@@ -158,6 +158,8 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
+        global $_ARRAYLANG;
+
         $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
 
         if(!empty($strValue)) {
@@ -172,7 +174,7 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
     }
 
     function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_LANGID;
 
         $intId = intval($arrInputfield['id']);
 

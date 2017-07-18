@@ -137,6 +137,8 @@ class MediaDirectoryInputfieldGoogleWeather extends \Cx\Modules\MediaDir\Control
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
+        global $_LANGID;
+
         $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
 
         if(!empty($strValue)) {
@@ -157,7 +159,7 @@ class MediaDirectoryInputfieldGoogleWeather extends \Cx\Modules\MediaDir\Control
     }
 
     function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $intId = intval($arrInputfield['id']);
         $objInputfieldValue = $objDatabase->Execute("

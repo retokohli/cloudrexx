@@ -509,6 +509,8 @@ EOF;
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
+        global $_LANGID, $_ARRAYLANG;
+
         $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
 
         if(!empty($strValue)) {
@@ -617,7 +619,7 @@ EOF;
     }
 
     function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
-        global $objDatabase, $_LANGID, $_ARRAYLANG;
+        global $objDatabase;
 
         $intId = intval($arrInputfield['id']);
         $objInputfieldValue = $objDatabase->Execute("

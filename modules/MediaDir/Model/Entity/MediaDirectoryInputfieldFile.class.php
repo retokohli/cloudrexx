@@ -399,7 +399,7 @@ INPUT;
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-        $arrValue = $arrValue = explode(
+        $arrValue = explode(
             ",",
             static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus)
         );
