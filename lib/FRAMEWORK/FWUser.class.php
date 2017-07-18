@@ -108,7 +108,7 @@ class FWUser extends User_Setting
      */
     function checkAuth()
     {
-        global $sessionObj, $_CORELANG;
+        global $_CORELANG;
 
         $username = isset($_POST['USERNAME']) && $_POST['USERNAME'] != '' ? contrexx_stripslashes($_POST['USERNAME']) : null;
         $password = isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '' ? md5(contrexx_stripslashes($_POST['PASSWORD'])) : null;
@@ -121,7 +121,8 @@ class FWUser extends User_Setting
             return false;
         }
 
-        if (empty($sessionObj)) $sessionObj = cmsSession::getInstance();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $sessionObj = $cx->getComponent('Session')->getSession();
 
         if (!isset($_SESSION['auth'])) {
             $_SESSION['auth'] = array();
@@ -141,6 +142,14 @@ class FWUser extends User_Setting
 
         $_SESSION['auth']['loginLastAuthFailed'] = 1;
         User::registerFailedLogin($username);
+
+        // load core language data in case it has not yet been loaded
+        if (!is_array($_CORELANG) || !count($_CORELANG)) {
+            $objInit = \Env::get('init');
+            $objInit->_initBackendLanguage();
+            $_CORELANG = $objInit->loadLanguageData('core');
+        }
+
         $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
         $_SESSION->cmsSessionUserUpdate();
         $_SESSION->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
@@ -197,7 +206,19 @@ class FWUser extends User_Setting
     function logout()
     {
 
-         $this->logoutAndDestroySession();
+        $this->logoutAndDestroySession();
+        //Clear cache
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getEvents()->triggerEvent(
+            'clearEsiCache',
+            array(
+                'Widget',
+                array(
+                    'access_currently_online_member_list',
+                    'access_last_active_member_list'
+                )
+            )
+        );
 
         if ($this->backendMode) {
             $pathOffset = ASCMS_PATH_OFFSET;
@@ -224,7 +245,10 @@ class FWUser extends User_Setting
 
         $pathOffset = ASCMS_PATH_OFFSET;
 
-        $redirect = $baseUrl = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . (!empty($pathOffset) ? $pathOffset : '/');
+        $requestUrl = clone \Cx\Core\Core\Controller\Cx::instanciate()->getRequest()->getUrl();
+        $requestUrl->setPath('');
+        $redirect = $baseUrl = $requestUrl->toString();
+
         $rawUrl   = trim(self::getRawUrL(urldecode($redirectUrl), $baseUrl));
 
         if (
@@ -246,10 +270,11 @@ class FWUser extends User_Setting
      */
     public static function hostFromUri($uri)
     {
+        $scheme = null;
+        $host = null;
+        $path = null;
         extract(parse_url($uri));
 
-// TODO: $scheme is not defined
-// TODO: $host is not defined
         return str_ireplace('www.', '', $scheme.'://'.$host);
     }
 
@@ -260,6 +285,10 @@ class FWUser extends User_Setting
      */
     public static function getRawUrL($url, $baseUrl)
     {
+        $scheme = null;
+        $host = null;
+        $path = null;
+
         /* return if already absolute URL */
         if (parse_url($url, PHP_URL_SCHEME) != '') return $url;
 
@@ -277,7 +306,6 @@ class FWUser extends User_Setting
         if ($url[0] == '/') $path = '';
 
         /* dirty absolute URL // with port number if exists */
-// TODO: $host is not defined
         if (parse_url($baseUrl, PHP_URL_PORT) != ''){
             $abs = "$host:".parse_url($baseUrl, PHP_URL_PORT)."$path/$url";
         }else{
@@ -287,7 +315,6 @@ class FWUser extends User_Setting
         $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#');
         for($n=1; $n>0; $abs=preg_replace($re, '/', $abs, -1, $n)) {}
 
-// TODO: $scheme is not defined
         /* absolute URL is ready! */
         return $scheme.'://'.$abs;
 
@@ -301,7 +328,8 @@ class FWUser extends User_Setting
         if (isset($_SESSION['auth'])) {
             unset($_SESSION['auth']);
         }
-        \cmsSession::getInstance()->destroy();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getComponent('Session')->getSession()->destroy();
     }
 
     /**
@@ -348,7 +376,6 @@ class FWUser extends User_Setting
         $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_THEMES_PATH);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->setTemplate($template[0]);
-        self::parseLoggedInOutBlocks($objTemplate);
         return $objTemplate->get();
     }
 
@@ -522,26 +549,12 @@ class FWUser extends User_Setting
         ) {
             return false;
         }
-        $objMail = new PHPMailer();
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
         if (!$objMail) {
             return false;
         }
 
-        if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-            if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                $objMail->IsSMTP();
-                $objMail->Host = $arrSmtp['hostname'];
-                $objMail->Port = $arrSmtp['port'];
-                $objMail->SMTPAuth = true;
-                $objMail->Username = $arrSmtp['username'];
-                $objMail->Password = $arrSmtp['password'];
-            }
-        }
-
-        $objMail->CharSet = CONTREXX_CHARSET;
-        $objMail->From = $objUserMail->getSenderMail();
-        $objMail->FromName = $objUserMail->getSenderName();
-        $objMail->AddReplyTo($objUserMail->getSenderMail());
+        $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
         $objMail->Subject = $objUserMail->getSubject();
 
         $restoreLink = self::getPasswordRestoreLink($this->isBackendMode(), $objUser);

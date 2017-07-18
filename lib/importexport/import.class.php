@@ -73,7 +73,14 @@ class Import extends ImportExport
 		$this->parseFile($file);
 
 		$retval = array();
+
+        // init base data-set
+        $retStructure = array();
+        foreach (array_keys($fields) as $fieldKey) {
+            $retStructure[$fieldKey] = null;
+        }
 		foreach ($this->importedData as $datarow) {
+            $retfields = $retStructure;
 			foreach ($this->pairs as $key => $value) {
 				$retfields[$key] = $datarow[$value];
 				$retfields[$fields[$key]] = $datarow[$value];
@@ -319,7 +326,8 @@ class Import extends ImportExport
                 return false;
             }
             
-            $objSession = \cmsSession::getInstance();
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $objSession = $cx->getComponent('Session')->getSession();
             $uploaderFolder = $objSession->getTempPath() . '/' . $uploaderId;
             if (!\Cx\Lib\FileSystem\FileSystem::exists($uploaderFolder)) {
                 return false;
