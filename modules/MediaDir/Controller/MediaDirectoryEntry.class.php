@@ -264,7 +264,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 entry.`duration_notification` AS `duration_notification`,
                 entry.`translation_status` AS `translation_status`,
                 entry.`ready_to_confirm` AS `ready_to_confirm`,
-                rel_inputfield.`value` AS `value`
+                rel_inputfield.`value` AS `value`,
+                rel_inputfield.`field_id` AS `field_id`
             FROM
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_entries AS entry,
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield
@@ -328,26 +329,19 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                     $arrEntry['entryReadyToConfirm'] = intval($objEntries->fields['ready_to_confirm']);
 
                     if ($this->arrSettings['usePrettyUrls']) {
-                        // load slug from db (if it exists)
+                        // load slug (if it exists)
                         $slugQuery = "
-                            SELECT
-                                r.value AS slug
+                            SELECT 1
                             FROM
-                                `contrexx_module_mediadir_inputfields` AS i
-                            JOIN
-                                `contrexx_module_mediadir_rel_entry_inputfields` AS r
-                            ON
-                                i.id = r.field_id
+                                ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields
                             WHERE
-                                r.entry_id = ".$objEntries->fields['id']."
+                                id = ".$objEntries->fields['field_id']."
                             AND
-                                r.lang_id = ".$langId."
-                            AND
-                                i.context_type = 'slug'
+                                context_type = 'slug'
                         ";
-                        $objSlugField = $objDatabase->Execute($slugQuery);
-                        if ($objSlugField->fields('slug')) {
-                            $arrEntry['slug'] = $objSlugField->fields('slug');
+                        $objSlug = $objDatabase->Execute($slugQuery);
+                        if (!$objSlug->EOF) {
+                            $arrEntry['slug'] = $objEntries->fields['value'];
                         }
                     }
 
