@@ -749,7 +749,10 @@ class MediaDirectory extends MediaDirectoryLibrary
                     case 'title':
                         $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE'];
                         if ($inputfieldValue) {
-                            $this->metaTitle .= ' - ' . $inputfieldValue;
+                            if (!empty($this->metaTitle)) {
+                                $this->metaTitle .= ' - ';
+                            }
+                            $this->metaTitle .= $inputfieldValue;
                             $this->pageTitle = $inputfieldValue;
                         }
                         $titleChanged = true;
@@ -1533,11 +1536,11 @@ class MediaDirectory extends MediaDirectoryLibrary
     }
 
     public function getMetaTitle() {
-        return $this->metaTitle;
+        return contrexx_html2plaintext($this->metaTitle);
     }
 
     public function getMetaDescription() {
-        return $this->metaDescription;
+        return contrexx_html2plaintext($this->metaDescription);
     }
 
     public function getMetaImage() {
