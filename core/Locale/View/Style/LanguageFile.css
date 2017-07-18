@@ -1,10 +1,25 @@
 form#form-language-select {
     margin-bottom: 15px;
 }
+#form-0 {
+    position: relative;
+}
 #form-0 .group > label {
     width: auto;
     padding-right: 8px;
 }
 #form-0 > fieldset > .group > .controls, #form-0 > fieldset > .group > .controls .row {
     display: inline-block;
+}
+body #content input[type="submit"] {
+    position: fixed;
+    bottom: 31px;
+    right: 14px;
+    min-width: 100px;
+    height: 30px;
+    color: #fff;
+    border: none;
+    text-shadow: none;
+    background: #4eaa09;
+    cursor: pointer;
 }
