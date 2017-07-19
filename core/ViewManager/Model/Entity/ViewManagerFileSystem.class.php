@@ -121,7 +121,7 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
      */
     public function isDirectory(\Cx\Core\MediaSource\Model\Entity\File $file)
     {
-        return is_dir($this->getFullPath($file));
+        return is_dir($this->getFullPath($file) . $file->getFullName());
     }
 
     /**
