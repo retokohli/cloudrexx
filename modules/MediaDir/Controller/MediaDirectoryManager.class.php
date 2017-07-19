@@ -630,6 +630,14 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                     $intEntryDourationEnd = date("d.m.Y", mktime(0,0,0,date("m")+$intDiffMonth,date("d")+$intDiffDay,date("Y")+$intDiffYear));
                 }
 
+                if ($intEntryId != 0) {
+                    \ContrexxJavascript::getInstance()->setVariable(
+                        'slugFieldId',
+                        $objEntry->getFormSlugFieldArray()[$intFormId],
+                        'Mediadir'
+                    );
+                }
+
                 //parse spez fields
                 $this->_objTpl->touchBlock($this->moduleNameLC.'SpezfieldList');
 

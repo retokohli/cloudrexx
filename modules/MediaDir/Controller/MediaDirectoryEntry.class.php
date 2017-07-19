@@ -85,6 +85,12 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
     protected $objForm = null;
 
     /**
+     * Contains the form fields as key and their slug field's id as value
+     * @var array
+     */
+    protected $formSlugFields = null;
+
+    /**
      * Constructor
      */
     function __construct($name)
@@ -1377,6 +1383,16 @@ JSCODE;
                 continue;
             }
 
+            // slugify slug value
+            if ($arrInputfield['context_type'] == 'slug') {
+                $slugValues = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']];
+                array_walk(
+                    $slugValues,
+                    array($this, 'slugify')
+                );
+                $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] = $slugValues;
+            }
+
             // truncate attribute's data ($arrInputfield) from database if it's VALUE is not set (empty) or set to it's default value
             if (   empty($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])
                 || $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] == $arrInputfield['default_value'][$_LANGID]
@@ -1963,5 +1979,37 @@ JSCODE;
 
         $formId = $this->arrEntries[$entryId]['entryFormId'];
         return $this->objForm->arrForms[$formId];
+    }
+
+    /**
+     * Gets an array with the form ids as key and the form's slug field's id
+     * as value
+     *
+     * @return array
+     */
+    public function getFormSlugFieldArray() {
+        global $objDatabase;
+
+        if (isset($this->formSlugFields)) {
+            return $this->formSlugFields;
+        }
+
+        $this->formSlugFields = array();
+
+        $query = "
+            SELECT form, id FROM
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields
+            WHERE
+                context_type = 'slug'
+        ";
+        $objField = $objDatabase->Execute($query);
+
+        if ($objField !== false) {
+            while(!$objField->EOF) {
+                $this->formSlugFields[intval($objField->fields['form'])] = intval($objField->fields['id']);
+                $objField->MoveNext();
+            }
+        }
+        return $this->formSlugFields;
     }
 }
