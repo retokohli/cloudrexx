@@ -298,6 +298,9 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             ".$strLimit."
             ".$strOffset."
         ";
+
+        $formSlugFields = $this->getFormSlugFieldArray();
+
         $objEntries = $objDatabase->Execute($query);
 
         $totalRecords =$objDatabase->Execute("SELECT FOUND_ROWS() AS found_rows");
@@ -334,21 +337,12 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                     $arrEntry['entryTranslationStatus'] = explode(",",$objEntries->fields['translation_status']);
                     $arrEntry['entryReadyToConfirm'] = intval($objEntries->fields['ready_to_confirm']);
 
-                    if ($this->arrSettings['usePrettyUrls']) {
-                        // load slug (if it exists)
-                        $slugQuery = "
-                            SELECT 1
-                            FROM
-                                ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields
-                            WHERE
-                                id = ".$objEntries->fields['field_id']."
-                            AND
-                                context_type = 'slug'
-                        ";
-                        $objSlug = $objDatabase->Execute($slugQuery);
-                        if (!$objSlug->EOF) {
-                            $arrEntry['slug'] = $objEntries->fields['value'];
-                        }
+                    // load slug (if it exists)
+                    if (
+                        $this->arrSettings['usePrettyUrls'] &&
+                        $slug = $formSlugFields[$arrEntry['entryFormId']]['lang'][$langId]
+                    ) {
+                        $arrEntry['slug'] = $slug;
                     }
 
                     $this->arrEntries[$objEntries->fields['id']] = $arrEntry;
@@ -1997,16 +1991,29 @@ JSCODE;
         $this->formSlugFields = array();
 
         $query = "
-            SELECT form, id FROM
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields
+            SELECT
+                i.form as form,
+                i.id as id,
+                r.lang_id as lang_id,
+                r.value as value
+            FROM
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS i
+            JOIN
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS r
+            ON
+                i.id = r.field_id
             WHERE
-                context_type = 'slug'
+                i.context_type = 'slug'
         ";
         $objField = $objDatabase->Execute($query);
 
         if ($objField !== false) {
             while(!$objField->EOF) {
-                $this->formSlugFields[intval($objField->fields['form'])] = intval($objField->fields['id']);
+                $formId = intval($objField->fields['form']);
+                if (!$this->formSlugFields[$formId]['fieldId']) {
+                    $this->formSlugFields[$formId]['fieldId'] = intval($objField->fields('id'));
+                }
+                $this->formSlugFields[$formId]['lang'][intval($objField->fields('lang_id'))] = $objField->fields('value');
                 $objField->MoveNext();
             }
         }

@@ -633,7 +633,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 if ($intEntryId != 0) {
                     \ContrexxJavascript::getInstance()->setVariable(
                         'slugFieldId',
-                        $objEntry->getFormSlugFieldArray()[$intFormId],
+                        $objEntry->getFormSlugFieldArray()[$intFormId]['fieldId'],
                         'Mediadir'
                     );
                 }
