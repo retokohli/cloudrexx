@@ -758,6 +758,9 @@ class Url {
             'node' => $nodeId,
             'lang' => $lang,
         ));
+        if (!$page) {
+            throw new UrlException("Unable to find a page with Node-ID:$nodeId in language:$lang!");
+        }
         return static::fromPage($page, $parameters, $protocol);
     }
 
