@@ -126,7 +126,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 level.`picture` AS `picture`,
                 level.`active` AS `active`,
                 level_names.`level_name` AS `name`,
-                level_names.`level_description` AS `description`
+                level_names.`level_description` AS `description`,
+                level_names.`level_metadesc` AS `metadesc`
             FROM
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_levels AS level,
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names AS level_names
@@ -182,17 +183,20 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $arrLevel = array();
                 $arrLevelName = array();
                 $arrLevelDesc = array();
+                $arrLevelMetaDesc = array();
                 $this->intNumEntries = 0;
 
                 //get lang attributes
                 $arrLevelName[0] = $objLevels->fields['name'];
                 $arrLevelDesc[0] = $objLevels->fields['description'];
+                $arrLevelMetaDesc[0] = $objLevels->fields['metadesc'];
 
                 $objLevelAttributes = $objDatabase->Execute("
                     SELECT
                         `lang_id` AS `lang_id`,
                         `level_name` AS `name`,
-                        `level_description` AS `description`
+                        `level_description` AS `description`,
+                        `level_metadesc` AS `metadesc`
                     FROM
                         ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names
                     WHERE
@@ -203,6 +207,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     while (!$objLevelAttributes->EOF) {
                         $arrLevelName[$objLevelAttributes->fields['lang_id']] = htmlspecialchars($objLevelAttributes->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
                         $arrLevelDesc[$objLevelAttributes->fields['lang_id']] = $objLevelAttributes->fields['description'];
+                        $arrLevelMetaDesc[$objLevelAttributes->fields['lang_id']] = $objLevelAttributes->fields['metadesc'];
 
                         $objLevelAttributes->MoveNext();
                     }
@@ -213,6 +218,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $arrLevel['levelParentId'] = intval($objLevels->fields['parent_id']);
                 $arrLevel['levelName'] = $arrLevelName;
                 $arrLevel['levelDescription'] = $arrLevelDesc;
+                $arrLevel['levelMetaDesc'] = $arrLevelMetaDesc;
                 $arrLevel['levelPicture'] = htmlspecialchars($objLevels->fields['picture'], ENT_QUOTES, CONTREXX_CHARSET);
                 if($weAreCountingEntries) {
                     $arrLevel['levelNumEntries'] = isset($arrEntryCounts[$arrLevel['levelId']]) ? $arrEntryCounts[$arrLevel['levelId']] : 0;
@@ -612,6 +618,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
         $arrName = $arrData['levelName'];
         $arrDescription = $arrData['levelDescription'];
+        $arrMetaDesc = $arrData['levelMetaDesc'];
 
         if(empty($intId)) {
             //insert new category
@@ -634,12 +641,15 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                     if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
                     if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[$_LANGID]) ? $arrDescription[$_LANGID] : '';
+                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[$_LANGID]) ? $arrMetaDesc[$_LANGID] : '';
 
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
+                    $metaDesc = $arrMetaDesc[$arrLang['id']];
 
                     if(empty($strName)) $strName = $arrName[0];
                     if(empty($strDescription)) $strDescription = $arrDescription[0];
+                    if(empty($metaDesc)) $metaDesc = $arrMetaDesc[0];
 
                     $objInsertNames = $objDatabase->Execute("
                         INSERT INTO
@@ -648,7 +658,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                             `lang_id`='".intval($arrLang['id'])."',
                             `level_id`='".intval($intId)."',
                             `level_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
-                            `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."'
+                            `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."',
+                            `level_metadesc`='".contrexx_input2db($metaDesc)."'
                     ");
                 }
 
@@ -689,12 +700,15 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                     if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
                     if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[$_LANGID]) ? $arrDescription[$_LANGID] : '';
+                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[$_LANGID]) ? $arrMetaDesc[$_LANGID] : '';
 
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
+                    $metaDesc = $arrMetaDesc[$arrLang['id']];
 
                     if(empty($strName)) $strName = $arrName[0];
                     if(empty($strDescription)) $strDescription = $arrDescription[0];
+                    if(empty($metaDesc)) $metaDesc = $arrMetaDesc[0];
 
                     $objInsertNames = $objDatabase->Execute("
                         INSERT INTO
@@ -703,7 +717,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                             `lang_id`='".intval($arrLang['id'])."',
                             `level_id`='".intval($intId)."',
                             `level_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
-                            `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."'
+                            `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."',
+                            `level_metadesc`='".contrexx_input2db($metaDesc)."'
                     ");
                 }
 

@@ -26,7 +26,7 @@
  */
 
 /**
- * Media Directory Inputfield Google Weather Class
+ * Media Directory Inputfield Range Class
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Cloudrexx Development Team <info@cloudrexx.com>
@@ -36,14 +36,14 @@
  */
 namespace Cx\Modules\MediaDir\Model\Entity;
 /**
- * Media Directory Inputfield Google Weather Class
+ * Media Directory Inputfield Range Class
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      CLOUDREXX Development Team <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  module_mediadir
  */
-class MediaDirectoryInputfieldGoogleWeather extends \Cx\Modules\MediaDir\Controller\MediaDirectoryLibrary implements Inputfield
+class MediaDirectoryInputfieldRange extends \Cx\Modules\MediaDir\Controller\MediaDirectoryLibrary implements Inputfield
 {
     public $arrPlaceholders = array('TXT_MEDIADIR_INPUTFIELD_NAME','MEDIADIR_INPUTFIELD_VALUE');
 
@@ -53,20 +53,18 @@ class MediaDirectoryInputfieldGoogleWeather extends \Cx\Modules\MediaDir\Control
     function __construct($name)
     {
         parent::__construct('.', $name);
-        parent::getFrontendLanguages();
     }
-
 
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
-        global $objDatabase, $_LANGID, $objInit;
+        global $objDatabase, $_LANGID, $objInit, $_ARRAYLANG;
 
+        $intId = intval($arrInputfield['id']);
+        
         switch ($intView) {
             default:
             case 1:
                 //modify (add/edit) View
-                $intId = intval($arrInputfield['id']);
-
                 if(isset($intEntryId) && $intEntryId != 0) {
                     $objInputfieldValue = $objDatabase->Execute("
                         SELECT
@@ -79,39 +77,50 @@ class MediaDirectoryInputfieldGoogleWeather extends \Cx\Modules\MediaDir\Control
                             entry_id=".$intEntryId."
                         LIMIT 1
                     ");
-                    $strValue = htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET);
+
+                    $strValue = intval($objInputfieldValue->fields['value']);
                 } else {
                     $strValue = null;
                 }
 
-                if(empty($strValue)) {
-                    $strValue = empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID];
-                }
 
+                $arrInfoValue = array();
                 if(!empty($arrInputfield['info'][0])){
-                    $strInfoValue = empty($arrInputfield['info'][$_LANGID]) ? 'title="'.$arrInputfield['info'][0].'"' : 'title="'.$arrInputfield['info'][$_LANGID].'"';
-                    $strInfoClass = 'mediadirInputfieldHint';
+                	$arrInfoValue[0] = 'title="'.$arrInputfield['info'][0].'"';
+	                foreach($arrInputfield['info'] as $intLangKey => $strInfoValue) {
+	                	$strInfoClass = 'mediadirInputfieldHint';
+	                    $arrInfoValue[$intLangKey] = empty($strInfoValue) ? 'title="'.$arrInputfield['info'][0].'"' : 'title="'.$strInfoValue.'"';
+	                }
                 } else {
-                    $strInfoValue = null;
+                	$arrInfoValue = null;
                     $strInfoClass = '';
                 }
 
                 if($objInit->mode == 'backend') {
-                    $strInputfield = '<input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'" value="'.$strValue.'" style="width: 300px" onfocus="this.select();" />';
+                    $strInputfield = '<div id="'.$this->moduleName.'Inputfield_'.$intId.'_Minimized" style="display: block;"><input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_0" value="'.$strValue.'" style="width: 300px" onfocus="this.select();" />&nbsp;</div>';
+
+                    $strInputfield .= '</div>';
                 } else {
-                    $strInputfield = '<input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'" class="'.$this->moduleNameLC.'InputfieldLink '.$strInfoClass.'" '.$strInfoValue.' value="'.$strValue.'" onfocus="this.select();" />';
+                    $strInputfield = '<input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][0]" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_0" value="'.$strValue.'" class="'.$this->moduleNameLC.'InputfieldText '.$strInfoClass.'" '.$arrInfoValue[0].'/>';
                 }
-
                 return $strInputfield;
-
-                break;
             case 2:
                 //search View
-                break;
+
+                // Slider-Config from the "default_value"
+                // default_value = [MIN-VALUE],[MAX-VALUE],[STEP]
+                // Example = 0, 1000000, 100
+                $arrSliderConfig = explode(",",$arrInputfield['default_value'][0]);
+                $intMin = (int) $arrSliderConfig[0];
+                $intMax = (int) $arrSliderConfig[1];
+                $intCurMin = (int)(isset($_GET[$intId][0])) ? $_GET[$intId][0] : $intMin;
+                $intCurMax = (int)(isset($_GET[$intId][1])) ? $_GET[$intId][1] : $intMax;
+                $intStep = (int)$arrSliderConfig[2];
+                
+                $rangeSlider = new \Cx\Core\Html\Model\Entity\RangeSliderElement($intId, $this->moduleNameLC.'_'.$intId, $intMin, $intMax, $intCurMin, $intCurMax, $intStep);
+                return $rangeSlider->render();
         }
     }
-
-
 
     function saveInputfield($intInputfieldId, $strValue, $langId = 0)
     {
@@ -119,38 +128,24 @@ class MediaDirectoryInputfieldGoogleWeather extends \Cx\Modules\MediaDir\Control
         return $strValue;
     }
 
-
     function deleteContent($intEntryId, $intIputfieldId)
     {
         global $objDatabase;
 
-        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
-
-        if($objDeleteInputfield !== false) {
-            return true;
-        } else {
-            return false;
-        }
+        return (boolean)$objDatabase->Execute("
+            DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+             WHERE `entry_id`='".intval($intEntryId)."'
+               AND `field_id`='".intval($intIputfieldId)."'");
     }
-
-
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-        global $_LANGID;
-
         $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+        $strValue = strip_tags(htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET));
 
         if(!empty($strValue)) {
-            $strValue = strip_tags($strValue);
-            $objGoogleWeather = new \googleWeather();
-            $objGoogleWeather->setWeatherLanguage($_LANGID);
-            $objGoogleWeather->setWeatherLocation($strValue);
-            $objGoogleWeather->setWeatherForecastDays(4);
-            $objGoogleWeather->setWeatherShowTitle(false);
-
             $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $objGoogleWeather->getWeather();
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValue;
         } else {
             $arrContent = null;
         }
@@ -162,6 +157,7 @@ class MediaDirectoryInputfieldGoogleWeather extends \Cx\Modules\MediaDir\Control
         global $objDatabase;
 
         $intId = intval($arrInputfield['id']);
+            
         $objInputfieldValue = $objDatabase->Execute("
             SELECT
                 `value`
@@ -170,29 +166,29 @@ class MediaDirectoryInputfieldGoogleWeather extends \Cx\Modules\MediaDir\Control
             WHERE
                 field_id=".$intId."
             AND
-                entry_id=".$intEntryId."
+                entry_id=".intval($intEntryId)."
             LIMIT 1
         ");
+
         return $objInputfieldValue->fields['value'];
     }
 
-
     function getJavascriptCheck()
     {
-        $fieldName = $this->moduleNameLC."Inputfield_";
+    	$fieldName = $this->moduleName."Inputfield_";
         $strJavascriptCheck = <<<EOF
 
-            case 'google_weather':
-                /*value = document.getElementById('$fieldName' + field + '_0').value;
+            case 'range':
+                value = document.getElementById('$fieldName' + field + '_0').value;
                 if (value == "" && isRequiredGlobal(inputFields[field][1], value)) {
-                    isOk = false;
-                    document.getElementById('$fieldName' + field + '_0').style.border = "#ff0000 1px solid";
+                	isOk = false;
+                	document.getElementById('$fieldName' + field + '_0').style.border = "#ff0000 1px solid";
                 } else if (value != "" && !matchType(inputFields[field][2], value)) {
-                    isOk = false;
-                    document.getElementById('$fieldName' + field + '_0').style.border = "#ff0000 1px solid";
+                	isOk = false;
+                	document.getElementById('$fieldName' + field + '_0').style.border = "#ff0000 1px solid";
                 } else {
-                    document.getElementById('$fieldName' + field + '_0').style.borderColor = '';
-                }*/
+                	document.getElementById('$fieldName' + field + '_0').style.borderColor = '';
+                }
                 break;
 
 EOF;
@@ -205,3 +201,4 @@ EOF;
         return null;
     }
 }
+
