@@ -86,6 +86,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 if ($objMediaDirectory->getMetaImage() != '') {
                     \Env::get('cx')->getPage()->setMetaimage($objMediaDirectory->getMetaImage());
                 }
+                if ($objMediaDirectory->getMetaKeys() != '') {
+                    \Env::get('cx')->getPage()->setMetakeys($objMediaDirectory->getMetaKeys());
+                }
 
                 break;
 
@@ -291,8 +294,24 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $cmd = $page->getCmd();
         $slug = array_pop($parts);
 
+        // fetch category & level from page's CMD
+        if (count($parts) == 0) {
+            if ($page->getCmd()) {
+                $pageArguments = explode('-', $page->getCmd());
+                if (count($pageArguments) == 2) {
+                    $levelId = $pageArguments[0];
+                    $categoryId = $pageArguments[1];
+                } elseif (count($pageArguments) && $objMediaDirectoryEntry->arrSettings['settingsShowLevels']) {
+                    $levelId = $pageArguments[0];
+                } elseif (count($pageArguments)) {
+                    $categoryId = $pageArguments[0];
+                }
+            }
+        }
+
         // detect entry
-        $entryId = $objMediaDirectoryEntry->findOneBySlug($slug);
+        $name = $objMediaDirectoryEntry->getNameFromSlug($slug);
+        $entryId = $objMediaDirectoryEntry->findOneByName($name, null, $categoryId, $levelId);
         if ($entryId) {
             if (substr($cmd,0,6) != 'detail') {
                 $formId = null;
@@ -317,11 +336,42 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // TODO: we need an other method that does also load the additional infos (template, css, etc.)
                 //       this new method must also be used for symlink pages
                 $page->setContentOf($detailPage, true);
+
+
+                // ------------------------------------------------------------
+                // ------------------------------------------------------------
+                // TODO: this code snipped is taken from \Cx\Core\Routing\Resolver
+                //       the relevant code in the Resolver should be moved further down in the resolving process
+                //       so that the following code snipped can be omitted
+                global $themesPages, $page_template;
+
+                \Env::get('init')->setCustomizedTheme($page->getSkin(), $page->getCustomContent(), $page->getUseSkinForAllChannels());
+
+                $themesPages = \Env::get('init')->getTemplates($page);
+
+                //replace the {NODE_<ID>_<LANG>}- placeholders
+                \LinkGenerator::parseTemplate($themesPages);
+
+                //$page_access_id = $objResult->fields['frontend_access_id'];
+                $page_template  = $themesPages['content'];
+                // END TODO
+                // ------------------------------------------------------------
+                // ------------------------------------------------------------
+
+
                 //$page->getFallbackContentFrom($detailPage);
                 $_GET['cmd']     = $_POST['cmd']     = $_REQUEST['cmd']     = $detailPage->getCmd();
             }
 
             $this->cx->getRequest()->getUrl()->setParam('eid', $entryId);
+
+            // inject level & category as request arguments from page's CMD
+            if ($levelId) {
+                $this->cx->getRequest()->getUrl()->setParam('lid', $levelId);
+            }
+            if ($categoryId) {
+                $this->cx->getRequest()->getUrl()->setParam('cid', $categoryId);
+            }
 
             if (empty($parts)) {
                 $this->setCanonicalPage($detailPage);
