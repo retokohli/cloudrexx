@@ -124,14 +124,16 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
         $strWhereEntryId = '';
         $strWhereLevel = '';
-        $strFromLevel = '';
+        $strJoinLevel = '';
         $strWhereActive = '';
         $strWhereTerm = '';
         $strWhereLangId = '';
         $strWhereFormId = '';
-        $strFromCategory = '';
+        $strJoinCategory = '';
         $strWhereCategory = '';
         $strOrder = "rel_inputfield.`value` ASC";
+        $strSlugField = '';
+        $strJoinSlug = '';
 
         if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             $langId = FRONTEND_LANG_ID;
@@ -159,13 +161,13 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         }
 
         if(!empty($this->intLevelId)) {
-            $strWhereLevel = "AND ((level.`level_id` = ".$this->intLevelId.") AND (level.`entry_id` = entry.`id`)) ";
-            $strFromLevel = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS level";
+            $strWhereLevel = "AND (level.`level_id` = ".$this->intLevelId.")";
+            $strJoinLevel = "INNER JOIN ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS level ON level.`entry_id` = entry.`id`";
         }
 
         if(!empty($this->intCatId)) {
-            $strWhereCategory = "AND ((category.`category_id` = ".$this->intCatId.") AND (category.`entry_id` = entry.`id`)) ";
-            $strFromCategory = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS category";
+            $strWhereCategory = "AND (category.`category_id` = ".$this->intCatId.")";
+            $strJoinCategory = "INNER JOIN ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS category ON category.`entry_id` = entry.`id`";
         }
 
         if(!empty($this->bolLatest)) {
@@ -247,6 +249,32 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             $strWhereDuration = null;
         }
 
+        if ($this->arrSettings['usePrettyUrls']) {
+            $strSlugField = ",
+                rel_slug_inputfield.`value` AS `slug`,
+                rel_slug_inputfield.`field_id` AS `slug_field_id`
+            ";
+            $strJoinSlug = "
+            LEFT JOIN
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_slug_inputfield
+            ON
+                rel_slug_inputfield.`entry_id` = entry.`id`
+                AND rel_slug_inputfield.`lang_id` = ".$langId."
+                AND (rel_slug_inputfield.`field_id` = (
+                    SELECT 
+                        slug_inputfield.`id` 
+                    FROM
+                        ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS slug_inputfield
+                    WHERE
+                        slug_inputfield.`context_type` = 'slug'
+                    ORDER BY
+                        FIELD(slug_inputfield.`context_type`, 'slug') DESC
+                    LIMIT 1
+                    )
+                )
+            ";
+        }
+
         $query = "
             SELECT SQL_CALC_FOUND_ROWS
                 entry.`id` AS `id`,
@@ -270,15 +298,19 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 entry.`duration_notification` AS `duration_notification`,
                 entry.`translation_status` AS `translation_status`,
                 entry.`ready_to_confirm` AS `ready_to_confirm`,
-                rel_inputfield.`value` AS `value`,
-                rel_inputfield.`field_id` AS `field_id`
+                rel_inputfield.`value` AS `value`
+                ".$strSlugField."
             FROM
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_entries AS entry,
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_entries AS entry
+            INNER JOIN
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield
-                ".$strFromCategory."
-                ".$strFromLevel."
+            ON
+                rel_inputfield.`entry_id` = entry.`id`
+            ".$strJoinSlug."
+            ".$strJoinCategory."
+            ".$strJoinLevel."
             WHERE
-                (rel_inputfield.`entry_id` = entry.`id`)
+                rel_inputfield.`entry_id` = entry.`id`
                 ".$strWhereFirstInputfield."
                 ".$strWhereTerm."
                 ".$strWhereUnconfirmed."
@@ -298,8 +330,6 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             ".$strLimit."
             ".$strOffset."
         ";
-
-        $formSlugFields = $this->getFormSlugFieldArray();
 
         $objEntries = $objDatabase->Execute($query);
 
@@ -336,14 +366,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                     $arrEntry['entryDurationNotification'] = intval($objEntries->fields['duration_notification']);
                     $arrEntry['entryTranslationStatus'] = explode(",",$objEntries->fields['translation_status']);
                     $arrEntry['entryReadyToConfirm'] = intval($objEntries->fields['ready_to_confirm']);
-
-                    // load slug (if it exists)
-                    if (
-                        $this->arrSettings['usePrettyUrls'] &&
-                        $slug = $formSlugFields[$arrEntry['entryFormId']]['lang'][$langId]
-                    ) {
-                        $arrEntry['slug'] = $slug;
-                    }
+                    $arrEntry['slug_field_id'] = $objEntries->fields['slug_field_id'];
+                    $arrEntry['slug'] = $objEntries->fields['slug'];
 
                     $this->arrEntries[$objEntries->fields['id']] = $arrEntry;
                 }
@@ -356,30 +380,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         $this->setCurrentFetchedEntryDataObject($this);
     }
 
-    public function findOneBySlug($slug) {
-        $query = "
-            SELECT DISTINCT entry_id
-            FROM
-              ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS r
-            JOIN
-              ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS i
-              ON r.field_id = i.id
-            WHERE
-              r.value = '".$slug."'
-              AND r.lang_id = ".FRONTEND_LANG_ID."
-              AND i.context_type = 'slug'
-            LIMIT 1
-        ";
-
-        $objResult = $this->cx->getDb()->getAdoDb()->Execute($query);
-        if (!$objResult || $objResult->EOF) {
-            return $this->findOneByName($this->getNameFromSlug($slug));
-        }
-
-        return $objResult->fields['entry_id'];
-    }
-
-    public function findOneByName($name, $formId = null, $catId = null, $levelId = null, $autoload = false) {
+    public function findOneBySlug($slug, $formId = null, $catId = null, $levelId = null, $autoload = false) {
 		$strWhereLevel = '';
 		$strFromLevel = '';
 		$strWhereLangId = '';
@@ -417,9 +418,9 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             WHERE
                     entry.`active` = 1
                 AND entry.`confirmed` = 1
-                AND inputfield.`context_type` = 'title'
+                AND inputfield.`context_type` = 'slug'
                 AND (entry.`duration_type` = 1 OR (entry.`duration_type` = 2 AND (entry.`duration_start` < '" . time() . "' AND entry.`duration_end` > '" . time() . "')))
-                AND rel_inputfield.`value` = '".contrexx_raw2db($name)."'
+                AND rel_inputfield.`value` = '".contrexx_raw2db($slug)."'
                 ".$strWhereCategory."
                 ".$strWhereLevel."
                 ".$strWhereLangId."
@@ -1973,50 +1974,5 @@ JSCODE;
 
         $formId = $this->arrEntries[$entryId]['entryFormId'];
         return $this->objForm->arrForms[$formId];
-    }
-
-    /**
-     * Gets an array with the form ids as key and the form's slug field's id
-     * as value
-     *
-     * @return array
-     */
-    public function getFormSlugFieldArray() {
-        global $objDatabase;
-
-        if (isset($this->formSlugFields)) {
-            return $this->formSlugFields;
-        }
-
-        $this->formSlugFields = array();
-
-        $query = "
-            SELECT
-                i.form as form,
-                i.id as id,
-                r.lang_id as lang_id,
-                r.value as value
-            FROM
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS i
-            JOIN
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS r
-            ON
-                i.id = r.field_id
-            WHERE
-                i.context_type = 'slug'
-        ";
-        $objField = $objDatabase->Execute($query);
-
-        if ($objField !== false) {
-            while(!$objField->EOF) {
-                $formId = intval($objField->fields['form']);
-                if (!$this->formSlugFields[$formId]['fieldId']) {
-                    $this->formSlugFields[$formId]['fieldId'] = intval($objField->fields('id'));
-                }
-                $this->formSlugFields[$formId]['lang'][intval($objField->fields('lang_id'))] = $objField->fields('value');
-                $objField->MoveNext();
-            }
-        }
-        return $this->formSlugFields;
     }
 }

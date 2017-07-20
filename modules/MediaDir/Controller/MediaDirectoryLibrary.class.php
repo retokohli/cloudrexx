@@ -1022,7 +1022,7 @@ EOF;
      */
     public function getAutoSlugPath($arrEntry = null, $categoryId = null, $levelId = null, $useRequestedPageAsFallback = false, $includeDetailApplicationPage = true) {
         $entryId = null;
-        $entryName = null;
+        $entrySlug = null;
         $formId = null;
         $formCmd = null;
         $page = null;
@@ -1032,9 +1032,7 @@ EOF;
         }
 
         if (isset($arrEntry['slug'])) {
-            $entryName = $arrEntry['slug'];
-        } else if (isset($arrEntry['entryFields'][0])) {
-            $entryName = $arrEntry['entryFields'][0];
+            $entrySlug = $arrEntry['slug'];
         }
 
         if (isset($arrEntry['entryFormId'])) {
@@ -1102,7 +1100,7 @@ EOF;
 
         // create human readable url if option has been enabled to do so
         if ($this->arrSettings['usePrettyUrls']) {
-            $url->setPath($url->getPath() . $this->getLevelSlugPath($levelId) . $this->getCategorySlugPath($categoryId) . $this->getEntrySlugPath($entryName));
+            $url->setPath($url->getPath() . $this->getLevelSlugPath($levelId) . $this->getCategorySlugPath($categoryId) . '/' . $entrySlug);
         } else {
             if ($entryId) {
                 $url->setParam('eid', $entryId);
@@ -1252,14 +1250,6 @@ EOF;
         }
 
         return '';
-    }
-
-    public function getEntrySlugPath($entryName) {
-        if (!$entryName) {
-            return '';
-        }
-
-        return '/' . $this->getSlugFromName($entryName);
     }
 
     public function getLevelData() {

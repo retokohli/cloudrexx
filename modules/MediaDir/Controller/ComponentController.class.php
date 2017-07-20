@@ -315,8 +315,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         // detect entry
-        $name = $objMediaDirectoryEntry->getNameFromSlug($slug);
-        $entryId = $objMediaDirectoryEntry->findOneByName($name, null, $categoryId, $levelId);
+        $entryId = $objMediaDirectoryEntry->findOneBySlug($slug, null, $categoryId, $levelId);
         if ($entryId) {
             // set canonical url
             $this->setCanonicalUrlByEntryId(intval($entryId));
