@@ -301,8 +301,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         // fetch category & level from page's CMD
         if (count($parts) == 0) {
-            if ($page->getCmd()) {
-                $pageArguments = explode('-', $page->getCmd());
+            if ($cmd &&
+                preg_match('/^\d*-?\d*+$/', $cmd)
+            ) {
+                $pageArguments = explode('-', $cmd);
                 if (count($pageArguments) == 2) {
                     $levelId = $pageArguments[0];
                     $categoryId = $pageArguments[1];
