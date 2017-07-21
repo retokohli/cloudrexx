@@ -1644,20 +1644,39 @@ EOF;
                         }
                     }
                     break;
+                case 'usePrettyUrls':
+                    // check if setting changed
+                    $objUsePrettyUrls = $objDatabase->Execute("
+                        SELECT
+                            `value`
+                        FROM
+                          ".DBPREFIX."module_".$this->moduleTablePrefix."_settings
+                        WHERE
+                            `name` = 'usePrettyUrls'
+                        LIMIT 1
+                    ");
+                    if (
+                        $objUsePrettyUrls->fields['value'] == $varValue
+                    ) {
+                        break;
+                    } elseif (!$objUsePrettyUrls->fields['value']) {
+                        if (!$this->saveSetting($strName, $varValue)) {
+                            return false;
+                        }
+                        // pretty urls is getting activated,
+                        // make sure each entry gets a slug
+                        $this->generateEntrySlugs();
+                        break;
+                    }
+                    if (!$this->saveSetting($strName, $varValue)) {
+                        return false;
+                    }
+                    break;
                 case 'settingsActiveLanguages':
                     $varValue = join(",",$varValue);
                         $oldActiveLanguage = explode(',', $this->arrSettings['settingsActiveLanguages']);
                 default:
-                    $objSaveSettings = $objDatabase->Execute("
-                        UPDATE
-                            ".DBPREFIX."module_".$this->moduleTablePrefix."_settings
-                        SET
-                            `value`='".contrexx_addslashes($varValue)."'
-                        WHERE
-                            `name`='".contrexx_addslashes($strName)."'
-                    ");
-
-                    if ($objSaveSettings === false) {
+                    if (!$this->saveSetting($strName, $varValue)) {
                         return false;
                     }
                     break;
@@ -1717,5 +1736,151 @@ EOF;
         $objEntries = new MediaDirectoryEntry($this->moduleName);
         //update entries
         $objEntries->updateEntries();
+    }
+
+    /**
+     * Stores a single mediadir setting
+     * @param $strName The setting's name
+     * @param $varValue The setting's value
+     * @return bool Wether the storing process was successful or not
+     */
+    protected function saveSetting($strName, $varValue) {
+        global $objDatabase;
+
+        $objSaveSettings = $objDatabase->Execute("
+            UPDATE
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_settings
+            SET
+                `value`='".contrexx_addslashes($varValue)."'
+            WHERE
+                `name`='".contrexx_addslashes($strName)."'
+        ");
+
+        if ($objSaveSettings === false) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Provides each entry (and the form it is based on)
+     * with a slug field and a slug value,
+     * both only if the entry/form doesn't already have it
+     *
+     * Is called when usePrettyUrls is activated, to make sure the resolving
+     * of the entries works correctly
+     */
+    public function generateEntrySlugs() {
+        global $objDatabase;
+
+        // get all entries
+        $objEntries = new MediaDirectoryEntry($this->moduleName);
+        $objEntries->getEntries();
+
+        $formsWithFieldAlreadyCreated = array();
+        $langCount = count(explode(',',$this->arrSettings['settingsActiveLanguages']));
+        foreach($objEntries->arrEntries as $arrEntry) {
+
+            if ($arrEntry['slug_field_id'] && $arrEntry['slug']) {
+                // slug exists and has a value, nothing to do with this entry
+                continue;
+            }
+
+            // check if the entry's slug field is set
+            if (!$arrEntry['slug_field_id']) {
+
+                // get form definition of the entry
+                $arrForm = $objEntries->getFormDefinitionOfEntry(
+                    $arrEntry['entryId']
+                );
+
+                // check if form's slug field already exists
+                if ($arrForm['slug_field_id']) {
+                    $arrEntry['slug_field_id'] = $arrForm['slug_field_id'];
+                } else {
+
+                    // check if form's slug field was already created
+                    if ($formsWithFieldAlreadyCreated[$arrForm['formId']]) {
+                        $arrEntry['slug_field_id'] = $formsWithFieldAlreadyCreated[$arrForm['formId']];
+                    } else { // create slug field for form
+                        $objInputfields = new MediaDirectoryInputfield(
+                            $arrForm['formId'], false, null, $this->moduleName
+                        );
+                        $arrEntry['slug_field_id'] = $objInputfields->addInputfield();
+
+                        // set context_type to slug
+                        $updateSlugField = $objDatabase->Execute("
+                            UPDATE
+                                ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields
+                            SET
+                                `context_type` = 'slug'
+                            WHERE
+                                `id` = " . $arrEntry['slug_field_id']
+                        );
+                        // set slug field name
+                        $updateSlugFieldName = $objDatabase->Execute("
+                            UPDATE
+                                ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfield_names
+                            SET
+                                `field_name` = 'Slug'
+                            WHERE
+                                `field_id` = " . $arrEntry['slug_field_id'] . "
+                                AND `form_id` = " . $arrForm['formId']
+                        );
+
+                        // store slug field id in array, to make sure that in
+                        // next loop with an entry based on the same form,
+                        // the slug field id will be gotten directly
+                        $formsWithFieldAlreadyCreated[$arrForm['formId']] = $arrEntry['slug_field_id'];
+                    }
+
+                }
+
+            }
+
+            // check if entry already has a slug value set
+            if (!$arrEntry['slug']) {
+
+                // get first field value of each lang
+                $firstFieldQuery = "
+                    SELECT
+                        r.`lang_id` AS `lang_id`,
+                        r.value AS `value`
+                    FROM
+                        ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS r
+                    WHERE
+                        r.entry_id = ".$arrEntry['entryId']."
+                        AND r.form_id = ".$arrEntry['entryFormId']."
+                        AND r.field_id = ".$arrEntry['field_id']."
+                    LIMIT " . $langCount;
+                $firstField = $objDatabase->Execute($firstFieldQuery);
+
+                if ($firstField) {
+                    while (!$firstField->EOF) {
+                        $langId = $firstField->fields['lang_id'];
+                        $slugFromFirstField = $this->getSlugFromName(
+                            $firstField->fields['value']
+                        );
+
+                        // store slug value for entry in db
+                        $query = "
+                            INSERT INTO
+                                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+                            VALUES
+                                (
+                                    ".$arrEntry['entryId'].",
+                                    ".$langId.",
+                                    ".$arrEntry['entryFormId'].",
+                                    ".$arrEntry['slug_field_id'].",
+                                    '".$slugFromFirstField."'
+                                )
+                        ";
+                        $storeSlug = $objDatabase->Execute($query);
+
+                        $firstField->MoveNext();
+                    }
+                }
+            }
+        }
     }
 }
