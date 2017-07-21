@@ -79,6 +79,22 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
             $whereFormId = null;
         }
 
+        $strSlugField = '';
+        $strJoinSlugField = '';
+
+        if ($this->arrSettings['usePrettyUrls']) {
+            $strSlugField = ",
+                slug_field.`id` as `slug_field_id`
+            ";
+            $strJoinSlugField = "
+                LEFT JOIN
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS slug_field
+                ON
+                    slug_field.`form` = form_names.`form_id`
+                    AND slug_field.`context_type` = 'slug'
+            ";
+        }
+
         $objFormsRS = $objDatabase->Execute("
             SELECT
                 form.`id` AS `id`,
@@ -92,9 +108,11 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                 form.`active` AS `active`,
                 form_names.`form_name` AS `name`,
                 form_names.`form_description` AS `description`
+                ".$strSlugField."
             FROM
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_forms AS form,
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names AS form_names
+                ".$strJoinSlugField."
             WHERE
                 ($whereFormId form_names.form_id=form.id)
             AND
@@ -145,6 +163,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                 $arrForm['formUseLevel']          = intval($objFormsRS->fields['use_level']);
                 $arrForm['formUseReadyToConfirm'] = intval($objFormsRS->fields['use_ready_to_confirm']);
                 $arrForm['formEntriesPerPage']    = $objFormsRS->fields['entries_per_page'];
+                $arrForm['slug_field_id']         = intval($objFormsRS->fields['slug_field_id']) ? intval($objFormsRS->fields['slug_field_id']) : 0;
 
                 $arrForms[$objFormsRS->fields['id']] = $arrForm;
                 $objFormsRS->MoveNext();
