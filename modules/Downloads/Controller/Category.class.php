@@ -443,7 +443,7 @@ class Category
         $objResult = $objDatabase->Execute('SELECT `download_id`, `order` FROM `'.DBPREFIX.'module_downloads_rel_download_category` WHERE ('.implode(' OR ', $arrSubCategories).')');
         if ($objResult) {
             while (!$objResult->EOF) {
-                $this->downloads[$objResult->fields['download_id']] = $objResult->fields['order'];
+                $this->downloads[$objResult->fields['download_id']] = intval($objResult->fields['order']);
                 $objResult->MoveNext();
             }
         }
