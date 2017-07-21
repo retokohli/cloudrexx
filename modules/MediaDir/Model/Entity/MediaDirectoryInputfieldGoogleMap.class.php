@@ -284,6 +284,8 @@ EOF;
         $strValueLink = '<a href="http://maps.google.com/maps?q='.$strValueLat.','.$strValueLon.'" target="_blank">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLEMAPS_LINK'].'</a>';
         $strValueLinkHref = 'http://maps.google.com/maps?q='.$strValueLat.','.$strValueLon;
 
+        $intId = intval($arrInputfield['id']);
+
         if(!empty($strValue)) {
             $objGoogleMap = new \googleMap();
             $objGoogleMap->setMapId($this->moduleNameLC.'Inputfield_'.$intId.'_'.$intEntryId.'_map');
