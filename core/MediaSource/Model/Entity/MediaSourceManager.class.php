@@ -259,13 +259,13 @@ class MediaSourceManager extends EntityBase
         $pathArray = explode('/', $path);
         // Shift off the first element of the array to get the media type.
         $mediaTypePathArray[] = array_shift($pathArray);
-        $strPath    = '/' . join('/', $pathArray);
+        $strPath    = '/' . implode('/', $pathArray);
 
         // Adjust the mediaTypePath, if the path is not related to themes
         if (\Cx\Core\Core\Controller\Cx::FOLDER_NAME_THEMES !== '/' . $mediaTypePathArray[0]) {
             $mediaTypePathArray[] = array_shift($pathArray);
         }
-        $mediaTypePath = '/' . join('/', $mediaTypePathArray);
+        $mediaTypePath = '/' . implode('/', $mediaTypePathArray);
 
         // Get MediaType
         $mediaType = $this->getMediaTypeByPath($mediaTypePath);
