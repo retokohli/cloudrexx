@@ -1771,6 +1771,8 @@ EOF;
      * of the entries works correctly
      */
     public function generateEntrySlugs() {
+        global $_ARRAYLANG;
+
         $db = $this->cx->getDb()->getAdoDb();
 
         // get all entries
@@ -1815,8 +1817,15 @@ EOF;
                             SET
                                 `context_type` = 'slug'
                             WHERE
-                                `id` = " . $arrEntry['slug_field_id']
-                        );
+                                `id` = " . $arrEntry['slug_field_id'] ."
+                        ");
+                        if (!$updateSlugField) {
+                            \Message::error(sprintf(
+                                $_ARRAYLANG['TXT_MEDIADIR_SET_SLUG_FIELD_ERROR'],
+                                $arrEntry['entryFormId']
+                            ));
+                        }
+
                         // set slug field name
                         $updateSlugFieldName = $db->Execute("
                             UPDATE
@@ -1825,8 +1834,14 @@ EOF;
                                 `field_name` = 'Slug'
                             WHERE
                                 `field_id` = " . $arrEntry['slug_field_id'] . "
-                                AND `form_id` = " . $arrForm['formId']
-                        );
+                                AND `form_id` = " . $arrForm['formId'] . "
+                        ");
+                        if (!$updateSlugFieldName) {
+                            \Message::error(sprintf(
+                                $_ARRAYLANG['TXT_MEDIADIR_SET_SLUG_FIELD_NAME_ERROR'],
+                                $arrEntry['entryFormId']
+                            ));
+                        }
 
                         // store slug field id in array, to make sure that in
                         // next loop with an entry based on the same form,
@@ -1876,6 +1891,13 @@ EOF;
                                 )
                         ";
                         $storeSlug = $db->Execute($query);
+                        if (!$storeSlug) {
+                            \Message::error(sprintf(
+                                $_ARRAYLANG['TXT_MEDIADIR_SET_SLUG_FIELD_VALUE_ERROR'],
+                                $arrEntry['entryId'],
+                                $langId
+                            ));
+                        }
 
                         $firstField->MoveNext();
                     }

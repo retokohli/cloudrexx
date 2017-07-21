@@ -367,3 +367,6 @@ $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_CATEGORY_LIST'] = 'Die Auflistung der 
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_NOT_LATEST'] = 'Sofern der Template-Block mediadirCategoriesLevelsList fehlt, werden auf der Einstiegsseite anstelle der neusten Einträge alle Einträge aufgeführt';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_LATEST_PARSING'] = 'Die Anzeige der neusten Einträge (Template-Block mediadirLatestList) erfolgt nur, sofern der Template-Block mediadirEntryList vorhanden ist';
 $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_LATEST_HIDING'] = 'Der Template-Block für die Anzeige der neusten Einträge (mediadirLatestList) wird nicht ausgeblendet, wenn alle Einträge (Template-Block mediadirEntryList) angezeigt werden';
+$_ARRAYLANG['TXT_MEDIADIR_SET_SLUG_FIELD_ERROR'] = 'Slug-Feld für Formular mit ID %u konnte nicht gesetzt werden.';
+$_ARRAYLANG['TXT_MEDIADIR_SET_SLUG_FIELD_NAME_ERROR'] = 'Slug-Feldname für Formular mit ID %u konnte nicht gesetzt werden.';
+$_ARRAYLANG['TXT_MEDIADIR_SET_SLUG_FIELD_VALUE_ERROR'] = 'Slug-Feldwert für Eintrag mit ID %u und LANG ID %u konnte nicht gesetzt werden.';
