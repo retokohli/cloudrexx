@@ -252,6 +252,13 @@ class MediaSourceManager extends EntityBase
         return $this->thumbnailGenerator;
     }
 
+    /**
+     * Get MediaSourceFile from given path
+     *
+     * @param string $path file path
+     *
+     * @return string MediaSourceFile
+     */
     public function getMediaSourceFileFromPath($path) {
         if (strpos($path, '/') === 0) {
             $path = substr($path, 1);
@@ -274,10 +281,10 @@ class MediaSourceManager extends EntityBase
         try {
             $mediaSourceFile = $this->getMediaType($mediaType)->getFileSystem()->getFileFromPath($strPath);
         } catch (MediaSourceManagerException $e) {
-            return false;
+            return '';
         }
         if (!$mediaSourceFile) {
-            return false;
+            return '';
         }
         return $mediaSourceFile;
     }
