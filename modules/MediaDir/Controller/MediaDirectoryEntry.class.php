@@ -267,6 +267,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                         ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS slug_inputfield
                     WHERE
                         slug_inputfield.`context_type` = 'slug'
+                        AND slug_inputfield.`form` = rel_slug_inputfield.`form_id`
                     ORDER BY
                         FIELD(slug_inputfield.`context_type`, 'slug') DESC
                     LIMIT 1
@@ -298,6 +299,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 entry.`duration_notification` AS `duration_notification`,
                 entry.`translation_status` AS `translation_status`,
                 entry.`ready_to_confirm` AS `ready_to_confirm`,
+                rel_inputfield.`field_id` AS `field_id`,
                 rel_inputfield.`value` AS `value`
                 ".$strSlugField."
             FROM
@@ -368,6 +370,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                     $arrEntry['entryReadyToConfirm'] = intval($objEntries->fields['ready_to_confirm']);
                     $arrEntry['slug_field_id'] = $objEntries->fields['slug_field_id'];
                     $arrEntry['slug'] = $objEntries->fields['slug'];
+                    $arrEntry['field_id'] = intval($objEntries->fields['field_id']);
 
                     $this->arrEntries[$objEntries->fields['id']] = $arrEntry;
                 }
