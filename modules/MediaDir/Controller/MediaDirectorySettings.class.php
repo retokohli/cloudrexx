@@ -1745,9 +1745,9 @@ EOF;
      * @return bool Wether the storing process was successful or not
      */
     protected function saveSetting($strName, $varValue) {
-        global $objDatabase;
+        $db = $this->cx->getDb()->getAdoDb();
 
-        $objSaveSettings = $objDatabase->Execute("
+        $objSaveSettings = $db->Execute("
             UPDATE
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_settings
             SET
@@ -1771,7 +1771,7 @@ EOF;
      * of the entries works correctly
      */
     public function generateEntrySlugs() {
-        global $objDatabase;
+        $db = $this->cx->getDb()->getAdoDb();
 
         // get all entries
         $objEntries = new MediaDirectoryEntry($this->moduleName);
@@ -1809,7 +1809,7 @@ EOF;
                         $arrEntry['slug_field_id'] = $objInputfields->addInputfield();
 
                         // set context_type to slug
-                        $updateSlugField = $objDatabase->Execute("
+                        $updateSlugField = $db->Execute("
                             UPDATE
                                 ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields
                             SET
@@ -1818,7 +1818,7 @@ EOF;
                                 `id` = " . $arrEntry['slug_field_id']
                         );
                         // set slug field name
-                        $updateSlugFieldName = $objDatabase->Execute("
+                        $updateSlugFieldName = $db->Execute("
                             UPDATE
                                 ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfield_names
                             SET
@@ -1853,7 +1853,7 @@ EOF;
                         AND r.form_id = ".$arrEntry['entryFormId']."
                         AND r.field_id = ".$arrEntry['field_id']."
                     LIMIT " . $langCount;
-                $firstField = $objDatabase->Execute($firstFieldQuery);
+                $firstField = $db->Execute($firstFieldQuery);
 
                 if ($firstField) {
                     while (!$firstField->EOF) {
@@ -1875,7 +1875,7 @@ EOF;
                                     '".$slugFromFirstField."'
                                 )
                         ";
-                        $storeSlug = $objDatabase->Execute($query);
+                        $storeSlug = $db->Execute($query);
 
                         $firstField->MoveNext();
                     }
