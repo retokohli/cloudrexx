@@ -258,8 +258,19 @@ class MediaSourceManager extends EntityBase
         }
         $pathArray = explode('/', $path);
         // Shift off the first element of the array to get the media type.
-        $mediaType  = array_shift($pathArray);
+        $mediaTypePathArray[] = array_shift($pathArray);
         $strPath    = '/' . join('/', $pathArray);
+
+        // Adjust the mediaTypePath, if the path is not related to themes
+        if (\Cx\Core\Core\Controller\Cx::FOLDER_NAME_THEMES !== '/' . $mediaTypePathArray[0]) {
+            $mediaTypePathArray[] = array_shift($pathArray);
+        }
+        $mediaTypePath = '/' . join('/', $mediaTypePathArray);
+
+        // Get MediaType
+        $mediaType = $this->getMediaTypeByPath($mediaTypePath);
+
+        // fetch file from related MediaType file system
         try {
             $mediaSourceFile = $this->getMediaType($mediaType)->getFileSystem()->getFileFromPath($strPath);
         } catch (MediaSourceManagerException $e) {
@@ -288,5 +299,22 @@ class MediaSourceManager extends EntityBase
             }
         }
         return null;
+    }
+
+    /**
+     * Get path related 'MediaType' by the given path
+     *
+     * @param string $path File path
+     *
+     * @return string MediaSource name
+     */
+    public function getMediaTypeByPath($path)
+    {
+        foreach ($this->mediaTypes as $mediaSource) {
+            if (in_array($path, $mediaSource->getDirectory())) {
+                return $mediaSource->getName();
+            }
+        }
+        return '';
     }
 }

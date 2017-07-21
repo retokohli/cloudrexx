@@ -325,7 +325,10 @@ class ClassLoader {
             return false;
         }
 
-        return $webPath ? $file : $mediaSourceFile->getFileSystem()->getFullPath($mediaSourceFile);
+        if ($webPath) {
+            return $file;
+        }
+        return $mediaSourceFile->getFileSystem()->getFullPath($mediaSourceFile) . $mediaSourceFile->getFullName();
     }
 
     /**
