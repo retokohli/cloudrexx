@@ -713,6 +713,12 @@ class CalendarEventManager extends CalendarLibrary
             'status' => 1,
         ));
 
+        // abort in case the event of the invitation is not published
+        if (!$event) {
+            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
+            return;
+        }
+
         // check if event has been published in currently requested locale region
         if ($this->arrSettings['showEventsOnlyInActiveLanguage'] == 1) {
             $publishedLanguages = explode(',', $event->getShowIn());
@@ -720,12 +726,6 @@ class CalendarEventManager extends CalendarLibrary
                 \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
                 return;
             }
-        }
-
-        // abort in case the event of the invitation is not published
-        if (!$event) {
-            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
-            return;
         }
 
         if (!$objEvent) { 
