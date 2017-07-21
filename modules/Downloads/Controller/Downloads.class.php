@@ -211,6 +211,10 @@ class Downloads extends DownloadsLibrary
         $objDownload = new Download();
         $objCategory = Category::getCategory($this->categoryId);
 
+        if (!$objCategory->getActiveStatus()) {
+            return;
+        }
+
         if ($objCategory->getId()) {
             // check access permissions to selected category
             if (!\Permission::checkAccess(143, 'static', true)
@@ -230,7 +234,7 @@ class Downloads extends DownloadsLibrary
                 && $objDownload->getActiveStatus()
             ) {
                 /* DOWNLOAD DETAIL PAGE */
-                $this->pageTitle = contrexx_raw2xhtml($objDownload->getName(FRONTEND_LANG_ID));
+                $this->pageTitle = $objDownload->getName(FRONTEND_LANG_ID);
 
                 $metakeys = $objDownload->getMetakeys(FRONTEND_LANG_ID);
                 if ($this->arrConfig['use_attr_metakeys'] && !empty($metakeys)) {
@@ -260,7 +264,7 @@ class Downloads extends DownloadsLibrary
                 }
             } else {
                 /* CATEGORY DETAIL PAGE */
-                $this->pageTitle = htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
+                $this->pageTitle = $objCategory->getName($_LANGID);
 
                 // process create directory
                 $this->processCreateDirectory($objCategory);
@@ -1518,10 +1522,12 @@ JS_CODE;
         $arrCategoryIds = $objDownload->getAssociatedCategoryIds();
         $filter = array(
             'is_active'     => true,
-            'id'            => $arrCategoryIds,
             // read_access_id = 0 refers to unprotected categories
             'read_access_id'=> array(0),
         );
+        if (!empty($arrCategoryIds)) {
+            $filter['id'] = $arrCategoryIds;
+        }
         $objUser = \FWUser::getFWUserObject()->objUser;
         if ($objUser->login()) {
             $filter['read_access_id'] = array_merge($filter['read_access_id'], $objUser->getDynamicPermissionIds());
