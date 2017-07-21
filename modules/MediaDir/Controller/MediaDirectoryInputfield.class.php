@@ -809,7 +809,6 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
         ");
 
         $intInsertId = $objDatabase->Insert_ID();
-        $objDatabase->debug = 1;
         //insert blank field name
         $objAddInputfieldName = $objDatabase->Execute("
             INSERT INTO
