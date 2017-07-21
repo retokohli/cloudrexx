@@ -722,7 +722,8 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `place_mediadir_id` int(11) NOT NULL,
   `catid` int(11) NOT NULL DEFAULT '0',
   `show_in` varchar(255) NOT NULL,
-  `invited_groups` varchar(45) DEFAULT NULL,
+  `invited_groups` varchar(255) DEFAULT NULL,
+  `invited_crm_groups` varchar(255) DEFAULT NULL,
   `invited_mails` mediumtext,
   `invitation_sent` int(1) NOT NULL,
   `invitation_email_template` varchar(255) NOT NULL,
@@ -791,12 +792,22 @@ CREATE TABLE `contrexx_module_calendar_event_field` (
   KEY `fk_contrexx_module_calendar_note_field_contrexx_module_calend1` (`event_id`),
   FULLTEXT KEY `eventIndex` (`title`,`teaser`,`description`)
 ) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_calendar_invite` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `event_id` int(11) NOT NULL,
+  `date` bigint unsigned NOT NULL,
+  `invitee_type` enum('-', 'AccessUser','CrmContact') NOT NULL,
+  `invitee_id` int(11) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `token` varchar(32) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_calendar_host` (
   `id` int(1) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `uri` mediumtext NOT NULL,
   `cat_id` int(11) NOT NULL,
-  `key` varchar(40) NOT NULL,
+  `key` varchar(32) NOT NULL,
   `confirmed` int(11) NOT NULL,
   `status` int(1) NOT NULL,
   PRIMARY KEY (`id`),
@@ -814,22 +825,15 @@ CREATE TABLE `contrexx_module_calendar_mail` (
   `status` int(1) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_calendar_mail_action` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `default_recipient` enum('empty','admin','author') NOT NULL,
-  `need_auth` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_calendar_registration` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
-  `event_id` int(7) NOT NULL,
+  `event_id` int(11) NOT NULL,
   `date` int(15) NOT NULL,
   `submission_date` timestamp NULL DEFAULT '0000-00-00 00:00:00',
   `host_name` varchar(255) NOT NULL,
   `ip_address` varchar(15) NOT NULL,
   `type` int(1) NOT NULL,
-  `key` varchar(45) NOT NULL,
+  `invite_id` int NOT NULL DEFAULT '0',
   `user_id` int(7) NOT NULL,
   `lang_id` int(11) NOT NULL,
   `export` int(11) NOT NULL,
@@ -2371,6 +2375,7 @@ CREATE TABLE `contrexx_module_mediadir_categories_names` (
   `category_id` int(7) NOT NULL,
   `category_name` varchar(255) NOT NULL,
   `category_description` mediumtext NOT NULL,
+  `category_metadesc` varchar(160) NOT NULL DEFAULT '',
   KEY `lang_id` (`lang_id`),
   KEY `category_id` (`category_id`)
 ) ENGINE=MyISAM;
@@ -2468,7 +2473,7 @@ CREATE TABLE `contrexx_module_mediadir_inputfields` (
   `required` int(10) NOT NULL,
   `order` int(10) NOT NULL,
   `show_in` int(10) NOT NULL,
-  `context_type` enum('none','title','content','address','zip','city','country','image') NOT NULL,
+  `context_type` enum('none','title','content','address','zip','city','country','image','keywords') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_mediadir_level_names` (
@@ -2476,6 +2481,7 @@ CREATE TABLE `contrexx_module_mediadir_level_names` (
   `level_id` int(7) NOT NULL,
   `level_name` varchar(255) NOT NULL,
   `level_description` mediumtext NOT NULL,
+  `level_metadesc` varchar(160) NOT NULL DEFAULT '',
   KEY `lang_id` (`lang_id`),
   KEY `category_id` (`level_id`)
 ) ENGINE=MyISAM;
@@ -3627,7 +3633,7 @@ CREATE TABLE `contrexx_stats_requests` (
   `sid` varchar(32) NOT NULL DEFAULT '',
   `pageTitle` varchar(250) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unique` (`page`)
+  UNIQUE KEY `pageId` (`pageId`)
 ) ENGINE=MyISAM;
 CREATE TABLE `contrexx_stats_requests_summary` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,

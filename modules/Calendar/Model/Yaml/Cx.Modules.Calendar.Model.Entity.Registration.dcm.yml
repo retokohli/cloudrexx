@@ -26,9 +26,6 @@ Cx\Modules\Calendar\Model\Entity\Registration:
       column: ip_address
     type:
       type: integer
-    key:
-      type: string
-      length: 45
     userId:
       type: integer
       column: user_id
@@ -42,6 +39,13 @@ Cx\Modules\Calendar\Model\Entity\Registration:
       column: payment_method
     paid:
       type: integer
+  oneToOne:
+    invite:
+      targetEntity: Cx\Modules\Calendar\Model\Entity\Invite
+      inversedBy: registration
+      joinColumn:
+        name: invite_id
+        referencedColumnName: id
   oneToMany:
     registrationFormFieldValues:
       targetEntity: Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue

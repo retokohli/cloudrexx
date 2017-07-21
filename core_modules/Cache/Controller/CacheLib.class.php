@@ -124,6 +124,14 @@ class CacheLib
     protected $jsonData = null;
 
     /**
+     * Prefix to be used to identify cache entries in shared caching
+     * environments.
+     *
+     * @var string
+     */
+    protected $cachePrefix;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -211,7 +219,9 @@ class CacheLib
         if ($this->isInstalled(self::CACHE_ENGINE_ZEND_OPCACHE)) {
             ini_set('opcache.save_comments', 1);
             ini_set('opcache.load_comments', 1);
-            @ini_set('opcache.enable', 1);
+            if (!ini_get('opcache.enable')) {
+                @ini_set('opcache.enable', 1);
+            }
 
             if (
                 !$this->isActive(self::CACHE_ENGINE_ZEND_OPCACHE) ||
@@ -666,7 +676,10 @@ class CacheLib
                 }
                 return true;
             case self::CACHE_ENGINE_ZEND_OPCACHE:
-                return ini_get('opcache.save_comments') && ini_get('opcache.load_comments');
+                // opcache.load_comments no longer exists since PHP7
+                // therefore, ini_get() will return FALSE in case the
+                // php directive does not exist
+                return ini_get('opcache.save_comments') && (ini_get('opcache.load_comments') === false || ini_get('opcache.load_comments'));
             case self::CACHE_ENGINE_MEMCACHE:
                 return $this->memcache ? true : false;
             case self::CACHE_ENGINE_MEMCACHED:
@@ -956,7 +969,24 @@ class CacheLib
     protected function getCachePrefix()
     {
         global $_DBCONFIG;
-        return $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'];
+
+        // TODO: check if the initialization of the prefix could be moved into
+        //       the constructor
+        if (empty($this->cachePrefix)) {
+            $this->cachePrefix = $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'];
+        }
+
+        return $this->cachePrefix;
+    }
+
+    /**
+     * Overwrite the automatically set CachePrefix
+     * @param   $prefix String  The new CachePrefix to be used.
+     *                          Setting an empty string will reset
+     *                          the CachePrefix to its initial value.
+     */
+    public function setCachePrefix($prefix = '') {
+        $this->cachePrefix = $prefix;
     }
 
     /**

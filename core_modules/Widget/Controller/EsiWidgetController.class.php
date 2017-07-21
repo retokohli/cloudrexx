@@ -209,6 +209,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                     // resolve additional path fragments (if any)
                     $pageComponent->resolve($fragments, $page);
                     // adjust response
+                    $params['response']->setPage($page);
                     $pageComponent->adjustResponse($params['response']);
                 }
                 return $page;

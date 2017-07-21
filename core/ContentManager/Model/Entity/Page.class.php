@@ -1788,7 +1788,6 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
             $this->applicationTemplate = $page->getApplicationTemplate();
             $this->cssName = $page->getCssName();
         }
-        $this->cssNavName = $page->getCssNavName();
 
         $this->type = $page->getType();
         $this->target = $page->getTarget();
@@ -1865,8 +1864,8 @@ class Page extends \Cx\Core_Modules\Widget\Model\Entity\WidgetParseTarget implem
 
         // merge both resultsets
         $aliases = array_merge(
-                $pageRepo->findBy($crit1, true),
-                $pageRepo->findBy($crit2, true)
+                $pageRepo->findBy($crit1, null, null, null, true),
+                $pageRepo->findBy($crit2, null, null, null, true)
         );
         return $aliases;
     }
