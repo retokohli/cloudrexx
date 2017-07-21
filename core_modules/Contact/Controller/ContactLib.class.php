@@ -1430,7 +1430,11 @@ class ContactLib
             $code .= "\t".(!empty($this->arrCheckTypes[$field['check_type']]['regex']) ? '/'.($this->arrCheckTypes[$field['check_type']]['regex']).'/'.$modifiers : "''").",\n";
             $code .= "\t'". (($field['type'] != 'special') ? $field['type'] : $field['special_type']) ."');\n";
         }
-        $captchaValidationCode = \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getJSValidationFn();
+
+        $captchaValidationCode = '';
+        if ($this->arrForms[$id]['useCaptcha']) {
+            $captchaValidationCode = \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getJSValidationFn();
+        }
         $captchaErrorMsg = addslashes($_ARRAYLANG['TXT_CONTACT_RECAPTCHA_ERROR']);
         $code .= <<<JS_checkAllFields
 function checkAllFields() {

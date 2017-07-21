@@ -240,9 +240,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         if ($objTemplate->blockExists('mediadirNavtree')) {
             $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+            $categoryId = 0;
             if (isset($requestParams['cid'])) {
                 $categoryId = intval($requestParams['cid']);
             }
+            $levelId = 0;
             if (isset($requestParams['lid'])) {
                 $levelId = intval($requestParams['lid']);
             }
@@ -437,25 +439,26 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function adjustResponse(\Cx\Core\Routing\Model\Entity\Response $response) {
         if (!$this->canonicalUrl) {
-            $canonicalUrlArguments = array('eid', 'cid', 'lid', 'preview', 'pos');
-            if (in_array('eid', array_keys($response->getRequest()->getUrl()->getParamArray()))) {
-                $canonicalUrlArguments = array_filter($canonicalUrlArguments, function($key) {return !in_array($key, array('cid', 'lid'));});
-            }
+        $canonicalUrlArguments = array('eid', 'cid', 'lid', 'preview', 'pos');
+        if (in_array('eid', array_keys($response->getRequest()->getUrl()->getParamArray()))) {
+            $canonicalUrlArguments = array_filter($canonicalUrlArguments, function($key) {return !in_array($key, array('cid', 'lid'));});
+        }
 
-            // filter out all non-relevant URL arguments
-            /*$params = array_filter(
-                $this->cx->getRequest()->getUrl()->getParamArray(),
-                function($key) {return in_array($key, $canonicalUrlArguments);},
-                \ARRAY_FILTER_USE_KEY
-            );*/
+        $params = array();
 
-            $params = array();
-            foreach ($response->getRequest()->getUrl()->getParamArray() as $key => $value) {
-                if (!in_array($key, $canonicalUrlArguments)) {
-                    continue;
-                }
-                $params[$key] = $value;
+        // filter out all non-relevant URL arguments
+        /*$params = array_filter(
+            $this->cx->getRequest()->getUrl()->getParamArray(),
+            function($key) {return in_array($key, $canonicalUrlArguments);},
+            \ARRAY_FILTER_USE_KEY
+        );*/
+
+        foreach ($response->getRequest()->getUrl()->getParamArray() as $key => $value) {
+            if (!in_array($key, $canonicalUrlArguments)) {
+                continue;
             }
+            $params[$key] = $value;
+        }
 
             if (isset($params['eid'])) {
                 // set correct canonical url for detail pages
