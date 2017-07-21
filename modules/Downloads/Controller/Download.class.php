@@ -1198,10 +1198,10 @@ class Download {
         if ($listDownloadsOfCurrentLanguage) {
             $availableLangIds = array(LANG_ID);
         } else {
-            $availableLangIds = array_keys(\FWLanguage::getActiveBackendLanguages());
             if ($this->isFrontendMode) {
-                $availableLangIds =
-                    array_keys(\FWLanguage::getActiveFrontendLanguages());
+                $availableLangIds = array_keys(\FWLanguage::getActiveFrontendLanguages());
+            } else {
+                $availableLangIds = array_keys(\FWLanguage::getActiveBackendLanguages());
             }
         }
 
