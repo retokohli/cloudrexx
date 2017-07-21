@@ -26,29 +26,11 @@
  */
 
 /**
- * Media Directory Inputfield Interface
- *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
- * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @access      public
  * @package     cloudrexx
  * @subpackage  module_mediadir
  */
-namespace Cx\Modules\MediaDir\Model\Entity;
-/**
- * Media Directory Inputfield Interface
- *
- * @copyright   CLOUDREXX CMS - CLOUDREXX AG
- * @author      CLOUDREXX Development Team <info@cloudrexx.com>
- * @package     cloudrexx
- * @subpackage  module_mediadir
- */
-interface Inputfield  {
-    function getInputfield($intView, $arrInputfield, $intEntryId=null);
-    function saveInputfield($intInputfieldId, $strValue, $langId=0);
-    function deleteContent($intEntryId, $intIputfieldId);
-    function getContent($intEntryId, $arrInputfield, $arrTranslationStatus);
-    function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
-    function getJavascriptCheck();
-    function getFormOnSubmit($intInputfieldId);
-}
-?>
+$_ARRAYLANG['TXT_MEDIADIR_ENTRIES'] = "Запись";
+

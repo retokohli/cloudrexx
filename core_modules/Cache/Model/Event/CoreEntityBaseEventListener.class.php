@@ -26,29 +26,32 @@
  */
 
 /**
- * Media Directory Inputfield Interface
+ * CoreEntityBaseEventListener
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
- * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @author      Thomas Däppen <thomas.daeppen@cloudrexx.com>
  * @package     cloudrexx
- * @subpackage  module_mediadir
+ * @subpackage  coremodules_cache
  */
-namespace Cx\Modules\MediaDir\Model\Entity;
+
+namespace Cx\Core_Modules\Cache\Model\Event;
+
 /**
- * Media Directory Inputfield Interface
+ * CoreEntityBaseEventListener
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
- * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @author      Thomas Däppen <thomas.daeppen@cloudrexx.com>
  * @package     cloudrexx
- * @subpackage  module_mediadir
+ * @subpackage  coremodules_cache
  */
-interface Inputfield  {
-    function getInputfield($intView, $arrInputfield, $intEntryId=null);
-    function saveInputfield($intInputfieldId, $strValue, $langId=0);
-    function deleteContent($intEntryId, $intIputfieldId);
-    function getContent($intEntryId, $arrInputfield, $arrTranslationStatus);
-    function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
-    function getJavascriptCheck();
-    function getFormOnSubmit($intInputfieldId);
+class CoreEntityBaseEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventListener {
+
+    /**
+     * Listens to postFlush event in order to drop cache on changes
+     */
+    public function postFlush() {
+        // TODO: This is a workaround for Doctrine's result query cache.
+        //       Proper handling of ResultCache must be implemented.
+        $this->cx->getDb()->getEntityManager()->getConfiguration()->getResultCacheImpl()->deleteAll();
+    }
 }
-?>
