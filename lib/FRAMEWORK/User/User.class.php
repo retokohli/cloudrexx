@@ -685,6 +685,10 @@ class User extends User_Profile
 
     public function getBackendLanguage()
     {
+        if (!$this->backend_language) {
+            global $_LANGID;
+            $this->backend_language = $_LANGID;
+        }
         return $this->backend_language;
     }
 
