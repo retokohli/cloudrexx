@@ -174,19 +174,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 if (isset($_GET) && isset($_GET['languageCode'])) {
                     // use language selected by user
                     $languageCode = $_GET['languageCode'];
-                } elseif (
-                    $userLanguageId =
-                        $frontend ?
-                            \FWUser::getFWUserObject()->objUser->getFrontendLanguage() :
-                            \FWUser::getFWUserObject()->objUser->getBackendLanguage()
-                ) {
-                    // use user's default locale
-                    $languageId = $userLanguageId;
                 } else {
+                    \Cx\Core\Setting\Controller\Setting::init('Config',null,'Yaml');
                     // use system's default locale
                     $languageId = $frontend ?
-                        \Cx\Core\Setting\Controller\Setting::getValue('defaultLocaleId') :
-                        \Cx\Core\Setting\Controller\Setting::getValue('defaultLanguageId');
+                        \Cx\Core\Setting\Controller\Setting::getValue('defaultLocaleId','Config') :
+                        \Cx\Core\Setting\Controller\Setting::getValue('defaultLanguageId','Config');
                 }
 
                 if (!isset($languageCode)) {
