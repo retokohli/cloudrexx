@@ -1,15 +1,15 @@
 cx.jQuery(document).ready(function() {
 
-    var languageSelectForm = cx.jQuery('#form-language-select');
+    var selectLanguageFileForm = cx.jQuery('#form-language-file-select');
     // reload page automatically when changing language
-    languageSelectForm.change(function() {
+    selectLanguageFileForm.change(function() {
         cx.jQuery(this).submit();
     });
 
     // add hidden field for selected language to placeholder form
     cx.jQuery('#form-0').append(function() {
         var hiddenInput = cx.jQuery("<input type='hidden' />");
-        var languageSelect = languageSelectForm.find('select');
+        var languageSelect = selectLanguageFileForm.find('select[name="languageCode"');
         hiddenInput.attr('name', languageSelect.attr('name'));
         hiddenInput.val(languageSelect.val());
         return hiddenInput;

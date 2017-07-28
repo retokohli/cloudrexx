@@ -191,11 +191,18 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 }
                 $language = $this->getLanguageRepository()->find($languageCode);
 
+                // get requested component name
+                if ($_GET['componentName']) {
+                    $componentName = $_GET['componentName'];
+                } else {
+                    $componentName = 'Core';
+                }
+
                 try {
                     // set language file by source language
                     $this->languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile(
                         $language,
-                        'Core',
+                        $componentName,
                         $frontend,
                         false
                     );
@@ -209,6 +216,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 }
                 // parse locale select
                 $this->parseLanguageSelect($template);
+
+                // parse component select
+                $this->parseComponentSelect($template);
+                $template->touchBlock('language_file_select_form');
 
                 // set entity class name (equal to identifier of LanguageFile)
                 $entityClassName = 'Cx\Core\Locale\Model\Entity\LanguageFile';
@@ -805,6 +816,49 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             $template->setVariable('LANGUAGE_SELECT', $select);
             $template->touchBlock('language_dropdown');
         }
+    }
+
+    /**
+     * Parses the select with all components to choose language file
+     * @param \Cx\Core\Html\Sigma $template The template to parse the view with
+     */
+    protected function parseComponentSelect($template) {
+        // check if template block exists
+        if (!$template->blockExists('component_dropdown')) {
+            return;
+        }
+
+        $em = $this->cx->getDb()->getEntityManager();
+        $query = 'SELECT `name` FROM '.DBPREFIX.'component ORDER BY name ASC';
+        $stmt = $em->getConnection()->prepare($query);
+        $stmt->execute();
+
+        // build html select
+        $select = new \Cx\Core\Html\Model\Entity\DataElement(
+            'componentName',
+            '',
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+        );
+
+        foreach($stmt->fetchAll() as $component) {
+            $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
+
+            // set id as value
+            $option->setAttribute('value', $component['name']);
+
+            // set label as option content
+            $option->addChild(new \Cx\Core\Html\Model\Entity\TextElement($component['name']));
+
+            if ($component['name'] == $this->languageFile->getComponentName()) {
+                // mark option of selected locale as selected
+                $option->setAttribute('selected');
+            }
+
+            $select->addChild($option);
+        }
+
+        $template->setVariable('COMPONENT_SELECT', $select);
+        $template->touchBlock('component_dropdown');
     }
 
     /**

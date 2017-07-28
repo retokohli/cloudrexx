@@ -71,6 +71,18 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     protected $language;
 
     /**
+     * The name of the component that defines the language file
+     * @var string
+     */
+    protected $componentName;
+
+    /**
+     * The language file's mode ('frontend' or 'backend'), used for path
+     * @var string
+     */
+    protected $mode;
+
+    /**
      * An Array containing the overwritten placeholders
      * @var \Cx\Core\Locale\Model\Entity\Placeholder[]
      */
@@ -105,17 +117,31 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
             );
         }
 
+        $this->componentName = $componentName;
+
         // set identifier to parse entity view correctly
         $this->setIdentifier('Cx\Core\Locale\Model\Entity\LanguageFile');
 
         // load component specific language data from init
+        $init = \Env::get('init');
         if (!$onlyCustomized) {
-            $this->data = \Env::get('init')->getComponentSpecificLanguageDataByCode($componentName, $frontend, $language->getIso1(), false);
+            try {
+                $this->data = $init->getComponentSpecificLanguageDataByCode(
+                    $this->componentName,
+                    $frontend,
+                    $language->getIso1(),
+                    false
+                );
+            } catch(\InitCMSException $e) {
+                \Message::add($e->getMessage(), \Message::CLASS_ERROR);
+                return;
+            }
         }
 
-        // set path to yaml file
-        $mode = $frontend ? 'frontend' : 'backend';
-        $this->path = ASCMS_CUSTOMIZING_PATH . '/lang/' . $language->getIso1() . '/' . $mode . '.yaml';
+        // generate path to yaml file
+        $this->mode = $frontend ? 'frontend' : 'backend';
+        $this->generatePath($init);
+
 
         // check if yaml with customized placeholders exists
         if (!\Cx\Lib\FileSystem\FileSystem::exists($this->getPath())) {
@@ -272,10 +298,35 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     }
 
     /**
+     * @param $init
+     */
+    protected function generatePath($init)
+    {
+        // set path
+        $this->path = $init->arrModulePath[$this->componentName] .
+            $this->language->getIso1() . '/' . $this->mode . '.yaml';
+        // rewrite path to customizing
+        $this->path = str_replace(
+            ASCMS_DOCUMENT_ROOT,
+            ASCMS_CUSTOMIZING_PATH,
+            $this->path
+        );
+    }
+
+    /**
      * Returns an array containing the placeholders before the overwrite
      * @return array The placeholders before overwrite
      */
     public function getData() {
         return $this->data;
+    }
+
+    /**
+     * Returns the name of the language file's component
+     * @return string
+     */
+    public function getComponentName()
+    {
+        return $this->componentName;
     }
 }

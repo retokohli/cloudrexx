@@ -37,6 +37,16 @@
  */
 
 /**
+ * InitCMSException
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
+ * @package     cloudrexx
+ * @version     5.0.0
+ */
+class InitCMSException extends \Exception {}
+
+/**
  * Initialize the CMS
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
@@ -813,6 +823,7 @@ class InitCMS
                     switch ($objResult->fields['name']){
                         case 'core':
                             $this->arrModulePath[$objResult->fields['name']] = ASCMS_DOCUMENT_ROOT.'/lang/';
+                            $this->arrModulePath['Core'] = ASCMS_DOCUMENT_ROOT.'/lang/';
                             break;
                         case 'DatabaseManager':
                         case 'SystemInfo':
@@ -995,7 +1006,7 @@ class InitCMS
         $path = \Env::get('ClassLoader')->getFilePath($this->arrModulePath[$componentName].$langCode.'/'.$mode.'.php');
 
         if (!$path) {
-            throw new \Exception($arrayLangBackup['TXT_CORE_LOCALE_LANGUAGEFILE_NOT_FOUND']);
+            throw new \InitCMSException($arrayLangBackup['TXT_CORE_LOCALE_LANGUAGEFILE_NOT_FOUND']);
         }
 
         $componentSpecificLanguageData = $this->loadLangFile($path, $loadFromYaml, $componentName);
