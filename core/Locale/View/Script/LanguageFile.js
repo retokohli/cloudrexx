@@ -6,15 +6,6 @@ cx.jQuery(document).ready(function() {
         cx.jQuery(this).submit();
     });
 
-    // add hidden field for selected language to placeholder form
-    cx.jQuery('#form-0').append(function() {
-        var hiddenInput = cx.jQuery("<input type='hidden' />");
-        var languageSelect = selectLanguageFileForm.find('select[name="languageCode"');
-        hiddenInput.attr('name', languageSelect.attr('name'));
-        hiddenInput.val(languageSelect.val());
-        return hiddenInput;
-    });
-
     // set width of form labels according to the longest content equally
     var equalWidth = 0;
     var formLabels = cx.jQuery("#form-0 .group label");
@@ -47,10 +38,9 @@ cx.jQuery(document).ready(function() {
 
     function resetPlaceholder(button) {
         var placeholderName = cx.jQuery(button).siblings("label").html();
-        var languageCode = cx.jQuery("input[name='languageCode'").val();
+        var languageCode = cx.jQuery("select[name='languageCode'").val();
+        var componentName = cx.jQuery("select[name='componentName'").val();
         var frontend = cx.jQuery("#subnavbar_level2 ul li a[title='Frontend']").hasClass("active");
-        // @TODO: get component name dynamically
-        var componentName = "Core";
 
         cx.ajax(
           "Locale",
