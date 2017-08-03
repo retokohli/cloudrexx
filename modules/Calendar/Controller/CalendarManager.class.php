@@ -1763,9 +1763,30 @@ class CalendarManager extends CalendarLibrary
         global $_ARRAYLANG;
 
         $this->_objTpl->loadTemplateFile('module_calendar_modify_registration.html');
+        $objEvent        = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
 
         if (isset($_POST['submitModifyRegistration'])) {
             $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration(intval($_POST['form']));
+
+            if (!$objRegistration->getInvite()) {
+                // Create invite
+                $eventRepo = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Event');
+                $event = $eventRepo->findOneBy(array(
+                    'id'     => $eventId,
+                    'status' => 1,
+                ));
+                if (!$event) {
+                    die('fail');
+                }
+                $invite = new \Cx\Modules\Calendar\Model\Entity\Invite();
+                $invite->setEvent($event);
+                // note: we need to use $objEvent->startDate here,
+                // instead of $event->getStartDate(),
+                // as $event->getStartDate() does not use UTC as timezone
+                $invite->setDate($objEvent->startDate);
+                $invite->setToken($this->generateKey());
+                $objRegistration->setInvite($invite);
+            }
             if ($objRegistration->save($_POST)) {
                     switch ($_POST['registrationType']) {
                         case 0:
@@ -1790,7 +1811,6 @@ class CalendarManager extends CalendarLibrary
         $objFWUser       = \FWUser::getFWUserObject();
         $objUser         = $objFWUser->objUser;
         $userId          = intval($objUser->getId());
-        $objEvent        = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
 
         if ($regId != 0) {
             $this->_pageTitle = $_ARRAYLANG['TXT_CALENDAR_EVENT_EDIT_REGISTRATION'];
