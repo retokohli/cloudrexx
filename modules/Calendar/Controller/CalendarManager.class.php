@@ -1108,6 +1108,11 @@ class CalendarManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_TEASER'        => !empty($objEvent->arrData['teaser'][$arrLang['id']]) ? $objEvent->arrData['teaser'][$arrLang['id']] : $objEvent->teaser,
             ));
 
+            //parse eventTabMenuDescTab
+            $this->_objTpl->setVariable(array(
+                $this->moduleLangVar.'_EVENT_TAB_CLASS'  => $defaultLang ? 'active' : '',
+            ));
+
             $this->_objTpl->parse('eventTabMenuDescTab');
 
             //parse eventDescTab
@@ -1569,7 +1574,10 @@ class CalendarManager extends CalendarLibrary
                             foreach ($values as $key => $value) {
                                 $arrValue = explode('[[', $value);
                                 $value = $arrValue[0];
-                                $input = str_replace(']]','', $arrValue[1]);
+                                $input = '';
+                                if (isset($arrValue[1])) {
+                                    $input = str_replace(']]','', $arrValue[1]);
+                                }
 
                                 if(!empty($input)) {
                                     $arrOption = explode('[[', $options[$value-1]);
@@ -1765,7 +1773,7 @@ class CalendarManager extends CalendarLibrary
         $this->_objTpl->loadTemplateFile('module_calendar_modify_registration.html');
 
         if (isset($_POST['submitModifyRegistration'])) {
-            $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration(intval($_POST['form']));
+            $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration(intval($_POST['form']), $regId);
             if ($objRegistration->save($_POST)) {
                     switch ($_POST['registrationType']) {
                         case 0:
