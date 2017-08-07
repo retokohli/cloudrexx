@@ -713,6 +713,12 @@ class CalendarEventManager extends CalendarLibrary
             'status' => 1,
         ));
 
+        // abort in case the event of the invitation is not published
+        if (!$event) {
+            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
+            return;
+        }
+
         // check if event has been published in currently requested locale region
         if ($this->arrSettings['showEventsOnlyInActiveLanguage'] == 1) {
             $publishedLanguages = explode(',', $event->getShowIn());
@@ -720,12 +726,6 @@ class CalendarEventManager extends CalendarLibrary
                 \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
                 return;
             }
-        }
-
-        // abort in case the event of the invitation is not published
-        if (!$event) {
-            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
-            return;
         }
 
         if (!$objEvent) { 
@@ -1064,7 +1064,7 @@ class CalendarEventManager extends CalendarLibrary
             $objTpl->parse('calendarEventHost');
         }
 
-        $this->parseRegistrationPlaceholders($objTpl, $objEvent, $hostUri, $hostTarget);
+        $this->parseRegistrationPlaceholders($objTpl, $objEvent, $hostUri, $hostTarget, $invite);
 
         if ($objTpl->placeholderExists('CALENDAR_EVENT_MONTH_BOX')) {
             $objTpl->setVariable(
@@ -1089,7 +1089,8 @@ class CalendarEventManager extends CalendarLibrary
         \Cx\Core\Html\Sigma $objTpl,
         CalendarEvent $event,
         $hostUri = '',
-        $hostTarget = ''
+        $hostTarget = '',
+        $invite = null
     ) {
         global $_ARRAYLANG;
 
@@ -1115,10 +1116,22 @@ class CalendarEventManager extends CalendarLibrary
         //     - or if there are still free places available
         $registrationOpen = true;
         $regLinkTarget = '_self';
-        if (   ($event->registration == CalendarEvent::EVENT_REGISTRATION_EXTERNAL && !$event->registrationExternalFullyBooked)
-            || (   $event->registration == CalendarEvent::EVENT_REGISTRATION_INTERNAL
-                && (   empty($event->numSubscriber)
-                    || !\FWValidator::isEmpty($event->getFreePlaces())))
+        if ((
+                // event registration is handled by external app
+                // and it hasn't been marked as booked out yet
+                $event->registration == CalendarEvent::EVENT_REGISTRATION_EXTERNAL &&
+                !$event->registrationExternalFullyBooked
+            ) || (
+                // event registration is handled internally
+                $event->registration == CalendarEvent::EVENT_REGISTRATION_INTERNAL && (
+                    // request contains a valid invite
+                    $invite ||
+                    // and no invitee limit is set
+                    empty($event->numSubscriber) ||
+                    // or the event is not yet booked out
+                    !\FWValidator::isEmpty($event->getFreePlaces())
+                )
+            )
         ) {
             if ($event->registration == CalendarEvent::EVENT_REGISTRATION_EXTERNAL) {
                 $regLinkSrc = \FWValidator::getUrl($event->registrationExternalLink);

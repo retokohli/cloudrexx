@@ -187,7 +187,13 @@ class Calendar extends CalendarLibrary
 
         if(isset($_GET['export'])) {
             $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($_GET['export']));
-            $objEvent->export();
+            if ($objEvent->getId()) {
+                $objEvent->export();
+            }
+
+            // abort as event does not exist
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: ' . \Cx\Core\Routing\Url::fromModuleAndCmd('Error'));
+            exit;
         }
 
         $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : null;
@@ -1105,6 +1111,13 @@ UPLOADER;
             'status' => 1,
         ));
 
+        // abort in case the event of the invitation is not published
+        // or does not exist at all
+        if (!$event) {
+            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
+            return;
+        }
+
         // check if event has been published in currently requested locale region
         if ($this->arrSettings['showEventsOnlyInActiveLanguage'] == 1) {
             $publishedLanguages = explode(',', $event->getShowIn());
@@ -1112,13 +1125,6 @@ UPLOADER;
                 \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
                 return;
             }
-        }
-
-        // abort in case the event of the invitation is not published
-        // or does not exist at all
-        if (!$event) {
-            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
-            return;
         }
 
         if (!$objEvent) { 
