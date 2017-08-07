@@ -120,15 +120,17 @@ class PageLogRepository extends LogEntryRepository
         $wrapped = new \Gedmo\Tool\Wrapper\EntityWrapper($entity, $this->_em);
         $objectClass = $wrapped->getMetadata()->name;
         $meta = $this->getClassMetadata();
-        $dql = "SELECT count(log) as logCount FROM {$meta->name} log";
-        $dql .= " WHERE log.objectId = :objectId";
-        $dql .= " AND log.objectClass = :objectClass";
-
+        $qb   = $this->em->createQueryBuilder();
+        $qb->select('log', 'count(log) AS logCount')
+            ->from($meta->name, 'log')
+            ->where('log.objectId = :objectId')
+            ->andWhere('log.objectClass = :objectClass');
         $objectId = $wrapped->getIdentifier();
-        $q = $this->_em->createQuery($dql);
-        $q->setParameters(compact('objectId', 'objectClass'));
-        $result = $q->getResult();
-
+        $qb->setParameters(array(
+            'objectId'    => $objectId,
+            'objectClass' => $objectClass
+        ));
+        $result = $qb->getQuery()->getResult();
         return $result[0]['logCount'];
     }
 
