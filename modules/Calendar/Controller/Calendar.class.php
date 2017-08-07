@@ -279,14 +279,30 @@ class Calendar extends CalendarLibrary
     function loadEventManager()
     {
         $term   = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
-        $from   = isset($_GET['from']) ? contrexx_input2raw($_GET['from']) : '';
-        $till   = isset($_GET['till']) ? contrexx_input2raw($_GET['till']) : '';
+        $from   = '';
+        $till   = '';
         $catid  = isset($_GET['catid']) ? contrexx_input2raw($_GET['catid']) : '';
         $cmd    = isset($_GET['cmd']) ? contrexx_input2raw($_GET['cmd']) : '';
 
+        try {
+            if (!empty($_GET['from'])) {
+                $from = $this->getDateTime(contrexx_input2raw($_GET['from']));
+            }
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+        }
+
+        try {
+            if (!empty($_GET['till'])) {
+                $till = $this->getDateTime(contrexx_input2raw($_GET['till']));
+            }
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+        }
+
         // get startdate
         if (!empty($from)) {
-            $this->startDate = $this->getDateTime($from);
+            $this->startDate = $from;
         } else if ($cmd == 'archive') {
             $this->startDate = null;
             $this->sortDirection = 'DESC';
@@ -327,7 +343,7 @@ class Calendar extends CalendarLibrary
 
         // get enddate
         if (!empty($till)) {
-            $this->endDate = $this->getDateTime($till);
+            $this->endDate = $till;
         } else if ($cmd == 'archive') {
             $this->endDate = new \DateTime();
         } else {
