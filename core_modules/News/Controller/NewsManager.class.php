@@ -2378,7 +2378,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
             $id = intval($_POST['newsId']);
             $userId = $objFWUser->objUser->getId();
-            $changelog = mktime();
+            $changelog = time();
 
             $date = $this->dateFromInput($_POST['newsDate']);
 
