@@ -1649,11 +1649,24 @@ class CalendarEvent extends CalendarLibrary
             $this->triggerEvent('model/postFlush');
         }
 
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+        foreach ($event->getInvite() as $invite) {
+            $em->detach($invite);
+        }
+        foreach ($event->getRegistrations() as $registration) {
+            $em->detach($registration);
+        }
         if ($send_invitation == 1) {
             // TO-DO set form data into $this
-            $event          = new CalendarEvent($this->id);
+            $legacyEvent    = new CalendarEvent($this->id);
             $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();    
-            $objMailManager->sendMail($event, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_INVITATION, null, $invitationTemplate);
+            $objMailManager->sendMail($legacyEvent, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_INVITATION, null, $invitationTemplate);
+        }
+        foreach ($event->getInvite() as $invite) {
+            $em->detach($invite);
+        }
+        foreach ($event->getRegistrations() as $registration) {
+            $em->detach($registration);
         }
         //Clear cache
         $this->triggerEvent('clearEsiCache');
