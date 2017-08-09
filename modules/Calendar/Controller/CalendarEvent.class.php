@@ -2047,6 +2047,13 @@ class CalendarEvent extends CalendarLibrary
 
         $objResult = $objDatabase->Execute($query);
 
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+        foreach ($event->getInvite() as $invite) {
+            $em->detach($invite);
+        }
+        foreach ($event->getRegistrations() as $registration) {
+            $em->detach($registration);
+        }
         if ($objResult !== false) {
             //Trigger postUpdate event for Event Entity
             $this->triggerEvent('model/postUpdate', $event);
