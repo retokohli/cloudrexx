@@ -1920,6 +1920,15 @@ class CalendarEvent extends CalendarLibrary
                                 WHERE event_id = '".intval($this->id)."'";
 
                 $objResult = $objDatabase->Execute($query);
+
+                $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+                foreach ($event->getInvite() as $invite) {
+                    $em->detach($invite);
+                }
+                foreach ($event->getRegistrations() as $registration) {
+                    $em->detach($registration);
+                }
+
                 $this->triggerEvent('model/postFlush');
                 if ($objResult !== false) {
                     //Clear cache
