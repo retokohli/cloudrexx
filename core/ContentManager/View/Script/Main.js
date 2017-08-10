@@ -2873,7 +2873,6 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
 
     if (reloadHistory) {
         cx.jQuery('#page_history').empty();
-        cx.cm.loadHistory(page.id);
     }
 
     if (page.editingStatus == 'hasDraftWaiting') {
