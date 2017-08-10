@@ -943,8 +943,8 @@ class JsonPage implements JsonAdapter {
         $logs = $this->logRepo->getLogEntries(
             $page,
             true,
-            $offset,
-            $numberOfEntries
+            $numberOfEntries,
+            $offset
         );
         $logsCount  = $this->logRepo->getLogEntriesCount($page);
         $tableRowId = 1;

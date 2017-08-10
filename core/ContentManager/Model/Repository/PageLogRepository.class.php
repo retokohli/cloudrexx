@@ -96,8 +96,8 @@ class PageLogRepository extends LogEntryRepository
     public function getLogEntries(
         $entity,
         $useCache = true,
-        $offset = 0,
-        $limit = 0
+        $limit = 0,
+        $offset = 0
     ) {
         $q = $this->getLogEntriesQuery($entity);
         $q->useResultCache($useCache);
