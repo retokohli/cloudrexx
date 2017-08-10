@@ -144,12 +144,24 @@ function mbCallback(data)
 
 function downloadsAdjustSourceConfig(source) {
     if (source === 'file') {
-        cx.jQuery('.downloads_download_type_file_config').css('display', 'block');
-        cx.jQuery('.downloads_download_type_url_config').css('display', 'none');
+        var target = 'url';
     } else if (source === 'url') {
-        cx.jQuery('.downloads_download_type_file_config').css('display', 'none');
-        cx.jQuery('.downloads_download_type_url_config').css('display', 'block');
+        var target = 'file';
+    } else {
+        return;
     }
+
+    cx.jQuery('.downloads_download_type_' + source + '_config').css('display', 'block');
+    cx.jQuery('.downloads_download_type_' + target + '_config').css('display', 'none');
+
+    // copy old source to new source input field
+    jQuery('.downloads_download_type_url_config input').each(
+        function(i,e) {
+            var currentSourceInputId = jQuery(e).attr('id').replace('_' + source + '_', '_' + target + '_');
+            var currentSourceInputValue = jQuery('#' + currentSourceInputId).val();
+            jQuery(e).val(currentSourceInputValue);
+        }
+    );
 }
 
 

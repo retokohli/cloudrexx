@@ -1374,7 +1374,7 @@ class DownloadsManager extends DownloadsLibrary
             $objDownload->setNames(isset($_POST['downloads_download_name']) ? $this->filterArray($unselectedLanguages, array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_name']))) : array());
             $objDownload->setDescriptions(isset($_POST['downloads_download_description']) ? $this->filterArray($unselectedLanguages, array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_description']))) : array());
             $this->arrConfig['use_attr_metakeys'] ? $objDownload->setMetakeys(isset($_POST['downloads_download_metakeys']) ? $this->filterArray($unselectedLanguages, array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_metakeys']))) : array()) : null;
-            $objDownload->setType(isset($_POST['downloads_download_type']) ? contrexx_stripslashes(array_values($_POST['downloads_download_type'])[0]) : '');
+            $objDownload->setType(isset($_POST['downloads_download_type']) ? contrexx_stripslashes($_POST['downloads_download_type']) : '');
             $objDownload->setSources(isset($_POST['downloads_download_' . $objDownload->getType() . '_source']) ? $this->filterArray($unselectedLanguages, array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_' . $objDownload->getType() . '_source']))) : array());
 
             // language non-specific attributes
