@@ -1075,6 +1075,7 @@ class CrmSettings extends CrmLibrary
             $settings = array(
                     'allow_pm'                             => (!$this->isPmInstalled ? 0 : (isset($_POST['allowPm']) ? 1 : 0)),
                     'create_user_account'                  => isset($_POST['create_user_account']) ? 1 : 0,
+                    'contact_amount_enabled'               => isset($_POST['contact_amount_enabled']) ? 1 : 0,
                     'customer_default_language_backend'    => isset($_POST['default_language_backend']) ? (int) $_POST['default_language_backend'] : 0,
                     'customer_default_language_frontend'   => isset($_POST['default_language_frontend']) ? (int) $_POST['default_language_frontend'] : 0,
                     'default_user_group'                   => isset($_POST['default_user_group']) ? (int) $_POST['default_user_group'] : 0,
@@ -1207,6 +1208,7 @@ class CrmSettings extends CrmLibrary
         $objTpl->setVariable(array(
             'CRM_ALLOW_PM'                   => ($settings['allow_pm']) ? "checked='checked'" : '',
             'CRM_CREATE_ACCOUNT_USER'        => ($settings['create_user_account']) ? "checked='checked'" : '',
+            'CRM_CONTACT_AMOUNT_ENABLED'     => ($settings['contact_amount_enabled']) ? "checked='checked'" : '',
             'CRM_ACCOUNT_MANTATORY'          => ($settings['user_account_mantatory']) ? "checked='checked'" : '',
         ));
 
@@ -1237,6 +1239,7 @@ class CrmSettings extends CrmLibrary
                 'TXT_CRM_EMP_DEFAULT_USER_GROUP' => $_ARRAYLANG['TXT_CRM_EMP_DEFAULT_USER_GROUP'],
                 'TXT_CRM_SETTINGS_EMP_TOOLTIP'   => $_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE_TOOLTIP'],
                 'TXT_CRM_ACCOUNT_ARE_MANTATORY'  => $_ARRAYLANG['TXT_CRM_ACCOUNT_ARE_MANTATORY'],
+                'TXT_CRM_CONTACT_AMOUNT_ENABLED' => $_ARRAYLANG['TXT_CRM_CONTACT_AMOUNT_ENABLED'],
                 'CRM_PROFILE_ATTRIBUT_INDUSTRY_TYPE_DROPDOWN' =>\Html::getSelect(
                                                                 'user_profile_attribute_industry_type',
                                                                 \User_Profile_Attribute::getCustomAttributeNameArray(),

@@ -86,7 +86,8 @@ class CrmContact
         if (!empty($this->id)) {
             $query = "SELECT c.id, c.customer_id, c.customer_type,
                              c.customer_name, c.customer_addedby,
-                             c.customer_currency, c.contact_familyname, c.contact_title,
+                             c.customer_currency, c.contact_amount,
+                             c.contact_familyname, c.contact_title,
                              c.contact_role, c.contact_customer, c.contact_language,c.company_size,
                              c.notes, c.contact_type,c.user_account,c.updated_date,c.added_date,
                              c.industry_type,e.email,p.phone, c.datasource,
@@ -105,6 +106,7 @@ class CrmContact
                 $this->customerName     = $objResult->fields['customer_name'];
                 $this->family_name      = $objResult->fields['contact_familyname'];
                 $this->contact_title    = $objResult->fields['contact_title'];
+                $this->contact_amount   = $objResult->fields['contact_amount'];
                 $this->contact_role     = $objResult->fields['contact_role'];
                 $this->contact_language = $objResult->fields['contact_language'];
                 $this->companySize      = $objResult->fields['company_size'];
@@ -144,6 +146,7 @@ class CrmContact
                            c.customer_name,
                            c.contact_familyname,
                            c.contact_title,
+                           c.contact_amount,
                            c.contact_type,
                            c.contact_customer AS contactCustomerId,
                            c.status,
@@ -209,6 +212,7 @@ class CrmContact
             'customer_addedby'  => isset ($this->addedUser) ? (int) $this->addedUser : 1,
             'company_size'      => isset ($this->companySize) ? $this->companySize : 0,
             'customer_currency' => isset ($this->currency) ? (int) $this->currency : 0,
+            'contact_amount'    => isset ($this->contact_amount) ? (int) $this->contact_amount : 0,
             'contact_familyname'=> isset ($this->family_name) ? $this->family_name : '',
             'contact_title'     => isset ($this->contact_title) ? $this->contact_title : '',
             'contact_role'      => isset ($this->contact_role) ? $this->contact_role : '',
@@ -336,6 +340,7 @@ class CrmContact
         $this->contact_customer = 0;
         $this->addedUser        = 0;
         $this->currency         = 0;
+        $this->contact_amount   = null;
         $this->notes            = '';
         $this->industryType     = 0;
         $this->account_id       = 0;
