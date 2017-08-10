@@ -1985,6 +1985,7 @@ END;
 
         //person
         $this->contact->family_name      = (isset($_POST['family_name'])) ? contrexx_input2raw($_POST['family_name']) : '';
+        $this->contact->contact_title    = (isset($_POST['contact_title'])) ? contrexx_input2raw($_POST['contact_title']) : '';
         $this->contact->contact_role     = (isset($_POST['contact_role'])) ? contrexx_input2raw($_POST['contact_role']) : '';
         $this->contact->contact_language = (isset($_POST['contact_language'])) ? (int) $_POST['contact_language'] : (empty($id) ? $_LANGID : 0);
         $this->contact->contact_customer = isset($_POST['company']) ? (int) $_POST['company'] : (isset($_GET['custId']) ? (int) $_GET['custId'] : 0);
@@ -2439,6 +2440,8 @@ END;
 
                 'CRM_CUSTOMERID'            => contrexx_input2xhtml($this->contact->customerId),
                 'CRM_COMPANY_NAME'          => contrexx_input2xhtml($this->contact->customerName),
+                'CRM_CONTACT_TITLE'         => contrexx_input2xhtml($this->contact->contact_title),
+                'CRM_UPDATED_DATE'          => date(ASCMS_DATE_FORMAT_DATETIME, strtotime($this->contact->updated_date)),
                 'CRM_CONTACT_ID'            => $this->contact->id != null ? $this->contact->id : 0,
                 'CRM_CONTACT_USER_ID'       => $this->contact->account_id != null ? $this->contact->account_id : 0,
                 'CRM_CONTACT_USERNAME'      => $objUser ? contrexx_raw2xhtml($objUser->getEmail()) : '',
@@ -2468,6 +2471,7 @@ END;
                 'TXT_CRM_PHONE'                 => $_ARRAYLANG['TXT_CRM_PHONE'],
                 'TXT_CRM_TITLE_LANGUAGE'        => $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'],
                 'TXT_CRM_ROLE'                  => $_ARRAYLANG['TXT_CRM_ROLE'],
+                'TXT_CRM_TITLE'                 => $_ARRAYLANG['TXT_CRM_TITLE'],
                 'TXT_CRM_FAMILY_NAME'           => $_ARRAYLANG['TXT_CRM_FAMILY_NAME'],
                 'TXT_CRM_TITLE_SELECT_LANGUAGE' => $_ARRAYLANG['TXT_CRM_TITLE_SELECT_LANGUAGE'],
                 'TXT_CRM_HOME'              => $_ARRAYLANG['TXT_CRM_HOME'],
@@ -2511,6 +2515,7 @@ END;
                 'TXT_CRM_EMAIL_DELIVERY'      => $_ARRAYLANG['TXT_CRM_EMAIL_DELIVERY'],
 
                 'TXT_CRM_COMPANY_NAME'        =>    $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
+                'TXT_CRM_LASTUPDATE'          =>    $_ARRAYLANG['TXT_CRM_LASTUPDATE'],
                 'TXT_CRM_CUSTOMERTYPE'        =>    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
                 'TXT_CRM_SOCIAL_NETWORK'      =>    $_ARRAYLANG['TXT_CRM_SOCIAL_NETWORK'],
                 'TXT_CRM_GENDER'              =>    $_ARRAYLANG['TXT_CRM_GENDER'],
@@ -2554,6 +2559,12 @@ END;
                 'CONTACT_MENU_ACTIVE'         => ($contactType == 2) ? 'active' : '',
                 'CRM_REDIRECT_LINK'           => $redirect,
         ));
+
+        // If updated_date is null, its a new entry. If not, show the date of the
+        // last update.
+        if($this->contact->updated_date) {
+            $this->_objTpl->touchBlock("crmLastUpdate");
+        }
         if ($contactType == 2) {    // If contact type eq to `contact`
             if ($settings['create_user_account']) {
                 $this->_objTpl->touchBlock("contactUserName");
