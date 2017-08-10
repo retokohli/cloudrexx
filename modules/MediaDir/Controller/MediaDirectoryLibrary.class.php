@@ -1405,9 +1405,10 @@ EOF;
             'list' => array(),
             'filter' => array(),
         );
-        $placeholderList = join("\n", $template->getPlaceholderList($block));
+        $placeholderList = $template->getPlaceholderList($block);
+        $placeholderListAsString = join("\n", $placeholderList);
 
-        if (preg_match_all('/MEDIADIR_CONFIG_(FILTER|LIST)_(LATEST|LIMIT|OFFSET|FORM|CATEGORY|LEVEL)(?:_([0-9]+))?/', $placeholderList, $match)) {
+        if (preg_match_all('/MEDIADIR_CONFIG_(FILTER|LIST)_(LATEST|LIMIT|OFFSET|FORM|CATEGORY|LEVEL)(?:_([0-9]+))?/', $placeholderListAsString, $match)) {
             foreach ($match[2] as $idx => $key) {
                 $configKey = strtolower($match[1][$idx]);
                 $option = strtolower($key);
