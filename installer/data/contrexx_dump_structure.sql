@@ -2803,7 +2803,7 @@ CREATE TABLE `contrexx_module_newsletter` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `subject` varchar(255) NOT NULL DEFAULT '',
   `template` int(11) NOT NULL DEFAULT '0',
-  `content` text NOT NULL,
+  `content` mediumtext NOT NULL,
   `attachment` enum('0','1') NOT NULL DEFAULT '0',
   `priority` tinyint(1) NOT NULL DEFAULT '0',
   `sender_email` varchar(255) NOT NULL DEFAULT '',
