@@ -101,9 +101,9 @@
                                 <td>
                                     <select tabindex="7" id="language" name="contact_language" style="width: 262px !important;">
                                         <option value="">--{TXT_CRM_TITLE_SELECT_LANGUAGE}--</option>
-                                        <!-- BEGIN showAddtionalContactLanguages -->
+                                        <!-- BEGIN showAddtionalContactLanguages2 -->
                                         <option {TXT_LANG_SELECT} value="{TXT_LANG_ID}">{TXT_LANG_NAME}</option>
-                                        <!-- END showAddtionalContactLanguages -->
+                                        <!-- END showAddtionalContactLanguages2 -->
                                     </select>
                                 </td>
                             </tr>
@@ -515,11 +515,13 @@
                         <tr class="row2">
                             <td style="width:127px;">{TXT_CRM_COMPANY_NAME}&nbsp;<font color="red">*</font></td>
                             <td style="width:340px;"><input tabindex="1" type="text" name="companyName" id="companyName" style="width: 255px;"  value="{CRM_COMPANY_NAME}" /></td>
-                            <td>{TXT_CRM_INDUSTRY_TYPE}</td>
+                            <td>{TXT_CRM_TITLE_LANGUAGE}</td>
                             <td>
-                                <select tabindex="6" name="industryType" id="industryType" style="width: 262px !important;">
-                                    <option value="">--{TXT_CRM_PLEASE_SELECT}--</option>
-                                    {CRM_INDUSTRY_DROPDOWN}
+                                <select tabindex="7" id="" name="contact_language" style="width: 262px !important;">
+                                    <option value="">--{TXT_CRM_TITLE_SELECT_LANGUAGE}--</option>
+                                    <!-- BEGIN showAddtionalContactLanguages1 -->
+                                    <option {TXT_LANG_SELECT} value="{TXT_LANG_ID}">{TXT_LANG_NAME}</option>
+                                    <!-- END showAddtionalContactLanguages1 -->
                                 </select>
                             </td>
                         </tr>
@@ -555,12 +557,11 @@
                                     <!-- END customerEmailContainer -->
                                 </div>
                             </td>
-                            <td valign="top">{TXT_CRM_MEMBERSHIP}</td>
-                            <td valign="top">
-                                <select tabindex="7" data-placeholder="{TXT_CRM_CHOOSE_MEMBERSHIPS}" name="assigned_memberships[]" id="assigned_memberships" size="1" multiple>
-                                    <!-- BEGIN assignedGroup -->
-                                    <option value="{CRM_MEMBERSHIP_ID}" {CRM_MEMBERSHIP_SELECTED}>{CRM_MEMBERSHIP_VALUE}</option>
-                                    <!-- END assignedGroup -->
+                            <td>{TXT_CRM_INDUSTRY_TYPE}</td>
+                            <td>
+                                <select tabindex="8" name="industryType" id="industryType" style="width: 262px !important;">
+                                    <option value="">--{TXT_CRM_PLEASE_SELECT}--</option>
+                                    {CRM_INDUSTRY_DROPDOWN}
                                 </select>
                             </td>
                         </tr>
@@ -595,13 +596,12 @@
                                     <!-- END customerwebsiteContainer -->
                                 </div>
                             </td>
-                            <td>{TXT_CRM_CUSTOMERTYPE}&nbsp;<font color="red">*</font></td>
-                            <td>
-                                <select tabindex="8" name="customer_type" id="customer_type" style="width: 262px !important;">
-                                    <option value="">--{TXT_CRM_PLEASE_SELECT}--</option>
-                                    <!-- BEGIN customerTypes -->
-                                    <option value="{CRM_CUSTOMER_TYPE_ID}" {CRM_CUSTOMER_TYPE_SELECTED}>{CRM_CUSTOMER_TYPE}</option>
-                                    <!-- END customerTypes -->
+                            <td valign="top">{TXT_CRM_MEMBERSHIP}</td>
+                            <td valign="top">
+                                <select tabindex="9" data-placeholder="{TXT_CRM_CHOOSE_MEMBERSHIPS}" name="assigned_memberships[]" id="assigned_memberships" size="1" multiple>
+                                    <!-- BEGIN assignedGroup -->
+                                    <option value="{CRM_MEMBERSHIP_ID}" {CRM_MEMBERSHIP_SELECTED}>{CRM_MEMBERSHIP_VALUE}</option>
+                                    <!-- END assignedGroup -->
                                 </select>
                             </td>
                         </tr>
@@ -635,13 +635,14 @@
                                     <!-- END customerSocialLinkContainer -->
                                 </div>
                             </td>
-                            <td><span>{TXT_CRM_COMPANY_SIZE}</span></td>
-                            <td><select tabindex="9" name="companySize" id="companySize" style="width: 262px !important;">
-                                <option value="">--{TXT_CRM_PLEASE_SELECT}--</option>
-                                <!-- BEGIN companySize -->
-                                <option value="{CRM_COMPANY_SIZE_ID}" {CRM_COMPANY_SIZE_SELECTED}>{CRM_COMPANY_SIZE}</option>
-                                <!-- END companySize -->
-                              </select>
+                            <td>{TXT_CRM_CUSTOMERTYPE}&nbsp;<font color="red">*</font></td>
+                            <td>
+                                <select tabindex="10" name="customer_type" id="customer_type" style="width: 262px !important;">
+                                    <option value="">--{TXT_CRM_PLEASE_SELECT}--</option>
+                                    <!-- BEGIN customerTypes -->
+                                    <option value="{CRM_CUSTOMER_TYPE_ID}" {CRM_CUSTOMER_TYPE_SELECTED}>{CRM_CUSTOMER_TYPE}</option>
+                                    <!-- END customerTypes -->
+                                </select>
                             </td>
                         </tr>
                         <tr class="row1">
@@ -676,21 +677,32 @@
                                     <!-- END customerPhoneContainer -->
                                 </div>
                             </td>
-                            <td>{TXT_CRM_CURRENCY}&nbsp;<font color="red">*</font></td>
-                            <td><select tabindex="9" name="currency" id="currency" style="width: 262px !important;">
-                                    <option value="">--{TXT_CRM_PLEASE_SELECT}--</option>
-                                    <!-- BEGIN currency -->
-                                    <option value="{CRM_CURRENCYID}" {CRM_CURRENCY_SELECTED}>{CRM_CURRENCYNAME}</option>
-                                    <!-- END currency -->
-                                </select>
+                            <td><span>{TXT_CRM_COMPANY_SIZE}</span></td>
+                            <td><select tabindex="11" name="companySize" id="companySize" style="width: 262px !important;">
+                                <option value="">--{TXT_CRM_PLEASE_SELECT}--</option>
+                                <!-- BEGIN companySize -->
+                                <option value="{CRM_COMPANY_SIZE_ID}" {CRM_COMPANY_SIZE_SELECTED}>{CRM_COMPANY_SIZE}</option>
+                                <!-- END companySize -->
+                            </select>
                             </td>
                         </tr>
                         <tr>
                             <td style="width:127px;">{TXT_CRM_CUSTOMERID}</td>
-                            <td><input tabindex="10" type="text" value="{CRM_CUSTOMERID}" style="width: 255px;" name="customerId" id="customerId" /></td>
+                            <td><input tabindex="6" type="text" value="{CRM_CUSTOMERID}" style="width: 255px;" name="customerId" id="customerId" /></td>
+                            <td>{TXT_CRM_CURRENCY}&nbsp;<font color="red">*</font></td>
+                            <td><select tabindex="12" name="currency" id="currency" style="width: 262px !important;">
+                                <option value="">--{TXT_CRM_PLEASE_SELECT}--</option>
+                                <!-- BEGIN currency -->
+                                <option value="{CRM_CURRENCYID}" {CRM_CURRENCY_SELECTED}>{CRM_CURRENCYNAME}</option>
+                                <!-- END currency -->
+                            </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"></td>
                             <!-- BEGIN customeramount1 -->
-                                <td style="width:127px;">{TXT_CRM_AMOUNT}</td>
-                                <td><input tabindex="10" type="text" id="contact_amount" name="contact_amount" value="{CRM_CONTACT_AMOUNT}" style="width: 254px;" /></td>
+                            <td style="width:127px;">{TXT_CRM_AMOUNT}</td>
+                            <td><input tabindex="13" type="text" id="contact_amount" name="contact_amount" value="{CRM_CONTACT_AMOUNT}" style="width: 254px;" /></td>
                             <!-- END customeramount1 -->
                         </tr>
 

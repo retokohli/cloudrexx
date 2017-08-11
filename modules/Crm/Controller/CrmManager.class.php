@@ -2372,8 +2372,10 @@ END;
                     'TXT_LANG_NAME'     =>  contrexx_raw2xhtml($objResult->fields['name']),
                     'TXT_LANG_SELECT'   =>  ($objResult->fields['id'] == $this->contact->contact_language) ? "selected=selected" : "",
             ));
-            $langBlock = ($contactType == 2) ? "showAddtionalContactLanguages" : "ContactLanguages";
-            $this->_objTpl->parse($langBlock);
+            if($contactType == 1){
+                $this->_objTpl->parse("ContactLanguages" . $contactType);
+            }
+            $this->_objTpl->parse("showAddtionalContactLanguages" . $contactType);
             $objResult->MoveNext();
         }
 
