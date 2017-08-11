@@ -2373,7 +2373,7 @@ END;
                     'TXT_LANG_SELECT'   =>  ($objResult->fields['id'] == $this->contact->contact_language) ? "selected=selected" : "",
             ));
             if($contactType == 1){
-                $this->_objTpl->parse("ContactLanguages" . $contactType);
+                $this->_objTpl->parse("ContactLanguages");
             }
             $this->_objTpl->parse("showAddtionalContactLanguages" . $contactType);
             $objResult->MoveNext();
