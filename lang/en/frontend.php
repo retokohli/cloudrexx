@@ -54,6 +54,8 @@ $_ARRAYLANG['TXT_PASSWORD'] = "Password";
 $_ARRAYLANG['TXT_PAGE'] = "Site";
 $_ARRAYLANG['TXT_BROWSERLANGUAGE'] = "Language";
 $_ARRAYLANG['TXT_FROM'] = "from";
+$_ARRAYLANG['TXT_PAGING_OUT_OF'] = "out of";
+$_ARRAYLANG['TXT_PAGING_TO'] = "to";
 $_ARRAYLANG['TXT_PASSWORD_FIELD_EMPTY'] = "If the password field remains empty, the current password is maintained!";
 $_ARRAYLANG['TXT_SIZE'] = "File size";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Database Query Error!";
@@ -178,7 +180,7 @@ $_ARRAYLANG['TXT_ACCESS_GENDER'] = "Gender";
 $_ARRAYLANG['TXT_ACCESS_INTERESTS'] = "Interests";
 $_ARRAYLANG['TXT_ACCESS_INVALID_EMAIL_ADDRESS'] = "You need to enter a valid email address";
 $_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "The password is invalid. It must contain at least 6 characters.";
-$_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "The password is invalid. It must be at least 6 characters long as well as contain at least one upper and one lower case character and one number.";
+$_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD_WITH_COMPLEXITY'] = "The password is invalid. It must be at least 6 characters long as well as contain at least one upper and one lower case character and one number.";
 $_ARRAYLANG['TXT_ACCESS_INVALID_USERNAME'] = "The username may only contain alphanumeric characters (a-z, A-Z, 0-9) and the following special characters: -_";
 $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] = "Language";
 $_ARRAYLANG['TXT_ACCESS_LAST_ADMIN_USER'] = "The user account %s could not be deleted as it is the only administrator account";
@@ -317,3 +319,4 @@ $_ARRAYLANG['TXT_LOGIN_WELCOME_PAGE'] = 'Forward to the <a href="%s" title="Webs
 $_ARRAYLANG['TXT_BROWSE'] = 'Browse';
 
 $_ARRAYLANG['TXT_CORE_SIGN_UP'] = "Not yet a member? Sign up now";
+$_ARRAYLANG['TXT_READ_MORE'] = "Continue reading"; 
