@@ -761,6 +761,7 @@ $_ARRAYLANG['TXT_ACCESS_SET_ADDRESS_OF_WEBSITE'] = "Please enter the address of 
 $_ARRAYLANG['TXT_ACCESS_SIGNATURE'] = "Signature";
 $_ARRAYLANG['TXT_ACCESS_SKYPE_NAME'] = "Skype name";
 $_ARRAYLANG['TXT_ACCESS_TITLE'] = "Salutation";
+$_ARRAYLANG['TXT_ACCESS_DESIGNATION'] = "Designation";
 $_ARRAYLANG['TXT_ACCESS_UNABLE_DELETE_YOUR_USER'] = "You cannot delete your own user account!";
 $_ARRAYLANG['TXT_ACCESS_UNABLE_STORE_PROFILE_ATTIRBUTE'] = "The profile setting %s could not be saved.";
 $_ARRAYLANG['TXT_ACCESS_NOT_SPECIFIED'] = "Not specified";
