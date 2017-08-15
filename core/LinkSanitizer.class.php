@@ -101,7 +101,7 @@ class LinkSanitizer {
 
         if (!empty($_GET['preview']) || (isset($_GET['appview']) && ($_GET['appview'] == 1))) {
             $content = preg_replace_callback("/
-                (\<(?:a|form)[^>]*?\s+(?:href|action)\s*=\s*)
+                (\<(?:a|form|iframe)[^>]*?\s+(?:href|action|src)\s*=\s*)
                 (['\"])
                 (?!\#)
                 ((?![a-zA-Z]+?:|\\\\).+?)
@@ -236,7 +236,8 @@ class LinkSanitizer {
         $after  = $matches[4];
 
         if (strpos($value, '?') !== false) {
-            list($path, $query) = explode('?', $value);
+            list($path, $query) = explode('?', $value, 2);
+            $query = str_replace('?', '&', $query);
             $query = \Cx\Core\Routing\Url::params2array($query);
         } else {
             $path = $value;
