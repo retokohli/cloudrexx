@@ -3487,7 +3487,8 @@ die("Shop::processRedirect(): This method is obsolete!");
         self::$objTemplate->hideBlock('shopConfirm');
         // Store the customer, register the order
         $customer_ip = $_SERVER['REMOTE_ADDR'];
-        $customer_host = substr(@gethostbyaddr($_SERVER['REMOTE_ADDR']), 0, 100);
+        //$customer_host = substr(@gethostbyaddr($_SERVER['REMOTE_ADDR']), 0, 100);
+        $customer_host = substr($_SERVER['REMOTE_ADDR'], 0, 100);
         $customer_browser = substr(getenv('HTTP_USER_AGENT'), 0, 100);
         $new_customer = false;
 //\DBG::log("Shop::process(): E-Mail: ".$_SESSION['shop']['email']);

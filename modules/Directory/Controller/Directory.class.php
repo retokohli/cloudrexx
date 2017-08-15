@@ -2241,7 +2241,8 @@ $this->arrRows[2] = '';
     {
         if (isset($_SERVER['HTTP_VIA']) && $_SERVER['HTTP_VIA']) { // client does use a proxy
             $this->arrProxy['ip'] = $_SERVER['REMOTE_ADDR'];
-            $this->arrProxy['host'] = @gethostbyaddr($this->arrProxy['ip']);
+            //$this->arrProxy['host'] = @gethostbyaddr($this->arrProxy['ip']);
+            $this->arrProxy['host'] = $this->arrProxy['ip'];
             $proxyUseragent = trim(addslashes(urldecode(strstr($_SERVER['HTTP_VIA'],' '))));
             $startPos = strpos($proxyUseragent, '(');
             $this->arrProxy['useragent'] = substr($proxyUseragent,$startPos+1);

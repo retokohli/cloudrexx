@@ -343,7 +343,8 @@ class FWUser extends User_Setting
         global $objDatabase;
 
         if (!isset($_SESSION['auth']['log'])) {
-            $remote_host = @gethostbyaddr($_SERVER['REMOTE_ADDR']);
+            //$remote_host = @gethostbyaddr($_SERVER['REMOTE_ADDR']);
+            $remote_host = $_SERVER['REMOTE_ADDR'];
             $referer = isset($_SERVER['HTTP_REFERER']) ? contrexx_strip_tags(strtolower($_SERVER['HTTP_REFERER'])) : '';
             $httpUserAgent = get_magic_quotes_gpc() ? strip_tags($_SERVER['HTTP_USER_AGENT']) : addslashes(strip_tags($_SERVER['HTTP_USER_AGENT']));
             $httpAcceptLanguage = get_magic_quotes_gpc() ? strip_tags($_SERVER['HTTP_ACCEPT_LANGUAGE']) : addslashes(strip_tags($_SERVER['HTTP_ACCEPT_LANGUAGE']));
