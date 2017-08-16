@@ -76,7 +76,7 @@ class Changeset extends \Cx\Model\Base\EntityBase
             foreach ($this->getComponentController()->getDependendingFields($entity) as $field=>$fieldType) {
                 // recurse
                 //echo 'Calculating relations for ' . $entityClassName . '.' . $field . '<br />';
-                $this->calculateRelations($field, $fieldType, $entity, $em, $eventType, 'put', $sync, $changeCondition);
+                $this->calculateRelations($field, $fieldType, $entity, $em, $eventType, 'put', $sync, $changeCondition, $originEntityIndexData, $originalSync);
             }
         }
         
@@ -87,7 +87,7 @@ class Changeset extends \Cx\Model\Base\EntityBase
             foreach ($this->getComponentController()->getCascadingFields($entity, $eventType) as $field=>$fieldType) {
                 // recurse
                 //echo 'Calculating cascades for ' . $entityClassName . '.' . $field . '<br />';
-                $this->calculateRelations($field, $fieldType, $entity, $em, $eventType, 'delete', $sync, $changeCondition);
+                $this->calculateRelations($field, $fieldType, $entity, $em, $eventType, 'delete', $sync, $changeCondition, $originEntityIndexData, $originalSync);
             }
         }
         

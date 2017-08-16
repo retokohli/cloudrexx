@@ -2063,6 +2063,7 @@ INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) 
 INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (8, 'Cx\\Modules\\Calendar\\Model\\Entity\\RegistrationFormField', '', 'doctrineRepository');
 INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (9, 'Cx\\Modules\\Calendar\\Model\\Entity\\RegistrationFormName', '', 'doctrineRepository');
 INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (10, 'Cx\\Modules\\Calendar\\Model\\Entity\\RegistrationFormValue', '', 'doctrineRepository');
+INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (11, 'Cx\\Modules\\Calendar\\Model\\Entity\\Invite', '', 'doctrineRepository');
 INSERT INTO `contrexx_core_module_data_access` (`id`, `read_permission`, `write_permission`, `data_source_id`, `name`, `field_list`, `access_condition`, `allowed_output_methods`) VALUES (1, NULL, NULL, 1, 'calendar-event', 'a:0:{}', 'a:0:{}', 'a:0:{}');
 INSERT INTO `contrexx_core_module_data_access` (`id`, `read_permission`, `write_permission`, `data_source_id`, `name`, `field_list`, `access_condition`, `allowed_output_methods`) VALUES (2, NULL, NULL, 2, 'calendar-category', 'a:0:{}', 'a:0:{}', 'a:0:{}');
 INSERT INTO `contrexx_core_module_data_access` (`id`, `read_permission`, `write_permission`, `data_source_id`, `name`, `field_list`, `access_condition`, `allowed_output_methods`) VALUES (3, NULL, NULL, 3, 'calendar-categoryname', 'a:0:{}', 'a:0:{}', 'a:0:{}');
@@ -2073,6 +2074,7 @@ INSERT INTO `contrexx_core_module_data_access` (`id`, `read_permission`, `write_
 INSERT INTO `contrexx_core_module_data_access` (`id`, `read_permission`, `write_permission`, `data_source_id`, `name`, `field_list`, `access_condition`, `allowed_output_methods`) VALUES (8, NULL, NULL, 8, 'calendar-registrationformfield', 'a:0:{}', 'a:0:{}', 'a:0:{}');
 INSERT INTO `contrexx_core_module_data_access` (`id`, `read_permission`, `write_permission`, `data_source_id`, `name`, `field_list`, `access_condition`, `allowed_output_methods`) VALUES (9, NULL, NULL, 9, 'calendar-registrationformname', 'a:0:{}', 'a:0:{}', 'a:0:{}');
 INSERT INTO `contrexx_core_module_data_access` (`id`, `read_permission`, `write_permission`, `data_source_id`, `name`, `field_list`, `access_condition`, `allowed_output_methods`) VALUES (10, NULL, NULL, 10, 'calendar-registrationformvalue', 'a:0:{}', 'a:0:{}', 'a:0:{}');
+INSERT INTO `contrexx_core_module_data_access` (`id`, `read_permission`, `write_permission`, `data_source_id`, `name`, `field_list`, `access_condition`, `allowed_output_methods`) VALUES (11, NULL, NULL, 11, 'calendar-invite', 'a:0:{}', 'a:0:{}', 'a:0:{}');
 INSERT INTO `contrexx_core_module_sync` (`id`, `data_access_id`, `to_uri`, `api_key`, `active`) VALUES (1, 1, '', '', 0);
 INSERT INTO `contrexx_core_module_sync` (`id`, `data_access_id`, `to_uri`, `api_key`, `active`) VALUES (2, 2, '', '', 0);
 INSERT INTO `contrexx_core_module_sync` (`id`, `data_access_id`, `to_uri`, `api_key`, `active`) VALUES (3, 3, '', '', 0);
@@ -2083,6 +2085,7 @@ INSERT INTO `contrexx_core_module_sync` (`id`, `data_access_id`, `to_uri`, `api_
 INSERT INTO `contrexx_core_module_sync` (`id`, `data_access_id`, `to_uri`, `api_key`, `active`) VALUES (8, 8, '', '', 0);
 INSERT INTO `contrexx_core_module_sync` (`id`, `data_access_id`, `to_uri`, `api_key`, `active`) VALUES (9, 9, '', '', 0);
 INSERT INTO `contrexx_core_module_sync` (`id`, `data_access_id`, `to_uri`, `api_key`, `active`) VALUES (10, 10, '', '', 0);
+INSERT INTO `contrexx_core_module_sync` (`id`, `data_access_id`, `to_uri`, `api_key`, `active`) VALUES (11, 11, '', '', 0);
 INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('core','numof_countries_per_page_backend','country','text','30','',101);
 INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','address','config','text','MaxMuster AG\r\nFirmenstrasse 1\r\n4321 Irgendwo','',20);
 INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','company','config','text','MaxMuster AG','',19);
@@ -4256,6 +4259,9 @@ INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES 
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (14,'updated_file_time_limit','604800');
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (15,'associate_user_to_groups','');
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (16,'use_attr_metakeys','1');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (17,'downloads_sorting_order','newestToOldest');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (18,'categories_sorting_order','alphabetic');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (19,'list_downloads_current_lang','0');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('emailText','[[ECARD_SENDER_NAME]] hat Ihnen eine E-Card geschickt.<br />\r\nSie können diese während den nächsten [[ECARD_VALID_DAYS]] Tagen unter [[ECARD_URL]] abrufen.');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('maxCharacters','100');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('maxHeight','300');

@@ -187,7 +187,13 @@ class Calendar extends CalendarLibrary
 
         if(isset($_GET['export'])) {
             $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($_GET['export']));
-            $objEvent->export();
+            if ($objEvent->getId()) {
+                $objEvent->export();
+            }
+
+            // abort as event does not exist
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: ' . \Cx\Core\Routing\Url::fromModuleAndCmd('Error'));
+            exit;
         }
 
         $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : null;
@@ -279,14 +285,30 @@ class Calendar extends CalendarLibrary
     function loadEventManager()
     {
         $term   = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
-        $from   = isset($_GET['from']) ? contrexx_input2raw($_GET['from']) : '';
-        $till   = isset($_GET['till']) ? contrexx_input2raw($_GET['till']) : '';
+        $from   = '';
+        $till   = '';
         $catid  = isset($_GET['catid']) ? contrexx_input2raw($_GET['catid']) : '';
         $cmd    = isset($_GET['cmd']) ? contrexx_input2raw($_GET['cmd']) : '';
 
+        try {
+            if (!empty($_GET['from'])) {
+                $from = $this->getDateTime(contrexx_input2raw($_GET['from']));
+            }
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+        }
+
+        try {
+            if (!empty($_GET['till'])) {
+                $till = $this->getDateTime(contrexx_input2raw($_GET['till']));
+            }
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+        }
+
         // get startdate
         if (!empty($from)) {
-            $this->startDate = $this->getDateTime($from);
+            $this->startDate = $from;
         } else if ($cmd == 'archive') {
             $this->startDate = null;
             $this->sortDirection = 'DESC';
@@ -327,7 +349,7 @@ class Calendar extends CalendarLibrary
 
         // get enddate
         if (!empty($till)) {
-            $this->endDate = $this->getDateTime($till);
+            $this->endDate = $till;
         } else if ($cmd == 'archive') {
             $this->endDate = new \DateTime();
         } else {
@@ -1105,6 +1127,13 @@ UPLOADER;
             'status' => 1,
         ));
 
+        // abort in case the event of the invitation is not published
+        // or does not exist at all
+        if (!$event) {
+            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
+            return;
+        }
+
         // check if event has been published in currently requested locale region
         if ($this->arrSettings['showEventsOnlyInActiveLanguage'] == 1) {
             $publishedLanguages = explode(',', $event->getShowIn());
@@ -1112,13 +1141,6 @@ UPLOADER;
                 \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
                 return;
             }
-        }
-
-        // abort in case the event of the invitation is not published
-        // or does not exist at all
-        if (!$event) {
-            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
-            return;
         }
 
         if (!$objEvent) { 
