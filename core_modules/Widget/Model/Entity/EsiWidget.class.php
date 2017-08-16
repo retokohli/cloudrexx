@@ -298,11 +298,14 @@ class EsiWidget extends Widget {
                         $esiVarValue = $this->cx->getPage()->getId();
                         break;
                     case static::ESI_VAR_NAME_LOCALE:
-                        $esiVarValue = $this->getComponent(
-                            'Locale'
-                        )->getLocaleCode(
+                        $locale = $this->cx->getDb()->getEntityManager()->find(
+                            'Cx\Core\Locale\Model\Entity\Locale',
                             $this->cx->getPage()->getLang()
                         );
+                        if (!$locale) {
+                            break;
+                        }
+                        $esiVarValue = $locale->getShortForm();
                         break;
                     case static::ESI_VAR_NAME_THEME:
                         $esiVarValue = \Env::get('init')->getCurrentThemeId();
