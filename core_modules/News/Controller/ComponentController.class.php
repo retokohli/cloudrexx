@@ -329,6 +329,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * Register the Event listeners
      */
     public function registerEventListeners() {
-        $this->cx->getEvents()->addEventListener('languageStatusUpdate', new \Cx\Core_Modules\News\Model\Event\NewsEventListener());
+        $evm = $this->cx->getEvents();
+        // locale event listener
+        $localeLocaleEventListener = new \Cx\Core_Modules\News\Model\Event\LocaleLocaleEventListener($this->cx);
+        $evm->addModelListener('postPersist', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
+        $evm->addModelListener('preRemove', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
     }
 }
