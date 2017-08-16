@@ -82,11 +82,6 @@ class CacheLib
     const CACHE_ENGINE_ZEND_OPCACHE = 'zendopcache';
 
     /**
-     * file system user cache extension
-     */
-    const CACHE_ENGINE_FILESYSTEM = 'filesystem';
-
-    /**
      * cache off
      */
     const CACHE_ENGINE_OFF = 'off';
@@ -302,11 +297,6 @@ class CacheLib
             $this->isConfigured(self::CACHE_ENGINE_XCACHE, true)
         ) {
             $this->userCacheEngines[] = self::CACHE_ENGINE_XCACHE;
-        }
-
-        // Filesystem
-        if ($this->isConfigured(self::CACHE_ENGINE_FILESYSTEM)) {
-            $this->userCacheEngines[] = self::CACHE_ENGINE_FILESYSTEM;
         }
     }
 
@@ -631,8 +621,6 @@ class CacheLib
                 return extension_loaded('memcached');
             case self::CACHE_ENGINE_XCACHE:
                 return extension_loaded('xcache');
-            case self::CACHE_ENGINE_FILESYSTEM:
-                return true;
         }
     }
 
@@ -655,8 +643,6 @@ class CacheLib
             case self::CACHE_ENGINE_XCACHE:
                 $setting = 'xcache.cacher';
                 break;
-            case self::CACHE_ENGINE_FILESYSTEM:
-                return true;
         }
         if (!empty($setting)) {
             $configurations = ini_get_all();
@@ -693,9 +679,6 @@ class CacheLib
                     );
                 }
                 return ini_get('xcache.size') > 0;
-            case self::CACHE_ENGINE_FILESYSTEM:
-                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-                return is_writable($cx->getWebsiteCachePath());
         }
     }
 
@@ -803,8 +786,6 @@ class CacheLib
             case self::CACHE_ENGINE_ZEND_OPCACHE:
                 $this->clearZendOpCache();
                 break;
-            case self::CACHE_ENGINE_FILESYSTEM:
-                $this->_deleteAllFiles();
             default:
                 break;
         }
@@ -1022,9 +1003,6 @@ class CacheLib
             case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_XCACHE:
                 $cache = new \Doctrine\Common\Cache\XcacheCache();
                 $cache->setNamespace($this->getCachePrefix());
-                break;
-            case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_FILESYSTEM:
-                $cache = new \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver\FileSystemCache($this->strCachePath);
                 break;
             default:
                 $cache = new \Doctrine\Common\Cache\ArrayCache();
