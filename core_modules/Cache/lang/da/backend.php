@@ -47,7 +47,6 @@ $_ARRAYLANG['TXT_CACHE_ZEND_OPCACHE'] = 'Zend OPCache';
 $_ARRAYLANG['TXT_CACHE_XCACHE'] = 'xCache';
 $_ARRAYLANG['TXT_CACHE_MEMCACHE'] = 'Memcache';
 $_ARRAYLANG['TXT_CACHE_MEMCACHED'] = 'Memcached';
-$_ARRAYLANG['TXT_CACHE_FILESYSTEM'] = 'FileSystem';
 $_ARRAYLANG['TXT_CACHE_APC_ACTIVE_INFO'] = 'APC ist aktiviert, sobald die PHP Direktive "apc.enabled" auf "On" gesetzt ist.';
 $_ARRAYLANG['TXT_CACHE_APC_CONFIG_INFO'] = 'Wenn Sie APC als Datenbank Cache System einsetzen möchten, muss die PHP Direktive "apc.serializer" auf "php" gesetzt sein.';
 $_ARRAYLANG['TXT_CACHE_ZEND_OPCACHE_ACTIVE_INFO'] = 'Zend OPCache ist aktiviert, sobald die PHP Direktive "opcache.enable" auf "On" gesetzt ist.';
