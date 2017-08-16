@@ -86,4 +86,26 @@ class LocaleRepository extends EntityRepository
         });
         return $locales;
     }
+
+    /**
+     * Finds a locale by it's code/short form (e.g de, de-CH, etc.)
+     * @param string $code The locale code/short form
+     * @return null|\Cx\Core\Locale\Model\Entity\Locale The locale object
+     */
+    public function findOneByCode($code) {
+        $matches = null;
+        if (
+            !preg_match(
+                '/^([a-z]{1,2})(?:-([A-Z]{2,4})|())$/',
+                $code,
+                $matches
+            )
+        ) {
+            return null;
+        }
+        return $this->findOneBy(array(
+            'iso1' => $matches[1], // [a-z]{1,2}
+            'country' => $matches[2], // [A-Z]{2,4}
+        ));
+    }
 }
