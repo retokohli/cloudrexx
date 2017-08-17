@@ -686,16 +686,8 @@ class DBG
 
     private static function _escapeDoctrineDump(&$val)
     {
-        if (   $val instanceof \Cx\Model\Base\EntityBase
-            || $val instanceof \Doctrine\DBAL\Statement
-            || $val instanceof \Doctrine\DBAL\Connection
-            || $val instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain
-            || $val instanceof \Cx\Core\Core\Model\Entity\EntityBase
-            || $val instanceof \Doctrine\ORM\Mapping\ClassMetadata
-            || $val instanceof \Cx\Core\Core\Controller\Cx
-            || $val instanceof \Cx\Core\Html\Sigma
-            || $val instanceof \Cx\Core\Core\Model\Entity\SystemComponentController
-        ) {
+        // TODO: implement own dump-method that is able to handle recursive references
+        if (is_object($val)) {
             $val = \Doctrine\Common\Util\Debug::export($val, 2);
         } else if (is_array($val)) {
             foreach ($val as &$entry) {
@@ -803,6 +795,13 @@ class DBG
                 self::_log("PHP: $type$suppressed: $errstr in $errfile on line $errline");
             } else {
                 self::_log("PHP: <strong>$type</strong>$suppressed: $errstr in <strong>$errfile</strong> on line <strong>$errline</strong>");
+            }
+
+            // Catch infinite loop produced by var_export()
+            if ($errstr == 'var_export does not handle circular references') {
+                self::log('Cancelled script execution to prevent memory overflow caused by var_export()');
+                self::stack();
+                exit;
             }
         }
     }

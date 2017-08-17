@@ -2378,7 +2378,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
             $id = intval($_POST['newsId']);
             $userId = $objFWUser->objUser->getId();
-            $changelog = mktime();
+            $changelog = time();
 
             $date = $this->dateFromInput($_POST['newsDate']);
 
@@ -2862,9 +2862,13 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 if (!$catId = $this->objNestedSet->createSubNode($catParentId, array())) {
                     $status = false;
                 } else {
-                    if ($objDatabase->Execute('INSERT INTO `'.DBPREFIX.'module_news_categories_locale` (`lang_id`, `category_id`, `name`)
-                                               SELECT `id`, "'.$catId.'", "'.$catName.'" FROM `'.DBPREFIX.'languages`') === false) {
-                        $status = false;
+                    $frontendLanguages = \FWLanguage::getActiveFrontendLanguages();
+                    foreach($frontendLanguages as $language) {
+                        if ($objDatabase->Execute('INSERT INTO `' . DBPREFIX . 'module_news_categories_locale` (`lang_id`, `category_id`, `name`)
+                                               VALUES ("'.$language['id'].'", "' . $catId . '", "' . $catName . '")') === false
+                        ) {
+                            $status = false;
+                        }
                     }
                 }
 
@@ -3100,10 +3104,13 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     $status = false;
                 } else {
                     $typeId = $objDatabase->Insert_ID();
-                    if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_types_locale
+                    $frontendLanguages = \FWLanguage::getActiveFrontendLanguages();
+                    foreach($frontendLanguages as $language) {
+                        if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_types_locale
                                                            (lang_id, type_id, name)
-                                                           SELECT id, '$typeId', '$typeName' FROM ".DBPREFIX."languages") === false) {
-                        $status = false;
+                                                           VALUES ('" . $language['id'] . "', '$typeId', '$typeName')") === false) {
+                            $status = false;
+                        }
                     }
                 }
                 if ($status) {
@@ -3598,9 +3605,9 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         $this->_objTpl->addBlockfile('NEWS_SETTINGS_CONTENT', 'settings_content', 'module_news_settings_general.html');
         // Show settings
-        $objResult = $objDatabase->Execute("SELECT lang FROM ".DBPREFIX."languages WHERE id='".$this->langId."'");
-        if ($objResult !== false) {
-            $newsFeedPath =  'http://'.$_SERVER['SERVER_NAME'].ASCMS_FEED_WEB_PATH.'/news_headlines_'.$objResult->fields['lang'].'.xml';
+        $langShort = \FWLanguage::getLanguageParameter($this->langId, 'lang');
+        if ($langShort) {
+            $newsFeedPath =  'http://'.$_SERVER['SERVER_NAME'].ASCMS_FEED_WEB_PATH.'/news_headlines_'.$langShort.'.xml';
         }
         if (intval($this->arrSettings['news_feed_status'])==1) {
             $status = 'checked="checked"';

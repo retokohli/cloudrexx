@@ -72,14 +72,14 @@ class EsiWidget extends Widget {
     const ESI_VAR_NAME_PAGE = 'page';
 
     /**
-     * @const int Index for ESI variable for lang
+     * @const int Index for ESI variable for locale
      */
-    const ESI_VAR_ID_LANG = 2;
+    const ESI_VAR_ID_LOCALE = 2;
 
     /**
-     * @const string Name of ESI variable for lang
+     * @const string Name of ESI variable for locale
      */
-    const ESI_VAR_NAME_LANG = 'lang';
+    const ESI_VAR_NAME_LOCALE = 'locale';
 
     /**
      * @const int Index for ESI variable for theme
@@ -209,7 +209,7 @@ class EsiWidget extends Widget {
         if ($this->esiVariables == static::ESI_VAR_ID_AUTOCONF) {
             $this->esiVariables = 0;
             $this->esiVariables |= static::ESI_VAR_ID_PAGE;
-            $this->esiVariables |= static::ESI_VAR_ID_LANG;
+            $this->esiVariables |= static::ESI_VAR_ID_LOCALE;
             if ($this->hasContent()) {
                 $this->esiVariables |= static::ESI_VAR_ID_THEME;
                 $this->esiVariables |= static::ESI_VAR_ID_CHANNEL;
@@ -277,7 +277,7 @@ class EsiWidget extends Widget {
         // This should be set at a central place (Cache?)
         $esiVars = array(
             static::ESI_VAR_ID_PAGE => static::ESI_VAR_NAME_PAGE,
-            static::ESI_VAR_ID_LANG => static::ESI_VAR_NAME_LANG,
+            static::ESI_VAR_ID_LOCALE => static::ESI_VAR_NAME_LOCALE,
             static::ESI_VAR_ID_THEME => static::ESI_VAR_NAME_THEME,
             static::ESI_VAR_ID_CHANNEL => static::ESI_VAR_NAME_CHANNEL,
             static::ESI_VAR_ID_USER => static::ESI_VAR_NAME_USER,
@@ -297,10 +297,15 @@ class EsiWidget extends Widget {
                     case static::ESI_VAR_NAME_PAGE:
                         $esiVarValue = $this->cx->getPage()->getId();
                         break;
-                    case static::ESI_VAR_NAME_LANG:
-                        $esiVarValue = \FWLanguage::getLanguageCodeById(
+                    case static::ESI_VAR_NAME_LOCALE:
+                        $locale = $this->cx->getDb()->getEntityManager()->find(
+                            'Cx\Core\Locale\Model\Entity\Locale',
                             $this->cx->getPage()->getLang()
                         );
+                        if (!$locale) {
+                            break;
+                        }
+                        $esiVarValue = $locale->getShortForm();
                         break;
                     case static::ESI_VAR_NAME_THEME:
                         $esiVarValue = \Env::get('init')->getCurrentThemeId();

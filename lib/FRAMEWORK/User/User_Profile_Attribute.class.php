@@ -137,6 +137,14 @@ class User_Profile_Attribute
             'unknown'      => true,
             'order_id'     => 0,
         ),
+        'designation' => array(
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'desc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_DESIGNATION',
+        ),
         'firstname' => array(
             'type'         => 'text',
             'multiline'    => false,

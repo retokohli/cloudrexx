@@ -86,6 +86,11 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
     {
         global $_CONFIG;
 
+        if ($_CONFIG['cacheEnabled'] == 'off') {
+            $this->boolIsEnabled = false;
+            return;
+        }
+
         // in case the request's origin is from a mobile devie
         // and this is the first request (the InitCMS object wasn't yet
         // able to determine of the mobile device wishes to be served
@@ -96,17 +101,19 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             !isset($_REQUEST['smallscreen'])
         );
 
-        if ($_CONFIG['cacheEnabled'] == 'off') {
-            $this->boolIsEnabled = false;
-            return;
-        }
-
         if (isset($_REQUEST['caching']) && $_REQUEST['caching'] == '0') {
             $this->boolIsEnabled = false;
             return;
         }
 
+        // @todo: A component should have a possibility to add caching exceptions
         if (isset($_GET['templateEditor']) && $_GET['templateEditor'] == 1) {
+            $this->boolIsEnabled = false;
+            return;
+        }
+
+        // @todo: A component should have a possibility to add caching exceptions
+        if (isset($_GET['pagePreview'])) {
             $this->boolIsEnabled = false;
             return;
         }
@@ -134,7 +141,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         //            system.
         $request = array_merge_recursive($_GET, $_POST);
         ksort($request);
-        $currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
+        $this->currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
             $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         $country = '';
         $geoIp = $cx->getComponent('GeoIp');
@@ -145,7 +152,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             }
         }
         $this->arrPageContent = array(
-            'url' => $currentUrl,
+            'url' => $this->currentUrl,
             'request' => $request,
             'isMobile' => $isMobile,
             'country' => $country,
@@ -167,11 +174,14 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         // TODO: $dynVars needs to be built dynamically (via event handler)
         $this->dynVars = array(
             'GEO' => array(
+                // This is not specified by W3C but by Akamai
                 'country_code' => function() use ($cx) {
                     return $cx->getComponent('GeoIp')->getCountryCode(array())['content'];
                 },
             ),
             'HTTP_COOKIE' => array(
+                // This only supports PHPSESSID instead of full cookie support
+                // as specified by W3C
                 'PHPSESSID' => function() {
                     $sessId = 0;
                     if (!empty($_COOKIE[session_name()])) {
@@ -180,7 +190,19 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                     return $sessId;
                 },
             ),
+            // HTTP_ACCEPT_LANGUAGE
+            // HTTP_HOST
+            // HTTP_USER_AGENT
+            'HTTP_REFERER' => function() {
+                if (!isset($_SERVER['HTTP_REFERER'])) {
+                    return '';
+                }
+                return $_SERVER['HTTP_REFERER'];
+            },
             'QUERY_STRING' => function () {
+                // This is not according to W3C specifications since it
+                // includes the leading "?" if there are params. This is due
+                // to backwards compatibility
                 $parameters = array();
                 parse_str($_SERVER['QUERY_STRING'], $parameters);
                 if (isset($parameters['__cap'])) {
@@ -205,7 +227,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         } else {
             $cacheFileUserRegex = '(?:_u0|)';
         }
-        $cacheFileRegex = '/([0-9a-f]{32})_([0-9]+' . $cacheFileUserRegex . ')?$/';
+        $cacheFileRegex = '/([0-9a-f]{32})_(([0-9]+)' . $cacheFileUserRegex . ')?$/';
         $files = preg_grep(
             $cacheFileRegex,
             $files
@@ -227,6 +249,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             // load headers
             $matches = array();
             preg_match($cacheFileRegex, $file, $matches);
+            // @todo: Make header cache user based
             $headerFile = $this->strCachePath . $matches[1] . '_h' . $matches[2];
             if (file_exists($headerFile)) {
                 $headers = unserialize(file_get_contents($headerFile));
@@ -261,6 +284,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             $endcode = file_get_contents($file);
 
             echo $this->internalEsiParsing($endcode, true);
+            $parsingTime = $cx->stopTimer();
+            \DBG::log("(Cx: {$cx->getId()}) Request parsing completed after $parsingTime (from cache)");
             exit;
         } else {
             $headerFile = new \Cx\Lib\FileSystem\File($headerFile);
@@ -278,9 +303,14 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
     {
         // back-replace ESI variables that are url encoded
         foreach ($this->dynVars as $groupName=>$vars) {
-            foreach ($vars as $varName=>$url) {
-                $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
+            if (is_callable($vars)) {
+                $esiPlaceholder = '$(' . $groupName . ')';
                 $endcode = str_replace(urlencode($esiPlaceholder), $esiPlaceholder, $endcode);
+            } else {
+                foreach ($vars as $varName=>$url) {
+                    $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
+                    $endcode = str_replace(urlencode($esiPlaceholder), $esiPlaceholder, $endcode);
+                }
             }
         }
         
@@ -297,12 +327,6 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
             // all the following exceptions are TEMPORARY and only necessary
             // due to non-proper implementation of caching mechanisms
-            
-            // do not cache if a user is logged in (since we can't handle user based ESI caches yet)
-            function ($cx, $page) {
-                return session_id() != '' &&
-                    \FWUser::getFWUserObject()->objUser->login();
-            },
 
             // do not cache if uploader is in use (since its ID will get cached otherwise)
             function ($cx, $page) {
@@ -421,10 +445,15 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $this->cleanupCacheFiles($this->strCacheFilename, $pageId, $userbased);
 
         if (count($headers)) {
+            foreach ($headers as &$header) {
+                $header = (string) $header;
+            }
             $handleFile = $this->strCachePath . $this->strCacheFilename . '_h' . $pageId . $user;
             $File = new \Cx\Lib\FileSystem\File($handleFile);
             $File->write(serialize($headers));
         }
+        \DBG::log('Writing cache file "' . $this->strCacheFilename . '_' . $pageId . $user . ' for request info:');
+        \DBG::dump($this->arrPageContent);
         // write page cache file
         $handleFile = $this->strCachePath . $this->strCacheFilename . '_' . $pageId . $user;
         $File = new \Cx\Lib\FileSystem\File($handleFile);
@@ -480,11 +509,35 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $settings = $this->getSettings();
         $replaceEsiFn = function($matches) use (&$cxNotYetInitialized, $settings) {
             // return cached content if available
-            $cacheFile = $this->getCacheFileNameFromUrl($matches[1]);
+            $cacheFile = $this->getCacheFileNameFromUrl(
+                $matches[1],
+                $this->currentUrl
+            );
             if ($settings['internalSsiCache'] == 'on' && file_exists($this->strCachePath . $cacheFile)) {
-                if (filemtime($this->strCachePath . $cacheFile) > (time() - $this->intCachingTime)) {
+                $expireTimestamp = -1;
+                if (file_exists($this->strCachePath . $cacheFile . '_h')) {
+                    $expireTimestamp = file_get_contents(
+                        $this->strCachePath . $cacheFile . '_h'
+                    );
+                }
+
+                if (
+                    (
+                        $expireTimestamp >= 0 && $expireTimestamp > time()
+                    ) ||
+                    (
+                        $expireTimestamp < 0 && filemtime(
+                            $this->strCachePath . $cacheFile
+                        ) > (
+                            time() - $this->intCachingTime
+                        )
+                    )
+                ) {
+                    \DBG::dump($matches[1]);
+                    \DBG::dump($cacheFile);
                     return file_get_contents($this->strCachePath . $cacheFile);
                 } else {
+                    \DBG::msg('Drop expired cached file ' . $this->strCachePath . $cacheFile);
                     $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
                     $file->delete();
                 }
@@ -517,6 +570,19 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 $content = $this->getApiResponseForUrl($matches[1]);
 
                 if ($settings['internalSsiCache'] == 'on') {
+                    // back-replace ESI variables that are url encoded
+                    foreach ($this->dynVars as $groupName=>$vars) {
+                        if (is_callable($vars)) {
+                            $esiPlaceholder = '$(' . $groupName . ')';
+                            $content = str_replace(urlencode($esiPlaceholder), $esiPlaceholder, $content);
+                        } else {
+                            foreach ($vars as $varName=>$url) {
+                                $esiPlaceholder = '$(' . $groupName . '{\'' . $varName . '\'})';
+                                $content = str_replace(urlencode($esiPlaceholder), $esiPlaceholder, $content);
+                            }
+                        }
+                    }
+
                     $file = new \Cx\Lib\FileSystem\File($this->strCachePath . $cacheFile);
                     $file->write($content);
                 }

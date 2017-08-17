@@ -72,6 +72,13 @@ class NewsLibrary
     protected $errMsg = array();
 
     /**
+     * Cached value of setting option use_thumbnails
+     *
+     * @var boolean
+     */
+    static $useThumbnails;
+
+    /**
      * Initializes the NestedSet object
      * which is needed to manage the news categories.
      *
@@ -1184,19 +1191,16 @@ class NewsLibrary
             return false;
         }
         $status = true;
-        $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."languages");
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_locale (`lang_id`, `news_id`, `title`, `text`, `teaser_text`)
+        $frontendLanguages = \FWLanguage::getActiveFrontendLanguages();
+        foreach ($frontendLanguages as $language) {
+            if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_locale (`lang_id`, `news_id`, `title`, `text`, `teaser_text`)
                     VALUES ("
-                        . intval($objResult->fields['id']) . ", "
-                        . intval($newsId) . ", '"
-                        . contrexx_input2db($title) . "', '"
-                        . $this->filterBodyTag(contrexx_input2db($text)) . "', '"
-                        . contrexx_input2db($teaser_text) . "')")){
-                    $status = false;
-                }
-                $objResult->MoveNext();
+                . intval($language['id']) . ", "
+                . intval($newsId) . ", '"
+                . contrexx_input2db($title) . "', '"
+                . $this->filterBodyTag(contrexx_input2db($text)) . "', '"
+                . contrexx_input2db($teaser_text) . "')")){
+                $status = false;
             }
         }
         return $status;
@@ -1208,9 +1212,20 @@ class NewsLibrary
         $imageLink = '';
         $source = '';
         $cx     = \Cx\Core\Core\Controller\Cx::instanciate();
+
+        if (!isset(static::$useThumbnails)) {
+            static::$useThumbnails = false;
+            $query = 'SELECT value FROM `' . DBPREFIX . 'module_news_settings` WHERE `name` = \'use_thumbnails\'';
+            $db = $cx->getDb()->getAdoDb();
+            $objResult = $db->SelectLimit($query, 1);
+            if ($objResult !== false && $objResult->RecordCount()) {
+                static::$useThumbnails = $objResult->fields['value'];
+            }
+        }
+
         if (!empty($thumbnailSource)) {
             $source = $thumbnailSource;
-        } elseif (!empty($imageSource) && file_exists(\ImageManager::getThumbnailFilename($cx->getWebsitePath() .'/' .$imageSource))) {
+        } elseif (!empty($imageSource) && static::$useThumbnails && file_exists(\ImageManager::getThumbnailFilename($cx->getWebsitePath() .'/' .$imageSource))) {
             $source = \ImageManager::getThumbnailFilename($imageSource);
         } elseif (!empty($imageSource)) {
             $source = $imageSource;

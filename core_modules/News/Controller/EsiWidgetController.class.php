@@ -82,6 +82,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         $matches = null;
         if (preg_match('/^HEADLINES(\d{1,2}|)_FILE/', $name, $matches)) {
             $category   = null;
+            $incSubCategories = false;
             $catMatches = null;
 
             $templateContent = $this->getFileContent(
@@ -94,18 +95,20 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
 
             if (
                 preg_match(
-                    '/\{CATEGORY_([0-9]+)\}/',
+                    '/\{CATEGORY_([0-9]+)(_FULL)?\}/',
                     $templateContent,
                     $catMatches
                 )
             ) {
                 $category = $catMatches[1];
+                $incSubCategories = !empty($catMatches[2]);
             }
             $newsHeadlines = new NewsHeadlines($templateContent);
             $nextUpdateDate = null;
             $content       = $newsHeadlines->getHomeHeadlines(
                 $category,
                 $langId,
+                $incSubCategories,
                 $nextUpdateDate
             );
             if ($nextUpdateDate) {
