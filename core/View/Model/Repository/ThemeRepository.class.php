@@ -53,6 +53,11 @@ class ThemeRepository
      */
     private $db;
 
+    /**
+     * @var array ID=>\Cx\Core\View\Model\Entity\Theme
+     */
+    protected static $loadedThemes = array();
+
     public function __construct() {
         $this->db = \Env::get('db');
     }
@@ -64,35 +69,38 @@ class ThemeRepository
      * @return \Cx\Core\View\Model\Entity\Theme the default theme
      */
     public function getDefaultTheme($type = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB, $languageId = null) {
+
+        // filter for channel
         switch ($type) {
             case \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PRINT:
-                $dbField = 'print_themes_id';
-                break;
             case \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE:
-                $dbField = 'mobile_themes_id';
-                break;
             case \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_APP:
-                $dbField = 'app_themes_id';
-                break;
             case \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PDF:
-                $dbField = 'pdf_themes_id';
+                $channel = $type;
                 break;
             default:
-                $dbField = 'themesid';
+                $channel = 'default';
                 break;
         }
 
-        // select default theme of default language if no language id has been
-        // provided
-        $where = '`is_default` = "true"';
-        if ($languageId) {
-            $where = '`id` = ' . intval($languageId);
+        // select theme of default language if no language id has been provided
+        if (!isset($languageId)) {
+            $languageId = \FWLanguage::getDefaultLangId();
         }
 
-        $result = $this->db->SelectLimit('SELECT `'.$dbField.'` FROM `'.DBPREFIX.'languages` WHERE ' . $where, 1);
-        if ($result !== false && $result->RecordCount() > 0) {
-            $id = current($result->fields);
-            return $this->findById($id);
+        $criteria = array(
+            'language' => $languageId,
+            'channel' => $channel
+        );
+        $frontendRepo = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getDb()
+            ->getEntityManager()
+            ->getRepository('Cx\Core\View\Model\Entity\Frontend');
+        $frontend = $frontendRepo->findOneBy($criteria);
+        $themeId = $frontend->getTheme();
+        // find theme by id and return it
+        if (!empty($themeId)) {
+            return $this->findById($themeId);
         }
         return null;
     }
@@ -129,15 +137,19 @@ class ThemeRepository
      * @return \Cx\Core\View\Model\Entity\Theme the theme
      */
     public function findById($id) {
+        if (isset(static::$loadedThemes[$id])) {
+            return static::$loadedThemes[$id];
+        }
         $result = $this->db->SelectLimit('SELECT `id`, `themesname`, `foldername`, `expert` FROM `'.DBPREFIX.'skins` WHERE `id` = '.intval($id), 1);
         if ($result !== false && !$result->EOF) {
-            return $this->getTheme(
+            static::$loadedThemes[$id] =  $this->getTheme(
                 $result->fields['id'],
                 $result->fields['themesname'],
                 $result->fields['foldername'],
                 $result->fields['expert'],
                 null
             );
+            return static::$loadedThemes[$id];
         }
         return null;
     }
@@ -222,34 +234,16 @@ class ThemeRepository
      */
     public function getActiveThemes() {
 
-        $objResult = $this->db->Execute('
-            SELECT   `themesid`, `mobile_themes_id`, `print_themes_id`, `pdf_themes_id`, `app_themes_id`
-            FROM     `'.DBPREFIX.'languages`
-            WHERE    `frontend` = 1
-            ORDER BY `id`
-        ');
+        $frontendRepo = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getDb()
+            ->getEntityManager()
+            ->getRepository('Cx\Core\View\Model\Entity\Frontend');
+        $frontends = $frontendRepo->findAll();
+
         $themesArray = array();
 
-        if ($objResult) {
-            while (!$objResult->EOF) {
-                if (!empty($objResult->fields['themesid'])) {
-                    $themesArray[] = $objResult->fields['themesid'];
-                }
-                if (!empty($objResult->fields['mobile_themes_id'])) {
-                    $themesArray[] = $objResult->fields['mobile_themes_id'];
-                }
-                if (!empty($objResult->fields['print_themes_id'])) {
-                    $themesArray[] = $objResult->fields['print_themes_id'];
-                }
-                if (!empty($objResult->fields['pdf_themes_id'])) {
-                    $themesArray[] = $objResult->fields['pdf_themes_id'];
-                }
-                if (!empty($objResult->fields['app_themes_id'])) {
-                    $themesArray[] = $objResult->fields['app_themes_id'];
-                }
-
-                $objResult->MoveNext();
-            }
+        foreach ($frontends as $frontend) {
+            $themesArray[] = $frontend->getTheme();
         }
         $themesArray = array_unique($themesArray);
 
@@ -317,7 +311,7 @@ class ThemeRepository
             try {
                 $objYaml = new \Symfony\Component\Yaml\Yaml();
                 $objFile = new \Cx\Lib\FileSystem\File($filePath);
-                $themeInformation = $objYaml->load($objFile->getData());
+                $themeInformation = $objYaml->parse($objFile->getData());
                 $theme->setComponentData($themeInformation['DlcInfo']);
             } catch (\Exception $e) {
                 \DBG::log($e->getMessage());
@@ -340,30 +334,29 @@ class ThemeRepository
     protected function getTheme($id, $themesname, $foldername, $expert, $languageId = null) {
         $theme = new \Cx\Core\View\Model\Entity\Theme($id, $themesname, $foldername, $expert);
 
-        // select default theme of default language if no language id has been
-        // provided
-        $where = '`is_default` = "true"';
-        if ($languageId) {
-            $where = '`id` = ' . intval($languageId);
-        }
 
-        $result = $this->db->SelectLimit('SELECT `themesid`, `pdf_themes_id`, `app_themes_id`, `mobile_themes_id`, `print_themes_id` FROM `'.DBPREFIX.'languages` WHERE ' . $where, 1);
-        if ($result !== false && !$result->EOF) {
-            if ($result->fields['themesid'] == $id) {
-                $theme->addDefault(\Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB);
+        // select theme of default language if no language id has been provided
+        if (!isset($languageId)) {
+            $languageId = \FWLanguage::getDefaultLangId();
+        }
+        // only load frontends with the given language and theme
+        $criteria = array(
+            'language' => $languageId,
+            'theme' => $id
+        );
+
+        $frontendRepo = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getDb()
+            ->getEntityManager()
+            ->getRepository('Cx\Core\View\Model\Entity\Frontend');
+        $frontends = $frontendRepo->findBy($criteria);
+        // add default theme for every channel
+        foreach($frontends as $frontend) {
+            $channel = $frontend->getChannel();
+            if ($channel == 'default') {
+                $channel = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB;
             }
-            if ($result->fields['pdf_themes_id'] == $id) {
-                $theme->addDefault(\Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PDF);
-            }
-            if ($result->fields['app_themes_id'] == $id) {
-                $theme->addDefault(\Cx\Core\View\Model\Entity\Theme::THEME_TYPE_APP);
-            }
-            if ($result->fields['mobile_themes_id'] == $id) {
-                $theme->addDefault(\Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE);
-            }
-            if ($result->fields['print_themes_id'] == $id) {
-                $theme->addDefault(\Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PRINT);
-            }
+            $theme->addDefault($channel);
         }
 
         $themePath = $theme->getFilePath('/'.$foldername);

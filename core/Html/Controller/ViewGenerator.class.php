@@ -198,7 +198,8 @@ class ViewGenerator {
             return $this->object->getDataType();
         } else {
             if (!is_object($object)) {
-                $entityClassName = $object;
+                // Resolve proxies
+                $entityClassName = \Env::get('em')->getClassMetadata($object)->name;
                 $entityRepository = \Env::get('em')->getRepository($entityClassName);
                 $entities = $entityRepository->findAll();
                 if (empty($entities)) {
@@ -584,15 +585,17 @@ class ViewGenerator {
             $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
             $searchCriteria = contrexx_input2raw($this->getVgParam($_GET['search']));
             $entityClass = $this->findEntityClass($renderObject);
-            $metaData = $em->getClassMetadata($entityClass);
-            foreach ($metaData->associationMappings as $relationField => $associationMapping) {
-                if (!isset($searchCriteria[$relationField])) {
-                    continue;
+            if ($entityClass !== 'array') {
+                $metaData = $em->getClassMetadata($entityClass);
+                foreach ($metaData->associationMappings as $relationField => $associationMapping) {
+                    if (!isset($searchCriteria[$relationField])) {
+                        continue;
+                    }
+                    $relationClass = $associationMapping['targetEntity'];
+                    $relationRepo = $em->getRepository($relationClass);
+                    $relationEntity = $relationRepo->find($searchCriteria[$relationField]);
+                    $searchCriteria[$relationField] = $relationEntity;
                 }
-                $relationClass = $associationMapping['targetEntity'];
-                $relationRepo = $em->getRepository($relationClass);
-                $relationEntity = $relationRepo->find($searchCriteria[$relationField]);
-                $searchCriteria[$relationField] = $relationEntity;
             }
 
             $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController(
@@ -695,8 +698,14 @@ class ViewGenerator {
                         continue;
                     }
 
+                    $classMetadata = \Env::get('em')->getClassMetadata($entityClassWithNS);
+                    // check if the field isn't mapped and is not an associated one
+                    if (!$classMetadata->hasField($name) && !$classMetadata->hasAssociation($name)) {
+                        continue;
+                    }
+
                     $fieldDefinition['type'] = null;
-                    if (!\Env::get('em')->getClassMetadata($entityClassWithNS)->hasAssociation($name)) {
+                    if (!$classMetadata->hasAssociation($name)) {
                         $fieldDefinition = $entityObject->getFieldMapping($name);
                     }
                     $this->options[$name]['type'] = $fieldDefinition['type'];

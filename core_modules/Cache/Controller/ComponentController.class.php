@@ -96,7 +96,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             return;
         }
-        $this->cache->startContrexxCaching();
+        $this->cache->startContrexxCaching($this->cx);
     }
 
     /**
@@ -116,6 +116,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'postFlush',
             'Cx\Core\Routing\Model\Entity\RewriteRule',
             new \Cx\Core_Modules\Cache\Model\Event\RewriteRuleEventListener($this->cx)
+        );
+
+        // TODO: This is a workaround for Doctrine's result query cache.
+        //       Proper handling of ResultCache must be implemented.
+        $evm->addModelListener(
+            'postFlush',
+            'Cx\Core\Model\Entity\EntityBase',
+            new \Cx\Core_Modules\Cache\Model\Event\CoreEntityBaseEventListener($this->cx)
         );
     }
 
@@ -180,8 +188,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Wrapper to drop all cached ESI/SSI elements
      */
-    public function clearSsiCache() {
-        $this->cache->clearSsiCache();
+    public function clearSsiCache($urlPattern = '') {
+        $this->cache->clearSsiCache($urlPattern);
     }
 
     /**
@@ -262,19 +270,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Returns the validated file search parts of the URL
      * @param string $url URL to parse
+     * @param string $originalUrl URL of the page that ESI is parsed for
      * @return array <fileNamePrefix>=><parsedValue> type array
      */
-    public function getCacheFileNameSearchPartsFromUrl($urlPattern) {
-        return $this->cache->getCacheFileNameSearchPartsFromUrl($urlPattern);
+    public function getCacheFileNameSearchPartsFromUrl($urlPattern, $originalUrl) {
+        return $this->cache->getCacheFileNameSearchPartsFromUrl($urlPattern, $originalUrl);
     }
 
     /**
      * Gets the local cache file name for an URL
      * @param string $url URL to get file name for
-     * @return string File name
+     * @param string $originalUrl URL of the page that ESI is parsed for
+     * @param boolean $withCacheInfoPart (optional) Adds info part (default true)
+     * @return string File name (without path)
      */
-    public function getCacheFileNameFromUrl($urlPattern, $withCacheInfoPart = true) {
-        return $this->cache->getCacheFileNameFromUrl($urlPattern, $withCacheInfoPart);
+    public function getCacheFileNameFromUrl($url, $originalUrl, $withCacheInfoPart = true) {
+        return $this->cache->getCacheFileNameFromUrl($url, $originalUrl, $withCacheInfoPart);
     }
 
     /**
@@ -293,6 +304,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param string $endcode Current response
      */
     public function writeCacheFileForRequest($page, $headers, $endcode) {
+        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
         $this->cache->writeCacheFileForRequest($page, $headers, $endcode);
     }
 
@@ -445,5 +459,25 @@ Cache clear all';
                 break;
         }
         echo 'Cache cleared' . "\n";
+    }
+
+    /**
+     * Forces page cache to be stored per user
+     */
+    public function forceUserbasedPageCache() {
+        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
+        $this->cache->forceUserbasedPageCache();
+    }
+
+    /**
+     * Overwrite the automatically set CachePrefix
+     *                          Setting an empty string will reset
+     *                          the CachePrefix to its initial value.
+     * @param   $prefix String  The new CachePrefix to be used
+     */
+    public function setCachePrefix($prefix = '') {
+        $this->cache->setCachePrefix($prefix);
     }
 }
