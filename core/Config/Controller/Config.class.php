@@ -81,19 +81,25 @@ class Config
     {
         global $objTemplate, $_ARRAYLANG;
 
+        // TODO: instead of including the config section of MultiSite component
+        // (as well as the one of Cache component) directly, the Config
+        // component should provide a method for other components to include
+        // their config sections in the base configuration section
         $componentRepo = \Env::get('cx')->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
         $component     = $componentRepo->findOneBy(array('name' => 'multisite'));
 
         $multisiteNavigation = '';
-        if ($component &&
-            \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::isWebsiteOwner() &&
-            \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser','MultiSite')
-        ) {
-            $multisiteNavigation = '<a href="index.php?cmd=Config&amp;act=Ftp" class="'.
-                ($this->act == 'Ftp' ? 'active' : '').'">' . $_ARRAYLANG['TXT_SETTINGS_FTP'].'</a>';
+        if ($component) {
+            if (\Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::isWebsiteOwner() &&
+                \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser','MultiSite')
+            ) {
+                $multisiteNavigation = '<a href="index.php?cmd=Config&amp;act=Ftp" class="'.
+                    ($this->act == 'Ftp' ? 'active' : '').'">' . $_ARRAYLANG['TXT_SETTINGS_FTP'].'</a>';
+            }
+
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem');
         }
 
-        \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem');
         $objTemplate->setVariable('CONTENT_NAVIGATION','
             <a href="?cmd=Config" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_MENU_SYSTEM'].'</a>'
             .(in_array('CacheManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="?cmd=Config&amp;act=cache" class="'.($this->act == 'cache' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_MENU_CACHE'].'</a>' : '')  .
