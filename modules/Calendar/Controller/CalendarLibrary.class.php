@@ -1025,7 +1025,7 @@ EOF;
     public function getHeadlinePlaceholders()
     {
         $placeholders = array();
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 20; $i++) {
             $id = '';
             if ($i > 1) {
                 $id = $i;
