@@ -63,7 +63,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
     {
         global $_CORELANG, $_ARRAYLANG;
 
-        $langId = $params['lang'];
+        $langId = \FWLanguage::getLangIdByIso639_1($params['locale']);
         $theme  = $params['theme'];
 
         //The globals $_CORELANG and $_ARRAYLANG are required in the following methods
