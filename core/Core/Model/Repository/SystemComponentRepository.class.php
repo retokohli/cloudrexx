@@ -121,22 +121,30 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      * Finds entities by a set of criteria.
      *
      * Overwritten in order to decorate result
-     * @param array $criteria
+     * 
+     * @param array      $criteria
+     * @param array|null $orderBy
+     * @param int|null   $limit
+     * @param int|null   $offset
+     * 
      * @return array
      */
-    public function findBy(array $criteria) {
-        return $this->decorate(parent::findBy($criteria));
+    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null) 
+    {
+        return $this->decorate(parent::findBy($criteria, $orderBy, $limit, $offset));
     }
 
     /**
      * Finds a single entity by a set of criteria.
      *
      * Overwritten in order to decorate result
-     * @param array $criteria
+     * @param array      $criteria
+     * @param array|null $orderBy
      * @return \Cx\Core\Core\Model\Entity\SystemComponentController The entity.
      */
-    public function findOneBy(array $criteria) {
-        return $this->decorate(parent::findOneBy($criteria));
+    public function findOneBy(array $criteria, array $orderBy = null)
+    {
+        return $this->decorate(parent::findOneBy($criteria, $orderBy));
     }
 
     /**

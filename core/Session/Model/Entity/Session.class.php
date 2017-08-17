@@ -281,7 +281,15 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                 if (isset($this->data[$lockKey])) {
                     $sessionValue = $this->data[$lockKey];
                     if (is_a($sessionValue, 'Cx\Core\Model\RecursiveArrayAccess')) {
+                        // Do flush session data to database through a transaction.
+                        // This will have a great impact on performance.
+                        $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
+                        $db->StartTrans();
                         static::updateToDb($sessionValue);
+                        if ($db->HasFailedTrans()) {
+                            \DBG::msg('Oops: Unable to flush session data to database. This will result in lost session data!');
+                        }
+                        $db->CompleteTrans();
                     } else {
                         if ($this->isDirty($lockKey)) {
                             // is_callable() can return true for type array, so we need to check that it is not an array
@@ -926,6 +934,15 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                           ON DUPLICATE KEY UPDATE
                              `value` = "'. $serializedValue .'"';
                 \Env::get('db')->Execute($query);
+                if (
+                    is_a($value, 'Cx\Core\Model\RecursiveArrayAccess') &&
+                    empty($value->id)
+                ) {
+                    $insertId = \Env::get('db')->Insert_ID();
+                    if ($insertId) {
+                        $value->id = $insertId;
+                    }
+                }
             }
             if (is_a($value, 'Cx\Core\Model\RecursiveArrayAccess')) {
                 $value->parentId = intval($recursiveArrayAccess->id);

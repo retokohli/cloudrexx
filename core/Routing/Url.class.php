@@ -90,7 +90,7 @@ class Url {
      */
     protected $path = null;
     /**
-     * Virtual language directory, like 'de' or 'en'
+     * Virtual language directory, like 'de', 'en' or 'en-GB'
      * @var string
      */
     protected $langDir = '';

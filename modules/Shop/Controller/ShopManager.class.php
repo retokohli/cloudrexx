@@ -2897,7 +2897,7 @@ if ($test === NULL) {
         ));
 // TODO: TEST
         $count = NULL;
-        $orders = Orders::getArray($count, NULL, array(), \Paging::getPosition(),
+        $orders = Orders::getArray($count, NULL, array('customer_id' => $objCustomer->id()), \Paging::getPosition(),
                 \Cx\Core\Setting\Controller\Setting::getValue('numof_orders_per_page_backend','Shop'));
         $i = 1;
         foreach ($orders as $order) {

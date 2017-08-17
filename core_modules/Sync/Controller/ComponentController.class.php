@@ -210,15 +210,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($this->unspooling || !isset($this->spooler)) {
             return;
         }
-        $this->unspooling = true;
         $em = $this->cx->getDb()->getEntityManager();
         foreach ($this->spooler->getSpool() as $i=>$change) {
-            $change->setHosts($change->getSync()->getRelatedHosts($change->getOriginEntityIndexData()));
+            $change->setHosts($change->getOriginSync()->getRelatedHosts($change->getOriginEntityIndexData()));
             if (!count($change->getHosts())) {
                 continue;
             }
             $em->persist($change);
         }
+        $this->unspooling = true;
         $em->flush();
         $this->spooler = new \Cx\Core_Modules\Sync\Model\Entity\Spooler();
         $this->unspooling = false;

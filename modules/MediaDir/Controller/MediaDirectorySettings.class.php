@@ -641,7 +641,7 @@ EOF;
             'TXT_'.$this->moduleLangVar.'_SETTINGS_POPULAR_NUM_RESTORE' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_POPULAR_NUM_RESTORE'],
             'TXT_'.$this->moduleLangVar.'_BEHAVIOR' => $_ARRAYLANG['TXT_MEDIADIR_BEHAVIOR'],
             'TXT_'.$this->moduleLangVar.'_PRETTY_URLS' => $_ARRAYLANG['TXT_MEDIADIR_PRETTY_URLS'],
-            'TXT_'.$this->moduleLangVar.'_PRETTY_URLS_INFO' => sprintf($_ARRAYLANG['TXT_MEDIADIR_PRETTY_URLS_INFO'], ''),
+            'TXT_'.$this->moduleLangVar.'_PRETTY_URLS_INFO' => sprintf($_ARRAYLANG['TXT_MEDIADIR_PRETTY_URLS_INFO'], 'https://support.cloudrexx.com/support/solutions/articles/13000031545'),
             'TXT_'.$this->moduleLangVar.'_LEGACY_BEHAVIOR' => $_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR'],
             'TXT_'.$this->moduleLangVar.'_LEGACY_BEHAVIOR_INFO' => sprintf($_ARRAYLANG['TXT_MEDIADIR_LEGACY_BEHAVIOR_INFO'], '<ul><li>' . implode('</li><li>', $legacyBehaviorChanges) . '</li></ul>'),
             'TXT_'.$this->moduleLangVar.'_SETTINGS_NUM_ENTRIES_TO_LIST' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_ENTRIES_TO_LIST'],
@@ -887,25 +887,21 @@ EOF;
             }
         }
 
-        $objLanguages = $objDatabase->Execute("SELECT id,lang,name,frontend,is_default FROM ".DBPREFIX."languages ORDER BY is_default ASC");
         $arrActiveLangs = array();
         $arrActiveLangs = explode(",",$this->arrSettings['settingsActiveLanguages']);
-        if ($objLanguages !== false) {
-            while (!$objLanguages->EOF) {
-                if(in_array($objLanguages->fields['id'], $arrActiveLangs)) {
-                    $strLangStatus = 'checked="checked"';
-                } else {
-                   $strLangStatus = '';
-                }
-                $objTpl->setVariable(array(
-                    $this->moduleLangVar.'_SETTINGS_ACTIVE_LANG_ID' => intval($objLanguages->fields['id']),
-                    $this->moduleLangVar.'_SETTINGS_ACTIVE_LANG_NAME' => htmlspecialchars($objLanguages->fields['name'], ENT_QUOTES, CONTREXX_CHARSET),
-                    $this->moduleLangVar.'_SETTINGS_ACTIVE_LANG_STATUS' => $strLangStatus,
-                ));
-
-                $objTpl->parse('activeLanguageList');
-                $objLanguages->MoveNext();
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $frontendLanguage) {
+            if(in_array($frontendLanguage['id'], $arrActiveLangs)) {
+                $strLangStatus = 'checked="checked"';
+            } else {
+               $strLangStatus = '';
             }
+            $objTpl->setVariable(array(
+                $this->moduleLangVar.'_SETTINGS_ACTIVE_LANG_ID' => intval($frontendLanguage['id']),
+                $this->moduleLangVar.'_SETTINGS_ACTIVE_LANG_NAME' => htmlspecialchars($frontendLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET),
+                $this->moduleLangVar.'_SETTINGS_ACTIVE_LANG_STATUS' => $strLangStatus,
+            ));
+
+            $objTpl->parse('activeLanguageList');
         }
 
         $objTpl->parse('settings_content');

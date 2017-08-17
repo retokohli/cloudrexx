@@ -50,6 +50,7 @@ class MediaDirectory extends MediaDirectoryLibrary
     var $metaTitle;
     var $metaDescription;
     var $metaImage;
+    var $metaKeys;
 
 
     var $arrNavtree = array();
@@ -397,7 +398,11 @@ class MediaDirectory extends MediaDirectoryLibrary
             if (!$this->arrSettings['legacyBehavior']) {
                 $this->pageTitle = $objLevel->arrLevels[$intLevelId]['levelName'][0];
             }
-            $this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelDescription'][0];
+            if (empty($objLevel->arrLevels[$intLevelId]['levelMetaDesc'][0])) {
+                $this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelDescription'][0];
+            } else {
+                $this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelMetaDesc'][0];
+            }
             $this->metaImage = $objLevel->arrLevels[$intLevelId]['levelPicture'];
         }
 
@@ -412,7 +417,11 @@ class MediaDirectory extends MediaDirectoryLibrary
             if (!$this->arrSettings['legacyBehavior']) {
                 $this->pageTitle = $objCategory->arrCategories[$intCategoryId]['catName'][0];
             }
-            $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catDescription'][0];
+            if (empty($objCategory->arrCategories[$intCategoryId]['catMetaDesc'][0])) {
+                $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catDescription'][0];
+            } else {
+                $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catMetaDesc'][0];
+            }
             $this->metaImage = $objCategory->arrCategories[$intCategoryId]['catPicture'];
         }
 
@@ -725,7 +734,7 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         foreach ($inputFields as $arrInputfield) {
             $contextType = isset($arrInputfield['context_type']) ? $arrInputfield['context_type'] : '';
-            if (!in_array($contextType, array('title', 'content', 'image'))) {
+            if (!in_array($contextType, array('title', 'content', 'image', 'keywords'))) {
                 continue;
             }
             $strType = isset($arrInputfield['type_name']) ? $arrInputfield['type_name'] : '';
@@ -740,7 +749,10 @@ class MediaDirectory extends MediaDirectoryLibrary
                     case 'title':
                         $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE'];
                         if ($inputfieldValue) {
-                            $this->metaTitle .= ' - ' . $inputfieldValue;
+                            if (!empty($this->metaTitle)) {
+                                $this->metaTitle .= ' - ';
+                            }
+                            $this->metaTitle .= $inputfieldValue;
                             $this->pageTitle = $inputfieldValue;
                         }
                         $titleChanged = true;
@@ -756,6 +768,12 @@ class MediaDirectory extends MediaDirectoryLibrary
                         $inputfieldValue = $arrInputfieldContent[$this->moduleLangVar . '_INPUTFIELD_VALUE_SRC'];
                         if ($inputfieldValue) {
                             $this->metaImage = $inputfieldValue;
+                        }
+                        break;
+                    case 'keywords':
+                        $inputfieldValue = $objInputfield->getRawData($entry['entryId'], $arrInputfield, $arrTranslationStatus, true);
+                        if ($inputfieldValue) {
+                            $this->metaKeys = $inputfieldValue;
                         }
                         break;
                     default:
@@ -775,6 +793,58 @@ class MediaDirectory extends MediaDirectoryLibrary
         if (!$contentChanged && $firstInputfieldValue) {
             $this->metaDescription = $firstInputfieldValue;
         }
+
+        // check if we shall parse any related entries
+        if (!$this->_objTpl->blockExists($this->moduleNameLC.'RelatedList')) {
+            return;
+        }
+
+        $latest = null;
+        $limit = $this->arrSettings['settingsPagingNumEntries'];
+        $offset = null;
+        $formId = null;
+        $categoryId = null;
+        $levelId = null;
+
+        $config = MediaDirectoryLibrary::fetchMediaDirListConfigFromTemplate($this->moduleNameLC.'RelatedList', $this->_objTpl, null, $intCategoryId, $intLevelId);
+
+        if (isset($config['list']['latest'])) {
+            $latest = $config['list']['latest'];
+        }
+        if (isset($config['list']['limit'])) {
+            $limit = $config['list']['limit'];
+        }
+        if (isset($config['list']['offset'])) {
+            $offset = $config['list']['offset'];
+        }
+        if (isset($config['filter']['form'])) {
+            $formId = $config['filter']['form'];
+        }
+        if (isset($config['filter']['category'])) {
+            $categoryId = $config['filter']['category'];
+        }
+        if (isset($config['filter']['level'])) {
+            $levelId = $config['filter']['level'];
+        }
+
+        // fetch related entries
+        $objEntry->getEntries(null, $levelId, $categoryId, null, $latest, null, true, $offset, $limit, null, null, $formId);
+
+        // remove currently parsed entry
+        unset($objEntry->arrEntries[$intEntryId]);
+
+        // abort in case no related entries are present
+        if (empty($objEntry->arrEntries)) {
+            // hide block being used to display related entries
+            $this->_objTpl->hideBlock($this->moduleNameLC.'RelatedList');
+            return;
+        }
+
+        // set mediadirRelatedList tempalte block to be parsed
+        $objEntry->setStrBlockName($this->moduleNameLC.'RelatedListEntry');
+
+        // prarse related entries
+        $objEntry->listEntries($this->_objTpl, 5);
     }
 
 
@@ -922,39 +992,63 @@ class MediaDirectory extends MediaDirectoryLibrary
      * Parse entries in template block mediadirList of supplied template object $template.
      * If $block is set, then the template block identifined by $block will be parsed
      * instead of mediadirList.
-     * Using $filter the entries to be parsed can be filtered by form, category and/or level
+     * Using $config the entries to be parsed can be filtered by form, category and/or level
      * association.
      * @param   \Cx\Core\Html\Sigma $template   Template object to be used for parsing
      * @param   string  $block  The template block to be parsed. If not set, the template block mediadirList will be parsed.
-     * @param   array   $filter Filter the entries to be parsed by form, category and/or level association. Schema:
-     *                          array(
-     *                                  'form'     => <form-id>,
-     *                                  'category' => <category-id>,
-     *                                  'level'    => <level-id>
-     *                          )
+     * @param   array   $config Filter the entries to be parsed by form,
+     *                          category and/or level association.
+     *                          Additionally, the order of the listing can be
+     *                          set according to the latest additions.
+     *                          Further, the listing can be limited to a
+     *                          specific amount of entries. Schema:
+     *                  <pre>array(
+     *                      'list' => array(
+     *                           'latest' => <true|false>,
+     *                           'limit' => <limit>,
+     *                           'offset' => <offset>
+     *                      ),
+     *                      'filter' => array(
+     *                           'form' => <form-id>,
+     *                           'category' => <category-id>,
+     *                           'level' => <level-id>
+     *                      )
+     *                  )</pre>
      */
-    public function parseEntries($template, $block = '', $filter = array()) {
+    public function parseEntries($template, $block = '', $config = array()) {
         $objEntry = new MediaDirectoryEntry($this->moduleName);
 
+        $latest = null;
+        $limit = $this->arrSettings['settingsPagingNumEntries'];
+        $offset = null;
         $formId = null;
         $categoryId = null;
         $levelId = null;
 
-        if (isset($filter['form'])) {
-            $formId = $filter['form'];
+        if (isset($config['list']['latest'])) {
+            $latest = $config['list']['latest'];
         }
-        if (isset($filter['category'])) {
-            $categoryId = $filter['category'];
+        if (isset($config['list']['limit'])) {
+            $limit = $config['list']['limit'];
         }
-        if (isset($filter['level'])) {
-            $levelId = $filter['level'];
+        if (isset($config['list']['offset'])) {
+            $offset = $config['list']['offset'];
+        }
+        if (isset($config['filter']['form'])) {
+            $formId = $config['filter']['form'];
+        }
+        if (isset($config['filter']['category'])) {
+            $categoryId = $config['filter']['category'];
+        }
+        if (isset($config['filter']['level'])) {
+            $levelId = $config['filter']['level'];
         }
 
         if (empty($block)) {
             $block = $this->moduleNameLC.'List';
         }
 
-        $objEntry->getEntries(null, $levelId, $categoryId, null, null, null, true, null, $this->arrSettings['settingsPagingNumEntries'], null, null, $formId);
+        $objEntry->getEntries(null, $levelId, $categoryId, null, $latest, null, true, $offset, $limit, null, null, $formId);
         $objEntry->setStrBlockName($block);
         $objEntry->listEntries($template, 2);
     }
@@ -1032,6 +1126,9 @@ class MediaDirectory extends MediaDirectoryLibrary
                 if(isset($_POST['submitEntryModfyForm'])) {
                     $objEntry = new MediaDirectoryEntry($this->moduleName);
                     $strStatus = $objEntry->saveEntry($_POST, intval($_POST['entryId']));
+
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('MediaDir');
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Home');
 
                     if(!empty($_POST['entryId'])) {
                         $objEntry->getEntries(intval($_POST['entryId']));
@@ -1347,11 +1444,40 @@ class MediaDirectory extends MediaDirectoryLibrary
             foreach ($this->arrNavtree as $key => $strName) {
                 $strClass = $i == $count -1 ? 'last' : '';
                 $strSeparator = $i == 0 ? '' : '&gt;';
+                $url = '';
+                $title = '';
 
+                // Note: the following is a workaround as the array
+                // $this->arrNavtree does not contain normalized data,
+                // but instead already the processed HTML-links.
+                //
+                // Load HTML code of navtree element into a DOMDocument
+                $domDocument = \DOMDocument::loadHTML($strName);
+                if ($domDocument) {
+                    // fetch link tags
+                    $nodeList = $domDocument->getElementsByTagName('a');
+
+                    // check if the navtree element was an actual HTML-link
+                    if ($nodeList->length) {
+                        // as the HTML-code did only contain one link element,
+                        // the first one (index 0) will be our navtree element
+                        $item = $nodeList->item(0);
+                        if ($item) {
+                            $url = $item->getAttribute('href');
+                            $title = $item->textContent;
+                        }
+                    } else {
+                        // in case the navtree element was not a HTML-link,
+                        // we shall only set the TITLE placeholder
+                        $title = $strName;
+                    }
+                }
                 $template->setVariable(array(
-                    $this->moduleLangVar.'_NAVTREE_LINK'    =>  $strName,
-                    $this->moduleLangVar.'_NAVTREE_LINK_CLASS'    =>  $strClass,
-                    $this->moduleLangVar.'_NAVTREE_SEPARATOR'    =>  $strSeparator
+                    $this->moduleLangVar.'_NAVTREE_LINK'        =>  $strName,
+                    $this->moduleLangVar.'_NAVTREE_LINK_SRC'    =>  $url,
+                    $this->moduleLangVar.'_NAVTREE_LINK_TITLE'  =>  $title,
+                    $this->moduleLangVar.'_NAVTREE_LINK_CLASS'  =>  $strClass,
+                    $this->moduleLangVar.'_NAVTREE_SEPARATOR'   =>  $strSeparator
                 ));
 
                 $i++;
@@ -1413,14 +1539,22 @@ class MediaDirectory extends MediaDirectoryLibrary
     }
 
     public function getMetaTitle() {
-        return $this->metaTitle;
+        return contrexx_html2plaintext($this->metaTitle);
     }
 
     public function getMetaDescription() {
-        return $this->metaDescription;
+        return contrexx_html2plaintext($this->metaDescription);
     }
 
     public function getMetaImage() {
         return $this->metaImage;
+    }
+
+    /**
+     * Returns the metakeys
+     * @return string The meta keywords separated by comma
+     */
+    public function getMetaKeys() {
+        return $this->metaKeys;
     }
 }
