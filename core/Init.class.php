@@ -593,6 +593,11 @@ class InitCMS
         $this->templates['subnavbar']               = $this->getThemeFileContent($themesPath, 'subnavbar.html');
         $this->templates['subnavbar2']              = $this->getThemeFileContent($themesPath, 'subnavbar2.html');
         $this->templates['subnavbar3']              = $this->getThemeFileContent($themesPath, 'subnavbar3.html');
+        $this->templates['sidebar']                 = $this->getThemeFileContent($themesPath, 'sidebar.html');
+        $this->templates['top_news']                = $this->getThemeFileContent($themesPath, 'top_news.html');
+        $this->templates['shopnavbar']              = $this->getThemeFileContent($themesPath, 'shopnavbar.html');
+        $this->templates['shopnavbar2']             = $this->getThemeFileContent($themesPath, 'shopnavbar2.html');
+        $this->templates['shopnavbar3']             = $this->getThemeFileContent($themesPath, 'shopnavbar3.html');
         $this->templates['headlines']               = $this->getThemeFileContent($themesPath, 'headlines.html');
         $this->templates['headlines2']              = $this->getThemeFileContent($themesPath, 'headlines2.html');
         $this->templates['headlines3']              = $this->getThemeFileContent($themesPath, 'headlines3.html');
@@ -603,38 +608,25 @@ class InitCMS
         $this->templates['headlines8']              = $this->getThemeFileContent($themesPath, 'headlines8.html');
         $this->templates['headlines9']              = $this->getThemeFileContent($themesPath, 'headlines9.html');
         $this->templates['headlines10']             = $this->getThemeFileContent($themesPath, 'headlines10.html');
-        $this->templates['sidebar']                 = $this->getThemeFileContent($themesPath, 'sidebar.html');
-        $this->templates['top_news']                = $this->getThemeFileContent($themesPath, 'top_news.html');
-        $this->templates['shopnavbar']              = $this->getThemeFileContent($themesPath, 'shopnavbar.html');
-        $this->templates['shopnavbar2']             = $this->getThemeFileContent($themesPath, 'shopnavbar2.html');
-        $this->templates['shopnavbar3']             = $this->getThemeFileContent($themesPath, 'shopnavbar3.html');
         $this->templates['news_recent_comments']    = $this->getThemeFileContent($themesPath, 'news_recent_comments.html');
         $this->templates['javascript']              = $this->getThemeFileContent($themesPath, 'javascript.js');
         //$this->templates['style']                 = $this->getThemeFileContent($themesPath, 'style.css');
         $this->templates['buildin_style']           = $this->getThemeFileContent($themesPath, 'buildin_style.css');
+        $this->templates['calendar_headlines']      = $this->getThemeFileContent($themesPath, 'events.html');
+        $this->templates['calendar_headlines2']     = $this->getThemeFileContent($themesPath, 'events2.html');
+        $this->templates['calendar_headlines3']     = $this->getThemeFileContent($themesPath, 'events3.html');
+        $this->templates['calendar_headlines4']     = $this->getThemeFileContent($themesPath, 'events4.html');
+        $this->templates['calendar_headlines5']     = $this->getThemeFileContent($themesPath, 'events5.html');
+        $this->templates['calendar_headlines6']     = $this->getThemeFileContent($themesPath, 'events6.html');
+        $this->templates['calendar_headlines7']     = $this->getThemeFileContent($themesPath, 'events7.html');
+        $this->templates['calendar_headlines8']     = $this->getThemeFileContent($themesPath, 'events8.html');
+        $this->templates['calendar_headlines9']     = $this->getThemeFileContent($themesPath, 'events9.html');
+        $this->templates['calendar_headlines10']    = $this->getThemeFileContent($themesPath, 'events10.html');
         $this->templates['directory_content']       = $this->getThemeFileContent($themesPath, 'directory.html');
         $this->templates['forum_content']           = $this->getThemeFileContent($themesPath, 'forum.html');
         $this->templates['podcast_content']         = $this->getThemeFileContent($themesPath, 'podcast.html');
         $this->templates['blog_content']            = $this->getThemeFileContent($themesPath, 'blog.html');
         $this->templates['immo']                    = $this->getThemeFileContent($themesPath, 'immo.html');
-
-        // Load News and Calendar headlines files
-        foreach (
-            array(
-                'calendar_headlines' => 'events',
-            ) as $templateIndexPrefix=>$filePrefix
-        ) {
-            for ($i = 1; $i <= 20; $i++) {
-                $suffix = (string) $i;
-                if ($i == 1) {
-                    $suffix = '';
-                }
-                $this->templates[$templateIndexPrefix . $suffix] = $this->getThemeFileContent(
-                    $themesPath,
-                    $filePrefix . $suffix . '.html'
-                );
-            }
-        }
 
         if (!$this->hasCustomContent() || !$this->loadCustomContent($page)) {
             // load default content layout if page doesn't have a custom content
