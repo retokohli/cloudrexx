@@ -593,6 +593,16 @@ class InitCMS
         $this->templates['subnavbar']               = $this->getThemeFileContent($themesPath, 'subnavbar.html');
         $this->templates['subnavbar2']              = $this->getThemeFileContent($themesPath, 'subnavbar2.html');
         $this->templates['subnavbar3']              = $this->getThemeFileContent($themesPath, 'subnavbar3.html');
+        $this->templates['headlines']               = $this->getThemeFileContent($themesPath, 'headlines.html');
+        $this->templates['headlines2']              = $this->getThemeFileContent($themesPath, 'headlines2.html');
+        $this->templates['headlines3']              = $this->getThemeFileContent($themesPath, 'headlines3.html');
+        $this->templates['headlines4']              = $this->getThemeFileContent($themesPath, 'headlines4.html');
+        $this->templates['headlines5']              = $this->getThemeFileContent($themesPath, 'headlines5.html');
+        $this->templates['headlines6']              = $this->getThemeFileContent($themesPath, 'headlines6.html');
+        $this->templates['headlines7']              = $this->getThemeFileContent($themesPath, 'headlines7.html');
+        $this->templates['headlines8']              = $this->getThemeFileContent($themesPath, 'headlines8.html');
+        $this->templates['headlines9']              = $this->getThemeFileContent($themesPath, 'headlines9.html');
+        $this->templates['headlines10']             = $this->getThemeFileContent($themesPath, 'headlines10.html');
         $this->templates['sidebar']                 = $this->getThemeFileContent($themesPath, 'sidebar.html');
         $this->templates['top_news']                = $this->getThemeFileContent($themesPath, 'top_news.html');
         $this->templates['shopnavbar']              = $this->getThemeFileContent($themesPath, 'shopnavbar.html');
@@ -611,8 +621,7 @@ class InitCMS
         // Load News and Calendar headlines files
         foreach (
             array(
-                'headlines' => 'headlines',
-                'events' => 'calendar_headlines',
+                'calendar_headlines' => 'events',
             ) as $templateIndexPrefix=>$filePrefix
         ) {
             for ($i = 1; $i <= 20; $i++) {
