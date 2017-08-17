@@ -160,7 +160,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // Get Headlines
                 $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsHeadlines.class.php';
                 if (file_exists($modulespath)) {
-                    for ($i = 0; $i <= 10; $i++) {
+                    for ($i = 0; $i <= 20; $i++) {
                         $visibleI = '';
                         if ($i > 0) {
                             $visibleI = (string) $i;
