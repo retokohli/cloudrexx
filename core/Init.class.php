@@ -608,6 +608,16 @@ class InitCMS
         $this->templates['headlines8']              = $this->getThemeFileContent($themesPath, 'headlines8.html');
         $this->templates['headlines9']              = $this->getThemeFileContent($themesPath, 'headlines9.html');
         $this->templates['headlines10']             = $this->getThemeFileContent($themesPath, 'headlines10.html');
+        $this->templates['headlines11']             = $this->getThemeFileContent($themesPath, 'headlines11.html');
+        $this->templates['headlines12']             = $this->getThemeFileContent($themesPath, 'headlines12.html');
+        $this->templates['headlines13']             = $this->getThemeFileContent($themesPath, 'headlines13.html');
+        $this->templates['headlines14']             = $this->getThemeFileContent($themesPath, 'headlines14.html');
+        $this->templates['headlines15']             = $this->getThemeFileContent($themesPath, 'headlines15.html');
+        $this->templates['headlines16']             = $this->getThemeFileContent($themesPath, 'headlines16.html');
+        $this->templates['headlines17']             = $this->getThemeFileContent($themesPath, 'headlines17.html');
+        $this->templates['headlines18']             = $this->getThemeFileContent($themesPath, 'headlines18.html');
+        $this->templates['headlines19']             = $this->getThemeFileContent($themesPath, 'headlines19.html');
+        $this->templates['headlines20']             = $this->getThemeFileContent($themesPath, 'headlines20.html');
         $this->templates['news_recent_comments']    = $this->getThemeFileContent($themesPath, 'news_recent_comments.html');
         $this->templates['javascript']              = $this->getThemeFileContent($themesPath, 'javascript.js');
         //$this->templates['style']                 = $this->getThemeFileContent($themesPath, 'style.css');
