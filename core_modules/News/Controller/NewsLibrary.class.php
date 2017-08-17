@@ -1188,19 +1188,16 @@ class NewsLibrary
             return false;
         }
         $status = true;
-        $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."languages");
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_locale (`lang_id`, `news_id`, `title`, `text`, `teaser_text`)
+        $frontendLanguages = \FWLanguage::getActiveFrontendLanguages();
+        foreach ($frontendLanguages as $language) {
+            if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_locale (`lang_id`, `news_id`, `title`, `text`, `teaser_text`)
                     VALUES ("
-                        . intval($objResult->fields['id']) . ", "
-                        . intval($newsId) . ", '"
-                        . contrexx_input2db($title) . "', '"
-                        . $this->filterBodyTag(contrexx_input2db($text)) . "', '"
-                        . contrexx_input2db($teaser_text) . "')")){
-                    $status = false;
-                }
-                $objResult->MoveNext();
+                . intval($language['id']) . ", "
+                . intval($newsId) . ", '"
+                . contrexx_input2db($title) . "', '"
+                . $this->filterBodyTag(contrexx_input2db($text)) . "', '"
+                . contrexx_input2db($teaser_text) . "')")){
+                $status = false;
             }
         }
         return $status;

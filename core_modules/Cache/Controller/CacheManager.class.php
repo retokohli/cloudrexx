@@ -116,7 +116,6 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             'TXT_CACHE_XCACHE' => $_ARRAYLANG['TXT_CACHE_XCACHE'],
             'TXT_CACHE_MEMCACHE' => $_ARRAYLANG['TXT_CACHE_MEMCACHE'],
             'TXT_CACHE_MEMCACHED' => $_ARRAYLANG['TXT_CACHE_MEMCACHED'],
-            'TXT_CACHE_FILESYSTEM' => $_ARRAYLANG['TXT_CACHE_FILESYSTEM'],
             'TXT_CACHE_APC_ACTIVE_INFO' => $_ARRAYLANG['TXT_CACHE_APC_ACTIVE_INFO'],
             'TXT_CACHE_APC_CONFIG_INFO' => $_ARRAYLANG['TXT_CACHE_APC_CONFIG_INFO'],
             'TXT_CACHE_ZEND_OPCACHE_ACTIVE_INFO' => $_ARRAYLANG['TXT_CACHE_ZEND_OPCACHE_ACTIVE_INFO'],
@@ -249,11 +248,6 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         }else{
             $this->objTpl->hideBlock('xCacheCachingStats');
         }
-        if ($this->userCacheEngine == self::CACHE_ENGINE_FILESYSTEM && $this->getUserCacheActive()) {
-            $this->objTpl->touchBlock('FileSystemCachingStats');
-        } else {
-            $this->objTpl->hideBlock('FileSystemCachingStats');
-        }
         $apcSizeCount = isset($apcCacheInfo['nhits']) ? $apcCacheInfo['nhits'] : 0;
         $apcEntriesCount = 0;
         if(isset($apcCacheInfo)){
@@ -301,9 +295,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             'SETTINGS_SSI_CACHE_TYPE_VARNISH' => ($this->arrSettings['cacheSsiType'] == 'varnish') ? 'selected' : '',
             'SETTINGS_SSI_CACHE_TYPE_NGINX' => ($this->arrSettings['cacheSsiType'] == 'nginx') ? 'selected' : '',
             'SETTINGS_EXPIRATION' => intval($this->arrSettings['cacheExpiration']),
-            'STATS_CONTREXX_FILESYSTEM_CHACHE_PAGES_COUNT' => $intFilesPages,
             'STATS_FOLDERSIZE_PAGES'                => number_format($intFoldersizePages / 1024, 2, '.', '\''),
-            'STATS_CONTREXX_FILESYSTEM_CHACHE_ENTRIES_COUNT' => $intFilesEntries,
             'STATS_FOLDERSIZE_ENTRIES'              => number_format($intFoldersizeEntries / 1024, 2, '.', '\''),
             'STATS_APC_CHACHE_SITE_COUNT'           => $apcSizeCount,
             'STATS_APC_CHACHE_ENTRIES_COUNT'        => $apcEntriesCount,
@@ -502,7 +494,6 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             self::CACHE_ENGINE_MEMCACHE => array(),
             self::CACHE_ENGINE_MEMCACHED => array(),
             self::CACHE_ENGINE_XCACHE => array(),
-            self::CACHE_ENGINE_FILESYSTEM => array(),
         );
         $this->objTpl->setVariable('CHECKED_USERCACHE_' . strtoupper($this->getUserCacheEngine()), 'checked="checked"');
         if ($this->isInstalled(self::CACHE_ENGINE_APC, true)) {
@@ -545,13 +536,6 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             $cachingEngines[self::CACHE_ENGINE_XCACHE]['configured'] = true;
         }
 
-        if ($this->isConfigured(self::CACHE_ENGINE_FILESYSTEM)) {
-            $cachingEngines[self::CACHE_ENGINE_FILESYSTEM] = array(
-                'installed' => true,
-                'active' => true,
-                'configured' => true
-            );
-        }
         foreach ($cachingEngines as $engine => $data) {
             $installationIcon = $activeIcon = $configurationIcon = 'led_red.gif';
             if (isset($data['installed']) && isset($data['active']) && isset($data['configured'])) {
@@ -646,27 +630,4 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
         $objTemplate->SetVariable('CONTENT_OK_MESSAGE', $_ARRAYLANG['TXT_CACHE_EMPTY_SUCCESS']);
     }
-
-
-    /**
-     * Delete all specific file from cache-folder
-     *
-     * @global     object    $objDatabase
-     */
-    function deleteSingleFile($intPageId)
-    {
-        global $objDatabase;
-
-        $intPageId = intval($intPageId);
-        if ( 0 < $intPageId ) {
-            $files = glob( $this->strCachePath . '*_' . $intPageId );
-            if ( count( $files ) ) {
-                foreach ( $files as $file ) {
-                    @unlink( $file );
-                }
-            }
-        }
-    }
 }
-
-?>

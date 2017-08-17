@@ -35,7 +35,6 @@
  */
 
 namespace Cx\Core_Modules\Access\Controller;
-use Cx\Core_Modules\Access\Model\Event\AccessEventListener;
 
 /**
  * Main controller for Access
@@ -205,8 +204,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * $this->cx->getEvents()->addEventListener($eventName, $listener);
      */
     public function registerEventListeners() {
-        $eventListener = new AccessEventListener($this->cx);
-        $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
+        $evm = $this->cx->getEvents();
+        $eventListener = new \Cx\Core_Modules\Access\Model\Event\AccessEventListener($this->cx);
+        $evm->addEventListener('mediasource.load', $eventListener);
+        // locale event listener
+        $localeLocaleEventListener = new \Cx\Core_Modules\Access\Model\Event\LocaleLocaleEventListener($this->cx);
+        $evm->addModelListener('postPersist', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
+        $evm->addModelListener('preRemove', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
     }
 
     /**
@@ -214,9 +218,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *
      * This event must be registered in the postInit-Hook definition
      * file config/postInitHooks.yml.
-     * @param \Cx\Core\Core\Controller\Cx $cx The instance of \Cx\Core\Core\Controller\Cx
+     * @param \Cx\Core\Core\Controller\Cx   $cx The instance of \Cx\Core\Core\Controller\Cx
      */
-    public function postInit()
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx)
     {
         $widgetController = $this->getComponent('Widget');
         foreach (
@@ -244,7 +248,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
         }
 
-        $widgetNames = array(
+        $widgetNames     = array(
             'access_currently_online_member_list',
             'access_last_active_member_list',
             'access_latest_registered_member_list',
