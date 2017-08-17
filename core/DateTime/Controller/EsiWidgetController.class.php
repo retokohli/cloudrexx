@@ -66,10 +66,11 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             global $_CORELANG;
 
             //The global $_CORELANG is required by the method showFormattedDate()
+            $langId = \FWLanguage::getLangIdByIso639_1($params['locale']);
             $_CORELANG = \Env::get('init')->getComponentSpecificLanguageData(
                 'Core',
                 true,
-                $params['lang']
+                $langId
             );
             $template->setVariable($name, showFormattedDate());
             $setTimeout = new \DateTime();
