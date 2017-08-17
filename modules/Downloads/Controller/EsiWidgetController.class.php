@@ -64,7 +64,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
 
         $this->getComponent('Session')->getSession();
         //The $_LANGID is required in the Downloads::overview()
-        $_LANGID = $params['lang'];
+        $_LANGID = $params['locale']->getId();
 
         $matches = array();
         if (preg_match('/^DOWNLOADS_GROUP_([0-9]+)$/', $name, $matches)) {
