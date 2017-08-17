@@ -1937,7 +1937,7 @@ END;
      */
     function _modifyContact()
     {
-        global $_ARRAYLANG, $objDatabase ,$objJs, $objResult, $_LANGID, $_CORELANG;
+        global $_ARRAYLANG, $objDatabase ,$objJs, $_LANGID, $_CORELANG;
 
         \JS::activate('cx');
         \JS::activate("jquery");
@@ -2379,7 +2379,6 @@ END;
                 $this->_objTpl->parse("ContactLanguages");
             }
             $this->_objTpl->parse("showAddtionalContactLanguages" . $contactType);
-            $objResult->MoveNext();
         }
 
         // special fields for customer
@@ -2571,11 +2570,11 @@ END;
 
         // If updated_date is null, its a new entry. If not, show the date of the
         // last update.
-        if($this->contact->updated_date) {
+        if ($this->contact->updated_date) {
             $this->_objTpl->touchBlock("crmLastUpdate");
         }
         // Only show amount input if it is enabled in settings
-        if($settings['contact_amount_enabled']){
+        if ($settings['contact_amount_enabled']){
             $this->_objTpl->touchBlock('customeramount' . $contactType);
         }
         if ($contactType == 2) {    // If contact type eq to `contact`
