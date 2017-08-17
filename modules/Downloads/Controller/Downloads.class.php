@@ -165,8 +165,9 @@ class Downloads extends DownloadsLibrary
         global $_LANGID, $_ARRAYLANG;
 
         \Cx\Core\Csrf\Controller\Csrf::check_code();
+        $id = isset($_GET['delete_file']) ? contrexx_input2int($_GET['delete_file']) : 0;
         $objDownload = new Download();
-        $objDownload->load(isset($_GET['delete_file']) ? $_GET['delete_file'] : 0);
+        $objDownload->load($id, $this->arrConfig['list_downloads_current_lang']);
 
         if (!$objDownload->EOF) {
             $name = '<strong>'.htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'</strong>';
@@ -234,9 +235,14 @@ class Downloads extends DownloadsLibrary
             // parse crumbtrail
             $this->parseCrumbtrail($objCategory);
 
-            if ($objDownload->load(!empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0)
-                && (!$objDownload->getExpirationDate() || $objDownload->getExpirationDate() > time())
-                && $objDownload->getActiveStatus()
+            $id = !empty($_REQUEST['id']) ? contrexx_input2int($_REQUEST['id']) : 0;
+            if (
+                $objDownload->load($id, $this->arrConfig['list_downloads_current_lang']) &&
+                (
+                    !$objDownload->getExpirationDate() ||
+                    $objDownload->getExpirationDate() > time()
+                ) &&
+                $objDownload->getActiveStatus()
             ) {
                 /* DOWNLOAD DETAIL PAGE */
                 $this->pageTitle = $objDownload->getName(FRONTEND_LANG_ID);
@@ -1026,7 +1032,7 @@ JS_CODE;
             'DOWNLOADS_'.$variablePrefix.'CATEGORY_IMAGE_SRC'          => $imageSrc,
             'DOWNLOADS_'.$variablePrefix.'CATEGORY_THUMBNAIL'          => $this->getHtmlImageTag($thumbnailSrc, htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_'.$variablePrefix.'CATEGORY_THUMBNAIL_SRC'      => $thumbnailSrc,
-            'DOWNLOADS_'.$variablePrefix.'CATEGORY_DOWNLOADS_COUNT'    => intval($objCategory->getAssociatedDownloadsCount()),
+            'DOWNLOADS_'.$variablePrefix.'CATEGORY_DOWNLOADS_COUNT'    => intval($objCategory->getAssociatedDownloadsCount($this->arrConfig['list_downloads_current_lang'])),
             'DOWNLOADS_'.$variablePrefix.'CATEGORY_DELETE_ICON'        => $deleteIcon,
             'DOWNLOADS_'.$variablePrefix.'CATEGORY_ROW_CLASS'          => 'row'.($row % 2 + 1),
             'TXT_DOWNLOADS_MORE'                                       => $_ARRAYLANG['TXT_DOWNLOADS_MORE']
@@ -1085,7 +1091,16 @@ JS_CODE;
 
         $objDownload = new Download();
         $sortOrder   = $this->downloadsSortingOptions[$this->arrConfig['downloads_sorting_order']];
-        $objDownload->loadDownloads($filter, $this->searchKeyword, $sortOrder, null, $_CONFIG['corePagingLimit'], $limitOffset, $includeDownloadsOfSubcategories);
+        $objDownload->loadDownloads(
+            $filter,
+            $this->searchKeyword,
+            $sortOrder,
+            null,
+            $_CONFIG['corePagingLimit'],
+            $limitOffset,
+            $includeDownloadsOfSubcategories,
+            $this->arrConfig['list_downloads_current_lang']
+        );
         $categoryId = $objCategory->getId();
         $allowdDeleteFiles = false;
         if (!$objCategory->EOF) {
@@ -1156,7 +1171,16 @@ JS_CODE;
         }
 
         $objDownload = new Download();
-        $objDownload->loadDownloads($arrFilter, null, $arrSort, null, $limit);
+        $objDownload->loadDownloads(
+            $arrFilter,
+            null,
+            $arrSort,
+            null,
+            $limit,
+            null,
+            false,
+            $this->arrConfig['list_downloads_current_lang']
+        );
 
         if ($objDownload->EOF) {
             $this->objTemplate->hideBlock($arrBlocks[0]);
@@ -1329,7 +1353,12 @@ JS_CODE;
         }
     }
 
-
+    /**
+     * Parse a related downloads
+     *
+     * @param \Cx\Modules\Downloads\Controller\Download $objDownload        Download object
+     * @param integer                                   $currentCategoryId  Category ID
+     */
     private function parseRelatedDownloads($objDownload, $currentCategoryId)
     {
         global $_LANGID, $_ARRAYLANG;
@@ -1339,7 +1368,16 @@ JS_CODE;
         }
 
         $sortOrder          = $this->downloadsSortingOptions[$this->arrConfig['downloads_sorting_order']];
-        $objRelatedDownload = $objDownload->getDownloads(array('download_id' => $objDownload->getId()), null, $sortOrder);
+        $objRelatedDownload =
+            $objDownload->getDownloads(
+                array('download_id' => $objDownload->getId()),
+                null,
+                $sortOrder,
+                null,
+                null,
+                null,
+                $this->arrConfig['list_downloads_current_lang']
+            );
 
         if ($objRelatedDownload) {
             $row = 1;
@@ -1464,7 +1502,8 @@ JS_CODE;
         global $objInit;
 
         $objDownload = new Download();
-        $objDownload->load(!empty($_GET['download']) ? intval($_GET['download']) : 0);
+        $id = !empty($_GET['download']) ? contrexx_input2int($_GET['download']) : 0;
+        $objDownload->load($id, $this->arrConfig['list_downloads_current_lang']);
         if (!$objDownload->EOF) {
             // check if the download is expired
             if (

@@ -1127,6 +1127,9 @@ class MediaDirectory extends MediaDirectoryLibrary
                     $objEntry = new MediaDirectoryEntry($this->moduleName);
                     $strStatus = $objEntry->saveEntry($_POST, intval($_POST['entryId']));
 
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('MediaDir');
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Home');
+
                     if(!empty($_POST['entryId'])) {
                         $objEntry->getEntries(intval($_POST['entryId']));
                         if($strStatus == true) {
