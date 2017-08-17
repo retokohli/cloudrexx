@@ -1989,7 +1989,7 @@ END;
         //person
         $this->contact->family_name      = (isset($_POST['family_name'])) ? contrexx_input2raw($_POST['family_name']) : '';
         $this->contact->contact_title    = (isset($_POST['contact_title'])) ? contrexx_input2raw($_POST['contact_title']) : '';
-        $this->contact->contact_amount   = (isset($_POST['contact_amount'])) ? contrexx_input2raw($_POST['contact_amount']) : null;
+        $this->contact->contact_amount   = (isset($_POST['contact_amount'])) ? contrexx_input2raw($_POST['contact_amount']) : '';
         $this->contact->contact_role     = (isset($_POST['contact_role'])) ? contrexx_input2raw($_POST['contact_role']) : '';
         $this->contact->contact_language = (isset($_POST['contact_language'])) ? (int) $_POST['contact_language'] : (empty($id) ? $_LANGID : 0);
         $this->contact->contact_customer = isset($_POST['company']) ? (int) $_POST['company'] : (isset($_GET['custId']) ? (int) $_GET['custId'] : 0);

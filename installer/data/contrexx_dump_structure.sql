@@ -92,7 +92,7 @@ CREATE TABLE `contrexx_access_user_profile` (
   `user_id` int(5) unsigned NOT NULL DEFAULT '0',
   `gender` enum('gender_undefined','gender_female','gender_male') NOT NULL DEFAULT 'gender_undefined',
   `title` int(10) unsigned NOT NULL DEFAULT '0',
-  `designation` VARCHAR(256) DEFAULT NULL,
+  `designation` varchar(255) NOT NULL DEFAULT '',
   `firstname` varchar(255) NOT NULL DEFAULT '',
   `lastname` varchar(255) NOT NULL DEFAULT '',
   `company` varchar(255) NOT NULL DEFAULT '',

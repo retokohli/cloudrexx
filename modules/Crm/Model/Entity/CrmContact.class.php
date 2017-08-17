@@ -212,7 +212,7 @@ class CrmContact
             'customer_addedby'  => isset ($this->addedUser) ? (int) $this->addedUser : 1,
             'company_size'      => isset ($this->companySize) ? $this->companySize : 0,
             'customer_currency' => isset ($this->currency) ? (int) $this->currency : 0,
-            'contact_amount'    => isset ($this->contact_amount) ? (int) $this->contact_amount : 0,
+            'contact_amount'    => isset ($this->contact_amount) ? $this->contact_amount : '',
             'contact_familyname'=> isset ($this->family_name) ? $this->family_name : '',
             'contact_title'     => isset ($this->contact_title) ? $this->contact_title : '',
             'contact_role'      => isset ($this->contact_role) ? $this->contact_role : '',
