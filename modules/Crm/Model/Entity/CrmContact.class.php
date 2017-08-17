@@ -161,9 +161,9 @@ class CrmContact
                            c.user_account,
                            c.datasource,
                            c.gender,
+                           c.contact_language,
                            con.customer_name AS contactCustomer,
                            t.label AS cType,
-                           lang.name AS language,
                            curr.name AS currency,
                            c.profile_picture,
                            c.`email_delivery`
@@ -180,8 +180,6 @@ class CrmContact
                          ON idn.entry_id = i.id AND lang_id = {$_LANGID}
                        LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_currency AS curr
                          ON c.customer_currency = curr.id
-                       LEFT JOIN ".DBPREFIX."languages AS lang
-                         ON c.contact_language = lang.id
                        WHERE c.id = {$this->id}";
         $objResult = $objDatabase->SelectLimit($query, 1);
 
