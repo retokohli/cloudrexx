@@ -163,7 +163,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         $widgetController = $this->getComponent('Widget');
         // Get Headlines
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 20; $i++) {
             $id = '';
             if ($i > 1) {
                 $id = $i;
