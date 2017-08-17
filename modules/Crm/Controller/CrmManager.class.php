@@ -1169,13 +1169,15 @@ class CrmManager extends CrmLibrary
             if ($custDetails['contact_type'] == 2) {
                 $custDetails['contact_role'] ? $objTpl->touchBlock("contactRole") : $objTpl->hideBlock("contactRole");
                 $membershipLink ? $objTpl->touchBlock("contactMembership") : $objTpl->hideBlock("contactMembership");
-                $custDetails['language'] ? $objTpl->touchBlock("contactLang") : $objTpl->hideBlock("contactLang");
+                $langId = $custDetails['contact_language'];
+                $langName = \FWLanguage::getLanguageParameter($langId, 'name');
+                $langName ? $objTpl->touchBlock("contactLang") : $objTpl->hideBlock("contactLang");
                 $objTpl->setVariable(array(
                         'CRM_CONTACT_NAME'          => contrexx_raw2xhtml($custDetails['customer_name']),
                         'CRM_CONTACT_FAMILY_NAME'   => contrexx_raw2xhtml($custDetails['contact_familyname']),
                         'CRM_CONTACT_ROLE'          => contrexx_raw2xhtml($custDetails['contact_role']),
                         'CRM_COMPNAY_NAME'          => (!empty($custDetails['contactCustomerId'])) ? "<a class='personPopupTrigger' href='./index.php?cmd=Crm&act=customers&tpl=showcustdetail&id={$custDetails['contactCustomerId']}' rel='{$custDetails['contactCustomerId']}' > ". contrexx_raw2xhtml($custDetails['contactCustomer'])."</a>" : '',
-                        'CRM_CONTACT_LANGUAGE'      => contrexx_raw2xhtml($custDetails['language']),
+                        'CRM_CONTACT_LANGUAGE'      => contrexx_raw2xhtml($langName),
                         'CRM_CUSTOMER_CURRENCY'     => contrexx_raw2xhtml($custDetails['currency']),
                         'CRM_CONTACT_PROFILE_IMAGE' => !empty($custDetails['profile_picture']) ? contrexx_raw2xhtml($custDetails['profile_picture']).".thumb" : 'profile_person_big.png',
                         'CRM_CUSTOMERTYPE'          => "<a title='filter' href='./index.php?cmd=".$this->moduleName."&act=customers&customer_type={$custDetails['customer_type']}'>".contrexx_raw2xhtml($custDetails['cType']).'</a>',
@@ -2367,12 +2369,11 @@ END;
         $this->getContactAddrTypeCountry($this->_objTpl, 2, $contactType == 1 ? "customerAdditionaladdressType" : 'additionaladdressType');
 
         // special fields for contacts
-        $objResult =   $objDatabase->Execute('SELECT  id,name,lang FROM    '.DBPREFIX.'languages');
-        while (!$objResult->EOF) {
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $frontendLang) {
             $this->_objTpl->setVariable(array(
-                    'TXT_LANG_ID'    =>  (int) $objResult->fields['id'],
-                    'TXT_LANG_NAME'     =>  contrexx_raw2xhtml($objResult->fields['name']),
-                    'TXT_LANG_SELECT'   =>  ($objResult->fields['id'] == $this->contact->contact_language) ? "selected=selected" : "",
+                    'TXT_LANG_ID'    =>  (int) $frontendLang['id'],
+                    'TXT_LANG_NAME'     =>  contrexx_raw2xhtml($frontendLang['name']),
+                    'TXT_LANG_SELECT'   =>  ($frontendLang['id'] == $this->contact->contact_language) ? "selected=selected" : "",
             ));
             if($contactType == 1){
                 $this->_objTpl->parse("ContactLanguages");
