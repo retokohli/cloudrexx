@@ -150,14 +150,17 @@ class NewsLibrary
     /**
      * Generates the formated ul/li of Archive list
      * Used in the template's
-     *
+     * If there are any news with scheduled publishing $nextUpdateDate will
+     * contain the date when the next news changes its publishing state.
+     * If there are are no news with scheduled publishing $nextUpdateDate will
+     * be null.
      * @param integer $langId Language id
-     *
+     * @param \DateTime $nextUpdateDate (reference) DateTime of the next change
      * @return string Formated ul/li of Archive list
      */
-    public function getNewsArchiveList($langId = null)
+    public function getNewsArchiveList($langId = null, &$nextUpdateDate = null)
     {
-        $monthlyStats = $this->getMonthlyNewsStats(array(), $langId);
+        $monthlyStats = $this->getMonthlyNewsStats(array(), $langId, $nextUpdateDate);
 
         $html = '';
         if (!empty($monthlyStats)) {
@@ -1353,14 +1356,17 @@ class NewsLibrary
 
     /**
      * Returns the news monthly stats by the given filters
-     *
+     * If there are any news with scheduled publishing $nextUpdateDate will
+     * contain the date when the next news changes its publishing state.
+     * If there are are no news with scheduled publishing $nextUpdateDate will
+     * be null.
      * @access protected
      * @param  array     $categories      category filter
      * @param  integer   $langId          Language id
-     *
+     * @param \DateTime $nextUpdateDate (reference) DateTime of the next change
      * @return array     $monthlyStats  Monthly status array
      */
-    protected function getMonthlyNewsStats($categories, $langId = null)
+    protected function getMonthlyNewsStats($categories, $langId = null, &$nextUpdateDate = null)
     {
         global $objDatabase, $_CORELANG;
 
@@ -1385,6 +1391,8 @@ class NewsLibrary
                                 n.author_id      AS author_id,
                                 n.allow_comments AS commentactive,
                                 n.redirect_new_window AS redirectNewWindow,
+                                n.startdate,
+                                n.enddate,
                                 nl.title         AS newstitle,
                                 nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
                                 nl.teaser_text
@@ -1407,9 +1415,36 @@ class NewsLibrary
 
         $objResult = $objDatabase->Execute($query);
 
+        $nextUpdateDate = null;
         if ($objResult !== false) {
             $arrMonthTxt = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
             while (!$objResult->EOF) {
+                if (
+                    $objResult->fields['startdate'] != '0000-00-00 00:00:00' &&
+                    $objResult->fields['enddate'] != '0000-00-00 00:00:00'
+                ) {
+                    $startDate = new \DateTime($objResult->fields['startdate']);
+                    $endDate = new \DateTime($objResult->field['enddate']);
+                    if (
+                        $endDate > new \DateTime() &&
+                        (
+                            !$nextUpdateDate ||
+                            $endDate < $nextUpdateDate
+                        )
+                    ) {
+                        $nextUpdateDate = $endDate;
+                    }
+                    if (
+                        $startDate > new \DateTime() &&
+                        (
+                            !$nextUpdateDate ||
+                            $startDate < $nextUpdateDate
+                        )
+                    ) {
+                        $nextUpdateDate = $startDate;
+                    }
+                }
+
                 $filterDate = $objResult->fields['date'];
                 $newsYear = date('Y', $filterDate);
                 $newsMonth = date('m', $filterDate);

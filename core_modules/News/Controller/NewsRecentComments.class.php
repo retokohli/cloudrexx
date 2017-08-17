@@ -61,6 +61,9 @@ class NewsRecentComments extends \Cx\Core_Modules\News\Controller\NewsLibrary
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTemplate);
     }
 
+    /**
+     * @todo This does not respect scheduled publishing!
+     */
     function getRecentNewsComments($langId = 0)
     {
         global $objDatabase;

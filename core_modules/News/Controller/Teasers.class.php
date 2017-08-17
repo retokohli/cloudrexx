@@ -78,11 +78,16 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
     protected $langId = null;
 
     /**
-    * PHP5 constructor
-    * @global \Cx\Core\Html\Sigma
-    * @see \Cx\Core\Html\Sigma::setErrorHandling, \Cx\Core\Html\Sigma::setVariable, initialize()
-    */
-    function __construct($administrate = false, $langId = null)
+     * Creates a new Teaser controller
+     * If there are any news with scheduled publishing $nextUpdateDate will
+     * contain the date when the next news changes its publishing state.
+     * If there are are no news with scheduled publishing $nextUpdateDate will
+     * be null.
+     * @param boolean $administrate (optional) True for backend, false otherwise (default)
+     * @param integer $langId (optional) Language ID, if not specified FRONTEND_LANG_ID is used
+     * @param \DateTime $nextUpdateDate (reference) DateTime of the next change
+     */
+    public function __construct($administrate = false, $langId = null, &$nextUpdateDate = null)
     {
         parent::__construct();
         $this->administrate = $administrate;
@@ -94,20 +99,34 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-        $this->_initialize();
+        $this->_initialize($nextUpdateDate);
     }
 
-
-    function _initialize()
+    /**
+     * Initializes this controller
+     * If there are any news with scheduled publishing $nextUpdateDate will
+     * contain the date when the next news changes its publishing state.
+     * If there are are no news with scheduled publishing $nextUpdateDate will
+     * be null.
+     * @param \DateTime $nextUpdateDate (reference) DateTime of the next change
+     */
+    protected function _initialize(&$nextUpdateDate = null)
     {
-        $this->initializeTeasers();
+        $this->initializeTeasers($nextUpdateDate);
         $this->initializeTeaserFrames();
         //$this->_initializeTeaserTemplates();
         $this->initializeTeaserFrameTemplates();
     }
 
-
-    function initializeTeasers()
+    /**
+     * Loads the teasers parsed by this controller from DB
+     * If there are any news with scheduled publishing $nextUpdateDate will
+     * contain the date when the next news changes its publishing state.
+     * If there are are no news with scheduled publishing $nextUpdateDate will
+     * be null.
+     * @param \DateTime $nextUpdateDate (reference) DateTime of the next change
+     */
+    protected function initializeTeasers(&$nextUpdateDate = null)
     {
         global $objDatabase, $_CORELANG;
 
@@ -123,6 +142,8 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                    tblN.teaser_show_link,
                    tblN.teaser_image_path,
                    tblN.teaser_image_thumbnail_path,
+                   tblN.startdate,
+                   tblN.enddate,
                    tblL.title,
                    tblL.text AS teaser_full_text,
                    tblL.teaser_text
@@ -146,8 +167,37 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                     : " AND tblN.frontend_access_id=0 ")
                 : '')."
              ORDER BY date DESC");
+
+        $nextUpdateDate = null;
         if ($objResult !== false) {
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             while (!$objResult->EOF) {
+                if (
+                    $objResult->fields['startdate'] != '0000-00-00 00:00:00' &&
+                    $objResult->fields['enddate'] != '0000-00-00 00:00:00'
+                ) {
+                    $startDate = new \DateTime($objResult->fields['startdate']);
+                    $endDate = new \DateTime($objResult->field['enddate']);
+                    if (
+                        $endDate > new \DateTime() &&
+                        (
+                            !$nextUpdateDate ||
+                            $endDate < $nextUpdateDate
+                        )
+                    ) {
+                        $nextUpdateDate = $endDate;
+                    }
+                    if (
+                        $startDate > new \DateTime() &&
+                        (
+                            !$nextUpdateDate ||
+                            $startDate < $nextUpdateDate
+                        )
+                    ) {
+                        $nextUpdateDate = $startDate;
+                    }
+                }
+
                 $arrFrames = explode(';', $objResult->fields['teaser_frames']);
                 foreach ($arrFrames as $frameId) {
                     if (!isset($this->arrFrameTeaserIds[$frameId])) {
@@ -179,7 +229,6 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 } else {
                     $author = '';
                 }
-                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                 if (!empty($objResult->fields['teaser_image_thumbnail_path'])) {
                     $image = $objResult->fields['teaser_image_thumbnail_path'];
                 } elseif (!empty($objResult->fields['teaser_image_path']) && file_exists($cx->getWebsitePath() .'/' .\ImageManager::getThumbnailFilename($objResult->fields['teaser_image_path']))) {
