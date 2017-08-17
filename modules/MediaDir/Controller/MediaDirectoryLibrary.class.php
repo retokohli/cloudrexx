@@ -370,22 +370,17 @@ class MediaDirectoryLibrary
         self::getSettings();
         $arrActiveLangs = explode(",",$this->arrSettings['settingsActiveLanguages']);
 
-        $objLanguages = $objDatabase->Execute("SELECT id,lang,name,frontend,is_default FROM ".DBPREFIX."languages ORDER BY is_default ASC");
-        if ($objLanguages !== false) {
-            while (!$objLanguages->EOF) {
-                if(in_array($objLanguages->fields['id'], $arrActiveLangs)) {
-                    $arrData = array();
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $frontendLanguage) {
+            if(in_array($frontendLanguage['id'], $arrActiveLangs)) {
+                $arrData = array();
 
-                    $arrData['id'] = intval($objLanguages->fields['id']);
-                    $arrData['lang'] = htmlspecialchars($objLanguages->fields['lang'], ENT_QUOTES, CONTREXX_CHARSET);
-                    $arrData['name'] = htmlspecialchars($objLanguages->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
-                    $arrData['frontend'] = intval($objLanguages->fields['frontend']);
-                    $arrData['is_default'] = htmlspecialchars($objLanguages->fields['is_default'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrData['id'] = intval($frontendLanguage['id']);
+                $arrData['lang'] = htmlspecialchars($frontendLanguage['lang'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrData['name'] = htmlspecialchars($frontendLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrData['frontend'] = intval($frontendLanguage['frontend']);
+                $arrData['is_default'] = htmlspecialchars($frontendLanguage['is_default'], ENT_QUOTES, CONTREXX_CHARSET);
 
-                    $arrLanguages[$objLanguages->fields['id']] = $arrData;
-                }
-
-                $objLanguages->MoveNext();
+                $arrLanguages[$frontendLanguage['id']] = $arrData;
             }
         }
 
@@ -1354,5 +1349,100 @@ EOF;
         }
 
         self::$currentFetchedEntryDataObject->listEntries($template, 4, $placeholder);
+    }
+
+    /**
+     * Identity functional placeholders in the block $block of template
+     * $templatet that will act as config options to be applied on the listing
+     * of entries. Placeholders can have the following form:
+     * - MEDIADIR_CONFIG_LIST_LATEST => Order by latest addition
+     * - MEDIADIR_CONFIG_LIST_LIMIT_<limit> => Limit the listing
+     * - MEDIADIR_CONFIG_LIST_OFFSET_<offset> => Start listing at offset
+     * - MEDIADIR_CONFIG_FILTER_FORM_<id> => filter by form
+     * - MEDIADIR_CONFIG_FILTER_CATEGORY_<id> => filter by category
+     * - MEDIADIR_CONFIG_FILTER_LEVEL_<id> => filter by level
+     * - MEDIADIR_CONFIG_FILTER_AUTO => filter by supplied arguments as default
+     *
+     * @param   string  $block Name of the template block to look up for
+     *                         functional placeholders
+     * @param   \Cx\Core\Html\Sigma $template   Template object where the block
+     *                                          $block is located in
+     * @param   integer $formId If supplied and filter
+     *                          MEDIADIR_CONFIG_FILTER_AUTO is present, then do
+     *                          set filter 'form' to $formId
+     * @param   integer $categoryId If supplied and filter
+     *                              MEDIADIR_CONFIG_FILTER_AUTO is present, then
+     *                              do set filter 'category' to $categoryId
+     * @param   integer $levelId If supplied and filter
+     *                           MEDIADIR_CONFIG_FILTER_AUTO is present, then do
+     *                           set filter 'level' to $levelId
+     * @return  array   2-dimensional array containing the identified config.
+     *                  It has the following structure:
+     *                  <pre>array(
+     *                      'list' => array(
+     *                           'latest' => true,
+     *                           'limit' => 10,
+     *                           'offset' => 3
+     *                      ),
+     *                      'filter' => array(
+     *                           'form' => 3,
+     *                           'category' => 4,
+     *                           'level' => 5
+     *                      )
+     *                  )</pre>
+     *                  Note: the sub entries in array 'list' and array 'filter'
+     *                  are optional. They will only be set in case the
+     *                  associated placeholder was found in the specified
+     *                  template block.
+     */
+    public static function fetchMediaDirListConfigFromTemplate($block, $template, $formId = null, $categoryId = null, $levelId = null) {
+        $config = array(
+            'list' => array(),
+            'filter' => array(),
+        );
+        $placeholderList = $template->getPlaceholderList($block);
+        $placeholderListAsString = join("\n", $placeholderList);
+
+        if (preg_match_all('/MEDIADIR_CONFIG_(FILTER|LIST)_(LATEST|LIMIT|OFFSET|FORM|CATEGORY|LEVEL)(?:_([0-9]+))?/', $placeholderListAsString, $match)) {
+            foreach ($match[2] as $idx => $key) {
+                $configKey = strtolower($match[1][$idx]);
+                $option = strtolower($key);
+
+                // check for a specific set option value
+                if ($match[3][$idx] !== '') {
+                    $value = intval($match[3][$idx]);
+                } else {
+                    // if no specific option value has been set,
+                    // then the option will be set to TRUE
+                    $value = true;
+                }
+
+                $config[$configKey][$option] = $value;
+            }
+        }
+
+        // If filter MEDIADIR_FILTER_AUTO is present, then we will override the
+        // filters by the supplied arguments $formId, $categoryId and $levelId.
+        // Otherwise, we will ignore any supplied arguments
+        if (!in_array('MEDIADIR_CONFIG_FILTER_AUTO', $placeholderList)) {
+            return $config;
+        }
+
+        // override form filter
+        if ($formId) {
+            $config['filter']['form'] = $formId;
+        }
+
+        // override category filter
+        if ($categoryId) {
+            $config['filter']['category'] = $categoryId;
+        }
+
+        // override level filter
+        if ($levelId) {
+            $config['filter']['level'] = $levelId;
+        }
+
+        return $config;
     }
 }

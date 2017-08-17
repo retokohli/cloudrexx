@@ -259,6 +259,16 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             foreach ($_POST['displayorder'] as $blockId => $value){
                 $query = "UPDATE ".DBPREFIX."module_block_blocks SET `order`='".intval($value)."' WHERE id='".intval($blockId)."'";
                 $objDatabase->Execute($query);
+                // I guess this does not work in this case, but since
+                // the current implementation of block cache will be replaced
+                // in CLX-1547 we just try:
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->clearSsiCachePage(
+                    'Block',
+                    'getBlockContent',
+                    array(
+                        'block' => $blockId,
+                    )
+                );
             }
         }
 
@@ -1223,17 +1233,29 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
         global $_ARRAYLANG, $objDatabase;
 
         $arrStatusBlocks = isset($_POST['selectedBlockId']) ? $_POST['selectedBlockId'] : null;
-        if($arrStatusBlocks != null){
-            foreach ($arrStatusBlocks as $blockId){
+        if ($arrStatusBlocks != null) {
+            foreach ($arrStatusBlocks as $blockId) {
                 $query = "UPDATE ".DBPREFIX."module_block_blocks SET active='1' WHERE id=$blockId";
                 $objDatabase->Execute($query);
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->clearSsiCachePage(
+                    'Block',
+                    'getBlockContent',
+                    array(
+                        'block' => $blockId,
+                    )
+                );
             }
-        }else{
-            if(isset($_GET['blockId'])){
-                $blockId = $_GET['blockId'];
-                $query = "UPDATE ".DBPREFIX."module_block_blocks SET active='1' WHERE id=$blockId";
-                $objDatabase->Execute($query);
-            }
+        } else if(isset($_GET['blockId'])) {
+            $blockId = $_GET['blockId'];
+            $query = "UPDATE ".DBPREFIX."module_block_blocks SET active='1' WHERE id=$blockId";
+            $objDatabase->Execute($query);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->clearSsiCachePage(
+                'Block',
+                'getBlockContent',
+                array(
+                    'block' => $blockId,
+                )
+            );
         }
 
         $categoryParam = isset($_GET['catId']) ? '&catId=' . contrexx_input2int($_GET['catId']) : '';
@@ -1254,17 +1276,29 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
         global $objDatabase;
 
         $arrStatusBlocks = isset($_POST['selectedBlockId']) ? $_POST['selectedBlockId'] : null;
-        if($arrStatusBlocks != null){
+        if ($arrStatusBlocks != null) {
             foreach ($arrStatusBlocks as $blockId){
                 $query = "UPDATE ".DBPREFIX."module_block_blocks SET active='0' WHERE id=$blockId";
                 $objDatabase->Execute($query);
+                \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->clearSsiCachePage(
+                    'Block',
+                    'getBlockContent',
+                    array(
+                        'block' => $blockId,
+                    )
+                );
             }
-        }else{
-            if(isset($_GET['blockId'])){
-                $blockId = $_GET['blockId'];
-                $query = "UPDATE ".DBPREFIX."module_block_blocks SET active='0' WHERE id=$blockId";
-                $objDatabase->Execute($query);
-            }
+        } else if (isset($_GET['blockId'])) {
+            $blockId = $_GET['blockId'];
+            $query = "UPDATE ".DBPREFIX."module_block_blocks SET active='0' WHERE id=$blockId";
+            $objDatabase->Execute($query);
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->clearSsiCachePage(
+                'Block',
+                'getBlockContent',
+                array(
+                    'block' => $blockId,
+                )
+            );
         }
 
         $categoryParam = isset($_GET['catId']) ? '&catId=' . contrexx_input2int($_GET['catId']) : '';

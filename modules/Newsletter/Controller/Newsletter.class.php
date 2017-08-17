@@ -81,14 +81,8 @@ class Newsletter extends NewsletterLib
         }
 
         switch($_REQUEST['cmd']) {
-            case 'profile':
-                $this->_profile();
-                break;
             case 'unsubscribe':
                 $this->_unsubscribe();
-                break;
-             case 'subscribe':
-                $this->_profile();
                 break;
             case 'confirm':
                 $this->_confirm();
@@ -96,6 +90,8 @@ class Newsletter extends NewsletterLib
             case 'displayInBrowser':
                 $this->displayInBrowser();
                 break;
+            case 'subscribe':
+            case 'profile':
             default:
                 $this->_profile();
                 break;
@@ -109,7 +105,7 @@ class Newsletter extends NewsletterLib
         global $objDatabase, $_ARRAYLANG;
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
-        $userEmail = isset($_GET['email']) ? contrexx_input2raw(urldecode($_GET['email'])) : '';
+        $userEmail = isset($_GET['email']) ? rawurldecode(contrexx_input2raw($_GET['email'])) : '';
         $count     = 0;
         if (!empty($userEmail)) {
             $query     = "SELECT id FROM ".DBPREFIX."module_newsletter_user where status=0 and email='". contrexx_raw2db($userEmail) ."'";
@@ -235,6 +231,7 @@ class Newsletter extends NewsletterLib
 
         $isNewsletterRecipient = false;
         $isAccessRecipient = false;
+        $isAuthenticatedUser = false;
         $recipientId = 0;
         $recipientEmail = '';
         $recipientUri = '';
@@ -296,6 +293,12 @@ class Newsletter extends NewsletterLib
             }
         }
 
+        // Check if the user is verified.
+        // It the user is verified, we won't have to use the CAPTCHA protection.
+        if ($isAccessRecipient || $isNewsletterRecipient) {
+            $isAuthenticatedUser = true;
+        }
+
         // Get interface settings
         $objInterface = $objDatabase->Execute('SELECT `setvalue`
                                                 FROM `'.DBPREFIX.'module_newsletter_settings`
@@ -305,6 +308,7 @@ class Newsletter extends NewsletterLib
 
         $captchaOk = true;
         if (
+            !$isAuthenticatedUser &&
             isset($recipientAttributeStatus['captcha']) &&
             $recipientAttributeStatus['captcha']['active']
         ) {
@@ -582,12 +586,10 @@ class Newsletter extends NewsletterLib
         }
 
         $languages = '<select name="language" class="selectLanguage" id="language" >';
-        $objLanguage = $objDatabase->Execute("SELECT id, name FROM ".DBPREFIX."languages WHERE frontend = 1 ORDER BY name");
         $languages .= '<option value="0">'.$_ARRAYLANG['TXT_NEWSLETTER_LANGUAGE_PLEASE_CHOSE'].'</option>';
-        while (!$objLanguage->EOF) {
-            $selected = ($objLanguage->fields['id'] == $recipientLanguage) ? 'selected' : '';
-            $languages .= '<option value="'.$objLanguage->fields['id'].'" '.$selected.'>'.contrexx_raw2xhtml($objLanguage->fields['name']).'</option>';
-            $objLanguage->MoveNext();
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $frontendLanguage) {
+            $selected = ($frontendLanguage['id'] == $recipientLanguage) ? 'selected' : '';
+            $languages .= '<option value="'.$frontendLanguage['id'].'" '.$selected.'>'.contrexx_raw2xhtml($frontendLanguage['name']).'</option>';
         }
         $languages .= '</select>';
 
@@ -617,7 +619,6 @@ class Newsletter extends NewsletterLib
                     'recipient_fax',
                     'recipient_birthday',
                     'recipient_website',
-                    'captcha',
                 );
                 foreach ($recipientAttributesArray as $attribute) {
                     if ($this->_objTpl->blockExists($attribute)) {
@@ -632,9 +633,23 @@ class Newsletter extends NewsletterLib
                     }
                 }
 
+                // use CAPTCHA if it has been activated and the user is not authenticated
+                if (!$isAuthenticatedUser &&
+                    $recipientAttributeStatus['captcha']['active']
+                ) {
+                    $this->_objTpl->setVariable(array(
+                        'TXT_MODULE_CAPTCHA'   => $_CORELANG['TXT_CORE_CAPTCHA'],
+                        'MODULE_CAPTCHA_CODE'  => \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getCode(),
+
+                        // this is a legacy placeholder
+                        'NEWSLETTER_CAPTCHA_MANDATORY' => $recipientAttributeStatus['captcha']['required'] ? '*' : '',
+                    ));
+                    $this->_objTpl->touchBlock('captcha');
+                } else {
+                    $this->_objTpl->hideBlock('captcha');
+                }
+
                 $this->_objTpl->setVariable(array(
-                    'TXT_MODULE_CAPTCHA'   => $_CORELANG['TXT_CORE_CAPTCHA'],
-                    'MODULE_CAPTCHA_CODE'  => \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getCode(),
                     'NEWSLETTER_EMAIL'        => htmlentities($recipientEmail, ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_WEBSITE'          => htmlentities($recipientUri, ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_SEX_F'        => $recipientSex == 'f' ? 'checked="checked"' : '',

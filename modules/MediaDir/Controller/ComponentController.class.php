@@ -86,6 +86,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 if ($objMediaDirectory->getMetaImage() != '') {
                     \Env::get('cx')->getPage()->setMetaimage($objMediaDirectory->getMetaImage());
                 }
+                if ($objMediaDirectory->getMetaKeys() != '') {
+                    \Env::get('cx')->getPage()->setMetakeys($objMediaDirectory->getMetaKeys());
+                }
 
                 break;
 
@@ -175,7 +178,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $objMediadir->getHeadlines($mediadirCheck);
         }
         if ($objTemplate->blockExists('mediadirLatest')){
-            $objMediadirForms = new \Cx\Modules\MediaDir\Controller\MediaDirectoryForm(null, 'MediaDir');
+            $objMediadirForms = new MediaDirectoryForm(null, 'MediaDir');
             $foundOne = false;
             foreach ($objMediadirForms->getForms() as $key => $arrForm) {
                 if ($objTemplate->blockExists('mediadirLatest_form_'.$arrForm['formCmd'])) {
@@ -195,24 +198,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             // hold information if a specific block has been parsed
             $foundOne = false;
 
-            // function to match for placeholders in template that act as a filter. I.e.:
-            //     MEDIADIR_FILTER_FORM_3
-            //     MEDIADIR_FILTER_CATEGORY_4
-            //     MEDIADIR_FILTER_LEVEL_5
-            $fetchMediaDirListFilters = function($block) use ($objTemplate) {
-                $filter = array();
-                $placeholderList = join("\n", $objTemplate->getPlaceholderList($block));
-                if (preg_match_all('/MEDIADIR_FILTER_(FORM|CATEGORY|LEVEL)_([0-9]+)/', $placeholderList, $match)) {
-                    foreach ($match[1] as $idx => $key) {
-                        $filterKey = strtolower($key);
-                        $filter[$filterKey] = intval($match[2][$idx]);
-                    }
-                }
-                return $filter;
-            };
-
             // fetch mediadir object data
-            $objMediadirForm = new \Cx\Modules\MediaDir\Controller\MediaDirectoryForm(null, $this->getName());
+            $objMediadirForm = new MediaDirectoryForm(null, $this->getName());
             $objMediadirCategory = new MediaDirectoryCategory(null, null, 0, $this->getName());
             $objMediadirLevel = new MediaDirectoryLevel(null, null, 1, $this->getName());
 
@@ -232,9 +219,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     //    mediadirList_level_5
                     $block = 'mediadirList_'.$objectType.'_'.$objectId;
                     if ($objTemplate->blockExists($block)) {
-                        $filter = $fetchMediaDirListFilters($block);
-                        $filter[$objectType] = $objectId;
-                        $objMediadir->parseEntries($objTemplate, $block, $filter);
+                        $config = MediaDirectoryLibrary::fetchMediaDirListConfigFromTemplate($block, $objTemplate);
+                        $config['filter'][$objectType] = $objectId;
+                        $objMediadir->parseEntries($objTemplate, $block, $config);
                         $foundOne = true;
                     }
                 }
@@ -248,9 +235,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         if ($objTemplate->blockExists('mediadirNavtree')) {
             $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+            $categoryId = 0;
             if (isset($requestParams['cid'])) {
                 $categoryId = intval($requestParams['cid']);
             }
+            $levelId = 0;
             if (isset($requestParams['lid'])) {
                 $levelId = intval($requestParams['lid']);
             }
@@ -307,8 +296,24 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $cmd = $page->getCmd();
         $slug = array_pop($parts);
 
+        // fetch category & level from page's CMD
+        if (count($parts) == 0) {
+            if ($page->getCmd()) {
+                $pageArguments = explode('-', $page->getCmd());
+                if (count($pageArguments) == 2) {
+                    $levelId = $pageArguments[0];
+                    $categoryId = $pageArguments[1];
+                } elseif (count($pageArguments) && $objMediaDirectoryEntry->arrSettings['settingsShowLevels']) {
+                    $levelId = $pageArguments[0];
+                } elseif (count($pageArguments)) {
+                    $categoryId = $pageArguments[0];
+                }
+            }
+        }
+
         // detect entry
-        $entryId = $objMediaDirectoryEntry->findOneBySlug($slug);
+        $name = $objMediaDirectoryEntry->getNameFromSlug($slug);
+        $entryId = $objMediaDirectoryEntry->findOneByName($name, null, $categoryId, $levelId);
         if ($entryId) {
             if (substr($cmd,0,6) != 'detail') {
                 $formId = null;
@@ -333,11 +338,42 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // TODO: we need an other method that does also load the additional infos (template, css, etc.)
                 //       this new method must also be used for symlink pages
                 $page->setContentOf($detailPage, true);
+
+
+                // ------------------------------------------------------------
+                // ------------------------------------------------------------
+                // TODO: this code snipped is taken from \Cx\Core\Routing\Resolver
+                //       the relevant code in the Resolver should be moved further down in the resolving process
+                //       so that the following code snipped can be omitted
+                global $themesPages, $page_template;
+
+                \Env::get('init')->setCustomizedTheme($page->getSkin(), $page->getCustomContent(), $page->getUseSkinForAllChannels());
+
+                $themesPages = \Env::get('init')->getTemplates($page);
+
+                //replace the {NODE_<ID>_<LANG>}- placeholders
+                \LinkGenerator::parseTemplate($themesPages);
+
+                //$page_access_id = $objResult->fields['frontend_access_id'];
+                $page_template  = $themesPages['content'];
+                // END TODO
+                // ------------------------------------------------------------
+                // ------------------------------------------------------------
+
+
                 //$page->getFallbackContentFrom($detailPage);
                 $_GET['cmd']     = $_POST['cmd']     = $_REQUEST['cmd']     = $detailPage->getCmd();
             }
 
             $this->cx->getRequest()->getUrl()->setParam('eid', $entryId);
+
+            // inject level & category as request arguments from page's CMD
+            if ($levelId) {
+                $this->cx->getRequest()->getUrl()->setParam('lid', $levelId);
+            }
+            if ($categoryId) {
+                $this->cx->getRequest()->getUrl()->setParam('cid', $categoryId);
+            }
 
             if (empty($parts)) {
                 $this->setCanonicalPage($detailPage);
@@ -397,6 +433,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (in_array('eid', array_keys($response->getRequest()->getUrl()->getParamArray()))) {
             $canonicalUrlArguments = array_filter($canonicalUrlArguments, function($key) {return !in_array($key, array('cid', 'lid'));});
         }
+
+        $params = array();
 
         // filter out all non-relevant URL arguments
         /*$params = array_filter(
