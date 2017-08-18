@@ -830,9 +830,9 @@ class DBG
         }
 
         if (self::$logPrefix !== '') {
-            $text = '(' . self::$logPrefix . ' - ' . self::$logHash . ') ' . $text;
+            $text = '"(' . self::$logPrefix . ' - ' . self::$logHash . ')" ' . $text;
         } else {
-            $text = '(' . self::$logHash . ') ' . $text;
+            $text = '"(' . self::$logHash . ')" ' . $text;
         }
 
         if (self::$log_firephp
