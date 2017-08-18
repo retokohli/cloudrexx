@@ -1048,7 +1048,7 @@ class InitCMS
             $themesId=intval($themesId);
             if ($themesId>0){
                 $customizedTheme = $this->themeRepository->findById($themesId);
-                if ($customizedTheme !== false) {
+                if ($customizedTheme) {
                     $this->currentThemesId=intval($customizedTheme->getId());
                 }
             }
