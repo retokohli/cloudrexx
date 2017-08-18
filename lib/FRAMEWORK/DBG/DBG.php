@@ -101,6 +101,7 @@ class DBG
     private static $memory_logs = array();
     protected static $enable_profiling = 0;
     protected static $logPrefix = '';
+    protected static $logHash= '';
 
 
     public function __construct()
@@ -119,6 +120,11 @@ class DBG
      */
     public static function activate($mode = null)
     {
+        // generate a hash to be used for associating all logs to the same request
+        if (empty(self::$logHash)) {
+            self::$logHash = base_convert(microtime(), 10, 36);
+        }
+
         if (!self::$fileskiplength) {
             self::$fileskiplength = strlen(dirname(dirname(dirname(dirname(__FILE__))))) + 1;
         }
@@ -821,6 +827,10 @@ class DBG
 
         if ($profile && self::$enable_profiling) {
             self::time();
+        }
+
+        if (self::$logHash !== '') {
+            $text = '(' . self::$logHash . ') ' . $text;
         }
 
         if (self::$logPrefix !== '') {
