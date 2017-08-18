@@ -829,12 +829,10 @@ class DBG
             self::time();
         }
 
-        if (self::$logHash !== '') {
-            $text = '(' . self::$logHash . ') ' . $text;
-        }
-
         if (self::$logPrefix !== '') {
-            $text = '(' . self::$logPrefix . ') ' . $text;
+            $text = '"(' . self::$logPrefix . ' - ' . self::$logHash . ')" ' . $text;
+        } else {
+            $text = '"(' . self::$logHash . ')" ' . $text;
         }
 
         if (self::$log_firephp
