@@ -81,19 +81,25 @@ class Config
     {
         global $objTemplate, $_ARRAYLANG;
 
+        // TODO: instead of including the config section of MultiSite component
+        // (as well as the one of Cache component) directly, the Config
+        // component should provide a method for other components to include
+        // their config sections in the base configuration section
         $componentRepo = \Env::get('cx')->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
         $component     = $componentRepo->findOneBy(array('name' => 'multisite'));
 
         $multisiteNavigation = '';
-        if ($component &&
-            \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::isWebsiteOwner() &&
-            \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser','MultiSite')
-        ) {
-            $multisiteNavigation = '<a href="index.php?cmd=Config&amp;act=Ftp" class="'.
-                ($this->act == 'Ftp' ? 'active' : '').'">' . $_ARRAYLANG['TXT_SETTINGS_FTP'].'</a>';
+        if ($component) {
+            if (\Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::isWebsiteOwner() &&
+                \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser','MultiSite')
+            ) {
+                $multisiteNavigation = '<a href="index.php?cmd=Config&amp;act=Ftp" class="'.
+                    ($this->act == 'Ftp' ? 'active' : '').'">' . $_ARRAYLANG['TXT_SETTINGS_FTP'].'</a>';
+            }
+
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem');
         }
 
-        \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem');
         $objTemplate->setVariable('CONTENT_NAVIGATION','
             <a href="?cmd=Config" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_MENU_SYSTEM'].'</a>'
             .(in_array('CacheManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="?cmd=Config&amp;act=cache" class="'.($this->act == 'cache' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_MENU_CACHE'].'</a>' : '')  .
@@ -1247,7 +1253,7 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Auto Detect Language");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreGlobalPageTitle')
-                && !\Cx\Core\Setting\Controller\Setting::add('coreGlobalPageTitle', isset($existingConfig['coreGlobalPageTitle']) ? $existingConfig['coreGlobalPageTitle'] : 'Contrexx Example Website', 3,
+                && !\Cx\Core\Setting\Controller\Setting::add('coreGlobalPageTitle', isset($existingConfig['coreGlobalPageTitle']) ? $existingConfig['coreGlobalPageTitle'] : 'Cloudrexx Example Website', 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Global Page Title");
             }
@@ -1306,7 +1312,7 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Dashboard News");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardNewsSrc')
-                && !\Cx\Core\Setting\Controller\Setting::add('dashboardNewsSrc', isset($existingConfig['dashboardNewsSrc']) ? $existingConfig['dashboardNewsSrc'] : 'http://www.contrexx.com/feed/news_headlines_de.xml', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('dashboardNewsSrc', isset($existingConfig['dashboardNewsSrc']) ? $existingConfig['dashboardNewsSrc'] : 'http://www.cloudrexx.com/feed/news_headlines_de.xml', 1,
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'component')){
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for dashboardNewsSrc");
             }
@@ -1333,7 +1339,7 @@ class Config
 
             if (in_array('SystemInfo', \Env::get('cx')->getLicense()->getLegalComponentsList())) {
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('dnsServer')
-                    && !\Cx\Core\Setting\Controller\Setting::add('dnsServer', isset($existingConfig['dnsServer']) ? $existingConfig['dnsServer'] : 'ns1.contrexxhosting.com', 6,
+                    && !\Cx\Core\Setting\Controller\Setting::add('dnsServer', isset($existingConfig['dnsServer']) ? $existingConfig['dnsServer'] : '8.8.8.8', 6,
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
                         throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Dns Server");
                 }
@@ -1633,7 +1639,7 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsEdition");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreCmsVersion')
-                && !\Cx\Core\Setting\Controller\Setting::add('coreCmsVersion', isset($existingConfig['coreCmsVersion']) ? $existingConfig['coreCmsVersion'] : '4.0.0', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('coreCmsVersion', isset($existingConfig['coreCmsVersion']) ? $existingConfig['coreCmsVersion'] : '5.0.0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsVersion");
             }
@@ -1653,7 +1659,7 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsReleaseDate");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreCmsName')
-                && !\Cx\Core\Setting\Controller\Setting::add('coreCmsName', isset($existingConfig['coreCmsName']) ? $existingConfig['coreCmsName'] : 'Contrexx', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('coreCmsName', isset($existingConfig['coreCmsName']) ? $existingConfig['coreCmsName'] : 'Cloudrexx', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsName");
             }
