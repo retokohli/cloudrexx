@@ -137,6 +137,14 @@ class User_Profile_Attribute
             'unknown'      => true,
             'order_id'     => 0,
         ),
+        'designation' => array(
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'desc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_DESIGNATION',
+        ),
         'firstname' => array(
             'type'         => 'text',
             'multiline'    => false,
@@ -523,7 +531,7 @@ class User_Profile_Attribute
 
 // TODO: In the backend, this always results in the empty string!
 // The core language is not loaded yet when this is run!
-            $this->arrAttributes[$attributeId]['names'][$this->langId] = $_CORELANG[$arrAttribute['desc']];
+            $this->arrAttributes[$attributeId]['names'][$this->langId] = isset($_CORELANG[$arrAttribute['desc']]) ? $_CORELANG[$arrAttribute['desc']] : null;
 // See:
 //die(var_export($_CORELANG, true));
 // and

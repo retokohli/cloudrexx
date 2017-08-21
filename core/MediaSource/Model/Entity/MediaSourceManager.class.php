@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * class MediaSourceManager
  *
@@ -39,6 +39,16 @@ namespace Cx\Core\MediaSource\Model\Entity;
 
 use Cx\Core\Core\Controller\Cx;
 use Cx\Model\Base\EntityBase;
+
+/**
+ * Class MediaSourceManagerException
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Thomas Däppen <thomas.daeppen@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  core_mediasource
+ */
+class MediaSourceManagerException extends \Exception {}
 
 /**
  * Class MediaSourceManager
@@ -193,11 +203,11 @@ class MediaSourceManager extends EntityBase
      * @param $name string
      *
      * @return MediaSource
-     * @throws MediaSourceException
+     * @throws MediaSourceManagerException
      */
     public function getMediaType($name) {
         if(!isset($this->mediaTypes[$name])){
-            throw new MediaSourceException("No such mediatype available");
+            throw new MediaSourceManagerException("No such mediatype available");
         }
         return $this->mediaTypes[$name];
     }
@@ -242,4 +252,41 @@ class MediaSourceManager extends EntityBase
         return $this->thumbnailGenerator;
     }
 
+    public function getMediaSourceFileFromPath($path) {
+        if (strpos($path, '/') === 0) {
+            $path = substr($path, 1);
+        }
+        $pathArray = explode('/', $path);
+        // Shift off the first element of the array to get the media type.
+        $mediaType  = array_shift($pathArray);
+        $strPath    = '/' . join('/', $pathArray);
+        try {
+            $mediaSourceFile = $this->getMediaType($mediaType)->getFileSystem()->getFileFromPath($strPath);
+        } catch (MediaSourceManagerException $e) {
+            return false;
+        }
+        if (!$mediaSourceFile) {
+            return false;
+        }
+        return $mediaSourceFile;
+    }
+
+    /**
+     * Get MediaSource by given component
+     *
+     * @param \Cx\Core\Core\Model\Entity\SystemComponentController $component Component to look up for a MediaSource
+     *
+     * @return MediaSource  if a MediaSource of the given Component does exist
+     *                              returns MediaSource, otherwise NULL 
+     */
+    public function getMediaSourceByComponent($component)
+    {
+        foreach ($this->mediaTypes as $mediaSource) {
+            $mediaSourceComponent = $mediaSource->getSystemComponentController();
+            if ($component == $mediaSourceComponent) {
+                return $mediaSource;
+            }
+        }
+        return null;
+    }
 }

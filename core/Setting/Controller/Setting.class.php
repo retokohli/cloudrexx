@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Manages settings stored in the database or file system
  *
@@ -121,9 +121,9 @@ class Setting{
 
     public static $arrSettings = array();
     protected static $engines = array(
-	'Database' => '\Cx\Core\Setting\Model\Entity\DbEngine',
-	'FileSystem' => '\Cx\Core\Setting\Model\Entity\FileSystem',
-	'Yaml'	=> '\Cx\Core\Setting\Model\Entity\YamlEngine',
+    'Database' => '\Cx\Core\Setting\Model\Entity\DbEngine',
+    'FileSystem' => '\Cx\Core\Setting\Model\Entity\FileSystem',
+    'Yaml'    => '\Cx\Core\Setting\Model\Entity\YamlEngine',
     );
 
     protected static $engine = 'Database';
@@ -180,8 +180,10 @@ class Setting{
      * @param   string    $fileSystemConfigRepository     An optional path
      *                                to the storage location of config files (/config) which shall be used for the engine 'File System'.
      *                                Default to set Database
-     * @param   int       $populate   Defines behavior of what to do when section already exists; NOT_POPULATE(0) - return,
-     *                                POPULATE(1) - add elements to existing array; REPOPULATE(2) - replace, set by default;
+     * @param   int       $populate   Defines behavior of what to do when section already exists (defaults to NOT_POPULATE):
+     *                                - NOT_POPULATE(0): do nothing
+     *                                - POPULATE(1): add elements to existing array
+     *                                - REPOPULATE(2): replace existing elements
      * @return  boolean               True on success, false otherwise
      * @global  ADOConnection   $objDatabase
      */
@@ -515,14 +517,17 @@ class Setting{
         }
         self::show_section($objTemplateLocal, $section, $prefix, $readOnly);
         // The tabindex must be set in the form name in any case
-        $objTemplateLocal->setGlobalVariable(
-            'CORE_SETTING_TAB_INDEX', self::$tab_index);
+        $objTemplateLocal->setGlobalVariable(array(
+            'CORE_SETTING_TAB_INDEX' => self::$tab_index,
+            'CORE_SETTING_GROUP' => self::$group,
+        ));
         // Set up tab, if any
         if (!empty($tab_name)) {
             $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
             $objTemplateLocal->setGlobalVariable(array(
                 'CORE_SETTING_TAB_NAME' => $tab_name,
                 'CORE_SETTING_TAB_INDEX' => self::$tab_index,
+                'CORE_SETTING_GROUP' => self::$group,
                 'CORE_SETTING_TAB_CLASS' => (self::$tab_index == $active_tab ? 'active' : ''),
                 'CORE_SETTING_TAB_DISPLAY' => (self::$tab_index++ == $active_tab ? 'block' : 'none'),
                 'CORE_SETTING_CURRENT_TAB'=>'tab-'.$active_tab
@@ -749,7 +754,10 @@ class Setting{
                     if (    !empty($arrSetting['value'])
                         &&  \Cx\Lib\FileSystem\FileSystem::exists($cx->getWebsitePath() . '/' . $arrSetting['value'])
                     ) {
-                        $element .= \Html::getImageByPath($cx->getWebsitePath() . '/' . $arrSetting['value']) . '&nbsp;&nbsp;';
+                        $element .= \Html::getImageByPath(
+                            $cx->getWebsitePath() . '/' . $arrSetting['value'],
+                            'id="' . $name . 'Image" '
+                        ) . '&nbsp;&nbsp;';
                     }
                     $element .= \Html::getHidden($name, $arrSetting['value'], $name);
                     $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
@@ -761,8 +769,13 @@ class Setting{
                             if (data.type === "file" && data.data[0]) {
                                 var filePath = data.data[0].datainfo.filepath;
                                 jQuery("#' . $name . '").val(filePath);
+                                jQuery("#' . $name . 'Image").attr("src", filePath);
                             }
                         }
+                        jQuery(document).ready(function(){
+                            var imgSrc = jQuery("#' . $name . 'Image").attr("src");
+                            jQuery("#' . $name . 'Image").attr("src", imgSrc + "?t=" + new Date().getTime());
+                        });
                     ');
                     break;
                 // Default to text input fields
@@ -905,6 +918,7 @@ class Setting{
             return false;
         }
         $arrSettings = $engine->getArraySetting();
+        $submittedGroup = !empty($_POST['settingGroup']) ? $_POST['settingGroup'] : null;
         unset($_POST['bsubmit']);
         $result = true;
         // Compare POST with current settings and only store what was changed.
@@ -985,6 +999,8 @@ class Setting{
                 }
                 //\DBG::log('setting value ' . $name . ' = ' . $value);
                 self::set($name, $value);
+            } elseif ($arrSettings[$name]['type'] == self::TYPE_CHECKBOX && $arrSettings[$name]['group'] == $submittedGroup) {
+                self::set($name, null);
             }
         }
         //echo("self::storeFromPost(): So far, the result is ".($result ? 'okay' : 'no good')."<br />");
@@ -1213,8 +1229,8 @@ class Setting{
                 self::$arrSettings[self::getInstanceId()][$section]['default_engine'] = $engine;
             }
             return true;
-	}
-	return false;
+    }
+    return false;
     }
 
     /**

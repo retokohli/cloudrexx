@@ -308,7 +308,7 @@ class PodcastLib
         if ($objCategory !== false) {
             while (!$objCategory->EOF) {
                 if ($langId !== false) {
-                    $arrLangIds = &$this->_getLangIdsOfCategory($objCategory->fields['id']);
+                    $arrLangIds = $this->_getLangIdsOfCategory($objCategory->fields['id']);
                     if (!in_array($_LANGID, $arrLangIds)) {
                         $objCategory->MoveNext();
                         continue;
@@ -972,7 +972,7 @@ EOF;
             'TXT_PODCAST_YOUTUBE_ID_INVALID'=> $_ARRAYLANG['TXT_PODCAST_YOUTUBE_ID_INVALID'],
             'TXT_PODCAST_YOUTUBE_SPECIFY_ID'=> $_ARRAYLANG['TXT_PODCAST_YOUTUBE_SPECIFY_ID']
         ));
-        
+
         $this->_objTpl->setVariable(array(
             'PODCAST_SELECT_LOCAL_MEDIUM'       => $sourceType == 'local' ? 'checked="checked"' : '',
             'PODCAST_SELECT_LOCAL_MEDIUM_BOX'   => $sourceType == 'local' ? 'block' : 'none',
@@ -1031,7 +1031,7 @@ EOF;
                 'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
                 'cmd' => 'modifyMedium',
             ));
-            
+
             if (count($pages)) {
                 //overwrite template, since _modifyMedium is called in the same request as the _selectMediumSource
                 $this->_objTpl->setTemplate(current($pages)->getContent());
@@ -1276,7 +1276,7 @@ EOF;
             }
 
             $column = $categoryNr % 3;
-            $arrCatLangIds = &$this->_getLangIdsOfCategory($categoryId);
+            $arrCatLangIds = $this->_getLangIdsOfCategory($categoryId);
             array_walk($arrCatLangIds, create_function('&$cat, $k, $arrLanguages', '$cat = $arrLanguages[$cat]["lang"];'), $arrLanguages);
             $arrCategory['title'] .= ' ('.implode(', ', $arrCatLangIds).')';
 
@@ -1453,7 +1453,7 @@ EOF;
         }
 
         $objRSSWriter = new \RSSWriter();
-        
+
         $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
         $objRSSWriter->channelTitle = $this->_arrSettings['feed_title'];
         $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
@@ -1533,14 +1533,14 @@ EOF;
         }
         return $status;
     }
-    
+
     /**
      * Get mediabrowser button
-     * 
+     *
      * @param string $buttonValue Value of the button
-     * @param string $options     Input button options 
+     * @param string $options     Input button options
      * @param string $callback    Media browser callback function
-     * 
+     *
      * @return string html element of browse button
      */
     public static function getMediaBrowserButton($buttonValue, $options = array(), $callback = '')
@@ -1551,7 +1551,7 @@ EOF;
         if ($callback) {
             $mediaBrowser->setCallback($callback);
         }
-        
-        return $mediaBrowser->getXHtml($buttonValue);        
+
+        return $mediaBrowser->getXHtml($buttonValue);
     }
 }

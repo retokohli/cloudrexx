@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,15 +24,15 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
-/** 
+
+/**
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Cloudrexx Development Team <info@cloudrexx.com>
- * @access      public 
+ * @access      public
  * @package     cloudrexx
  * @subpackage  core_config
- */ 
-global $_ARRAYLANG; 
+ */
+global $_ARRAYLANG;
 $_ARRAYLANG['TXT_SETTINGS_MENU_SYSTEM'] = 'System';
 $_ARRAYLANG['TXT_SETTINGS_MENU_CACHE'] = 'Caching';
 $_ARRAYLANG['TXT_EMAIL_SERVER'] = 'E-mail server';
@@ -87,6 +87,8 @@ $_ARRAYLANG['TXT_CORE_CONFIG_SESSIONLIFETIME'] = 'Session length';
 $_ARRAYLANG['TXT_CORE_CONFIG_SESSIONLIFETIME_TOOLTIP_HELP'] = 'Session length in seconds';
 $_ARRAYLANG['TXT_CORE_CONFIG_SESSIONLIFETIMEREMEMBERME'] = 'Session length (remember me)';
 $_ARRAYLANG['TXT_CORE_CONFIG_SESSIONLIFETIMEREMEMBERME_TOOLTIP_HELP'] = 'Session length in seconds for users which have set the checkbox "Remember me" at login.';
+$_ARRAYLANG['TXT_CORE_CONFIG_DEFAULTLANGUAGEID'] = 'Default Language';
+$_ARRAYLANG['TXT_CORE_CONFIG_DEFAULTLOCALEID'] = 'Default Locale';
 $_ARRAYLANG['TXT_CORE_CONFIG_DNSSERVER'] = 'DNS Server';
 $_ARRAYLANG['TXT_CORE_CONFIG_DNSSERVER_TOOLTIP_HELP'] = 'To be able to lookup MX records, a DNS ((domain name server) is needed.';
 $_ARRAYLANG['TXT_CORE_CONFIG_COREADMINNAME'] = 'Administrators Name';
@@ -103,8 +105,8 @@ $_ARRAYLANG['TXT_CORE_CONFIG_CONTACTFAX'] = 'Fax';
 $_ARRAYLANG['TXT_CORE_CONFIG_SEARCHVISIBLECONTENTONLY'] = 'Seek only in visible contents';
 $_ARRAYLANG['TXT_CORE_CONFIG_LANGUAGEDETECTION'] = 'Auto-Detect Language';
 $_ARRAYLANG['TXT_CORE_CONFIG_LANGUAGEDETECTION_TOOLTIP_HELP'] = 'This configuration allows for language specific content based on browser setting';
-$_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEMAPSAPIKEY_TOOLTIP_HELP'] = 'Global Google-Map API key for the primary domain. <br />A new key can be generated here: http://code.google.com/apis/maps/signup.html';
-$_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEMAPSAPIKEY'] = 'Google-Map API key';
+$_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEMAPSAPIKEY_TOOLTIP_HELP'] = 'Global Google Maps API key.<br />Available for integration in the webdesign template through placeholder [[GOOGLE_MAPS_API_KEY]].<br /><br /><i>Note: Issue your API key at <a href="https://developers.google.com/maps/documentation/embed/guide#api_key">https://developers.google.com/maps/documentation/embed/guide#api_key</a></i>';
+$_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEMAPSAPIKEY'] = 'Google Maps API key';
 $_ARRAYLANG['TXT_CORE_CONFIG_FRONTENDEDITINGSTATUS'] = 'Frontend Editing';
 $_ARRAYLANG['TXT_CORE_CONFIG_FRONTENDEDITINGSTATUS_TOOLTIP_HELP'] = 'Frontend Editing allows you to edit the content of your page without the need of logging in into your admin-panel - status (on | off).';
 $_ARRAYLANG['TXT_CORE_CONFIG_USECUSTOMIZINGS'] = 'Customizing';
@@ -116,8 +118,15 @@ $_ARRAYLANG['TXT_CORE_CONFIG_DASHBOARDNEWS'] = 'Dashboard news';
 $_ARRAYLANG['TXT_CORE_CONFIG_DASHBOARDSTATISTICS'] = 'Dashboard statistics';
 $_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEANALYTICSTRACKINGID'] = 'Google Analytics Tracking ID';
 $_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEANALYTICSTRACKINGID_TOOLTIP_HELP'] = 'Enter your Google Analytics tracking ID here. These can be found in your Google Analytics account under Admin => Tracking Code.';
+$_ARRAYLANG['TXT_CORE_CONFIG_DEFAULTMETAIMAGE'] = 'Default meta image';
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY'] = 'Passwords must meet the complexity requirements';
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY_TOOLTIP_HELP'] = 'Password must contain the following characters: upper and lower case character and number';
+$_ARRAYLANG['TXT_CORE_CONFIG_CAPTCHAMETHOD'] = 'CAPTCHA method';
+$_ARRAYLANG['TXT_CORE_CONFIG_RECAPTCHASITEKEY'] = 'Site key for reCAPTCHA';
+$_ARRAYLANG['TXT_CORE_CONFIG_RECAPTCHASECRETKEY'] = 'Secret key for reCAPTCHA';
+$_ARRAYLANG['TXT_CORE_CONFIG_CONTREXX_CAPTCHA_LABEL'] = 'Cloudrexx';
+$_ARRAYLANG['TXT_CORE_CONFIG_RECAPTCHA_LABEL'] = 'reCAPTCHA';
+$_ARRAYLANG['TXT_CORE_CONFIG_CAPTCHAMETHOD_TOOLTIP_HELP'] = 'Choose the CAPTCHA-mechanism to be used as protection against SPAM<br /><br /><strong>Cloudrexx</strong><br />Works out of the box - no additional setup is required.<br /><br /><strong>reCAPTCHA</strong><br />reCAPTCHA is a CAPTCHA-service provided by Google Inc. and provides the best possible protection against SPAM. To setup, you\'ll need a Google account to apply for the required API keys. Please refer to the <a href="https://www.google.com/recaptcha/intro/index.html" target="_blank">documentation</a>';
 $_ARRAYLANG['TXT_CORE_CONFIG_ADVANCEDUPLOADBACKEND'] = 'Advanced uploading tools (administrator interface)';
 $_ARRAYLANG['TXT_CORE_CONFIG_ADVANCEDUPLOADFRONTEND'] = 'Advanced uploading tools (frontend)';
 $_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLFRONTEND_TOOLTIP_HELP'] = $_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLBACKEND_TOOLTIP_HELP'] = 'By default, Cloudrexx does not force the usage of a protocol. You have the option to change the setting to force HTTP in order to improve search engine ranking or to force HTTPS (Hypertext Transfer Protocol Secure), a secure protocol that additionally provides authenticated and encrypted communication. If your webserver doesn"t support HTTPS, Cloudrexx will reset this option to default.';
@@ -175,3 +184,4 @@ $_ARRAYLANG['TXT_CORE_CONFIG_PORTFRONTENDHTTPS'] = 'HTTPS Port';
 $_ARRAYLANG['TXT_CORE_CONFIG_PORTBACKENDHTTP'] = 'HTTP Port';
 $_ARRAYLANG['TXT_CORE_CONFIG_PORTBACKENDHTTPS'] = 'HTTPS Port';
 $_ARRAYLANG['TXT_CORE_CONFIG_FAVICON'] = 'Favicon';
+$_ARRAYLANG['TXT_CORE_CONFIG_PDF'] = 'PDF Templates';

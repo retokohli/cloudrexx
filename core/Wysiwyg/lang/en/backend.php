@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * This is the english language file for backend mode.
  * This file is included by Cloudrexx and all entries are set as placeholder
@@ -49,6 +49,7 @@ $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_TEMPLATE_TOOLTIP'] = 'Click here to cr
 $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_SETTINGS_DEFAULT'] = 'Mailing';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_SETTINGS_HELP'] = 'Help';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_TEMPLATE_ENTITY'] = 'WysiwygTemplate';
+$_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_FUNCTIONS'] = 'Editor functions';
 
 // Now our content specific values:
 $_ARRAYLANG['TXT_CORE_WYSIWYG_CONGRATULATIONS'] = 'Overview';
@@ -68,3 +69,7 @@ $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYGTEMPLATE_STATE'] = 'State';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_SETTINGS'] = 'Settings';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_SPECIFICSTYLESHEET'] = 'Consideration of specific CSS';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_REPLACEACTUALCONTENTS'] = 'Replace actual content in the WYSIWYG';
+
+// Functions
+$_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'] = 'Editor functions';
+$_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_SAVE'] = 'Save';
