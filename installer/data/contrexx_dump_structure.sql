@@ -147,6 +147,7 @@ CREATE TABLE `contrexx_access_users` (
   `restore_key` varchar(255) NOT NULL DEFAULT '',
   `restore_key_time` int(14) unsigned NOT NULL DEFAULT '0',
   `u2u_active` enum('0','1') NOT NULL DEFAULT '1',
+  `hash_algorithm` enum('MD5', 'BLOWFISH') NOT NULL DEFAULT 'MD5',
   PRIMARY KEY (`id`),
   KEY `username` (`username`)
 ) ENGINE=InnoDB ;

@@ -58,6 +58,8 @@ class UserException extends Exception {}
  */
 class User extends User_Profile
 {
+    const HASH_ALGORITHM_MD5 = 'MD5';
+    const HASH_ALGORITHM_BLOWFISH = 'BLOWFISH';
     /**
      * ID of loaded user
      * @var integer
@@ -283,6 +285,7 @@ class User extends User_Profile
         'profile_access'    => 'string',
         'restore_key'       => 'string',
         'restore_key_time'  => 'int',
+        'hash_algorithm'    => 'string',
     );
 
     /**
@@ -314,6 +317,13 @@ class User extends User_Profile
     private $defaultEmailAccessType;
 
     /**
+     * Contains the hash algorithm of currently loaded user
+     *
+     * @var string
+     */
+    protected $hashAlgorithm;
+
+    /**
      * Contains the message if an error occurs
      * @var string
      */
@@ -338,7 +348,11 @@ class User extends User_Profile
         $arrSettings = FWUser::getSettings();
 // TODO:  Provide default values here in case the settings are missing!
         $this->defaultProfileAccessTyp = $arrSettings['default_profile_access']['value'];
-        $this->defaultEmailAccessType = $arrSettings['default_email_access']['value'];
+        $this->defaultEmailAccessType  = $arrSettings['default_email_access']['value'];
+        $this->hashAlgorithm           = \Cx\Core\Setting\Controller\Setting::getValue(
+            'defaultPasswordAlgorithm',
+            'Config'
+        );
         $this->clean();
     }
 
@@ -426,16 +440,11 @@ class User extends User_Profile
             1
         );
 
-        if (!$objResult || $objResult->RecordCount() != 1) {
-            return false;
-        }
-        $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getComponent('Access');
+        $this->id = $objResult->fields['id'];
         if (
-            !$accessController->checkPassword(
-                $password,
-                $objResult->fields['password']
-            )
+            !$objResult ||
+            $objResult->RecordCount() != 1 ||
+            !$this->checkPassword($password)
         ) {
             return false;
         }
@@ -475,7 +484,9 @@ class User extends User_Profile
     /**
      * Returns TRUE if the given password matches the current user,
      * FALSE otherwise.
-     * @param string $password
+     *
+     * @param string $password Input password
+     *
      * @return boolean
      */
     public function checkPassword($password)
@@ -483,23 +494,47 @@ class User extends User_Profile
         global $objDatabase;
 
         $query = '
-            SELECT `password`
+            SELECT `password`, `hash_algorithm`
               FROM `'.DBPREFIX.'access_users`
             WHERE `id` = ' . $this->id;
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult || $objResult->RecordCount() == 0) {
+        $userHashAlgorithm = $objResult->fields['hash_algorithm'];
+        if (
+            !$objResult ||
+            $objResult->RecordCount() == 0 ||
+            empty($userHashAlgorithm)
+        ) {
             return false;
         }
 
-        $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getComponent('Access');
+        // Check the password by using MD5 hash_algorithm
         if (
-            !$accessController->checkPassword(
-                $password,
-                $objResult->fields['password']
-            )
+            $userHashAlgorithm == self::HASH_ALGORITHM_MD5 &&
+            $objResult->fields['password'] !== md5($password)
         ) {
             return false;
+        }
+
+        // Check the password by using BLOWFISH hash_algorithm
+        if (
+            $userHashAlgorithm == self::HASH_ALGORITHM_BLOWFISH &&
+            !password_verify($password, $objResult->fields['password'])
+        ) {
+            return false;
+        }
+
+        // If the User's password algorithm differ with the default password
+        // algorithm and the current password verification is correct then
+        // update the User password by the default password algorithm
+        $defaultPasswordAlgorithm = \Cx\Core\Setting\Controller\Setting::getValue(
+            'defaultPasswordAlgorithm',
+            'Config'
+        );
+        if ($userHashAlgorithm != $defaultPasswordAlgorithm) {
+            $user = $this->getUser($this->id);
+            $user->setHashAlgorithm($defaultPasswordAlgorithm);
+            $user->setPassword($password);
+            $user->store();
         }
 
         return true;
@@ -908,6 +943,23 @@ class User extends User_Profile
         return $this->restore_key_time;
     }
 
+    /**
+     * Get a user hash algorithm
+     *
+     * @return string
+     */
+    public function getHashAlgorithm()
+    {
+        return $this->hashAlgorithm;
+    }
+
+    /**
+     * Set a user hash algorithm
+     */
+    public function setHashAlgorithm($hashAlgorithm)
+    {
+        $this->hashAlgorithm = $hashAlgorithm;
+    }
 
     public function getStaticPermissionIds($reload=false)
     {
@@ -1126,6 +1178,7 @@ class User extends User_Profile
             $this->profile_access = isset($this->arrCachedUsers[$id]['profile_access']) ? $this->arrCachedUsers[$id]['profile_access'] : $this->defaultProfileAccessTyp;
             $this->restore_key = isset($this->arrCachedUsers[$id]['restore_key']) ? $this->arrCachedUsers[$id]['restore_key'] : '';
             $this->restore_key_time = isset($this->arrCachedUsers[$id]['restore_key_time']) ? $this->arrCachedUsers[$id]['restore_key_time'] : 0;
+            $this->hashAlgorithm = isset($this->arrCachedUsers[$id]['hash_algorithm']) ? $this->arrCachedUsers[$id]['hash_algorithm'] : '';
             $this->password = '';
             $this->arrGroups = null;
             $this->arrNewsletterListIDs = null;
@@ -1472,9 +1525,7 @@ class User extends User_Profile
             return;
         }
 
-        $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-            ->getComponent('Access');
-        $this->restore_key = $accessController->hashPassword(
+        $this->restore_key = $this->hashPassword(
             $this->email . $this->regdate . time()
         );
         $this->restore_key_time = time() + 3600;
@@ -1696,9 +1747,7 @@ class User extends User_Profile
     {
         $arrSettings = User_Setting::getSettings();
         if ($arrSettings['user_activation']['status']) {
-            $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getComponent('Access');
-            $this->restore_key = $accessController->hashPassword(
+            $this->restore_key = $this->hashPassword(
                 $this->username . $this->password . time()
             );
             $this->restore_key_time = $arrSettings['user_activation_timeout']['status'] ? time() + $arrSettings['user_activation_timeout']['value'] * 3600 : 0;
@@ -1925,7 +1974,8 @@ class User extends User_Profile
                 `primary_group` = ".intval($this->primary_group).",
                 `profile_access` = '".$this->profile_access."',
                 `restore_key` = '".$this->restore_key."',
-                `restore_key_time` = ".$this->restore_key_time."
+                `restore_key_time` = ".$this->restore_key_time.",
+                `hash_algorithm` = '" . $this->hashAlgorithm . "'
             WHERE `id` = ".$this->id
         ) === false) {
             $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_TO_UPDATE_USER_ACCOUNT'];
@@ -1964,7 +2014,8 @@ class User extends User_Profile
                 `primary_group`,
                 `profile_access`,
                 `restore_key`,
-                `restore_key_time`
+                `restore_key_time`,
+                `hash_algorithm`
             ) VALUES (
                 '".addslashes($this->username)."',
                 ".intval($this->is_admin).",
@@ -1985,7 +2036,8 @@ class User extends User_Profile
                 ".intval($this->primary_group).",
                 '".$this->profile_access."',
                 '".$this->restore_key."',
-                '".$this->restore_key_time."'
+                '".$this->restore_key_time."',
+                '" . $this->hashAlgorithm . "'
             )")) {
             $this->id = $objDatabase->Insert_ID();
             if (!$this->createProfile()) {
@@ -2530,9 +2582,12 @@ class User extends User_Profile
                 $this->error_msg[] = $_CORELANG['TXT_ACCESS_PASSWORD_NOT_CONFIRMED'];
                 return false;
             }
-            $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getComponent('Access');
-            $this->password = $accessController->hashPassword($password);
+            if ($this->hashAlgorithm == self::HASH_ALGORITHM_BLOWFISH) {
+                $this->password = $this->hashPassword($password);
+            } else {
+                $this->password = md5($password);
+            }
+
             return true;
         }
         if (isset($_CONFIG['passwordComplexity']) && $_CONFIG['passwordComplexity'] == 'on') {
@@ -3059,4 +3114,15 @@ class User extends User_Profile
         return;
     }
 
+    /**
+     * Create the new password with hash
+     *
+     * @param string $password input password
+     *
+     * @return string the hashed password, or false on failure.
+     */
+    public function hashPassword($password)
+    {
+        return password_hash($password, PASSWORD_BCRYPT);
+    }
 }

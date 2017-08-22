@@ -3915,12 +3915,9 @@ die("Shop::processRedirect(): This method is obsolete!");
             if (empty($_POST['shopCurrentPassword'])) {
                 return \Message::error($_ARRAYLANG['TXT_SHOP_ENTER_CURRENT_PASSWORD']);
             }
-            $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getComponent('Access');
             if (
-                !$accessController->checkPassword(
-                    contrexx_input2raw($_POST['shopCurrentPassword']),
-                    self::$objCustomer->password()
+                !self::$objCustomer->checkPassword(
+                    contrexx_input2raw($_POST['shopCurrentPassword'])
                 )
             ) {
                 return \Message::error($_ARRAYLANG['TXT_SHOP_WRONG_CURRENT_PASSWORD']);

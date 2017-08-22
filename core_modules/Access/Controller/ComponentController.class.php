@@ -274,30 +274,4 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // make all language data of Access component globally available
         $template->setVariable(\Env::get('init')->getComponentSpecificLanguageData($this->getName()));
     }
-
-    /**
-     * Verify the password
-     *
-     * @param string $password Input password
-     * @param string $hash     Each password has hashstring
-     *
-     * @return boolean returns true | false, if given password matched with
-     *                 hash string returns true, otherwise false
-     */
-    public function checkPassword($password, $hash)
-    {
-        return password_verify($password, $hash);
-    }
-
-    /**
-     * Create the new password with hash
-     *
-     * @param string $password input password
-     *
-     * @return string the hashed password, or false on failure.
-     */
-    public function hashPassword($password )
-    {
-        return password_hash($password, PASSWORD_DEFAULT);
-    }
 }

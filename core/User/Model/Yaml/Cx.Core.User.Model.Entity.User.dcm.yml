@@ -120,6 +120,12 @@ Cx\Core\User\Model\Entity\User:
       type: string
       nullable: false
       column: u2u_active
+    hashAlgorithm:
+      type: string
+      length: 8
+      column: hash_algorithm
+      columnDefinition: ENUM('MD5', 'BLOWFISH')
+      nullable: false
   indexes:
     username:
       columns: [username]

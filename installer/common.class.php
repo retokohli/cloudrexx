@@ -1291,11 +1291,10 @@ class CommonFunctions
         $objDb = $this->_getDbObject($statusMsg);
         if ($objDb !== false) {
             #$objDb->debug = true;
-            $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getComponent('Access');
+            $user = new \User();
             $query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."access_users`
                          SET `username` = '".$_SESSION['installer']['account']['username']."',
-                             `password` = '".$accessController->hashPassword($_SESSION['installer']['account']['password'])."',
+                             `password` = '" . $user->hashPassword($_SESSION['installer']['account']['password']) . "',
                              `regdate` = '".time()."',
                              `email` = '".$_SESSION['installer']['account']['email']."',
                              `frontend_lang_id` = 1,

@@ -1414,6 +1414,25 @@ class Config
             ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for reCAPTCHA secret key");
             }
+            $defaultPasswordAlgorithm = '';
+            if (isset($existingConfig['defaultPasswordAlgorithm'])) {
+                $defaultPasswordAlgorithm = $existingConfig['defaultPasswordAlgorithm'];
+            }
+            if (
+                !\Cx\Core\Setting\Controller\Setting::isDefined('defaultPasswordAlgorithm') &&
+                !\Cx\Core\Setting\Controller\Setting::add(
+                    'defaultPasswordAlgorithm',
+                    $defaultPasswordAlgorithm,
+                    6,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
+                    'MD5:MD5,BLOWFISH:BLOWFISH',
+                    'security'
+                )
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException(
+                    'Failed to add Setting entry for default Password Algorithm'
+                );
+            }
 
             //contactInformation group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'contactInformation','Yaml', $configPath);
