@@ -46,8 +46,13 @@ namespace Cx\Core_Modules\Access\Controller;
  */
 class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
 {
-
-    function setCurrentlyOnlineUsers($gender=null)
+    /**
+     * Parse a list (into the loaded template object) of those users
+     * currently signed in.
+     *
+     * @param   string  $gender Optional set to 'female' or 'male' to filter the list by gender
+     */
+    public function setCurrentlyOnlineUsers($gender = '')
     {
         $objFWUser = \FWUser::getFWUserObject();
         $arrSettings = \User_Setting::getSettings();
@@ -99,8 +104,13 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
     }
 
-
-    function setLastActiveUsers($gender = null)
+    /**
+     * Parse a list (into the loaded template object) of those users having
+     * signed in the most recent.
+     *
+     * @param   string  $gender Optional set to 'female' or 'male' to filter the list by gender
+     */
+    public function setLastActiveUsers($gender = '')
     {
         $arrSettings = \User_Setting::getSettings();
 
@@ -147,8 +157,13 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
     }
 
-
-    function setLatestRegisteredUsers($gender = null)
+    /**
+     * Parse a list (into the loaded template object) of those users having
+     * signed up the most recent.
+     *
+     * @param   string  $gender Optional set to 'female' or 'male' to filter the list by gender
+     */
+    public function setLatestRegisteredUsers($gender = '')
     {
         $arrSettings = \User_Setting::getSettings();
 
@@ -195,8 +210,13 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
     }
 
-
-    function setBirthdayUsers($gender = null)
+    /**
+     * Parse a list (into the loaded template object) of those users having
+     * their birthday today.
+     *
+     * @param   string  $gender Optional set to 'female' or 'male' to filter the list by gender
+     */
+    public function setBirthdayUsers($gender = '')
     {
         $arrSettings = \User_Setting::getSettings();
 
@@ -247,10 +267,14 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
     }
 
-
-    function setNextBirthdayUsers($gender = null)
+    /**
+     * Parse a list (into the loaded template object) of those users having
+     * their birthday coming up.
+     *
+     * @param   string  $gender Optional set to 'female' or 'male' to filter the list by gender
+     */
+    public function setNextBirthdayUsers($gender = '')
     {
-        global $objDatabase;
         $arrSettings = \User_Setting::getSettings();
 
         $query = 'SELECT tblU.`id`
@@ -268,7 +292,7 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $dayOffset = $arrSettings['block_next_birthday_users']['value'];
 
-        $date = new \DateTime();
+        $date = new \DateTime('tomorrow');
         $days = array();
         for ($i = 0; $i < $dayOffset + 1; $i++) {
             $day = array(
@@ -282,14 +306,16 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
 
         $arrConditions = array();
+        $arrOrder = array();
         $birthdayQuery = ' AND (';
         foreach ($days as $day) {
             $arrConditions[] = '(DATE_FORMAT(DATE_ADD(FROM_UNIXTIME(0), interval `tblP`.`birthday` second), "%e") = "' . intval($day['birthday_day']) . '")
              AND (DATE_FORMAT(DATE_ADD(FROM_UNIXTIME(0), interval `tblP`.`birthday` second), "%c") = "' . intval($day['birthday_month']) . '")';
+            $arrOrder[] = intval($day['birthday_day']) . '-' . intval($day['birthday_month']);
         }
         $birthdayQuery .= implode(' OR ', $arrConditions) . ')';
         $query .= $birthdayQuery;
-        $objResult = $objDatabase->Execute($query);
+        $objResult = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb()->Execute($query);
 
         $userIds = array();
         if ($objResult !== false) {
@@ -310,6 +336,24 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
             $this->_objTpl->hideBlock('access_next_birthday_' . (!empty($gender) ? $gender . '_' : '') . 'members');
             return;
         }
+
+        // sort users by their anniversary
+        usort($users, function($a, $b) use ($arrOrder) {
+            $birthdayOfA = date('j-n', $a->getProfileAttribute('birthday'));
+            $birthdayOfB = date('j-n', $b->getProfileAttribute('birthday'));
+
+            $orderLocationOfA = array_search($birthdayOfA, $arrOrder);
+            $orderLocationOfB = array_search($birthdayOfB, $arrOrder);
+
+            if ($orderLocationOfA > $orderLocationOfB) {
+                return 1;
+            } elseif ($orderLocationOfA < $orderLocationOfB) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
+
         foreach ($users as $user) {
             $this->_objTpl->setVariable(array(
                 'ACCESS_USER_ID' => $user->getId(),
@@ -327,7 +371,12 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
     }
 
-    function isSomeonesBirthdayToday()
+    /**
+     * Check if any of the active users having their birthday today.
+     *
+     * @return  boolean TRUE if one user's birthday is today. Otherwise FALSE
+     */
+    public function isSomeonesBirthdayToday()
     {
         $arrSettings = \User_Setting::getSettings();
 
