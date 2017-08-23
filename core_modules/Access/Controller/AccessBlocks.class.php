@@ -85,7 +85,8 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
             while (!$objUser->EOF) {
                 $this->_objTpl->setVariable(array(
                     'ACCESS_USER_ID'    => $objUser->getId(),
-                    'ACCESS_USER_USERNAME'    => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
+                    'ACCESS_USER_USERNAME'    => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
+                    'ACCESS_USER_REGDATE'     => date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate()),
                 ));
 
                 $objUser->objAttribute->first();
@@ -138,7 +139,8 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
             while (!$objUser->EOF) {
                 $this->_objTpl->setVariable(array(
                     'ACCESS_USER_ID'    => $objUser->getId(),
-                    'ACCESS_USER_USERNAME'    => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
+                    'ACCESS_USER_USERNAME'    => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
+                    'ACCESS_USER_REGDATE'     => date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate()),
                 ));
 
                 $objUser->objAttribute->first();
@@ -191,7 +193,8 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
             while (!$objUser->EOF) {
                 $this->_objTpl->setVariable(array(
                     'ACCESS_USER_ID'    => $objUser->getId(),
-                    'ACCESS_USER_USERNAME'    => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
+                    'ACCESS_USER_USERNAME'    => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
+                    'ACCESS_USER_REGDATE'     => date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate()),
                 ));
 
                 $objUser->objAttribute->first();
@@ -248,7 +251,8 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
             while (!$objUser->EOF) {
                 $this->_objTpl->setVariable(array(
                     'ACCESS_USER_ID'    => $objUser->getId(),
-                    'ACCESS_USER_USERNAME'    => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
+                    'ACCESS_USER_USERNAME'    => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
+                    'ACCESS_USER_REGDATE'     => date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate()),
                 ));
 
                 $objUser->objAttribute->first();
@@ -353,7 +357,8 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
         foreach ($users as $user) {
             $this->_objTpl->setVariable(array(
                 'ACCESS_USER_ID' => $user->getId(),
-                'ACCESS_USER_USERNAME' => htmlentities($user->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
+                'ACCESS_USER_USERNAME' => htmlentities($user->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
+                'ACCESS_USER_REGDATE'  => date(ASCMS_DATE_FORMAT_DATE, $user->getRegistrationDate()),
             ));
 
             $user->objAttribute->first();
