@@ -59,14 +59,14 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             \Env::get('init')->getComponentSpecificLanguageData(
                 'Access',
                 true,
-                $params['lang']
+                $params['locale']->getId()
             )
         );
         $template->setVariable(
             \Env::get('init')->getComponentSpecificLanguageData(
                 'Core',
                 true,
-                $params['lang']
+                $params['locale']->getId()
             )
         );
 

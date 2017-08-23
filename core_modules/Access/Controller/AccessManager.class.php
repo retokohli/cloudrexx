@@ -3456,9 +3456,10 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 // TODO: Make new Users active or inactive?
 //            $objUser->setActiveStatus(0);
 //            $objUser->setAdminStatus(0);
-            $lang_id = \FWLanguage::getLanguageIdByCode($language);
-            $objUser->setFrontendLanguage($lang_id);
-            $objUser->setBackendLanguage($lang_id);
+            $frontend_lang_id = \FWLanguage::getLanguageIdByCode($language);
+            $backend_lang_id = \FWLanguage::getBackendLanguageIdByCode($language);
+            $objUser->setFrontendLanguage($frontend_lang_id);
+            $objUser->setBackendLanguage($backend_lang_id);
             $objUser->setProfile(array(
 //                'picture' => array(''),
                 'gender' => array($gender),

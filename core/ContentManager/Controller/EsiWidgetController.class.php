@@ -66,7 +66,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             $arrayLang = \Env::get('init')->getComponentSpecificLanguageData(
                 'Core',
                 true,
-                $params['lang']
+                $params['locale']->getId()
             );
             $template->setVariable(
                 $name,
