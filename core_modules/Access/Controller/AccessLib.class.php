@@ -2006,18 +2006,21 @@ JS
                     $arrImagesDb = array();
                     while (!$objImage->EOF) {
                         $arrImagesDb[] = $objImage->fields['picture'];
-                        $arrImagesDb[] = basename(
-                            \ImageManager::getThumbnailFilename(
-                                $imageWebPath
-                                .'/'. $objImage->fields['picture']
-                        ));
+
+                        // fetch all thumbnails of image
+                        $thumbnails = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($imageWebPath, $objImage->fields['picture'], true);
+                        $thumbnails = array_map('basename', $thumbnails);
+                        $arrImagesDb = array_merge($arrImagesDb, $thumbnails);
+
                         $objImage->MoveNext();
                     }
                     $offset += $step;
                     $arrImages = array_diff($arrImages, $arrImagesDb);
                 }
             }
-            array_walk($arrImages, create_function('$img', 'unlink("'.$imagePath.'/".$img);'));
+            array_walk($arrImages, function ($img) use ($imagePath) {
+                unlink($imagePath.'/'.$img);
+            });
         }
 
         return true;
