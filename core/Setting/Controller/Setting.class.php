@@ -98,6 +98,7 @@ class Setting{
     const TYPE_DATE  = 'date';
     const TYPE_DATETIME  = 'datetime';
     const TYPE_IMAGE  = 'image';
+    const TYPE_FILECONTENT = 'file';
     // Not implemented
     //const TYPE_SUBMIT = 'submit';
     /**
@@ -778,6 +779,19 @@ class Setting{
                         });
                     ');
                     break;
+              case self::TYPE_FILECONTENT:
+                  $disable  = '';
+                  if ($readOnly) {
+                      $disable = \Html::ATTRIBUTE_DISABLED;
+                  }
+                  $element = \Html::getTextarea(
+                      $name,
+                      $value,
+                      80,
+                      8,
+                      $disable
+                  );
+                  break;
                 // Default to text input fields
               case self::TYPE_TEXT:
               case self::TYPE_EMAIL:
@@ -992,6 +1006,16 @@ class Setting{
                           );
                           $value = $arrSettings[$name]['value'];
                       }
+                      break;
+                    case self::TYPE_FILECONTENT:
+                        $cx       = \Cx\Core\Core\Controller\Cx::instanciate();
+                        $filePath = $cx->getCodeBaseDocumentRootPath() . '/' .
+                            $arrSettings[$name]['values'];
+                        if (\Cx\Lib\FileSystem\FileSystem::exists($filePath)) {
+                            $objFile  = new \Cx\Lib\FileSystem\File($filePath);
+                            $objFile->write($value);
+                        }
+                        $value = '';
                       break;
                   default:
                         // Regular value of any other type
