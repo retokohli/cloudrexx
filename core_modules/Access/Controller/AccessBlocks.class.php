@@ -337,21 +337,17 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
             return;
         }
 
+        $arrOrder = array_flip($arrOrder);
+
         // sort users by their anniversary
         usort($users, function($a, $b) use ($arrOrder) {
             $birthdayOfA = date('j-n', $a->getProfileAttribute('birthday'));
             $birthdayOfB = date('j-n', $b->getProfileAttribute('birthday'));
 
-            $orderLocationOfA = array_search($birthdayOfA, $arrOrder);
-            $orderLocationOfB = array_search($birthdayOfB, $arrOrder);
+            $orderLocationOfA = isset($arrOrder[$birthdayOfA]) ? $arrOrder[$birthdayOfA] : count($arrOrder);
+            $orderLocationOfB = isset($arrOrder[$birthdayOfB]) ? $arrOrder[$birthdayOfB] : count($arrOrder);
 
-            if ($orderLocationOfA > $orderLocationOfB) {
-                return 1;
-            } elseif ($orderLocationOfA < $orderLocationOfB) {
-                return -1;
-            } else {
-                return 0;
-            }
+            return $orderLocationOfA - $orderLocationOfB;
         });
 
         foreach ($users as $user) {
