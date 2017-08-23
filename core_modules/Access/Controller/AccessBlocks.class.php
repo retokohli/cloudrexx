@@ -357,7 +357,8 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
         foreach ($users as $user) {
             $this->_objTpl->setVariable(array(
                 'ACCESS_USER_ID' => $user->getId(),
-                'ACCESS_USER_USERNAME' => htmlentities($user->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
+                'ACCESS_USER_USERNAME' => htmlentities($user->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
+                'ACCESS_USER_REGDATE'  => date(ASCMS_DATE_FORMAT_DATE, $user->getRegistrationDate()),
             ));
 
             $user->objAttribute->first();
