@@ -1812,19 +1812,19 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
     {
         $objFWUser = \FWUser::getFWUserObject();
         // Check if the logged-in user has super admin permission
-        if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
+        if ($objFWUser->objUser->getAdminStatus()) {
             return true;
         }
 
         // Check if the logged-in user has MANAGE_USER_ACCESS_ID permission and
         // editing non-admin user account
         if (
+            !$objUser->getAdminStatus() &&
             \Permission::checkAccess(
                 static::MANAGE_USER_ACCESS_ID,
                 'static',
                 true
-            ) &&
-            !$objUser->getAdminStatus()
+            )
         ) {
             return true;
         }
