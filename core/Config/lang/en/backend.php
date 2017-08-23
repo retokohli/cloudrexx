@@ -117,6 +117,8 @@ $_ARRAYLANG['TXT_CORE_CONFIG_DASHBOARDSTATISTICS'] = 'Dashboard statistics';
 $_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEANALYTICSTRACKINGID'] = 'Google Analytics Tracking ID';
 $_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEANALYTICSTRACKINGID_TOOLTIP_HELP'] = 'Enter your Google Analytics tracking ID here. These can be found in your Google Analytics account under Admin => Tracking Code.';
 $_ARRAYLANG['TXT_CORE_CONFIG_DEFAULTMETAIMAGE'] = 'Default meta image';
+$_ARRAYLANG['TXT_CORE_CONFIG_DNSHOSTNAMELOOKUP'] = 'DNS Hostname lookup';
+$_ARRAYLANG['TXT_CORE_CONFIG_DNSHOSTNAMELOOKUP_TOOLTIP_HELP'] = 'Activate to enable the lookup of hostnames of website users based on their IP address. Important: this might slow down the page speed in frontend';
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY'] = 'Passwords must meet the complexity requirements';
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY_TOOLTIP_HELP'] = 'Password must contain the following characters: upper and lower case character and number';
 $_ARRAYLANG['TXT_CORE_CONFIG_CAPTCHAMETHOD'] = 'CAPTCHA method';

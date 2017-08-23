@@ -323,8 +323,8 @@ class Counter
 
         $this->_getProxyInformations(); // get also the client ip
 
-        //$this->arrClient['host'] = @gethostbyaddr($this->arrClient['ip']);
-        $this->arrClient['host'] = $this->arrClient['ip'];
+        $net = $this->cx->getComponent('Net');
+        $this->arrClient['host'] = $net->getHostByAddr($this->arrClient['ip']);
         if ($this->arrClient['host'] == $this->arrClient['ip']) { // is remote host available?
             $this->arrClient['host'] = '';
         } else {
@@ -360,8 +360,8 @@ class Counter
     function _getProxyInformations() {
         if (isset($_SERVER['HTTP_VIA']) && $_SERVER['HTTP_VIA']) { // client does use a proxy
             $this->arrProxy['ip'] = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
-            //$this->arrProxy['host'] = @gethostbyaddr($this->arrProxy['ip']);
-            $this->arrProxy['host'] = $this->arrProxy['ip'];
+            $net = $this->cx->getComponent('Net');
+            $this->arrProxy['host'] = $net->getHostByAddr($this->arrProxy['ip']);
             $proxyUseragent = trim(addslashes(urldecode(strstr($_SERVER['HTTP_VIA'],' '))));
             $startPos = strpos($proxyUseragent,"(");
             $this->arrProxy['useragent'] = substr($proxyUseragent,$startPos+1);
