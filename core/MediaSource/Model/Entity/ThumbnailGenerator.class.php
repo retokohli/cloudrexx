@@ -111,15 +111,15 @@ class ThumbnailGenerator extends EntityBase
                 \Cx\Lib\FileSystem\FileSystem::delete_file(
                     MediaSourceManager::getAbsolutePath($path) . '/'
                     . $fileNamePlain . $thumbnail['value'] . '.'
-                    . $fileExtension
+                    . strtolower($fileExtension)
                 );
             } elseif (\Cx\Lib\FileSystem\FileSystem::exists(
                 MediaSourceManager::getAbsolutePath($path) . '/'
-                . $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension
+                . $fileNamePlain . $thumbnail['value'] . '.' . strtolower($fileExtension)
             )
             ) {
                 $thumbnails[] = $fileNamePlain . $thumbnail['value'] . '.'
-                    . $fileExtension;
+                    . strtolower($fileExtension);
                 continue;
             }
             if ($imageManager->_createThumb(
@@ -128,12 +128,12 @@ class ThumbnailGenerator extends EntityBase
                 $fileNamePlain . '.' . $fileExtension,
                 $thumbnail['size'],
                 $thumbnail['quality'],
-                $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension,
+                $fileNamePlain . $thumbnail['value'] . '.' . strtolower($fileExtension),
                 $generateThumbnailByRatio
             )
             ) {
                 $thumbnails[] = $fileNamePlain . $thumbnail['value'] . '.'
-                    . $fileExtension;
+                    . strtolower($fileExtension);
                 continue;
             }
         }
