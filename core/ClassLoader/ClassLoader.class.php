@@ -118,6 +118,8 @@ class ClassLoader {
                     $third = 'events';
                 }
                 if ($parts[2] == 'Proxies') {
+                    $tmpPart = implode('', array_slice($parts, 3));
+                    $parts   = array('Cx', 'Model', 'Proxies', $tmpPart);
                     $third = 'proxies';
                     $suffix = '';
                 }

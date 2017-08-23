@@ -29,7 +29,7 @@
  * Class EsiWidgetController
  *
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
- * @author      Project Team SS4U <info@comvation.com>
+ * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  core_languagemanager
  * @version     1.0.0
@@ -44,7 +44,7 @@ namespace Cx\Core\LanguageManager\Controller;
  * - Register it as a Controller in your ComponentController
  *
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
- * @author      Project Team SS4U <info@comvation.com>
+ * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  core_languagemanager
  * @version     1.0.0
@@ -53,44 +53,46 @@ namespace Cx\Core\LanguageManager\Controller;
 class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetController {
 
     /**
-    * current page ID
-    *
-    * @var integer
-    */
-    protected $currentPageId;
-
-    /**
      * Parses a widget
      *
-     * @param string              $name     Widget name
-     * @param \Cx\Core\Html\Sigma $template Widget template
-     * @param string              $locale   RFC 3066 locale identifier
+     * @param string                                 $name     Widget name
+     * @param \Cx\Core\Html\Sigma Widget             $template Template
+     * @param \Cx\Core\Routing\Model\Entity\Response $response Response object
+     * @param array                                  $params   Get parameters
      */
-    public function parseWidget($name, $template, $locale)
+    public function parseWidget($name, $template, $response, $params)
     {
         if ($name === 'CHARSET') {
-            $template->setVariable($name, \Env::get('init')->getFrontendLangCharset());
+            $template->setVariable($name, CONTREXX_CHARSET);
             return;
         }
 
         if ($name == 'ACTIVE_LANGUAGE_NAME') {
-            $template->setVariable($name, $locale);
+            $template->setVariable(
+                $name,
+                $params['locale']->getShortForm()
+            );
             return;
         }
 
         $matches = null;
-        if (preg_match('/^LANG_SELECTED_([A-Z]{2})$/', $name, $matches)) {
-            $selected   = '';
-            if (strtolower($matches[1]) === $locale) {
+        if (
+            preg_match(
+                '/^LANG_SELECTED_([A-Z]{1,2}(?:-[A-Z]{2,4})?)$/',
+                $name,
+                $matches
+            )
+        ) {
+            $selected = '';
+            $langCode = $params['locale']->getShortForm();
+            if ($matches[1] === strtoupper($langCode)) {
                 $selected = 'selected';
             }
             $template->setVariable($name, $selected);
             return;
         }
 
-        $em       = $this->cx->getDb()->getEntityManager();
-        $pageRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
-        $page     = $pageRepo->find($this->currentPageId);
+        $page = $params['page'];
         if (!$page) {
             return;
         }
@@ -107,28 +109,31 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         }
 
         $langMatches = null;
-        if (preg_match('/^LANG_CHANGE_([A-Z]{2})$/', $name, $langMatches)) {
-            $langId = \FWLanguage::getLangIdByIso639_1($langMatches[1]);
+        if (
+            preg_match(
+                '/^LANG_CHANGE_([A-Z]{1,2}(?:-[A-Z]{2,4})?)$/',
+                $name,
+                $langMatches
+            )
+        ) {
+            // make iso1 part of code lowercase (e.g DE-CH --> de-CH)
+            $code = explode('-', $langMatches[1]);
+            $code[0] = strtolower($code[0]);
+            $code = implode('-', $code);
+
+            $locale = $this->cx->getDb()->getEntityManager()
+                ->getRepository('\Cx\Core\Locale\Model\Entity\Locale')
+                ->findOneByCode($code);
+
+            // return early and don't set variable if locale doesn't exist
+            if (!$locale) {
+                return;
+            }
+
             $template->setVariable(
                 $name,
-                $navbar->getLanguageLinkById($page, $langId)
+                $navbar->getLanguageLinkById($page, $locale->getId())
             );
         }
     }
-
-    /**
-    * Returns the content of a widget
-    *
-    * @param array $params JsonAdapter parameters
-    *
-    * @return array Content in an associative array
-    */
-    public function getWidget($params)
-    {
-        if (isset($params['get']) && isset($params['get']['page'])) {
-            $this->currentPageId = $params['get']['page'];
-        }
-        return parent::getWidget($params);
-    }
-
 }

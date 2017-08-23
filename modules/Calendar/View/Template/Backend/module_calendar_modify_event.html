@@ -297,6 +297,54 @@
 
             exceptionDialog.open();
         });
+        var selectedRecurrence = false;
+        $J(".add_additional_recurrences").click(function() {
+            cx.ui.dialog({
+            width: 520,
+            title: '{TXT_CALENDAR_SELECT_ADDITIONAL_RECURRENCES_TITLE}',
+            content: $J( "#additionalRecurrencesContainer" ),
+            autoOpen: true,
+            buttons: {
+                "{TXT_CALENDAR_CANCEL}" : function() {
+                    $J( this ).dialog( "close" );
+                },
+                "{TXT_CALENDAR_OK}": function() {
+                    $J('#additionalRecurrencesList .seriesList span').each(function(){
+                            if( $J.trim($J(this).html()) === $J.trim(selectedRecurrence)){
+                                selectedRecurrence = false;
+                            }
+                        });
+                    if(selectedRecurrence) {
+                        var selectedDate = selectedRecurrence.split(",");
+                        $J( "#additionalRecurrencesList" )
+                            .append(
+                                '<div class="seriesList">\n\
+                                    <span>'+ selectedRecurrence +'</span>\n\
+                                    <input type="hidden" name="additionalRecurrences[]" value="'+ $J.trim(selectedDate['1']) +'"  />&nbsp;\n\
+                                    <a href="javascript:void(0);" class="delete_exception" title="{TXT_CALENDAR_DELETE}">\n\
+                                        <img style="vertical-align: middle;" src="../core/Core/View/Media/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17">\n\
+                                    </a>\n\
+                                <div/>'
+                            );
+                    }
+                 $J(this).dialog( "close" );
+                }
+            },
+            open: function() {
+                selectedRecurrence = false;
+                $J("#recurrenceDatepicker").datepicker({
+                    minDate: 0,
+                    dateFormat: 'D, dd.mm.yy',
+                    onSelect: function(date) {
+                        selectedRecurrence = date;
+                    }
+                });
+                var minDays = $J('#recurrenceDatepicker').datepicker('option', 'dayNamesMin');
+                $J('#recurrenceDatepicker').datepicker('option', 'dayNamesShort', minDays);
+            }
+            });
+        });
+
         $J( ".delete_exception" ).live("click", function() {
            $J( this ).closest(".seriesList").fadeOut("slow").remove();
         });
@@ -723,6 +771,10 @@
             cx.jQuery('.event_minimized_block').find('input').trigger('keyup');
         }
     }
+
+    cx.ready(function() {
+        cx.jQuery("#calendar_event_invite_crm_memberships").chosen({ width: '250px' });
+    });
 </script>
 
 
@@ -1136,10 +1188,14 @@
                             </td>
                         </tr>    -->
             <tr class="row2">
-                <td>{TXT_CALENDAR_SHOW_TIME_TYPE}</td>
-                <td colspan="2"><input name="showDateSettings" id="showDateSettings" value="1" type="checkbox" onchange="showSelection();" {CALENDAR_USE_CUSTOM_DATE_DISPLAY} /></td>
+                <td>{TXT_CALENDAR_STATUS}</td>
+                <td colspan="2"><input name="eventState" id="eventActive" value="1" type="checkbox" {CALENDAR_EVENT_ACTIVE} /><label for="eventActive">{TXT_CALENDAR_PUBLISHED}</label></td>
             </tr>
-            <tr class="row1" style="height: 30px !important;" id="listformat">
+            <tr class="row1">
+                <td>{TXT_CALENDAR_SHOW_TIME_TYPE}</td>
+                <td colspan="2"><input name="showDateSettings" id="showDateSettings" value="1" type="checkbox" onchange="showSelection();" {CALENDAR_USE_CUSTOM_DATE_DISPLAY} /><label for="showDateSettings">{TXT_CALENDAR_USE_CUSTOM_FORMAT}</label></td>
+            </tr>
+            <tr class="row2" style="height: 30px !important;" id="listformat">
                 <td style="height: 30px !important;">{TXT_CALENDAR_LIST}</td>
                 <td width="250" style="height: 30px !important;">
                     <label><input name="showStartDateList" id="showStartDateList" value="{CALENDAR_START_DATE_VALUE_LIST}" type="checkbox" {CALENDAR_START_DATE_CHECKED_LIST} />&nbsp;{TXT_CALENDAR_SHOW_START_DATE}&nbsp;&nbsp;</label>
@@ -1149,7 +1205,7 @@
                     {CALENDAR_SHOW_TIME_TYPE_DROPDOWN_LIST}&nbsp;<span id="timeSelectionContentList"><label><input name="showStartTimeList" id="showStartTimeList" value="{CALENDAR_START_TIME_VALUE_LIST} " type="checkbox" {CALENDAR_START_TIME_CHECKED_LIST} />&nbsp;{TXT_CALENDAR_SHOW_START_TIME}&nbsp;&nbsp;</label><label><input name="showEndTimeList" id="showEndTimeList" value="{CALENDAR_END_TIME_VALUE_LIST}" type="checkbox" {CALENDAR_END_TIME_CHECKED_LIST} />&nbsp;{TXT_CALENDAR_SHOW_END_TIME}</label></span>
                 </td>
             </tr>
-            <tr class="row2" style="height: 30px !important;" id="detailformat">
+            <tr class="row1" style="height: 30px !important;" id="detailformat">
                 <td style="height: 30px !important;">{TXT_CALENDAR_DETAIL}</td>
                 <td width="250" style="height: 30px !important;">
                     <label><input name="showStartDateDetail" id="showStartDateDetail" value="{CALENDAR_START_DATE_VALUE_DETAIL}" type="checkbox" {CALENDAR_START_DATE_CHECKED_DETAIL} />&nbsp;{TXT_CALENDAR_SHOW_START_DATE}&nbsp;&nbsp;</label>
@@ -1159,7 +1215,7 @@
                     {CALENDAR_SHOW_TIME_TYPE_DROPDOWN_DETAIL}&nbsp;<span id="timeSelectionContentDetail"><label><input name="showStartTimeDetail" id="showStartTimeDetail" value="{CALENDAR_START_TIME_VALUE_DETAIL} " type="checkbox" {CALENDAR_START_TIME_CHECKED_DETAIL} />&nbsp;{TXT_CALENDAR_SHOW_START_TIME}&nbsp;&nbsp;</label><label><input name="showEndTimeDetail" id="showEndTimeDetail" value="{CALENDAR_END_TIME_VALUE_DETAIL}" type="checkbox" {CALENDAR_END_TIME_CHECKED_DETAIL} />&nbsp;{TXT_CALENDAR_SHOW_END_TIME}</label></span>
                 </td>
             </tr>
-            <tr class="row1">
+            <tr class="row2">
                 <td style="border-top: 1px solid #DDE4FF;" width="180"  valign="top">{TXT_CALENDAR_EVENT_ACCESS}</td>
                 <td style="border-top: 1px solid #DDE4FF;" colspan="2">
                     <select name="access" style="width: 258px">
@@ -1169,7 +1225,7 @@
                     </select>
                 </td>
             </tr>
-            <tr class="row2">
+            <tr class="row1">
                 <td width="180"  valign="top">{TXT_CALENDAR_EVENT_PRIORITY}</td>
                 <td colspan="2">
                     <select name="priority" style="width: 258px">
@@ -1226,12 +1282,24 @@
                 </td>
             </tr>
             <tr class="row2">
+                <td width="180" valign="top">{TXT_CALENDAR_CRM_MEMBERSHIPS}</td>
+                <td colspan="2">
+                    <div>
+                        <select tabindex="7" data-placeholder="{TXT_CALENDAR_CHOOSE_CRM_MEMBERSHIPS}" name="calendar_event_invite_crm_memberships[]" id="calendar_event_invite_crm_memberships" size="1" multiple autocomplete="off">
+                            <!-- BEGIN calendar_event_invite_crm_membership -->
+                            <option value="{CRM_MEMBERSHIP_ID}" {CRM_MEMBERSHIP_SELECTED}>{CRM_MEMBERSHIP_VALUE}</option>
+                            <!-- END calendar_event_invite_crm_membership -->
+                        </select>
+                    </div>
+                </td>
+            </tr>
+            <tr class="row1">
                 <td valign="top">{TXT_CALENDAR_EVENT_MORE_INVITATIONS}</td>
                 <td colspan="2">
                     <textarea name="invitedMails" style="width: 250px; height: 60px;" />{CALENDAR_EVENT_MORE_INVITATIONS}</textarea>&nbsp;&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_MORE_INVITATIONS_INFO}</span>
                 </td>
             </tr>
-            <tr class="row1">
+            <tr class="row2">
                 <td valign="top">{TXT_CALENDAR_EVENT_SEND_INVITATION}</td>
                 <td width="1%">
                     <input name="sendInvitation" class="sendInvitation" type="checkbox" value="1" {CALENDAR_EVENT_SEND_INVITATION}/>
@@ -1408,16 +1476,31 @@
                 </td>
             </tr>
             <tr class="row1">
+                <td valign="top" width="180">{TXT_CALENDAR_EVENT_SERIES_ADDITIONAL_RECURRENCES}</td>
+                <td valign="top">
+                    <div id="additionalRecurrencesList">
+                        <!-- BEGIN eventAdditionalRecurrences -->
+                        <div class="seriesList">
+                            <span>{CALENDAR_SERIES_ADDITIONAL_RECURRENCES_FULL_DATE}</span>
+                            <input type="hidden" name="additionalRecurrences[]" value="{CALENDAR_SERIES_ADDITIONAL_RECURRENCES_DATE}"  />
+                            &nbsp;<a href="javascript:void(0);" class="delete_exception" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="../core/Core/View/Media/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a>
+                        </div>
+                        <!-- END eventAdditionalRecurrences -->
+                    </div>
+                    <input type="button" class="add_additional_recurrences" value="{TXT_CALENDAR_ADD}" />
+                </td>
+            </tr>
+            <tr class="row2">
                 <td valign="top">{TXT_CALENDAR_SERIES_PATTERN_DURANCE}</td>
                 <td valign="middle">
                     <label><input type="radio" name='seriesDouranceType' value="1" {CALENDAR_SERIES_PATTERN_DOURANCE_1}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_NO_ENDDATE}</label><br />
                     <label style="width: 100px;float:left;"><input type="radio" name='seriesDouranceType' value="2" {CALENDAR_SERIES_PATTERN_DOURANCE_2}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS_AFTER}&nbsp;</label>
                     <input type="text" name='seriesDouranceEvents' id="seriesDouranceEvents" maxlength="3" value="{CALENDAR_SERIES_PATTERN_ENDS_EVENTS}" style="width: 20px;" onkeypress="return modifyEvent._isNumber(event);" />&nbsp;{TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS}<br />
                     <label style="width: 100px;float:left;"><input type="radio" name='seriesDouranceType' value="3" {CALENDAR_SERIES_PATTERN_DOURANCE_3}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS}&nbsp;</label>
-                    <input type="text" name="seriesDouranceDate"  id="{CALENDAR_SERIES_PATTERN_ENDS_INPUT_ID}" class="event_date" style="width: 140px;" value="{CALENDAR_SERIES_PATTERN_ENDS_DATE}" />
+                    <input type="text" name="seriesDouranceDate"  id="" class="event_date" style="width: 140px;" value="{CALENDAR_SERIES_PATTERN_ENDS_DATE}" />
                 </td>
             </tr>
-            <tr class="row2">
+            <tr class="row1">
                 <td valign="top" width="180">{TXT_CALENDAR_EVENT_TREAT_AS_INDEPENDENT}</td>
                 <td>
                     <label><input type="checkbox" name='seriesIndependent' value="1" {CALENDAR_EVENT_SERIES_INDEPENDENT}/></label>
@@ -1472,6 +1555,10 @@
     </ul>
     <br/>
     <div class="paginationHolder"></div>
+</div>
+<div id="additionalRecurrencesContainer" style="display: none;">
+    {TXT_CALENDAR_SELECT_ADDITIONAL_RECURRENCES_INFO}:<br/><br/>
+    <div id="recurrenceDatepicker"></div>
 </div>
 <script id="exceptionDateTemplate" type="jquery/tmpl">
     <li>

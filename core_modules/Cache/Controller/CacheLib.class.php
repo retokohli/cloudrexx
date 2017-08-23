@@ -82,11 +82,6 @@ class CacheLib
     const CACHE_ENGINE_ZEND_OPCACHE = 'zendopcache';
 
     /**
-     * file system user cache extension
-     */
-    const CACHE_ENGINE_FILESYSTEM = 'filesystem';
-
-    /**
      * cache off
      */
     const CACHE_ENGINE_OFF = 'off';
@@ -122,6 +117,14 @@ class CacheLib
      * @var \Cx\Core\Json\JsonData
      */
     protected $jsonData = null;
+
+    /**
+     * Prefix to be used to identify cache entries in shared caching
+     * environments.
+     *
+     * @var string
+     */
+    protected $cachePrefix;
 
     /**
      * Constructor
@@ -211,7 +214,9 @@ class CacheLib
         if ($this->isInstalled(self::CACHE_ENGINE_ZEND_OPCACHE)) {
             ini_set('opcache.save_comments', 1);
             ini_set('opcache.load_comments', 1);
-            @ini_set('opcache.enable', 1);
+            if (!ini_get('opcache.enable')) {
+                @ini_set('opcache.enable', 1);
+            }
 
             if (
                 !$this->isActive(self::CACHE_ENGINE_ZEND_OPCACHE) ||
@@ -292,11 +297,6 @@ class CacheLib
             $this->isConfigured(self::CACHE_ENGINE_XCACHE, true)
         ) {
             $this->userCacheEngines[] = self::CACHE_ENGINE_XCACHE;
-        }
-
-        // Filesystem
-        if ($this->isConfigured(self::CACHE_ENGINE_FILESYSTEM)) {
-            $this->userCacheEngines[] = self::CACHE_ENGINE_FILESYSTEM;
         }
     }
 
@@ -496,7 +496,7 @@ class CacheLib
      * @throws \Exception If JsonAdapter request did not succeed
      * @return string API content or empty string
      */
-    protected function getApiResponseForUrl($url, $response = null) {
+    protected function getApiResponseForUrl($url) {
         // Initialize only when needed, we need DB for this!
         if (empty($this->apiUrlString)) {
             $this->apiUrlString = substr(\Cx\Core\Routing\Url::fromApi('', array(), array()), 0, -1);
@@ -521,9 +521,19 @@ class CacheLib
         unset($params['object']);
         unset($params['act']);
         $arguments = array('get' => contrexx_input2raw($params));
-        if ($response) {
-            $arguments['response'] = $response;
-        }
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $arguments['response'] = new \Cx\Core\Routing\Model\Entity\Response(
+            null,
+            200,
+            new \Cx\Core\Routing\Model\Entity\Request(
+                'get',
+                new \Cx\Core\Routing\Url($url),
+                array(
+                    'Referer' => $cx->getRequest()->getUrl()->toString(),
+                )
+            )
+        );
+        $arguments['response']->setPage($cx->getPage());
 
         if (!$this->jsonData) {
             $this->jsonData = new \Cx\Core\Json\JsonData();
@@ -574,6 +584,7 @@ class CacheLib
             'channel',
             'country',
             'currency',
+            'ref',
             'targetComponent',
             'targetEntity',
             'targetId',
@@ -610,8 +621,6 @@ class CacheLib
                 return extension_loaded('memcached');
             case self::CACHE_ENGINE_XCACHE:
                 return extension_loaded('xcache');
-            case self::CACHE_ENGINE_FILESYSTEM:
-                return true;
         }
     }
 
@@ -634,8 +643,6 @@ class CacheLib
             case self::CACHE_ENGINE_XCACHE:
                 $setting = 'xcache.cacher';
                 break;
-            case self::CACHE_ENGINE_FILESYSTEM:
-                return true;
         }
         if (!empty($setting)) {
             $configurations = ini_get_all();
@@ -655,7 +662,10 @@ class CacheLib
                 }
                 return true;
             case self::CACHE_ENGINE_ZEND_OPCACHE:
-                return ini_get('opcache.save_comments') && ini_get('opcache.load_comments');
+                // opcache.load_comments no longer exists since PHP7
+                // therefore, ini_get() will return FALSE in case the
+                // php directive does not exist
+                return ini_get('opcache.save_comments') && (ini_get('opcache.load_comments') === false || ini_get('opcache.load_comments'));
             case self::CACHE_ENGINE_MEMCACHE:
                 return $this->memcache ? true : false;
             case self::CACHE_ENGINE_MEMCACHED:
@@ -669,9 +679,6 @@ class CacheLib
                     );
                 }
                 return ini_get('xcache.size') > 0;
-            case self::CACHE_ENGINE_FILESYSTEM:
-                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-                return is_writable($cx->getWebsiteCachePath());
         }
     }
 
@@ -779,8 +786,6 @@ class CacheLib
             case self::CACHE_ENGINE_ZEND_OPCACHE:
                 $this->clearZendOpCache();
                 break;
-            case self::CACHE_ENGINE_FILESYSTEM:
-                $this->_deleteAllFiles();
             default:
                 break;
         }
@@ -945,7 +950,24 @@ class CacheLib
     protected function getCachePrefix()
     {
         global $_DBCONFIG;
-        return $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'];
+
+        // TODO: check if the initialization of the prefix could be moved into
+        //       the constructor
+        if (empty($this->cachePrefix)) {
+            $this->cachePrefix = $_DBCONFIG['database'].'.'.$_DBCONFIG['tablePrefix'];
+        }
+
+        return $this->cachePrefix;
+    }
+
+    /**
+     * Overwrite the automatically set CachePrefix
+     * @param   $prefix String  The new CachePrefix to be used.
+     *                          Setting an empty string will reset
+     *                          the CachePrefix to its initial value.
+     */
+    public function setCachePrefix($prefix = '') {
+        $this->cachePrefix = $prefix;
     }
 
     /**
@@ -982,9 +1004,6 @@ class CacheLib
                 $cache = new \Doctrine\Common\Cache\XcacheCache();
                 $cache->setNamespace($this->getCachePrefix());
                 break;
-            case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_FILESYSTEM:
-                $cache = new \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver\FileSystemCache($this->strCachePath);
-                break;
             default:
                 $cache = new \Doctrine\Common\Cache\ArrayCache();
                 break;
@@ -1015,9 +1034,10 @@ class CacheLib
     /**
      * Returns the validated file search parts of the URL
      * @param string $url URL to parse
+     * @param string $originalUrl URL of the page that ESI is parsed for
      * @return array <fileNamePrefix>=><parsedValue> type array
      */
-    public function getCacheFileNameSearchPartsFromUrl($url) {
+    public function getCacheFileNameSearchPartsFromUrl($url, $originalUrl) {
         try {
             $url = new \Cx\Lib\Net\Model\Entity\Url($url);
             $params = $url->getParsedQuery();
@@ -1032,6 +1052,7 @@ class CacheLib
             'ch' => 'channel',
             'g' => 'country',
             'c' => 'currency',
+            'r' => 'ref',
             'tc' => 'targetComponent',
             'te' => 'targetEntity',
             'ti' => 'targetId',
@@ -1041,9 +1062,17 @@ class CacheLib
             if (!isset($params[$long])) {
                 continue;
             }
-            // security: abort if any mystirius characters are found
+            // security: abort if any mysterious characters are found
             if (!preg_match('/^[a-zA-Z0-9-]+$/', $params[$long])) {
                 return array();
+            }
+            if ($long == 'ref') {
+                $params[$long] = str_replace(
+                    '$(HTTP_REFERER)',
+                    $originalUrl,
+                    $params[$long]
+                );
+                $params[$long] = md5($params[$long]);
             }
             $fileNameSearchParts[$short] = '_' . $short . $params[$long];
         }
@@ -1053,10 +1082,12 @@ class CacheLib
     /**
      * Gets the local cache file name for an URL
      * @param string $url URL to get file name for
-     * @return string File name
+     * @param string $originalUrl URL of the page that ESI is parsed for
+     * @param boolean $withCacheInfoPart (optional) Adds info part (default true)
+     * @return string File name (without path)
      */
-    public function getCacheFileNameFromUrl($url, $withCacheInfoPart = true) {
-        $cacheInfoParts = $this->getCacheFileNameSearchPartsFromUrl($url);
+    public function getCacheFileNameFromUrl($url, $originalUrl, $withCacheInfoPart = true) {
+        $cacheInfoParts = $this->getCacheFileNameSearchPartsFromUrl($url, $originalUrl);
         try {
             $url = new \Cx\Lib\Net\Model\Entity\Url($url);
             $params = $url->getParsedQuery();
@@ -1071,12 +1102,22 @@ class CacheLib
             'channel',
             'country',
             'currency',
+            'ref',
             'targetComponent',
             'targetEntity',
             'targetId',
         );
         foreach ($correctIndexOrder as $paramName) {
             unset($params[$paramName]);
+        }
+        // Make sure placeholders are replaced before generating filename.
+        // Otherwise the filename will be non-unique.
+        if (isset($params['ref'])) {
+            $params['ref'] = str_replace(
+                '$(HTTP_REFERER)',
+                $originalUrl,
+                $params['ref']
+            );
         }
         $fileName = '';
         if (is_object($url)) {
