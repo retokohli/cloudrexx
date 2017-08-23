@@ -1555,8 +1555,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         if (isset($_POST['access_save_user'])) {
             $arrSettings = \User_Setting::getSettings();
 
-            // only administrators and users with MANAGE_USER_ACCES_ID are
-            // allowed to change a users account.
+            // only administrators and users with MANAGE_USER_ACCESS_ID are
+            // allowed to change a user's account.
             // Or users may be allowed to change their own account.
             // Only administrators are allowed to modify a super admin account
             if (!$this->checkUserModifyPermission($objUser)) {
@@ -1832,8 +1832,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         // Check if the logged-in user has '31' permission and
         // editing their own user account
         if (
-           $objUser->getId() == $objFWUser->objUser->getId() &&
-           \Permission::checkAccess(31, 'static', true)
+            $objUser->getId() == $objFWUser->objUser->getId() &&
+            \Permission::checkAccess(31, 'static', true)
         ) {
             return true;
         }
