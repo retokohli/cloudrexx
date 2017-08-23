@@ -1590,7 +1590,7 @@ class Forum extends ForumLibrary {
         }else{
             die('DB error: '.$objDatabase->ErrorMsg());
         }
-        $this->_objTpl->setVariable("FORUM_REFERER", $_SERVER['HTTP_REFERER']);
+        $this->_objTpl->setVariable("FORUM_REFERER", '$(HTTP_REFERER)');
     }
 
     /**

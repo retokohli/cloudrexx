@@ -146,7 +146,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $objUser->objAttribute->next();
             }
 
-            $this->_objTpl->setVariable("ACCESS_REFERER", $_SERVER['HTTP_REFERER']);
+            $this->_objTpl->setVariable("ACCESS_REFERER", '$(HTTP_REFERER)');
         } else {
             // or would it be better to redirect to the home page?
             \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Access&cmd=members');
