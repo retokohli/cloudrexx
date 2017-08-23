@@ -1557,18 +1557,11 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         if (isset($_POST['access_save_user'])) {
             $arrSettings = \User_Setting::getSettings();
 
-            // only administrators and users with MANAGE_USER_ACCES_ID are
-            // allowed to change a users account.
-            // Or users may be allowed to change their own account
-            if (
-                !\Permission::checkAccess(
-                    static::MANAGE_USER_ACCESS_ID, 'static', true
-                ) &&
-                (
-                    $objUser->getId() != $objFWUser->objUser->getId() ||
-                    !\Permission::checkAccess(31, 'static', true)
-                )
-            ) {
+            // only administrators and users with MANAGE_USER_ACCESS_ID are
+            // allowed to change a user's account.
+            // Or users may be allowed to change their own account.
+            // Only administrators are allowed to modify a super admin account
+            if (!$this->checkUserModifyPermission($objUser)) {
                 \Permission::noAccess();
             }
 
@@ -1810,6 +1803,45 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         return true;
     }
 
+    /**
+     * Check user add/edit permission
+     *
+     * @param \User $objUser user object
+     *
+     * @return boolean
+     */
+    protected function checkUserModifyPermission(\User $objUser)
+    {
+        $objFWUser = \FWUser::getFWUserObject();
+        // Check if the logged-in user has super admin permission
+        if ($objFWUser->objUser->getAdminStatus()) {
+            return true;
+        }
+
+        // Check if the logged-in user has MANAGE_USER_ACCESS_ID permission and
+        // editing non-admin user account
+        if (
+            !$objUser->getAdminStatus() &&
+            \Permission::checkAccess(
+                static::MANAGE_USER_ACCESS_ID,
+                'static',
+                true
+            )
+        ) {
+            return true;
+        }
+
+        // Check if the logged-in user has '31' permission and
+        // editing their own user account
+        if (
+            $objUser->getId() == $objFWUser->objUser->getId() &&
+            \Permission::checkAccess(31, 'static', true)
+        ) {
+            return true;
+        }
+
+        return false;
+    }
 
     private function parseModuleSpecificExtensions()
     {
