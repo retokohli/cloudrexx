@@ -100,7 +100,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
         $requiredParamsForWidgetsWithContent = array(
             'theme',
             'page',
-            'lang',
+            'locale',
             'targetComponent',
             'targetEntity',
             'targetId',
@@ -214,9 +214,11 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                 }
                 return $page;
             },
-            'lang' => function($langCode) {
-                // this should return a locale object
-                $langId = \FWLanguage::getLanguageIdByCode($langCode);
+            'locale' => function($langCode) {
+                $em = $this->cx->getDb()->getEntityManager();
+                $locale = $em
+                    ->getRepository('\Cx\Core\Locale\Model\Entity\Locale')
+                    ->findOneByCode($langCode);
 
                 // load component language data
                 global $_ARRAYLANG;
@@ -225,10 +227,10 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                     \Env::get('init')->getComponentSpecificLanguageData(
                         parent::getName(),
                         true,
-                        $langId
+                        $locale->getId()
                     )
                 );
-                return $langId;
+                return $locale;
             },
             'user' => function($userId) {
                 return \FWUser::getFWUserObject()->objUser->getUser($userId);

@@ -1766,7 +1766,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         }
         catch (e) {}
     });
-    if (typeof(langPreset) == 'string' && langPreset.length == 2) {
+    if (typeof(langPreset) == 'string' && langPreset.length >= 2) {
         cx.cm.setCurrentLang(langPreset);
     }
 };
