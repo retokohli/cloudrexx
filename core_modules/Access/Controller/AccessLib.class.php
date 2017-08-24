@@ -1927,8 +1927,22 @@ JS
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
         // fetch thumbnails of fallback images
-        $noAvatarThumbnails = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($cx->getWebsiteImagesAccessProfileWebPath(), \User_Profile::$arrNoAvatar['src'], true);
-        $noPictureThumbnails = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($cx->getWebsiteImagesAccessPhotoWebPath(), \User_Profile::$arrNoPicture['src'], true);
+        $noAvatarThumbnails =
+            $cx->getMediaSourceManager()
+            ->getThumbnailGenerator()
+            ->getThumbnailsFromFile(
+                $cx->getWebsiteImagesAccessProfileWebPath(),
+                \User_Profile::$arrNoAvatar['src'],
+                true
+            );
+        $noPictureThumbnails =
+            $cx->getMediaSourceManager()
+            ->getThumbnailGenerator()
+            ->getThumbnailsFromFile(
+                $cx->getWebsiteImagesAccessPhotoWebPath(),
+                \User_Profile::$arrNoPicture['src'],
+                true
+            );
         $noThumbnails = array_merge($noAvatarThumbnails, $noPictureThumbnails);
 
         // strip path from fallback thumbnails
@@ -2000,7 +2014,14 @@ JS
                         $arrImagesDb[] = $objImage->fields['picture'];
 
                         // fetch all thumbnails of image
-                        $thumbnails = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($imageWebPath, $objImage->fields['picture'], true);
+                        $thumbnails =
+                            $cx->getMediaSourceManager()
+                            ->getThumbnailGenerator()
+                            ->getThumbnailsFromFile(
+                                $imageWebPath,
+                                $objImage->fields['picture'],
+                                true
+                            );
                         $thumbnails = array_map('basename', $thumbnails);
                         $arrImagesDb = array_merge($arrImagesDb, $thumbnails);
 
