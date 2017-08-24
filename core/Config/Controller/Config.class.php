@@ -1533,6 +1533,21 @@ class Config
                     \Cx\Core\Setting\Controller\Setting::TYPE_IMAGE, '{"type":"reference"}', 'otherConfigurations')) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default meta image");
             }
+            if (
+                !\Cx\Core\Setting\Controller\Setting::isDefined('robotstxt') &&
+                !\Cx\Core\Setting\Controller\Setting::add(
+                    'robotstxt',
+                    '',
+                    9,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_FILECONTENT,
+                    'robots.txt',
+                    'otherConfigurations'
+                )
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException(
+                    'Failed to add Setting entry for robots.txt'
+                );
+            }
 
             // core
             \Cx\Core\Setting\Controller\Setting::init('Config', 'core','Yaml', $configPath);
