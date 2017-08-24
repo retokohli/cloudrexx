@@ -2833,7 +2833,6 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
             //check attribute read access
             if (
-                isset($_POST['read_access_attribute_all_access']) &&
                 !empty($_POST['read_access_attribute_all_access'])
             ) {
                 $objAttribute->removeReadProtection();
