@@ -1925,19 +1925,24 @@ JS
         global $objDatabase;
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+
+        // fetch thumbnails of fallback images
+        $noAvatarThumbnails = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($cx->getWebsiteImagesAccessProfileWebPath(), \User_Profile::$arrNoAvatar['src'], true);
+        $noPictureThumbnails = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($cx->getWebsiteImagesAccessPhotoWebPath(), \User_Profile::$arrNoPicture['src'], true);
+        $noThumbnails = array_merge($noAvatarThumbnails, $noPictureThumbnails);
+
+        // strip path from fallback thumbnails
+        $excludeFiles = array_map('basename', $noThumbnails);
+
+        // add fallback images
+        $excludeFiles[] = \User_Profile::$arrNoAvatar['src'];
+        $excludeFiles[] = \User_Profile::$arrNoPicture['src'];
+
+        // quote images for REGEXP
+        $excludeFiles = array_map('preg_quote', $excludeFiles);
+
         // Regex matching folders and files not to be deleted
-        $noAvatarThumbSrc = \ImageManager::getThumbnailFilename(
-            $cx->getWebsiteImagesAccessProfileWebPath() .'/'.
-            \User_Profile::$arrNoAvatar['src']);
-        $noPictureThumbSrc = \ImageManager::getThumbnailFilename(
-            $cx->getWebsiteImagesAccessPhotoWebPath() .'/'.
-            \User_Profile::$arrNoPicture['src']);
-        $ignoreRe =
-            '/(?:\.(?:\.?|svn)'.
-            '|'.preg_quote(\User_Profile::$arrNoAvatar['src'], '/').
-            '|'.preg_quote($noAvatarThumbSrc, '/').
-            '|'.preg_quote(\User_Profile::$arrNoPicture['src'], '/').
-            '|'.preg_quote($noPictureThumbSrc, '/').')$/';
+        $ignoreRe = '#^(?:\.(?:\.?|svn|git|htaccess|ftpaccess)|' . implode('|', $excludeFiles) . ')$#';
 
         $arrTrueFalse = array(true, false);
         foreach ($arrTrueFalse as $profilePics) {
@@ -1948,21 +1953,8 @@ JS
             $arrImages = array();
             $offset = 0;
             $step = 50000;
-// TODO: Never used
-//            $removeImages = array();
 
-            if (CONTREXX_PHP5) {
-                $arrImages = scandir($imagePath);
-            } else {
-// TODO: We're PHP5 *ONLY* now.  This is obsolete
-                $dh  = opendir($imagePath);
-                $image = readdir($dh);
-                while ($image !== false) {
-                    $arrImages[] = $image;
-                    $image = readdir($dh);
-                }
-                closedir($dh);
-            }
+            $arrImages = scandir($imagePath);
             foreach ($arrImages as $index => $file) {
                 if (preg_match($ignoreRe, $file)) unset($arrImages[$index]);
             }
