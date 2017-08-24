@@ -1009,7 +1009,7 @@ class Setting{
                       break;
                     case self::TYPE_FILECONTENT:
                         $cx       = \Cx\Core\Core\Controller\Cx::instanciate();
-                        $filePath = $cx->getCodeBaseDocumentRootPath() . '/' .
+                        $filePath = $cx->getWebsiteDocumentRootPath() . '/' .
                             $arrSettings[$name]['values'];
                         if (\Cx\Lib\FileSystem\FileSystem::exists($filePath)) {
                             $objFile  = new \Cx\Lib\FileSystem\File($filePath);
