@@ -261,6 +261,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $widgetName,
                 true
             );
+            $widget->setEsiVariable(
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
+            );
             $widgetController->registerWidget(
                 $widget
             );
