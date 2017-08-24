@@ -73,10 +73,10 @@ class Group extends \Cx\Core\User\Model\Entity\Group implements \Doctrine\ORM\Pr
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'groupId', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'groupName', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'groupDescription', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'isActive', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'type', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'homepage', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'user', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'accessId2', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'accessId', 'readAccessId', 'validators', 'virtual');
+            return array('__isInitialized__', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'groupId', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'groupName', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'groupDescription', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'isActive', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'type', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'homepage', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'user', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'accessId2', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'accessId', 'validators', 'virtual');
         }
 
-        return array('__isInitialized__', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'groupId', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'groupName', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'groupDescription', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'isActive', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'type', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'homepage', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'user', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'accessId2', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'accessId', 'readAccessId', 'validators', 'virtual');
+        return array('__isInitialized__', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'groupId', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'groupName', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'groupDescription', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'isActive', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'type', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'homepage', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'user', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'accessId2', '' . "\0" . 'Cx\\Core\\User\\Model\\Entity\\Group' . "\0" . 'accessId', 'validators', 'virtual');
     }
 
     /**
@@ -382,28 +382,6 @@ class Group extends \Cx\Core\User\Model\Entity\Group implements \Doctrine\ORM\Pr
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAccessId', array());
 
         return parent::getAccessId();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function addReadAccessId(\Cx\Core_Modules\Access\Model\Entity\AccessId $readAccessId)
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addReadAccessId', array($readAccessId));
-
-        return parent::addReadAccessId($readAccessId);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getReadAccessId()
-    {
-
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getReadAccessId', array());
-
-        return parent::getReadAccessId();
     }
 
     /**

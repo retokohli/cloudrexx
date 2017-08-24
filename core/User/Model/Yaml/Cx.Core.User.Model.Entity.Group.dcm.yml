@@ -42,6 +42,3 @@ Cx\Core\User\Model\Entity\Group:
     accessId:
       targetEntity: Cx\Core_Modules\Access\Model\Entity\AccessId
       mappedBy: group
-    readAccessId:
-      targetEntity: Cx\Core_Modules\Access\Model\Entity\AccessId
-      mappedBy: group
