@@ -109,10 +109,15 @@ class YamlEngine extends Engine{
                             $websitePath . '/' . $yamlSetting->getValues() 
                         )
                     ) {
-                        $objFile  = new \Cx\Lib\FileSystem\File(
-                            $websitePath . '/' . $yamlSetting->getValues()
-                        );
-                        $value = $objFile->getData();
+                        try {
+                            $objFile  = new \Cx\Lib\FileSystem\File(
+                                $websitePath . '/' . $yamlSetting->getValues()
+                            );
+                            $value = $objFile->getData();
+                        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                            \DBG::msg($e->getMessage());
+                            $value = '';
+                        }
                     }
                     $yamlSettingArray[$yamlSetting->getName()] = array(
                         'name'    => $yamlSetting->getName(),

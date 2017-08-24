@@ -1012,8 +1012,12 @@ class Setting{
                         $filePath = $cx->getWebsiteDocumentRootPath() . '/' .
                             $arrSettings[$name]['values'];
                         if (\Cx\Lib\FileSystem\FileSystem::exists($filePath)) {
-                            $objFile  = new \Cx\Lib\FileSystem\File($filePath);
-                            $objFile->write($value);
+                            try {
+                                $objFile  = new \Cx\Lib\FileSystem\File($filePath);
+                                $objFile->write($value);
+                            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                                \DBG::msg($e->getMessage());
+                            }
                         }
                         $value = '';
                       break;
