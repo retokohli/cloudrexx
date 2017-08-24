@@ -170,6 +170,11 @@ class Event extends \Cx\Model\Base\EntityBase {
     protected $invitedGroups;
 
     /**
+     * @var string $invitedCrmGroups
+     */
+    protected $invitedCrmGroups;
+
+    /**
      * @var text $invitedMails
      */
     protected $invitedMails;
@@ -410,6 +415,11 @@ class Event extends \Cx\Model\Base\EntityBase {
     protected $eventFields;
 
     /**
+     * @var Cx\Modules\Calendar\Model\Entity\Invite
+     */
+    protected $invite;
+
+    /**
      * @var Cx\Modules\Calendar\Model\Entity\Registration
      */
     protected $registrations;
@@ -428,6 +438,7 @@ class Event extends \Cx\Model\Base\EntityBase {
     {
         $this->eventFields = new \Doctrine\Common\Collections\ArrayCollection();
         $this->registrations = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->invite = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -918,6 +929,26 @@ class Event extends \Cx\Model\Base\EntityBase {
     public function getInvitedGroups()
     {
         return $this->invitedGroups;
+    }
+
+    /**
+     * Set invitedCrmGroups
+     *
+     * @param string $invitedCrmGroups
+     */
+    public function setInvitedCrmGroups($invitedCrmGroups)
+    {
+        $this->invitedCrmGroups = $invitedCrmGroups;
+    }
+
+    /**
+     * Get invitedCrmGroups
+     *
+     * @return string $invitedCrmGroups
+     */
+    public function getInvitedCrmGroups()
+    {
+        return $this->invitedCrmGroups;
     }
 
     /**
@@ -1889,9 +1920,39 @@ class Event extends \Cx\Model\Base\EntityBase {
      *
      * @param Doctrine\Common\Collections\Collection $eventFields
      */
-    function setEventFields($eventFields)
+    public function setEventFields($eventFields)
     {
         $this->eventFields = $eventFields;
+    }
+
+    /**
+     * Set invite
+     *
+     * @param Cx\Modules\Calendar\Model\Entity\Invite $invite
+     */
+    public function setInvite($invite)
+    {
+        $this->invite= $invite;
+    }
+
+    /**
+     * Add invites
+     *
+     * @param Cx\Modules\Calendar\Model\Entity\Invite $invite
+     */
+    public function addInvite(\Cx\Modules\Calendar\Model\Entity\Invite $invite)
+    {
+        $this->invite[] = $invite;
+    }
+
+    /**
+     * Get invite
+     *
+     * @return Cx\Modules\Calendar\Model\Entity\Invite
+     */
+    public function getInvite()
+    {
+        return $this->invite;
     }
 
     /**

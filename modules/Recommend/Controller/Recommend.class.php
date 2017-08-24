@@ -124,7 +124,7 @@ class Recommend extends RecommendLibrary
         ));
 
         $this->_objTpl->setVariable(array(
-            'RECOM_REFERER'                    => $_SERVER['HTTP_REFERER'],
+            'RECOM_REFERER'                    => '$(HTTP_REFERER)',
             'RECOM_FEMALE_CHECKED'          => 'checked',
             'RECOM_SCRIPT'                    => $this->getJs(),
             'RECOM_PREVIEW'                    => $this->getMessageBody($_LANGID),

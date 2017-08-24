@@ -1447,7 +1447,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                                 'access_currently_online_member_list',
                                 'access_last_active_member_list',
                                 'access_latest_registered_member_list',
-                                'access_birthday_member_list'
+                                'access_birthday_member_list',
+                                'access_next_birthday_member_list',
                             )
                         )
                     );
@@ -1519,7 +1520,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         'access_currently_online_member_list',
                         'access_last_active_member_list',
                         'access_latest_registered_member_list',
-                        'access_birthday_member_list'
+                        'access_birthday_member_list',
+                        'access_next_birthday_member_list',
                     )
                 )
             );
@@ -1555,18 +1557,11 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         if (isset($_POST['access_save_user'])) {
             $arrSettings = \User_Setting::getSettings();
 
-            // only administrators and users with MANAGE_USER_ACCES_ID are
-            // allowed to change a users account.
-            // Or users may be allowed to change their own account
-            if (
-                !\Permission::checkAccess(
-                    static::MANAGE_USER_ACCESS_ID, 'static', true
-                ) &&
-                (
-                    $objUser->getId() != $objFWUser->objUser->getId() ||
-                    !\Permission::checkAccess(31, 'static', true)
-                )
-            ) {
+            // only administrators and users with MANAGE_USER_ACCESS_ID are
+            // allowed to change a user's account.
+            // Or users may be allowed to change their own account.
+            // Only administrators are allowed to modify a super admin account
+            if (!$this->checkUserModifyPermission($objUser)) {
                 \Permission::noAccess();
             }
 
@@ -1808,6 +1803,45 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         return true;
     }
 
+    /**
+     * Check user add/edit permission
+     *
+     * @param \User $objUser user object
+     *
+     * @return boolean
+     */
+    protected function checkUserModifyPermission(\User $objUser)
+    {
+        $objFWUser = \FWUser::getFWUserObject();
+        // Check if the logged-in user has super admin permission
+        if ($objFWUser->objUser->getAdminStatus()) {
+            return true;
+        }
+
+        // Check if the logged-in user has MANAGE_USER_ACCESS_ID permission and
+        // editing non-admin user account
+        if (
+            !$objUser->getAdminStatus() &&
+            \Permission::checkAccess(
+                static::MANAGE_USER_ACCESS_ID,
+                'static',
+                true
+            )
+        ) {
+            return true;
+        }
+
+        // Check if the logged-in user has '31' permission and
+        // editing their own user account
+        if (
+            $objUser->getId() == $objFWUser->objUser->getId() &&
+            \Permission::checkAccess(31, 'static', true)
+        ) {
+            return true;
+        }
+
+        return false;
+    }
 
     private function parseModuleSpecificExtensions()
     {
@@ -2332,6 +2366,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'TXT_ACCESS_LAST_ACTIVE'                            => $_ARRAYLANG['TXT_ACCESS_LAST_ACTIVE'],
             'TXT_ACCESS_LATEST_REGISTERED_USERS'                => $_ARRAYLANG['TXT_ACCESS_LATEST_REGISTERED_USERS'],
             'TXT_ACCESS_BIRTHDAYS'                              => $_ARRAYLANG['TXT_ACCESS_BIRTHDAYS'],
+            'TXT_ACCESS_NEXT_BIRTHDAYS'                         => $_ARRAYLANG['TXT_ACCESS_NEXT_BIRTHDAYS'],
+            'TXT_ACCESS_NEXT_BIRTHDAYS_DAYS'                    => $_ARRAYLANG['TXT_ACCESS_NEXT_BIRTHDAYS_DAYS'],
             'TXT_ACCESS_ACTIVATE_BLOCK_FUNCTION'                => $_ARRAYLANG['TXT_ACCESS_ACTIVATE_BLOCK_FUNCTION'],
             'TXT_ACCESS_SHOW_USERS_ONLY_WITH_PHOTO'             => $_ARRAYLANG['TXT_ACCESS_SHOW_USERS_ONLY_WITH_PHOTO'],
             'TXT_ACCESS_MAX_USER_COUNT'                         => $_ARRAYLANG['TXT_ACCESS_MAX_USER_COUNT'],
@@ -2429,6 +2465,13 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $arrSettings['block_birthday_users_pic']['status'] = !empty($_POST['access_blocks_birthday_users_only_with_photo']) && intval($_POST['access_blocks_birthday_users_only_with_photo']);
             } else {
                 $arrSettings['block_birthday_users']['status'] = 0;
+            }
+            if (!empty($_POST['access_blocks_next_birthday_users'])) {
+                $arrSettings['block_next_birthday_users']['status'] = 1;
+                $arrSettings['block_next_birthday_users']['value'] = !empty($_POST['access_blocks_next_birthday_users_day_count']) ? intval($_POST['access_blocks_next_birthday_users_day_count']) : 0;
+                $arrSettings['block_next_birthday_users_pic']['status'] = !empty($_POST['access_blocks_next_birthday_users_pic']) && intval($_POST['access_blocks_next_birthday_users_pic']);
+            } else {
+                $arrSettings['block_next_birthday_users']['status'] = 0;
             }
 
             if (!empty($_POST['accessMaxProfilePicWidth'])) {
@@ -2528,7 +2571,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                                 'access_currently_online_member_list',
                                 'access_last_active_member_list',
                                 'access_latest_registered_member_list',
-                                'access_birthday_member_list'
+                                'access_birthday_member_list',
+                                'access_next_birthday_member_list',
                             )
                         )
                     );
@@ -2641,6 +2685,10 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'ACCESS_BLOCKS_BIRTHDAY_USERS_DISPLAY'                  => $arrSettings['block_birthday_users']['status'] ? '' : 'none',
             'ACCESS_BLOCKS_BIRTHDAY_USERS_USER_COUNT'               => $arrSettings['block_birthday_users']['value'],
             'ACCESS_BLOCKS_BIRTHDAY_USERS_ONLY_WITH_PHOTO'          => $arrSettings['block_birthday_users_pic']['status'] ? 'checked="checked"' : '',
+            'ACCESS_BLOCKS_NEXT_BIRTHDAY_USERS'                     => $arrSettings['block_next_birthday_users']['status'] ? 'checked="checked"' : '',
+            'ACCESS_BLOCKS_NEXT_BIRTHDAY_USERS_DISPLAY'             => $arrSettings['block_next_birthday_users']['status'] ? '' : 'none',
+            'ACCESS_BLOCKS_NEXT_BIRTHDAY_USERS_DAY_COUNT'           => $arrSettings['block_next_birthday_users']['value'],
+            'ACCESS_BLOCKS_NEXT_BIRTHDAY_USERS_PIC'                 => $arrSettings['block_next_birthday_users_pic']['status'] ? 'checked="checked"' : '',
             'ACCESS_MAX_PROFILE_PIC_WIDTH'                          => $arrSettings['max_profile_pic_width']['value'],
             'ACCESS_MAX_PROFILE_PIC_HEIGHT'                         => $arrSettings['max_profile_pic_height']['value'],
             'ACCESS_PROFILE_THUMBNAIL_PIC_WIDTH'                    => $arrSettings['profile_thumbnail_pic_width']['value'],
@@ -3511,9 +3559,10 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 // TODO: Make new Users active or inactive?
 //            $objUser->setActiveStatus(0);
 //            $objUser->setAdminStatus(0);
-            $lang_id = \FWLanguage::getLanguageIdByCode($language);
-            $objUser->setFrontendLanguage($lang_id);
-            $objUser->setBackendLanguage($lang_id);
+            $frontend_lang_id = \FWLanguage::getLanguageIdByCode($language);
+            $backend_lang_id = \FWLanguage::getBackendLanguageIdByCode($language);
+            $objUser->setFrontendLanguage($frontend_lang_id);
+            $objUser->setBackendLanguage($backend_lang_id);
             $objUser->setProfile(array(
 //                'picture' => array(''),
                 'gender' => array($gender),

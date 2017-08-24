@@ -125,6 +125,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 'ACCESS_USER_ID'            => $objUser->getId(),
                 'ACCESS_USER_USERNAME'      => contrexx_raw2xhtml($objUser->getUsername()),
                 'ACCESS_USER_PRIMARY_GROUP' => contrexx_raw2xhtml($objUser->getPrimaryGroupName()),
+                'ACCESS_USER_REGDATE'       => date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate()),
             ));
 
             if ($objUser->getEmailAccess() == 'everyone' ||
@@ -147,7 +148,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $objUser->objAttribute->next();
             }
 
-            $this->_objTpl->setVariable("ACCESS_REFERER", $_SERVER['HTTP_REFERER']);
+            $this->_objTpl->setVariable("ACCESS_REFERER", '$(HTTP_REFERER)');
         } else {
             // or would it be better to redirect to the home page?
             \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Access&cmd=members');
@@ -266,6 +267,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $this->parseAccountAttributes($objUser);
                 $this->_objTpl->setVariable('ACCESS_USER_ID', $objUser->getId());
                 $this->_objTpl->setVariable('ACCESS_USER_CLASS', $nr++ % 2 + 1);
+                $this->_objTpl->setVariable('ACCESS_USER_REGDATE', date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate()));
 
                 if ($objUser->getProfileAccess() == 'everyone' ||
                     $objFWUser->objUser->login() &&

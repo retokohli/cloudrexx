@@ -934,6 +934,15 @@ class Session extends \Cx\Core\Model\RecursiveArrayAccess implements \SessionHan
                           ON DUPLICATE KEY UPDATE
                              `value` = "'. $serializedValue .'"';
                 \Env::get('db')->Execute($query);
+                if (
+                    is_a($value, 'Cx\Core\Model\RecursiveArrayAccess') &&
+                    empty($value->id)
+                ) {
+                    $insertId = \Env::get('db')->Insert_ID();
+                    if ($insertId) {
+                        $value->id = $insertId;
+                    }
+                }
             }
             if (is_a($value, 'Cx\Core\Model\RecursiveArrayAccess')) {
                 $value->parentId = intval($recursiveArrayAccess->id);

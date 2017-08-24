@@ -1079,11 +1079,11 @@ namespace Cx\Core\Core\Controller {
                     if (!isset($_GET['__cap'])) {
                         break;
                     }
-                    if (preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{2})?' . self::FOLDER_NAME_COMMAND_MODE . '#', $_GET['__cap'])) {
+                    if (preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{1,2}(?:-[A-Za-z]{2,4})?)?' . self::FOLDER_NAME_COMMAND_MODE . '#', $_GET['__cap'])) {
                         $this->mode = self::MODE_COMMAND;
                         return;
                     }
-                    if (!preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{2})?(/admin|' . $this->getBackendFolderName() . ')#', $_GET['__cap'])) {
+                    if (!preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{1,2}(?:-[A-Za-z]{2,4})?)?(/admin|' . $this->getBackendFolderName() . ')#', $_GET['__cap'])) {
                         break;
                     }
                     // this does not belong here:
@@ -1366,10 +1366,9 @@ namespace Cx\Core\Core\Controller {
          * @global array $_CONFIG
          * @global type $_FTPCONFIG
          * @global type $objDatabase
-         * @global type $objInit
          */
         protected function init() {
-            global $objDatabase, $objInit, $_DBCONFIG, $_CONFIG;
+            global $objDatabase, $_DBCONFIG, $_CONFIG;
 
             $this->tryToSetMemoryLimit();
 
@@ -1414,10 +1413,6 @@ namespace Cx\Core\Core\Controller {
             $this->eventManager->addEvent('preComponent');
             $this->eventManager->addEvent('postComponent');
 
-            // Initialize base system
-            // TODO: Get rid of InitCMS class, merge it with this class instead
-            $objInit = new \InitCMS($this->mode == self::MODE_FRONTEND ? 'frontend' : 'backend', \Env::get('em'));
-            \Env::set('init', $objInit);
             //$bla = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             //$bla->findAll();
         }
@@ -1910,9 +1905,18 @@ namespace Cx\Core\Core\Controller {
                 $themeFolderName  = \Env::get('init')->getCurrentThemesPath();
 
                 // use application template for all output channels
-                if ($page->getUseCustomApplicationTemplateForAllChannels() && $page->getSkin()) {
-                    $themeRepo       = new \Cx\Core\View\Model\Repository\ThemeRepository();
-                    $themeFolderName = $themeRepo->findById($page->getSkin())->getFoldername();
+                if ($page->getUseCustomApplicationTemplateForAllChannels()) {
+                    $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
+                    // Skin is '0' if set to "default"
+                    if (!$page->getSkin()) {
+                        $theme = $themeRepo->getDefaultTheme(
+                            \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB,
+                            $page->getLang()
+                        );
+                    } else {
+                        $theme = $themeRepo->findById($page->getSkin());
+                    }
+                    $themeFolderName = $theme->getFoldername();
                 }
 
                 // use default theme in case a custom set theme is no longer available

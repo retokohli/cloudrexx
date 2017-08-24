@@ -450,10 +450,28 @@ class CalendarCategory extends CalendarLibrary
      */
     function countEntries($getAll = false, $onlyActive = false)
     {
+        $from   = '';
+        $till   = '';
+
+        try {
+            if (!empty($_GET['from'])) {
+                $from = $this->getDateTime(contrexx_input2raw($_GET['from']));
+            }
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+        }
+
+        try {
+            if (!empty($_GET['till'])) {
+                $till = $this->getDateTime(contrexx_input2raw($_GET['till']));
+            }
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+        }
 
         // get startdate
-        if (!empty($_GET['from'])) {
-            $startDate = $this->getDateTime($_GET['from']); 
+        if (!empty($from)) {
+            $startDate = $from; 
         } else if ($_GET['cmd'] == 'archive') {                             
             $startDate = null; 
         } else {
@@ -467,8 +485,8 @@ class CalendarCategory extends CalendarLibrary
         }                   
         
         // get enddate
-        if (!empty($_GET['till'])) {
-            $endDate = $this->getDateTime($_GET['till']); 
+        if (!empty($till)) {
+            $endDate = $till; 
         } else if ($_GET['cmd'] == 'archive') {
             $endDate = new \DateTime();
         } else {
