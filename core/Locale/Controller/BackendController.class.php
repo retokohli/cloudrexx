@@ -224,8 +224,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     $this->updateLanguageFile($_POST['placeholders']);
                 }
 
-                $template->touchBlock('language_file_select_form');
-
                 // set entity class name (equal to identifier of LanguageFile)
                 $entityClassName = 'Cx\Core\Locale\Model\Entity\SettingsLanguageFile';
 
@@ -603,7 +601,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                     },
                                     'table' => array(
                                         'parse' => function ($value, $rowData) {
-                                            return '<input type="text" size="100" class="placeholder" value="' . contrexx_raw2xhtml($value) . '" name="placeholders[' . $rowData['id'] . ']" />';
+                                            return '<input type="text" size="100" class="placeholder" value="' . contrexx_raw2xhtml($value) . '" name="placeholders[' . $rowData['id'] . ']" form="languageFileSave" />';
                                         },
                                     ),
                                 ),
@@ -794,7 +792,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         // check for changed values
         foreach ($placeholders as $name => $value) {
             // ignore line breaks
-            $oldValue = str_replace(array("\r", "\n"), '', $oldPlaceholders[$name]);
+            $oldValue = str_replace(array("\r", "\n"), '', $oldPlaceholders[$name]['destLang']);
             $newValue = str_replace(array("\r", "\n"), '', $value);
             if ($oldValue == $newValue) {
                 // not changed, skip this one
