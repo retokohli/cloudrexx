@@ -549,6 +549,10 @@ class ViewGenerator {
             $isSingle = true;
             return $this->renderFormForEntry(null);
         }
+        $template = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath().'/Html/View/Template/Generic');
+        $template->loadTemplateFile('TableView.html');
+        $template->setGlobalVariable($_ARRAYLANG);
+        $template->setGlobalVariable('VG_ID', $this->viewId);
         $renderObject = $this->object;
         $entityId = $this->getEntryId();
 
@@ -577,11 +581,11 @@ class ViewGenerator {
                 }
                 $addBtn = '<br /><br /><input type="button" name="addEtity" value="'.$_ARRAYLANG['TXT_ADD'].'" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'".'" />';
             }
+            $template->setVariable('ADD_BUTTON', $addBtn);
             if (!count($renderObject) || !count(current($renderObject))) {
                 // make this configurable
-                $tpl = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath().'/Html/View/Template/Generic');
-                $tpl->loadTemplateFile('NoEntries.html');
-                return $tpl->get().$addBtn;
+                $template->parse('no-entries');
+                return $template->get();
             }
 
             // replace foreign key search criteria
@@ -609,9 +613,13 @@ class ViewGenerator {
             );
             $renderObject = $listingController->getData();
             $this->options['functions']['vg_increment_number'] = $this->viewId;
-            $backendTable = new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
+            $backendTable = new \BackendTable($renderObject, $this->options);
+            $template->setVariable(array(
+                'TABLE' => $backendTable,
+                'PAGING' => $listingController,
+            ));
 
-            return $backendTable.$addBtn;
+            return $template->get();
         }
 
         // render form for single entry view like editEntry
