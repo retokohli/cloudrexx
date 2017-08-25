@@ -660,6 +660,12 @@ class ViewGenerator {
                     if ($field == 'virtual') {
                         continue;
                     }
+                    if (
+                        isset($this->options['fields'][$field]['allowFiltering']) &&
+                        !$this->options['fields'][$field]['allowFiltering']
+                    ) {
+                        continue;
+                    }
                     // set field ID
                     $fieldId = 'vg-' . $this->viewId . '-filter-field-' . $field;
                     $template->setVariable('FIELD_ID', $fieldId);
