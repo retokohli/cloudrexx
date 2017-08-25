@@ -163,4 +163,14 @@ class SettingsLanguageFile extends LanguageFile  {
             $this->path
         );
     }
+
+    /**
+     * Removes a customized placeholder.
+     * @param string $name Placeholder name
+     * @param string $oldValue Old/un-customized value
+     */
+    public function removePlaceholder($name, $oldValue) {
+        unset($this->placeholders[$name]);
+        $this->data[$name]['destLang'] = $oldValue;
+    }
 }

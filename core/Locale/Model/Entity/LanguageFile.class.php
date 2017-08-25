@@ -84,7 +84,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
 
     /**
      * An Array containing the overwritten placeholders
-     * @var \Cx\Core\Locale\Model\Entity\Placeholder[]
+     * @var \Cx\Core\Locale\Model\Entity\Placeholder[], placeholder name as key
      */
     protected $placeholders;
 
@@ -300,14 +300,21 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
      * @param Placeholder $placeholder The placeholder to add
      */
     public function addPlaceholder($placeholder) {
-        foreach ($this->getPlaceholders() as $key => $existingPlaceholders) {
-            if ($existingPlaceholders->getName() == $placeholder->getName()) {
-                // overwrite existing placeholder
-                $this->placeholders[$key] = $placeholder;
-                return;
-            }
+        if (isset($this->placeholders[$placeholder->getName()])) {
+            $this->placeholders[$placeholder->getName()] = $placeholder;
+            return;
         }
         $this->placeholders[] = $placeholder;
+    }
+
+    /**
+     * Removes a customized placeholder.
+     * @param string $name Placeholder name
+     * @param string $oldValue Old/un-customized value
+     */
+    public function removePlaceholder($name, $oldValue) {
+        unset($this->placeholders[$name]);
+        $this->data[$name] = $oldValue;
     }
 
     /**
@@ -359,5 +366,13 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     public function getComponentName()
     {
         return $this->componentName;
+    }
+
+    /**
+     * Returns the mode this language file is for
+     * @return string See Cx class constants for possible values
+     */
+    public function getMode() {
+        return $this->mode;
     }
 }

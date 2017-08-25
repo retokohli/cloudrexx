@@ -787,15 +787,33 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         global $_ARRAYLANG;
 
         // get old placeholder values
-        $oldPlaceholders = $this->languageFile->getData();
+        $init = \Env::get('init');
+        $basePlaceholders = $init->getComponentSpecificLanguageDataByCode(
+            $this->languageFile->getComponentName(),
+            $this->languageFile->getMode() == 'frontend',
+            'en',
+            false
+        );
+        $oldPlaceholders = $init->getComponentSpecificLanguageDataByCode(
+            $this->languageFile->getComponentName(),
+            $this->languageFile->getMode() == 'frontend',
+            $this->languageFile->getDestLang()->getIso1(),
+            false
+        );
+        foreach ($basePlaceholders as $name=>$value) {
+            if (!isset($oldPlaceholders[$name])) {
+                $oldPlaceholders[$name] = $value;
+            }
+        }
 
         // check for changed values
         foreach ($placeholders as $name => $value) {
             // ignore line breaks
-            $oldValue = str_replace(array("\r", "\n"), '', $oldPlaceholders[$name]['destLang']);
+            $oldValue = str_replace(array("\r", "\n"), '', $oldPlaceholders[$name]);
             $newValue = str_replace(array("\r", "\n"), '', $value);
             if ($oldValue == $newValue) {
-                // not changed, skip this one
+                // not changed, remove it if it exists
+                $this->languageFile->removePlaceholder($name, $oldPlaceholders[$name]);
                 continue;
             }
             // add changed placeholders to language file
