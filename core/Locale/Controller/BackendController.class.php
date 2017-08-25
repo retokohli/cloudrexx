@@ -157,42 +157,50 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             case 'LanguageFile':
                 // activate cx and load neccessary js files
                 \JS::activate('cx');
-                \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/LanguageFile.js', 1));
                 // set js variables
                 $cxjs = \ContrexxJavascript::getInstance();
                 $cxjs->setVariable('resetText', $_ARRAYLANG['TXT_CORE_LOCALE_RESET'], 'Locale/LanguageFile');
                 $cxjs->setVariable('resetSuccess', $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_RESET_SUCCESS'], 'Locale/LanguageFile');
                 $cxjs->setVariable('resetError', $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_RESET_ERROR'], 'Locale/LanguageFile');
 
-                // register css
-                \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/LanguageFile.css', 1));
-
                 // check which language file is wanted (front- or backend)
                 $frontend = !in_array('Backend', $cmd);
 
                 // load the language file's locale
-                if (isset($_GET) && isset($_GET['languageCode'])) {
-                    // use language selected by user
-                    $languageCode = $_GET['languageCode'];
-                } else {
+                if (isset($_GET)) {
+                    if (isset($_GET['sourceLang'])) {
+                        // use language selected by user
+                        $sourceLang = contrexx_input2raw($_GET['sourceLang']);
+                    }
+                    if (isset($_GET['destLang'])) {
+                        // use language selected by user
+                        $destLang = contrexx_input2raw($_GET['destLang']);
+                    }
+                }
+
+                if (!isset($sourceLang) || !isset($destLang)) {
                     \Cx\Core\Setting\Controller\Setting::init('Config',null,'Yaml');
                     // use system's default locale
                     $languageId = $frontend ?
                         \Cx\Core\Setting\Controller\Setting::getValue('defaultLocaleId','Config') :
                         \Cx\Core\Setting\Controller\Setting::getValue('defaultLanguageId','Config');
-                }
-
-                if (!isset($languageCode)) {
                     if ($frontend) {
                         $languageCode = $this->getLocaleRepo()->find($languageId)->getSourceLanguage()->getIso1();
                     } else {
                         $languageCode = $this->cx->getDb()->getEntityManager()->find('Cx\Core\Locale\Model\Entity\Backend', $languageId)->getIso1();
                     }
                 }
-                $language = $this->getLanguageRepository()->find($languageCode);
+                if (!isset($sourceLang)) {
+                    $sourceLang = $languageCode;
+                }
+                if (!isset($destLang)) {
+                    $destLang = $languageCode;
+                }
+                $sourceLang = $this->getLanguageRepository()->find($sourceLang);
+                $destLang = $this->getLanguageRepository()->find($destLang);
 
                 // get requested component name
-                if ($_GET['componentName']) {
+                if (isset($_GET['componentName'])) {
                     $componentName = $_GET['componentName'];
                 } else {
                     $componentName = 'Core';
@@ -200,8 +208,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
                 try {
                     // set language file by source language
-                    $this->languageFile = new \Cx\Core\Locale\Model\Entity\LanguageFile(
-                        $language,
+                    $this->languageFile = new \Cx\Core\Locale\Model\Entity\SettingsLanguageFile(
+                        $sourceLang,
+                        $destLang,
                         $componentName,
                         $frontend,
                         false
@@ -214,18 +223,14 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 if (isset($_POST['placeholders'])) {
                     $this->updateLanguageFile($_POST['placeholders']);
                 }
-                // parse locale select
-                $this->parseLanguageSelect($template);
 
-                // parse component select
-                $this->parseComponentSelect($template);
                 $template->touchBlock('language_file_select_form');
 
                 // set entity class name (equal to identifier of LanguageFile)
-                $entityClassName = 'Cx\Core\Locale\Model\Entity\LanguageFile';
+                $entityClassName = 'Cx\Core\Locale\Model\Entity\SettingsLanguageFile';
 
                 // parse view for language file (always single)
-                $isSingle = true;
+                $isSingle = false;
                 $this->parseEntityClassPage($template, $entityClassName, $cmd, array(), $isSingle);
                 break;
             default:
@@ -560,13 +565,58 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         $dataSetIdentifier => array(
                             'entityName' => $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_NAME'],
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_ACT_LANGUAGEFILE'],
+                            'fields' => array(
+                                'id' => array(
+                                    'filterOptionsField' => function(
+                                        $parseObject,
+                                        $fieldName,
+                                        $elementName
+                                    ) {
+                                        return $this->createComponentSelect(
+                                            'componentName',
+                                            $this->languageFile->getComponentName()
+                                        );
+                                    },
+                                ),
+                                'sourceLang' => array(
+                                    'filterOptionsField' => function(
+                                        $parseObject,
+                                        $fieldName,
+                                        $elementName
+                                    ) {
+                                        return $this->createLanguageSelect(
+                                            'sourceLang',
+                                            $this->languageFile->getLanguage()->getIso1()
+                                        );
+                                    },
+                                ),
+                                'destLang' => array(
+                                    'filterOptionsField' => function(
+                                        $parseObject,
+                                        $fieldName,
+                                        $elementName
+                                    ) {
+                                        return $this->createLanguageSelect(
+                                            'destLang',
+                                            $this->languageFile->getDestLang()->getIso1()
+                                        );
+                                    },
+                                    'table' => array(
+                                        'parse' => function ($value, $rowData) {
+                                            return '<input type="text" size="100" class="placeholder" value="' . contrexx_raw2xhtml($value) . '" name="placeholders[' . $rowData['id'] . ']" />';
+                                        },
+                                    ),
+                                ),
+                            ),
                             'functions' => array(
-                                'add' => true,
-                                'edit' => true,
-                                'delete' => true,
-                                'sorting' => true,
+                                'add' => false,
+                                'edit' => false,
+                                'delete' => false,
+                                'sorting' => false,
                                 'paging' => true,
-                                'filtering' => false,
+                                'searching' => true,
+                                'filtering' => true,
+                                'autoHideFiltering' => false,
                             ),
                         ),
                     );
@@ -603,7 +653,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 }
                 return $parseObject;
                 break;
-            case 'Cx\Core\Locale\Model\Entity\LanguageFile':
+            case 'Cx\Core\Locale\Model\Entity\SettingsLanguageFile':
                 return $this->languageFile;
             break;
             default:
@@ -772,93 +822,64 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     }
 
     /**
-     * Parses the select with the source languages to choose language file
-     * @param \Cx\Core\Html\Sigma $template The template to parse the view with
+     * Creates a select field with all source languages as options
+     * @param string $name Name of the select field
+     * @param string $selectedValue Pre-selected value
+     * @return \Cx\Core\Html\Model\Entity\DataElement Select field
      */
-    protected function parseLanguageSelect($template) {
-        // check if template block exists
-        if ($template->blockExists('language_dropdown')) {
+    protected function createLanguageSelect($name, $selectedValue) {
+        // load all source languages
+        $em = $this->cx->getDb()->getEntityManager();
+        $languageRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Language');
+        $languages = $languageRepo->findBy(
+            array('source' => true)
+        );
 
-            // load all source languages
-            $em = $this->cx->getDb()->getEntityManager();
-            $languageRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Language');
-            $languages = $languageRepo->findBy(
-                array('source' => true)
-            );
-
-            // build html select
-            $select = new \Cx\Core\Html\Model\Entity\DataElement(
-                'languageCode',
-                '',
-                \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
-            );
-
-            // set locales as options
-            foreach($languages as $language) {
-                $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
-
-                // set id as value
-                $option->setAttribute('value', $language->getIso1());
-
-                // set label as option content
-                $option->addChild(new \Cx\Core\Html\Model\Entity\TextElement($language->__toString()));
-
-                if (
-                    // mark option of selected locale as selected
-                    $language->getIso1() == $this->languageFile->getLanguage()->getIso1()
-                ) {
-                    $option->setAttribute('selected');
-                }
-
-                $select->addChild($option);
-            }
-
-            $template->setVariable('LANGUAGE_SELECT', $select);
-            $template->touchBlock('language_dropdown');
+        $validData = array();
+        foreach($languages as $language) {
+            $validData[$language->getIso1()] = (string) $language;
         }
+        return $this->createSelect($name, $validData, $selectedValue);
     }
 
     /**
-     * Parses the select with all components to choose language file
-     * @param \Cx\Core\Html\Sigma $template The template to parse the view with
+     * Creates a select field with all componentss as options
+     * @param string $name Name of the select field
+     * @param string $selectedValue Pre-selected value
+     * @return \Cx\Core\Html\Model\Entity\DataElement Select field
      */
-    protected function parseComponentSelect($template) {
-        // check if template block exists
-        if (!$template->blockExists('component_dropdown')) {
-            return;
-        }
-
+    protected function createComponentSelect($name, $selectedValue) {
         $em = $this->cx->getDb()->getEntityManager();
         $query = 'SELECT `name` FROM '.DBPREFIX.'component ORDER BY name ASC';
         $stmt = $em->getConnection()->prepare($query);
         $stmt->execute();
 
+        $validData = array();
+        foreach($stmt->fetchAll() as $component) {
+            $validData[$component['name']] = $component['name'];
+        }
+        return $this->createSelect($name, $validData, $selectedValue);
+    }
+
+    /**
+     * Creates a select field with the given values as options
+     * @param string $name Name of the select field
+     * @param array $options Key=>value type array
+     * @param string $selectedValue Pre-selected value
+     * @return \Cx\Core\Html\Model\Entity\DataElement Select field
+     */
+    protected function createSelect($name, $options, $selectedValue) {
         // build html select
         $select = new \Cx\Core\Html\Model\Entity\DataElement(
-            'componentName',
-            '',
-            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+            $name,
+            $selectedValue,
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+            null,
+            $options
         );
-
-        foreach($stmt->fetchAll() as $component) {
-            $option = new \Cx\Core\Html\Model\Entity\HtmlElement('option');
-
-            // set id as value
-            $option->setAttribute('value', $component['name']);
-
-            // set label as option content
-            $option->addChild(new \Cx\Core\Html\Model\Entity\TextElement($component['name']));
-
-            if ($component['name'] == $this->languageFile->getComponentName()) {
-                // mark option of selected locale as selected
-                $option->setAttribute('selected');
-            }
-
-            $select->addChild($option);
-        }
-
-        $template->setVariable('COMPONENT_SELECT', $select);
-        $template->touchBlock('component_dropdown');
+        $select->setAttribute('form', 'vg-0-searchForm');
+        $select->addClass('vg-searchSubmit');
+        return $select;
     }
 
     /**

@@ -68,7 +68,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
      * The source language which defines the language file
      * @var \Cx\Core\Locale\Model\Entity\Language
      */
-    protected $language;
+    protected $sourceLanguage;
 
     /**
      * The name of the component that defines the language file
@@ -106,12 +106,26 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
      * @param boolean $onlyCustomized Defines wether to load only the customized language placeholders or all
      * @throws \Cx\Core\Locale\Model\Entity\LanguageFileException
      */
-    public function __construct(\Cx\Core\Locale\Model\Entity\Language $language, $componentName='Core', $frontend=true, $onlyCustomized=true) {
+    public function __construct(
+        $sourceLanguage = '',
+        $componentName = 'Core',
+        $frontend = true,
+        $onlyCustomized = true
+    ) {
+        // Make sure we stay compatible with parent's constructor
+        if (!$sourceLanguage) {
+            return;
+        }
+        if (is_array($sourceLanguage)) {
+            parent::__construct($sourceLanguage);
+            return;
+        }
+
         global $_ARRAYLANG;
 
-        // set the language
-        $this->language = $language;
-        if (!isset($this->language)) {
+        // set the languages
+        $this->sourceLanguage = $sourceLanguage;
+        if (!isset($this->sourceLanguage)) {
             throw new LanguageFileException(
                 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_LANGUAGE_NOT_SET']
             );
@@ -120,7 +134,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
         $this->componentName = $componentName;
 
         // set identifier to parse entity view correctly
-        $this->setIdentifier('Cx\Core\Locale\Model\Entity\LanguageFile');
+        $this->setIdentifier(get_class($this));
 
         // load component specific language data from init
         $init = \Env::get('init');
@@ -129,7 +143,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
                 $this->data = $init->getComponentSpecificLanguageDataByCode(
                     $this->componentName,
                     $frontend,
-                    $language->getIso1(),
+                    $sourceLanguage->getIso1(),
                     false
                 );
             } catch(\InitCMSException $e) {
@@ -190,7 +204,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
 
         try {
             // export the placeholders to the yaml file
-            return $exportInterface->export($this->getPlaceholders());
+            return $exportInterface->export($this->getPlaceholderArray());
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
             throw new \Cx\Core_Modules\Listing\Model\Entity\DataSetException(
@@ -209,7 +223,12 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
         global $_ARRAYLANG;
 
         try {
-            return $importInterface->import($content);
+            $data = $importInterface->import($content);
+            $placeholders = array();
+            foreach ($data as $name=>$value) {
+                $placeholders[$name] = new Placeholder($name, $value);
+            }
+            return $placeholders;
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
             throw new \Cx\Core_Modules\Listing\Model\Entity\DataSetException(
@@ -234,7 +253,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
      */
     public function getLanguage()
     {
-        return $this->language;
+        return $this->sourceLanguage;
     }
 
     /**
@@ -243,7 +262,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
      */
     public function setLanguage($language)
     {
-        $this->language = $language;
+        $this->sourceLanguage = $language;
     }
 
     /**
@@ -253,6 +272,18 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     public function getPlaceholders()
     {
         return $this->placeholders;
+    }
+
+    /**
+     * Returns an array of all placeholders
+     * @return array Key=>value type array
+     */
+    public function getPlaceholderArray() {
+        $data = array();
+        foreach ($this->placeholders as $placeholder) {
+            $data[$placeholder->getName()] = $placeholder->getValue();
+        }
+        return $data;
     }
 
     /**
@@ -304,7 +335,7 @@ class LanguageFile extends \Cx\Core_Modules\Listing\Model\Entity\DataSet  {
     {
         // set path
         $this->path = $init->arrModulePath[$this->componentName] .
-            $this->language->getIso1() . '/' . $this->mode . '.yaml';
+            $this->sourceLanguage->getIso1() . '/' . $this->mode . '.yaml';
         // rewrite path to customizing
         $this->path = str_replace(
             ASCMS_DOCUMENT_ROOT,

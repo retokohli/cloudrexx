@@ -99,3 +99,8 @@ $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_IMPORT_FAILED'] = 'Importing the langu
 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_NOT_FOUND'] = 'Language file not found.';
 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_RESET_SUCCESS'] = 'Default value successfully loaded.';
 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_RESET_ERROR'] = 'Default value not found.';
+
+// Translation view
+$_ARRAYLANG['id'] = 'Placeholder';
+$_ARRAYLANG['sourceLang'] = 'Origin language';
+$_ARRAYLANG['destLang'] = 'Target language';
