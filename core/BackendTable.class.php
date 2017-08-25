@@ -226,6 +226,7 @@ class BackendTable extends HTML_Table {
                 $row++;
             }
             // adjust colspan of master-table-header-row
+            $this->altRowAttributes(1, array('class' => 'row1'), array('class' => 'row2'), true);
             if ($hasMasterTableHeader) {
                 $this->setCellAttributes(0, 0, array('colspan' => $col + is_array($options['functions'])));
                 $this->updateRowAttributes(1, array('class' => 'row3'), true);
@@ -524,7 +525,6 @@ class BackendTable extends HTML_Table {
      */
     function toHtml()
     {
-        $this->altRowAttributes(1, array('class' => 'row1'), array('class' => 'row2'), true);
         $strHtml = '';
         $tabs = $this->_getTabs();
         $tab = $this->_getTab();
