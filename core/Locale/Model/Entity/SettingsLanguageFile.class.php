@@ -105,7 +105,7 @@ class SettingsLanguageFile extends LanguageFile  {
                     $this->componentName,
                     $frontend,
                     $destLanguage->getIso1(),
-                    true
+                    false
                 );
 
                 $this->data = array();
@@ -121,8 +121,10 @@ class SettingsLanguageFile extends LanguageFile  {
                         'sourceLang' => $sourceData[$name],
                         'destLang' => $destData[$name],
                         'virtual' => true,
+                        'initData' => $destData[$name],
                     );
                 }
+                $this->updateLanguageData();
             } catch(\InitCMSException $e) {
                 \Message::add($e->getMessage(), \Message::CLASS_ERROR);
                 return;
@@ -134,13 +136,13 @@ class SettingsLanguageFile extends LanguageFile  {
      * Updates the language data with the placeholders from the yaml file
      */
     public function updateLanguageData() {
+        // sort out calls from the parent constructor
+        if (!current($this->data) || !isset(current($this->data)['destLang'])) {
+            return;
+        }
         // update language data
         foreach ($this->placeholders as $name=>$placeholder) {
-            if (isset($this->data[$placeholder->getName()]['destLang'])) {
-                $this->data[$placeholder->getName()]['destLang'] = $placeholder->getValue();
-            } else {
-                $this->data[$placeholder->getName()] = $placeholder->getValue();
-            }
+            $this->data[$placeholder->getName()]['destLang'] = $placeholder->getValue();
         }
     }
 

@@ -88,7 +88,6 @@ $_ARRAYLANG['TXT_NO'] = 'No';
 $_ARRAYLANG['TXT_CORE_LOCALE_LABEL_LANG_REMOVAL'] = 'Confirm language data removal';
 $_ARRAYLANG['TXT_CORE_LOCALE_LANG_REMOVAL_CONTENT'] = 'Remove all language related data of the deactivated language from all applications.';
 $_ARRAYLANG['TXT_CORE_LOCALE_SAVE'] = 'Apply changes';
-$_ARRAYLANG['TXT_CORE_LOCALE_RESET'] = 'Reset';
 
 // Messages
 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_SUCCESSFULLY_UPDATED'] = 'The language placeholders were succesfully updated.';
@@ -104,3 +103,5 @@ $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_RESET_ERROR'] = 'Default value not fou
 $_ARRAYLANG['id'] = 'Placeholder';
 $_ARRAYLANG['sourceLang'] = 'Origin language';
 $_ARRAYLANG['destLang'] = 'Target language';
+$_ARRAYLANG['TXT_CORE_LOCALE_RESET'] = 'Reset';
+$_ARRAYLANG['TXT_CORE_LOCALE_UNSAVED_CHANGES'] = 'Please press "Apply changes"';

@@ -601,9 +601,24 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                     },
                                     'table' => array(
                                         'parse' => function ($value, $rowData) {
-                                            return '<input type="text" size="100" class="placeholder" value="' . contrexx_raw2xhtml($value) . '" name="placeholders[' . $rowData['id'] . ']" form="languageFileSave" />';
+                                            $input = new \Cx\Core\Html\Model\Entity\DataElement(
+                                                'placeholders[' . $rowData['id'] . ']',
+                                                contrexx_raw2xhtml($value)
+                                            );
+                                            $input->addClass('placeholder');
+                                            $input->setAttribute('form', 'languageFileSave');
+                                            $input->setAttribute('size', '100');
+                                            $input->setAttribute(
+                                                'onchange',
+                                                'var resetFunc = cx.jQuery(this).closest(\'tr\').find(\'a\');if (resetFunc.data(\'init\') != cx.jQuery(this).val()) {resetFunc.show();}'
+                                            );
+                                            return $input;
                                         },
                                     ),
+                                ),
+                                'initData' => array(
+                                    'showOverview' => false,
+                                    'allowFiltering' => false,
                                 ),
                             ),
                             'functions' => array(
@@ -615,6 +630,42 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 'searching' => true,
                                 'filtering' => true,
                                 'autoHideFiltering' => false,
+                                'actions' => function($rowData) {
+                                    global $_ARRAYLANG;
+                                    $resetLink = new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                        'a'
+                                    );
+                                    $resetLink->setAttribute('src', '#');
+                                    $resetLink->setAttribute(
+                                        'data-init',
+                                        $rowData['initData']
+                                    );
+                                    $resetLink->setAttribute(
+                                        'onclick',
+                                        'cx.jQuery(this).closest(\'tr\').find(\'.placeholder\').val(
+                                            cx.jQuery(this).data(\'init\')
+                                        );cx.jQuery(this).hide();cx.ui.messages.add(\'' . $_ARRAYLANG['TXT_CORE_LOCALE_UNSAVED_CHANGES'] . '\');'
+                                    );
+                                    $resetLink->setAttribute(
+                                        'title',
+                                        $_ARRAYLANG['TXT_CORE_LOCALE_RESET']
+                                    );
+                                    if ($rowData['initData'] == $rowData['destLang']) {
+                                        $resetLink->setAttribute(
+                                            'style',
+                                            'display:none;'
+                                        );
+                                    }
+                                    $resetImg = new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                        'img'
+                                    );
+                                    $resetImg->setAttribute(
+                                        'src',
+                                        '../core/Core/View/Media/icons/reset.png'
+                                    );
+                                    $resetLink->addChild($resetImg);
+                                    return $resetLink;
+                                }
                             ),
                         ),
                     );
