@@ -618,6 +618,90 @@ class ViewGenerator {
                 'TABLE' => $backendTable,
                 'PAGING' => $listingController,
             ));
+            $searching = (
+                isset($this->options['functions']['searching']) &&
+                $this->options['functions']['searching']
+            );
+            $filtering = (
+                isset($this->options['functions']['filtering']) &&
+                $this->options['functions']['filtering']
+            );
+            if ($searching || $filtering) {
+                \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
+            }
+            if ($searching) {
+                // If filter is used for extended search,
+                // hide filter and add a toggle link
+                if (
+                    $filtering && (
+                        !isset($this->options['functions']['autoHideFiltering']) ||
+                        $this->options['functions']['autoHideFiltering']
+                    )
+                ) {
+                    $template->touchBlock('showExtendedSearch');
+                    $template->parse('showExtendedSearch');
+                    $template->touchBlock('hideFilter');
+                    $template->parse('hideFilter');
+                }
+                if (!$filtering) {
+                    $template->touchBlock('submitSearch');
+                    $template->hideBlock('buttonSearch');
+                } else {
+                    $template->touchBlock('buttonSearch');
+                    $template->hideBlock('submitSearch');
+                }
+                $template->touchBlock('search');
+                $template->parse('search');
+            }
+            if ($filtering) {
+                // find all filter-able fields
+                $filterableFields = array_keys($renderObject->rewind());
+                foreach ($filterableFields as $field) {
+                    if ($field == 'virtual') {
+                        continue;
+                    }
+                    // set field ID
+                    $fieldId = 'vg-' . $this->viewId . '-filter-field-' . $field;
+                    $template->setVariable('FIELD_ID', $fieldId);
+                    // set field title
+                    $header = $field;
+                    if (isset($this->options['fields'][$field]['filterHeader'])) {
+                        $header = $this->options['fields'][$field]['filterHeader'];
+                    } else if (isset($this->options['fields'][$field]['header'])) {
+                        $header = $this->options['fields'][$field]['header'];
+                    }
+                    if (isset($_ARRAYLANG[$header])) {
+                        $header = $_ARRAYLANG[$header];
+                    }
+                    $template->setVariable('FIELD_TITLE', $header);
+                    // find options: Default is a text field, for more we need doctrine
+                    $optionsField = '';
+                    if (isset($this->options['fields'][$field]['filterOptionsField'])) {
+                        $optionsField = $this->options['fields'][$field]['filterOptionsField'](
+                            $renderObject,
+                            $field,
+                            $fieldId
+                        );
+                    } else {
+                        // parse options
+                        // TODO: This is quite a simple way of solving this
+                        $optionsField = new \Cx\Core\Html\Model\Entity\DataElement(
+                            $fieldId
+                        );
+                        $optionsField->setAttribute('id', $fieldId);
+                        $optionsField->setAttribute('form', 'vg-' . $this->viewId . '-searchForm');
+                        $optionsField->setAttribute('data-vg-attrgroup', 'search');
+                        $optionsField->setAttribute('data-vg-field', $field);
+                        $optionsField->addClass('vg-encode');
+                    }
+                    // set options
+                    $template->setVariable('FIELD_FILTER_OPTIONS', $optionsField);
+                    // parse block
+                    $template->parse('filter-field');
+                }
+                $template->touchBlock('filter');
+                $template->parse('filter');
+            }
 
             return $template->get();
         }
