@@ -73,17 +73,22 @@ class ViewGenerator {
     protected $formGenerator = null;
 
     /**
+     * @var \Cx\Core\Core\Controller\Cx $cx
+     */
+    protected $cx;
+
+    /**
      *
      * @param mixed $object Array, instance of DataSet, instance of EntityBase, object
      * @param array $options component options
      * @throws ViewGeneratorException if there is any error in try catch statement
      */
     public function __construct($object, $options = array()) {
+        $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $this->componentOptions = $options;
         $this->viewId = static::$increment++;
         try {
-            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-            \JS::registerCSS($cx->getCoreFolderName() . '/Html/View/Style/Backend.css');
+            \JS::registerCSS($this->cx->getCoreFolderName() . '/Html/View/Style/Backend.css');
             $entityWithNS = preg_replace('/^\\\/', '', $this->findEntityClass($object));
 
             // this is a temporary "workaround" for combined keys, see todo
@@ -235,8 +240,7 @@ class ViewGenerator {
             $entityData = $_POST;
         }
 
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $em = $cx->getDb()->getEntityManager();
+        $em = $this->cx->getDb()->getEntityManager();
         $primaryKeyName = $entityClassMetadata->getSingleIdentifierFieldName(); //get primary key name
         $entityColumnNames = $entityClassMetadata->getColumnNames(); //get the names of all fields
 
@@ -397,8 +401,7 @@ class ViewGenerator {
             return;
         }
 
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $em = $cx->getDb()->getEntityManager();
+        $em = $this->cx->getDb()->getEntityManager();
         $sortBy = (     isset($this->options['functions']['sortBy'])
                     &&  is_array($this->options['functions']['sortBy'])
                   )
@@ -472,7 +475,7 @@ class ViewGenerator {
         $this->options['functions']['sortBy']['pagingPosition'] = $pagingPosition;
 
         //Register the script Backend.js and activate the jqueryui and cx for the row sorting
-        \JS::registerJS(substr($cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
+        \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
     }
 
     /**
@@ -582,7 +585,7 @@ class ViewGenerator {
             }
 
             // replace foreign key search criteria
-            $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+            $em = $this->cx->getDb()->getEntityManager();
             $searchCriteria = contrexx_input2raw($this->getVgParam($_GET['search']));
             $entityClass = $this->findEntityClass($renderObject);
             if ($entityClass !== 'array') {
@@ -803,8 +806,7 @@ class ViewGenerator {
     protected function saveEntry($entityWithNS) {
         global $_ARRAYLANG;
 
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $em = $cx->getDb()->getEntityManager();
+        $em = $this->cx->getDb()->getEntityManager();
         // if entityId is a number the user edited an existing entry. If it is null we create a new one
         $entityId = contrexx_input2raw($this->getEntryId());
         $this->renderFormForEntry($entityId);
@@ -961,7 +963,7 @@ class ViewGenerator {
             \Message::add($successMessage);
         }
         // get the proper action url and redirect the user
-        $actionUrl = clone $cx->getRequest()->getUrl();
+        $actionUrl = clone $this->cx->getRequest()->getUrl();
         $actionUrl->setParam($param, null);
         \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
     }
@@ -979,8 +981,7 @@ class ViewGenerator {
     protected function removeEntry($entityWithNS) {
         global $_ARRAYLANG;
 
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $em = $cx->getDb()->getEntityManager();
+        $em = $this->cx->getDb()->getEntityManager();
         $deleteId = !empty($_GET['deleteid']) ? contrexx_input2raw($_GET['deleteid']) : '';
         $entityObject = $this->object->getEntry($deleteId);
         if (empty($entityObject)) {
@@ -1020,7 +1021,7 @@ class ViewGenerator {
                 \Message::add($_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL']);
             }
         }
-        $actionUrl = clone $cx->getRequest()->getUrl();
+        $actionUrl = clone $this->cx->getRequest()->getUrl();
         $actionUrl->setParam('deleteid', null);
         \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
     }
