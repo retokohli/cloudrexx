@@ -107,8 +107,6 @@ class SettingsLanguageFile extends LanguageFile  {
                     $destLanguage->getIso1(),
                     true
                 );
-                \DBG::dump($sourceLanguage->getIso1());
-                \DBG::dump($destLanguage->getIso1());
 
                 $this->data = array();
                 foreach ($baseData as $name=>$value) {
