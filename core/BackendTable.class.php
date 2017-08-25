@@ -254,8 +254,10 @@ class BackendTable extends HTML_Table {
                 }
                 $select = new \Cx\Core\Html\Model\Entity\DataElement(
                     'cxMultiAction',
-                    \Html::getOptions($multiActions),
-                    \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+                    '',
+                    \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+                    null,
+                    $multiActions
                 );
                 // this is not a nice place for this code
                 // but we should cleanup this complete class and make
