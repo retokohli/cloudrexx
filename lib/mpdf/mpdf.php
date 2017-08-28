@@ -11775,8 +11775,8 @@ class mPDF
 			if (substr($orig_srcpath, 0, 5) != 'data:') {
 				$orig_srcpath = str_replace(" ", "%20", $orig_srcpath);
 			}
-            if (!preg_match('/^(http|ftp)/', $orig_srcpath)) {
-                $orig_srcpath = urldecode_parts($orig_srcpath);
+			if (!preg_match('/^(http|ftp)/', $orig_srcpath)) {
+				$orig_srcpath = urldecode_parts($orig_srcpath);
 			}
 		}
 
@@ -11825,7 +11825,7 @@ class mPDF
 				}
 			}
 		}
-        if (!$data) {
+		if (!$data) {
 			return $this->_imageError($file, $firsttime, 'Could not find image file');
 		}
 		if (empty($type)) {
