@@ -11770,16 +11770,13 @@ class mPDF
 		}
 
 		// mPDF 5.7.4 URLs
-		if ($firsttime && $file && substr($file, 0, 5) != 'data:') {
-			$file = str_replace(" ", "%20", $file);
-		}
 		if ($firsttime && $orig_srcpath) {
 			// If orig_srcpath is a relative file path (and not a URL), then it needs to be URL decoded
 			if (substr($orig_srcpath, 0, 5) != 'data:') {
 				$orig_srcpath = str_replace(" ", "%20", $orig_srcpath);
 			}
-			if (!preg_match('/^(http|ftp)/', $orig_srcpath)) {
-				$orig_srcpath = urldecode_parts($orig_srcpath);
+            if (!preg_match('/^(http|ftp)/', $orig_srcpath)) {
+                $orig_srcpath = urldecode_parts($orig_srcpath);
 			}
 		}
 
@@ -11816,19 +11813,19 @@ class mPDF
 				$type = $this->_imageTypeFromString($data);
 			}
 			if ((!$data || !$type) && !ini_get('allow_url_fopen')) { // only worth trying if remote file and !ini_get('allow_url_fopen')
-				$this->file_get_contents_by_socket($file, $data); // needs full url?? even on local (never needed for local)
+				$this->file_get_contents_by_socket(contrexx_raw2encodedUrl($file), $data); // needs full url?? even on local (never needed for local)
 				if ($data) {
 					$type = $this->_imageTypeFromString($data);
 				}
 			}
 			if ((!$data || !$type) && function_exists("curl_init")) { // mPDF 5.7.4
-				$this->file_get_contents_by_curl($file, $data);  // needs full url?? even on local (never needed for local)
+				$this->file_get_contents_by_curl(contrexx_raw2encodedUrl($file), $data);  // needs full url?? even on local (never needed for local)
 				if ($data) {
 					$type = $this->_imageTypeFromString($data);
 				}
 			}
 		}
-		if (!$data) {
+        if (!$data) {
 			return $this->_imageError($file, $firsttime, 'Could not find image file');
 		}
 		if (empty($type)) {
