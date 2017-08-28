@@ -399,7 +399,7 @@ class File implements FileInterface
             try {
                 $objFilePhp = new FileSystemFile($this->file);
                 $objFilePhp->delete();
-                clearstatcache();
+                clearstatcache(true, $objFilePhp->getAbsoluteFilePath());
                 if (!file_exists($objFilePhp->getAbsoluteFilePath())) {
                     return true;
                 }
@@ -415,7 +415,7 @@ class File implements FileInterface
             try {
                 $objFileFtp = new FTPFile($this->file);
                 $objFileFtp->delete();
-                clearstatcache();
+                clearstatcache(true, $objFileFtp->getAbsoluteFilePath());
                 if (!file_exists($objFileFtp->getAbsoluteFilePath())) {
                     return true;
                 }
@@ -423,6 +423,8 @@ class File implements FileInterface
                 \DBG::msg('FTPFile: '.$e->getMessage());
             }
         }
+
         throw new FileSystemException('File: Unable to delete file '.$this->file.'!');
     }
 }
+
