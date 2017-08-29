@@ -135,6 +135,7 @@ class StatsLibrary
             $searchTermPlain = '';
             if (isset($_REQUEST['term']) && !empty($_REQUEST['term']) && $_REQUEST['section'] == "Search") {
                 $searchTerm = "&amp;searchTerm=".urlencode($_REQUEST['term'])."' + '";
+                $searchTermNoScript = "&amp;searchTerm=".urlencode($_REQUEST['term']);
                 $searchTermPlain = contrexx_addslashes($_REQUEST['term']);
             }
 
@@ -144,6 +145,7 @@ class StatsLibrary
                 '[CORE_MODULE_URL]' => $ascms_core_module_web_path,
                 '[PAGEID]'          => $pageId,
                 '[SEARCHTERM]'      => $searchTerm,
+                '[SEARCHTERM_NOSCRIPT]'=> $searchTermNoScript,
                 '[SEARCHTERM_PLAIN]'=> $searchTermPlain,
                 '[REFERER]'         => '$(HTTP_REFERER)',
             );
