@@ -151,7 +151,7 @@ class AliasLib
 
     function _getURL($page)
     {
-        return $page->getUrl(null, array());
+        return $page->getURL(null, array());
     }
 
     function _getAliasesWithSameTarget($aliasPage)
