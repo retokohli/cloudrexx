@@ -1533,6 +1533,25 @@ class Config
                     \Cx\Core\Setting\Controller\Setting::TYPE_IMAGE, '{"type":"reference"}', 'otherConfigurations')) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default meta image");
             }
+            $defaultDnsHostnameLookup = 'off';
+            if (isset($existingConfig['dnsHostnameLookup'])) {
+                $defaultDnsHostnameLookup = $existingConfig['dnsHostnameLookup'];
+            }
+            if (
+                !\Cx\Core\Setting\Controller\Setting::isDefined('dnsHostnameLookup') &&
+                !\Cx\Core\Setting\Controller\Setting::add(
+                    'dnsHostnameLookup',
+                    $defaultDnsHostnameLookup,
+                    9,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'on:TXT_ACTIVATED,off:TXT_DEACTIVATED',
+                    'otherConfigurations'
+                )
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException(
+                    'Failed to add Setting entry for DNS Hostname Lookup'
+                );
+            }
 
             // core
             \Cx\Core\Setting\Controller\Setting::init('Config', 'core','Yaml', $configPath);
