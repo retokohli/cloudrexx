@@ -176,20 +176,20 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $intFilesPages = 0;
         $intFilesEntries = 0;
 
-        $handleFolder = opendir($this->strCachePath);
+        $handleFolder = opendir($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE);
         if ($handleFolder) {
             while ($strFile = readdir($handleFolder)) {
                 if ($strFile != '.' && $strFile != '..') {
-                    if(is_dir($this->strCachePath.'/'.$strFile)){
-                        $intFoldersizeEntries += filesize($this->strCachePath . $strFile);
+                    if(is_dir($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE.'/'.$strFile)){
+                        $intFoldersizeEntries += filesize($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $strFile);
                         ++$intFilesEntries;
                     }elseif($strFile !== '.htaccess'){
-                        $intFoldersizePages += filesize($this->strCachePath . $strFile);
+                        $intFoldersizePages += filesize($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $strFile);
                         ++$intFilesPages;
                     }
                 }
             }
-            $intFoldersizeEntries = filesize($this->strCachePath) - $intFoldersizePages - filesize($this->strCachePath . '.htaccess');
+            $intFoldersizeEntries = filesize($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE) - $intFoldersizePages - filesize($this->strCachePath . '.htaccess');
             closedir($handleFolder);
         }
 

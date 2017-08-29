@@ -87,6 +87,16 @@ class CacheLib
     const CACHE_ENGINE_OFF = 'off';
 
     /**
+     * Page cache directory offset
+     */
+    const CACHE_DIRECTORY_OFFSET_PAGE = 'page/';
+
+    /**
+     * ESI cache directory offset
+     */
+    const CACHE_DIRECTORY_OFFSET_ESI = 'esi/';
+
+    /**
      * Used op cache engines
      * @var array Cache engine names, empty for none
      */
@@ -146,21 +156,29 @@ class CacheLib
             $this->getDoctrineCacheDriver()->deleteAll();
             return;
         }
-        $handleDir = opendir($this->strCachePath);
+        $handleDir = opendir(
+            $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE
+        );
         if ($handleDir) {
             while ($strFile = readdir($handleDir)) {
                 if ($strFile != '.' && $strFile != '..') {
                     switch ($cacheEngine) {
                         case 'cxPages':
-                            if(is_file($this->strCachePath . $strFile)){
-                                unlink($this->strCachePath . $strFile);
+                            if (is_file(
+                                $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $strFile
+                            )) {
+                                unlink(
+                                    $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $strFile
+                                );
                             }
                             break;
                         case 'cxEntries':
                             $this->getDoctrineCacheDriver()->deleteAll();
                             break;
                         default:
-                            unlink($this->strCachePath . $strFile);
+                            unlink(
+                                $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $strFile
+                            );
                             break;
                     }
                 }
@@ -1139,7 +1157,7 @@ class CacheLib
     function deleteSingleFile($intPageId) {
         $intPageId = intval($intPageId);
         if ( 0 < $intPageId ) {
-            $files = glob($this->strCachePath . '*_{,h}' . $intPageId . '*', GLOB_BRACE);
+            $files = glob($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . '*_{,h}' . $intPageId . '*', GLOB_BRACE);
             if ( count( $files ) ) {
                 foreach ( $files as $file ) {
                     @unlink( $file );
@@ -1180,7 +1198,7 @@ class CacheLib
      * Those are cached header redirects
      */
     public function deleteNonPagePageCache() {
-        $files = glob($this->strCachePath . '*_{,h}', GLOB_BRACE);
+        $files = glob($this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . '*_{,h}', GLOB_BRACE);
         if (count($files)) {
             foreach ($files as $file) {
                 @unlink($file);
