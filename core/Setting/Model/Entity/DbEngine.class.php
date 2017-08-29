@@ -96,17 +96,17 @@ class DbEngine extends Engine{
         while (!$objResult->EOF) {
             $value      = $objResult->fields['value'];
             $type       = $objResult->fields['type'];
-            $fileName   = $objResult->fields['values'];
+            $values     = $objResult->fields['values'];
             if (
                 $type == \Cx\Core\Setting\Controller\Setting::TYPE_FILECONTENT &&
-                $value &&
+                $values &&
                 \Cx\Lib\FileSystem\FileSystem::exists(
-                    $websitePath . '/' . $fileName
+                    $websitePath . '/' . $values
                 )
             ) {
                 try {
                     $objFile  = new \Cx\Lib\FileSystem\File(
-                        $websitePath . '/' . $fileName
+                        $websitePath . '/' . $values
                     );
                     $value = $objFile->getData();
                 } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
@@ -120,7 +120,7 @@ class DbEngine extends Engine{
                 'group'   => $objResult->fields['group'],
                 'value'   => $value,
                 'type'    => $type,
-                'values'  => $fileName,
+                'values'  => $values,
                 'ord'     => $objResult->fields['ord'],
             );
             //echo("Setting ".$objResult->fields['name']." = ".$objResult->fields['value']."<br />");
