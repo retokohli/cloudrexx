@@ -207,6 +207,18 @@ class Counter
                 }
             }
         }
+
+        // output content-type based on request method (javascript / image-tag)
+        $mode = isset($_GET['mode']) ? $_GET['mode'] : '';
+        if ($mode == 'script') {
+            header('Content-Type: application/javascript');
+        } else {
+            // output Transparent 1x1 GIF pixel
+            header('Content-Type: image/gif');
+            echo base64_decode('R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
+        }
+
+        exit;
     }
 
     /**
