@@ -1403,7 +1403,9 @@ die("Failed to update the Cart!");
             }
             if (!empty($product_id)) {
                 self::$pageTitle = $objProduct->name();
-                self::$pageMetaImage = current($arrProductImages)['THUMBNAIL'];
+                if (count($arrProductImages)) {
+                    static::$pageMetaImage = current($arrProductImages)['THUMBNAIL'];
+                }
             }
             $i = 1;
             foreach ($arrProductImages as $arrProductImage) {
