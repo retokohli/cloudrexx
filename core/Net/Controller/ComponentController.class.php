@@ -113,7 +113,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'dnsHostnameLookup',
             'Config'
         );
-        if ($dnsHostnameLookup == 'off') {
+        if ($dnsHostnameLookup != 'on') {
             return $ip;
         }
 
