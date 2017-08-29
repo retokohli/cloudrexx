@@ -134,7 +134,12 @@ class AliasLib
 
     function _fetchTarget($page)
     {
-        return $this->pageRepository->getTargetPage($page);
+        try {
+            return $this->pageRepository->getTargetPage($page);
+        } catch (\Cx\Core\ContentManager\Model\Repository\PageRepositoryException $e) {
+            \DBG::log($e->getMessage());
+            return null;
+        }
     }
 
 
@@ -146,7 +151,7 @@ class AliasLib
 
     function _getURL($page)
     {
-        return $page->getUrl();
+        return $page->getURL(null, array());
     }
 
     function _getAliasesWithSameTarget($aliasPage)

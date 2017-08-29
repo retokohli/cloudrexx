@@ -747,6 +747,7 @@ class Url {
      * @param int $lang (optional) Language to use, default is FRONTEND_LANG_ID
      * @param array $parameters (optional) HTTP GET parameters to append
      * @param string $protocol (optional) The protocol to use
+     * @throws \Cx\Core\Routing\UrlException If no page was found
      * @return \Cx\Core\Routing\Url Url object for the supplied module, cmd and lang
      */
     public static function fromNodeId($nodeId, $lang = '', $parameters = array(), $protocol = '') {
@@ -758,6 +759,9 @@ class Url {
             'node' => $nodeId,
             'lang' => $lang,
         ));
+        if (!$page) {
+            throw new UrlException('Unable to find a page with Node-ID:' . $nodeId . ' in language:' . $lang . '!');
+        }
         return static::fromPage($page, $parameters, $protocol);
     }
 
