@@ -116,6 +116,14 @@ class Shop extends ShopLibrary
     protected static $pageTitle = null;
 
     /**
+     * The current page's meta image
+     * If the user is on the detail or category page,
+     * show the product or category image
+     * @var string
+     */
+    protected static $pageMetaImage = '';
+
+    /**
      * Whether or not a session has been initialized
      * and is being used
      * @var boolean
@@ -397,6 +405,15 @@ die("Failed to get Customer for ID $customer_id");
             return self::$pageTitle;
         }
         return null;
+    }
+
+    /**
+     * Returns the category or product image if the use is on
+     * a product's or category's page
+     * @return string Relative image URL
+     */
+    public static function getPageMetaImage() {
+        return static::$pageMetaImage;
     }
 
     /**
@@ -984,6 +1001,7 @@ die("Failed to update the Cart!");
                             'SHOP_CATEGORY_CURRENT_THUMBNAIL'       => contrexx_raw2encodedUrl($thumbnailPath),
                             'SHOP_CATEGORY_CURRENT_THUMBNAIL_SIZE'  => $arrSize[3],
                         ));
+                        static::$pageMetaImage = contrexx_raw2encodedUrl($thumbnailPath);
                     }
                 }
             }
@@ -1328,9 +1346,6 @@ die("Failed to update the Cart!");
         $arrDefaultImageSize = $arrSize = null;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         foreach ($arrProduct as $objProduct) {
-            if (!empty($product_id)) {
-                self::$pageTitle = $objProduct->name();
-            }
             $id = $objProduct->id();
             $productSubmitFunction = '';
             $arrPictures = Products::get_image_array_from_base64($objProduct->pictures());
@@ -1385,6 +1400,12 @@ die("Failed to update the Cart!");
                     'POPUP_LINK_NAME' => $_ARRAYLANG['TXT_SHOP_IMAGE'].' '.$index,
                 );
                 $havePicture = true;
+            }
+            if (!empty($product_id)) {
+                self::$pageTitle = $objProduct->name();
+                if (count($arrProductImages)) {
+                    static::$pageMetaImage = current($arrProductImages)['THUMBNAIL'];
+                }
             }
             $i = 1;
             foreach ($arrProductImages as $arrProductImage) {
