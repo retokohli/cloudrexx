@@ -120,7 +120,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             \Cx\Core\MailTemplate\Controller\MailTemplate::substitute(
                 $fileName,
                 $substitution,
-                true
+                $convertToHtmlEntities
             );
         } else {
             $datetime = $this->getComponent('DateTime')
