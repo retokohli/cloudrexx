@@ -105,9 +105,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @see getCommandsForCommandMode()
      * @param string $command Name of command to execute
      * @param array $arguments List of arguments for the command
+     * @param array  $dataArguments (optional) List of data arguments for the command
      * @return void
      */
-    public function executeCommand($command, $arguments, $dataArguments) {
+    public function executeCommand($command, $arguments, $dataArguments = array()) {
         try {
             switch ($command) {
                 case 'v1':
@@ -129,7 +130,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return void
      */
     public function apiV1($command, $arguments, $dataArguments) {
-        $method = strtolower($_SERVER['REQUEST_METHOD']);
+        $method = $this->cx->getRequest()->getHttpRequestMethod();
         
         // handle CLI
         if (php_sapi_name() == 'cli') {
@@ -156,11 +157,19 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             if (empty($arguments[1])) {
                 throw new \InvalidArgumentException('Not enough arguments');
             }
+            $em = $this->cx->getDb()->getEntityManager();
             $dataSource = $this->getDataSource($arguments[1]);
-            
-            $elementId = null;
+            $elementId = array();
             if (isset($arguments[2])) {
-                $elementId = $arguments[2];
+                $argumentKeys = array_keys($arguments);
+                $metaData = $em->getClassMetadata($dataSource->getIdentifier());
+                $primaryKeyNames = $metaData->getIdentifierFieldNames();
+                for ($i = 0; $i < count($arguments) - 2; $i++) {
+                    if (!is_numeric($argumentKeys[$i + 2])) {
+                        break;
+                    }
+                    $elementId[$primaryKeyNames[$i]] = $arguments[$i + 2];
+                }
             }
             
             $apiKey = null;

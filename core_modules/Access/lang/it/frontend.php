@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Cloudrexx Development Team <info@cloudrexx.com>
@@ -72,7 +72,7 @@ $_ARRAYLANG['TXT_CHANGE_PASSWORD'] = "Passwort ändern";
 $_ARRAYLANG['TXT_EMAIL_DO_NOT_MATCH'] = "Die beiden E-Mail Adressen stimmen nicht überein!";
 $_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_CHANGED'] = "Ihre Email Adresse wurde erfolgreich geändert.";
 $_ARRAYLANG['TXT_PROFILE_DATA_SUCCESSFULLY_CHANGED'] = "Ihre Profildaten wurden erfolgreich geändert.";
-$_ARRAYLANG['TXT_MALE_FRONTEND'] = "Uomo";
+$_ARRAYLANG['TXT_MALE_FRONTEND'] = "Maschio";
 $_ARRAYLANG['TXT_RESIDENCE'] = "Wohnort";
 $_ARRAYLANG['TXT_ZIP'] = "Zip";
 $_ARRAYLANG['TXT_BACK'] = "zurück";

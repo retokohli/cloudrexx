@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,15 +24,15 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
-/** 
+
+/**
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Cloudrexx Development Team <info@cloudrexx.com>
- * @access      public 
+ * @access      public
  * @package     cloudrexx
  * @subpackage  core_config
- */ 
-global $_ARRAYLANG; 
+ */
+global $_ARRAYLANG;
 $_ARRAYLANG['TXT_SETTINGS_MENU_SYSTEM'] = 'System';
 $_ARRAYLANG['TXT_SETTINGS_MENU_CACHE'] = 'Caching';
 $_ARRAYLANG['TXT_EMAIL_SERVER'] = 'E-Mail Server';
@@ -87,6 +87,8 @@ $_ARRAYLANG['TXT_CORE_CONFIG_SESSIONLIFETIME'] = 'Session Dauer';
 $_ARRAYLANG['TXT_CORE_CONFIG_SESSIONLIFETIME_TOOLTIP_HELP'] = 'Die Session Zeit in Sekunden';
 $_ARRAYLANG['TXT_CORE_CONFIG_SESSIONLIFETIMEREMEMBERME'] = 'Session Dauer (Angemeldet bleiben)';
 $_ARRAYLANG['TXT_CORE_CONFIG_SESSIONLIFETIMEREMEMBERME_TOOLTIP_HELP'] = 'Die Session Zeit in Sekunden für Benutzer, die beim Login die Checkbox "Angemeldet bleiben" gesetzt haben.';
+$_ARRAYLANG['TXT_CORE_CONFIG_DEFAULTLANGUAGEID'] = 'Standard Sprache';
+$_ARRAYLANG['TXT_CORE_CONFIG_DEFAULTLOCALEID'] = 'Standard Sprachversion';
 $_ARRAYLANG['TXT_CORE_CONFIG_DNSSERVER'] = 'DNS-Server';
 $_ARRAYLANG['TXT_CORE_CONFIG_DNSSERVER_TOOLTIP_HELP'] = 'Ein DNS-Server wird für die Abfrage eines MX-Lookup"s bei den Netzwerk Tools benötigt.';
 $_ARRAYLANG['TXT_CORE_CONFIG_COREADMINNAME'] = 'Name des Administrators';
@@ -116,8 +118,17 @@ $_ARRAYLANG['TXT_CORE_CONFIG_DASHBOARDNEWS'] = 'Dashboard News';
 $_ARRAYLANG['TXT_CORE_CONFIG_DASHBOARDSTATISTICS'] = 'Dashboard Statistiken';
 $_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEANALYTICSTRACKINGID'] = 'Google Analytics Tracking-ID';
 $_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEANALYTICSTRACKINGID_TOOLTIP_HELP'] = 'Geben Sie hier Ihre Google Analytics Tracking-ID ein. Diese finden Sie in Ihrem Google Analytics Konto unter Verwaltung => Tracking-Code.';
+$_ARRAYLANG['TXT_CORE_CONFIG_DEFAULTMETAIMAGE'] = 'Standard Metabild';
+$_ARRAYLANG['TXT_CORE_CONFIG_DNSHOSTNAMELOOKUP'] = 'DNS Hostname Auflösung';
+$_ARRAYLANG['TXT_CORE_CONFIG_DNSHOSTNAMELOOKUP_TOOLTIP_HELP'] = 'Aktivieren Sie diese Option, um die Auflösung der Hostnamen (basierend auf der IP-Adresse) der Website-Besucher zu aktivieren. Wichtig: Dadurch kann die Ladegeschwindigkeit der Website langsamer werden.';
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY'] = 'Kennwort muss der Komplexitätsvoraussetzung entsprechen';
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY_TOOLTIP_HELP'] = 'Kennwort muss folgende Zeichen enthalten: Gross-, Kleinbuchstabe und Zahl';
+$_ARRAYLANG['TXT_CORE_CONFIG_CAPTCHAMETHOD'] = 'CAPTCHA Methode';
+$_ARRAYLANG['TXT_CORE_CONFIG_RECAPTCHASITEKEY'] = 'Site key für reCAPTCHA';
+$_ARRAYLANG['TXT_CORE_CONFIG_RECAPTCHASECRETKEY'] = 'Secret key für reCAPTCHA';
+$_ARRAYLANG['TXT_CORE_CONFIG_CONTREXX_CAPTCHA_LABEL'] = 'Cloudrexx';
+$_ARRAYLANG['TXT_CORE_CONFIG_RECAPTCHA_LABEL'] = 'reCAPTCHA';
+$_ARRAYLANG['TXT_CORE_CONFIG_CAPTCHAMETHOD_TOOLTIP_HELP'] = 'Wählen Sie den CAPTCHA-Mechanismus aus, welcher zur Abwehr von SPAM eingesetzt werden soll<br /><br /><strong>Cloudrexx</strong><br />Sofort einsetzbar - Benötigt keine zusätzliche Konfiguration.<br /><br /><strong>reCAPTCHA</strong><br />reCAPTCHA ist ein CAPTCHA-Service von Google Inc. und bietet bestmöglichen Schutz gegen SPAM. Für die Nutzung wird ein Google-Konto benötigt, um die benötigten API-Schlüssel zu beantragen. <a href="https://www.google.com/recaptcha/intro/index.html" target="_blank">Mehr Informationen</a>';
 $_ARRAYLANG['TXT_CORE_CONFIG_ADVANCEDUPLOADBACKEND'] = 'Erweiterte Dateiuploadmöglickeiten';
 $_ARRAYLANG['TXT_CORE_CONFIG_ADVANCEDUPLOADFRONTEND'] = 'Erweiterte Dateiuploadmöglickeiten';
 $_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLFRONTEND_TOOLTIP_HELP'] = $_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLBACKEND_TOOLTIP_HELP'] = 'Cloudrexx erzwingt standardmässig kein Protokoll. Sie können HTTP erzwingen um die Suchmaschinen-Bewertung zu verbessern oder HTTPS (Hypertext Transfer Protocol Secure), ein Protokoll das zusätzlich mehr Sicherheit garantiert, aktivieren. Sollte Ihr Webserver dies nicht unterstützen, deaktiviert Cloudrexx diese Einstellung automatisch wieder.';

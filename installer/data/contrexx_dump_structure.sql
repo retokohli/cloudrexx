@@ -35,6 +35,7 @@ CREATE TABLE `contrexx_access_user_attribute` (
   `order_id` int(10) unsigned NOT NULL DEFAULT '0',
   `access_special` enum('','menu_select_higher','menu_select_lower') NOT NULL DEFAULT '',
   `access_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `read_access_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_access_user_attribute_name` (
@@ -58,6 +59,7 @@ CREATE TABLE `contrexx_access_user_core_attribute` (
   `order_id` int(10) unsigned NOT NULL DEFAULT '0',
   `access_special` enum('','menu_select_higher','menu_select_lower') NOT NULL DEFAULT '',
   `access_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `read_access_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_access_user_groups` (
@@ -67,6 +69,7 @@ CREATE TABLE `contrexx_access_user_groups` (
   `is_active` tinyint(4) NOT NULL DEFAULT '1',
   `type` enum('frontend','backend') NOT NULL DEFAULT 'frontend',
   `homepage` varchar(255) NOT NULL DEFAULT '',
+  `toolbar` int(6) DEFAULT NULL,
   PRIMARY KEY (`group_id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_access_user_mail` (
@@ -91,6 +94,7 @@ CREATE TABLE `contrexx_access_user_profile` (
   `user_id` int(5) unsigned NOT NULL DEFAULT '0',
   `gender` enum('gender_undefined','gender_female','gender_male') NOT NULL DEFAULT 'gender_undefined',
   `title` int(10) unsigned NOT NULL DEFAULT '0',
+  `designation` varchar(255) NOT NULL DEFAULT '',
   `firstname` varchar(255) NOT NULL DEFAULT '',
   `lastname` varchar(255) NOT NULL DEFAULT '',
   `company` varchar(255) NOT NULL DEFAULT '',
@@ -219,6 +223,7 @@ CREATE TABLE `contrexx_content_page` (
   `metadesc` text NOT NULL,
   `metakeys` text NOT NULL,
   `metarobots` varchar(7) DEFAULT NULL,
+  `metaimage` varchar(255) DEFAULT NULL,
   `start` timestamp NULL DEFAULT NULL,
   `end` timestamp NULL DEFAULT NULL,
   `editingStatus` varchar(16) NOT NULL,
@@ -243,6 +248,13 @@ CREATE TABLE `contrexx_core_country` (
   `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_core_country_country` (
+  `alpha2` char(2) NOT NULL,
+  `alpha3` char(3) NOT NULL DEFAULT '',
+  `ord` int(5) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`alpha2`),
+  UNIQUE KEY `alpha3` (`alpha3`)
+) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_core_mail_template` (
   `key` tinytext NOT NULL,
   `section` tinytext NOT NULL,
@@ -259,6 +271,33 @@ CREATE TABLE `contrexx_core_data_source` (
   PRIMARY KEY(`id`),
   UNIQUE KEY `identifier` (`identifier`)
 ) ENGINE = InnoDB;
+CREATE TABLE `contrexx_core_locale_backend` (
+  `id` int AUTO_INCREMENT NOT NULL,
+  `iso_1` char(2) NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `contrexx_core_locale_backend_ibfk_iso_1` FOREIGN KEY (`iso_1`) REFERENCES `contrexx_core_locale_language` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_core_locale_language` (
+  `iso_1` char(2) NOT NULL,
+  `iso_3` char(3) DEFAULT NULL,
+  `source` tinyint(1) NOT NULL,
+  PRIMARY KEY (`iso_1`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_core_locale_locale` (
+  `id` int AUTO_INCREMENT NOT NULL,
+  `iso_1` char(2) NOT NULL,
+  `label` varchar(255) DEFAULT NULL,
+  `country` char(2) DEFAULT NULL,
+  `fallback` int DEFAULT NULL,
+  `source_language` char(2) NOT NULL,
+  `order_no` int(11) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `iso_1` (`iso_1`, `country`),
+  CONSTRAINT `contrexx_core_locale_locale_ibfk_country` FOREIGN KEY (`country`) REFERENCES `contrexx_core_country_country` (`alpha2`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `contrexx_core_locale_locale_ibfk_fallback` FOREIGN KEY (`fallback`) REFERENCES `contrexx_core_locale_locale` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `contrexx_core_locale_locale_ibfk_iso_1` FOREIGN KEY (`iso_1`) REFERENCES `contrexx_core_locale_language` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `contrexx_core_locale_locale_ibfk_source_language` FOREIGN KEY (`source_language`) REFERENCES `contrexx_core_locale_language` (`iso_1`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_modules_access_permission` (
   `id` int(11) AUTO_INCREMENT NOT NULL,
   `allowed_protocols` longtext NOT NULL,
@@ -361,26 +400,62 @@ CREATE TABLE `contrexx_core_module_linkmanager_link` (
   `brokenLinkText` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
-CREATE TABLE `contrexx_core_module_sync_id_mapping` (
-  `id` int(11) AUTO_INCREMENT NOT NULL,
-  `foreign_host` varchar(255) NOT NULL,
-  `entity_type` varchar(255) NOT NULL,
-  `foreign_id` int(11) NOT NULL,
-  `local_id` int(11) NOT NULL,
-  PRIMARY KEY(`id`)
-) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_module_sync` (
-  `id` int(11) AUTO_INCREMENT NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `data_access_id` int(11) DEFAULT NULL,
   `to_uri` varchar(255) NOT NULL,
   `api_key` varchar(32) NOT NULL,
   `active` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
   KEY `data_access_id` (`data_access_id`),
-  PRIMARY KEY(`id`),
   CONSTRAINT `contrexx_core_module_sync_ibfk_data_access_id` FOREIGN KEY (`data_access_id`) REFERENCES `contrexx_core_module_data_access` (`id`)
-) ENGINE = InnoDB;
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_core_module_sync_change` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sync_id` int(11) NOT NULL,
+  `origin_sync_id` int(11) NOT NULL,
+  `event_type` char(6) NOT NULL,
+  `condition` char(7) NOT NULL,
+  `entity_index_data` text NOT NULL,
+  `origin_entity_index_data` text NOT NULL,
+  `contents` longtext NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_core_module_sync_change_host` (
+  `change_id` int(11) NOT NULL,
+  `host_id` int(11) NOT NULL,
+  PRIMARY KEY (`change_id`,`host_id`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_core_module_sync_host` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `host` varchar(255) NOT NULL,
+  `active` tinyint(1) NOT NULL,
+  `api_key` varchar(32) NOT NULL,
+  `api_version` int(11) NOT NULL,
+  `url_template` varchar(255) NOT NULL,
+  `state` int(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `host_UNIQUE` (`host`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_core_module_sync_host_entity` (
+  `sync_id` int(11) NOT NULL,
+  `host_id` int(11) NOT NULL,
+  `entity_id` varchar(255) NOT NULL,
+  PRIMARY KEY (`sync_id`,`host_id`,`entity_id`),
+  KEY `host_id` (`host_id`),
+  CONSTRAINT `contrexx_core_module_sync_host_entity_ibfk_sync_id` FOREIGN KEY (`sync_id`) REFERENCES `contrexx_core_module_sync` (`id`),
+  CONSTRAINT `contrexx_core_module_sync_host_entity_ibfk_host_id` FOREIGN KEY (`host_id`) REFERENCES `contrexx_core_module_sync_host` (`id`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_core_module_sync_id_mapping` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `foreign_host` varchar(255) NOT NULL,
+  `entity_type` varchar(255) NOT NULL,
+  `foreign_id` varchar(255) NOT NULL,
+  `local_id` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_module_sync_relation` (
-  `id` int(11) AUTO_INCREMENT NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `parent_id` int(11) DEFAULT NULL,
   `related_sync_id` int(11) NOT NULL,
   `foreign_data_access_id` int(11) NOT NULL,
@@ -390,37 +465,19 @@ CREATE TABLE `contrexx_core_module_sync_relation` (
   `local_field_name` varchar(50) NOT NULL,
   `do_sync` tinyint(1) NOT NULL,
   `default_entity_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
   KEY `parent_id` (`parent_id`),
   KEY `related_sync_id` (`related_sync_id`),
-  PRIMARY KEY(`id`),
+  KEY `contrexx_core_module_sync_relation_ibfk_foreign_data_access_id` (`foreign_data_access_id`),
   CONSTRAINT `contrexx_core_module_sync_relation_ibfk_foreign_data_access_id` FOREIGN KEY (`foreign_data_access_id`) REFERENCES `contrexx_core_module_data_access` (`id`),
   CONSTRAINT `contrexx_core_module_sync_relation_ibfk_parent_id` FOREIGN KEY (`parent_id`) REFERENCES `contrexx_core_module_sync_relation` (`id`),
   CONSTRAINT `contrexx_core_module_sync_relation_ibfk_related_sync_id` FOREIGN KEY (`related_sync_id`) REFERENCES `contrexx_core_module_sync` (`id`)
-) ENGINE = InnoDB;
-CREATE TABLE `contrexx_core_module_sync_host` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `host` varchar(255) NOT NULL,
-  `active` tinyint(1) NOT NULL,
-  `api_key` varchar(32) NOT NULL,
-  `api_version` int(11) NOT NULL,
-  `url_template` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `host_UNIQUE` (`host`)
-) ENGINE=InnoDB;
-CREATE TABLE `contrexx_core_module_sync_host_entity` (
-  `sync_id` int(11) NOT NULL,
-  `host_id` int(11) NOT NULL,
-  `entity_id` varchar(255) NOT NULL,
-  KEY `host_id` (`host_id`),
-  PRIMARY KEY (`sync_id`,`host_id`,`entity_id`),
-  CONSTRAINT `contrexx_core_module_sync_host_entity_ibfk_sync_id` FOREIGN KEY (`sync_id`) REFERENCES `contrexx_core_module_sync` (`id`),
-  CONSTRAINT `contrexx_core_module_sync_host_entity_ibfk_host_id` FOREIGN KEY (`host_id`) REFERENCES `contrexx_core_module_sync_host` (`id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_rewrite_rule` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `regular_expression` varchar(255) NOT NULL,
   `continue_on_match` tinyint(1) NOT NULL,
-  `rewrite_status_code` int(11) NOT NULL,
+  `rewrite_status_code` enum('301','302','intern') NOT NULL,
   `order_no` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
@@ -443,6 +500,14 @@ CREATE TABLE `contrexx_core_text` (
   PRIMARY KEY (`id`,`lang_id`,`section`,`key`(32)),
   FULLTEXT KEY `text` (`text`)
 ) ENGINE=MyISAM;
+CREATE TABLE `contrexx_core_view_frontend` (
+  `language` int NOT NULL,
+  `theme` int(2) unsigned NOT NULL,
+  `channel` enum('default','mobile','print','pdf','app') NOT NULL,
+  PRIMARY KEY (`language`,`theme`,`channel`),
+  CONSTRAINT `contrexx_core_view_frontend_ibfk_locale` FOREIGN KEY (`language`) REFERENCES `contrexx_core_locale_locale` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `contrexx_core_view_frontend_ibfk_theme` FOREIGN KEY (`theme`) REFERENCES `contrexx_skins` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_wysiwyg_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
@@ -452,6 +517,20 @@ CREATE TABLE `contrexx_core_wysiwyg_template` (
   `active` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_core_wysiwyg_toolbar` (
+  `id` int(6) NOT NULL AUTO_INCREMENT,
+  `available_functions` text NOT NULL,
+  `removed_buttons` text NOT NULL,
+  `is_default` int(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_core_module_pdf_template` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `html_content` longtext NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY(`id`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_ids` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `timestamp` int(14) DEFAULT NULL,
@@ -688,7 +767,8 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `place_mediadir_id` int(11) NOT NULL,
   `catid` int(11) NOT NULL DEFAULT '0',
   `show_in` varchar(255) NOT NULL,
-  `invited_groups` varchar(45) DEFAULT NULL,
+  `invited_groups` varchar(255) DEFAULT NULL,
+  `invited_crm_groups` varchar(255) DEFAULT NULL,
   `invited_mails` mediumtext,
   `invitation_sent` int(1) NOT NULL,
   `invitation_email_template` varchar(255) NOT NULL,
@@ -715,6 +795,7 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `series_pattern_end_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `series_pattern_begin` int(11) NOT NULL DEFAULT '0',
   `series_pattern_exceptions` longtext NOT NULL,
+  `series_additional_recurrences` longtext NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `confirmed` tinyint(1) NOT NULL DEFAULT '1',
   `show_detail_view` tinyint(1) NOT NULL DEFAULT '1',
@@ -756,12 +837,22 @@ CREATE TABLE `contrexx_module_calendar_event_field` (
   KEY `fk_contrexx_module_calendar_note_field_contrexx_module_calend1` (`event_id`),
   FULLTEXT KEY `eventIndex` (`title`,`teaser`,`description`)
 ) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_calendar_invite` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `event_id` int(11) NOT NULL,
+  `date` bigint unsigned NOT NULL,
+  `invitee_type` enum('-', 'AccessUser','CrmContact') NOT NULL,
+  `invitee_id` int(11) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `token` varchar(32) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_calendar_host` (
   `id` int(1) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `uri` mediumtext NOT NULL,
   `cat_id` int(11) NOT NULL,
-  `key` varchar(40) NOT NULL,
+  `key` varchar(32) NOT NULL,
   `confirmed` int(11) NOT NULL,
   `status` int(1) NOT NULL,
   PRIMARY KEY (`id`),
@@ -779,21 +870,15 @@ CREATE TABLE `contrexx_module_calendar_mail` (
   `status` int(1) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_calendar_mail_action` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `default_recipient` enum('empty','admin','author') NOT NULL,
-  `need_auth` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_calendar_registration` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
-  `event_id` int(7) NOT NULL,
+  `event_id` int(11) NOT NULL,
   `date` int(15) NOT NULL,
+  `submission_date` timestamp NULL DEFAULT '0000-00-00 00:00:00',
   `host_name` varchar(255) NOT NULL,
   `ip_address` varchar(15) NOT NULL,
   `type` int(1) NOT NULL,
-  `key` varchar(45) NOT NULL,
+  `invite_id` int NULL DEFAULT NULL,
   `user_id` int(7) NOT NULL,
   `lang_id` int(11) NOT NULL,
   `export` int(11) NOT NULL,
@@ -1017,7 +1102,9 @@ CREATE TABLE `contrexx_module_crm_contacts` (
   `customer_addedby` int(11) DEFAULT NULL,
   `company_size` int(11) DEFAULT NULL,
   `customer_currency` int(11) DEFAULT NULL,
+  `contact_amount` VARCHAR(256) DEFAULT NULL,
   `contact_familyname` varchar(256) DEFAULT NULL,
+  `contact_title` VARCHAR(256) DEFAULT NULL,
   `contact_role` varchar(256) DEFAULT NULL,
   `contact_customer` int(11) DEFAULT NULL,
   `contact_language` int(11) DEFAULT NULL,
@@ -1030,6 +1117,7 @@ CREATE TABLE `contrexx_module_crm_contacts` (
   `profile_picture` varchar(256) NOT NULL,
   `status` tinyint(2) NOT NULL DEFAULT '1',
   `added_date` date NOT NULL,
+  `updated_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `email_delivery` tinyint(2) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `contact_customer` (`contact_customer`),
@@ -1491,14 +1579,6 @@ CREATE TABLE `contrexx_module_directory_rel_dir_level` (
   PRIMARY KEY (`dir_id`,`level_id`)
 ) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_directory_settings` (
-  `setid` int(6) unsigned NOT NULL AUTO_INCREMENT,
-  `setname` varchar(250) NOT NULL DEFAULT '',
-  `setvalue` text NOT NULL,
-  `settyp` int(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`setid`),
-  KEY `setname` (`setname`)
-) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_directory_settings_google` (
   `setid` int(6) unsigned NOT NULL AUTO_INCREMENT,
   `setname` varchar(250) NOT NULL DEFAULT '',
   `setvalue` text NOT NULL,
@@ -2272,6 +2352,11 @@ CREATE TABLE `contrexx_module_market` (
   `spez_field_3` varchar(255) NOT NULL,
   `spez_field_4` varchar(255) NOT NULL,
   `spez_field_5` varchar(255) NOT NULL,
+  `spez_field_6` VARCHAR(255) NOT NULL,
+  `spez_field_7` VARCHAR(255) NOT NULL,
+  `spez_field_8` VARCHAR(255) NOT NULL,
+  `spez_field_9` VARCHAR(255) NOT NULL,
+  `spez_field_10` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
   FULLTEXT KEY `description` (`description`),
   FULLTEXT KEY `title` (`description`,`title`)
@@ -2338,6 +2423,7 @@ CREATE TABLE `contrexx_module_mediadir_categories_names` (
   `category_id` int(7) NOT NULL,
   `category_name` varchar(255) NOT NULL,
   `category_description` mediumtext NOT NULL,
+  `category_metadesc` varchar(160) NOT NULL DEFAULT '',
   KEY `lang_id` (`lang_id`),
   KEY `category_id` (`category_id`)
 ) ENGINE=MyISAM;
@@ -2435,7 +2521,7 @@ CREATE TABLE `contrexx_module_mediadir_inputfields` (
   `required` int(10) NOT NULL,
   `order` int(10) NOT NULL,
   `show_in` int(10) NOT NULL,
-  `context_type` enum('none','title','content','address','zip','city','country') NOT NULL,
+  `context_type` enum('none','title','content','address','zip','city','country','image','keywords') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_mediadir_level_names` (
@@ -2443,6 +2529,7 @@ CREATE TABLE `contrexx_module_mediadir_level_names` (
   `level_id` int(7) NOT NULL,
   `level_name` varchar(255) NOT NULL,
   `level_description` mediumtext NOT NULL,
+  `level_metadesc` varchar(160) NOT NULL DEFAULT '',
   KEY `lang_id` (`lang_id`),
   KEY `category_id` (`level_id`)
 ) ENGINE=MyISAM;
@@ -2636,6 +2723,7 @@ CREATE TABLE `contrexx_module_news` (
   `allow_comments` tinyint(1) NOT NULL DEFAULT '0',
   `enable_related_news` tinyint(1) NOT NULL DEFAULT '0',
   `enable_tags` tinyint(1) NOT NULL DEFAULT '0',
+  `redirect_new_window` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_news_categories` (
@@ -2763,7 +2851,7 @@ CREATE TABLE `contrexx_module_newsletter` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `subject` varchar(255) NOT NULL DEFAULT '',
   `template` int(11) NOT NULL DEFAULT '0',
-  `content` text NOT NULL,
+  `content` mediumtext NOT NULL,
   `attachment` enum('0','1') NOT NULL DEFAULT '0',
   `priority` tinyint(1) NOT NULL DEFAULT '0',
   `sender_email` varchar(255) NOT NULL DEFAULT '',
@@ -2800,13 +2888,6 @@ CREATE TABLE `contrexx_module_newsletter_category` (
   `notification_email` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `name` (`name`)
-) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_newsletter_confirm_mail` (
-  `id` int(1) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL DEFAULT '',
-  `content` longtext NOT NULL,
-  `recipients` text NOT NULL,
-  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_newsletter_email_link` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -3161,7 +3242,7 @@ CREATE TABLE `contrexx_module_shop_order_attributes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `item_id` int(10) unsigned NOT NULL DEFAULT '0',
   `attribute_name` varchar(255) NOT NULL DEFAULT '',
-  `option_name` varchar(255) NOT NULL DEFAULT '',
+  `option_name` TEXT NOT NULL DEFAULT '',
   `price` decimal(9,2) NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`id`),
   KEY `item_id` (`item_id`)
@@ -3533,7 +3614,7 @@ CREATE TABLE `contrexx_skins` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `theme_unique` (`themesname`),
   UNIQUE KEY `folder_unique` (`foldername`)
-) ENGINE=MyISAM ;
+) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_stats_browser` (
   `id` int(6) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) binary NOT NULL DEFAULT '',
@@ -3600,7 +3681,7 @@ CREATE TABLE `contrexx_stats_requests` (
   `sid` varchar(32) NOT NULL DEFAULT '',
   `pageTitle` varchar(250) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unique` (`page`)
+  UNIQUE KEY `pageId` (`pageId`)
 ) ENGINE=MyISAM;
 CREATE TABLE `contrexx_stats_requests_summary` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -3675,6 +3756,17 @@ CREATE TABLE `contrexx_syslog` (
   `data` text NOT NULL,
   `logger` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_translations` (
+  `id` int(10) UNSIGNED AUTO_INCREMENT,
+  `locale` varchar(8) NOT NULL,
+  `object_class` varchar(255) NOT NULL,
+  `field` varchar(32) NOT NULL,
+  `foreign_key` varchar(64) DEFAULT NULL,
+  `content` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `lookup_unique_idx` (`locale`,`object_class`,`foreign_key`,`field`),
+  KEY `content_lookup_idx` (`content`(255), `object_class`, `field`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_voting_additionaldata` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
