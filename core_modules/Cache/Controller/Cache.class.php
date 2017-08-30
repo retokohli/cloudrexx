@@ -142,7 +142,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $request = array_merge_recursive($_GET, $_POST);
         ksort($request);
         $this->currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
-            $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+            (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '') . $_SERVER['REQUEST_URI'];
+
         $country = '';
         $geoIp = $cx->getComponent('GeoIp');
         if ($geoIp) {
