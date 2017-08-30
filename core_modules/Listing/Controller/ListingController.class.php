@@ -170,7 +170,10 @@ class ListingController {
         if (!empty($options['sorting'])) {
             $this->handlers[] = new SortingController();
         }
-        $this->handlers[] = new PagingController();
+
+        if ($this->paging) {
+            $this->handlers[] = new PagingController();
+        }
 
         if (is_callable($entities)) {
             \DBG::msg('Init ListingController using callback function');
@@ -216,6 +219,8 @@ class ListingController {
         // handle ajax requests
         if (false /* ajax request for this listing */) {
             $jd = new \Cx\Core\Json\JsonData();
+            // TODO: This does not work yet
+            // TODO: JsonData->json() expects a Response object
             $jd->json(array(
                 'filtering' => $this->getAjaxFilteringData(),
                 'sorting' => $this->getAjaxSortingData(),
@@ -243,6 +248,7 @@ class ListingController {
                 });
             }
 
+            // filter data
             if (!empty($this->filter)) {
                 $data->filter(function($entry) {
                     foreach ($entry as $field=>$data) {
@@ -254,10 +260,13 @@ class ListingController {
                 });
             }
 
+            // sort data
             $data = $data->sort($this->order);
 
-            // add sorting and filtering
-            $data = $data->limit($this->count, $this->offset);
+            // limit data
+            if ($this->count) {
+                $data = $data->limit($this->count, $this->offset);
+            }
             return $data;
         }
 
@@ -281,7 +290,7 @@ class ListingController {
         // TODO: check if entity class is managed
          //$qb = new \Doctrine\ORM\QueryBuilder();
         $query->setFirstResult($this->offset);
-        $query->setMaxResults($this->count);
+        $query->setMaxResults($this->count ? $this->count : null);
         /*foreach ($this->order as $field=>$order) {
             $query->orderBy($field, $order);
         }
