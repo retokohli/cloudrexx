@@ -162,6 +162,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         },
                     ),
                 ),
+                'fileName' => array(
+                    'showOverview' => false,
+                    'header' => $_ARRAYLANG[$placeholderPrefix . '_FILENAME'],
+                ),
                 'active' => array(
                     'header'   => $_ARRAYLANG[$placeholderPrefix . '_STATE'],
                     'formtext' => $_ARRAYLANG[$placeholderPrefix . '_ACTIVE'],
@@ -193,7 +197,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         $editor = new \Cx\Core\Wysiwyg\Wysiwyg(
                             $name,
                             $value,
-                            'fullpage'
+                            'full'
                         );
                         $span   = new \Cx\Core\Html\Model\Entity\HtmlElement(
                             'span'
