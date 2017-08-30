@@ -1011,13 +1011,16 @@ class Setting{
                         $cx       = \Cx\Core\Core\Controller\Cx::instanciate();
                         $filePath = $cx->getWebsiteDocumentRootPath() . '/' .
                             $arrSettings[$name]['values'];
-                        if (\Cx\Lib\FileSystem\FileSystem::exists($filePath)) {
-                            try {
-                                $objFile  = new \Cx\Lib\FileSystem\File($filePath);
-                                $objFile->write($value);
-                            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                                \DBG::msg($e->getMessage());
-                            }
+                        try {
+                            $objFile  = new \Cx\Lib\FileSystem\File($filePaths);
+                            $objFile->write($value);
+                        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                            \Message::error(
+                                sprintf(
+                                    $_CORELANG['TXT_CORE_SETTING_ERROR_STORING_FILECONTENT'],
+                                    $name
+                                )
+                             );
                         }
                         $value = '';
                       break;
