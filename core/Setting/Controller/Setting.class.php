@@ -1012,7 +1012,7 @@ class Setting{
                         $filePath = $cx->getWebsiteDocumentRootPath() . '/' .
                             $arrSettings[$name]['values'];
                         try {
-                            $objFile  = new \Cx\Lib\FileSystem\File($filePaths);
+                            $objFile  = new \Cx\Lib\FileSystem\File($filePath);
                             $objFile->write($value);
                         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                             \Message::error(
