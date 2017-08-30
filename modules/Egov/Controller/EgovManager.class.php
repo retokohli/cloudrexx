@@ -316,6 +316,7 @@ class EgovManager extends EgovLibrary
         $autoStatusNo          = $productAutoStatus == 0 ? 'checked="checked"' : '';
         $autoStatusElectro     = $productAutoStatus == 2 ? 'checked="checked"' : '';
         $autoStatusReservation = $productAutoStatus == 3 ? 'checked="checked"' : '';
+
         $ProductSenderName = EgovLibrary::GetProduktValue('product_sender_name', $product_id);
         if ($ProductSenderName == '') {
             $ProductSenderName = EgovLibrary::GetSettings('set_sender_name');
@@ -725,28 +726,16 @@ class EgovManager extends EgovLibrary
                     $TargetMail = EgovLibrary::GetEmailAdress($order_id);
                 }
                 if ($TargetMail != '') {
-                    if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-                        $objMail = new \phpmailer();
-                        if ($_CONFIG['coreSmtpServer'] > 0) {
-                            if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                                $objMail->IsSMTP();
-                                $objMail->Host = $arrSmtp['hostname'];
-                                $objMail->Port = $arrSmtp['port'];
-                                $objMail->SMTPAuth = true;
-                                $objMail->Username = $arrSmtp['username'];
-                                $objMail->Password = $arrSmtp['password'];
-                            }
-                        }
-                        $objMail->CharSet = CONTREXX_CHARSET;
-                        $objMail->SetFrom($FromEmail, $FromName);
-                        $objMail->Subject = $SubjectText;
-                        $objMail->Priority = 3;
-                        $objMail->IsHTML(false);
-                        $objMail->Body = $BodyText;
-                        $objMail->AddAddress($TargetMail);
+                    $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
+
+                    $objMail->SetFrom($FromEmail, $FromName);
+                    $objMail->Subject = $SubjectText;
+                    $objMail->Priority = 3;
+                    $objMail->IsHTML(false);
+                    $objMail->Body = $BodyText;
+                    $objMail->AddAddress($TargetMail);
 // TODO: Verify the result and show an error if sending the mail fails!
-                        $objMail->Send();
-                    }
+                    $objMail->Send();
                 }
             }
         }
@@ -856,45 +845,45 @@ class EgovManager extends EgovLibrary
                 $pos
             );
             $this->objTemplate->setVariable('EGOV_ORDER_PAGING', $paging);
-            $i = 0;
-            while (!$objResult->EOF) {
-                $stateImg = 'status_yellow.gif';
-                switch ($objResult->fields['order_state']) {
-                    case 1:
-                        $stateImg = 'status_green.gif';
-                        break;
-                    case 2:
-                        $stateImg = 'status_red.gif';
-                        break;
-                    case 0:
-                    case 3:
-                    default:
-                        break;
+        $i = 0;
+        while (!$objResult->EOF) {
+            $stateImg = 'status_yellow.gif';
+            switch ($objResult->fields['order_state']) {
+                case 1:
+                    $stateImg = 'status_green.gif';
+                    break;
+                case 2:
+                    $stateImg = 'status_red.gif';
+                    break;
+                case 0:
+                case 3:
+                default:
+                    break;
                 }
                 $reservedDateVal = $objResult->fields['order_reservation_date'];
                 $reservationDateFormat = '';
                 if ($reservedDateVal != '0000-00-00') {
                     $reservationDateFormat = $reservedDateVal;
-                }
-                $this->objTemplate->setVariable(array(
-                    'ORDERS_ROWCLASS' => (++$i % 2 ? 'row2' : 'row1'),
-                    'ORDER_ID' => $objResult->fields['order_id'],
-                    'ORDER_DATE' => $objResult->fields['order_date'],
-                    'ORDER_ID' => $objResult->fields['order_id'],
-                    'ORDER_STATE' => EgovLibrary::MaskState($objResult->fields['order_state']),
-                    'EGOV_ORDER_AMOUNT' => contrexx_raw2xhtml($objResult->fields['order_quant']),
-                    'EGOV_ORDER_RESERVATION_DATE' => $reservationDateFormat,
-                    'ORDER_PRODUCT' => EgovLibrary::GetProduktValue('product_name', $objResult->fields['order_product']),
-                    'ORDER_NAME' =>
-                        $this->ParseFormValues('Vorname', $objResult->fields['order_values']).
-                        ' '.
-                        $this->ParseFormValues('Nachname', $objResult->fields['order_values']),
-                    'ORDER_STATE_IMG' => $stateImg,
-                    'ORDER_IP' => $objResult->fields['order_ip'],
-                ));
-                $this->objTemplate->parse('orders_row');
-                $objResult->MoveNext();
-            }
+		        }
+		        $this->objTemplate->setVariable(array(
+		            'ORDERS_ROWCLASS' => (++$i % 2 ? 'row2' : 'row1'),
+		            'ORDER_ID' => $objResult->fields['order_id'],
+		            'ORDER_DATE' => $objResult->fields['order_date'],
+		            'ORDER_ID' => $objResult->fields['order_id'],
+		            'ORDER_STATE' => EgovLibrary::MaskState($objResult->fields['order_state']),
+		                'EGOV_ORDER_AMOUNT' => contrexx_raw2xhtml($objResult->fields['order_quant']),
+		                'EGOV_ORDER_RESERVATION_DATE' => $reservationDateFormat,
+		            'ORDER_PRODUCT' => EgovLibrary::GetProduktValue('product_name', $objResult->fields['order_product']),
+		            'ORDER_NAME' =>
+		                $this->ParseFormValues('Vorname', $objResult->fields['order_values']).
+		                ' '.
+		                $this->ParseFormValues('Nachname', $objResult->fields['order_values']),
+		            'ORDER_STATE_IMG' => $stateImg,
+		            'ORDER_IP' => $objResult->fields['order_ip'],
+		        ));
+		        $this->objTemplate->parse('orders_row');
+		        $objResult->MoveNext();
+		    }
         } else {
             $this->objTemplate->hideBlock('orders_row');
         }
@@ -1629,37 +1618,26 @@ class EgovManager extends EgovLibrary
             if (empty($replyAddress)) {
                 $replyAddress = EgovLibrary::GetSettings('set_orderentry_sender');
             }
-            if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-                $objMail = new \phpmailer();
-                if (!empty($_CONFIG['coreSmtpServer'])) {
-                    if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                        $objMail->IsSMTP();
-                        $objMail->Host = $arrSmtp['hostname'];
-                        $objMail->Port = $arrSmtp['port'];
-                        $objMail->SMTPAuth = true;
-                        $objMail->Username = $arrSmtp['username'];
-                        $objMail->Password = $arrSmtp['password'];
-                    }
-                }
-                $objMail->CharSet = CONTREXX_CHARSET;
-                $from = EgovLibrary::GetSettings('set_orderentry_sender');
-                $fromName = EgovLibrary::GetSettings('set_orderentry_name');
-                $objMail->AddReplyTo($replyAddress);
-                $objMail->SetFrom($from, $fromName);
-                $objMail->Subject = $SubjectText;
-                $objMail->Priority = 3;
-                $objMail->IsHTML(false);
-                $objMail->Body = $BodyText;
-                $objMail->AddAddress($recipient);
-                $objMail->Send();
-            }
+
+            $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
+
+            $from = EgovLibrary::GetSettings('set_orderentry_sender');
+            $fromName = EgovLibrary::GetSettings('set_orderentry_name');
+            $objMail->AddReplyTo($replyAddress);
+            $objMail->SetFrom($from, $fromName);
+            $objMail->Subject = $SubjectText;
+            $objMail->Priority = 3;
+            $objMail->IsHTML(false);
+            $objMail->Body = $BodyText;
+            $objMail->AddAddress($recipient);
+            $objMail->Send();
         }
 
         // Update 29.10.2006 Statusmail automatisch abschicken || Produktdatei
         $autoStatus = self::GetProduktValue('product_autostatus', $product_id);
         if (   self::GetProduktValue('product_electro', $product_id) == 1
             || in_array($autoStatus, array(1, 2, 3))
-        ) {
+         ) {
             $status  = $autoStatus == 3 ? 4 : 1;
             EgovLibrary::updateOrderStatus($order_id, $status);
             $TargetMail = EgovLibrary::GetEmailAdress($order_id);
@@ -1685,30 +1663,19 @@ class EgovManager extends EgovLibrary
                 $BodyText = str_replace('[[ORDER_VALUE]]', $FormValue4Mail, $BodyDB);
                 $BodyText = str_replace('[[PRODUCT_NAME]]', html_entity_decode(EgovLibrary::GetProduktValue('product_name', $product_id)), $BodyText);
                 $BodyText = html_entity_decode($BodyText);
-                if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-                    $objMail = new \phpmailer();
-                    if ($_CONFIG['coreSmtpServer'] > 0) {
-                        if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                            $objMail->IsSMTP();
-                            $objMail->Host = $arrSmtp['hostname'];
-                            $objMail->Port = $arrSmtp['port'];
-                            $objMail->SMTPAuth = true;
-                            $objMail->Username = $arrSmtp['username'];
-                            $objMail->Password = $arrSmtp['password'];
-                        }
-                    }
-                    $objMail->CharSet = CONTREXX_CHARSET;
-                    $objMail->SetFrom($FromEmail, $FromName);
-                    $objMail->Subject = $SubjectText;
-                    $objMail->Priority = 3;
-                    $objMail->IsHTML(false);
-                    $objMail->Body = $BodyText;
-                    $objMail->AddAddress($TargetMail);
-                    if (EgovLibrary::GetProduktValue('product_electro', $product_id) == 1) {
-                        $objMail->AddAttachment(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().EgovLibrary::GetProduktValue('product_file', $product_id));
-                    }
-                    $objMail->Send();
+
+                $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
+
+                $objMail->SetFrom($FromEmail, $FromName);
+                $objMail->Subject = $SubjectText;
+                $objMail->Priority = 3;
+                $objMail->IsHTML(false);
+                $objMail->Body = $BodyText;
+                $objMail->AddAddress($TargetMail);
+                if (EgovLibrary::GetProduktValue('product_electro', $product_id) == 1) {
+                    $objMail->AddAttachment(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().EgovLibrary::GetProduktValue('product_file', $product_id));
                 }
+                $objMail->Send();
             }
         }
         return '';
