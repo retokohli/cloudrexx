@@ -498,7 +498,12 @@ class Resolver {
                 if (trim($this->page->getTargetQueryString()) != '') {
                     $params = array_merge($params, explode('&', $this->page->getTargetQueryString()));
                 }
-                $target = \Cx\Core\Routing\Url::fromNodeId($this->page->getTargetNodeId(), $this->page->getTargetLangId(), $params);
+                try {
+                    $target = \Cx\Core\Routing\Url::fromNodeId($this->page->getTargetNodeId(), $this->page->getTargetLangId(), $params);
+                } catch (UrlException $e) {
+                    \DBG::log($e->getMessage());
+                    return null;
+                }
             } else {
                 $target = $this->page->getTarget();
             }

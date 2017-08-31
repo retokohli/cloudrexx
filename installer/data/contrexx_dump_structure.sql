@@ -527,6 +527,7 @@ CREATE TABLE `contrexx_core_wysiwyg_toolbar` (
 CREATE TABLE `contrexx_core_module_pdf_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
+  `file_name` varchar(255) NOT NULL,
   `html_content` longtext NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY(`id`)
@@ -1755,6 +1756,7 @@ CREATE TABLE `contrexx_module_egov_orders` (
   `order_ip` varchar(255) NOT NULL DEFAULT '',
   `order_product` int(11) NOT NULL DEFAULT '0',
   `order_values` text NOT NULL,
+  `order_reservation_date` date NOT NULL DEFAULT '0000-00-00',
   `order_state` tinyint(4) NOT NULL DEFAULT '0',
   `order_quant` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`order_id`),

@@ -207,7 +207,8 @@ class StatsLibrary
             $spiderIp = $_SERVER['REMOTE_ADDR'];
         }
 
-        $spiderHost = @gethostbyaddr($spiderIp);
+        $net = $this->cx->getComponent('Net');
+        $spiderHost = $net->getHostByAddr($spiderIp);
         if ($spiderHost == $spiderIp) {
            $spiderHost = '';
         }
@@ -756,7 +757,8 @@ class StatsLibrary
     function _getProxyInformations() {
         if (isset($_SERVER['HTTP_VIA']) && $_SERVER['HTTP_VIA']) { // client does use a proxy
             $this->arrProxy['ip'] = $_SERVER['REMOTE_ADDR'];
-            $this->arrProxy['host'] = @gethostbyaddr($this->arrProxy['ip']);
+            $net = $this->cx->getComponent('Net');
+            $this->arrProxy['host'] = $net->getHostByAddr($this->arrProxy['ip']);
             $proxyUseragent = trim(addslashes(urldecode(strstr($_SERVER['HTTP_VIA'],' '))));
             $startPos = strpos($proxyUseragent,"(");
             $this->arrProxy['useragent'] = substr($proxyUseragent,$startPos+1);

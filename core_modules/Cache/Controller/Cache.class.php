@@ -142,7 +142,8 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $request = array_merge_recursive($_GET, $_POST);
         ksort($request);
         $this->currentUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' .
-            $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+            (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '') . $_SERVER['REQUEST_URI'];
+
         $country = '';
         $geoIp = $cx->getComponent('GeoIp');
         if ($geoIp) {
@@ -285,7 +286,16 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
             echo $this->internalEsiParsing($endcode, true);
             $parsingTime = $cx->stopTimer();
-            \DBG::log("(Cx: {$cx->getId()}) Request parsing completed after $parsingTime (from cache)");
+
+            $requestInfo = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+            $requestIp = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+            $requestHost = isset($_SERVER['REMOTE_HOST']) ? $_SERVER['REMOTE_HOST'] : $requestIp;
+            $requestUserAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+            
+            register_shutdown_function(function() use ($cx, $requestInfo, $requestIp, $requestHost, $requestUserAgent) {
+                $parsingTime = $cx->stopTimer();
+                \DBG::log("(Cx: {$cx->getId()}) Request parsing completed after $parsingTime \"cached\" \"$requestInfo\" \"$requestIp\" \"$requestHost\" \"$requestUserAgent\"");
+            });
             exit;
         } else {
             $headerFile = new \Cx\Lib\FileSystem\File($headerFile);

@@ -718,8 +718,11 @@ CODE;
                 $arrFormData['meta']['ipaddress'] = contrexx_input2raw($_SERVER["REMOTE_ADDR"]);
             }
 
+            $net = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Net');
             $arrFormData['meta']['time'] = time();
-            $arrFormData['meta']['host'] = contrexx_input2raw(@gethostbyaddr($arrFormData['meta']['ipaddress']));
+            $arrFormData['meta']['host'] = contrexx_input2raw(
+                $net->getHostByAddr($arrFormData['meta']['ipaddress'])
+            );
             $arrFormData['meta']['lang'] = contrexx_input2raw($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
             $arrFormData['meta']['browser'] = contrexx_input2raw($_SERVER["HTTP_USER_AGENT"]);
 
