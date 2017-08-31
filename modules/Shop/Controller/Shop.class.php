@@ -1002,7 +1002,7 @@ die("Failed to update the Cart!");
                             'SHOP_CATEGORY_CURRENT_THUMBNAIL'       => contrexx_raw2encodedUrl($thumbnailPath),
                             'SHOP_CATEGORY_CURRENT_THUMBNAIL_SIZE'  => $arrSize[3],
                         ));
-                        static::$pageMetaImage = contrexx_raw2encodedUrl($thumbnailPath);
+                        static::$pageMetaImage = contrexx_raw2encodedUrl($cx->getWebsiteImagesShopWebPath() . '/' . $imageName);
                     }
 
                     // fetch all thumbnails of image and add as placeholders
@@ -1388,6 +1388,7 @@ die("Failed to update the Cart!");
             $arrProductImages = array();
             foreach ($arrPictures as $index => $image) {
                 $thumbnailPath = $pictureLink = '';
+                $imagePath = '#';
                 if (   empty($image['img'])
                     || $image['img'] == ShopLibrary::noPictureName) {
                     // We have at least one picture on display already.
@@ -1406,7 +1407,8 @@ die("Failed to update the Cart!");
                         $pictureLink =
                                 contrexx_raw2encodedUrl($cx->getWebsiteImagesShopWebPath() . '/' . $image['img']) .
                                 // Hack ahead!
-                            '" rel="shadowbox['.($formId+1).']';
+                                '" rel="shadowbox['.($formId+1).']';
+                        $imagePath = contrexx_raw2encodedUrl($cx->getWebsiteImagesShopWebPath() . '/' . $image['img']);
                         // Thumbnail display size
                         $arrSize = array($image['width'], $image['height']);
                     } else {
@@ -1425,6 +1427,7 @@ die("Failed to update the Cart!");
                         self::$objTemplate->setVariable(
                             'SHOP_PRODUCT_IMAGE', $picture_url->toString());
 //\DBG::log("Set image to ".$picture_url->toString());
+                        $imagePath = $picture_url->toString();
                     }
                 }
 
@@ -1444,6 +1447,7 @@ die("Failed to update the Cart!");
                     'THUMBNAIL_SIZE' => $arrSize[3],
                     'THUMBNAIL_LINK' => $pictureLink,
                     'POPUP_LINK' => $pictureLink,
+                    'IMAGE_PATH' => $imagePath,
                     'POPUP_LINK_NAME' => $_ARRAYLANG['TXT_SHOP_IMAGE'].' '.$index,
                     'THUMBNAIL_FORMATS' => $arrThumbnails,
                 );
@@ -1452,7 +1456,7 @@ die("Failed to update the Cart!");
             if (!empty($product_id)) {
                 self::$pageTitle = $objProduct->name();
                 if (count($arrProductImages)) {
-                    static::$pageMetaImage = current($arrProductImages)['THUMBNAIL'];
+                    static::$pageMetaImage = current($arrProductImages)['IMAGE_PATH'];
                 }
             }
             $i = 1;
