@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Class AccessEventListener
  *
@@ -70,6 +70,57 @@ class AccessEventListener extends DefaultEventListener
             array(18)
         );
         $mediaBrowserConfiguration->addMediaType($mediaType);
+    }
+
+    /**
+     * Update the access user attributes
+     * while activate/deactivate a language in the Administrative -> Language
+     *
+     * @param array $eventArgs Arguments for the event
+     *
+     * @return boolean
+     */
+    protected function languageStatusUpdate(array $eventArgs) {
+        if (empty($eventArgs)) {
+            return;
+        }
+        $defaultLangId = \FWLanguage::getDefaultLangId();
+        foreach ($eventArgs['langData'] as $args) {
+
+            $langId = isset($args['langId']) ? $args['langId'] : 0;
+            $langStatus = isset($args['status']) ? $args['status'] : 0;
+
+            if (
+                empty($langId) ||
+                !isset($args['status']) ||
+                (
+                    !$langStatus &&
+                    !$eventArgs['langRemovalStatus']
+                )
+            ) {
+                continue;
+            }
+
+            // Update the access user attributes
+            if ($langStatus) {
+                $accessAttrQuery = 'INSERT IGNORE INTO `' . DBPREFIX . 'access_user_attribute_name`
+                    (   
+                        `attribute_id`,
+                        `lang_id`,
+                        `name`
+                    )
+                    SELECT 
+                        `attribute_id`,
+                        ' . $langId . ',
+                        `name`
+                    FROM `' . DBPREFIX . 'access_user_attribute_name`
+                    WHERE lang_id = ' . $defaultLangId;
+            } else {
+                $accessAttrQuery = 'DELETE FROM `' . DBPREFIX . 'access_user_attribute_name`
+                    WHERE lang_id = ' . $langId;
+            }
+            $this->cx->getDb()->getAdoDb()->Execute($accessAttrQuery);
+        }
     }
 
 }

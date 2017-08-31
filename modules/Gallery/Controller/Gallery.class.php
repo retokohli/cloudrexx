@@ -73,7 +73,7 @@ class Gallery
 
         $this->pageContent = $pageContent;
         $this->langId= $_LANGID;
-        
+
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -179,6 +179,18 @@ class Gallery
         $showImageSize   = $this->arrSettings['show_image_size'] == 'on' && $picture->fields['size_show'];
         $imageSize       = ($showImageSize) ? round(filesize($imagePath)/1024, 2) : '';
 
+        // set requested page's meta data
+        if ($imageDesc) {
+            $metaDescription = $imageDesc;
+        } else {
+            $metaDescription = $imageName;
+        }
+        $page = \Cx\Core\Core\Controller\Cx::instanciate()->getPage();
+        $page->setTitle($imageName);
+        $page->setContentTitle($imageName);
+        $page->setMetaTitle($imageName);
+        $page->setMetadesc($metaDescription);
+
         list($previousPicture, $nextPicture) = $this->getPreviousAndNextPicture($intCatId, $intPicId);
 
         $intImageHeigth = $intImageWidth  = '';
@@ -283,7 +295,19 @@ class Gallery
         //show image size based on the settings of "Show image size"
         $showImageSize   = $this->arrSettings['show_image_size'] == 'on' && $picture->fields['size_show'];
         $imageSize       = ($showImageSize) ? round(filesize($imagePath)/1024, 2) : '';
-        
+
+        // set requested page's meta data
+        if ($imageDesc) {
+            $metaDescription = $imageDesc;
+        } else {
+            $metaDescription = $imageName;
+        }
+        $page = \Cx\Core\Core\Controller\Cx::instanciate()->getPage();
+        $page->setTitle($imageName);
+        $page->setContentTitle($imageName);
+        $page->setMetaTitle($imageName);
+        $page->setMetadesc($metaDescription);
+
         // get pictures of the current category
         list($previousPicture, $nextPicture) = $this->getPreviousAndNextPicture($intCatId, $intPicId);
 
@@ -370,9 +394,9 @@ class Gallery
 
             if (isset($strCategory2)) { // this is a subcategory
                 $strOutput .= ' / <a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$intParentId.'" title="'.$strCategory2.'" target="_self">'.$strCategory2.'</a>';
-                $strOutput .= ' / <a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$intCatId.'" title="'.$strCategory1.'" target="_self">'.$strCategory1.'</a>';
+                $strOutput .= ' / <a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$intCatId.'" title="'.$strCategory1.'" target="_self" rel="nofollow">'.$strCategory1.'</a>';
             } else {
-                $strOutput .= ' / <a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$intCatId.'" title="'.$strCategory1.'" target="_self">'.$strCategory1.'</a>';
+                $strOutput .= ' / <a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$intCatId.'" title="'.$strCategory1.'" target="_self" rel="nofollow">'.$strCategory1.'</a>';
             }
         }
         return $strOutput;
@@ -414,46 +438,6 @@ class Gallery
 
 
     /**
-     * Returns the name of the currently visible top level gallery
-     * @return  string          The gallery name, or '' if not applicable
-     */
-    function getTopGalleryName()
-    {
-        global $objDatabase;
-
-        if (isset($_GET['cid'])) {
-            $intCatId = intval($_GET['cid']);
-
-            $running = true;
-            while ($running) {
-                $query = "SELECT pid FROM ".DBPREFIX."module_gallery_categories ".
-                    "WHERE id=$intCatId";
-                $objResult = $objDatabase->Execute($query);
-                if ($objResult) {
-                    if ($objResult->fields['pid'] != 0) {
-                        $intCatId = $objResult->fields['pid'];
-                    } else {
-                        $running = false;
-                    }
-                }
-            }
-
-            $query = "SELECT value FROM ".DBPREFIX."module_gallery_language ".
-                "WHERE gallery_id=$intCatId AND lang_id=$this->langId ".
-                "AND name='name' LIMIT 1";
-            $objResult = $objDatabase->Execute($query);
-            if ($objResult) {
-                $galleryName = $objResult->fields['value'];
-                return $galleryName;
-            }
-        }
-        // category is not set
-        // we're not inside a subgallery nor showing a picture yet.
-        return '';
-    }
-
-
-    /**
      * Shows the Overview of categories
      *
      * @param integer $intParentId
@@ -465,6 +449,18 @@ class Gallery
         $intParentId = intval($intParentId);
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
+
+        // load source code if cmd value is integer
+        if ($this->_objTpl->placeholderExists('APPLICATION_DATA')) {
+            $page = new \Cx\Core\ContentManager\Model\Entity\Page();
+            $page->setVirtual(true);
+            $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
+            $page->setModule('Gallery');
+            // load source code
+            $applicationTemplate = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
+            \LinkGenerator::parseTemplate($applicationTemplate);
+            $this->_objTpl->addBlock('APPLICATION_DATA', 'application_data', $applicationTemplate);
+        }
 
         $this->checkAccessToCategory($intParentId);
         $this->parseCategoryTree($this->_objTpl);
@@ -508,7 +504,7 @@ class Gallery
                                                     status="1"
                                         ');
         $this->_objTpl->setVariable(array(
-            'GALLERY_CATEGORY_PAGING'     => getPaging($objResult->fields['countValue'], $intPos, '&section=Gallery&cid='.$intParentId.$this->strCmd, '<b>'.$_ARRAYLANG['TXT_GALLERY'].'</b>',false,intval($_CONFIG['corePagingLimit']))
+            'GALLERY_CATEGORY_PAGING'     => getPaging($objResult->fields['countValue'], $intPos, '&cid='.$intParentId.$this->strCmd, '<b>'.$_ARRAYLANG['TXT_GALLERY'].'</b>',false,intval($_CONFIG['corePagingLimit']))
             ));
         //end category-paging
 
@@ -574,10 +570,41 @@ class Gallery
             'GALLERY_JAVASCRIPT'    =>    $this->getJavascript()
             ));
 
-        $objResult = $objDatabase->Execute(
-            "SELECT value FROM ".DBPREFIX."module_gallery_language ".
-            "WHERE gallery_id=$intParentId AND lang_id=$this->langId AND name='desc'");
-        $strCategoryComment = nl2br($objResult->fields['value']);
+        $strCategoryComment = '';
+
+        // set requested page's meta data based on requested category
+        if ($intParentId) {
+            // name of requested category
+            $objResult = $objDatabase->SelectLimit(
+                "SELECT value FROM ".DBPREFIX."module_gallery_language ".
+                "WHERE gallery_id=$intParentId AND lang_id=$this->langId AND name='name'", 1);
+            $name = $objResult->fields['value'];
+
+            // description of requested category
+            $objResult = $objDatabase->SelectLimit(
+                "SELECT value FROM ".DBPREFIX."module_gallery_language ".
+                "WHERE gallery_id=$intParentId AND lang_id=$this->langId AND name='desc'", 1);
+            $description = $objResult->fields['value'];
+            $strCategoryComment = nl2br($description);
+
+            if ($description) {
+                $metaDescription = $description;
+            } else {
+                $metaDescription = $name;
+            }
+
+            // only overwrite requested page's meta data if the requested
+            // category does have a name or description set
+            $page = \Cx\Core\Core\Controller\Cx::instanciate()->getPage();
+            if (!empty($name)) {
+                $page->setTitle($name);
+                $page->setContentTitle($name);
+                $page->setMetaTitle($name);
+            }
+            if (!empty($metaDescription)) {
+                $page->setMetadesc($metaDescription);
+            }
+        }
 
         $objResult = $objDatabase->Execute(
             "SELECT comment,voting FROM ".DBPREFIX."module_gallery_categories ".
@@ -593,7 +620,7 @@ class Gallery
             "ORDER BY sorting");
         $intCount = $objResult->RecordCount();
         $this->_objTpl->setVariable(array(
-            'GALLERY_PAGING'     => getPaging($intCount, $intPos, '&section=Gallery&cid='.$intParentId.$this->strCmd, '<b>'.$_ARRAYLANG['TXT_IMAGES'].'</b>', false, intval($this->arrSettings["paging"]))
+            'GALLERY_PAGING'     => getPaging($intCount, $intPos, '&cid='.$intParentId.$this->strCmd, '<b>'.$_ARRAYLANG['TXT_IMAGES'].'</b>', false, intval($this->arrSettings["paging"]))
         ));
         // end paging
         $this->_objTpl->setVariable('GALLERY_CATEGORY_COMMENT', $strCategoryComment);
@@ -893,7 +920,7 @@ END;
     */
     function addComment()
     {
-        global $objDatabase, $objCache;
+        global $objDatabase, $_ARRAYLANG;
 
         $intPicId    = intval($_POST['frmGalComAdd_PicId']);
         $categoryId = $this->getCategoryId($intPicId);
@@ -921,7 +948,7 @@ END;
             $strWWW = '';
         }
 
-        if (!ereg("^.+@.+\\..+$", $strEmail)) {
+        if (!preg_match("/^.+@.+\\..+$/", $strEmail)) {
             $strEmail = '';
         } else {
             $strEmail = htmlspecialchars(strip_tags($strEmail), ENT_QUOTES, CONTREXX_CHARSET);
@@ -935,7 +962,7 @@ END;
                 'INSERT INTO '.DBPREFIX.'module_gallery_comments '.
                 'SET picid='.$intPicId.', date='.time().', ip="'.$_SERVER['REMOTE_ADDR'].'", '.
                 'name="'.$strName.'", email="'.$strEmail.'", www="'.$strWWW.'", comment="'.$strComment.'"');
-            // $objCache->deleteAllFiles();
+            \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteAllFiles();
         }
     }
 
@@ -1315,3 +1342,4 @@ END;
                  )->toString();
     }
 }
+

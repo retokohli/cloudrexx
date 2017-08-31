@@ -64,9 +64,14 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
 
     function getForms($intFormId=null)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID, $objInit;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;
 
         $arrForms = array();
+
+        // LANG_ID is set to backend or frontend interface language.
+        // If LANG_ID is not yet set, then we've been requested from
+        // the frontend and the resolver did already set FRONTEND_LANG_ID
+        $langId = defined('LANG_ID') && LANG_ID ? LANG_ID : FRONTEND_LANG_ID;
 
         if(!empty($intFormId)) {
             $whereFormId = "form.id='".$intFormId."' AND";
@@ -82,7 +87,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                 form.`cmd` AS `cmd`,
                 form.`use_category` AS `use_category`,
                 form.`use_level` AS `use_level`,
-                form.`use_ready_to_confirm` AS `use_ready_to_confirm`,    
+                form.`use_ready_to_confirm` AS `use_ready_to_confirm`,
                 form.`entries_per_page` AS `entries_per_page`,
                 form.`active` AS `active`,
                 form_names.`form_name` AS `name`,
@@ -93,15 +98,15 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
             WHERE
                 ($whereFormId form_names.form_id=form.id)
             AND
-                (form_names.lang_id='".$_LANGID."')
+                (form_names.lang_id='".$langId."')
             ORDER BY
                 `order` ASC
             ");
 
         if ($objFormsRS !== false) {
-			while (!$objFormsRS->EOF) {
+            while (!$objFormsRS->EOF) {
 
-			    $arrForm = array();
+                $arrForm = array();
                 $arrFormName = array();
                 $arrFormDesc = array();
 
@@ -143,7 +148,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
 
                 $arrForms[$objFormsRS->fields['id']] = $arrForm;
                 $objFormsRS->MoveNext();
-			}
+            }
         }
 
         return $arrForms;
@@ -162,16 +167,16 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                 //settings overview
                 if(!empty($this->arrForms)){
                     foreach ($this->arrForms as $key => $arrForm) {
-                		//get status
-                		if($arrForm['formActive'] == 1) {
-                		    $strStatus = '../core/Core/View/Media/icons/status_green.gif';
-                		    $intStatus = 0;
-                		} else {
-                		    $strStatus = '../core/Core/View/Media/icons/status_red.gif';
-                		    $intStatus = 1;
-                		}
+                        //get status
+                        if($arrForm['formActive'] == 1) {
+                            $strStatus = '../core/Core/View/Media/icons/status_green.gif';
+                            $intStatus = 0;
+                        } else {
+                            $strStatus = '../core/Core/View/Media/icons/status_red.gif';
+                            $intStatus = 1;
+                        }
 
-        			    //parse data variables
+                        //parse data variables
                         $objTpl->setVariable(array(
                             $this->moduleLangVar.'_FORM_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
                             $this->moduleLangVar.'_FORM_ID' => $arrForm['formId'],
@@ -246,20 +251,20 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
 
                 $objTpl->parse($this->moduleNameLC.'Forms');
                 break;
-            
+
             case 4:
                 //Dropdown Menu
                 $strDropdownOptions = '';
                 foreach ($this->arrForms  as $key => $arrForm) {
-                	if($arrForm['formActive'] == 1) {
-	                    if($arrForm['formId'] == $intFormId) {
-	                        $strSelected = 'selected="selected"';
-	                    } else {
-	                        $strSelected = '';
-	                    }
-	
-	                    $strDropdownOptions .= '<option value="'.$arrForm['formId'].'" '.$strSelected.' >'.contrexx_raw2xhtml($arrForm['formName'][0]).'</option>';
-                	}
+                    if($arrForm['formActive'] == 1) {
+                        if($arrForm['formId'] == $intFormId) {
+                            $strSelected = 'selected="selected"';
+                        } else {
+                            $strSelected = '';
+                        }
+
+                        $strDropdownOptions .= '<option value="'.$arrForm['formId'].'" '.$strSelected.' >'.contrexx_raw2xhtml($arrForm['formName'][0]).'</option>';
+                    }
                 }
 
                 return $strDropdownOptions;
@@ -463,13 +468,13 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                 WHERE
                     `id`='".$intId."'
             ");
-            
+
             if($objUpdateAttributes !== false) {
-                
+
                 //permissions
                 $objDeletePerm = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_perm_group_forms WHERE form_id='".$intId."'");
                 $settingsPermissionGroupForm = isset($arrData['settingsPermGroupForm'][$intId]) ? $arrData['settingsPermGroupForm'][$intId] : array();
-                
+
                 foreach ($settingsPermissionGroupForm as $intGroupId => $intGroupStatus) {
                     $objInsertPerm = $objDatabase->Execute("
                         INSERT INTO
@@ -479,8 +484,8 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                             `form_id`='".intval($intId)."',
                             `status_group`='".intval($intGroupStatus)."'
                     ");
-                } 
-                
+                }
+
                 $objInsertNames = $this->updateFormLocale($arrName, $arrDescription, $intId);
 
                 if($objInsertNames !== false) {
@@ -511,47 +516,47 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                                                         `form_id`='".intval($intFormId)."'
                                                     ");
         if ($objRSEntriesDelete !== false) {
-			while (!$objRSEntriesDelete->EOF) {
-			    $arrEntryIds[] = $objRSEntriesDelete->fields['id'];
+            while (!$objRSEntriesDelete->EOF) {
+                $arrEntryIds[] = $objRSEntriesDelete->fields['id'];
                 $objRSEntriesDelete->MoveNext();
-			}
+            }
 
-			foreach ($arrEntryIds as $key => $intEntryId) {
-			    //delete rel levels
-			    $objRSEntryDeleteRelLevels = $objDatabase->Execute("DELETE FROM
-			                                                             ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels
-			                                                        WHERE
-			                                                             `entry_id`='".intval($intEntryId)."'
-			                                                        ");
+            foreach ($arrEntryIds as $key => $intEntryId) {
+                //delete rel levels
+                $objRSEntryDeleteRelLevels = $objDatabase->Execute("DELETE FROM
+                                                                         ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels
+                                                                    WHERE
+                                                                         `entry_id`='".intval($intEntryId)."'
+                                                                    ");
 
-			    //delete rel categories
-			    $objRSEntryDeleteRelCategories = $objDatabase->Execute("DELETE FROM
-			                                                             ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories
-			                                                        WHERE
-			                                                             `entry_id`='".intval($intEntryId)."'
-			                                                        ");
+                //delete rel categories
+                $objRSEntryDeleteRelCategories = $objDatabase->Execute("DELETE FROM
+                                                                         ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories
+                                                                    WHERE
+                                                                         `entry_id`='".intval($intEntryId)."'
+                                                                    ");
 
-			    //delete rel inputfields
-			    $objRSEntryDeleteRelInputfields = $objDatabase->Execute("DELETE FROM
-			                                                             ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
-			                                                        WHERE
-			                                                             `entry_id`='".intval($intEntryId)."'
-			                                                        ");
+                //delete rel inputfields
+                $objRSEntryDeleteRelInputfields = $objDatabase->Execute("DELETE FROM
+                                                                         ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+                                                                    WHERE
+                                                                         `entry_id`='".intval($intEntryId)."'
+                                                                    ");
 
-			    if ($objRSEntryDeleteRelLevels !== false && $objRSEntryDeleteRelCategories !== false && $objRSEntryDeleteRelInputfields !== false) {
-			        //delete entries
-			        $objRSEntryDeleteRelInputfields = $objDatabase->Execute("DELETE FROM
-			                                                                     ".DBPREFIX."module_".$this->moduleTablePrefix."_entries
-        			                                                         WHERE
-        			                                                             `form_id`='".intval($intFormId)."'
-        			                                                         ");
-			        if ($objRSEntryDeleteRelInputfields === false) {
-			            return false;
-			        }
-			    } else {
-			        return false;
-			    }
-			}
+                if ($objRSEntryDeleteRelLevels !== false && $objRSEntryDeleteRelCategories !== false && $objRSEntryDeleteRelInputfields !== false) {
+                    //delete entries
+                    $objRSEntryDeleteRelInputfields = $objDatabase->Execute("DELETE FROM
+                                                                                 ".DBPREFIX."module_".$this->moduleTablePrefix."_entries
+                                                                             WHERE
+                                                                                 `form_id`='".intval($intFormId)."'
+                                                                             ");
+                    if ($objRSEntryDeleteRelInputfields === false) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
         } else {
             return false;
         }

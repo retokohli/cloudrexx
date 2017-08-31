@@ -71,11 +71,11 @@ class ShopManager extends ShopLibrary
         global $_ARRAYLANG, $objTemplate;
 
         \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
-        
+
         $this->checkProfileAttributes();
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        self::$defaultImage = file_exists($cx->getWebsiteImagesShopPath() . '/' . ShopLibrary::noPictureName) ? 
-                                $cx->getWebsiteImagesShopWebPath() . '/' . ShopLibrary::noPictureName : 
+        self::$defaultImage = file_exists($cx->getWebsiteImagesShopPath() . '/' . ShopLibrary::noPictureName) ?
+                                $cx->getWebsiteImagesShopWebPath() . '/' . ShopLibrary::noPictureName :
                                 $cx->getCodeBaseOffsetPath(). '/images/Shop/' . ShopLibrary::noPictureName;
         self::$objTemplate = new \Cx\Core\Html\Sigma($cx->getCodeBaseModulePath() . '/Shop/View/Template/Backend');
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
@@ -119,7 +119,7 @@ class ShopManager extends ShopLibrary
                 throw new \Cx\Lib\Update_DatabaseException(
                     "Failed to create User_Profile_Attribute 'notes'");
             }
-            
+
             //Re initialize shop setting
             \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
 //DBG::log("Customer::errorHandler(): Stored notes attribute, ID ".$objProfileAttribute->getId());
@@ -156,7 +156,7 @@ class ShopManager extends ShopLibrary
                 throw new \Cx\Lib\Update_DatabaseException(
                     "Failed to create User_Profile_Attribute 'notes'");
             }
-            
+
             //Re initialize shop setting
             \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
             if (!(\Cx\Core\Setting\Controller\Setting::set('user_profile_attribute_customer_group_id', $objProfileAttribute->getId())
@@ -448,7 +448,8 @@ class ShopManager extends ShopLibrary
                         ? contrexx_input2raw($_POST['importCsvUploaderId'])
                         : '';
         if (!empty($fileName) && !empty($uploaderId)) {
-            $objSession = \cmsSession::getInstance();
+            $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+            $objSession = $cx->getComponent('Session')->getSession();
             $tmpFile    = $objSession->getTempPath() . '/' . $uploaderId . '/' . $fileName;
             $fileExists = \Cx\Lib\FileSystem\FileSystem::exists($tmpFile);
         }
@@ -1607,6 +1608,8 @@ if ($test === NULL) {
                 \Cx\Core\Setting\Controller\Setting::getValue('numof_coupon_per_page_backend','Shop'),
             'SHOP_SETTING_NUMOF_PRODUCTS_PER_PAGE_FRONTEND' =>
                 \Cx\Core\Setting\Controller\Setting::getValue('numof_products_per_page_frontend','Shop'),
+            'SHOP_SETTING_NUM_CATEGORIES_PER_ROW' =>
+                \Cx\Core\Setting\Controller\Setting::getValue('num_categories_per_row','Shop'),
 
 // TODO: Use \Cx\Core\Setting\Controller\Setting::show(), and add a proper setting type!
             'SHOP_SETTING_USERGROUP_ID_CUSTOMER' =>
@@ -1674,7 +1677,7 @@ if ($test === NULL) {
         $virtual = false;
         $pictureFilename = NULL;
         $picturePath = $thumbPath = self::$defaultImage;
-        if ($category_id) {            
+        if ($category_id) {
             // Edit the selected category:  Flip view to the edit tab
             $flagEditTabActive = true;
             $objCategory = ShopCategory::getById($category_id);
@@ -1741,7 +1744,7 @@ if ($test === NULL) {
         self::$objTemplate->setGlobalVariable(array(
             'MEDIABROWSER_BUTTON' => self::getMediaBrowserButton($mediaBrowserOptions, 'setSelectedImage')
         ));
-        
+
         self::$objTemplate->parse('category_edit');
 // TODO: Add controls to fold parent categories
 //        $level_prev = null;
@@ -2087,27 +2090,6 @@ if ($test === NULL) {
         return $result;
     }
 
-
-    function delFile($file)
-    {
-        @unlink($file);
-        clearstatcache();
-        if (@file_exists($file)) {
-            $filesys = eregi_replace('/', '\\', $file);
-            @system('del '.$filesys);
-            clearstatcache();
-            // don't work in safemode
-            if (@file_exists($file)) {
-                @chmod ($file, 0775);
-                @unlink($file);
-            }
-        }
-        clearstatcache();
-        if (@file_exists($file)) return false;
-        return true;
-    }
-
-
     /**
      * Manage products
      *
@@ -2148,7 +2130,7 @@ if ($test === NULL) {
 //            self::$objTemplate->setVariable(
 //                'SHOP_FLAGS_SELECTION', $flagsSelection);
 //        }
-//        
+//
         // media browser
         $mediaBrowserOptions = array(
             'type'                      => 'button',
@@ -2157,7 +2139,7 @@ if ($test === NULL) {
             'id'                        => 'media_browser_shop',
             'style'                     => 'display:none'
         );
-        
+
         self::$objTemplate->setVariable(array(
             'MEDIABROWSER_BUTTON' => self::getMediaBrowserButton($mediaBrowserOptions, 'setSelectedImage')
         ));
@@ -2246,11 +2228,11 @@ if ($test === NULL) {
             'SHOP_PICTURE1_IMG_SRC' =>
                 (   !empty($arrImages[1]['img'])
                  && is_file(\ImageManager::getThumbnailFilename($websiteImagesShopPath . $arrImages[1]['img']))
-                        ? contrexx_raw2encodedUrl(\ImageManager::getThumbnailFilename($websiteImagesShopWebPath . $arrImages[1]['img'])) 
+                        ? contrexx_raw2encodedUrl(\ImageManager::getThumbnailFilename($websiteImagesShopWebPath . $arrImages[1]['img']))
                     : self::$defaultImage),
             'SHOP_PICTURE2_IMG_SRC' =>
                 (   !empty($arrImages[2]['img'])
-                 && is_file(\ImageManager::getThumbnailFilename($websiteImagesShopPath . $arrImages[2]['img'])) 
+                 && is_file(\ImageManager::getThumbnailFilename($websiteImagesShopPath . $arrImages[2]['img']))
                         ? contrexx_raw2encodedUrl(\ImageManager::getThumbnailFilename($websiteImagesShopWebPath . $arrImages[2]['img']))
                     : self::$defaultImage),
             'SHOP_PICTURE3_IMG_SRC' =>
@@ -2359,6 +2341,7 @@ if ($test === NULL) {
         $discount_group_article_id = $_POST['discount_group_article_id'];
 //DBG::log("ShopManager::store_product(): Set \$discount_group_article_id to $discount_group_article_id");
         $keywords = contrexx_input2raw($_POST['keywords']);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
         for ($i = 1; $i <= 3; ++$i) {
             // Images outside the above directory are copied to the shop image folder.
@@ -2376,7 +2359,24 @@ if ($test === NULL) {
             }
             // Update the posted path (used below)
             $_POST['productImage'.$i] = $picture;
+
+            //Set the image width and height If empty
+            if (   !empty($_POST['productImage' . $i . '_width'])
+                && !empty($_POST['productImage' . $i . '_height'])
+            ) {
+                continue;
+            }
+
+            $picturePath = $cx->getWebsiteImagesShopPath(). '/' . $picture;
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($picturePath)) {
+                continue;
+            }
+
+            $pictureSize = getimagesize($picturePath);
+            $_POST['productImage' . $i . '_width']  = $pictureSize[0];
+            $_POST['productImage' . $i . '_height'] = $pictureSize[1];
         }
+
         // add all to pictures DBstring
         $imageName =
                  base64_encode($_POST['productImage1'])
@@ -2603,9 +2603,10 @@ if ($test === NULL) {
             array_push($arrOrderId, $order_id);
         }
         if (empty($arrOrderId)) return null;
+        $stockUpdate = !empty($_GET['stock_update']);
         $result = true;
         foreach ($arrOrderId as $oId) {
-            $result &= Order::deleteById($oId);
+            $result &= Order::deleteById($oId, $stockUpdate);
         }
         if ($result) {
             \Message::ok($_ARRAYLANG['TXT_ORDER_DELETED']);
@@ -2896,7 +2897,7 @@ if ($test === NULL) {
         ));
 // TODO: TEST
         $count = NULL;
-        $orders = Orders::getArray($count, NULL, array(), \Paging::getPosition(),
+        $orders = Orders::getArray($count, NULL, array('customer_id' => $objCustomer->id()), \Paging::getPosition(),
                 \Cx\Core\Setting\Controller\Setting::getValue('numof_orders_per_page_backend','Shop'));
         $i = 1;
         foreach ($orders as $order) {
@@ -3254,15 +3255,20 @@ if ($test === NULL) {
         // However, the design doesn't like it.  Limit to the current one.
         $arrLanguages = array(FRONTEND_LANG_ID => $arrLanguages[FRONTEND_LANG_ID]);
         $i = 0;
+
+        \JS::activate('schedule-publish-tooltip', array());
         foreach ($arrProducts as $objProduct) {
-            $productStatus = '';
-            $productStatusValue = '';
-            $productStatusPicture = 'status_red.gif';
+            $productStatus = 'inactive';
             if ($objProduct->active()) {
-                $productStatus = \Html::ATTRIBUTE_CHECKED;
-                $productStatusValue = 1;
-                $productStatusPicture = 'status_green.gif';
+                $hasScheduledPublishing =   $objProduct->date_start() != '0000-00-00 00:00:00'
+                                         || $objProduct->date_end() != '0000-00-00 00:00:00';
+                $productStatus = 'active';
+                if ($hasScheduledPublishing) {
+                    $productStatus =  $objProduct->getActiveByScheduledPublishing()
+                                    ? 'scheduled active' : 'scheduled inactive';
+                }
             }
+
             $discount_active = '';
             $specialOfferValue = '';
             if ($objProduct->discount_active()) {
@@ -3287,9 +3293,7 @@ if ($test === NULL) {
                 'SHOP_PRODUCT_DISTRIBUTION' => $objProduct->distribution(),
                 'SHOP_PRODUCT_STOCK' => $objProduct->stock(),
                 'SHOP_PRODUCT_SHORT_DESC' => $objProduct->short(),
-                'SHOP_PRODUCT_STATUS' => $productStatus,
-                'SHOP_PRODUCT_STATUS_PICTURE' => $productStatusPicture,
-                'SHOP_ACTIVE_VALUE_OLD' => $productStatusValue,
+                'SHOP_PRODUCT_STATUS_CLASS' => $productStatus,
                 'SHOP_SORT_ORDER' => $objProduct->ord(),
 //                'SHOP_DISTRIBUTION_MENU' => Distribution::getDistributionMenu($objProduct->distribution(), "distribution[".$objProduct->id()."]"),
 //                'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($objProduct->weight()),
@@ -4048,30 +4052,30 @@ die("Shopmanager::delete_article_group(): Obsolete method called");
 
     /**
      * Get Media Browser
-     * 
-     * @param object $objTpl            Template object 
+     *
+     * @param object $objTpl            Template object
      * @param string $placeholderKey    Place holder name
      * @param string $placeholderValue  Display name
      * @param array  $options           options Ex:type, id.. etc
      * @param string $callback          callback function name
-     * 
+     *
      * @return null
      */
     public static function getMediaBrowserButton($options = array(), $callback = '')
     {
         global $_ARRAYLANG;
-        
+
         if (empty($options)) {
             return;
         }
-        
+
         // Mediabrowser
         $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions($options);
         if ($callback) {
             $mediaBrowser->setCallback($callback);
         }
-        
+
         return $mediaBrowser->getXHtml($_ARRAYLANG['TXT_SHOP_EDIT_OR_ADD_IMAGE']);
     }
 }
