@@ -1388,7 +1388,7 @@ die("Failed to update the Cart!");
             $arrProductImages = array();
             foreach ($arrPictures as $index => $image) {
                 $thumbnailPath = $pictureLink = '';
-                $imagePath = '#';
+                $imagePath = '';
                 if (   empty($image['img'])
                     || $image['img'] == ShopLibrary::noPictureName) {
                     // We have at least one picture on display already.
