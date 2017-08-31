@@ -2872,12 +2872,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     'clearEsiCache',
                     array(
                         'Widget',
-                        array(
-                            'access_currently_online_member_list',
-                            'access_last_active_member_list',
-                            'access_latest_registered_member_list',
-                            'access_birthday_member_list'
-                        )
+                        $cx->getComponent('Access')->getSessionBasedWidgetNames(),
                     )
                 );
             } else {
@@ -3158,15 +3153,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                 $cx->getEvents()->triggerEvent(
                     'clearEsiCache',
-                    array(
-                        'Widget',
-                        array(
-                            'access_currently_online_member_list',
-                            'access_last_active_member_list',
-                            'access_latest_registered_member_list',
-                            'access_birthday_member_list'
-                        )
-                    )
+                    $cx->getComponent('Access')->getSessionBasedWidgetNames()
                 );
             } else {
                 self::$arrStatusMsg['error'][] = $objAttribute->getErrorMsg();

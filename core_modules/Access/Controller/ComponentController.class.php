@@ -128,10 +128,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'clearEsiCache',
                             array(
                                 'Widget',
-                                array(
-                                    'access_currently_online_member_list',
-                                    'access_last_active_member_list'
-                                )
+                                $this->getSessionBasedWidgetNames(),
                             )
                         );
                     }
@@ -281,5 +278,36 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         // make all language data of Access component globally available
         $template->setVariable(\Env::get('init')->getComponentSpecificLanguageData($this->getName()));
+    }
+
+    /**
+     * Get all session based widget names
+     *
+     * @return array
+     */
+    public function getSessionBasedWidgetNames()
+    {
+        $widgets = array(
+            'access_currently_online_member_list',
+            'access_last_active_member_list',
+        );
+
+        // Get logged in/out widgets
+        foreach (
+            array(
+                'logged_in',
+                'logged_out',
+            ) as $widgetNamePrefix
+        ) {
+            for ($i = 0; $i <= 10; $i++) {
+                $widgetName = 'access_' . $widgetNamePrefix;
+                if ($i > 0) {
+                    $widgetName .= $i;
+                }
+                $widgets[] = $widgetName;
+            }
+        }
+
+        return $widgets;
     }
 }
