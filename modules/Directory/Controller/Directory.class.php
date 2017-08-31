@@ -997,9 +997,8 @@ $this->arrRows[2] = '';
         }
 
         // set variables
-        if (empty($validatedate)) {
-            $formattedValidateDate = date('d. M Y');
-        } else {
+        $formattedValidateDate = '';
+        if (!empty($validatedate)) {
             $formattedValidateDate = date('d. M Y', $validatedate);
         }
         $this->_objTpl->setVariable(array(
