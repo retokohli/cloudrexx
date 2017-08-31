@@ -563,7 +563,7 @@ class CacheLib
             !isset($response['data']) ||
             !isset($response['data']['content'])
         ) {
-            throw new \Exception('JsonAdapter returned with an error');
+            throw new \Exception('JsonAdapter returned with an error: "' . $response['message'] . '"');
         }
         return $response['data']['content'];
     }
@@ -596,7 +596,7 @@ class CacheLib
         // make sure params are in correct order:
         $correctIndexOrder = array(
             'page',
-            'lang',
+            'locale',
             'user',
             'theme',
             'channel',
@@ -1064,7 +1064,7 @@ class CacheLib
         }
         $searchParams = array(
             'p' => 'page',
-            'l' => 'lang',
+            'l' => 'locale',
             'u' => 'user',
             't' => 'theme',
             'ch' => 'channel',
@@ -1114,7 +1114,7 @@ class CacheLib
         }
         $correctIndexOrder = array(
             'page',
-            'lang',
+            'locale',
             'user',
             'theme',
             'channel',
