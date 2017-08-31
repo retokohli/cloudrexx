@@ -156,29 +156,11 @@ class EgovLibrary {
         $arrOrderValues = EgovLibrary::getOrderValues($order_id);
         $strEmail = '';
         foreach ($arrOrderValues as $value) {
-            if (EgovLibrary::isEmail($value)) {
+            if (\FWValidator::isEmail($value)) {
                 $strEmail = $value;
             }
         }
         return $strEmail;
-    }
-
-
-    /**
-     * Run a plausibility test on the given string to determine
-     * whether it contains valid e-mail address(es) or not.
-     *
-     * @param   string    $Text     The string to test
-     * @return  integer             Zero if it does not seem to contain an
-     *                              e-mail address, the number of matches
-     *                              otherwise
-     * @static
-     */
-    static function isEmail($Text)
-    {
-        return preg_match(
-            '/^\w[\w\.\-]+@\w[\w\.\-]+\.[a-zA-Z]{2,4}$/', $Text
-        );
     }
 
 
