@@ -966,6 +966,7 @@ die("Failed to update the Cart!");
     static function showCategories($parent_id=0)
     {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $thumbnailFormats = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
         if ($parent_id) {
             $objCategory = ShopCategory::getById($parent_id);
             // If we can't get this ShopCategory, it most probably does
@@ -1002,6 +1003,22 @@ die("Failed to update the Cart!");
                             'SHOP_CATEGORY_CURRENT_THUMBNAIL_SIZE'  => $arrSize[3],
                         ));
                         static::$pageMetaImage = contrexx_raw2encodedUrl($thumbnailPath);
+                    }
+
+                    // fetch all thumbnails of image and add as placeholders
+                    $arrThumbnails = array();
+                    $imagePath = pathinfo($imageName, PATHINFO_DIRNAME);
+                    $imageFilename = pathinfo($imageName, PATHINFO_BASENAME);
+                    $thumbnails = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($cx->getWebsiteImagesShopWebPath() . '/' . $imagePath, $imageFilename, true);
+                    foreach ($thumbnailFormats as $thumbnailFormat) {
+                        if (!isset($thumbnails[$thumbnailFormat['size']])) {
+                            continue;
+                        }
+                        $format = strtoupper($thumbnailFormat['name']);
+                        $thumbnail = contrexx_raw2encodedUrl($thumbnails[$thumbnailFormat['size']]);
+                        self::$objTemplate->setVariable(
+                            'SHOP_CATEGORY_CURRENT_THUMBNAIL_FORMAT_' . $format, $thumbnail
+                        );
                     }
                 }
             }
@@ -1067,6 +1084,23 @@ die("Failed to update the Cart!");
 //                'SHOP_CATEGORY_SUBMIT_FUNCTION' => 'location.replace("index.php?section=Shop'.MODULE_INDEX.'&catId='.$id.'")',
 //                'SHOP_CATEGORY_SUBMIT_TYPE' => "button",
             ));
+
+            // fetch all thumbnails of image and add as placeholders
+            $arrThumbnails = array();
+            $imagePath = pathinfo($imageName, PATHINFO_DIRNAME);
+            $imageFilename = pathinfo($imageName, PATHINFO_BASENAME);
+            $thumbnails = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($cx->getWebsiteImagesShopWebPath() . '/' . $imagePath, $imageFilename, true);
+            foreach ($thumbnailFormats as $thumbnailFormat) {
+                if (!isset($thumbnails[$thumbnailFormat['size']])) {
+                    continue;
+                }
+                $format = strtoupper($thumbnailFormat['name']);
+                $thumbnail = contrexx_raw2encodedUrl($thumbnails[$thumbnailFormat['size']]);
+                self::$objTemplate->setVariable(
+                    'SHOP_CATEGORY_THUMBNAIL_FORMAT_' . $format, $thumbnail
+                );
+            }
+
             // Add flag images for flagged ShopCategories
             $strImage = '';
             $arrVirtual = ShopCategories::getVirtualCategoryNameArray();
@@ -1345,6 +1379,7 @@ die("Failed to update the Cart!");
         $formId = 0;
         $arrDefaultImageSize = $arrSize = null;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $thumbnailFormats = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
         foreach ($arrProduct as $objProduct) {
             $id = $objProduct->id();
             $productSubmitFunction = '';
@@ -1392,12 +1427,25 @@ die("Failed to update the Cart!");
 //\DBG::log("Set image to ".$picture_url->toString());
                     }
                 }
+
+                // fetch all thumbnails of image and add as placeholders
+                $arrThumbnails = array();
+                $imagePath = pathinfo($image['img'], PATHINFO_DIRNAME);
+                $imageFilename = pathinfo($image['img'], PATHINFO_BASENAME);
+                $thumbnails = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($cx->getWebsiteImagesShopWebPath() . '/' . $imagePath, $imageFilename, true);
+                foreach ($thumbnailFormats as $thumbnailFormat) {
+                    if (!isset($thumbnails[$thumbnailFormat['size']])) {
+                        continue;
+                    }
+                    $arrThumbnails[strtoupper($thumbnailFormat['name'])] = contrexx_raw2encodedUrl($thumbnails[$thumbnailFormat['size']]);
+                }
                 $arrProductImages[] = array(
                     'THUMBNAIL' => contrexx_raw2encodedUrl($thumbnailPath),
                     'THUMBNAIL_SIZE' => $arrSize[3],
                     'THUMBNAIL_LINK' => $pictureLink,
                     'POPUP_LINK' => $pictureLink,
                     'POPUP_LINK_NAME' => $_ARRAYLANG['TXT_SHOP_IMAGE'].' '.$index,
+                    'THUMBNAIL_FORMATS' => $arrThumbnails,
                 );
                 $havePicture = true;
             }
@@ -1432,6 +1480,11 @@ die("Failed to update the Cart!");
                 self::$objTemplate->setVariable(
                     'SHOP_PRODUCT_POPUP_LINK_NAME_'.$i, $arrProductImage['POPUP_LINK_NAME']
                 );
+                foreach ($arrProductImage['THUMBNAIL_FORMATS'] as $format => $thumbnail) {
+                    self::$objTemplate->setVariable(
+                        'SHOP_PRODUCT_THUMBNAIL_FORMAT_' . $format . '_' . $i, $thumbnail
+                    );
+                }
                 ++$i;
             }
             $stock = ($objProduct->stock_visible()
