@@ -565,7 +565,7 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
             // TODO: Somehow FRONTEND_LANG_ID is sometimes undefined here...
             $esiUrl = new \Cx\Lib\Net\Model\Entity\Url($matches[1]);
-            $langId = \FWLanguage::getLanguageIdByCode($esiUrl->getParam('lang'));
+            $langId = \FWLanguage::getLanguageIdByCode($esiUrl->getParam('locale'));
             if (!defined('FRONTEND_LANG_ID')) {
                 define('FRONTEND_LANG_ID', $langId);
             }
