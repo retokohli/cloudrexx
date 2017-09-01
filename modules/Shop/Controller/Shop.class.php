@@ -1388,7 +1388,7 @@ die("Failed to update the Cart!");
             $arrProductImages = array();
             foreach ($arrPictures as $index => $image) {
                 $thumbnailPath = $pictureLink = '';
-                $imagePath = '';
+                $imageFilePath = '';
                 if (   empty($image['img'])
                     || $image['img'] == ShopLibrary::noPictureName) {
                     // We have at least one picture on display already.
@@ -1408,7 +1408,7 @@ die("Failed to update the Cart!");
                                 contrexx_raw2encodedUrl($cx->getWebsiteImagesShopWebPath() . '/' . $image['img']) .
                                 // Hack ahead!
                                 '" rel="shadowbox['.($formId+1).']';
-                        $imagePath = contrexx_raw2encodedUrl($cx->getWebsiteImagesShopWebPath() . '/' . $image['img']);
+                        $imageFilePath = contrexx_raw2encodedUrl($cx->getWebsiteImagesShopWebPath() . '/' . $image['img']);
                         // Thumbnail display size
                         $arrSize = array($image['width'], $image['height']);
                     } else {
@@ -1427,7 +1427,7 @@ die("Failed to update the Cart!");
                         self::$objTemplate->setVariable(
                             'SHOP_PRODUCT_IMAGE', $picture_url->toString());
 //\DBG::log("Set image to ".$picture_url->toString());
-                        $imagePath = $picture_url->toString();
+                        $imageFilePath = $picture_url->toString();
                     }
                 }
 
@@ -1447,7 +1447,7 @@ die("Failed to update the Cart!");
                     'THUMBNAIL_SIZE' => $arrSize[3],
                     'THUMBNAIL_LINK' => $pictureLink,
                     'POPUP_LINK' => $pictureLink,
-                    'IMAGE_PATH' => $imagePath,
+                    'IMAGE_PATH' => $imageFilePath,
                     'POPUP_LINK_NAME' => $_ARRAYLANG['TXT_SHOP_IMAGE'].' '.$index,
                     'THUMBNAIL_FORMATS' => $arrThumbnails,
                 );
