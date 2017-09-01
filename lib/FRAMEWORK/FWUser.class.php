@@ -213,7 +213,7 @@ class FWUser extends User_Setting
             'clearEsiCache',
             array(
                 'Widget',
-                 $cx->getComponent('Access')->getSessionBasedWidgetNames(),
+                $cx->getComponent('Access')->getSessionBasedWidgetNames(),
             )
         );
 

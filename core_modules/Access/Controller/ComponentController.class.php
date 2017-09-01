@@ -281,33 +281,52 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Returns a list of widget names based on the given base name
+     * @param string $baseName Widget base name
+     * @return array List of widget names
+     */
+    protected function getRepeatableWidgetNames($baseName) {
+        $widgets = array();
+        for ($i = 0; $i <= 10; $i++) {
+            $widgetName = 'access_' . $baseName;
+            if ($i > 0) {
+                $widgetName .= $i;
+            }
+            $widgets[] = $widgetName;
+        }
+        return $widgets;
+    }
+
+    /**
      * Get all session based widget names
-     *
-     * @return array
+     * @return array List of widget names
      */
     public function getSessionBasedWidgetNames()
     {
-        $widgets = array(
-            'access_currently_online_member_list',
-            'access_last_active_member_list',
-        );
-
-        // Get logged in/out widgets
-        foreach (
+        return array_merge(
             array(
-                'logged_in',
-                'logged_out',
-            ) as $widgetNamePrefix
-        ) {
-            for ($i = 0; $i <= 10; $i++) {
-                $widgetName = 'access_' . $widgetNamePrefix;
-                if ($i > 0) {
-                    $widgetName .= $i;
-                }
-                $widgets[] = $widgetName;
-            }
-        }
+                'access_currently_online_member_list',
+                'access_last_active_member_list',
+            ),
+            $this->getRepeatableWidgetNames('logged_in'),
+            $this->getRepeatableWidgetNames('logged_out')
+        );
+    }
 
-        return $widgets;
+    /**
+     * Get all user data based widget names
+     * @return array List of widget names
+     */
+    public function getUserDataBasedWidgetNames() {
+        return array_merge(
+            array(
+                'access_currently_online_member_list',
+                'access_last_active_member_list',
+                'access_latest_registered_member_list',
+                'access_birthday_member_list',
+                'access_next_birthday_member_list',
+            ),
+            $this->getRepeatableWidgetNames('logged_in')
+        );
     }
 }
