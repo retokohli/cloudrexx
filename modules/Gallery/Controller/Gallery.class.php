@@ -146,6 +146,9 @@ class Gallery
 
         // we need to read the category id out of the database to prevent abusement
         $intCatId = $this->getCategoryId($intPicId);
+        if (!$intCatId) {
+            return;
+        }
         $this->checkAccessToCategory($intCatId);
 
         // hide category list
@@ -193,11 +196,15 @@ class Gallery
 
         list($previousPicture, $nextPicture) = $this->getPreviousAndNextPicture($intCatId, $intPicId);
 
-        $intImageHeigth = $intImageWidth  = '';
+        $intImageWidth  = '';
+        $intImageHeigth = '';
         if ($this->arrSettings['image_width'] < $imageReso[0]) {
             $resizeFactor   = $this->arrSettings['image_width'] / $imageReso[0];
             $intImageWidth  = $imageReso[0] * $resizeFactor;
             $intImageHeigth = $imageReso[1] * $resizeFactor;
+        }
+        if (empty($imageDesc)) {
+            $imageDesc = '-';
         }
 
         $strImageTitle = '';
@@ -221,7 +228,7 @@ class Gallery
             'GALLERY_IMAGE_HEIGHT'      => $intImageHeigth,
             'GALLERY_IMAGE_LINK'        => $this->getPictureDetailLink($intCatId, $intPicId),
             'GALLERY_IMAGE_NAME'        => $imageName,
-            'GALLERY_IMAGE_DESCRIPTION' => $imageDesc ? $imageDesc : '-',
+            'GALLERY_IMAGE_DESCRIPTION' => $imageDesc,
             'GALLERY_IMAGE_FILESIZE'    => ($showImageSize && $showFileName) ? '('. $imageSize .' kB)' : '',
 
             'TXT_GALLERY_PREVIOUS_IMAGE' => $_ARRAYLANG['TXT_PREVIOUS_IMAGE'],
@@ -231,8 +238,10 @@ class Gallery
         ));
 
         $this->parseCategoryTree($this->_objTpl);
+
         //voting
         $this->parsePictureVotingTab($this->_objTpl, $intCatId, $intPicId);
+
         // comments
         $this->parsePictureCommentsTab($this->_objTpl, $intCatId, $intPicId);
     }
@@ -250,6 +259,9 @@ class Gallery
 
         // we need to read the category id out of the database to prevent abusement
         $intCatId = $this->getCategoryId($intPicId);
+        if (!$intCatId) {
+            die();
+        }
         $this->checkAccessToCategory($intCatId);
 
         // POPUP Code
@@ -257,12 +269,10 @@ class Gallery
         $objTpl->loadTemplateFile('module_gallery_show_picture.html',true,true);
 
         // get category description
-        $objResult = $objDatabase->Execute('SELECT
-                                                `value`
-                                            FROM
-                                                '.DBPREFIX.'module_gallery_language
-                                            WHERE
-                                                gallery_id='. $intCatId .' AND name="desc" AND lang_id='. $this->langId);
+        $objResult = $objDatabase->Execute(
+            "SELECT value FROM ".DBPREFIX."module_gallery_language ".
+            "WHERE gallery_id=$intCatId AND lang_id=$this->langId ".
+            "AND name='desc' LIMIT 1");
         $strCategoryComment = '';
         if ($objResult && $objResult->RecordCount()) {
             $strCategoryComment = $objResult->fields['value'];
@@ -680,7 +690,8 @@ class Gallery
         $intFillPlaceholder   = 1;
         $fillPlaceholderCount = count($availableImagePlaceholders);
         while (!$objResult->EOF) {
-            $imageCommentOutput = $imageVotingOutput = '';
+            $imageVotingOutput = '';
+            $imageCommentOutput = '';
 
             $imageReso       = getimagesize($this->strImagePath.$objResult->fields['path']);
             $strImagePath    = $this->strImageWebPath.$objResult->fields['path'];
@@ -701,6 +712,7 @@ class Gallery
                 $intImageWidth  = $imageReso[0] * $resizeFactor;
                 $intImageHeigth = $imageReso[1] * $resizeFactor;
             }
+
             $strImageTitle = '';
             $showFileName  = $this->arrSettings['show_file_name'] == 'on';
             if ($showFileName) {
@@ -723,7 +735,8 @@ class Gallery
             }
 
             if ($this->arrSettings['show_names'] == 'on' || $this->arrSettings['show_file_name'] == 'on') {
-                $imageTitleTag = $imageSizeOutput = $imageName;
+                $imageSizeOutput = $imageName;
+                $imageTitleTag   = $imageName;
                 if ($this->arrSettings['show_file_name'] == 'on' || $showImageSize) {
                     $imageData = array();
                     if ($this->arrSettings['show_file_name'] == 'on') {
@@ -804,6 +817,11 @@ class Gallery
                 $imageLinkOutput = $imageLinkName;
             }
 
+            if (!$availableImagePlaceholders) {
+                $objResult->MoveNext();
+                continue;
+            }
+
             $placeholderNumber = $availableImagePlaceholders[$intFillPlaceholder - 1];
             $this->_objTpl->setVariable(array(
                 'GALLERY_IMAGE_LINK'.$placeholderNumber         => $imageSizeOutput.$imageCommentOutput.$imageVotingOutput.$imageLinkOutput,
@@ -837,6 +855,8 @@ class Gallery
             // so we are calling parse function here
             $this->_objTpl->parse('galleryShowImages');
         }
+
+        $this->_objTpl->parse('galleryCategories');
     }
 
     /**
@@ -920,7 +940,7 @@ END;
     */
     function addComment()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase;
 
         $intPicId    = intval($_POST['frmGalComAdd_PicId']);
         $categoryId = $this->getCategoryId($intPicId);
@@ -1127,6 +1147,8 @@ END;
                 ));
                 $template->parse('showVotingBar');
             }
+        } else {
+            $template->hideBlock('showVotingBar');
         }
         $template->setVariable(array(
             'TXT_VOTING_ALREADY_VOTED'  => $isAlreadyVoted ? $_ARRAYLANG['TXT_VOTING_ALREADY_VOTED'] : '',
@@ -1265,38 +1287,30 @@ END;
      */
     public function getPreviousAndNextPicture($categoryId, $pictureId)
     {
-        global $objDatabase;
+        $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
+        $arrPictures = array();
 
-        $query = 'SELECT
-                    t1.`id`,
-                    (SELECT `id` FROM `'. DBPREFIX .'module_gallery_pictures` AS t2
-                     WHERE t2.`id` < t1.`id` AND t2.`status`="1" AND t2.`validated`="1" AND t2.`catid`='. contrexx_input2int($categoryId).'
-                     ORDER BY `sorting` DESC, `id` DESC LIMIT 1) AS previous,
-                    (SELECT `id` FROM `'. DBPREFIX .'module_gallery_pictures` AS t3
-                     WHERE t3.`id` > t1.`id` AND t3.`status`="1" AND t3.`validated`="1" AND t3.`catid`='. contrexx_input2int($categoryId).'
-                     ORDER BY `sorting` ASC, `id` ASC LIMIT 1) AS next
-                  FROM
-                    `'. DBPREFIX .'module_gallery_pictures` AS t1
-                  WHERE t1.`id` = '. contrexx_input2int($pictureId);
-
-        $previousNext = $objDatabase->Execute($query);
-        if (!$previousNext) {
-            return array(0, 0);
+        // get pictures of the current category
+        $objResult = $db->Execute('
+            SELECT id FROM '.DBPREFIX.'module_gallery_pictures
+            WHERE status=\'1\' AND validated=\'1\' AND catid=' . intval($categoryId) . '
+            ORDER BY sorting, id
+		');
+        while (!$objResult->EOF) {
+            array_push($arrPictures, $objResult->fields['id']);
+            $objResult->MoveNext();
         }
-
-        $previous = $previousNext->fields['previous'];
-        $next     = $previousNext->fields['next'];
-        if (empty($previous)) {
-            $previous = $objDatabase->getOne('SELECT
-                                                `id` FROM `'. DBPREFIX .'module_gallery_pictures`
-                                              WHERE `status`="1" AND `validated`="1" AND `id` != '. $pictureId .' AND `catid`='. contrexx_input2int($categoryId).'
-                                              ORDER BY `sorting` DESC, `id` DESC LIMIT 1');
+        // get next picture id
+        if (array_key_exists(array_search($pictureId, $arrPictures) + 1, $arrPictures)) {
+            $next = $arrPictures[array_search($pictureId, $arrPictures) + 1];
+        } else {
+            $next = $arrPictures[0];
         }
-        if (empty($next)) {
-            $next = $objDatabase->getOne('SELECT
-                                                `id` FROM `'. DBPREFIX .'module_gallery_pictures`
-                                              WHERE `status`="1" AND `validated`="1" AND `id` != '. $pictureId .' AND `catid`='. contrexx_input2int($categoryId).'
-                                              ORDER BY `sorting` ASC, `id` ASC LIMIT 1');
+        // get previous picture id
+        if (array_key_exists(array_search($pictureId, $arrPictures) - 1, $arrPictures)) {
+            $previous = $arrPictures[array_search($pictureId, $arrPictures) - 1];
+        } else {
+            $previous = end($arrPictures);
         }
 
         return array($previous, $next);
