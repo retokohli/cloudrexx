@@ -411,7 +411,6 @@ Cache clear all';
                             CacheLib::CACHE_ENGINE_MEMCACHE,
                             CacheLib::CACHE_ENGINE_MEMCACHED,
                             CacheLib::CACHE_ENGINE_XCACHE,
-                            CacheLib::CACHE_ENGINE_FILESYSTEM,
                         )
                     )) {
                         echo 'Unknown cache engine' . "\n";
