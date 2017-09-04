@@ -689,7 +689,14 @@ class CalendarRegistrationManager extends CalendarLibrary
         if (empty($seatingFieldId))
             return (int) count($this->registrationList);
 
+        // Limit search to date of the event. This is critical for series!
+        $startDateBackup = $this->startDate;
+        $endDateBackup = $this->endDate;
+        $this->startDate = $this->event->startDate->format('U');
+        $this->endDate = $this->event->endDate->format('U');
         $this->getRegistrationList();
+        $this->startDate = $startDateBackup;
+        $this->endDate = $endDateBackup;
 
         $countSeating = 0;
         foreach ($this->registrationList as $registration) {
