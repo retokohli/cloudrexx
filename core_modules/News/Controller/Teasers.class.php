@@ -177,7 +177,7 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                     $objResult->fields['enddate'] != '0000-00-00 00:00:00'
                 ) {
                     $startDate = new \DateTime($objResult->fields['startdate']);
-                    $endDate = new \DateTime($objResult->field['enddate']);
+                    $endDate = new \DateTime($objResult->fields['enddate']);
                     if (
                         $endDate > new \DateTime() &&
                         (
@@ -231,7 +231,7 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 }
                 if (!empty($objResult->fields['teaser_image_thumbnail_path'])) {
                     $image = $objResult->fields['teaser_image_thumbnail_path'];
-                } elseif (!empty($objResult->fields['teaser_image_path']) && file_exists($cx->getWebsitePath() .'/' .\ImageManager::getThumbnailFilename($objResult->fields['teaser_image_path']))) {
+                } elseif (!empty($objResult->fields['teaser_image_path']) && $this->arrSettings['use_thumbnails'] && file_exists($cx->getWebsitePath() .'/' .\ImageManager::getThumbnailFilename($objResult->fields['teaser_image_path']))) {
                     $image = \ImageManager::getThumbnailFilename($objResult->fields['teaser_image_path']);
                 } elseif (!empty($objResult->fields['teaser_image_path'])) {
                     $image = $objResult->fields['teaser_image_path'];
