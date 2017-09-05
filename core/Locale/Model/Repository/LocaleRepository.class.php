@@ -76,13 +76,45 @@ class LocaleRepository extends EntityRepository
      * @param array $criteria The criteria
      * @return array The locales
      */
-    public function findBy(array $criteria)
-    {
+    public function findBy(
+        array $criteria, array $orderBy = NULL, $limit = NULL, $offset = NULL
+    ) {
         $locales = parent::findBy($criteria);
         // order locales by orderNo
         usort($locales, function($a, $b) {
            return $a->getOrderNo() - $b->getOrderNo();
         });
         return $locales;
+    }
+
+    /**
+     * Finds a locale by it's code/short form (e.g de, de-CH, etc.)
+     * @param string $code The locale code/short form
+     * @return null|\Cx\Core\Locale\Model\Entity\Locale The locale object
+     */
+    public function findOneByCode($code) {
+        $matches = null;
+        if (
+            !preg_match(
+                '/^([a-z]{1,2})(?:-([A-Z]{2,4})|())$/',
+                $code,
+                $matches
+            )
+        ) {
+            return null;
+        }
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('l')->from('Cx\Core\Locale\Model\Entity\Locale', 'l');
+        $qb->andWhere($qb->expr()->eq('l.iso1', '?1'));
+        $qb->setParameter(1, $matches[1]);
+        if (empty($matches[2])) {
+            $qb->andWhere($qb->expr()->isNull('l.country'));
+        } else {
+            $qb->andWhere($qb->expr()->eq('l.country', '?2'));
+            $qb->setParameter(2, $matches[2]);
+        }
+        return $qb->getQuery()->getSingleResult();
     }
 }

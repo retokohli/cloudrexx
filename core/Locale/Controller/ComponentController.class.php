@@ -86,5 +86,4 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getControllersAccessableByJson() {
         return array('JsonLocaleController');
     }
-
 }

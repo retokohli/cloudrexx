@@ -730,6 +730,77 @@ class CrmLibrary
     }
 
     /**
+     * Get company size name by id
+     *
+     * @param integer $companySizeId
+     *
+     * @return string name of the company size
+     */
+    public function getCompanySizeNameById($companySizeId)
+    {
+        global $objDatabase;
+
+        if (empty($companySizeId)) {
+            return false;
+        }
+
+        $objResult = $objDatabase->Execute('SELECT `company_size`
+                                                FROM `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_company_size`
+                                                WHERE `id` = "' . contrexx_raw2db($companySizeId) .
+                                                '" LIMIT 0, 1');
+
+        return ($objResult && $objResult->RecordCount()) ? $objResult->fields['company_size'] : '';
+    }
+
+    /**
+     * Get customer type name by id
+     *
+     * @param integer $customerTypeId customer type id
+     *
+     * @return string name of the customer type
+     */
+    public function getCustomerTypeNameById($customerTypeId)
+    {
+        global $objDatabase;
+
+        if (empty($customerTypeId)) {
+            return false;
+        }
+
+        $objResult = $objDatabase->Execute('SELECT `label`
+                                                FROM `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_customer_types`
+                                                WHERE `id` = "' . contrexx_raw2db($customerTypeId) .
+                                                '" LIMIT 0, 1');
+
+        return ($objResult && $objResult->RecordCount()) ? $objResult->fields['label'] : '';
+    }
+
+    /**
+     * Get industry type name by id
+     *
+     * @param integer $industryId industry type id
+     *
+     * @return string name of the industry type
+     */
+    public function getIndustryTypeNameById($industryId)
+    {
+        global $objDatabase;
+
+        if (empty($industryId)) {
+            return false;
+        }
+
+        $query = 'SELECT ind_loc.`value` FROM `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_industry_type_local` As ind_loc
+                    LEFT JOIN `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_industry_types` As ind
+                        ON (ind_loc.entry_id = ind.id)
+                    WHERE ind.id = "' . contrexx_raw2db($industryId) . '" LIMIT 0, 1';
+
+        $objResult = $objDatabase->Execute($query);
+
+        return ($objResult && $objResult->RecordCount()) ? $objResult->fields['value'] : '';
+    }
+
+    /**
      * Get Industry Type Dropdown From DB
      *
      * @param Object  $objTpl
@@ -2303,6 +2374,7 @@ class CrmLibrary
             'firstname'    => array(0 => $this->contact->customerName),
             'lastname'     => array(0 => $this->contact->family_name),
             'gender'       => array(0 => $gender),
+            'designation'  => array(0 => $this->contact->contact_title),
             'website'      => array(0 => $website),
             'company'      => array(0 => $company),
             'phone_office' => array(0 => $phone),
@@ -2715,6 +2787,7 @@ class CrmLibrary
                 $this->contact->load($id);
                 $this->contact->customerName   = !empty ($arrFormData['firstname'][0]) ? contrexx_input2raw($arrFormData['firstname'][0]) : '';
                 $this->contact->family_name    = !empty ($arrFormData['lastname'][0]) ? contrexx_input2raw($arrFormData['lastname'][0]) : '';
+                $this->contact->contact_title  = !empty ($arrFormData['designation'][0]) ? contrexx_input2raw($arrFormData['designation'][0]) : '';
                 $this->contact->contact_language = !empty ($frontendLanguage) ? (int) $frontendLanguage : $_LANGID;
                 $this->contact->contact_gender = !empty ($arrFormData['gender'][0]) ? ($arrFormData['gender'][0] == 'gender_female' ? 1 : ($arrFormData['gender'][0] == 'gender_male' ? 2 : '')) : '';
 

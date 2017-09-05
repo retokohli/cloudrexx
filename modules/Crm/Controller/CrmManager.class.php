@@ -130,7 +130,9 @@ class CrmManager extends CrmLibrary
                 $_ARRAYLANG['TXT_CRM_SETTINGS']."</a>";
         }
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION", $contentNavigation);
+        if ($objTemplate instanceof \Cx\Core\Html\Sigma) {
+            $objTemplate->setVariable("CONTENT_NAVIGATION", $contentNavigation);
+        }
 
         $dispatcher = CrmEventDispatcher::getInstance();
         $default_handler = new \Cx\Modules\Crm\Model\Events\CrmDefaultEventHandler();
@@ -654,6 +656,7 @@ class CrmManager extends CrmLibrary
                 'TXT_CRM_SUPPORT_TICKET'        =>  $_ARRAYLANG['TXT_CRM_SUPPORT_TICKET'],
                 'TXT_CRM_DATE'                  =>  $_ARRAYLANG['TXT_CRM_DATE'],
                 'TXT_CRM_TITLE'                 =>  $_ARRAYLANG['TXT_CRM_TITLE'],
+                'TXT_CRM_AMOUNT'                =>  $_ARRAYLANG['TXT_CRM_AMOUNT'],
                 'TXT_CRM_DESCRIPTION'           =>  $_ARRAYLANG['TXT_CRM_DESCRIPTION'],
                 'TXT_CRM_TITLE_STATUS'          =>  $_ARRAYLANG['TXT_CRM_TITLE_STATUS'],
                 'TXT_CRM_HOSTING'               =>  $_ARRAYLANG['TXT_CRM_HOSTING'],
@@ -1934,7 +1937,7 @@ END;
      */
     function _modifyContact()
     {
-        global $_ARRAYLANG, $objDatabase ,$objJs, $objResult, $_LANGID, $_CORELANG;
+        global $_ARRAYLANG, $objDatabase ,$objJs, $_LANGID, $_CORELANG;
 
         \JS::activate('cx');
         \JS::activate("jquery");
@@ -1987,6 +1990,8 @@ END;
 
         //person
         $this->contact->family_name      = (isset($_POST['family_name'])) ? contrexx_input2raw($_POST['family_name']) : '';
+        $this->contact->contact_title    = (isset($_POST['contact_title'])) ? contrexx_input2raw($_POST['contact_title']) : '';
+        $this->contact->contact_amount   = (isset($_POST['contact_amount'])) ? contrexx_input2raw($_POST['contact_amount']) : '';
         $this->contact->contact_role     = (isset($_POST['contact_role'])) ? contrexx_input2raw($_POST['contact_role']) : '';
         $this->contact->contact_language = (isset($_POST['contact_language'])) ? (int) $_POST['contact_language'] : (empty($id) ? $_LANGID : 0);
         $this->contact->contact_customer = isset($_POST['company']) ? (int) $_POST['company'] : (isset($_GET['custId']) ? (int) $_GET['custId'] : 0);
@@ -2370,8 +2375,10 @@ END;
                     'TXT_LANG_NAME'     =>  contrexx_raw2xhtml($frontendLang['name']),
                     'TXT_LANG_SELECT'   =>  ($frontendLang['id'] == $this->contact->contact_language) ? "selected=selected" : "",
             ));
-            $langBlock = ($contactType == 2) ? "showAddtionalContactLanguages" : "ContactLanguages";
-            $this->_objTpl->parse($langBlock);
+            if($contactType == 1){
+                $this->_objTpl->parse("ContactLanguages");
+            }
+            $this->_objTpl->parse("showAddtionalContactLanguages" . $contactType);
         }
 
         // special fields for customer
@@ -2439,6 +2446,9 @@ END;
 
                 'CRM_CUSTOMERID'            => contrexx_input2xhtml($this->contact->customerId),
                 'CRM_COMPANY_NAME'          => contrexx_input2xhtml($this->contact->customerName),
+                'CRM_CONTACT_TITLE'         => contrexx_input2xhtml($this->contact->contact_title),
+                'CRM_CONTACT_AMOUNT'        => $this->contact->contact_amount ? contrexx_input2xhtml($this->contact->contact_amount) : '',
+                'CRM_UPDATED_DATE'          => date(ASCMS_DATE_FORMAT_DATETIME, strtotime($this->contact->updated_date)),
                 'CRM_CONTACT_ID'            => $this->contact->id != null ? $this->contact->id : 0,
                 'CRM_CONTACT_USER_ID'       => $this->contact->account_id != null ? $this->contact->account_id : 0,
                 'CRM_CONTACT_USERNAME'      => $objUser ? contrexx_raw2xhtml($objUser->getEmail()) : '',
@@ -2468,6 +2478,8 @@ END;
                 'TXT_CRM_PHONE'                 => $_ARRAYLANG['TXT_CRM_PHONE'],
                 'TXT_CRM_TITLE_LANGUAGE'        => $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'],
                 'TXT_CRM_ROLE'                  => $_ARRAYLANG['TXT_CRM_ROLE'],
+                'TXT_CRM_TITLE'                 => $_ARRAYLANG['TXT_CRM_TITLE'],
+                'TXT_CRM_AMOUNT'                =>  $_ARRAYLANG['TXT_CRM_AMOUNT'],
                 'TXT_CRM_FAMILY_NAME'           => $_ARRAYLANG['TXT_CRM_FAMILY_NAME'],
                 'TXT_CRM_TITLE_SELECT_LANGUAGE' => $_ARRAYLANG['TXT_CRM_TITLE_SELECT_LANGUAGE'],
                 'TXT_CRM_HOME'              => $_ARRAYLANG['TXT_CRM_HOME'],
@@ -2511,6 +2523,7 @@ END;
                 'TXT_CRM_EMAIL_DELIVERY'      => $_ARRAYLANG['TXT_CRM_EMAIL_DELIVERY'],
 
                 'TXT_CRM_COMPANY_NAME'        =>    $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
+                'TXT_CRM_LASTUPDATE'          =>    $_ARRAYLANG['TXT_CRM_LASTUPDATE'],
                 'TXT_CRM_CUSTOMERTYPE'        =>    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
                 'TXT_CRM_SOCIAL_NETWORK'      =>    $_ARRAYLANG['TXT_CRM_SOCIAL_NETWORK'],
                 'TXT_CRM_GENDER'              =>    $_ARRAYLANG['TXT_CRM_GENDER'],
@@ -2554,6 +2567,16 @@ END;
                 'CONTACT_MENU_ACTIVE'         => ($contactType == 2) ? 'active' : '',
                 'CRM_REDIRECT_LINK'           => $redirect,
         ));
+
+        // If updated_date is null, its a new entry. If not, show the date of the
+        // last update.
+        if ($this->contact->updated_date) {
+            $this->_objTpl->touchBlock("crmLastUpdate");
+        }
+        // Only show amount input if it is enabled in settings
+        if ($settings['contact_amount_enabled']){
+            $this->_objTpl->touchBlock('customeramount' . $contactType);
+        }
         if ($contactType == 2) {    // If contact type eq to `contact`
             if ($settings['create_user_account']) {
                 $this->_objTpl->touchBlock("contactUserName");
@@ -2787,7 +2810,9 @@ END;
                 $this->crmInterfaceController->csvImport();
             break;
         case 'importoptions':
-                $this->crmInterfaceController->getImportOptions();
+                $importOptions = $this->crmInterfaceController->getImportOptions();
+                echo json_encode($importOptions);
+                exit();
             break;
         case 'save':
                 $this->crmInterfaceController->saveCsvData();
@@ -5856,6 +5881,7 @@ END;
      * @param array      $data        the data which are attached by uploader init method
      * @param integer    $uploadId    the upload id
      * @param array      $fileInfos   the file infos
+     * @param String     $response    the respose
      *
      * @return array the target paths
      */
@@ -5968,6 +5994,7 @@ END;
      * @param array      $data        the data which are attached by uploader init method
      * @param integer    $uploadId    the upload id
      * @param array      $fileInfos   the file infos
+     * @param String     $response    the respose
      *
      * @return array the target paths
      */
@@ -6041,6 +6068,7 @@ END;
      * @param array      $data        the data which are attached by uploader init method
      * @param integer    $uploadId    the upload id
      * @param array      $fileInfos   the file infos
+     * @param String     $response    the respose
      *
      * @return array the target paths
      */

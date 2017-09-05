@@ -117,6 +117,16 @@ class ViewManager
         'headlines8.html',
         'headlines9.html',
         'headlines10.html',
+        'headlines11.html',
+        'headlines12.html',
+        'headlines13.html',
+        'headlines14.html',
+        'headlines15.html',
+        'headlines16.html',
+        'headlines17.html',
+        'headlines18.html',
+        'headlines19.html',
+        'headlines20.html',
         'events.html',
         'events2.html',
         'events3.html',
@@ -127,6 +137,16 @@ class ViewManager
         'events8.html',
         'events9.html',
         'events10.html',
+        'events11.html',
+        'events12.html',
+        'events13.html',
+        'events14.html',
+        'events15.html',
+        'events16.html',
+        'events17.html',
+        'events18.html',
+        'events19.html',
+        'events20.html',
         'javascript.js',
         'buildin_style.css',
         'directory.html',
@@ -191,6 +211,31 @@ class ViewManager
      */
     protected $em;
 
+    /**
+     * Access id to view the viewManager section
+     */
+    const VIEW_MANAGER_ACCESS_ID = 21;
+
+    /**
+     * Access id to activate/deactivate themes
+     */
+    const ENABLE_THEMES_ACCESS_ID = 46;
+
+    /**
+     * Access id to add/edit themes
+     */
+    const EDIT_THEMES_ACCESS_ID = 47;
+
+    /**
+     * Access id to import and export themes
+     */
+    const THEMES_IMPORT_EXPORT_ACCESS_ID = 102;
+
+    /**
+     * Access id to use template editor
+     */
+    const TEMPLATE_EDITOR_ACCESS_ID = 204;
+
     function __construct()
     {
         global  $_ARRAYLANG, $objDatabase;
@@ -250,12 +295,20 @@ class ViewManager
     {
         global $objTemplate, $_ARRAYLANG;
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION","
-            <a href='index.php?cmd=ViewManager' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VIEWMANAGER_OVERVIEW']."</a>
-            <a href='index.php?cmd=ViewManager&amp;act=templates' class='".($this->act == 'templates' || $this->act == 'newDir' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VIEWMANAGER_TEMPLATE_EDITOR']."</a>
-            <a href='index.php?cmd=ViewManager&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_SETTINGS']."</a>"
-        );
+        $navigation = '';
+        if (\Permission::checkAccess(self::VIEW_MANAGER_ACCESS_ID, 'static', true)) {
+            $navigation .= "<a href='index.php?cmd=ViewManager' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VIEWMANAGER_OVERVIEW']."</a>";
+        }
+        if (   \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static', true)
+            || \Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static', true)
+        ) {
+            $navigation .= "<a href='index.php?cmd=ViewManager&amp;act=templates' class='".($this->act == 'templates' || $this->act == 'newDir' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VIEWMANAGER_TEMPLATE_EDITOR']."</a>";
+        }
+        if (\Permission::checkAccess(self::ENABLE_THEMES_ACCESS_ID, 'static', true)) {
+            $navigation .= "<a href='index.php?cmd=ViewManager&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_SETTINGS']."</a>";
+        }
 
+        $objTemplate->setVariable("CONTENT_NAVIGATION", $navigation);
     }
 
     /**
@@ -317,7 +370,7 @@ class ViewManager
     function viewManager() {
        global $_ARRAYLANG, $objTemplate, $objDatabase;
 
-       \Permission::checkAccess(47, 'static');
+       \Permission::checkAccess(self::VIEW_MANAGER_ACCESS_ID, 'static');
 
        $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_overview', 'skins_overview.html');
 
@@ -355,6 +408,14 @@ class ViewManager
                 $this->parseThemesData($theme, $subType);
             }
         }
+
+        \ContrexxJavascript::getInstance()->setVariable(array(
+            'view_manager_access'          => \Permission::checkAccess(self::VIEW_MANAGER_ACCESS_ID, 'static', true),
+            'enable_theme_access'          => \Permission::checkAccess(self::ENABLE_THEMES_ACCESS_ID, 'static', true),
+            'edit_theme_access'            => \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static', true),
+            'theme_import_export_access'   => \Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static', true),
+            'theme_template_editor_access' => \Permission::checkAccess(self::TEMPLATE_EDITOR_ACCESS_ID, 'static', true),
+        ), 'viewManager');
 
        $objTemplate->setGlobalVariable(array(
             'TXT_DELETE'                         => $_ARRAYLANG['TXT_DELETE'],
@@ -465,11 +526,11 @@ class ViewManager
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_settings', 'skins_settings.html');
         $tpl = isset($_REQUEST['tpl']) ? $_REQUEST['tpl'] : '';
         switch ($tpl) {
-            case 'examples':
-                $this->examples();
-                break;
             case 'manage':
                 $this->manage();
+                break;
+            case 'examples':
+                $this->examples();
                 break;
             default :
                 $this->_activate();
@@ -484,14 +545,19 @@ class ViewManager
     }
 
     /**
-     * show the overview page
-     * @access   public
+     * Show the Template Manager (advanced HTML/CSS/JS editor)
      */
     private function overview()
     {
         global $_ARRAYLANG, $objTemplate;
 
-        \Permission::checkAccess(47, 'static');
+        if (   !\Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static', true)
+            && \Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static', true)
+        ) {
+            $this->import();
+            return;
+        }
+        \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static');
 
         \JS::activate("cx");
         \JS::activate("jqueryui");
@@ -625,6 +691,9 @@ CODE;
             'TXT_THEME_FILE_FOLDER_NAME_EX_CONTENT' => $_ARRAYLANG['TXT_THEME_FILE_FOLDER_NAME_EX_CONTENT'],
         ));
 
+        if (!\Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static', true)) {
+            $objTemplate->hideBlock('view_manager_import_navigation');
+        }
     }
 
     /**
@@ -636,7 +705,7 @@ CODE;
     {
         global $_ARRAYLANG, $objTemplate;
 
-        \Permission::checkAccess(102, 'static');
+        \Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static');
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_import', 'skins_import.html');
         $this->pageTitle = $_ARRAYLANG['TXT_THEME_IMPORT'];
@@ -682,16 +751,19 @@ CODE;
             'THEMES_UPLOADER_ID'     => $uploader->getId(),
         ));
 
+        if (!\Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static', true)) {
+            $objTemplate->hideBlock('view_manager_manage_theme');
+        }
     }
 
     /**
-     * set up Import/Export page
-     * call specific function depending on $_GET
+     * Export theme as ZIP archive
+     *
      * @access private
      */
     private function manage()
     {
-        \Permission::checkAccess(102, 'static');
+        \Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static');
 
         //check GETs for action
         $themeId = isset($_GET['export']) ? contrexx_input2raw($_GET['export']) : 0;
@@ -953,7 +1025,7 @@ CODE;
                 $themeInfoContent = $archive->extract(PCLZIP_OPT_BY_NAME, $themeDirectoryFromArchive .  \Cx\Core\View\Model\Entity\Theme::THEME_COMPONENT_FILE, PCLZIP_OPT_EXTRACT_AS_STRING);
                 if (!empty($themeInfoContent)) {
                     $yaml      = new \Symfony\Component\Yaml\Yaml();
-                    $themeInfo = $yaml->load($themeInfoContent[0]['content']);
+                    $themeInfo = $yaml->parse($themeInfoContent[0]['content']);
                     $themeName = isset($themeInfo['DlcInfo']['name']) ? $themeInfo['DlcInfo']['name'] : $themeName;
                 }
 
@@ -987,7 +1059,7 @@ CODE;
                 if ($yamlFile) {
                     $objFile = new \Cx\Lib\FileSystem\File($yamlFile);
                     $yaml = new \Symfony\Component\Yaml\Yaml();
-                    $themeInformation = $yaml->load($objFile->getData());
+                    $themeInformation = $yaml->parse($objFile->getData());
                     $themeName = $themeInformation['DlcInfo']['name'];
                 }
 
@@ -1242,7 +1314,7 @@ CODE;
     {
         global $objDatabase, $_ARRAYLANG, $objTemplate;
 
-        \Permission::checkAccess(46, 'static');
+        \Permission::checkAccess(self::ENABLE_THEMES_ACCESS_ID, 'static');
 
         $objTemplate->addBlockfile('SETTINGS_CONTENT', 'skins_activate', 'skins_activate.html');
         $this->pageTitle = $_ARRAYLANG['TXT_OVERVIEW'];
@@ -1338,7 +1410,7 @@ CODE;
     {
         global $_ARRAYLANG, $_CONFIG, $objTemplate;
 
-        \Permission::checkAccess(47, 'static');
+        \Permission::checkAccess(self::ENABLE_THEMES_ACCESS_ID, 'static');
 
         // initialize variables
         $objTemplate->addBlockfile('SETTINGS_CONTENT', 'skins_examples', 'skins_examples.html');
@@ -1368,7 +1440,7 @@ CODE;
     {
         global $_ARRAYLANG, $objTemplate;
 
-        \Permission::checkAccess(47, 'static');
+        \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static');
 
         $this->webPath = $this->arrWebPaths[0];
 
@@ -1395,6 +1467,9 @@ CODE;
         ));
 
         $this->checkTable($this->oldTable);
+        if (!\Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static', true)) {
+            $objTemplate->hideBlock('view_manager_import_navigation');
+        }
 //      $this->newdir();
     }
 
@@ -1416,7 +1491,7 @@ CODE;
     {
         global $_ARRAYLANG;
 
-        \Permission::checkAccess(47, 'static');
+        \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static');
 
         $themeName          = !empty($_POST['dbName']) && !stristr($_POST['dbName'], '..') ? contrexx_input2raw($_POST['dbName']) : null;
         $copyFromTheme      = !empty($_POST['fromTheme']) && !stristr($_POST['fromTheme'], '..') ? contrexx_input2raw($_POST['fromTheme']) : null;
@@ -1609,7 +1684,7 @@ CODE;
      */
     function update()
     {
-        \Permission::checkAccess(47, 'static');
+        \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static');
 
         $themes = !empty($_POST['themes']) && !stristr($_POST['themes'], '..') ? contrexx_input2raw($_POST['themes']) : null;
         $themesPage = !empty($_POST['themesPage']) &&  !stristr($_POST['themesPage'], '..') ? contrexx_input2raw($_POST['themesPage']) : null;
@@ -1650,6 +1725,10 @@ CODE;
                $objFile->touch();
             }
             $objFile->write($pageContent);
+
+            // temporary hotfix for google chrome
+            // remove in case google chrome will no longer throw an ERR_BLOCKED_BY_XSS_AUDITOR exception
+            header('X-XSS-Protection: 0');
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
         }
