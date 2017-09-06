@@ -112,6 +112,13 @@ class Sigma extends \HTML_Template_Sigma {
         // remove block
         $this->_removeBlockData($block, false);
 
+        // remove block from parent block
+        foreach ($this->_children as &$children) {
+            if (isset($children[$block])) {
+                unset($children[$block]);
+            }
+        }
+
         // Renew variable list
         return $this->_buildBlockVariables();
     }
