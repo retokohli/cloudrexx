@@ -2561,7 +2561,7 @@ class NewsletterManager extends NewsletterLib
         $objValidator = new \FWValidator();
 
         if (!empty($_POST['newsletter_test_mail']) && $objValidator->isEmail($_POST['newsletter_test_mail'])) {
-            if ($this->SendEmail(0, $mailId, $_POST['newsletter_test_mail'], 0, self::USER_TYPE_ACCESS) !== false) {
+            if ($this->SendEmail(0, $mailId, $_POST['newsletter_test_mail'], 0, self::USER_TYPE_ACCESS, false) !== false) {
                 self::$strOkMessage = str_replace("%s", $_POST["newsletter_test_mail"], $_ARRAYLANG['TXT_TESTMAIL_SEND_SUCCESSFUL']);
                 return true;
             } else {
@@ -2896,7 +2896,7 @@ class NewsletterManager extends NewsletterLib
                     if ($tmpSending->valid()) {
                         foreach ($tmpSending as $send) {
                             $beforeSend = time();
-                            $this->SendEmail($send['id'], $mailId, $send['email'], 1, $send['type']);
+                            $this->SendEmail($send['id'], $mailId, $send['email'], 1, $send['type'], true);
 
                             // timeout prevention
                             if (time() >= $timeout - (time() - $beforeSend) * 2) {
@@ -3132,15 +3132,33 @@ class NewsletterManager extends NewsletterLib
 
 
     /**
-     * Send the email
-     * @param      int $UserID
-     * @param      int $NewsletterID
-     * @param      string $TargetEmail
-     * @param      string $type
+     * Deliver an email campaign to a recipient
+     *
+     * @param      int $UserID  ID of the recipient to receive the email
+     *                      campaign.
+     * @param      int $NewsletterID ID of the email campaign to deliver
+     * @param      string $TargetEmail Email of the recipient to receive the
+     *                      email campaign.
+     * @param      boolean  $TmpEntry   If set to TRUE, then the send operation
+     *                      will execute a live delivery to the recipient.
+     *                      Otherwise if set to FALSE, then the send operation
+     *                      performs a test delivery to the recipient.
+     * @param      string $type Type of the recipient to receive the email
+     *                      campaign. One of the following:
+     *                      - NewsletterManager::USER_TYPE_NEWSLETTER (default)
+     *                      - NewsletterManager::USER_TYPE_ACCESS
+     *                      - NewsletterManager::USER_TYPE_CORE
+     * @param      boolean  $sealDelivery If set to TRUE, the email campaign
+     *                      will be marked as sent in the case the campaign has
+     *                      been delivered (or attempted to) to all recipients.
+     *                      If set to FALSE, the delivery check will be skipped
+     *                      and the campaign will not be marked as sent (in case
+     *                      it hasn't been so anyway already). Defaults to TRUE.
      */
-    function SendEmail(
+    protected function SendEmail(
         $UserID, $NewsletterID, $TargetEmail, $TmpEntry,
-        $type=self::USER_TYPE_NEWSLETTER
+        $type=self::USER_TYPE_NEWSLETTER,
+        $sealDelivery = true
     ) {
         global $objDatabase, $_ARRAYLANG, $_DBCONFIG;
 
@@ -3243,13 +3261,16 @@ class NewsletterManager extends NewsletterLib
                     UPDATE ".DBPREFIX."module_newsletter
                        SET count=count+1
                      WHERE id=$NewsletterID");
-                $queryCheck     = "SELECT 1 FROM ".DBPREFIX."module_newsletter_tmp_sending where newsletter=".$NewsletterID." and sendt=0";
-                $objResultCheck = $objDatabase->SelectLimit($queryCheck, 1);
-                if ($objResultCheck->RecordCount() == 0) {
-                    $objDatabase->Execute("
-                        UPDATE ".DBPREFIX."module_newsletter
-                           SET status=1
-                         WHERE id=$NewsletterID");
+                // mark email campaign as sent in case it has been delivered (or attempted to) to all recipients
+                if ($sealDelivery) {
+                    $queryCheck     = "SELECT 1 FROM ".DBPREFIX."module_newsletter_tmp_sending where newsletter=".$NewsletterID." and sendt=0";
+                    $objResultCheck = $objDatabase->SelectLimit($queryCheck, 1);
+                    if ($objResultCheck->RecordCount() == 0) {
+                        $objDatabase->Execute("
+                            UPDATE ".DBPREFIX."module_newsletter
+                               SET status=1
+                             WHERE id=$NewsletterID");
+                    }
                 }
             } /*elseif ($mail->error_count) {
                 if (strstr($mail->ErrorInfo, 'authenticate')) {
@@ -4431,7 +4452,8 @@ $WhereStatement = '';
     {
         global $objDatabase, $_ARRAYLANG;
 
-        $objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Newsletter/View/Template/Backend');
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objTpl = new \Cx\Core\Html\Sigma($cx->getCodeBaseModulePath() . '/Newsletter/View/Template/Backend');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($objTpl);
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -4564,8 +4586,7 @@ $WhereStatement = '';
                                 $recipientId  = $objRecipient->fields['id'];
 
                                 $this->insertTmpEmail($recipientSendEmailId, $arrRecipient['email'], self::USER_TYPE_NEWSLETTER);
-// setting TmpEntry=1 will set the newsletter status=1, this will force an imediate stop in the newsletter send procedere.
-                                if ($this->SendEmail($recipientId, $recipientSendEmailId, $arrRecipient['email'], 1, self::USER_TYPE_NEWSLETTER) == false) {
+                                if ($this->SendEmail($recipientId, $recipientSendEmailId, $arrRecipient['email'], 1, self::USER_TYPE_NEWSLETTER, false) == false) {
                                     self::$strErrMessage .= $_ARRAYLANG['TXT_SENDING_MESSAGE_ERROR'];
                                 } else {
 // TODO: Unused
@@ -4586,6 +4607,8 @@ $WhereStatement = '';
                                         .$_ARRAYLANG['TXT_NEW_ADDED_EMAILS'].": ".$NewEmails;
 
                 $objImport->initFileSelectTemplate($objTpl);
+                $objTpl->setVariable('IMPORT_ADD_HELP', $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_SEND_MAIL_DESC']);
+                $objTpl->parse('additional_tooltip');
                 $objTpl->setVariable(array(
                     "IMPORT_ACTION" => "index.php?cmd=Newsletter&amp;act=users&amp;tpl=import",
                     'TXT_FILETYPE' => $_ARRAYLANG['TXT_NEWSLETTER_FILE_TYPE'],
@@ -4616,6 +4639,8 @@ $WhereStatement = '';
             }
 
             $objImport->initFileSelectTemplate($objTpl);
+            $objTpl->setVariable('IMPORT_ADD_HELP', $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_SEND_MAIL_DESC']);
+            $objTpl->parse('additional_tooltip');
             $objTpl->setVariable(array(
                 "IMPORT_ACTION" => "index.php?cmd=Newsletter&amp;act=users&amp;tpl=import",
                 'TXT_FILETYPE' => $_ARRAYLANG['TXT_NEWSLETTER_FILE_TYPE'],
@@ -5081,8 +5106,7 @@ $WhereStatement = '';
                                     $recipientId  = $objRecipient->fields['id'];
 
                                     $this->insertTmpEmail($recipientSendEmailId, $recipientEmail, self::USER_TYPE_NEWSLETTER);
-// setting TmpEntry=1 will set the newsletter status=1, this will force an imediate stop in the newsletter send procedere.
-                                    if ($this->SendEmail($recipientId, $recipientSendEmailId, $recipientEmail, 1, self::USER_TYPE_NEWSLETTER) == false) {
+                                    if ($this->SendEmail($recipientId, $recipientSendEmailId, $recipientEmail, 1, self::USER_TYPE_NEWSLETTER, false) == false) {
                                         // fall back to old recipient id, if any error occurs on copy
                                         $recipientId = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
                                         self::$strErrMessage .= $_ARRAYLANG['TXT_SENDING_MESSAGE_ERROR'];
