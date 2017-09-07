@@ -78,6 +78,8 @@ class NewsLibrary
      */
     static $useThumbnails;
 
+    public $newsMetaKeys = '';
+
     /**
      * Initializes the NestedSet object
      * which is needed to manage the news categories.
@@ -206,6 +208,7 @@ class NewsLibrary
      */
     function _buildNewsCategories($catId, $categoriesLang, $langId = null)
     {
+        $html = '';
         if ($this->categoryExists($catId)) {
             if ($langId === null) {
                 $langId = FRONTEND_LANG_ID;
