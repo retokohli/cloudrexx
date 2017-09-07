@@ -69,7 +69,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     * @param array $cmd CMD separated by slashes
     * @global array $_ARRAYLANG Language data
     */
-    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd, &$isSingle = false) {
         global $_ARRAYLANG;
 
         // Parse entity view generation pages
