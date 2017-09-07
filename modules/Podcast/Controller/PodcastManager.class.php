@@ -477,10 +477,10 @@ class PodcastManager extends PodcastLib
                 }
             }
         } elseif ($categoryId > 0 && ($arrCategory = $this->_getCategory($categoryId)) !== false) {
-            $categoryTitle = $arrCategory['title'];
-            $categoryDescription = $arrCategory['description'];
+            $categoryTitle = &$arrCategory['title'];
+            $categoryDescription = &$arrCategory['description'];
             $categoryAssociatedLangIds = $this->_getLangIdsOfCategory($categoryId);
-            $categoryStatus = $arrCategory['status'];
+            $categoryStatus = &$arrCategory['status'];
         }
 
         $this->_pageTitle = $categoryId > 0 ? $_ARRAYLANG['TXT_PODCAST_MODIFY_CATEGORY'] : $_ARRAYLANG['TXT_PODCAST_ADD_NEW_CATEGORY'];
