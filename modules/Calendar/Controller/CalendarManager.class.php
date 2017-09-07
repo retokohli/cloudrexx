@@ -1625,6 +1625,7 @@ class CalendarManager extends CalendarLibrary
         $this->_objTpl->loadTemplateFile('module_calendar_registrations.html');
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($eventId));
 
+        $regId = null;
         $getTpl = isset($_GET['tpl']) ? $_GET['tpl'] : 'r';
         if (isset($_GET['delete'])) {
             $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration($objEvent->registrationForm, $_GET['delete']);
@@ -1659,10 +1660,12 @@ class CalendarManager extends CalendarLibrary
             }
         }
 
-        if ($status) {
-            $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_'.$messageVar];
-        } else {
-            $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_'.$messageVar];
+        if (isset($status)) {
+            if ($status) {
+                $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_'.$messageVar];
+            } else {
+                $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_'.$messageVar];
+            }
         }
 
         $this->_objTpl->setGlobalVariable(array(

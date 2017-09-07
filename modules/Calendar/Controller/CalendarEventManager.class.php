@@ -362,7 +362,13 @@ class CalendarEventManager extends CalendarLibrary
                         }
                     }
 
-                    if ($checkFutureEvents && $objEvent->seriesStatus == 1 && $_GET['cmd'] != 'my_events') {
+                    if ($checkFutureEvents &&
+                        $objEvent->seriesStatus == 1 &&
+                        (
+                            !isset($_GET['cmd']) ||
+                            $_GET['cmd'] != 'my_events'
+                        )
+                    ) {
                         $additionalRecurrences = $objEvent->seriesData['seriesAdditionalRecurrences'];
                         self::_setNextSeriesElement($objEvent, $additionalRecurrences);
                     }
