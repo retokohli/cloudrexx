@@ -251,6 +251,15 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             $matches = array();
             preg_match($cacheFileRegex, $file, $matches);
             // @todo: Make header cache user based
+
+            // $matches[2] is not set if the following conditions are all true:
+            // 1. We have no session
+            // 2. Request is not user-based
+            // 3. We have no page (request to without URI-Slug, for example: /de/)
+            if (!isset($matches[2])) {
+                $matches[2] = '';
+            }
+
             $headerFile = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $matches[1] . '_h' . $matches[2];
             if (file_exists($headerFile)) {
                 $headers = unserialize(file_get_contents($headerFile));
