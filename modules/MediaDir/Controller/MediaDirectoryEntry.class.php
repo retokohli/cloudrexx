@@ -553,7 +553,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                 }
                             } catch (MediaDirectoryEntryException $e) {}
                             $objTpl->setVariable(array(
-                                    $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
+                                $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
                                 $this->moduleLangVar.'_ENTRY_ID' =>  $arrEntry['entryId'],
                                 $this->moduleLangVar.'_ENTRY_TITLE' => contrexx_raw2xhtml($arrEntry['entryFields'][0]),
                                 $this->moduleLangVar.'_ENTRY_TITLE_URL_ENCODED' => urlencode($arrEntry['entryFields'][0]),
@@ -561,7 +561,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                 $this->moduleLangVar.'_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
                                 $this->moduleLangVar.'_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
                                 $this->moduleLangVar.'_ENTRY_CATEGORIES' =>  $this->getCategoriesLevels(1, $arrEntry['entryId']),
-                                    $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId']),
+                                $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId']),
                                 $this->moduleLangVar.'_ENTRY_HITS' =>  $arrEntry['entryHits'],
                                 $this->moduleLangVar.'_ENTRY_POPULAR_HITS' =>  $arrEntry['entryPopularHits'],
                                 $this->moduleLangVar.'_ENTRY_DETAIL_URL' => $strDetailUrl,
@@ -1628,7 +1628,9 @@ JSCODE;
         return $strDropdownUsers;
     }
 
-    function parseCategoryLevels($intType, $intEntryId=null, $objTpl) {
+    public function parseCategoryLevels($intType, $intEntryId=null, $objTpl) {
+        $categoryId = null;
+        $levelId = null;
         if ($intType == 1) {
             // categories
             $objCategoriesLevels = $this->getCategories($intEntryId);
@@ -1645,9 +1647,18 @@ JSCODE;
 
         if ($objCategoriesLevels !== false && $objCategoriesLevels->RecordCount() > 0) {
             while(!$objCategoriesLevels->EOF) {
+                // assign ID to related variable based on the requested type (category or level)
+                if ($intType == 1) {
+                    $categoryId = $objCategoriesLevels->fields['elm_id'];
+                } else {
+                    $levelId = $objCategoriesLevels->fields['elm_id'];
+                }
+
                 $objTpl->setVariable(array(
-                    $this->moduleLangVar . '_ENTRY_' . $list . '_ID' => $objCategoriesLevels->fields['elm_id'],
-                    $this->moduleLangVar . '_ENTRY_' . $list . '_NAME' => $objCategoriesLevels->fields['elm_name'],
+                    $this->moduleLangVar . '_ENTRY_' . $list . '_ID'        => $objCategoriesLevels->fields['elm_id'],
+                    $this->moduleLangVar . '_ENTRY_' . $list . '_NAME'      => contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']),
+                    $this->moduleLangVar . '_ENTRY_' . $list . '_LINK'      => '<a href="'.$this->getAutoSlugPath(null, $categoryId, $levelId).'">'.contrexx_raw2xhtml($objCategoriesLevels->fields['elm_name']).'</a>',
+                    $this->moduleLangVar . '_ENTRY_' . $list . '_LINK_SRC'  => $this->getAutoSlugPath(null, $categoryId, $levelId),
                 ));
                 $objTpl->parse('mediadir_' . strtolower($list));
                 $objCategoriesLevels->MoveNext();
@@ -1658,17 +1669,18 @@ JSCODE;
     }
 
 
-    function getCategories($intEntryId = null) {
+    protected function getCategories($intEntryId = null) {
         global $objDatabase, $_LANGID;
         $query = "SELECT
             cat_rel.`category_id` AS `elm_id`,
             cat_name.`category_name` AS `elm_name`
           FROM
-            ".DBPREFIX."module_mediadir_rel_entry_categories AS cat_rel,
-            ".DBPREFIX."module_mediadir_categories_names AS cat_name
-          WHERE
+            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS cat_rel
+          INNER JOIN
+            ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names AS cat_name
+          ON
             cat_rel.`category_id` = cat_name.`category_id`
-          AND
+          WHERE
             cat_rel.`entry_id` = ?
           AND
             cat_name.`lang_id` = ?
@@ -1680,17 +1692,18 @@ JSCODE;
     }
 
 
-    function getLevels($intEntryId = null) {
+    protected function getLevels($intEntryId = null) {
         global $objDatabase, $_LANGID;
         $query = "SELECT
             level_rel.`level_id` AS `elm_id`,
             level_name.`level_name` AS `elm_name`
           FROM
-            ".DBPREFIX."module_mediadir_rel_entry_levels AS level_rel,
-            ".DBPREFIX."module_mediadir_level_names AS level_name
-          WHERE
+            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS level_rel
+          INNER JOIN
+            ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names AS level_name
+          ON
             level_rel.`level_id` = level_name.`level_id`
-          AND
+          WHERE
             level_rel.`entry_id` = ?
           AND
             level_name.`lang_id` = ?
@@ -1838,6 +1851,10 @@ JSCODE;
                 $pageUrlResult = $this->getDetailUrlOfEntry($entry, true);
             } catch (MediaDirectoryEntryException $e) {
                 // if entry has no page to be listed on, then dont show it in the result
+                continue;
+            }
+
+            if (!$pageUrlResult) {
                 continue;
             }
 

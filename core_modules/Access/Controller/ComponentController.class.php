@@ -35,7 +35,6 @@
  */
 
 namespace Cx\Core_Modules\Access\Controller;
-use Cx\Core_Modules\Access\Model\Event\AccessEventListener;
 
 /**
  * Main controller for Access
@@ -205,8 +204,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * $this->cx->getEvents()->addEventListener($eventName, $listener);
      */
     public function registerEventListeners() {
-        $eventListener = new AccessEventListener($this->cx);
-        $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
+        $evm = $this->cx->getEvents();
+        $eventListener = new \Cx\Core_Modules\Access\Model\Event\AccessEventListener($this->cx);
+        $evm->addEventListener('mediasource.load', $eventListener);
+        // locale event listener
+        $localeLocaleEventListener = new \Cx\Core_Modules\Access\Model\Event\LocaleLocaleEventListener($this->cx);
+        $evm->addModelListener('postPersist', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
+        $evm->addModelListener('preRemove', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
     }
 
     /**
@@ -248,13 +252,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'access_currently_online_member_list',
             'access_last_active_member_list',
             'access_latest_registered_member_list',
-            'access_birthday_member_list'
+            'access_birthday_member_list',
+            'access_next_birthday_member_list',
         );
         foreach ($widgetNames as $widgetName) {
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
                 $widgetName,
                 true
+            );
+            $widget->setEsiVariable(
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
             );
             $widgetController->registerWidget(
                 $widget
