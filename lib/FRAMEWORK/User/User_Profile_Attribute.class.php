@@ -741,13 +741,9 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     }
 
 
-    function getById($id)
+    public function getById($id)
     {
-        if (CONTREXX_PHP5) {
-            $objAttribute = clone $this;
-        } else {
-            $objAttribute = $this;
-        }
+        $objAttribute = clone $this;
         $objAttribute->arrAttributes = &$this->arrAttributes;
         $objAttribute->arrAttributeTree = &$this->arrAttributeTree;
         $objAttribute->arrAttributeRelations = &$this->arrAttributeRelations;
@@ -758,7 +754,9 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
         if ($objAttribute->load($id)) {
             return $objAttribute;
         }
-        $this->clean();
+
+        // reset attribute (ID=0)
+        $objAttribute->clean();
         return $objAttribute;
     }
 
@@ -860,7 +858,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
      * Clean attribute
      *
      */
-    function clean()
+    public function clean()
     {
         $this->id = 0;
         $this->type = $this->defaultAttributeType;
