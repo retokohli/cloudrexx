@@ -608,6 +608,7 @@ CODE;
 
         $objUser->objAttribute->reset();
         while (!$objUser->objAttribute->EOF) {
+            $value = '';
             $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
 
             switch ($objAttribute->getType())
@@ -616,13 +617,22 @@ CODE;
                     if ($objAttribute->isCoreAttribute()) {
                         foreach ($objAttribute->getChildren() as $childAttributeId) {
                             $objChildAtrribute = $objAttribute->getById($childAttributeId);
+                            if (!$objChildAtrribute->getId()) {
+                                continue;
+                            }
                             if ($objChildAtrribute->getMenuOptionValue() == $objUser->getProfileAttribute($objAttribute->getId())) {
                                 $value = $objChildAtrribute->getName();
                                 break;
                             }
                         }
                     } else {
+                        if (!$objUser->getProfileAttribute($objAttribute->getId())) {
+                            break;
+                        }
                         $objSelectedAttribute = $objAttribute->getById($objUser->getProfileAttribute($objAttribute->getId()));
+                        if (!$objSelectedAttribute->getId()) {
+                            break;
+                        }
                         $value = $objSelectedAttribute->getName();
                     }
                 break;
