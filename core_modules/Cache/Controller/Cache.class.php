@@ -246,21 +246,22 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         }
         $file = current($files);
 
+        // load headers
+        $matches = array();
+        preg_match($cacheFileRegex, $file, $matches);
+        // @todo: Make header cache user based
+
+        // $matches[2] is not set if the following conditions are all true:
+        // 1. We have no session
+        // 2. Request is not user-based
+        // 3. We have no page (request to without URI-Slug, for example: /de/)
+        if (!isset($matches[2])) {
+            $matches[2] = '';
+        }
+
+        $headerFile = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $matches[1] . '_h' . $matches[2];
+
         if (filemtime($file) > (time() - $this->intCachingTime)) {
-            // load headers
-            $matches = array();
-            preg_match($cacheFileRegex, $file, $matches);
-            // @todo: Make header cache user based
-
-            // $matches[2] is not set if the following conditions are all true:
-            // 1. We have no session
-            // 2. Request is not user-based
-            // 3. We have no page (request to without URI-Slug, for example: /de/)
-            if (!isset($matches[2])) {
-                $matches[2] = '';
-            }
-
-            $headerFile = $this->strCachePath . static::CACHE_DIRECTORY_OFFSET_PAGE . $matches[1] . '_h' . $matches[2];
             if (file_exists($headerFile)) {
                 $headers = unserialize(file_get_contents($headerFile));
                 if (is_array($headers)) {
@@ -307,8 +308,10 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             });
             exit;
         } else {
-            $headerFile = new \Cx\Lib\FileSystem\File($headerFile);
-            $headerFile->delete();
+            if (file_exists($headerFile)) {
+                $headerFile = new \Cx\Lib\FileSystem\File($headerFile);
+                $headerFile->delete();
+            }
             $file = new \Cx\Lib\FileSystem\File($file);
             $file->delete();
         }
