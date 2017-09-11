@@ -4511,6 +4511,7 @@ INSERT INTO `contrexx_module_knowledge_settings` (`id`, `name`, `value`) VALUES 
 INSERT INTO `contrexx_module_knowledge_settings` (`id`, `name`, `value`) VALUES (14,'best_rated_siderbar_template','');
 INSERT INTO `contrexx_module_knowledge_settings` (`id`, `name`, `value`) VALUES (15,'most_read_amount','5');
 INSERT INTO `contrexx_module_knowledge_settings` (`id`, `name`, `value`) VALUES (16,'best_rated_amount','5');
+INSERT INTO `contrexx_module_knowledge_settings` (`id`, `name`, `value`) VALUES (17,'show_all_langs','0');
 INSERT INTO `contrexx_module_knowledge_tags` (`id`, `name`, `lang`) VALUES (1,'comvation',1);
 INSERT INTO `contrexx_module_knowledge_tags` (`id`, `name`, `lang`) VALUES (2,'thun',1);
 INSERT INTO `contrexx_module_knowledge_tags` (`id`, `name`, `lang`) VALUES (3,'cms',1);
