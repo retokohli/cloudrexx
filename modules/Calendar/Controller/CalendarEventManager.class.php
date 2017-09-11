@@ -264,7 +264,7 @@ class CalendarEventManager extends CalendarLibrary
                 JOIN ' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_events_categories AS rel_categories
                 ON event.id=rel_categories.event_id';
         }
-        if ($objInit->mode === 'frontend') {
+        if ($objInit->mode !== \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
             if($this->arrSettings['showEventsOnlyInActiveLanguage'] == 1) {
                 $showIn_where = "
                     AND FIND_IN_SET('" . $_LANGID . "', event.show_in)>0";
@@ -352,8 +352,8 @@ class CalendarEventManager extends CalendarLibrary
                         continue;
                     }
                 }
-
-                if($objInit->mode == 'frontend' || $this->showSeries) {
+                if ($objInit->mode !== \Cx\Core\Core\Controller\Cx::MODE_BACKEND
+                    || $this->showSeries) {
                     $checkFutureEvents = true;
                     if(self::_addToEventList($objEvent)) {
                         $this->eventList[] = $objEvent;
@@ -389,7 +389,7 @@ class CalendarEventManager extends CalendarLibrary
     {
         global $objDatabase, $objInit, $_LANGID, $_CONFIG;
 
-        if($objInit->mode == 'frontend') {
+        if ($objInit->mode !== \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
             $this->getSettings();
 
             $objHostManager = new \Cx\Modules\Calendar\Controller\CalendarHostManager($this->categoryId, true, true);
@@ -599,7 +599,8 @@ class CalendarEventManager extends CalendarLibrary
         $this->eventList[] = $objEvent;
 
         if (   $objEvent->seriesStatus == 1
-            && ($forceCalculateSeries || $objInit->mode == 'frontend')
+            && ($forceCalculateSeries
+            || $objInit->mode !== \Cx\Core\Core\Controller\Cx::MODE_BACKEND)
         ) {
             $additionalRecurrences = $objEvent->seriesData['seriesAdditionalRecurrences'];
             self::_setNextSeriesElement($objEvent, $additionalRecurrences);
@@ -674,7 +675,8 @@ class CalendarEventManager extends CalendarLibrary
         // invite of an invitee
         $invite = null;
 
-        if ($objInit->mode != 'frontend' || $eventId == null || $eventStartDate == null) {
+        if ($objInit->mode === \Cx\Core\Core\Controller\Cx::MODE_BACKEND
+            || $eventId == null || $eventStartDate == null) {
             return;
         }
 
@@ -2187,8 +2189,9 @@ class CalendarEventManager extends CalendarLibrary
 
             //load events
             foreach ($this->eventList as $objEvent) {
-
-                if ($objEvent->access && $objInit->mode == 'frontend' && !\Permission::checkAccess(116, 'static', true)) {
+                if ($objEvent->access
+                    && $objInit->mode !== \Cx\Core\Core\Controller\Cx::MODE_BACKEND
+                    && !\Permission::checkAccess(116, 'static', true)) {
                     continue;
                 }
                 $startdate     = $this->getUserDateTimeFromIntern($objEvent->startDate);
