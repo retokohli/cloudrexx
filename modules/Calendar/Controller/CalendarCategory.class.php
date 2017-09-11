@@ -634,6 +634,30 @@ class CalendarCategory extends CalendarLibrary
     }
 
     /**
+     * Return the names of all categories associated with the given event
+     * @param   \Cx\Modules\Calendar\Controller\CalendarEvent   $event
+     * @return  array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    public static function getNamesByEvent(CalendarEvent $event)
+    {
+        $category_names = [];
+        $category_ids = $event->category_ids;
+        if (!is_array($category_ids)) {
+            return $category_names;
+        }
+        foreach ($category_ids as $category_id) {
+            $category =
+                new \Cx\Modules\Calendar\Controller\CalendarCategory(
+                    $category_id);
+            if ($category) {
+                $category_names[] = $category->name;
+            }
+        }
+        return $category_names;
+    }
+
+    /**
      * Update the Category-Event relation
      * @global  \ADOConnection  $objDatabase
      * @param   integer         $event_id

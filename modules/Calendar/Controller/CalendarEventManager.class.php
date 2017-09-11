@@ -1294,13 +1294,9 @@ class CalendarEventManager extends CalendarLibrary
 
         //if($objInit->mode == 'backend') {
             $i=0;
-            foreach ($this->eventList as $key => $objEvent) {
-
-                $category = CalendarCategory::getCurrentCategory(null, $objEvent);
-                $objCategory = new \Cx\Modules\Calendar\Controller\CalendarCategory($category->id);
-
+            foreach ($this->eventList as $objEvent) {
+                $category_names = CalendarCategory::getNamesByEvent($objEvent);
                 $showIn = explode(",",$objEvent->showIn);
-
                 $languages = '';
                 if (count(\FWLanguage::getActiveFrontendLanguages()) > 1) {
                     $langState = array();
@@ -1425,7 +1421,8 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_END_DATE'       => $this->format2userDate($endDate),
                     $this->moduleLangVar.'_EVENT_END_TIME'       => $this->format2userTime($endDate),
                     $this->moduleLangVar.'_EVENT_LANGUAGES'      => $languages,
-                    $this->moduleLangVar.'_EVENT_CATEGORY'       => $objCategory->name,
+                    $this->moduleLangVar.'_EVENT_CATEGORY'       =>
+                        implode(', ', $category_names),
                     $this->moduleLangVar.'_EVENT_EXPORT_LINK'    => $hostUri.'index.php?section='.$this->moduleName.'&amp;export='.$objEvent->id,
                     $this->moduleLangVar.'_EVENT_EXPORT_ICON'    => '<a href="'.$hostUri.'index.php?section='.$this->moduleName.'&amp;export='.$objEvent->id.'"><img src="modules/Calendar/View/Media/ical_export.gif" border="0" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" /></a>',
                     $this->moduleLangVar.'_EVENT_EDIT_LINK'      => $editLink,
