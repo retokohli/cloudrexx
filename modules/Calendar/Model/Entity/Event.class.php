@@ -439,6 +439,7 @@ class Event extends \Cx\Model\Base\EntityBase {
         $this->eventFields = new \Doctrine\Common\Collections\ArrayCollection();
         $this->registrations = new \Doctrine\Common\Collections\ArrayCollection();
         $this->categories = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->invite = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -1933,6 +1934,16 @@ class Event extends \Cx\Model\Base\EntityBase {
     public function setInvite($invite)
     {
         $this->invite= $invite;
+    }
+
+    /**
+     * Add invites
+     *
+     * @param Cx\Modules\Calendar\Model\Entity\Invite $invite
+     */
+    public function addInvite(\Cx\Modules\Calendar\Model\Entity\Invite $invite)
+    {
+        $this->invite[] = $invite;
     }
 
     /**

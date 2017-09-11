@@ -63,23 +63,29 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
     public function parseWidget($name, $template, $response, $params)
     {
         if ($name === 'CHARSET') {
-            $template->setVariable($name, \Env::get('init')->getFrontendLangCharset());
+            $template->setVariable($name, CONTREXX_CHARSET);
             return;
         }
 
         if ($name == 'ACTIVE_LANGUAGE_NAME') {
             $template->setVariable(
                 $name,
-                \FWLanguage::getLanguageCodeById($params['lang'])
+                $params['locale']->getShortForm()
             );
             return;
         }
 
         $matches = null;
-        if (preg_match('/^LANG_SELECTED_([A-Z]{2})$/', $name, $matches)) {
+        if (
+            preg_match(
+                '/^LANG_SELECTED_([A-Z]{1,2}(?:-[A-Z]{2,4})?)$/',
+                $name,
+                $matches
+            )
+        ) {
             $selected = '';
-            $langCode = \FWLanguage::getLanguageCodeById($params['lang']);
-            if (strtolower($matches[1]) === $langCode) {
+            $langCode = $params['locale']->getShortForm();
+            if ($matches[1] === strtoupper($langCode)) {
                 $selected = 'selected';
             }
             $template->setVariable($name, $selected);
@@ -103,11 +109,30 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         }
 
         $langMatches = null;
-        if (preg_match('/^LANG_CHANGE_([A-Z]{2})$/', $name, $langMatches)) {
-            $langId = \FWLanguage::getLangIdByIso639_1($langMatches[1]);
+        if (
+            preg_match(
+                '/^LANG_CHANGE_([A-Z]{1,2}(?:-[A-Z]{2,4})?)$/',
+                $name,
+                $langMatches
+            )
+        ) {
+            // make iso1 part of code lowercase (e.g DE-CH --> de-CH)
+            $code = explode('-', $langMatches[1]);
+            $code[0] = strtolower($code[0]);
+            $code = implode('-', $code);
+
+            $locale = $this->cx->getDb()->getEntityManager()
+                ->getRepository('\Cx\Core\Locale\Model\Entity\Locale')
+                ->findOneByCode($code);
+
+            // return early and don't set variable if locale doesn't exist
+            if (!$locale) {
+                return;
+            }
+
             $template->setVariable(
                 $name,
-                $navbar->getLanguageLinkById($page, $langId)
+                $navbar->getLanguageLinkById($page, $locale->getId())
             );
         }
     }

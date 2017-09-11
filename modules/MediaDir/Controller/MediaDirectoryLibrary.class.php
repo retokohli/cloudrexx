@@ -370,22 +370,17 @@ class MediaDirectoryLibrary
         self::getSettings();
         $arrActiveLangs = explode(",",$this->arrSettings['settingsActiveLanguages']);
 
-        $objLanguages = $objDatabase->Execute("SELECT id,lang,name,frontend,is_default FROM ".DBPREFIX."languages ORDER BY is_default ASC");
-        if ($objLanguages !== false) {
-            while (!$objLanguages->EOF) {
-                if(in_array($objLanguages->fields['id'], $arrActiveLangs)) {
-                    $arrData = array();
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $frontendLanguage) {
+            if(in_array($frontendLanguage['id'], $arrActiveLangs)) {
+                $arrData = array();
 
-                    $arrData['id'] = intval($objLanguages->fields['id']);
-                    $arrData['lang'] = htmlspecialchars($objLanguages->fields['lang'], ENT_QUOTES, CONTREXX_CHARSET);
-                    $arrData['name'] = htmlspecialchars($objLanguages->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
-                    $arrData['frontend'] = intval($objLanguages->fields['frontend']);
-                    $arrData['is_default'] = htmlspecialchars($objLanguages->fields['is_default'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrData['id'] = intval($frontendLanguage['id']);
+                $arrData['lang'] = htmlspecialchars($frontendLanguage['lang'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrData['name'] = htmlspecialchars($frontendLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrData['frontend'] = intval($frontendLanguage['frontend']);
+                $arrData['is_default'] = htmlspecialchars($frontendLanguage['is_default'], ENT_QUOTES, CONTREXX_CHARSET);
 
-                    $arrLanguages[$objLanguages->fields['id']] = $arrData;
-                }
-
-                $objLanguages->MoveNext();
+                $arrLanguages[$frontendLanguage['id']] = $arrData;
             }
         }
 
@@ -1405,9 +1400,10 @@ EOF;
             'list' => array(),
             'filter' => array(),
         );
-        $placeholderList = join("\n", $template->getPlaceholderList($block));
+        $placeholderList = $template->getPlaceholderList($block);
+        $placeholderListAsString = join("\n", $placeholderList);
 
-        if (preg_match_all('/MEDIADIR_CONFIG_(FILTER|LIST)_(LATEST|LIMIT|OFFSET|FORM|CATEGORY|LEVEL)(?:_([0-9]+))?/', $placeholderList, $match)) {
+        if (preg_match_all('/MEDIADIR_CONFIG_(FILTER|LIST)_(LATEST|LIMIT|OFFSET|FORM|CATEGORY|LEVEL)(?:_([0-9]+))?/', $placeholderListAsString, $match)) {
             foreach ($match[2] as $idx => $key) {
                 $configKey = strtolower($match[1][$idx]);
                 $option = strtolower($key);

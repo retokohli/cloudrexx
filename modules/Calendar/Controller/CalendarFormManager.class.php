@@ -497,7 +497,16 @@ class CalendarFormManager extends CalendarLibrary
                         $inputfield .= $optionSelect ? '<option value="" '.$selected.'>'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>' : '';
 
                         foreach ($options as $key => $name) {
-                            if ($checkSeating && contrexx_input2int($name) > $availableSeat) {
+                            // filter out any seating options that would cause
+                            // an overbooking
+                            if (
+                                // skip filtering selected option of loaded registration
+                                $key + 1 != $value &&
+                                // only filter in case the event has set an invitee limit
+                                $checkSeating &&
+                                // skip if option would cause an overbooking of the event
+                                contrexx_input2int($name) > $availableSeat
+                            ) {
                                 continue;
                             }
                             $selected    = ($key + 1 == $value) ? 'selected="selected"' : '';

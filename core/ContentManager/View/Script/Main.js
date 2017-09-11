@@ -1766,7 +1766,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         }
         catch (e) {}
     });
-    if (typeof(langPreset) == 'string' && langPreset.length == 2) {
+    if (typeof(langPreset) == 'string' && langPreset.length >= 2) {
         cx.cm.setCurrentLang(langPreset);
     }
 };
@@ -1902,10 +1902,17 @@ cx.cm.performAction = function(action, pageId, nodeId) {
             url = "index.php?cmd=JsonData&object=node&act=copy&id=" + nodeId;
             break;
         case "activate":
+            // do not try to activate inexisting pages, open them in editor instead
+            if (!page.existing) {
+                cx.cm.setCurrentLang(pageLang);
+                cx.cm.loadPage(undefined, nodeId, null, "content");
+                return;
+            }
+            // intentionally no "break" here!
         case "deactivate":
             // do not toggle activity for drafts
             if (page.publishing.hasDraft != "no") {
-                return
+                return;
             }
             break;
         case "show":
@@ -2873,7 +2880,6 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
 
     if (reloadHistory) {
         cx.jQuery('#page_history').empty();
-        cx.cm.loadHistory(page.id);
     }
 
     if (page.editingStatus == 'hasDraftWaiting') {

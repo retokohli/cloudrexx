@@ -398,9 +398,9 @@ class CalendarLibrary
                     
                     if($objInit->mode == 'backend') {
                         // This is for the preview in settings > Date
-                        $arrSettings["{$objSettings->fields['name']}_value"] = htmlspecialchars($_ARRAYLANG["{$value}_VALUE"], ENT_QUOTES, CONTREXX_CHARSET);
+                        $arrSettings["{$objSettings->fields['name']}_value"] = isset($_ARRAYLANG["{$value}_VALUE"]) ? htmlspecialchars($_ARRAYLANG["{$value}_VALUE"], ENT_QUOTES, CONTREXX_CHARSET) : '';
                     }
-                    $value = $_ARRAYLANG[$value];                    
+                    $value = isset($_ARRAYLANG[$value]) ? $_ARRAYLANG[$value] : '';
                     $arrSettings[$objSettings->fields['name']] = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
                 } else {
                     //return all exept date settings
@@ -1006,7 +1006,7 @@ EOF;
     public function getHeadlinePlaceholders()
     {
         $placeholders = array();
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 20; $i++) {
             $id = '';
             if ($i > 1) {
                 $id = $i;

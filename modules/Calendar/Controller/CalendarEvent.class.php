@@ -1661,11 +1661,24 @@ class CalendarEvent extends CalendarLibrary
             $this->triggerEvent('model/postFlush');
         }
 
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+        foreach ($event->getInvite() as $invite) {
+            $em->detach($invite);
+        }
+        foreach ($event->getRegistrations() as $registration) {
+            $em->detach($registration);
+        }
         if ($send_invitation == 1) {
             // TO-DO set form data into $this
-            $event          = new CalendarEvent($this->id);
+            $legacyEvent    = new CalendarEvent($this->id);
             $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();
-            $objMailManager->sendMail($event, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_INVITATION, null, $invitationTemplate);
+            $objMailManager->sendMail($legacyEvent, \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_INVITATION, null, $invitationTemplate);
+        }
+        foreach ($event->getInvite() as $invite) {
+            $em->detach($invite);
+        }
+        foreach ($event->getRegistrations() as $registration) {
+            $em->detach($registration);
         }
         //Clear cache
         $this->triggerEvent('clearEsiCache');
@@ -1919,6 +1932,15 @@ class CalendarEvent extends CalendarLibrary
                                 WHERE event_id = '".intval($this->id)."'";
 
                 $objResult = $objDatabase->Execute($query);
+
+                $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+                foreach ($event->getInvite() as $invite) {
+                    $em->detach($invite);
+                }
+                foreach ($event->getRegistrations() as $registration) {
+                    $em->detach($registration);
+                }
+
                 $this->triggerEvent('model/postFlush');
                 if ($objResult !== false) {
                     //Clear cache
@@ -2046,6 +2068,13 @@ class CalendarEvent extends CalendarLibrary
 
         $objResult = $objDatabase->Execute($query);
 
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+        foreach ($event->getInvite() as $invite) {
+            $em->detach($invite);
+        }
+        foreach ($event->getRegistrations() as $registration) {
+            $em->detach($registration);
+        }
         if ($objResult !== false) {
             //Trigger postUpdate event for Event Entity
             $this->triggerEvent('model/postUpdate', $event);

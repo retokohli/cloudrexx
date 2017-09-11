@@ -698,8 +698,14 @@ class ViewGenerator {
                         continue;
                     }
 
+                    $classMetadata = \Env::get('em')->getClassMetadata($entityClassWithNS);
+                    // check if the field isn't mapped and is not an associated one
+                    if (!$classMetadata->hasField($name) && !$classMetadata->hasAssociation($name)) {
+                        continue;
+                    }
+
                     $fieldDefinition['type'] = null;
-                    if (!\Env::get('em')->getClassMetadata($entityClassWithNS)->hasAssociation($name)) {
+                    if (!$classMetadata->hasAssociation($name)) {
                         $fieldDefinition = $entityObject->getFieldMapping($name);
                     }
                     $this->options[$name]['type'] = $fieldDefinition['type'];
