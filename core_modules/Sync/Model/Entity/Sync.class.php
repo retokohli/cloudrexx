@@ -459,6 +459,11 @@ class Sync extends \Cx\Model\Base\EntityBase {
     
     protected function calculateContent($change) {
         $entity = $change->getEntity();
+        // Entity is not set on all changesets
+        if (!$entity) {
+            return $change->getContents();
+        }
+
         // customizing for current calendar:
         if (
             get_class($entity) == 'Cx\\Modules\\Calendar\\Model\\Entity\\Event'

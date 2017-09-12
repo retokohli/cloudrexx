@@ -70,6 +70,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     protected $spooledPushes = array();
     
     protected $unspooling = false;
+
+    /**
+     * On remote side, this is set to the changeset's foreign host
+     */
+    protected $foreignHost = '';
     
     /**
      * Returns all Controller class names for this component (except this)
@@ -262,6 +267,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             throw new \Exception('No such DataSource: ' . $name);
         }
         $entityType = $dataAccess->getDataSource()->getIdentifier();
+        $this->cx->getEvents()->addEventListener('preDistantEntityLoad', $this);
         
         $argumentKeys = array_keys($arguments);
         $metaData = $em->getClassMetadata($entityType);
@@ -278,14 +284,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $this->currentInsertId = $elementId;
     
         $referrerParts = parse_url($_SERVER['HTTP_REFERRER']);
-        $foreignHost = $referrerParts['host'];
+        $this->foreignHost = $referrerParts['host'];
         
         if (!isset($arguments[2])) {
             // API would produce a 404 here
             throw new \BadMethodCallException('No element given');
         }
         
-        $mapping = $this->getIdMapping($entityType, $foreignHost, $elementId);
+        $mapping = $this->getIdMapping($entityType, $this->foreignHost, $elementId);
         
         if (!$mapping) {
             // remote is trying to push changes to an entity that does not yet exist here
@@ -339,17 +345,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         $primaryKeyColumnNames = array();
         foreach ($primaryKeyNames as $fieldName) {
-            $this->replaceKey($foreignHost, $entityType, $fieldName, $dataArguments, $foreignId);
+            $this->replaceKey($this->foreignHost, $entityType, $fieldName, $dataArguments, $foreignId);
             $fieldMapping = $metaData->getFieldMapping($fieldName);
             $primaryKeyColumnNames[$fieldMapping['columnName']] = $fieldName;
         }
         if ($method != 'delete') {
             $associationMappings = $metaData->getAssociationMappings();
             foreach ($associationMappings as $fieldName => $associationMapping) {
-                if (!isset($associationMapping['targetEntity'])) {
+                if (
+                    !isset($associationMapping['targetEntity']) ||
+                    !isset($associationMapping['joinColumns']) // not set for m-m relations, not a local field, no need to replace key
+                ) {
                     continue;
                 }
-                $replacement = $this->replaceKey($foreignHost, $associationMapping['targetEntity'], $fieldName, $dataArguments);
+                $replacement = $this->replaceKey($this->foreignHost, $associationMapping['targetEntity'], $fieldName, $dataArguments);
                 
                 $joinColumn = current($associationMapping['joinColumns']);
                 if ($replacement && isset($primaryKeyColumnNames[$joinColumn['name']])) {
@@ -382,6 +391,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function onEvent($eventName, array $eventArgs) {
         $em = $this->cx->getDb()->getEntityManager();
+
+        if ($eventName == 'preDistantEntityLoad') {
+            $fieldData = $eventArgs['targetId'];
+            $newId = $this->replaceKey(
+                $this->foreignHost,
+                $eventArgs['targetEntityClassName'],
+                $field,
+                $fieldData,
+                array_values($eventArgs['targetId'])
+            );
+            $eventArgs['targetId']['id'] = $newId;
+            return;
+        }
+
         if (substr($eventName, 6) != \Doctrine\ORM\Events::postFlush) {
             try {
                 $dlea = current($eventArgs);
@@ -636,7 +659,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * Returns the fields another entity depends on (relations that should be satisfied)
      * @todo: This method should be in DataSource model
      */
-    public function getCascadingFields($entity, $eventType) {
+    public function getCascadingFields($entity, $eventType, $manyToManyOnly = false) {
         $em = $this->cx->getDb()->getEntityManager();
         $entityClassName = get_class($entity);
         $entityMetaData = $em->getClassMetadata($entityClassName);
@@ -652,6 +675,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $eventType == 'delete' &&
                     !$associationMapping['isCascadeRemove']
                 )
+            ) {
+                continue;
+            }
+            if (
+                $manyToManyOnly &&
+                $associationMapping['type'] != \Doctrine\ORM\Mapping\ClassMetadata::MANY_TO_MANY
             ) {
                 continue;
             }
