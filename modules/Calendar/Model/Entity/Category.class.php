@@ -208,4 +208,13 @@ class Category extends \Cx\Model\Base\EntityBase {
     {
         return $this->events;
     }
+
+    /**
+     * Add an event
+     * @param Event $event Event to add
+     * @author Michael Ritter <michael.ritter@cloudrexx.com>
+     */
+    public function addEvents($event) {
+        $this->events[] = $event;
+    }
 }
