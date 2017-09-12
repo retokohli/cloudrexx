@@ -476,18 +476,10 @@ class Sync extends \Cx\Model\Base\EntityBase {
                 
                 // from CalendarEventManager:
                 $fullyBooked = true;
+                $calendarEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($entity->getId());
                 if (
-                    (
-                        $event->registration == \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_EXTERNAL &&
-                        !$event->registrationExternalFullyBooked
-                    ) ||
-                    (
-                        $event->registration == \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_INTERNAL &&
-                        (
-                            empty($event->numSubscriber) ||
-                            !\FWValidator::isEmpty($event->getFreePlaces())
-                        )
-                    )
+                    empty($calendarEvent->numSubscriber) ||
+                    !\FWValidator::isEmpty($calendarEvent->getFreePlaces())
                 ) {
                     $fullyBooked = false;
                 }

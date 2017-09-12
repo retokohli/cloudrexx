@@ -210,6 +210,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($this->unspooling || !isset($this->spooler)) {
             return;
         }
+        $this->unspooling = true;
         $em = $this->cx->getDb()->getEntityManager();
         foreach ($this->spooler->getSpool() as $i=>$change) {
             $change->setHosts($change->getOriginSync()->getRelatedHosts($change->getOriginEntityIndexData()));
@@ -218,7 +219,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
             $em->persist($change);
         }
-        $this->unspooling = true;
         $em->flush();
         $this->spooler = new \Cx\Core_Modules\Sync\Model\Entity\Spooler();
         $this->unspooling = false;
@@ -523,6 +523,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $severity = 'INFO';
         // for as long as there are changes of non-locked hosts
         $query = $em->createQuery('SELECT h FROM ' . $this->getNamespace() . '\Model\Entity\Host h WHERE h.state = 0');
+        $query->useResultCache(false);
         $nonLockedHosts = $query->getResult();
         $hasNonLockedChanges = false;
         foreach ($nonLockedHosts as $host) {
@@ -550,7 +551,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         break 2;
                     }
                     $i++;
-                    $em->remove($change);
+                    // remove host change
+                    $change->removeHost($host);
+                    $host->removeChange($change);
+                    if (!$change->getHosts()->count()) {
+                        // if change has no more hosts, remove change
+                        $em->remove($change);
+                    }
                 }
                 $host->removeLock();
             }
@@ -671,11 +678,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $qb->andWhere($qb->expr()->like('m.localId', $qb->expr()->literal(serialize($localId))));
         }
         $mapping = null;
+        $query = $qb->getQuery();
+        $query->useResultCache(false);
         try {
             if ($allowMultiple) {
-                $mapping = $qb->getQuery()->getResult();
+                $mapping = $query->getResult();
             } else {
-                $mapping = $qb->getQuery()->getSingleResult();
+                $mapping = $query->getSingleResult();
             }
         } catch (\Doctrine\ORM\NoResultException $e) {}
         return $mapping;
