@@ -4,7 +4,7 @@
  * Cloudrexx
  *
  * @link      http://www.cloudrexx.com
- * @copyright Cloudrexx AG 2007-2015
+ * @copyright Cloudrexx AG 2007-2016
  *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
@@ -26,37 +26,32 @@
  */
 
 /**
- * Class DownloadsEventListener
+ * LocaleEventListener
  *
  * @copyright   Cloudrexx AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @author      Thomas Däppen <thomas.daeppen@cloudrexx.com>
  * @package     cloudrexx
+ * @subpackage  core_locale
+ * @version     5.0.0
  */
-
-namespace Cx\Modules\Downloads\Model\Event;
-
-use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
-use Cx\Core\MediaSource\Model\Entity\MediaSource;
-use Cx\Core\Event\Model\Entity\DefaultEventListener;
+namespace Cx\Core\Locale\Model\Event;
 
 /**
- * Class DownloadsEventListener
+ * LocaleEventListener
  *
- * @copyright   Cloudrexx AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Thomas Däppen <thomas.daeppen@cloudrexx.com>
  * @package     cloudrexx
+ * @subpackage  core_locale
  */
-class DownloadsEventListener extends DefaultEventListener
-{
+class LocaleEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventListener {
 
-    public function mediasourceLoad(
-        MediaSourceManager $mediaBrowserConfiguration
-    ) {
-        global $_ARRAYLANG;
-        $mediaType = new MediaSource('downloads',$_ARRAYLANG['TXT_FILEBROWSER_DOWNLOADS'],array(
-            $this->cx->getWebsiteImagesDownloadsPath(),
-            $this->cx->getWebsiteImagesDownloadsWebPath(),
-        ),array(141));
-        $mediaBrowserConfiguration->addMediaType($mediaType);
+    /**
+     * Workaround to manually clear the Doctrine ResultCache
+     *
+     * @param $eventArgs
+     */
+    public function onFlush($eventArgs) {
+        $eventArgs->getEntityManager()->getConfiguration()->getResultCacheImpl()->deleteAll();
     }
 }
