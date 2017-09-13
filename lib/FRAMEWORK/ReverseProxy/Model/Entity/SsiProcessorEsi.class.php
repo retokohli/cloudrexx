@@ -60,8 +60,9 @@ class SsiProcessorEsi extends SsiProcessor {
      * Parses randomized include code
      * @param \HTML_Template_Sigma $template Template to parse
      * @param array $urls List of URLs to get random include tag for
+     * @param int $count (optional) Number of unique random entries to parse
      */
-    protected function parseRandomizedIncludeCode($template, $urls) {
+    protected function parseRandomizedIncludeCode($template, $urls, $count = 1) {
         foreach ($urls as $i=>$url) {
             $template->setVariable('CONTENT', $url);
             $block = 'content';
@@ -70,7 +71,9 @@ class SsiProcessorEsi extends SsiProcessor {
             }
             $template->parse($block);
         }
-        $template->touch('randomized_list_entry');
+        for ($i = 0; $i < $count; $i++) {
+            $template->touch('randomized_list_entry');
+        }
     }
 }
 

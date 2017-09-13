@@ -103,7 +103,8 @@ abstract class SsiProcessor {
      * Parses randomized include code
      * @param \HTML_Template_Sigma $template Template to parse
      * @param array $urls List of URLs to get random include tag for
+     * @param int $count (optional) Number of unique random entries to parse
      */
-    protected abstract function parseRandomizedIncludeCode($template, $urls);
+    protected abstract function parseRandomizedIncludeCode($template, $urls, $count = 1);
 }
 
