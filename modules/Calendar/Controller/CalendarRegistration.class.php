@@ -284,6 +284,7 @@ class CalendarRegistration extends CalendarLibrary
                 WHERE
                     `field`.`reg_id` = "' . $regId . '" AND
                     `field`.`field_id` IN (' . implode(',', array_column($this->getForm()->inputfields, 'id')) . ')
+                ORDER BY `field`.`field_id` DESC
             ';
             $fieldsQueryResult = $objDatabase->Execute($fieldsQuery);
             if ($fieldsQueryResult === false) {
