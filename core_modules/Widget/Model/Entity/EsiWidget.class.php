@@ -147,7 +147,7 @@ class EsiWidget extends Widget {
      * @param string $jsonMethodName (optional) Name of the JsonAdapter method to call. If not specified, "getWidget" is used
      * @param array $jsonParams (optional) Params to pass on JsonAdapter call. If not specified, a default list is used, see getEsiParams()
      */
-    public function __construct($component, $name, $type = static::TYPE_PLACEHOLDER, $jsonAdapterName = '', $jsonMethodName = '', $jsonParams = array()) {
+    public function __construct($component, $name, $type = self::TYPE_PLACEHOLDER, $jsonAdapterName = '', $jsonMethodName = '', $jsonParams = array()) {
         parent::__construct($component, $name, $type);
         $this->jsonAdapterName = $jsonAdapterName;
         $this->jsonMethodName = $jsonMethodName;
@@ -185,9 +185,10 @@ class EsiWidget extends Widget {
      * @param string $targetComponent Parse target component name
      * @param string $targetEntity Parse target entity name
      * @param string $targetId Parse target entity ID
+     * @param array $params (optional) List of params for widgets of type 'callback'
      * @return string Replacement for widgets without content, NULL otherwise
      */
-    public function internalParse($template, $response, $targetComponent, $targetEntity, $targetId) {
+    public function internalParse($template, $response, $targetComponent, $targetEntity, $targetId, $params = array()) {
         $esiContent = $this->getComponent('Cache')->getEsiContent(
             $this->getJsonAdapterName(),
             $this->getJsonMethodName(),

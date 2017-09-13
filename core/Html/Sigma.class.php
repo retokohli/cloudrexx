@@ -101,7 +101,7 @@ class Sigma extends \HTML_Template_Sigma {
         $this->setErrorHandling(PEAR_ERROR_DIE);
 
         // Add registered callbacks and ensure we also pass reference to $this
-        foreach (static::getCallbackPlaceholders as $name=>$callback) {
+        foreach (static::getCallbackPlaceholders() as $name=>$callback) {
             $this->setCallbackFunction(
                 $name,
                 function() use ($callback) {

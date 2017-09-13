@@ -83,7 +83,7 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
      * @param string $name Name of this widget
      * @param string $type (optional) Whether this widget represents a template placeholder, block or callback, default: placeholder
      */
-    public function __construct($component, $name, $type = static::TYPE_PLACEHOLDER) {
+    public function __construct($component, $name, $type = self::TYPE_PLACEHOLDER) {
         $this->component = $component;
         $this->name = $name;
         $this->type = $type;
