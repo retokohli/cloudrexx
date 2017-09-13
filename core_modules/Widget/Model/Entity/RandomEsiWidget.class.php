@@ -50,4 +50,15 @@ namespace Cx\Core_Modules\Widget\Model\Entity;
  * @subpackage  coremodules_widget
  * @version     1.0.0
  */
-class RandomEsiWidget extends EsiWidget {}
+class RandomEsiWidget extends EsiWidget {
+
+    /**
+     * Returns the number of unique repetitions of this widget
+     * By overriding this method you can parse multiple instances of your widget
+     * without having the same widget rendered twice
+     * @return int Number of unique repetitions
+     */
+    public function getUniqueRepeatCount() {
+        return 1;
+    }
+}
