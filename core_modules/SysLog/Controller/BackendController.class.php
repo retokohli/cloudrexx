@@ -58,7 +58,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @param \Cx\Core\Html\Sigma $template Backend template for this page
      * @param array $cmd Supplied CMD
      */
-    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd, &$isSingle = false) {
         $em = $this->cx->getDb()->getEntityManager();
         $logRepo = $em->getRepository('Cx\Core_Modules\SysLog\Model\Entity\Log');
 

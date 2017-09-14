@@ -69,6 +69,7 @@ class ReverseProxyCloudrexx extends \Cx\Lib\ReverseProxy\Model\Entity\ReversePro
     protected function clearCachePageForDomainAndPort($urlPattern, $domain, $port) {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $strCachePath = $cx->getWebsiteCachePath() . '/';
+        $strCachePath .= \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_DIRECTORY_OFFSET_ESI;
 
         $glob = null;
         $glob2 = null;

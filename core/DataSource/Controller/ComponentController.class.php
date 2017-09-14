@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- *
+ * 
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,39 +24,35 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
-
+ 
 /**
- * Class DownloadsEventListener
- *
+ * Main controller for DataSource
+ * 
  * @copyright   Cloudrexx AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     cloudrexx
+ * @author Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package cloudrexx
+ * @subpackage core_modules_data_source
  */
 
-namespace Cx\Modules\Downloads\Model\Event;
-
-use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
-use Cx\Core\MediaSource\Model\Entity\MediaSource;
-use Cx\Core\Event\Model\Entity\DefaultEventListener;
+namespace Cx\Core\DataSource\Controller;
 
 /**
- * Class DownloadsEventListener
- *
+ * Main controller for DataSource
+ * 
  * @copyright   Cloudrexx AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     cloudrexx
+ * @author Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package cloudrexx
+ * @subpackage core_modules_data_source
  */
-class DownloadsEventListener extends DefaultEventListener
-{
+class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
 
-    public function mediasourceLoad(
-        MediaSourceManager $mediaBrowserConfiguration
-    ) {
-        global $_ARRAYLANG;
-        $mediaType = new MediaSource('downloads',$_ARRAYLANG['TXT_FILEBROWSER_DOWNLOADS'],array(
-            $this->cx->getWebsiteImagesDownloadsPath(),
-            $this->cx->getWebsiteImagesDownloadsWebPath(),
-        ),array(141));
-        $mediaBrowserConfiguration->addMediaType($mediaType);
+    /**
+     * Register your events here
+     * 
+     * Do not do anything else here than list statements like
+     * $this->cx->getEvents()->addEvent($eventName);
+     */
+    public function registerEvents() {
+        $this->cx->getEvents()->addEvent('preDistantEntityLoad');
     }
 }

@@ -197,19 +197,19 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
         //explode elements
         $arrElements = explode(",", $strValue);
 
-        //open <ul> list
-        $strValue = '<ul class="'.$this->moduleNameLC.'InputfieldCheckbox">';
-
-        //make element list
-        foreach ($arrElements as $intKey => $strElement) {
-            $strElement = $strElement-1;
-            $strValue .= '<li>'.$arrValues[$strElement].'</li>';
-        }
-
-        //close </ul> list
-        $strValue .= '</ul>';
-
         if($arrElements[0] != null) {
+            //open <ul> list
+            $strValue = '<ul class="'.$this->moduleNameLC.'InputfieldCheckbox">';
+
+            //make element list
+            foreach ($arrElements as $intKey => $strElement) {
+                $strElement = $strElement-1;
+                $strValue .= '<li>'.$arrValues[$strElement].'</li>';
+            }
+
+            //close </ul> list
+            $strValue .= '</ul>';
+
             $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
             $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValue;
         } else {

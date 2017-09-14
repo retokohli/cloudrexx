@@ -26,37 +26,22 @@
  */
 
 /**
- * Class DownloadsEventListener
- *
- * @copyright   Cloudrexx AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     cloudrexx
+ * Represents an entity which is a content container (basic example would be
+ * a theme, in which we can parse content that will be displayed. Other
+ * examples would be mail templates, content pages, blocks, ...)
+ * @author Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package cloudrexx
+ * @subpackage core_view
  */
 
-namespace Cx\Modules\Downloads\Model\Event;
-
-use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
-use Cx\Core\MediaSource\Model\Entity\MediaSource;
-use Cx\Core\Event\Model\Entity\DefaultEventListener;
+namespace Cx\Core\View\Model\Entity;
 
 /**
- * Class DownloadsEventListener
- *
- * @copyright   Cloudrexx AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     cloudrexx
+ * Represents an entity which is a content container (basic example would be
+ * a theme, in which we can parse content that will be displayed. Other
+ * examples would be mail templates, content pages, blocks, ...)
+ * @author Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package cloudrexx
+ * @subpackage core_view
  */
-class DownloadsEventListener extends DefaultEventListener
-{
-
-    public function mediasourceLoad(
-        MediaSourceManager $mediaBrowserConfiguration
-    ) {
-        global $_ARRAYLANG;
-        $mediaType = new MediaSource('downloads',$_ARRAYLANG['TXT_FILEBROWSER_DOWNLOADS'],array(
-            $this->cx->getWebsiteImagesDownloadsPath(),
-            $this->cx->getWebsiteImagesDownloadsWebPath(),
-        ),array(141));
-        $mediaBrowserConfiguration->addMediaType($mediaType);
-    }
-}
+abstract class ParseTarget extends \Cx\Model\Base\EntityBase {}

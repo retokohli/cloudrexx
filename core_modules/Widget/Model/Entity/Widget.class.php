@@ -45,6 +45,21 @@ namespace Cx\Core_Modules\Widget\Model\Entity;
 abstract class Widget extends \Cx\Model\Base\EntityBase {
 
     /**
+     * @var string Widget is a simple placeholder
+     */
+    const TYPE_PLACEHOLDER = 'placeholder';
+
+    /**
+     * @var string Widget is a block that can be parsed
+     */
+    const TYPE_BLOCK = 'block';
+
+    /**
+     * @var string Widget is a placeholder that has params and triggers a callback
+     */
+    const TYPE_CALLBACK = 'callback';
+
+    /**
      * Component which registered this widget
      * @var \Cx\Core\Core\Model\Entity\SystemComponentController
      */
@@ -57,22 +72,40 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
     protected $name;
 
     /**
-     * Whether this widget has content (represents a template block)
-     * or not (represents a placeholder)
-     * @var boolean
+     * Whether this widget represents a template block, placeholder or callback
+     * @var string
      */
-    protected $hasContent;
+    protected $type;
 
     /**
      * Instanciates a new widget
      * @param \Cx\Core\Core\Model\Entity\SystemComponentController $component Component registering this widget
      * @param string $name Name of this widget
-     * @param boolean $hasContent Whether this widget has content or not
+     * @param string $type (optional) Whether this widget represents a template placeholder, block or callback, default: placeholder
      */
-    public function __construct($component, $name, $hasContent = false) {
+    public function __construct($component, $name, $type = self::TYPE_PLACEHOLDER) {
         $this->component = $component;
         $this->name = $name;
-        $this->hasContent = $hasContent;
+        $this->type = $type;
+        if ($this->getType() == static::TYPE_CALLBACK) {
+            \Cx\Core\Html\Sigma::addCallbackPlaceholder(
+                $this->getName(),
+                function() {
+                    $args = func_get_args();
+                    $template = current($args);
+                    if (!$template || !$template->getParseTarget()) {
+                        throw new \Exception('Wrong argument list for callback for widget "' . $this->getName() . '"');
+                    }
+                    $this->parse(
+                        $template,
+                        $this->cx->getResponse(),
+                        $template->getParseTarget()->getComponent->getName(),
+                        get_class($template->getParseTarget()),
+                        $template->getParseTarget()->getId()
+                    );
+                }
+            );
+        }
     }
 
     /**
@@ -92,31 +125,46 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Returns whether this widget has content (represents a template block)
-     * @return boolean True if this widget has content (represents a template
-     *                 block), false otherwise (represents a placeholder)
+     * Returns whether this widget represents a template placeholder, block or callback
+     * @return string $type Whether this widget represents a template placeholder, block or callback
      */
-    public function hasContent() {
-        return $this->hasContent;
+    public function getType() {
+        return $this->type;
     }
 
     /**
      * Parses this widget into $template
+     * Depending on the type, the passed params and return value are different:
+     * TYPE_CALLBACK:
+     *  $params are the callback's params
+     *  $excludeWidgets is always empty
+     *  return value is the content of this widget
+     * TYPE_PLACEHOLDER:
+     *  $params are always empty
+     *  $excludedWidgets is the list of Widgets we already recursed through
+     *  return value is the content of this widget
+     * TYPE_BLOCK
+     *  $params are always empty
+     *  $excludedWidgets is the list of Widgets we already recursed through
+     *  return value is empty string (/unused)
      * @param \HTML_Template_Sigma $template Template to parse this widget into
      * @param \Cx\Core\Routing\Model\Entity\Reponse $response Current response object
      * @param string $targetComponent Parse target component name
      * @param string $targetEntity Parse target entity name
      * @param string $targetId Parse target entity ID
-     * @param array $excludedWidgets List of widget names that shall not be parsed
+     * @param array $params (optional) List of params for widgets of type 'callback'
+     * @param array $excludedWidgets (optional) List of widget names that shall not be parsed
      */
-    public function parse($template, $response, $targetComponent, $targetEntity, $targetId, $excludedWidgets = array()) {
-        // Disable parsing of widgets in backend pending furtzer notice
+    public function parse($template, $response, $targetComponent, $targetEntity, $targetId, $arguments = array(), $excludedWidgets = array()) {
+        // Disable parsing of widgets in backend pending further notice
         // See CLX-1674
         if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
             return;
         }
 
-        if (!$this->hasContent()) {
+        switch ($this->getType()) {
+            case static::TYPE_CALLBACK:
+            case static::TYPE_PLACEHOLDER:
             if (!$template->placeholderExists($this->getName())) {
                 return;
             }
@@ -132,37 +180,39 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
                 $this->getName(),
                 $content
             );
-        } else {
-            if (!$template->blockExists($this->getName())) {
-                return;
-            }
-            // get widget template
-            $widgetHtml = $template->getUnparsedBlock($this->getName());
-            \LinkGenerator::parseTemplate($widgetHtml);
-            $widgetTemplate = new \Cx\Core_Modules\Widget\Model\Entity\Sigma();
-            $widgetTemplate->setTemplate($widgetHtml);
+                break;
+            case static::TYPE_BLOCK:
+                if (!$template->blockExists($this->getName())) {
+                    return;
+                }
+                // get widget template
+                $widgetHtml = $template->getUnparsedBlock($this->getName());
+                \LinkGenerator::parseTemplate($widgetHtml);
+                $widgetTemplate = new \Cx\Core_Modules\Widget\Model\Entity\Sigma();
+                $widgetTemplate->setTemplate($widgetHtml);
 
-            // parse this widget
-            $this->internalParse($widgetTemplate, $response, $targetComponent, $targetEntity, $targetId);
+                // parse this widget
+                $this->internalParse($widgetTemplate, $response, $targetComponent, $targetEntity, $targetId);
 
-            // recurse:
-            $excludedWidgets[] = $this->getName();
-            $this->getSystemComponentController()->parseWidgets(
-                $widgetTemplate,
-                $targetComponent,
-                $targetEntity,
-                $targetId,
-                $excludedWidgets
-            );
+                // recurse:
+                $excludedWidgets[] = $this->getName();
+                $this->getSystemComponentController()->parseWidgets(
+                    $widgetTemplate,
+                    $targetComponent,
+                    $targetEntity,
+                    $targetId,
+                    $excludedWidgets
+                );
 
-            // parse blocktemplate in main template
-            $parsedContent = $widgetTemplate->get();
-            $template->replaceBlock(
-                $this->getName(),
-                $parsedContent,
-                false,
-                true
-            );
+                // parse blocktemplate in main template
+                $parsedContent = $widgetTemplate->get();
+                $template->replaceBlock(
+                    $this->getName(),
+                    $parsedContent,
+                    false,
+                    true
+                );
+                break;
         }
     }
 
@@ -175,9 +225,10 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
      * @param string $targetComponent Parse target component name
      * @param string $targetEntity Parse target entity name
      * @param string $targetId Parse target entity ID
+     * @param array $params (optional) List of params for widgets of type 'callback'
      * @return string Replacement for widgets without content, NULL otherwise
      */
-    public abstract function internalParse($template, $response, $targetComponent, $targetEntity, $targetId);
+    public abstract function internalParse($template, $response, $targetComponent, $targetEntity, $targetId, $params = array());
 
     /**
      * Clears all cache files for this Widget (if any)

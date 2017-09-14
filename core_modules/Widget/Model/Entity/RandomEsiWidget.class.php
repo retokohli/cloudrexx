@@ -26,37 +26,28 @@
  */
 
 /**
- * Class DownloadsEventListener
+ * Represents a template widget that contains randomized content
  *
- * @copyright   Cloudrexx AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * This class' only use is to identify such widgets. Randomizing is done in
+ * EsiWidgetController
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
+ * @author      Michael Ritter <michael.ritter@cloudrexx.com>
  * @package     cloudrexx
+ * @subpackage  coremodules_widget
+ * @version     1.0.0
  */
 
-namespace Cx\Modules\Downloads\Model\Event;
-
-use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
-use Cx\Core\MediaSource\Model\Entity\MediaSource;
-use Cx\Core\Event\Model\Entity\DefaultEventListener;
+namespace Cx\Core_Modules\Widget\Model\Entity;
 
 /**
- * Class DownloadsEventListener
+ * Represents a template widget that contains randomized content
  *
- * @copyright   Cloudrexx AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * This class' only use is to identify such widgets. Randomizing is done in
+ * EsiWidgetController
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
+ * @author      Michael Ritter <michael.ritter@cloudrexx.com>
  * @package     cloudrexx
+ * @subpackage  coremodules_widget
+ * @version     1.0.0
  */
-class DownloadsEventListener extends DefaultEventListener
-{
-
-    public function mediasourceLoad(
-        MediaSourceManager $mediaBrowserConfiguration
-    ) {
-        global $_ARRAYLANG;
-        $mediaType = new MediaSource('downloads',$_ARRAYLANG['TXT_FILEBROWSER_DOWNLOADS'],array(
-            $this->cx->getWebsiteImagesDownloadsPath(),
-            $this->cx->getWebsiteImagesDownloadsWebPath(),
-        ),array(141));
-        $mediaBrowserConfiguration->addMediaType($mediaType);
-    }
-}
+class RandomEsiWidget extends EsiWidget {}
