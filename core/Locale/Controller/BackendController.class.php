@@ -56,7 +56,19 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     public function getCommands()
     {
-        return array('Locale', 'Backend');
+        $commands = array();
+
+        if (!\Permission::checkAccess(22, 'static', true)) {
+            return $commands;
+        }
+
+        // list locales and languages
+        if (\Permission::checkAccess(50, 'static', true)) {
+            $commands[] = 'Locale';
+            $commands[] = 'Backend';
+        }
+
+        return $commands;
     }
 
     /**
@@ -83,6 +95,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         switch (current($cmd)) {
             case 'Backend':
                 if (!empty($_POST)) {
+                    \Permission::checkAccess(49, 'static');
                     $this->updateBackends($_POST);
                 }
                 // We don't want to parse the entity view
@@ -91,6 +104,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 break;
             case 'Locale':
                 if (isset($_POST) && isset($_POST['updateLocales'])) {
+                    \Permission::checkAccess(49, 'static');
                     $this->updateLocales($_POST);
                 }
                 $isEdit = false;
@@ -261,6 +275,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             $header = $_ARRAYLANG['TXT_CORE_LOCALE_ACT_DEFAULT'];
         }
 
+        $allowModification = \Permission::checkAccess(49, 'static', true);
+
         switch ($entityClassName) {
             case 'Cx\Core\Locale\Model\Entity\Locale':
                 if (!isset($_GET['order'])) {
@@ -388,10 +404,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                     ),
                     'functions' => array(
-                        'add' => true,
-                        'edit' => true,
-                        'delete' => true,
-                        'actions' => function($rowData) {
+                        'add' => $allowModification,
+                        'edit' => $allowModification,
+                        'delete' => $allowModification,
+                        'actions' => !$allowModification ? null : function($rowData) {
                             global $_ARRAYLANG;
                             // parse copy/link functionality only for locales with fallback
                             if (!$rowData['fallback']) {
@@ -432,7 +448,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             return $copyLink . $linkLink;
                         },
                         'sorting'   => true,
-                        'sortBy' => array(
+                        'sortBy' => !$allowModification ? null : array(
                             'field' => array('orderNo' => SORT_ASC),
                         ),
                         'paging' => false,
@@ -462,9 +478,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 return array(
                     'header' => $header,
                     'functions' => array(
-                        'add' => true,
-                        'edit' => true,
-                        'delete' => true,
+                        'add' => $allowModification,
+                        'edit' => $allowModification,
+                        'delete' => $allowModification,
                         'sorting' => true,
                         'paging' => true,
                         'filtering' => false,
