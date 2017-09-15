@@ -45,7 +45,7 @@
 class BackendTable extends HTML_Table {
 
     /**
-     * Whether or not the table as a master table header.
+     * Whether or not the table has a master table header.
      * A master table header is used as a title and is being
      * parsed as TH tags.
      * If no master table header is set, then the column labels
