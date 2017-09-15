@@ -73,9 +73,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     public function getCommands()
     {
+        $localeMgmtPermission = new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, null, array(22, 50), null);
+        $variableMgmtPermission = new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, null, array(22, 48), null);
+
         return array(
-            'Locale',
-            'Backend',
+            'Locale'        => array('permission' => $localeMgmtPermission),
+            'Backend'       => array('permission' => $localeMgmtPermission),
             // Default is frontend
             'LanguageFile' => array(
                 'Backend',
@@ -107,6 +110,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         switch (current($cmd)) {
             case 'Backend':
                 if (!empty($_POST)) {
+                    \Permission::checkAccess(49, 'static');
                     $this->updateBackends($_POST);
                 }
                 // We don't want to parse the entity view
@@ -115,6 +119,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 break;
             case 'Locale':
                 if (isset($_POST) && isset($_POST['updateLocales'])) {
+                    \Permission::checkAccess(49, 'static');
                     $this->updateLocales($_POST);
                 }
                 $isEdit = false;
@@ -252,6 +257,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         // register backend settings css file
         \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/BackendSettings.css', 1));
 
+        $allowModification = \Permission::checkAccess(49, 'static', true);
+
         // simulate entity for view generator
         $simulatedEntity = array(
             1 => array(
@@ -270,7 +277,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'fields' => array(
                     'active' => array(
                         'header' => $_ARRAYLANG['TXT_CORE_LOCALE_ACTIVE_LANGUAGES'],
-                        'formfield' => function($fieldname, $fieldtype, $fieldlength, $fieldvalue, $fieldoptions) {
+                        'readonly' => !$allowModification,
+                        'formfield' => function($fieldname, $fieldtype, $fieldlength, $fieldvalue, $fieldoptions) use ($allowModification) {
                             global $_ARRAYLANG;
 
                             $em = $this->cx->getDb()->getEntityManager();
@@ -285,6 +293,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 '',
                                 \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
                             );
+                            if (!$allowModification) {
+                                $select->setAttribute('disabled');
+                            }
                             $select->setAttribute('multiple');
                             $select->setAttribute('data-placeholder', $_ARRAYLANG['TXT_CORE_LOCALE_BACKEND_SELECT_ACTIVE_LANGUAGES']);
                             // build options for select with source languages
@@ -303,12 +314,18 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     ),
                     'default' => array(
                         'header' => $_ARRAYLANG['TXT_CORE_LOCALE_DEFAULT_LANGUAGE'],
-                        'formfield' => function($fieldname, $fieldtype, $fieldlength, $fieldvalue, $fieldoptions) {
+                        'readonly' => !$allowModification,
+                        'formfield' => function($fieldname, $fieldtype, $fieldlength, $fieldvalue, $fieldoptions) use ($allowModification) {
                             global $_CONFIG;
 
                             $em = $this->cx->getDb()->getEntityManager();
                             // get already active backend languages
                             $backendRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Backend');
+
+                            if (!$allowModification) {
+                                return $backendRepo->findOneById($_CONFIG['defaultLanguageId'])->getIso1();
+                            }
+
                             $backendLanguages = $backendRepo->findAll();
 
                             // build select for default language
@@ -329,6 +346,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             return $select;
                         }
                     ),
+                ),
+                'functions' => array(
+                    'edit' => $allowModification,
+                    'formButtons' => $allowModification,
                 ),
             ),
         );
@@ -362,6 +383,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         } else {
             $header = $_ARRAYLANG['TXT_CORE_LOCALE_ACT_DEFAULT'];
         }
+
+        $allowModification = \Permission::checkAccess(49, 'static', true);
 
         switch ($entityClassName) {
             case 'Cx\Core\Locale\Model\Entity\Locale':
@@ -405,8 +428,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 'attributes' => array(
                                     'class' => 'localeDefault',
                                 ),
-                                'parse' => function ($value, $rowData) {
-                                    global $_CONFIG;
+                                'parse' => function ($value, $rowData) use ($allowModification) {
+                                    global $_CONFIG, $_ARRAYLANG;
+
+                                    if (!$allowModification) {
+                                        return $rowData['id'] == $_CONFIG['defaultLocaleId'] ? $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_DEFAULT'] : '';
+                                    }
+
                                     $radioButton = new \Cx\Core\Html\Model\Entity\DataElement('langDefaultStatus', $rowData['id'], 'input');
                                     $radioButton->setAttribute('type', 'radio');
                                     $radioButton->setAttribute('onchange', 'updateCurrent()');
@@ -416,6 +444,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                     return $radioButton;
                                 },
                             ),
+                            'readonly' => !$allowModification,
                         ),
                         'fallback' => array(
                             'header' => $_ARRAYLANG['TXT_CORE_LOCALE_FIELD_FALLBACK'],
@@ -424,8 +453,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 'attributes' => array(
                                     'class' => 'localeFallback',
                                 ),
-                                'parse' => function ($value, $rowData) {
+                                'parse' => function ($value, $rowData) use ($allowModification) {
                                     global $_ARRAYLANG;
+
+                                    if (!$allowModification) {
+                                        return is_object($value) ? $value->getLabel() : $_ARRAYLANG['TXT_CORE_NONE'];
+                                    }
+
                                     $selectedVal = is_object($value) ? $value->getId() : 'NULL';
                                     $locales = $this->getLocaleRepo()->findAll();
                                     // build select for fallbacks
@@ -488,10 +522,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                     ),
                     'functions' => array(
-                        'add' => true,
-                        'edit' => true,
-                        'delete' => true,
-                        'actions' => function($rowData) {
+                        'add' => $allowModification,
+                        'edit' => $allowModification,
+                        'delete' => $allowModification,
+                        'actions' => !$allowModification ? null : function($rowData) {
                             global $_ARRAYLANG;
                             // parse copy/link functionality only for locales with fallback
                             if (!$rowData['fallback']) {
@@ -532,7 +566,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             return $copyLink . $linkLink;
                         },
                         'sorting'   => true,
-                        'sortBy' => array(
+                        'sortBy' => !$allowModification ? null : array(
                             'field' => array('orderNo' => SORT_ASC),
                         ),
                         'paging' => false,
@@ -674,9 +708,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 return array(
                     'header' => $header,
                     'functions' => array(
-                        'add' => true,
-                        'edit' => true,
-                        'delete' => true,
+                        'add' => $allowModification,
+                        'edit' => $allowModification,
+                        'delete' => $allowModification,
                         'sorting' => true,
                         'paging' => true,
                         'filtering' => false,
