@@ -512,6 +512,33 @@ class Resolver {
             header('Connection: close');
             exit;
         }
+
+        // If an alias like /de/alias1 was resolved, redirect to /alias1
+        if (!empty($langDir)) {
+            $correctUrl = \Cx\Core\Routing\Url::fromPage($this->page);
+            // get additinal path parts (like /de/alias1/additional/path)
+            $splitQuery = explode('?', $this->url->getPath(), 2);
+            $pathParts = explode('/', $splitQuery[0]);
+            unset($pathParts[0]);
+            if (count($pathParts)) {
+                $additionalPath = '/' . implode('/', $pathParts);
+                $correctUrl->setPath($correctUrl->getPath() . $additionalPath);
+            }
+            // set query params (like /de/alias1?foo=bar)
+            $correctUrl->setParams($this->url->getParamArray());
+            // cached 301 redirect
+            $this->headers[] = 'HTTP/1.1 301 Moved Permanently';
+            $this->headers['Location'] = $correctUrl->toString();
+            $this->headers['Connection'] = 'close';
+            $emptyString = '';
+            \Env::set('Resolver', $this);
+            \Env::set('Page', $this->page);
+            \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
+            header('HTTP/1.1 301 Moved Permanently');
+            header('Location: ' . $correctUrl->toString());
+            header('Connection: close');
+            exit();
+        }
         return $this->page;
     }
 
