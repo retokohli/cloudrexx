@@ -161,7 +161,9 @@ die("Mail::send(): Obsolete method called!");
 
         $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-        $objMail->SetFrom($mailFrom, $mailSender);
+        $from = preg_replace('/\015\012/', '', $mailFrom);
+        $fromName = preg_replace('/\015\012/', '', $mailSender);
+        $objMail->SetFrom($from, $fromName);
         $objMail->Subject = $mailSubject;
         $objMail->IsHTML(false);
         $objMail->Body = preg_replace('/\015\012/', "\012", $mailBody);

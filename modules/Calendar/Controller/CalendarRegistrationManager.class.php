@@ -313,28 +313,44 @@ class CalendarRegistrationManager extends CalendarLibrary
                         case 'salutation':
                         case 'seating':
                         case 'select':
-                            $value = $options[$objResult->fields['value'] - 1];
+                            $optionIdx = $objResult->fields['value'] - 1;
+                            if (isset($options[$optionIdx])) {
+                                $value = $options[$optionIdx];
+                            }
                             break;
                         case 'radio':
                         case 'checkbox':
                             $output   = array();
                             $input    = '';
                             foreach (explode(',', $objResult->fields['value']) as $value) {
-                                $arrValue = explode('[[', $value);
-                                $value    = $arrValue[0];
-                                $input    = str_replace(']]','', $arrValue[1]);
+                                $input = '';
 
-                                $newOptions = explode('[[', $options[$value-1]);
+                                // extract data from input field (in case the magic [[INPUT]] function was used
+                                if (preg_match('/^([^\[]*)(?:\[\[([^\]]*)\]\])?$/', $value, $match)) {
+                                    $value = $match[1];
+                                    if (isset($match[2])) {
+                                        $input = $match[2];
+                                    }
+                                }
+
+                                // fetch label of selected option
+                                $optionIdx = $value - 1;
+                                $label = '';
+                                if (isset($options[$optionIdx])) {
+                                    $label = current(explode('[[', $options[$optionIdx]));
+                                }
+
+                                // fetch value of selected option (based on selection and magic [[INPUT]] field)
                                 if (!empty($input)) {
-                                    $output[]  = $newOptions[0].": ".$input;
+                                    $output[]  = $label . ': ' . $input;
                                 } else {
-                                    if ($newOptions[0] == '') {
-                                        $newOptions[0] = $value == 1 ? $_ARRAYLANG['TXT_CALENDAR_YES'] : $_ARRAYLANG['TXT_CALENDAR_NO'];
+                                    if ($label == '') {
+                                        $label = $value == 1 ? $_ARRAYLANG['TXT_CALENDAR_YES'] : $_ARRAYLANG['TXT_CALENDAR_NO'];
                                     }
 
-                                    $output[] = $newOptions[0];
+                                    $output[] = $label;
                                 }
-                                $value = implode(", ", $output);
+                                $value = implode(', ', $output);
                             }
                             break;
                     }
@@ -394,7 +410,7 @@ class CalendarRegistrationManager extends CalendarLibrary
 
             $links = '
                 <a style="float: right;" class="delete_registration" href="index.php?cmd='. $this->moduleName .'&amp;act=event_registrations&amp;tpl='.$tpl.'&amp;id='.$this->eventId.'&amp;delete='.$objRegistration->id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_DELETE'].'"><img src="../core/Core/View/Media/icons/delete.gif" width="17" height="17" border="0" alt="'.$_ARRAYLANG['TXT_CALENDAR_DELETE'].'" /></a>
-                <a style="float: right;" href="index.php?cmd='.$this->moduleName.'&amp;act=modify_registration&amp;tpl='.$tpl.'&amp;event_id='.$this->eventId.'&amp;reg_id='.$objRegistration->id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EDIT'].'"><img src="../core/Core/View/Media/icons/edit.gif" width="16" height="16" border="0" alt="'.$_ARRAYLANG['TXT_CALENDAR_EDIT'].'" /></a>
+                <a style="float: right;" href="index.php?cmd='.$this->moduleName.'&amp;act=modify_registration&amp;tpl='.$tpl.'&amp;event_id='.$this->eventId.'&amp;amp;reg_id='.$objRegistration->id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EDIT'].'"><img src="../core/Core/View/Media/icons/edit.gif" width="16" height="16" border="0" alt="'.$_ARRAYLANG['TXT_CALENDAR_EDIT'].'" /></a>
             ';
             $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', $links);
             $objTpl->parse('eventRegistrationValue');
@@ -561,7 +577,8 @@ class CalendarRegistrationManager extends CalendarLibrary
             if ($eventManager->_addToEventList($objEvent)) {
                 $eventManager->eventList[] = $objEvent;
             }
-            $eventManager->_setNextSeriesElement($objEvent);
+            $additionalRecurrences = $objEvent->seriesData['seriesAdditionalRecurrences'];
+            $eventManager->_setNextSeriesElement($objEvent, $additionalRecurrences);
 
             $regEventDateField = '<select style="width: 208px;" class="calendarSelect" name="registrationEventDate">';
             foreach ($eventManager->eventList as $event) {
@@ -688,12 +705,24 @@ class CalendarRegistrationManager extends CalendarLibrary
         if (empty($seatingFieldId))
             return (int) count($this->registrationList);
 
+        // Limit search to date of the event. This is critical for series!
+        $startDateBackup = $this->startDate;
+        $endDateBackup = $this->endDate;
+        $this->startDate = $this->event->startDate->format('U');
+        $this->endDate = $this->event->endDate->format('U');
         $this->getRegistrationList();
+        $this->startDate = $startDateBackup;
+        $this->endDate = $endDateBackup;
 
         $countSeating = 0;
         foreach ($this->registrationList as $registration) {
             $arrOptions    = explode(',', $registration->fields[$seatingFieldId]['default']);
-            $countSeating += (int) $arrOptions[$registration->fields[$seatingFieldId]['value'] - 1];
+            $optionIdx = $registration->fields[$seatingFieldId]['value'] - 1;
+            if (isset($arrOptions[$optionIdx])) {
+                $countSeating += (int) $arrOptions[$optionIdx];
+            } else {
+                $countSeating += 1;
+            }
         }
 
         return $countSeating;
