@@ -213,6 +213,9 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
                     true
                 );
                 break;
+            default:
+                throw new \Exception('No such widget type for widget "' . $this->getName() . '" of component "' . $this->getRegisteringComponent()->getName() . '"');
+                break;
         }
     }
 
