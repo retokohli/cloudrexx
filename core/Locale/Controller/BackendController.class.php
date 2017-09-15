@@ -269,9 +269,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @global $_ARRAYLANG
      * @global $_CONFIG
      * @param $entityClassName contains the FQCN from entity
+     * @param $dataSetIdentifier if $entityClassName is DataSet, this is used for better partition
      * @return array with options
      */
-    protected function getViewGeneratorOptions($entityClassName)
+    protected function getViewGeneratorOptions($entityClassName, $dataSetIdentifier = '') {
     {
         global $_ARRAYLANG;
 
