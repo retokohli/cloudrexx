@@ -608,7 +608,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                     ) {
                                         return $this->createComponentSelect(
                                             'componentName',
-                                            $this->languageFile->getComponentName()
+                                            $this->languageFile->getComponentName(),
+                                            $this->languageFile->getMode()
                                         );
                                     },
                                 ),
@@ -951,14 +952,131 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @param string $selectedValue Pre-selected value
      * @return \Cx\Core\Html\Model\Entity\DataElement Select field
      */
-    protected function createComponentSelect($name, $selectedValue) {
+    protected function createComponentSelect($name, $selectedValue, $mode) {
         $em = $this->cx->getDb()->getEntityManager();
         $query = 'SELECT `name` FROM '.DBPREFIX.'component ORDER BY name ASC';
         $stmt = $em->getConnection()->prepare($query);
         $stmt->execute();
 
+        // TODO: this should be done dynamically
+        if ($mode == $this->cx::MODE_FRONTEND) {
+            $skipList = array(
+                'Agb',
+                'Alias',
+                'Cache',
+                'Captcha',
+                'ComponentManager',
+                'Config',
+                'ContentManager',
+                'ContentWorkflow',
+                'Core',
+                'Country',
+                'Crm',
+                'Cron',
+                'Csrf',
+                'DataAccess',
+                'DatabaseManager',
+                'DataSource',
+                'DateTime',
+                'Error',
+                'FileBrowser',
+                'GeoIp',
+                'Home',
+                'Html',
+                'Ids',
+                'Imprint',
+                'JavaScript',
+                'JsonData',
+                'LanguageManager',
+                'License',
+                'LinkManager',
+                'Locale',
+                'Media2',
+                'Media3',
+                'Media4',
+                'MediaBrowser',
+                'MediaSource',
+                'Message',
+                'Model',
+                'Net',
+                'NetManager',
+                'Order',
+                'Pdf',
+                'Pim',
+                'Privacy',
+                'Routing',
+                'Security',
+                'Session',
+                'Setting',
+                'Shell',
+                'Sitemap',
+                'Support',
+                'Sync',
+                'SysLog',
+                'SystemInfo',
+                'SystemLog',
+                'Test',
+                'Upload',
+                'User',
+                'View',
+                'ViewManager',
+                'Widget',
+                'Workbench',
+            );
+        } else {
+            $skipList = array(
+                'Agb',
+                'Captcha',
+                'ContentManager',
+                'Core',
+                'Country',
+                'Csrf',
+                'DataAccess',
+                'DataSource',
+                'DateTime',
+                'Error',
+                'FrontendEditing',
+                'Home',
+                'Ids',
+                'Imprint',
+                'JavaScript',
+                'JsonData',
+                'License',
+                'Media2',
+                'Media3',
+                'Media4',
+                'MediaSource',
+                'Message',
+                'Model',
+                'Net',
+                'Pim',
+                'Privacy',
+                'Security',
+                'Session',
+                'Setting',
+                'Shell',
+                'Sitemap',
+                'Sync',
+                'SysLog',
+                'Test',
+                'Upload',
+                'User',
+                'View',
+                'Widget',
+                'Workbench',
+            );
+        }
+
         $validData = array();
         foreach($stmt->fetchAll() as $component) {
+            // skip components with no language files
+            if (in_array($component['name'], $skipList)) {
+                continue;
+            }
+            // custom hack for Media1, Media2, Media3, Media4
+            if ($component['name'] == 'Media1') {
+                $component['name'] = 'Media';
+            }
             $validData[$component['name']] = $component['name'];
         }
         return $this->createSelect($name, $validData, $selectedValue);
