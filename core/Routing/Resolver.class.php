@@ -507,6 +507,9 @@ class Resolver {
             } else {
                 $target = $this->page->getTarget();
             }
+            // TODO: Cache this redirect. This is not done yet since we would
+            // need to drop the complete page cache (since we don't know which
+            // is the correct cache file for this redirect)
             header('HTTP/1.1 301 Moved Permanently');
             header('Location: ' . $target);
             header('Connection: close');
@@ -526,14 +529,10 @@ class Resolver {
             }
             // set query params (like /de/alias1?foo=bar)
             $correctUrl->setParams($this->url->getParamArray());
-            // cached 301 redirect
-            $this->headers[] = 'HTTP/1.1 301 Moved Permanently';
-            $this->headers['Location'] = $correctUrl->toString();
-            $this->headers['Connection'] = 'close';
-            $emptyString = '';
-            \Env::set('Resolver', $this);
-            \Env::set('Page', $this->page);
-            \Env::get('cx')->getComponent('Cache')->postFinalize($emptyString);
+            // 301 redirect
+            // TODO: Cache this redirect. This is not done yet since we would
+            // need to drop the complete page cache (since we don't know which
+            // is the correct cache file for this redirect)
             header('HTTP/1.1 301 Moved Permanently');
             header('Location: ' . $correctUrl->toString());
             header('Connection: close');
