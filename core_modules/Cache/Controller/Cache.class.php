@@ -639,14 +639,29 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
             // Random include tags
             $htmlCode = preg_replace_callback(
-                '#<!-- ESI_RANDOM_START -->[\s\S]*<esi:assign name="content_list">\s*\[([^\]]+)\]\s*</esi:assign>[\s\S]*<!-- ESI_RANDOM_END -->#U',
+                '#<!-- ESI_RANDOM_START -->[\s\S]*<esi:assign name="content_list">\s*\[([^\]]+)\]\s*</esi:assign>([\s\S]*)<!-- ESI_RANDOM_END -->#U',
                 function($matches) {
+                    $includeCount = substr_count(
+                        $matches[2],
+                        '<esi:include src="'
+                    );
+                    $randomIncludes = '';
                     $uris = explode('\',\'', substr($matches[1], 1, -1));
-                    $randomNumber = rand(0, count($uris) - 1);
-                    $uri = $uris[$randomNumber];
-                    
-                    // this needs to match the format below!
-                    return '<esi:include src="' . $uri . '" onerror="continue"/>';
+                    for ($i = 0; $i < $includeCount; $i++) {
+                        if (!count($uris)) {
+                            continue;
+                        }
+                        $randomNumber = rand(0, count($uris) - 1);
+                        $uri = $uris[$randomNumber];
+                        unset($uris[$randomNumber]);
+                        // re-index array
+                        $uris = array_values($uris);
+
+                        // this needs to match the format below!
+                        $randomIncludes .= '<esi:include src="' . $uri . '" onerror="continue"/>';
+                    }
+
+                    return $randomIncludes;
                 },
                 $htmlCode
             );
