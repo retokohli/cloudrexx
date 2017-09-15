@@ -53,6 +53,11 @@ namespace Cx\Core_Modules\Widget\Model\Entity;
 class RandomEsiWidget extends EsiWidget {
 
     /**
+     * @var int Number of unique repetitions
+     */
+    protected $uniqueRepetitionCount = 1;
+
+    /**
      * Returns the name of the JsonAdapter to call
      * @return string JsonAdapter name
      */
@@ -65,11 +70,17 @@ class RandomEsiWidget extends EsiWidget {
 
     /**
      * Returns the number of unique repetitions of this widget
-     * By overriding this method you can parse multiple instances of your widget
-     * without having the same widget rendered twice
      * @return int Number of unique repetitions
      */
-    public function getUniqueRepeatCount() {
-        return 1;
+    public function getUniqueRepetitionCount() {
+        return $this->uniqueRepetitionCount;
+    }
+
+    /**
+     * Sets the number of unique repetitions of this widget
+     * @param int $count Number of unique repetitions
+     */
+    public function setUniqueRepetitionCount($count) {
+        $this->uniqueRepetitionCount = $count;
     }
 }
