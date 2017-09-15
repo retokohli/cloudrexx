@@ -48,6 +48,11 @@ $_ARRAYLANG['TXT_CORE_LOCALE_ACT_DEFAULT'] = 'Webiste';
 $_ARRAYLANG['TXT_CORE_LOCALE_ACT_LOCALE'] = 'Website';
 $_ARRAYLANG['TXT_CORE_LOCALE_ACT_BACKEND'] = 'Administration area';
 
+// Module ACLs:
+$_ARRAYLANG['TXT_CORE_LOCALE_ACL_LIST'] = 'List website & administration area';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACL_MANAGEMENT'] = 'Manage website & administration area';
+$_ARRAYLANG['TXT_CORE_LOCALE_ACL_VARS'] = 'Manage language placeholders';
+
 // Module fields
 $_ARRAYLANG['TXT_CORE_LOCALE_LOCALE_NAME'] = 'Locale';
 $_ARRAYLANG['TXT_CORE_LOCALE_BACKEND_NAME'] = 'Edit languages';
