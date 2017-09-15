@@ -80,8 +80,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             'Locale'        => array('permission' => $localeMgmtPermission),
             'Backend'       => array('permission' => $localeMgmtPermission),
             // Default is frontend
-            'LanguageFile' => array(
-                'Backend',
+            'LanguageFile'  => array(
+                'Backend' => array('permission' => $variableMgmtPermission),
             ),
         );
     }
