@@ -74,7 +74,7 @@ abstract class RandomEsiWidgetController extends EsiWidgetController {
     /**
      * @inheritdoc
      */
-    public function __construct(SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
+    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
         parent::__construct($systemComponentController, $cx);
         $this->subwidgetCountLimit = static::DEFAULT_SUBWIDGET_COUNT_LIMIT;
         $this->subwidgetCacheLifetime = static::DEFAULT_SUBWIDGET_CACHE_LIFETIME;
