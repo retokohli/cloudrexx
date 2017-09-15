@@ -73,10 +73,10 @@ class PdfTemplate extends \Cx\Core_Modules\Pdf\Model\Entity\PdfTemplate implemen
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', 'id', 'title', 'htmlContent', 'active', 'validators', 'virtual');
+            return array('__isInitialized__', 'id', 'title', 'fileName', 'htmlContent', 'active', 'validators', 'virtual');
         }
 
-        return array('__isInitialized__', 'id', 'title', 'htmlContent', 'active', 'validators', 'virtual');
+        return array('__isInitialized__', 'id', 'title', 'fileName', 'htmlContent', 'active', 'validators', 'virtual');
     }
 
     /**
@@ -217,6 +217,28 @@ class PdfTemplate extends \Cx\Core_Modules\Pdf\Model\Entity\PdfTemplate implemen
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getTitle', array());
 
         return parent::getTitle();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setFileName($fileName)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setFileName', array($fileName));
+
+        return parent::setFileName($fileName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getFileName()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getFileName', array());
+
+        return parent::getFileName();
     }
 
     /**

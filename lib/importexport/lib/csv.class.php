@@ -63,7 +63,7 @@ class CsvLib
             $this->separator = "\t";
         }
 
-        if (strlen($_POST['import_options']) == 1) {
+        if (isset($_POST['import_options']) && strlen($_POST['import_options']) == 1) {
             $this->enclosure = $_POST['import_options_csv_enclosure'];
         }
     }

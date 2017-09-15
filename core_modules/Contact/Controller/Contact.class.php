@@ -608,6 +608,7 @@ CODE;
 
         $objUser->objAttribute->reset();
         while (!$objUser->objAttribute->EOF) {
+            $value = '';
             $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
 
             switch ($objAttribute->getType())
@@ -616,13 +617,22 @@ CODE;
                     if ($objAttribute->isCoreAttribute()) {
                         foreach ($objAttribute->getChildren() as $childAttributeId) {
                             $objChildAtrribute = $objAttribute->getById($childAttributeId);
+                            if (!$objChildAtrribute->getId()) {
+                                continue;
+                            }
                             if ($objChildAtrribute->getMenuOptionValue() == $objUser->getProfileAttribute($objAttribute->getId())) {
                                 $value = $objChildAtrribute->getName();
                                 break;
                             }
                         }
                     } else {
+                        if (!$objUser->getProfileAttribute($objAttribute->getId())) {
+                            break;
+                        }
                         $objSelectedAttribute = $objAttribute->getById($objUser->getProfileAttribute($objAttribute->getId()));
+                        if (!$objSelectedAttribute->getId()) {
+                            break;
+                        }
                         $value = $objSelectedAttribute->getName();
                     }
                 break;
@@ -718,8 +728,11 @@ CODE;
                 $arrFormData['meta']['ipaddress'] = contrexx_input2raw($_SERVER["REMOTE_ADDR"]);
             }
 
+            $net = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Net');
             $arrFormData['meta']['time'] = time();
-            $arrFormData['meta']['host'] = contrexx_input2raw(@gethostbyaddr($arrFormData['meta']['ipaddress']));
+            $arrFormData['meta']['host'] = contrexx_input2raw(
+                $net->getHostByAddr($arrFormData['meta']['ipaddress'])
+            );
             $arrFormData['meta']['lang'] = contrexx_input2raw($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
             $arrFormData['meta']['browser'] = contrexx_input2raw($_SERVER["HTTP_USER_AGENT"]);
 

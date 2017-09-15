@@ -1816,12 +1816,7 @@ class User extends User_Profile
                     'clearEsiCache',
                     array(
                         'Widget',
-                        array(
-                            'access_currently_online_member_list',
-                            'access_last_active_member_list',
-                            'access_latest_registered_member_list',
-                            'access_birthday_member_list',
-                        ),
+                        $cx->getComponent('Access')->getUserDataBasedWidgetNames(),
                     )
                 );
             }
@@ -1834,12 +1829,7 @@ class User extends User_Profile
                 'clearEsiCache',
                 array(
                     'Widget',
-                    array(
-                        'access_currently_online_member_list',
-                        'access_last_active_member_list',
-                        'access_latest_registered_member_list',
-                        'access_birthday_member_list',
-                    ),
+                    $cx->getComponent('Access')->getUserDataBasedWidgetNames(),
                 )
             );
         }
