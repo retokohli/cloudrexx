@@ -438,6 +438,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                     $radioButton = new \Cx\Core\Html\Model\Entity\DataElement('langDefaultStatus', $rowData['id'], 'input');
                                     $radioButton->setAttribute('type', 'radio');
                                     $radioButton->setAttribute('onchange', 'updateCurrent()');
+                                    $radioButton->setAttribute('form', 'localeLocaleList');
                                     if ($rowData['id'] == $_CONFIG['defaultLocaleId']) {
                                         $radioButton->setAttribute('checked', 'checked');
                                     }
@@ -468,6 +469,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                         '',
                                         \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
                                     );
+                                    $select->setAttribute('form', 'localeLocaleList');
                                     $fallbackOptions = array(
                                         'NULL' => $_ARRAYLANG['TXT_CORE_NONE'],
                                     );
