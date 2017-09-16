@@ -175,4 +175,11 @@ class SettingsLanguageFile extends LanguageFile  {
         unset($this->placeholders[$name]);
         $this->data[$name]['destLang'] = $oldValue;
     }
+
+    /**
+     * Deletes the customizing file
+     */
+    public function delete() {
+        \Cx\Lib\FileSystem\FileSystem::delete_file($this->getPath());
+    }
 }

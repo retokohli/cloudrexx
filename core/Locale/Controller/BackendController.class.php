@@ -918,6 +918,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 \Message::CLASS_OK
             );
         } else {
+            // no changed placeholder, delete the file (if any)
+            $this->languageFile->delete();
             \Message::add(
                 $_ARRAYLANG['TXT_CORE_LOCALE_LANGUAGEFILE_NOTHING_CHANGED'],
                 \Message::CLASS_INFO
