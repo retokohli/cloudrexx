@@ -51,7 +51,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 {
     /**
      * The language file which is used to parse the placeholder list
-     * @var \Cx\Core\Locale\Model\Entity\LanguageFile
+     * @var \Cx\Core\Locale\Model\Entity\SettingsLanguageFile
      */
     protected $languageFile;
 
