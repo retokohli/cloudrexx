@@ -923,6 +923,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 \Message::CLASS_INFO
             );
         }
+
+        // drop page and ESI cache
+        $this->getComponent('Cache')->clearCache();
     }
 
     /**
