@@ -640,7 +640,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                         'parse' => function ($value, $rowData) {
                                             $input = new \Cx\Core\Html\Model\Entity\DataElement(
                                                 'placeholders[' . $rowData['id'] . ']',
-                                                contrexx_raw2xhtml($value)
+                                                $value
                                             );
                                             $input->addClass('placeholder');
                                             $input->setAttribute('form', 'languageFileSave');
