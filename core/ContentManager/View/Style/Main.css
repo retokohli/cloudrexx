@@ -88,6 +88,10 @@ h1{ font-size: 20px }
     background: #0071bc;
 }
 
+#content-manager.cm-single-locale.edit_view .adminlist {
+    margin:0px !important;
+}
+
 #content-manager.edit_view table.adminlist {
     /* overwrite fix width set by js when expanding translations*/
     width: auto !important;
@@ -110,6 +114,12 @@ h1{ font-size: 20px }
     min-height: 31px;
 }
 
+.edit_view #subnav {
+    border-right: 0;
+    border-left: 0;
+    margin-left: 0;
+}
+
 #site-language {
     float: right;
 }
@@ -125,6 +135,10 @@ h1{ font-size: 20px }
 
 #site-language .chosen-results li:nth-child(n+11) {
     display: none !important;
+}
+
+.cm-single-locale #site-language {
+    display:none;
 }
 
 #content-manager.edit_view .chzn-container {
@@ -166,6 +180,10 @@ h1{ font-size: 20px }
 #content-manager.edit_view #site-structure {
     width: 350px;
     margin: 0;
+}
+
+#content-manager.cm-single-locale.edit_view #site-structure {
+    margin-top:11px;
 }
 
 #site-structure li select {
@@ -1649,11 +1667,10 @@ div.date img{
 }
 
 #content-manager.edit_view .chosen-container {
-    width: 352px !important;
+    width: 354px !important;
+    margin-right: -2px;
 }
-.margin0 {
-    margin:0px !important;
-}
+
 span.app-template-tooltip { word-wrap: break-word;}
 
 @media only screen and (max-width: 1279px) {

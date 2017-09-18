@@ -1048,10 +1048,10 @@ cx.cm = function(target) {
     cx.jQuery(document).ready(function() {
         if (cx.jQuery('#languageCount').val()<=1) {
             cx.jQuery("#site-language").hide();
-            cx.jQuery(".adminlist ").addClass("margin0");
+            cx.jQuery("#content-manager").addClass("cm-single-locale");
         } else {
             cx.jQuery("#site-language").show();
-            cx.jQuery(".adminlist ").removeClass("margin0");
+            cx.jQuery("#content-manager ").removeClass("cm-single-locale");
         }
         if (cx.jQuery('#pageId').val() == 'new') {
             // make sure history tab is hidden

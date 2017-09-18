@@ -12,7 +12,7 @@ var language_labels = {LANGUAGE_LABELS};
 
 <link href="../core/ContentManager/View/Style/Main.css" rel="stylesheet" type="text/css" />
 
-<div id="content-manager" class="sidebar-hide {EDIT_VIEW_CSS_CLASS}">
+<div id="content-manager" class="sidebar-hide {EDIT_VIEW_CSS_CLASS} {CONTENTMANAGER_LOCALE_CSS_CLASS}">
     <div id="cm-left">
         <div id="subnav">
             <div class="navi">
@@ -22,7 +22,7 @@ var language_labels = {LANGUAGE_LABELS};
                 <a href="index.php?cmd=ContentWorkflow">{TXT_CONTENT_HISTORY}</a>
                 <a href="index.php?cmd=Media&archive=content">{TXT_IMAGE_ADMINISTRATION}</a>
             </div>
-            <div id="site-language" style="{LANGUAGE_DISPLAY}">
+            <div id="site-language">
                 <!-- BEGIN content_manager_language_selection -->
                 {LANGSWITCH_OPTIONS}
                 <!-- END content_manager_language_selection -->
