@@ -608,6 +608,16 @@ class InitCMS
         $this->templates['headlines8']              = $this->getThemeFileContent($themesPath, 'headlines8.html');
         $this->templates['headlines9']              = $this->getThemeFileContent($themesPath, 'headlines9.html');
         $this->templates['headlines10']             = $this->getThemeFileContent($themesPath, 'headlines10.html');
+        $this->templates['headlines11']             = $this->getThemeFileContent($themesPath, 'headlines11.html');
+        $this->templates['headlines12']             = $this->getThemeFileContent($themesPath, 'headlines12.html');
+        $this->templates['headlines13']             = $this->getThemeFileContent($themesPath, 'headlines13.html');
+        $this->templates['headlines14']             = $this->getThemeFileContent($themesPath, 'headlines14.html');
+        $this->templates['headlines15']             = $this->getThemeFileContent($themesPath, 'headlines15.html');
+        $this->templates['headlines16']             = $this->getThemeFileContent($themesPath, 'headlines16.html');
+        $this->templates['headlines17']             = $this->getThemeFileContent($themesPath, 'headlines17.html');
+        $this->templates['headlines18']             = $this->getThemeFileContent($themesPath, 'headlines18.html');
+        $this->templates['headlines19']             = $this->getThemeFileContent($themesPath, 'headlines19.html');
+        $this->templates['headlines20']             = $this->getThemeFileContent($themesPath, 'headlines20.html');
         $this->templates['news_recent_comments']    = $this->getThemeFileContent($themesPath, 'news_recent_comments.html');
         $this->templates['javascript']              = $this->getThemeFileContent($themesPath, 'javascript.js');
         //$this->templates['style']                 = $this->getThemeFileContent($themesPath, 'style.css');
@@ -1038,7 +1048,7 @@ class InitCMS
             $themesId=intval($themesId);
             if ($themesId>0){
                 $customizedTheme = $this->themeRepository->findById($themesId);
-                if ($customizedTheme !== false) {
+                if ($customizedTheme) {
                     $this->currentThemesId=intval($customizedTheme->getId());
                 }
             }
@@ -1158,7 +1168,7 @@ class InitCMS
 
     public function getUriBy($key = '', $value = '')
     {
-        $url = \Env::get('Resolver')->getUrl();
+        $url = \Env::get('cx')->getRequest()->getUrl();
         $myUrl = clone $url;
         $myUrl->setParam($key, $value);
 
@@ -1168,7 +1178,7 @@ class InitCMS
 
     public function getPageUri()
     {
-        return \Env::get('Resolver')->getUrl();
+        return \Env::get('cx')->getRequest()->getUrl();
     }
 
 
@@ -1180,7 +1190,7 @@ class InitCMS
 
     /**
      * Returns true if the user agent is a mobile device (smart phone, PDA etc.)
-     * @todo    Maybe put this in a separate class?
+     * @deprecated Use \Cx\Core\Routing\Model\Entity\Request::isMobilePhone() instead
      */
     public static function _is_mobile_phone()
     {
@@ -1241,6 +1251,7 @@ class InitCMS
 
     /**
      * Returns true if the user agent is a tablet
+     * @deprecated Use \Cx\Core\Routing\Model\Entity\Request::isTablet() instead
      */
     public static function _is_tablet()
     {
@@ -1279,5 +1290,17 @@ class InitCMS
     public function getCurrentThemeId()
     {
         return $this->pageThemeId;
+    }
+
+    /**
+     * Returns the current channel
+     * @throws \Exception If channel is not yet set, call setFrontendLangId() to set it
+     * @return string Channel
+     */
+    public function getCurrentChannel() {
+        if (!$this->currentChannel) {
+            throw new \Exception('Channel not yet set');
+        }
+        return $this->currentChannel;
     }
 }

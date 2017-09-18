@@ -675,10 +675,6 @@ class BlockLibrary
     */
     function _setBlock($id, &$code, $pageId)
     {
-        if (!$this->checkTargetingOptions($id)) {
-            return;
-        }
-
         $now = time();
 
         $this->replaceBlocks(
@@ -931,16 +927,6 @@ class BlockLibrary
                 break;
         }
 
-
-        if ($objBlockName === false || $objBlockName->RecordCount() <= 0) {
-            return;
-        }
-
-        while (!$objBlockName->EOF) {
-            $arrActiveBlocks[] = $objBlockName->fields['id'];
-            $objBlockName->MoveNext();
-        }
-
         $this->replaceBlocks(
             $this->blockNamePrefix . 'RANDOMIZER' . $blockNr,
             $query,
@@ -982,6 +968,7 @@ class BlockLibrary
         $em = $cx->getDb()->getEntityManager();
         $systemComponentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
         $frontendEditingComponent = $systemComponentRepo->findOneBy(array('name' => 'FrontendEditing'));
+        $settings = $this->getSettings();
 
         if ($randomize) {
             $esiBlockInfos = array();
@@ -1024,7 +1011,48 @@ class BlockLibrary
             }
             $content = implode($separator, $contentList);
         }
+
+        if (!empty($settings['markParsedBlock'])) {
+            $content = "<!-- start $placeholderName -->$content<!-- end $placeholderName -->";
+        }
+
         $code = str_replace('{' . $placeholderName . '}', $content, $code);
+    }
+
+    /**
+     * Get the settings from database
+     *
+     * @staticvar array $settings settings array
+     *
+     * @return array settings array
+     */
+    public function getSettings()
+    {
+
+        static $settings = array();
+        if (!empty($settings)) {
+            return $settings;
+        }
+
+        $query = '
+            SELECT
+                `name`,
+                `value`
+            FROM
+                `'. DBPREFIX .'module_block_settings`';
+        $setting = \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getDb()
+                    ->getAdoDb()
+                    ->Execute($query);
+        if ($setting === false) {
+            return array();
+        }
+        while (!$setting->EOF) {
+            $settings[$setting->fields['name']] = $setting->fields['value'];
+            $setting->MoveNext();
+        }
+
+        return $settings;
     }
 
     /**

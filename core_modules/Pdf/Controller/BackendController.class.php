@@ -66,7 +66,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @param \Cx\Core\Html\Sigma $template Template for current CMD
      * @param array $cmd CMD separated by slashes
      */
-    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd)
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd, &$isSingle = false)
     {
         global $_ARRAYLANG, $objInit;
 
@@ -110,13 +110,15 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     }
 
     /**
-     * This method defines the option to generate the backend view (list and form)
+     * This function returns the ViewGeneration options for a given entityClass
      *
-     * @global array $_ARRAYLANG Language data
-     * @param string $entityClassName contains the FQCN from entity
-     * @return array array containing the options
+     * @access protected
+     * @global $_ARRAYLANG
+     * @param $entityClassName contains the FQCN from entity
+     * @param $dataSetIdentifier if $entityClassName is DataSet, this is used for better partition
+     * @return array with options
      */
-    protected function getViewGeneratorOptions($entityClassName)
+    protected function getViewGeneratorOptions($entityClassName, $dataSetIdentifier = '') {
     {
         global $_ARRAYLANG;
 
@@ -162,6 +164,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         },
                     ),
                 ),
+                'fileName' => array(
+                    'showOverview' => false,
+                    'header' => $_ARRAYLANG[$placeholderPrefix . '_FILENAME'],
+                ),
                 'active' => array(
                     'header'   => $_ARRAYLANG[$placeholderPrefix . '_STATE'],
                     'formtext' => $_ARRAYLANG[$placeholderPrefix . '_ACTIVE'],
@@ -193,7 +199,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         $editor = new \Cx\Core\Wysiwyg\Wysiwyg(
                             $name,
                             $value,
-                            'fullpage'
+                            'full'
                         );
                         $span   = new \Cx\Core\Html\Model\Entity\HtmlElement(
                             'span'

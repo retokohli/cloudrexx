@@ -87,4 +87,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array('JsonLocaleController');
     }
 
+    /**
+     * Register the Event listeners
+     */
+    public function registerEventListeners() {
+        // locale event listener
+        $evm = $this->cx->getEvents();
+        $eventListener = new \Cx\Core\Locale\Model\Event\LocaleEventListener($this->cx);
+        $evm->addModelListener(\Doctrine\ORM\Events::onFlush, 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $eventListener);
+    }
 }

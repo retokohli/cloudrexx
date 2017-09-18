@@ -2012,7 +2012,7 @@ class GalleryManager extends GalleryLibrary
             'TXT_SETTINGS_THUMB_PROZ_DESC'            =>    $_ARRAYLANG['TXT_SETTINGS_THUMB_PROZ_DESC'],
             'TXT_SETTINGS_QUALITY'                    =>    $_ARRAYLANG['TXT_SETTINGS_QUALITY'],
             'TXT_STANDARD_QUALITY_UPLOADED_PICS'    =>    $_ARRAYLANG['TXT_STANDARD_QUALITY_UPLOADED_PICS'],
-            'TXT_QUALITY'                            =>    $_ARRAYLANG['TXT_QUALITY'],
+            'TXT_GALLERY_QUALITY'                            =>    $_ARRAYLANG['TXT_GALLERY_QUALITY'],
             'TXT_BUTTON_SUBMIT'                        =>    $_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_SORT'],
             'TXT_GALLERY_SETTINGS_POPUP_ENABLED'    =>    $_ARRAYLANG['TXT_GALLERY_SETTINGS_POPUP_ENABLED'],
             'TXT_GALLERY_SETTINGS_IMAGE_WIDTH'        =>    $_ARRAYLANG['TXT_GALLERY_SETTINGS_IMAGE_WIDTH'],
@@ -2128,11 +2128,6 @@ class GalleryManager extends GalleryLibrary
             // the submitted category isnt allowed, so set the standardvalue 'proz'
             $_POST['standard_size_type'] = 'proz';
         }
-        if ($_POST['standard_height_abs'] > 0 && $_POST['standard_width_abs'] > 0) {
-            // only one value can be bigger than 0, so set one to zero
-            $_POST['standard_height_abs'] = 0;
-        }
-
         if ($_POST['standard_height_abs'] > 2000) {
             $_POST['standard_height_abs'] = 2000;
         }
@@ -3264,7 +3259,7 @@ $strFileNew = '';
             }
 
             //Resize the Rotated image
-            if ($objImage->resizeImageSave($strOrgPath, $strWebpath, $strImagename, $intNewWidth, $intNewHeight, $objResult->fields['quality'], $strThumbPath, $strThumbWebpath, $strImagename)) {
+            if ($this->createImages_JPG_GIF_PNG($strOrgPath, $strThumbPath, $strImagename, $strImagename, $intNewWidth, $intNewHeight, $objResult->fields['quality'])) {
                 if ($objResult->fields['size_type'] == 'abs') {
                     $objDatabase->Execute('    UPDATE     ' . DBPREFIX . 'module_gallery_pictures
                                     SET     size_abs_h=' . $intNewHeight . ',
@@ -3591,8 +3586,8 @@ $strFileNew = '';
             $memoryLimit = $objSystem->getBytesOfLiteralSizeFormat(@ini_get('memory_limit'));
             // a $memoryLimit of zero means that there is no limit. so let's try it and hope that the host system has enough memory
             if (!empty($memoryLimit)) {
-                   $potentialRequiredMemory = $intSize[0] * $intSize[1] * ($intSize['bits']/8) * $intSize['channels'] * 1.8 * 2;
-        if (function_exists('memory_get_usage')) {
+               $potentialRequiredMemory = $intSize[0] * $intSize[1] * ($intSize['bits']/8) * $intSize['channels'] * 1.8 * 2;
+                if (function_exists('memory_get_usage')) {
                     $potentialRequiredMemory += memory_get_usage();
                 } else {
                     // add a default of 10 MBytes
@@ -3612,51 +3607,33 @@ $strFileNew = '';
             return false;
         }
 
-        switch ($strType)
-        {
-            case 1: //GIF
-                if ($this->boolGifEnabled) {
-                    $handleImage1 = ImageCreateFromGif ($strPathOld.$strFileOld);
-                    $handleImage2 = @ImageCreateTrueColor($intNewWidth,$intNewHeight);
-                    ImageCopyResampled($handleImage2, $handleImage1,0,0,0,0,$intNewWidth,$intNewHeight, $intWidth,$intHeight);
-                    ImageGif ($handleImage2, $strPathNew.$strFileNew);
+        $imageManager = new \ImageManager();
 
-                    ImageDestroy($handleImage1);
-                    ImageDestroy($handleImage2);
-                } else {
-                        $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_GIF_SUPPORT'];
-                }
-            break;
-            case 2: //JPG
-                if ($this->boolJpgEnabled) {
-                    $handleImage1 = ImageCreateFromJpeg($strPathOld.$strFileOld);
-                    $handleImage2 = ImageCreateTrueColor($intNewWidth,$intNewHeight);
-
-                    ImageCopyResampled($handleImage2, $handleImage1,0,0,0,0,$intNewWidth,$intNewHeight, $intWidth,$intHeight);
-                    ImageJpeg($handleImage2, $strPathNew.$strFileNew, $intQuality);
-
-                    ImageDestroy($handleImage1);
-                    ImageDestroy($handleImage2);
-                } else {
-                        $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_JPG_SUPPORT'];
-                }
-            break;
-            case 3: //PNG
-                if ($this->boolPngEnabled) {
-                    $handleImage1 = ImageCreateFromPNG($strPathOld.$strFileOld);
-                    $handleImage2 = @ImageCreateTrueColor($intNewWidth,$intNewHeight);
-                    ImageAlphaBlending($handleImage2, false);
-                    ImageSaveAlpha($handleImage2, true);
-                    ImageCopyResampled($handleImage2, $handleImage1,0,0,0,0,$intNewWidth,$intNewHeight, $intWidth,$intHeight);
-                    ImagePNG($handleImage2, $strPathNew.$strFileNew);
-                    ImageDestroy($handleImage1);
-                    ImageDestroy($handleImage2);
-                } else {
-                        $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_PNG_SUPPORT'];
-                }
-            break;
+        // load raw image
+        if (!$imageManager->loadImage($strPathOld.$strFileOld)) {
+            return false;
         }
-        return true;
+
+        // calculate the scale ratios
+        $rationWidth = $imageManager->orgImageWidth / $intNewWidth;
+        $rationHeight = $imageManager->orgImageHeight / $intNewHeight;
+
+        // crop the image to new dimension
+        if ($rationWidth < $rationHeight) {
+            $imageManager->orgImageHeight = $imageManager->orgImageHeight / $rationHeight * $rationWidth;
+        } else {
+            $imageManager->orgImageWidth = $imageManager->orgImageWidth / $rationWidth * $rationHeight;
+        }
+
+        // scale the image to thumbnail-size
+        if (!$imageManager->resizeImage(
+            $intNewWidth,
+            $intNewHeight,
+            $this->arrSettings['standard_quality']
+        )) {
+            return false;
+        }
+        return $imageManager->saveNewImage($strPathNew.$strFileNew, true);
     }
 
 

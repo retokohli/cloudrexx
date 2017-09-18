@@ -420,15 +420,6 @@ class Resolver {
             $canonicalPage = $this->pageRepo->getTargetPage($this->urlPage);
         }
 
-        // don't set canonical page when replying with an application page
-        // since we can't know which application pages share the same content.
-        // Exception to this rule: if we're not on main domain, we know that
-        // the canonical version is the same page using the main domain.
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $domainRepo = $cx->getDb()->getEntityManager()->getRepository(
-            'Cx\Core\Net\Model\Entity\Domain'
-        );
-
         // set canonical page only in case it hasn't been set already
         $linkHeader = preg_grep('/^Link:.*canonical["\']$/', headers_list());
         if ($linkHeader) {
@@ -438,9 +429,12 @@ class Resolver {
             $this->headers['Link'] = $link;
         }
 
+        // don't set canonical page when replying with an application page
+        // since we can't know which application pages share the same content.
+        // TODO: this should be handled by the affected components themself
         if (
             $canonicalPage->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION &&
-            $this->url->getDomain() == $domainRepo->getMainDomain()->getName()
+            !in_array($canonicalPage->getModule(), array('Home', 'Sitemap', 'Agb', 'Imprint', 'Privacy', 'Ids'))
         ) {
             return $this->page;
         }
@@ -504,14 +498,45 @@ class Resolver {
                 if (trim($this->page->getTargetQueryString()) != '') {
                     $params = array_merge($params, explode('&', $this->page->getTargetQueryString()));
                 }
-                $target = \Cx\Core\Routing\Url::fromNodeId($this->page->getTargetNodeId(), $this->page->getTargetLangId(), $params);
+                try {
+                    $target = \Cx\Core\Routing\Url::fromNodeId($this->page->getTargetNodeId(), $this->page->getTargetLangId(), $params);
+                } catch (UrlException $e) {
+                    \DBG::log($e->getMessage());
+                    return null;
+                }
             } else {
                 $target = $this->page->getTarget();
             }
+            // TODO: Cache this redirect. This is not done yet since we would
+            // need to drop the complete page cache (since we don't know which
+            // is the correct cache file for this redirect)
             header('HTTP/1.1 301 Moved Permanently');
             header('Location: ' . $target);
             header('Connection: close');
             exit;
+        }
+
+        // If an alias like /de/alias1 was resolved, redirect to /alias1
+        if (!empty($langDir)) {
+            $correctUrl = \Cx\Core\Routing\Url::fromPage($this->page);
+            // get additinal path parts (like /de/alias1/additional/path)
+            $splitQuery = explode('?', $this->url->getPath(), 2);
+            $pathParts = explode('/', $splitQuery[0]);
+            unset($pathParts[0]);
+            if (count($pathParts)) {
+                $additionalPath = '/' . implode('/', $pathParts);
+                $correctUrl->setPath($correctUrl->getPath() . $additionalPath);
+            }
+            // set query params (like /de/alias1?foo=bar)
+            $correctUrl->setParams($this->url->getParamArray());
+            // 301 redirect
+            // TODO: Cache this redirect. This is not done yet since we would
+            // need to drop the complete page cache (since we don't know which
+            // is the correct cache file for this redirect)
+            header('HTTP/1.1 301 Moved Permanently');
+            header('Location: ' . $correctUrl->toString());
+            header('Connection: close');
+            exit();
         }
         return $this->page;
     }
@@ -1015,6 +1040,10 @@ class Resolver {
      * @return array key=>value style array
      */
     public function getHeaders() {
+        $response = \Cx\Core\Core\Controller\Cx::instanciate()->getResponse();
+        if ($response->getExpirationDate()) {
+            $this->headers['Expires'] = $response->getExpirationDate()->format('r');
+        }
         return $this->headers;
     }
 }

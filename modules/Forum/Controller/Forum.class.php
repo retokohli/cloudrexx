@@ -99,9 +99,6 @@ class Forum extends ForumLibrary {
             case 'cat':
                 $this->showCategory($_GET['id']);
                 break;
-            case 'userinfo':
-                $this->showProfile($_GET['id']);
-                break;
             case 'notification':
                 $this->showNotifications();
                 break;
@@ -1558,39 +1555,6 @@ class Forum extends ForumLibrary {
         } else {
             //no forums in database
         }
-    }
-
-    /**
-     * show the user profile - adapted from the community module
-     *
-     * @param integer $userId as in `access_users`
-     * @return void
-     */
-    function showProfile($userId)
-    {
-        global $objDatabase;
-        $this->_communityLogin();
-        $userId = intval($userId);
-        $objResult = $objDatabase->SelectLimit("SELECT email, firstname, lastname, street, zip, phone, mobile, residence, profession, interests, webpage, company FROM ".DBPREFIX."access_users WHERE id=".$userId);
-        if ($objResult !== false) {
-            $this->_objTpl->setVariable(array(
-                'COMMUNITY_FIRSTNAME'    => $objResult->fields['firstname'],
-                'COMMUNITY_LASTNAME'    => $objResult->fields['lastname'],
-                'COMMUNITY_STREET'        => $objResult->fields['street'],
-                'COMMUNITY_ZIP'            => $objResult->fields['zip'],
-                'COMMUNITY_RESIDENCE'    => $objResult->fields['residence'],
-                'COMMUNITY_PROFESSION'    => $objResult->fields['profession'],
-                'COMMUNITY_INTERESTS'    => $objResult->fields['interests'],
-                'COMMUNITY_WEBPAGE'        => preg_replace('#(http://)?(www\.)?([a-zA-Z][a-zA-Z0-9-/]+\.[a-zA-Z][a-zA-Z0-9-/&\#\+=\?\.;%]+)#i', '<a href="http://$2$3"> $2$3 </a>' , $objResult->fields['webpage']),
-                'COMMUNITY_EMAIL'        => $objResult->fields['email'],
-                'COMMUNITY_COMPANY'        => $objResult->fields['company'],
-                'COMMUNITY_PHONE'        => $objResult->fields['phone'],
-                'COMMUNITY_MOBILE'        => $objResult->fields['mobile'],
-            ));
-        }else{
-            die('DB error: '.$objDatabase->ErrorMsg());
-        }
-        $this->_objTpl->setVariable("FORUM_REFERER", $_SERVER['HTTP_REFERER']);
     }
 
     /**
