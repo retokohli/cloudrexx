@@ -3092,8 +3092,8 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
 
     // store page's locale in last used locales
     var lastUsedLocales = '';
-    if (!!cx.jQuery.cookie('lastUsedLocales')) {
-        lastUsedLocales = cx.jQuery.cookie('lastUsedLocales');
+    if (!!Cookies.get('lastUsedLocales')) {
+        lastUsedLocales = Cookies.get('lastUsedLocales');
     }
     if (lastUsedLocales.length) {
         lastUsedLocales = lastUsedLocales.split(",");
@@ -3108,7 +3108,7 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     });
     // convert to string and store last used locales in cookie
     lastUsedLocales = lastUsedLocales.join(",");
-    cx.jQuery.cookie('lastUsedLocales', lastUsedLocales);
+    Cookies.set('lastUsedLocales', lastUsedLocales);
 
     cx.cm.updateLocaleSelect();
 };
@@ -3373,8 +3373,8 @@ cx.cm.setSelectedMetaimage = function (data) {
  */
 cx.cm.updateLocaleSelect = function() {
     // place last used locales on top of select
-    if (!!cx.jQuery.cookie("lastUsedLocales")) {
-        var lastUsedLocales = cx.jQuery.cookie("lastUsedLocales").split(",");
+    if (!!Cookies.get("lastUsedLocales")) {
+        var lastUsedLocales = Cookies.get("lastUsedLocales").split(",");
         // loop over last used locales backwards
         for (var i = lastUsedLocales.length - 1; i >= 0; --i) {
             // place option on top of select
