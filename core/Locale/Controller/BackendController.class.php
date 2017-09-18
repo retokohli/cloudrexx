@@ -273,7 +273,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @return array with options
      */
     protected function getViewGeneratorOptions($entityClassName, $dataSetIdentifier = '') {
-    {
         global $_ARRAYLANG;
 
         $classNameParts = explode('\\', $entityClassName);
