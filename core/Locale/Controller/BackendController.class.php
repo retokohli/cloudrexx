@@ -383,8 +383,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @param $dataSetIdentifier if $entityClassName is DataSet, this is used for better partition
      * @return array with options
      */
-    protected function getViewGeneratorOptions($entityClassName, $dataSetIdentifier='')
-    {
+    protected function getViewGeneratorOptions($entityClassName, $dataSetIdentifier = '') {
         global $_ARRAYLANG;
 
         $classNameParts = explode('\\', $entityClassName);
