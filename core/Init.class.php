@@ -906,12 +906,14 @@ class InitCMS
             $module = '';
         } else {
             //load english language file first...
+            // TODO: load language file by iso code 'en'
             $path = $this->getLangFilePath($module, 2);
             if (!empty($path)) {
                 $this->loadLangFile($path, $loadFromYaml, $module);
             }
             //...and overwrite with actual language where translated.
             //...but only if $langId is set (otherwise it will overwrite English by the default language
+            // TODO: verify by iso code 'en'
             if($langId && $langId != 2) { //don't do it for english, already loaded.
                 $path = $this->getLangFilePath($module, $langId);
                 if (!empty($path)) {
@@ -1094,15 +1096,18 @@ class InitCMS
         $frontend = $cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND;
         if ($frontend) {
             // get language by frontend locale
+            // TODO: we must load the language specified by $path
             $locale = $cx->getDb()->getEntityManager()->find(
                 'Cx\Core\Locale\Model\Entity\Locale',
                 $this->frontendLangId
             );
             $language = $locale->getSourceLanguage();
         } elseif ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+            // TODO: we must load the language specified by $path
+            $backendLangId = !empty($this->backendLangId) ? $this->backendLangId : $this->defaultBackendLangId;
             $backend = $em->find(
                 'Cx\Core\Locale\Model\Entity\Backend',
-                $this->backendLangId
+                $backendLangId
             );
             $language = $backend->getIso1();
         } else {
