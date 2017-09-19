@@ -3485,6 +3485,10 @@ cx.cm.getSiteStructureCols = function() {
  * @param toggle Wether to switch or not
  */
 cx.cm.switchTagDropdown = function(toggle) {
+    // do not render locale-selection-dropdown in single-locale-mode
+    if (cx.jQuery('#content-manager').hasClass('cm-single-locale')) {
+        return;
+    }
     var switchTagDropdown = cx.jQuery(".switch-tag-dropdown");
     var translations = cx.jQuery("#site-tree .translations");
 
