@@ -73,15 +73,28 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     public function getCommands()
     {
-        $localeMgmtPermission = new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, null, array(22, 50), null);
-        $variableMgmtPermission = new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, null, array(22, 48), null);
+        $cx = $this->cx;
+
+        // permission for Locale and Language management
+        $localeMgmtPermission = new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, null, array(50), null);
+
+        // permission for frontend variable management
+        $variableMgmtPermission = new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, null, array(48), null);
+
+        // backend variable management shall only be available if component SystemInfo is present
+        $variableBackendMgmtPermission = new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, null, array(48),
+            function() use ($cx) {
+                return in_array('SystemInfo', $cx->getLicense()->getLegalComponentsList());
+            }
+        );
 
         return array(
             'Locale'        => array('permission' => $localeMgmtPermission),
             'Backend'       => array('permission' => $localeMgmtPermission),
             // Default is frontend
             'LanguageFile'  => array(
-                'Backend' => array('permission' => $variableMgmtPermission),
+                'permission' => $variableMgmtPermission,
+                'Backend' => array('permission' => $variableBackendMgmtPermission),
             ),
         );
     }
@@ -1076,6 +1089,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         foreach($stmt->fetchAll() as $component) {
             // skip components with no language files
             if (in_array($component['name'], $skipList)) {
+                continue;
+            }
+            $componentCtrl = $this->cx->getComponent($component['name']);
+            if (!$componentCtrl || !$componentCtrl->isActive()) {
                 continue;
             }
             // custom hack for Media1, Media2, Media3, Media4
