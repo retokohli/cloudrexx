@@ -224,6 +224,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     $componentName = 'Core';
                 }
 
+                // verify that we are allowed to alter the language file
+                // of the selected component
+                if (!$this->isComponentCustomizable($componentName, $frontend ? $this->cx::MODE_FRONTEND : $this->cx::MODE_BACKEND)) {
+                    break;
+                }
+
                 try {
                     // set language file by source language
                     $this->languageFile = new \Cx\Core\Locale\Model\Entity\SettingsLanguageFile(
@@ -975,119 +981,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $stmt = $em->getConnection()->prepare($query);
         $stmt->execute();
 
-        // TODO: this should be done dynamically
-        if ($mode == $this->cx::MODE_FRONTEND) {
-            $skipList = array(
-                'Agb',
-                'Alias',
-                'Cache',
-                'Captcha',
-                'ComponentManager',
-                'Config',
-                'ContentManager',
-                'ContentWorkflow',
-                'Core',
-                'Country',
-                'Crm',
-                'Cron',
-                'Csrf',
-                'DataAccess',
-                'DatabaseManager',
-                'DataSource',
-                'DateTime',
-                'Error',
-                'FileBrowser',
-                'GeoIp',
-                'Home',
-                'Html',
-                'Ids',
-                'Imprint',
-                'JavaScript',
-                'JsonData',
-                'LanguageManager',
-                'License',
-                'LinkManager',
-                'Locale',
-                'Media2',
-                'Media3',
-                'Media4',
-                'MediaBrowser',
-                'MediaSource',
-                'Message',
-                'Model',
-                'Net',
-                'NetManager',
-                'Order',
-                'Pdf',
-                'Pim',
-                'Privacy',
-                'Routing',
-                'Security',
-                'Session',
-                'Setting',
-                'Shell',
-                'Sitemap',
-                'Support',
-                'Sync',
-                'SysLog',
-                'SystemInfo',
-                'SystemLog',
-                'Test',
-                'Upload',
-                'User',
-                'View',
-                'ViewManager',
-                'Widget',
-                'Workbench',
-            );
-        } else {
-            $skipList = array(
-                'Agb',
-                'Captcha',
-                'ContentManager',
-                'Core',
-                'Country',
-                'Csrf',
-                'DataAccess',
-                'DataSource',
-                'DateTime',
-                'Error',
-                'FrontendEditing',
-                'Home',
-                'Ids',
-                'Imprint',
-                'JavaScript',
-                'JsonData',
-                'License',
-                'Media2',
-                'Media3',
-                'Media4',
-                'MediaSource',
-                'Message',
-                'Model',
-                'Net',
-                'Pim',
-                'Privacy',
-                'Security',
-                'Session',
-                'Setting',
-                'Shell',
-                'Sitemap',
-                'Sync',
-                'SysLog',
-                'Test',
-                'Upload',
-                'User',
-                'View',
-                'Widget',
-                'Workbench',
-            );
-        }
-
         $validData = array();
         foreach($stmt->fetchAll() as $component) {
             // skip components with no language files
-            if (in_array($component['name'], $skipList)) {
+            if (!$this->isComponentCustomizable($component['name'], $mode)) {
                 continue;
             }
             $componentCtrl = $this->cx->getComponent($component['name']);
@@ -1152,5 +1049,115 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $em = $this->cx->getDb()->getEntityManager();
         $this->languageRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Language');
         return $this->languageRepo;
+    }
+
+    protected function isComponentCustomizable($component, $mode) {
+        // TODO: this should be done dynamically
+        if ($mode == $this->cx::MODE_FRONTEND) {
+            $skipList = array(
+                'Agb',
+                'Alias',
+                'Cache',
+                'Captcha',
+                'ComponentManager',
+                'Config',
+                'ContentManager',
+                'ContentWorkflow',
+                'Country',
+                'Crm',
+                'Cron',
+                'Csrf',
+                'DataAccess',
+                'DatabaseManager',
+                'DataSource',
+                'DateTime',
+                'Error',
+                'FileBrowser',
+                'GeoIp',
+                'Home',
+                'Html',
+                'Ids',
+                'Imprint',
+                'JavaScript',
+                'JsonData',
+                'LanguageManager',
+                'License',
+                'LinkManager',
+                'Locale',
+                'Media2',
+                'Media3',
+                'Media4',
+                'MediaBrowser',
+                'MediaSource',
+                'Message',
+                'Model',
+                'Net',
+                'NetManager',
+                'Order',
+                'Pdf',
+                'Pim',
+                'Privacy',
+                'Routing',
+                'Security',
+                'Session',
+                'Setting',
+                'Shell',
+                'Sitemap',
+                'Support',
+                'Sync',
+                'SysLog',
+                'SystemInfo',
+                'SystemLog',
+                'Test',
+                'Upload',
+                'User',
+                'View',
+                'ViewManager',
+                'Widget',
+                'Workbench',
+            );
+        } else {
+            $skipList = array(
+                'Agb',
+                'Captcha',
+                'ContentManager',
+                'Country',
+                'Csrf',
+                'DataAccess',
+                'DataSource',
+                'DateTime',
+                'Error',
+                'FrontendEditing',
+                'Home',
+                'Ids',
+                'Imprint',
+                'JavaScript',
+                'JsonData',
+                'License',
+                'Media2',
+                'Media3',
+                'Media4',
+                'MediaSource',
+                'Message',
+                'Model',
+                'Net',
+                'Pim',
+                'Privacy',
+                'Security',
+                'Session',
+                'Setting',
+                'Shell',
+                'Sitemap',
+                'Sync',
+                'SysLog',
+                'Test',
+                'Upload',
+                'User',
+                'View',
+                'Widget',
+                'Workbench',
+            );
+        }
+        return !in_array($component, $skipList);
     }
 }

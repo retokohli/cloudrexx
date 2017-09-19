@@ -160,8 +160,8 @@ class SettingsLanguageFile extends LanguageFile  {
             $this->destLanguage->getIso1() . '/' . $this->mode . '.yaml';
         // rewrite path to customizing
         $this->path = str_replace(
-            ASCMS_DOCUMENT_ROOT,
-            ASCMS_CUSTOMIZING_PATH,
+            $this->cx->getCodeBaseDocumentRootPath(),
+            $this->cx->getWebsiteCustomizingPath(),
             $this->path
         );
     }
