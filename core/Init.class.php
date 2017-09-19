@@ -824,6 +824,8 @@ class InitCMS
     {
         global $objDatabase;
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+
         // generate "module paths" array
         $query = "SELECT name, is_core FROM ".DBPREFIX."modules";
         $objResult = $objDatabase->Execute($query);
@@ -832,8 +834,8 @@ class InitCMS
                 if (strlen($objResult->fields['name'])>0){
                     switch ($objResult->fields['name']){
                         case 'core':
-                            $this->arrModulePath[$objResult->fields['name']] = ASCMS_DOCUMENT_ROOT.'/lang/';
-                            $this->arrModulePath['Core'] = ASCMS_DOCUMENT_ROOT.'/lang/';
+                            $this->arrModulePath[$objResult->fields['name']] = $cx->getCodeBaseDocumentRootPath() . '/lang/';
+                            $this->arrModulePath['Core'] = $cx->getCodeBaseDocumentRootPath() . '/lang/';
                             break;
                         case 'DatabaseManager':
                         case 'SystemInfo':
@@ -848,16 +850,16 @@ class InitCMS
                         case 'Wysiwyg':
                         case 'Routing':
                         case 'Html':
-                            $this->arrModulePath[$objResult->fields['name']] = ASCMS_CORE_PATH.'/'. $objResult->fields['name'] . '/lang/';
+                            $this->arrModulePath[$objResult->fields['name']] = $cx->getCodeBaseCorePath() . '/'. $objResult->fields['name'] . '/lang/';
                             break;
                         default:
-                        $this->arrModulePath[$objResult->fields['name']] = ($objResult->fields['is_core'] == 1 ? ASCMS_CORE_MODULE_PATH : ASCMS_MODULE_PATH).'/'.$objResult->fields['name'].'/lang/';
+                        $this->arrModulePath[$objResult->fields['name']] = ($objResult->fields['is_core'] == 1 ? $cx->getCodeBaseCoreModulePath() : $cx->getCodeBaseModulePath()).'/'.$objResult->fields['name'].'/lang/';
                     }
                 }
                 $objResult->MoveNext();
             }
             // add special modules
-            $this->arrModulePath['Media'] = ASCMS_CORE_MODULE_PATH.'/Media/lang/';
+            $this->arrModulePath['Media'] = $cx->getCodeBaseCoreModulePath() . '/Media/lang/';
         }
     }
 
