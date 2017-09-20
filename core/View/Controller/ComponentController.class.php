@@ -250,7 +250,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             );
         }
         $em = $this->cx->getDb()->getEntityManager();
-        $themeRepo = $em->getRepository('Cx\Core\View\Model\Entity\Theme');
+        $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
         $defaultTheme = $themeRepo->getDefaultTheme(
             $channel,
             $page->getLang()

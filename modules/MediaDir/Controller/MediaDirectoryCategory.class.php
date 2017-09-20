@@ -333,6 +333,8 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                     $levelId = intval($requestParams['lid']);
                 }
 
+                $thumbnailFormats = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
+
                 foreach ($arrCategories as $key => $arrCategory) {
                     if($this->arrSettings['settingsCategoryOrder'] == 2) {
                         $strIndexHeader = strtoupper(substr($arrCategory['catName'][0],0,1));
@@ -384,6 +386,24 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrCategory['catNumEntries'],
                         $this->moduleLangVar.'_CATEGORY_LEVEL_CHILDREN' => $childrenString,
                     ));
+
+                    // parse thumbnails
+                    if (!empty($arrCategory['catPicture'])) {
+                        $arrThumbnails = array();
+                        $imagePath = pathinfo($arrCategory['catPicture'], PATHINFO_DIRNAME);
+                        $imageFilename = pathinfo($arrCategory['catPicture'], PATHINFO_BASENAME);
+                        $thumbnails = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($imagePath, $imageFilename, true);
+                        foreach ($thumbnailFormats as $thumbnailFormat) {
+                            if (!isset($thumbnails[$thumbnailFormat['size']])) {
+                                continue;
+                            }
+                            $format = strtoupper($thumbnailFormat['name']);
+                            $thumbnail = $thumbnails[$thumbnailFormat['size']];
+                            $objTpl->setVariable(
+                                $this->moduleLangVar.'_CATEGORY_LEVEL_THUMBNAIL_FORMAT_' . $format, $thumbnail
+                            );
+                        }
+                    }
 
                     $intBlockId = $arrExistingBlocks[$i];
 
@@ -503,6 +523,25 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                     $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrCategories[$intCategoryId]['catPicture'],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrCategories[$intCategoryId]['catNumEntries'],
                 ));
+
+                // parse thumbnails
+                if ($thumbImage) {
+                    $thumbnailFormats = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
+                    $arrThumbnails = array();
+                    $imagePath = pathinfo($arrCategories[$intCategoryId]['catPicture'], PATHINFO_DIRNAME);
+                    $imageFilename = pathinfo($arrCategories[$intCategoryId]['catPicture'], PATHINFO_BASENAME);
+                    $thumbnails = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($imagePath, $imageFilename, true);
+                    foreach ($thumbnailFormats as $thumbnailFormat) {
+                        if (!isset($thumbnails[$thumbnailFormat['size']])) {
+                            continue;
+                        }
+                        $format = strtoupper($thumbnailFormat['name']);
+                        $thumbnail = $thumbnails[$thumbnailFormat['size']];
+                        $objTpl->setVariable(
+                            $this->moduleLangVar.'_CATEGORY_LEVEL_THUMBNAIL_FORMAT_' . $format, $thumbnail
+                        );
+                    }
+                }
 
                 // parse GoogleMap
                 $this->parseGoogleMapPlaceholder($objTpl, $this->moduleLangVar.'_CATEGORY_LEVEL_GOOGLE_MAP');

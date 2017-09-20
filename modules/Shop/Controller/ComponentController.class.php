@@ -68,6 +68,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     \Env::get('cx')->getPage()->setContentTitle($page_metatitle);
                     \Env::get('cx')->getPage()->setMetaTitle($page_metatitle);
                 }
+                $metaImage = Shop::getPageMetaImage();
+                if ($metaImage) {
+                    \Env::get('cx')->getPage()->setMetaimage($metaImage);
+                }
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
