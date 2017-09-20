@@ -53,6 +53,17 @@ namespace Cx\Core_Modules\Widget\Model\Entity;
 class RandomEsiWidget extends EsiWidget {
 
     /**
+     * Returns the name of the JsonAdapter to call
+     * @return string JsonAdapter name
+     */
+    public function getJsonAdapterName() {
+        if (empty($this->jsonAdapterName)) {
+            return $this->getRegisteringComponent()->getName() . 'RandomWidget';
+        }
+        return $this->jsonAdapterName;
+    }
+
+    /**
      * Returns the number of unique repetitions of this widget
      * By overriding this method you can parse multiple instances of your widget
      * without having the same widget rendered twice

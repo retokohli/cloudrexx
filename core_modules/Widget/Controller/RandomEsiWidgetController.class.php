@@ -81,6 +81,15 @@ abstract class RandomEsiWidgetController extends EsiWidgetController {
     }
 
     /**
+     * Returns the internal name used as identifier for this adapter
+     * @see \Cx\Core\Json\JsonAdapter::getName()
+     * @return string Name of this adapter
+     */
+    public function getName() {
+        return $this->getSystemComponent()->getName() . 'RandomWidget';
+    }
+
+    /**
      * Returns the max number of cached sub-widgets
      * @return integer Number of widgets
      */
