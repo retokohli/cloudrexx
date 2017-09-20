@@ -885,7 +885,7 @@ namespace Cx\Core\Core\Controller {
          * Stops time measurement and returns page parsing time
          * @return int Time needed to parse page in seconds
          */
-        protected function stopTimer() {
+        public function stopTimer() {
             $finishTime = explode(' ', microtime());
             return round(((float)$finishTime[0] + (float)$finishTime[1]) - ((float)$this->startTime[0] + (float)$this->startTime[1]), 5);
         }
@@ -2278,6 +2278,17 @@ namespace Cx\Core\Core\Controller {
                 );
                 $this->getResponse()->setParsedContent($ls->replace());
             }
+
+            $requestInfo = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+            $requestIp = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+            $requestHost = isset($_SERVER['REMOTE_HOST']) ? $_SERVER['REMOTE_HOST'] : $requestIp;
+            $requestUserAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+            
+            $cx = $this;
+            register_shutdown_function(function() use ($cx, $requestInfo, $requestIp, $requestHost, $requestUserAgent) {
+                $parsingTime = $cx->stopTimer();
+                \DBG::log("(Cx: {$cx->id}) Request parsing completed after $parsingTime \"uncached\" \"$requestInfo\" \"$requestIp\" \"$requestHost\" \"$requestUserAgent\"");
+            });
         }
 
         /**
@@ -2287,9 +2298,6 @@ namespace Cx\Core\Core\Controller {
             $endcode = $this->getResponse()->getParsedContent();
             $this->ch->callPostFinalizeHooks($endcode);
             $this->getResponse()->setParsedContent($endcode);
-
-            $parsingTime = $this->stopTimer();
-            \DBG::log("(Cx: {$this->id}) Request parsing completed after $parsingTime");
         }
 
         /* GETTERS */

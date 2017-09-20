@@ -116,6 +116,14 @@ class Shop extends ShopLibrary
     protected static $pageTitle = null;
 
     /**
+     * The current page's meta image
+     * If the user is on the detail or category page,
+     * show the product or category image
+     * @var string
+     */
+    protected static $pageMetaImage = '';
+
+    /**
      * Whether or not a session has been initialized
      * and is being used
      * @var boolean
@@ -400,6 +408,15 @@ die("Failed to get Customer for ID $customer_id");
     }
 
     /**
+     * Returns the category or product image if the use is on
+     * a product's or category's page
+     * @return string Relative image URL
+     */
+    public static function getPageMetaImage() {
+        return static::$pageMetaImage;
+    }
+
+    /**
      * Sets up the Shop Navbar content and returns it as a string
      *
      * Note that {@see init()} must have been called before.
@@ -669,6 +686,14 @@ die("Failed to get Customer for ID $customer_id");
             if (!$objTemplate->blockExists('shopJsCart')) {
                 continue;
             }
+
+            // placeholder SHOP_FORCE_JS_CART will allow multiple parsing of shopJsCart
+            // TODO: drop placeholder/feature as soon as placeholder-modification-
+            //       feature of Locale component is live
+            if (self::$use_js_cart && !$objTemplate->placeholderExists('SHOP_FORCE_JS_CART')) {
+                break;
+            }
+
 //\DBG::log("Shop::setJsCart(): In themespage $index: {$themesPages[$index]}");
             $objTemplate->setCurrentBlock('shopJsCart');
             // Set all language entries and replace formats
@@ -704,7 +729,10 @@ die("Failed to get Customer for ID $customer_id");
             }
             // One instance only (mind that there's a unique id attribute)
             self::$use_js_cart = true;
-            break;
+
+            // TODO: reactivate 'break' statement as soon as placeholder-modification-
+            //       feature of Locale component is live
+            //break;
         }
         if (!self::$use_js_cart) {
             return;
@@ -938,6 +966,7 @@ die("Failed to update the Cart!");
     static function showCategories($parent_id=0)
     {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $thumbnailFormats = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
         if ($parent_id) {
             $objCategory = ShopCategory::getById($parent_id);
             // If we can't get this ShopCategory, it most probably does
@@ -973,6 +1002,23 @@ die("Failed to update the Cart!");
                             'SHOP_CATEGORY_CURRENT_THUMBNAIL'       => contrexx_raw2encodedUrl($thumbnailPath),
                             'SHOP_CATEGORY_CURRENT_THUMBNAIL_SIZE'  => $arrSize[3],
                         ));
+                        static::$pageMetaImage = contrexx_raw2encodedUrl($cx->getWebsiteImagesShopWebPath() . '/' . $imageName);
+                    }
+
+                    // fetch all thumbnails of image and add as placeholders
+                    $arrThumbnails = array();
+                    $imagePath = pathinfo($imageName, PATHINFO_DIRNAME);
+                    $imageFilename = pathinfo($imageName, PATHINFO_BASENAME);
+                    $thumbnails = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($cx->getWebsiteImagesShopWebPath() . '/' . $imagePath, $imageFilename, true);
+                    foreach ($thumbnailFormats as $thumbnailFormat) {
+                        if (!isset($thumbnails[$thumbnailFormat['size']])) {
+                            continue;
+                        }
+                        $format = strtoupper($thumbnailFormat['name']);
+                        $thumbnail = contrexx_raw2encodedUrl($thumbnails[$thumbnailFormat['size']]);
+                        self::$objTemplate->setVariable(
+                            'SHOP_CATEGORY_CURRENT_THUMBNAIL_FORMAT_' . $format, $thumbnail
+                        );
                     }
                 }
             }
@@ -1038,6 +1084,23 @@ die("Failed to update the Cart!");
 //                'SHOP_CATEGORY_SUBMIT_FUNCTION' => 'location.replace("index.php?section=Shop'.MODULE_INDEX.'&catId='.$id.'")',
 //                'SHOP_CATEGORY_SUBMIT_TYPE' => "button",
             ));
+
+            // fetch all thumbnails of image and add as placeholders
+            $arrThumbnails = array();
+            $imagePath = pathinfo($imageName, PATHINFO_DIRNAME);
+            $imageFilename = pathinfo($imageName, PATHINFO_BASENAME);
+            $thumbnails = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($cx->getWebsiteImagesShopWebPath() . '/' . $imagePath, $imageFilename, true);
+            foreach ($thumbnailFormats as $thumbnailFormat) {
+                if (!isset($thumbnails[$thumbnailFormat['size']])) {
+                    continue;
+                }
+                $format = strtoupper($thumbnailFormat['name']);
+                $thumbnail = contrexx_raw2encodedUrl($thumbnails[$thumbnailFormat['size']]);
+                self::$objTemplate->setVariable(
+                    'SHOP_CATEGORY_THUMBNAIL_FORMAT_' . $format, $thumbnail
+                );
+            }
+
             // Add flag images for flagged ShopCategories
             $strImage = '';
             $arrVirtual = ShopCategories::getVirtualCategoryNameArray();
@@ -1316,10 +1379,8 @@ die("Failed to update the Cart!");
         $formId = 0;
         $arrDefaultImageSize = $arrSize = null;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $thumbnailFormats = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
         foreach ($arrProduct as $objProduct) {
-            if (!empty($product_id)) {
-                self::$pageTitle = $objProduct->name();
-            }
             $id = $objProduct->id();
             $productSubmitFunction = '';
             $arrPictures = Products::get_image_array_from_base64($objProduct->pictures());
@@ -1327,6 +1388,7 @@ die("Failed to update the Cart!");
             $arrProductImages = array();
             foreach ($arrPictures as $index => $image) {
                 $thumbnailPath = $pictureLink = '';
+                $imageFilePath = '';
                 if (   empty($image['img'])
                     || $image['img'] == ShopLibrary::noPictureName) {
                     // We have at least one picture on display already.
@@ -1345,7 +1407,8 @@ die("Failed to update the Cart!");
                         $pictureLink =
                                 contrexx_raw2encodedUrl($cx->getWebsiteImagesShopWebPath() . '/' . $image['img']) .
                                 // Hack ahead!
-                            '" rel="shadowbox['.($formId+1).']';
+                                '" rel="shadowbox['.($formId+1).']';
+                        $imageFilePath = contrexx_raw2encodedUrl($cx->getWebsiteImagesShopWebPath() . '/' . $image['img']);
                         // Thumbnail display size
                         $arrSize = array($image['width'], $image['height']);
                     } else {
@@ -1364,16 +1427,37 @@ die("Failed to update the Cart!");
                         self::$objTemplate->setVariable(
                             'SHOP_PRODUCT_IMAGE', $picture_url->toString());
 //\DBG::log("Set image to ".$picture_url->toString());
+                        $imageFilePath = $picture_url->toString();
                     }
+                }
+
+                // fetch all thumbnails of image and add as placeholders
+                $arrThumbnails = array();
+                $imagePath = pathinfo($image['img'], PATHINFO_DIRNAME);
+                $imageFilename = pathinfo($image['img'], PATHINFO_BASENAME);
+                $thumbnails = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($cx->getWebsiteImagesShopWebPath() . '/' . $imagePath, $imageFilename, true);
+                foreach ($thumbnailFormats as $thumbnailFormat) {
+                    if (!isset($thumbnails[$thumbnailFormat['size']])) {
+                        continue;
+                    }
+                    $arrThumbnails[strtoupper($thumbnailFormat['name'])] = contrexx_raw2encodedUrl($thumbnails[$thumbnailFormat['size']]);
                 }
                 $arrProductImages[] = array(
                     'THUMBNAIL' => contrexx_raw2encodedUrl($thumbnailPath),
                     'THUMBNAIL_SIZE' => $arrSize[3],
                     'THUMBNAIL_LINK' => $pictureLink,
                     'POPUP_LINK' => $pictureLink,
+                    'IMAGE_PATH' => $imageFilePath,
                     'POPUP_LINK_NAME' => $_ARRAYLANG['TXT_SHOP_IMAGE'].' '.$index,
+                    'THUMBNAIL_FORMATS' => $arrThumbnails,
                 );
                 $havePicture = true;
+            }
+            if (!empty($product_id)) {
+                self::$pageTitle = $objProduct->name();
+                if (count($arrProductImages)) {
+                    static::$pageMetaImage = current($arrProductImages)['IMAGE_PATH'];
+                }
             }
             $i = 1;
             foreach ($arrProductImages as $arrProductImage) {
@@ -1400,6 +1484,11 @@ die("Failed to update the Cart!");
                 self::$objTemplate->setVariable(
                     'SHOP_PRODUCT_POPUP_LINK_NAME_'.$i, $arrProductImage['POPUP_LINK_NAME']
                 );
+                foreach ($arrProductImage['THUMBNAIL_FORMATS'] as $format => $thumbnail) {
+                    self::$objTemplate->setVariable(
+                        'SHOP_PRODUCT_THUMBNAIL_FORMAT_' . $format . '_' . $i, $thumbnail
+                    );
+                }
                 ++$i;
             }
             $stock = ($objProduct->stock_visible()
@@ -3487,7 +3576,8 @@ die("Shop::processRedirect(): This method is obsolete!");
         self::$objTemplate->hideBlock('shopConfirm');
         // Store the customer, register the order
         $customer_ip = $_SERVER['REMOTE_ADDR'];
-        $customer_host = substr(@gethostbyaddr($_SERVER['REMOTE_ADDR']), 0, 100);
+        $net = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Net');
+        $customerHost = substr($net->getHostByAddr($_SERVER['REMOTE_ADDR']), 0, 100);
         $customer_browser = substr(getenv('HTTP_USER_AGENT'), 0, 100);
         $new_customer = false;
 //\DBG::log("Shop::process(): E-Mail: ".$_SESSION['shop']['email']);
@@ -3634,7 +3724,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         $objOrder->payment_id($payment_id);
         $objOrder->payment_amount($_SESSION['shop']['payment_price']);
         $objOrder->ip($customer_ip);
-        $objOrder->host($customer_host);
+        $objOrder->host($customerHost);
         $objOrder->lang_id(FRONTEND_LANG_ID);
         $objOrder->browser($customer_browser);
         $objOrder->note($_SESSION['shop']['note']);

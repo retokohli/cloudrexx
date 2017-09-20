@@ -379,7 +379,7 @@ class SystemComponentBackendController extends Controller {
     }
 
     /**
-     * Returns the object to parse a wiew with
+     * Returns the object to parse a view with
      *
      * If you overwrite this and return anything else than string, filter will not work
      * @return string|array|object An entity class name, entity, array of entities or DataSet
