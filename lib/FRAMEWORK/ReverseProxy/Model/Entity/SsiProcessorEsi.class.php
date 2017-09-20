@@ -70,6 +70,7 @@ class SsiProcessorEsi extends SsiProcessor {
             }
             $template->parse($block);
         }
+        $template->touch('randomized_list_entry');
     }
 }
 
