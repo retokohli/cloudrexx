@@ -211,11 +211,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *     <adapterMethod>,
      *     <params>,
      * )
-     * @param array $esiContentInfos
-     * @return string ESI random include tag
+     * @param array $esiContentInfos List of ESI content info arrays
+     * @param int $count (optional) Number of unique random entries to parse
+     * @return string ESI randomized include code
      */
-    public function getRandomizedEsiContent($esiContentInfos) {
-        return $this->cache->getRandomizedEsiContent($esiContentInfos);
+    public function getRandomizedEsiContent($esiContentInfos, $count = 1) {
+        return $this->cache->getRandomizedEsiContent($esiContentInfos, $count);
     }
 
     /**
