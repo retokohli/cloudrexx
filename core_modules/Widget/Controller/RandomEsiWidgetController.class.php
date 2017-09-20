@@ -117,6 +117,7 @@ abstract class RandomEsiWidgetController extends EsiWidgetController {
 
             if (count($esiInfos) > $this->getSubwidgetCountLimit()) {
                 // randomly pick some
+                // TODO: This randomly picks some instead of randomizing all
                 $randomIndexes = array_rand($esiInfos, $this->getSubwidgetCountLimit());
                 $limitedEsiInfos = array();
                 foreach ($randomIndexes as $index) {
@@ -133,7 +134,7 @@ abstract class RandomEsiWidgetController extends EsiWidgetController {
 
             $esiContent = $this->getComponent('Cache')->getRandomizedEsiContent(
                 $esiInfos,
-                $widget->getUniqueRepeatCount()
+                $widget->getUniqueRepetitionCount()
             );
             return array(
                 'content' => $esiContent,
