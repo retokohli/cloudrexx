@@ -50,4 +50,37 @@ namespace Cx\Core_Modules\Widget\Model\Entity;
  * @subpackage  coremodules_widget
  * @version     1.0.0
  */
-class RandomEsiWidget extends EsiWidget {}
+class RandomEsiWidget extends EsiWidget {
+
+    /**
+     * @var int Number of unique repetitions
+     */
+    protected $uniqueRepetitionCount = 1;
+
+    /**
+     * Returns the name of the JsonAdapter to call
+     * @return string JsonAdapter name
+     */
+    public function getJsonAdapterName() {
+        if (empty($this->jsonAdapterName)) {
+            return $this->getRegisteringComponent()->getName() . 'RandomWidget';
+        }
+        return $this->jsonAdapterName;
+    }
+
+    /**
+     * Returns the number of unique repetitions of this widget
+     * @return int Number of unique repetitions
+     */
+    public function getUniqueRepetitionCount() {
+        return $this->uniqueRepetitionCount;
+    }
+
+    /**
+     * Sets the number of unique repetitions of this widget
+     * @param int $count Number of unique repetitions
+     */
+    public function setUniqueRepetitionCount($count) {
+        $this->uniqueRepetitionCount = $count;
+    }
+}
