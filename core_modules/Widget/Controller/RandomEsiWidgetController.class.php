@@ -123,7 +123,8 @@ abstract class RandomEsiWidgetController extends EsiWidgetController {
             }
 
             $esiContent = $this->getComponent('Cache')->getRandomizedEsiContent(
-                $esiInfos
+                $esiInfos,
+                $widget->getUniqueRepeatCount()
             );
             return array(
                 'content' => $esiContent,
