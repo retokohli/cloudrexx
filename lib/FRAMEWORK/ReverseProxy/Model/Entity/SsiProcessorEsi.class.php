@@ -72,7 +72,8 @@ class SsiProcessorEsi extends SsiProcessor {
             $template->parse($block);
         }
         for ($i = 0; $i < $count; $i++) {
-            $template->touch('randomized_list_entry');
+            $template->touchBlock('randomized_list_entry');
+            $template->parse('randomized_list_entry');
         }
     }
 }
