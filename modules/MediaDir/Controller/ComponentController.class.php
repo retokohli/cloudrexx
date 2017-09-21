@@ -276,9 +276,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         );*/
 
         foreach ($response->getRequest()->getUrl()->getParamArray() as $key => $value) {
-        if (!in_array($key, $canonicalUrlArguments)) {
-        continue;
-        }
+            if (!in_array($key, $canonicalUrlArguments)) {
+                continue;
+            }
             $params[$key] = $value;
         }
 
