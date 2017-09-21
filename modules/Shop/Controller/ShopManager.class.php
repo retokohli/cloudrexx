@@ -1636,6 +1636,10 @@ if ($test === NULL) {
                     \User_Profile_Attribute::getCustomAttributeNameArray(),
                     \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_notes','Shop'),
                     '', '', 'tabindex="0" style="width: 270px;"'),
+
+            // product attribute behavior
+            'SHOP_ACTIVATE_PRODUCT_ATTRIBUTE_CHILDREN_CHECKED' => (\Cx\Core\Setting\Controller\Setting::getValue('activate_product_attribute_children','Shop')
+                ? \Html::ATTRIBUTE_CHECKED : ''),
         ));
     }
 
@@ -2284,6 +2288,10 @@ if ($test === NULL) {
             'SHOP_WEIGHT_ENABLED' => (\Cx\Core\Setting\Controller\Setting::getValue('weight_enable','Shop')
                 ? 1 : 0),
         ));
+
+        $activateChildrenOfProductAttribute = \Cx\Core\Setting\Controller\Setting::getValue('activate_product_attribute_children','Shop');
+        \ContrexxJavascript::getInstance()->setVariable('activate_product_attribute_children', $activateChildrenOfProductAttribute, 'shop');
+
         return true;
     }
 

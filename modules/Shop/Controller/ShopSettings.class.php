@@ -217,6 +217,13 @@ class ShopSettings
                 intval($_POST['num_categories_per_row']), null,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         }
+        if (!\Cx\Core\Setting\Controller\Setting::set('activate_product_attribute_children',
+            !empty($_POST['shop_activate_product_attribute_children']))) {
+            \Cx\Core\Setting\Controller\Setting::add('activate_product_attribute_children',
+                !empty($_POST['shop_activate_product_attribute_children']), null,
+                \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, null, 'config');
+        }
+
     }
 
 
@@ -916,6 +923,12 @@ class ShopSettings
             \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE, null, 'config');
         \Cx\Core\Setting\Controller\Setting::add('num_categories_per_row', 4, ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+
+
+        // New for v5.0.0
+        \Cx\Core\Setting\Controller\Setting::add('activate_product_attribute_children', 1, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, null, 'config');
+
         // Note that the Settings *MUST* be reinited after adding new entries!
 
         // Add more new/missing settings here
