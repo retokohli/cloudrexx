@@ -133,7 +133,7 @@ class MediaDirectoryInputfieldClassification extends \Cx\Modules\MediaDir\Contro
                 break;
             case 2:
                 //search View
-                $strValue = $_GET[$intId];
+                $strValue = isset($_GET[$intId]) ? intval($_GET[$intId]) : null;
                 $intNumPoints = $this->arrSettings['settingsClassificationPoints'];
                 $strFieldName = $this->moduleName."Classification_";
                 $strImageName = $this->moduleName."rClassificationImage_";
@@ -182,7 +182,7 @@ EOF;
                         $strImage = $pathImgClassificationOff;
                     }
 
-                    $strInputfield .= '<img id="'.$this->moduleName.'ClassificationImage_'.$intId.'_'.$i.'" src="'.$strImage.'" title="'.$arrInputfield['name'][0].' - '.$intValue.'" alt="'.$arrInputfield['name'][0].' - '.$intValue.'" style="cursor: pointer;" onclick="classification_'.$intId.'('.$i.');" />';
+                    $strInputfield .= '<img id="'.$this->moduleName.'ClassificationImage_'.$intId.'_'.$i.'" src="'.$strImage.'" title="'.$arrInputfield['name'][0].' - '.$i.'" alt="'.$arrInputfield['name'][0].' - '.$i.'" style="cursor: pointer;" onclick="classification_'.$intId.'('.$i.');" />';
                 }
 
 
@@ -219,22 +219,8 @@ EOF;
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-        global $objDatabase;
-
-        $intId = intval($arrInputfield['id']);
-        $objInputfieldValue = $objDatabase->Execute("
-            SELECT
-                `value`
-            FROM
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
-            WHERE
-                field_id=".$intId."
-            AND
-                entry_id=".$intEntryId."
-            LIMIT 1
-        ");
-
-        $intValue = intval($objInputfieldValue->fields['value']);
+        $value = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+        $intValue = intval($value);
 
         $pathImgClassificationOn = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getWebFilePath(
             \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath().'/'.$this->moduleName.'/View/Media/classification_on.png'
@@ -262,6 +248,25 @@ EOF;
         }
 
         return $arrContent;
+    }
+
+    function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
+        global $objDatabase;
+
+        $intId = intval($arrInputfield['id']);
+        $objInputfieldValue = $objDatabase->Execute("
+            SELECT
+                `value`
+            FROM
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+            WHERE
+                field_id=".$intId."
+            AND
+                entry_id=".$intEntryId."
+            LIMIT 1
+        ");
+
+        return $objInputfieldValue->fields['value'];
     }
 
 

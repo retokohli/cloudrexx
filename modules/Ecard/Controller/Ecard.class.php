@@ -214,7 +214,8 @@ class Ecard
         $this->_objTpl->setTemplate($this->pageContent);
         // Initialize POST variables
         $id = intval($_POST['selectedEcard']);
-        $message = nl2br(htmlentities(contrexx_stripslashes($_POST['ecardMessage']), ENT_QUOTES, CONTREXX_CHARSET));
+        $message = contrexx_input2xhtml($_POST['ecardMessage']);
+        $messagePreview = nl2br($message);
         $recipientSalutation = htmlentities(contrexx_stripslashes($_POST['ecardRecipientSalutation']), ENT_QUOTES, CONTREXX_CHARSET);
         $senderName = htmlentities(contrexx_stripslashes($_POST['ecardSenderName']), ENT_QUOTES, CONTREXX_CHARSET);
         $senderEmail = \FWValidator::isEmail($_POST['ecardSenderEmail']) ? $_POST['ecardSenderEmail'] : '';
@@ -236,6 +237,7 @@ class Ecard
                 '" alt="'.$selectedMotive.'" title="'.$selectedMotive.'" />',
             'ECARD_MOTIVE_ID' => $id,
             'ECARD_MESSAGE' => $message,
+            'ECARD_MESSAGE_PREVIEW' => $messagePreview,
             'ECARD_SENDER_NAME' => $senderName,
             'ECARD_SENDER_EMAIL' => $senderEmail,
             'ECARD_RECIPIENT_NAME' => $recipientName,
@@ -267,7 +269,7 @@ class Ecard
 
         // Initialize POST variables
         $id = intval($_POST['selectedEcard']);
-        $message = contrexx_addslashes($_POST['ecardMessage']);
+        $message = contrexx_input2db($_POST['ecardMessage']);
         $recipientSalutation = contrexx_stripslashes($_POST['ecardRecipientSalutation']);
         $senderName = contrexx_stripslashes($_POST['ecardSenderName']);
         $senderEmail = \FWValidator::isEmail($_POST['ecardSenderEmail']) ? $_POST['ecardSenderEmail'] : '';

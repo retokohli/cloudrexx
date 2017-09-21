@@ -145,6 +145,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $page->setContentTitle($page_metatitle);
             $page->setMetaTitle($page_metatitle);
         }
+
+        $metaImage = Shop::getPageMetaImage();
+        if ($metaImage) {
+            $page->setMetaimage($metaImage);
+        }
     }
 
     /**

@@ -449,6 +449,19 @@ class ContentManager extends \Module
             'contrexxBaseUrl'    => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . '/',
             'contrexxPathOffset' => ASCMS_PATH_OFFSET,
         ), 'contentmanager');
+
+        // manually set Wysiwyg variables as the Ckeditor will be
+        // loaded manually through JavaScript (and not properly through the
+        // component interface)
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+        $mediaSourceManager = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getMediaSourceManager();
+        $mediaSource        = current($mediaSourceManager->getMediaTypes());
+        $mediaSourceDir     = $mediaSource->getDirectory();
+        $cxjs->setVariable(array(
+            'ckeditorUploaderId'   => $uploader->getId(),
+            'ckeditorUploaderPath' => $mediaSourceDir[1] . '/'
+        ), 'wysiwyg');
     }
 
     protected function getThemes()
@@ -542,13 +555,14 @@ class ContentManager extends \Module
 
     protected function getDefaultTemplates()
     {
-        $query = 'SELECT `id`, `lang`, `themesid` FROM `' . DBPREFIX . 'languages`';
-        $rs    = $this->db->Execute($query);
+        $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
 
         $defaultThemes = array();
-        while (!$rs->EOF) {
-            $defaultThemes[$rs->fields['lang']] = $rs->fields['themesid'];
-            $rs->MoveNext();
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $frontendLanguage) {
+            $theme = $themeRepo->getDefaultTheme(
+                \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB,
+                $frontendLanguage['id']);
+            $defaultThemes[$frontendLanguage['lang']] = $theme->getId();
         }
 
         return $defaultThemes;

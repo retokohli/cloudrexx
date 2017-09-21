@@ -80,11 +80,12 @@ abstract class SsiProcessor {
     /**
      * Gets the ESI/SSI random include code for a set of URLs
      * @param array $urls List of URLs to get random include tag for
+     * @param int $count (optional) Number of unique random entries to parse
      * @return string ESI/SSI random include tag
      */
-    public function getRandomizedIncludeCode($urls) {
+    public function getRandomizedIncludeCode($urls, $count = 1) {
         $template = $this->getTemplateFile('RandomIncludeTag');
-        $this->parseRandomizedIncludeCode($template, $urls);
+        $this->parseRandomizedIncludeCode($template, $urls, $count);
         return $template->get();
     }
     
@@ -103,7 +104,8 @@ abstract class SsiProcessor {
      * Parses randomized include code
      * @param \HTML_Template_Sigma $template Template to parse
      * @param array $urls List of URLs to get random include tag for
+     * @param int $count (optional) Number of unique random entries to parse
      */
-    protected abstract function parseRandomizedIncludeCode($template, $urls);
+    protected abstract function parseRandomizedIncludeCode($template, $urls, $count = 1);
 }
 
