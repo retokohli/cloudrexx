@@ -1644,6 +1644,11 @@ if ($test === NULL) {
             // always show 'please select' option in product attribute's dropdowns
             'SHOP_FORCE_SELECT_OPTION_CHECKED' => (\Cx\Core\Setting\Controller\Setting::getValue('force_select_option','Shop')
                 ? \Html::ATTRIBUTE_CHECKED : ''),
+
+            // don't allow (anonymous) checkout with an email address
+            // of which a user account does already exist
+            'SHOP_VERIFY_ACCOUNT_EMAIL_CHECKED' => (\Cx\Core\Setting\Controller\Setting::getValue('verify_account_email','Shop')
+                ? \Html::ATTRIBUTE_CHECKED : ''),
         ));
     }
 

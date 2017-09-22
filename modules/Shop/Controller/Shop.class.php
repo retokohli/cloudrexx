@@ -2855,6 +2855,18 @@ die("Shop::processRedirect(): This method is obsolete!");
             if (Customer::getUnregisteredByEmail($_SESSION['shop']['email'])) {
                 return true;
             }
+
+            // Allow registered Customers (active Users!) to place orders without logging in.
+            // Important: this does not ensure data privacy!!
+            $verifyAccountEmail = \Cx\Core\Setting\Controller\Setting::getValue('verify_account_email','Shop');
+            if (!$verifyAccountEmail) {
+                $objCustomer =
+                    Customer::getRegisteredByEmail($_SESSION['shop']['email']);
+                if ($objCustomer) {
+                    return $status;
+                }
+            }
+
             $objUser = new \User();
             $objUser->setUsername($_SESSION['shop']['email']);
             $objUser->setEmail($_SESSION['shop']['email']);
@@ -3622,10 +3634,12 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (self::$objCustomer) {
 //\DBG::log("Shop::process(): Existing User username ".$_SESSION['shop']['username'].", email ".$_SESSION['shop']['email']);
         } else {
+            $verifyAccountEmail = \Cx\Core\Setting\Controller\Setting::getValue('verify_account_email','Shop');
+
             // Registered Customers are required to be logged in!
             self::$objCustomer = Customer::getRegisteredByEmail(
                 $_SESSION['shop']['email']);
-            if (self::$objCustomer) {
+            if ($verifyAccountEmail && self::$objCustomer) {
                 \Message::error($_ARRAYLANG['TXT_SHOP_CUSTOMER_REGISTERED_EMAIL']);
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
                     \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'login').
@@ -3635,8 +3649,10 @@ die("Shop::processRedirect(): This method is obsolete!");
             }
 // Unregistered Customers are stored as well, as their information is needed
 // nevertheless.  Their active status, however, is set to false.
-            self::$objCustomer = Customer::getUnregisteredByEmail(
-                $_SESSION['shop']['email']);
+            if (!self::$objCustomer) {
+                self::$objCustomer = Customer::getUnregisteredByEmail(
+                    $_SESSION['shop']['email']);
+            }
             if (!self::$objCustomer) {
                 self::$objCustomer = new Customer();
                 // Currently, the e-mail address is set as the user name
