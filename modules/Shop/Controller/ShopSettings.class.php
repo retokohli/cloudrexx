@@ -223,7 +223,12 @@ class ShopSettings
                 !empty($_POST['shop_activate_product_attribute_children']), null,
                 \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, null, 'config');
         }
-
+        if (!\Cx\Core\Setting\Controller\Setting::set('force_select_option',
+            !empty($_POST['shop_force_select_option']))) {
+            \Cx\Core\Setting\Controller\Setting::add('force_select_option',
+                !empty($_POST['shop_force_select_option']), null,
+                \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, null, 'config');
+        }
     }
 
 
@@ -927,6 +932,8 @@ class ShopSettings
 
         // New for v5.0.0
         \Cx\Core\Setting\Controller\Setting::add('activate_product_attribute_children', 1, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('force_select_option', 0, ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, null, 'config');
 
         // Note that the Settings *MUST* be reinited after adding new entries!
