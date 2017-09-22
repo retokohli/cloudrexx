@@ -2894,6 +2894,7 @@ if ($test === NULL) {
             'SHOP_PHONE' => $objCustomer->phone(),
             'SHOP_FAX' => $objCustomer->fax(),
             'SHOP_EMAIL' => $objCustomer->email(),
+            'SHOP_CUSTOMER_BIRTHDAY' => date(ASCMS_DATE_FORMAT_DATE, $objCustomer->getProfileAttribute('birthday')),
 // OBSOLETE
 //            'SHOP_CCNUMBER' => $objCustomer->getCcNumber(),
 //            'SHOP_CCDATE' => $objCustomer->getCcDate(),
@@ -3025,6 +3026,7 @@ if ($test === NULL) {
             'SHOP_EMAIL' => $email,
             'SHOP_PHONE' => $phone,
             'SHOP_FAX' => $fax,
+            'SHOP_CUSTOMER_BIRTHDAY' => date(ASCMS_DATE_FORMAT_DATE, $objCustomer->getProfileAttribute('birthday')),
             'SHOP_USERNAME' => $username,
             'SHOP_PASSWORD' => $password,
             'SHOP_COMPANY_NOTE' => $companynote,
@@ -3068,6 +3070,7 @@ if ($test === NULL) {
         $country_id = intval($_POST['country_id']);
         $phone = trim(strip_tags(contrexx_input2raw($_POST['phone'])));
         $fax = trim(strip_tags(contrexx_input2raw($_POST['fax'])));
+        $birthday = trim(strip_tags(contrexx_input2raw($_POST['shop_customer_birthday'])));
         $email = trim(strip_tags(contrexx_input2raw($_POST['email'])));
         $companynote = trim(strip_tags(contrexx_input2raw($_POST['companynote'])));
         $customer_active = intval($_POST['active']);
@@ -3090,6 +3093,7 @@ if ($test === NULL) {
         $objCustomer->phone($phone);
         $objCustomer->fax($fax);
         $objCustomer->email($email);
+        $objCustomer->setProfile(array('birthday' => array(0 => $birthday)));
         $objCustomer->companynote($companynote);
         $objCustomer->active($customer_active);
         $objCustomer->is_reseller($is_reseller);
