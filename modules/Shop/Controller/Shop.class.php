@@ -2569,6 +2569,30 @@ die("Shop::processRedirect(): This method is obsolete!");
         $fax = (isset($_SESSION['shop']['fax'])
             ? $_SESSION['shop']['fax']
             : (self::$objCustomer ? self::$objCustomer->fax() : ''));
+        $birthday = (isset($_SESSION['shop']['birthday'])
+            ? $_SESSION['shop']['birthday']
+            : (self::$objCustomer ? self::$objCustomer->getProfileAttribute('birthday') : mktime(0, 0, 0)));
+
+        $selectedBirthdayDay = date('j', $birthday);
+        $selectedBirthdayMonth = date('n', $birthday);
+        $selectedBirthdayYear = date('Y', $birthday);
+
+        $birthdayDaySelect= new \Cx\Core\Html\Model\Entity\DataElement(
+            'shop_birthday_day',
+            \Html::getOptions(array_combine(range(1, 31), range(1, 31)), $selectedBirthdayDay),
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+        );
+        $birthdayMonthSelect = new \Cx\Core\Html\Model\Entity\DataElement(
+            'shop_birthday_month',
+            \Html::getOptions(array_combine(range(1, 12), range(1, 12)), $selectedBirthdayMonth),
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+        );
+        $birthdayYearSelect= new \Cx\Core\Html\Model\Entity\DataElement(
+            'shop_birthday_year',
+            \Html::getOptions(array_combine(range(1900, date('Y')), range(1900, date('Y'))), $selectedBirthdayYear),
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+        );
+
         self::$objTemplate->setVariable(array(
             'SHOP_ACCOUNT_COMPANY' => htmlentities($company, ENT_QUOTES, CONTREXX_CHARSET),
             'SHOP_ACCOUNT_PREFIX' => Customers::getGenderMenuoptions($gender),
@@ -2587,6 +2611,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             // Old template
             // Compatibility with 2.0 and older versions
             'SHOP_ACCOUNT_COUNTRY' => \Cx\Core\Country\Controller\Country::getMenu('countryId', $country_id),
+            'SHOP_ACCOUNT_BIRTHDAY' => $birthdayDaySelect . $birthdayMonthSelect . $birthdayYearSelect,
         ));
         $register = \Cx\Core\Setting\Controller\Setting::getValue('register','Shop');
 
@@ -2725,6 +2750,17 @@ die("Shop::processRedirect(): This method is obsolete!");
         // clear password in case it wasn't provided in the account-form
         if (isset($_POST['email']) && !isset($_POST['password'])) {
             $_SESSION['shop']['password'] = '';
+        }
+
+        // set customer birthday
+        if (isset($_POST['shop_birthday_day']) &&
+            isset($_POST['shop_birthday_month']) &&
+            isset($_POST['shop_birthday_year'])) {
+            $day = contrexx_input2raw($_POST['shop_birthday_day']);
+            $month = contrexx_input2raw($_POST['shop_birthday_month']);
+            $year = contrexx_input2raw($_POST['shop_birthday_year']);
+            $birthday = mktime(0, 0, 0, $month, $day, $year);
+            $_SESSION['shop']['birthday'] = $birthday;
         }
 
         if (   empty($_SESSION['shop']['gender2'])
@@ -3482,6 +3518,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             'SHOP_EMAIL' => stripslashes($_SESSION['shop']['email']),
             'SHOP_PHONE' => stripslashes($_SESSION['shop']['phone']),
             'SHOP_FAX' => stripslashes($_SESSION['shop']['fax']),
+            'SHOP_BIRTHDAY' => date(ASCMS_DATE_FORMAT_DATE, $_SESSION['shop']['birthday']),
         ));
         if (!empty($_SESSION['shop']['lastname2'])) {
             self::$objTemplate->setVariable(array(
@@ -3635,6 +3672,9 @@ die("Shop::processRedirect(): This method is obsolete!");
         self::$objCustomer->country_id($_SESSION['shop']['countryId']);
         self::$objCustomer->phone($_SESSION['shop']['phone']);
         self::$objCustomer->fax($_SESSION['shop']['fax']);
+        self::$objCustomer->setProfile(array(
+            'birthday' => array(0 => date(ASCMS_DATE_FORMAT_DATE, $_SESSION['shop']['birthday']))
+        ));
 
         $arrGroups = self::$objCustomer->getAssociatedGroupIds();
         $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller','Shop');
