@@ -1816,7 +1816,6 @@ class Order
             'SHOP_PHONE' => $objOrder->billing_phone(),
             'SHOP_FAX' => $objOrder->billing_fax(),
             'SHOP_EMAIL' => $objOrder->billing_email(),
-            'SHOP_CUSTOMER_BIRTHDAY' => date(ASCMS_DATE_FORMAT_DATE, $objCustomer->getProfileAttribute('birthday')),
             'SHOP_SHIP_GENDER' => ($edit
                 ? Customer::getGenderMenu($objOrder->gender(), 'shipPrefix')
                 : $_ARRAYLANG['TXT_SHOP_'.strtoupper($objOrder->gender())]),
