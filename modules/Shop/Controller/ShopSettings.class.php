@@ -229,6 +229,12 @@ class ShopSettings
                 !empty($_POST['shop_force_select_option']), null,
                 \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, null, 'config');
         }
+        if (!\Cx\Core\Setting\Controller\Setting::set('verify_account_email',
+            !empty($_POST['shop_verify_account_email']))) {
+            \Cx\Core\Setting\Controller\Setting::add('verify_account_email',
+                !empty($_POST['shop_verify_account_email']), null,
+                \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, null, 'config');
+        }
     }
 
 
@@ -934,6 +940,8 @@ class ShopSettings
         \Cx\Core\Setting\Controller\Setting::add('activate_product_attribute_children', 1, ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, null, 'config');
         \Cx\Core\Setting\Controller\Setting::add('force_select_option', 0, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('verify_account_email', 1, ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, null, 'config');
 
         // Note that the Settings *MUST* be reinited after adding new entries!
