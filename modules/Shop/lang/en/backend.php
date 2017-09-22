@@ -160,6 +160,7 @@ $_ARRAYLANG['TXT_EKP'] = "Final customer";
 $_ARRAYLANG['TXT_EMAIL'] = "E-mail";
 $_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'] = "E-mail sent to %1\$s";
 $_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER'] = "This e-mail address is already assigned to a customer";
+$_ARRAYLANG['TXT_SHOP_BIRTHDAY'] = "Birthday";
 $_ARRAYLANG['TXT_ENABLED_FILE_EXTENSIONS'] = "Accepted file formats";
 $_ARRAYLANG['TXT_END_DATE'] = "End date";
 $_ARRAYLANG['TXT_ERROR_DELETING_PRODUCT'] = "Failed to delete the products";
