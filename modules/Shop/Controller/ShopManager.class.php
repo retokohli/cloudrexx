@@ -1640,6 +1640,10 @@ if ($test === NULL) {
             // product attribute behavior
             'SHOP_ACTIVATE_PRODUCT_ATTRIBUTE_CHILDREN_CHECKED' => (\Cx\Core\Setting\Controller\Setting::getValue('activate_product_attribute_children','Shop')
                 ? \Html::ATTRIBUTE_CHECKED : ''),
+
+            // always show 'please select' option in product attribute's dropdowns
+            'SHOP_FORCE_SELECT_OPTION_CHECKED' => (\Cx\Core\Setting\Controller\Setting::getValue('force_select_option','Shop')
+                ? \Html::ATTRIBUTE_CHECKED : ''),
         ));
     }
 

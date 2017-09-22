@@ -1944,6 +1944,7 @@ die("Failed to update the Cart!");
                 self::$objTemplate->hideBlock('shopProductOptionsRow');
                 self::$objTemplate->hideBlock('shopProductOptionsValuesRow');
             } else {
+                $forceSelectOption = \Cx\Core\Setting\Controller\Setting::getValue('force_select_option','Shop');
                 $isUpload = false;
                 // Loop through the Attribute Names for the Product
                 foreach ($arrAttributes as $attribute_id => $objAttribute) {
@@ -2006,6 +2007,7 @@ die("Failed to update the Cart!");
                         $checkOptionIds .= "$attribute_id;";
                         break;
                       case Attribute::TYPE_MENU_MANDATORY:
+                        $arrAssignedOptions = array_intersect_key($arrOptions, $arrRelation);
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
                             $product_id.'-'.$attribute_id.
@@ -2016,8 +2018,7 @@ die("Failed to update the Cart!");
                             '" class="product-option-field" style="width:180px;">'."\n".
                             // If there is only one option to choose from,
                             // why bother the customer at all?
-// NOTE: To always prepend the default "please choose" option, comment the condition
-                            (count($arrOptions) > 1
+                            ($forceSelectOption || count($arrAssignedOptions) > 1
                                 ? '<option value="0">'.
                                   $objAttribute->getName().'&nbsp;'.
                                   $_ARRAYLANG['TXT_CHOOSE']."</option>\n"
