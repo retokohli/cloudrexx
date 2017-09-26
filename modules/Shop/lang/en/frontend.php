@@ -72,6 +72,7 @@ $_ARRAYLANG['TXT_EKP'] = "Final customer";
 $_ARRAYLANG['TXT_EMAIL'] = "E-mail";
 $_ARRAYLANG['TXT_EMAIL_ADDRESS'] = "E-mail Address";
 $_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER'] = "This e-mail address is already assigned to a customer";
+$_ARRAYLANG['TXT_SHOP_BIRTHDAY'] = "Birthday";
 $_ARRAYLANG['TXT_EMPTY_CART'] = "Empty the shopping basket";
 $_ARRAYLANG['TXT_EMPTY_SHOPPING_CART'] = "Your shopping basket is empty.";
 $_ARRAYLANG['TXT_ERROR_ACCOUNT_INFORMATION_NOT_AVAILABLE'] = "Error: Account information is not available";

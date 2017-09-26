@@ -72,6 +72,7 @@ $_ARRAYLANG['TXT_EKP'] = "Endkunde";
 $_ARRAYLANG['TXT_EMAIL'] = "E-Mail";
 $_ARRAYLANG['TXT_EMAIL_ADDRESS'] = "E-Mail Adresse";
 $_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER'] = "Diese E-Mail Adresse wird bereits von einem anderen Kunden benutzt!<br />Wenn Sie diese E-Mail Adresse verwenden wollen, müssen Sie sich <a href=\"%1\$s\">anmelden</a>";
+$_ARRAYLANG['TXT_SHOP_BIRTHDAY'] = "Geburtstag";
 $_ARRAYLANG['TXT_EMPTY_CART'] = "Warenkorb leeren";
 $_ARRAYLANG['TXT_EMPTY_SHOPPING_CART'] = "Ihr Warenkorb ist leer.";
 $_ARRAYLANG['TXT_ERROR_ACCOUNT_INFORMATION_NOT_AVAILABLE'] = "Fehler: Kontoinformation ist nicht vorhanden";

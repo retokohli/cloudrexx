@@ -581,6 +581,7 @@ class Customer extends \User
             'CUSTOMER_PHONE' => $this->phone(),
             'CUSTOMER_FAX' => $this->fax(),
             'CUSTOMER_USERNAME' => $this->username(),
+            'CUSTOMER_BIRTHDAY' => date(ASCMS_DATE_FORMAT_DATE, $this->getProfileAttribute('birthday')),
 // There are not used in any MailTemplate so far:
 //            'CUSTOMER_COUNTRY_ID' => $this->country_id(),
 //            'CUSTOMER_NOTE' => $this->getProfileAttribute($index_notes),

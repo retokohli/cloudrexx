@@ -507,10 +507,36 @@ class Resolver {
             } else {
                 $target = $this->page->getTarget();
             }
+            // TODO: Cache this redirect. This is not done yet since we would
+            // need to drop the complete page cache (since we don't know which
+            // is the correct cache file for this redirect)
             header('HTTP/1.1 301 Moved Permanently');
             header('Location: ' . $target);
             header('Connection: close');
             exit;
+        }
+
+        // If an alias like /de/alias1 was resolved, redirect to /alias1
+        if (!empty($langDir)) {
+            $correctUrl = \Cx\Core\Routing\Url::fromPage($this->page);
+            // get additinal path parts (like /de/alias1/additional/path)
+            $splitQuery = explode('?', $this->url->getPath(), 2);
+            $pathParts = explode('/', $splitQuery[0]);
+            unset($pathParts[0]);
+            if (count($pathParts)) {
+                $additionalPath = '/' . implode('/', $pathParts);
+                $correctUrl->setPath($correctUrl->getPath() . $additionalPath);
+            }
+            // set query params (like /de/alias1?foo=bar)
+            $correctUrl->setParams($this->url->getParamArray());
+            // 301 redirect
+            // TODO: Cache this redirect. This is not done yet since we would
+            // need to drop the complete page cache (since we don't know which
+            // is the correct cache file for this redirect)
+            header('HTTP/1.1 301 Moved Permanently');
+            header('Location: ' . $correctUrl->toString());
+            header('Connection: close');
+            exit();
         }
         return $this->page;
     }

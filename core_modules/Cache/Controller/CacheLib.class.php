@@ -484,27 +484,42 @@ class CacheLib
      *     <adapterMethod>,
      *     <params>,
      * )
+     * @param array $esiContentInfos List of ESI content info arrays
+     * @param int $count (optional) Number of unique random entries to parse
+     * @return string ESI randomized include code
      */
-    public function getRandomizedEsiContent($esiContentInfos) {
+    public function getRandomizedEsiContent($esiContentInfos, $count = 1) {
         $urls = array();
         foreach ($esiContentInfos as $i=>$esiContentInfo) {
-            $urls[] = $this->getUrlFromApi($esiContentInfo[0], $esiContentInfo[1], $esiContentInfo[2])->toString();
+            $urls[] = $this->getUrlFromApi(
+                $esiContentInfo[0],
+                $esiContentInfo[1],
+                $esiContentInfo[2]
+            )->toString();
         }
         $settings = $this->getSettings();
         if (
-            is_a($this->getSsiProxy(), '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx') &&
+            is_a(
+                $this->getSsiProxy(),
+                '\\Cx\\Core_Modules\\Cache\\Model\\Entity\\ReverseProxyCloudrexx'
+            ) &&
             (
                 !isset($settings['internalSsiCache']) ||
                 $settings['internalSsiCache'] != 'on'
             )
         ) {
             try {
-                return $this->getApiResponseForUrl($urls[rand(0, (count($urls) - 1))]);
+                return $this->getApiResponseForUrl(
+                    $urls[rand(0, (count($urls) - 1))]
+                );
             } catch (\Exception $e) {
                 return '';
             }
         }
-        return $this->getSsiProxy()->getSsiProcessor()->getRandomizedIncludeCode($urls);
+        return $this->getSsiProxy()->getSsiProcessor()->getRandomizedIncludeCode(
+            $urls,
+            $count
+        );
     }
 
     /**
