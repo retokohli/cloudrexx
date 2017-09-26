@@ -1944,6 +1944,7 @@ die("Failed to update the Cart!");
                 self::$objTemplate->hideBlock('shopProductOptionsRow');
                 self::$objTemplate->hideBlock('shopProductOptionsValuesRow');
             } else {
+                $forceSelectOption = \Cx\Core\Setting\Controller\Setting::getValue('force_select_option','Shop');
                 $isUpload = false;
                 // Loop through the Attribute Names for the Product
                 foreach ($arrAttributes as $attribute_id => $objAttribute) {
@@ -2006,6 +2007,7 @@ die("Failed to update the Cart!");
                         $checkOptionIds .= "$attribute_id;";
                         break;
                       case Attribute::TYPE_MENU_MANDATORY:
+                        $arrAssignedOptions = array_intersect_key($arrOptions, $arrRelation);
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
                             $product_id.'-'.$attribute_id.
@@ -2016,8 +2018,7 @@ die("Failed to update the Cart!");
                             '" class="product-option-field" style="width:180px;">'."\n".
                             // If there is only one option to choose from,
                             // why bother the customer at all?
-// NOTE: To always prepend the default "please choose" option, comment the condition
-                            (count($arrOptions) > 1
+                            ($forceSelectOption || count($arrAssignedOptions) > 1
                                 ? '<option value="0">'.
                                   $objAttribute->getName().'&nbsp;'.
                                   $_ARRAYLANG['TXT_CHOOSE']."</option>\n"
@@ -2569,6 +2570,39 @@ die("Shop::processRedirect(): This method is obsolete!");
         $fax = (isset($_SESSION['shop']['fax'])
             ? $_SESSION['shop']['fax']
             : (self::$objCustomer ? self::$objCustomer->fax() : ''));
+        $birthday = (isset($_SESSION['shop']['birthday'])
+            ? $_SESSION['shop']['birthday']
+            : (self::$objCustomer ? self::$objCustomer->getProfileAttribute('birthday') : mktime(0, 0, 0)));
+
+        $selectedBirthdayDay = date('j', $birthday);
+        $selectedBirthdayMonth = date('n', $birthday);
+        $selectedBirthdayYear = date('Y', $birthday);
+
+        $birthdayDaySelect= new \Cx\Core\Html\Model\Entity\DataElement(
+            'shop_birthday_day',
+            $selectedBirthdayDay,
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+            null,
+            array_combine(range(1, 31), range(1, 31))
+        );
+        $birthdayDaySelect->setAttribute('class', 'birthday');
+        $birthdayMonthSelect = new \Cx\Core\Html\Model\Entity\DataElement(
+            'shop_birthday_month',
+            $selectedBirthdayMonth,
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+            null,
+            array_combine(range(1, 12), range(1, 12))
+        );
+        $birthdayMonthSelect->setAttribute('class', 'birthday');
+        $birthdayYearSelect= new \Cx\Core\Html\Model\Entity\DataElement(
+            'shop_birthday_year',
+            $selectedBirthdayYear,
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+            null,
+            array_combine(range(1900, date('Y')), range(1900, date('Y')))
+        );
+
+        $birthdayYearSelect->setAttribute('class', 'birthday');
         self::$objTemplate->setVariable(array(
             'SHOP_ACCOUNT_COMPANY' => htmlentities($company, ENT_QUOTES, CONTREXX_CHARSET),
             'SHOP_ACCOUNT_PREFIX' => Customers::getGenderMenuoptions($gender),
@@ -2587,6 +2621,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             // Old template
             // Compatibility with 2.0 and older versions
             'SHOP_ACCOUNT_COUNTRY' => \Cx\Core\Country\Controller\Country::getMenu('countryId', $country_id),
+            'SHOP_ACCOUNT_BIRTHDAY' => $birthdayDaySelect . $birthdayMonthSelect . $birthdayYearSelect,
         ));
         $register = \Cx\Core\Setting\Controller\Setting::getValue('register','Shop');
 
@@ -2727,6 +2762,17 @@ die("Shop::processRedirect(): This method is obsolete!");
             $_SESSION['shop']['password'] = '';
         }
 
+        // set customer birthday
+        if (isset($_POST['shop_birthday_day']) &&
+            isset($_POST['shop_birthday_month']) &&
+            isset($_POST['shop_birthday_year'])) {
+            $day = contrexx_input2raw($_POST['shop_birthday_day']);
+            $month = contrexx_input2raw($_POST['shop_birthday_month']);
+            $year = contrexx_input2raw($_POST['shop_birthday_year']);
+            $birthday = mktime(0, 0, 0, $month, $day, $year);
+            $_SESSION['shop']['birthday'] = $birthday;
+        }
+
         if (   empty($_SESSION['shop']['gender2'])
             || empty($_SESSION['shop']['lastname2'])
             || empty($_SESSION['shop']['firstname2'])
@@ -2818,6 +2864,18 @@ die("Shop::processRedirect(): This method is obsolete!");
             if (Customer::getUnregisteredByEmail($_SESSION['shop']['email'])) {
                 return true;
             }
+
+            // Allow registered Customers (active Users!) to place orders without logging in.
+            // Important: this does not ensure data privacy!!
+            $verifyAccountEmail = \Cx\Core\Setting\Controller\Setting::getValue('verify_account_email','Shop');
+            if (!$verifyAccountEmail) {
+                $objCustomer =
+                    Customer::getRegisteredByEmail($_SESSION['shop']['email']);
+                if ($objCustomer) {
+                    return $status;
+                }
+            }
+
             $objUser = new \User();
             $objUser->setUsername($_SESSION['shop']['email']);
             $objUser->setEmail($_SESSION['shop']['email']);
@@ -3482,6 +3540,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             'SHOP_EMAIL' => stripslashes($_SESSION['shop']['email']),
             'SHOP_PHONE' => stripslashes($_SESSION['shop']['phone']),
             'SHOP_FAX' => stripslashes($_SESSION['shop']['fax']),
+            'SHOP_BIRTHDAY' => date(ASCMS_DATE_FORMAT_DATE, $_SESSION['shop']['birthday']),
         ));
         if (!empty($_SESSION['shop']['lastname2'])) {
             self::$objTemplate->setVariable(array(
@@ -3584,10 +3643,12 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (self::$objCustomer) {
 //\DBG::log("Shop::process(): Existing User username ".$_SESSION['shop']['username'].", email ".$_SESSION['shop']['email']);
         } else {
+            $verifyAccountEmail = \Cx\Core\Setting\Controller\Setting::getValue('verify_account_email','Shop');
+
             // Registered Customers are required to be logged in!
             self::$objCustomer = Customer::getRegisteredByEmail(
                 $_SESSION['shop']['email']);
-            if (self::$objCustomer) {
+            if ($verifyAccountEmail && self::$objCustomer) {
                 \Message::error($_ARRAYLANG['TXT_SHOP_CUSTOMER_REGISTERED_EMAIL']);
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
                     \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'login').
@@ -3597,8 +3658,10 @@ die("Shop::processRedirect(): This method is obsolete!");
             }
 // Unregistered Customers are stored as well, as their information is needed
 // nevertheless.  Their active status, however, is set to false.
-            self::$objCustomer = Customer::getUnregisteredByEmail(
-                $_SESSION['shop']['email']);
+            if (!self::$objCustomer) {
+                self::$objCustomer = Customer::getUnregisteredByEmail(
+                    $_SESSION['shop']['email']);
+            }
             if (!self::$objCustomer) {
                 self::$objCustomer = new Customer();
                 // Currently, the e-mail address is set as the user name
@@ -3635,6 +3698,11 @@ die("Shop::processRedirect(): This method is obsolete!");
         self::$objCustomer->country_id($_SESSION['shop']['countryId']);
         self::$objCustomer->phone($_SESSION['shop']['phone']);
         self::$objCustomer->fax($_SESSION['shop']['fax']);
+        if (!empty($_SESSION['shop']['birthday'])) {
+            self::$objCustomer->setProfile(array(
+                'birthday' => array(0 => date(ASCMS_DATE_FORMAT_DATE, $_SESSION['shop']['birthday']))
+            ));
+        }
 
         $arrGroups = self::$objCustomer->getAssociatedGroupIds();
         $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller','Shop');
