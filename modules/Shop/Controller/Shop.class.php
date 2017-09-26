@@ -590,6 +590,8 @@ die("Failed to get Customer for ID $customer_id");
                 $objTpl->setVariable(array(
                     'SHOP_CATEGORY_STYLE' => $style,
                     'SHOP_CATEGORY_ID' => $id,
+                    'SHOP_CATEGORY_NAME_FLAT' =>
+                        str_replace('"', '&quot;', $arrShopCategory['name']),
                     'SHOP_CATEGORY_NAME' =>
                         str_repeat('&nbsp;', 3*$level).
                         str_replace('"', '&quot;', $arrShopCategory['name']),
