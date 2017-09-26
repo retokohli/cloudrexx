@@ -794,7 +794,7 @@ class ShopSettings
         \Cx\Core\Setting\Controller\Setting::add('vat_other_id', 1, ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         \Cx\Core\Setting\Controller\Setting::add('weight_enable', 0, ++$i,
-            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+            \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, null, 'config');
         \Cx\Core\Setting\Controller\Setting::add('show_products_default', 0, ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         \Cx\Core\Setting\Controller\Setting::add('product_sorting', 0, ++$i,
