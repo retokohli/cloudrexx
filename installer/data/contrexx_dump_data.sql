@@ -2004,7 +2004,7 @@ INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`
 INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','vat_included_home_customer','config','text','1','',39);
 INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','vat_included_home_reseller','config','text','1','',40);
 INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','vat_other_id','config','text','1','',42);
-INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','weight_enable','config','text','0','',24);
+INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','weight_enable','config','checkbox','0','',24);
 INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Egov','postfinance_shop_id','config','text','Ihr Kontoname','',1);
 INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Egov','postfinance_active','config','checkbox','0','1',2);
 INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Egov','postfinance_authorization_type','config','dropdown','SAL','RES:Reservation,SAL:Verkauf',3);
