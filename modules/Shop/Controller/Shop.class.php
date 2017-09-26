@@ -1382,6 +1382,8 @@ die("Failed to update the Cart!");
         $arrDefaultImageSize = $arrSize = null;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $thumbnailFormats = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
+        $isFileAttrExistsInPdt = false;
+        $uploader = false;
         foreach ($arrProduct as $objProduct) {
             $id = $objProduct->id();
             $productSubmitFunction = '';
@@ -1582,6 +1584,22 @@ die("Failed to update the Cart!");
                     $id, $formId, $cart_id, $flagMultipart
                 );
             }
+            if ($flagMultipart) {
+                $isFileAttrExistsInPdt = $flagMultipart;
+                if (!$uploader) {
+                    //initialize the uploader
+                    $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+                    $uploader->setCallback('productOptionsUploaderCallback');
+                    $uploader->setOptions(array(
+                        'id'                => 'productOptionsUploader',
+                        'data-upload-limit' => 1,
+                        'style'             => 'display:none'
+                    ));
+                }
+                self::$objTemplate->setVariable(array(
+                    'SHOP_PRODUCT_OPTIONS_UPLOADER_ID'   => $uploader->getId()
+                ));
+            }
             $shopProductFormName = "shopProductForm$formId";
             $row = $formId % 2 + 1;
             self::$objTemplate->setVariable(array(
@@ -1759,6 +1777,11 @@ die("Failed to update the Cart!");
                 self::$objTemplate->parse('shopProductRow');
             }
             ++$formId;
+        }
+        if ($isFileAttrExistsInPdt) {
+            self::$objTemplate->setVariable(array(
+                'SHOP_PRODUCT_OPTIONS_UPLOADER_CODE' => $uploader->getXHtml(),
+            ));
         }
         return true;
     }
@@ -1947,7 +1970,6 @@ die("Failed to update the Cart!");
                 self::$objTemplate->hideBlock('shopProductOptionsValuesRow');
             } else {
                 $forceSelectOption = \Cx\Core\Setting\Controller\Setting::getValue('force_select_option','Shop');
-                $isUpload = false;
                 // Loop through the Attribute Names for the Product
                 foreach ($arrAttributes as $attribute_id => $objAttribute) {
                     $mandatory = false;
@@ -2167,15 +2189,76 @@ die("Failed to update the Cart!");
                           case Attribute::TYPE_UPLOAD_OPTIONAL:
                           case Attribute::TYPE_UPLOAD_MANDATORY:
 //                            $option_price = '&nbsp;';
-                            $isUpload = true;
-                            $selectValues .='<input type="input" name="productOption['.$attribute_id.
-                                ']" id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
-                                '" style="width:180px; float:left" />'.
-                                  '<input type="button" name="productOption['.$attribute_id.
-                                ']" onClick="getUploader(cx.jQuery(this));" data-input-id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
-                                '" value="'.$_ARRAYLANG['TXT_SHOP_CHOOSE_FILE'].'"/>'.
-                                  '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
-                                $option_price."</label><br />\n";
+                            $inputName = 'productOption[' . $attribute_id . ']';
+                            $inputId   = 'productOption-' . $product_id . '-' .
+                                $attribute_id . '-' . $domId;
+                            $inputText =
+                                new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                    'input'
+                                );
+                            $inputText->setAttribute('type', 'text');
+                            $inputText->setAttribute('id', $inputId);
+                            $inputText->setAttribute('disabled', 'disabled');
+                            $inputText->setClass(
+                                'product-option-upload-text
+                                 product-option-field ' . $inputId
+                            );
+                            if ($arrOption['price'] != 0) {
+                                $inputText->setAttribute(
+                                    'data-price',
+                                    $arrOption['price']
+                                );
+                            }
+                            $inputHidden =
+                                new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                    'input'
+                                );
+                            $inputHidden->setAttribute('type', 'text');
+                            $inputHidden->setAttribute('name', $inputName);
+                            $inputHidden->setClass(
+                                'product-option-upload-hidden
+                                 product-option-upload ' . $inputId
+                            );
+                            $inputButton =
+                                new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                    'input'
+                                );
+                            $inputButton->setAttribute('type', 'button');
+                            $inputButton->setClass(
+                                'product-option-upload-button'
+                            );
+                            $inputButton->setAttribute(
+                                'data-input-id',
+                                $inputId
+                            );
+                            $inputButton->setAttribute(
+                                'value',
+                                $_ARRAYLANG['TXT_SHOP_CHOOSE_FILE']
+                            );
+                            $removeIcon = new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                'img'
+                            );
+                            $removeIcon->setClass('product-option-remove-file');
+                            $removeIcon->setAttribute('data-input-id', $inputId);
+                            $removeIcon->setAttribute(
+                                'src',
+                                '/core/Core/View/Media/icons/delete.gif'
+                            );
+                            $removeIcon->setAttribute(
+                                'title',
+                                $_ARRAYLANG['TXT_SHOP_REMOVE_FILE']
+                            );
+                            $label = new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                'label'
+                            );
+                            $label->setAttribute('for', $inputId);
+                            $value = new \Cx\Core\Html\Model\Entity\TextElement(
+                                $option_price
+                            );
+                            $label->addChild($value);
+                            $br = new \Cx\Core\Html\Model\Entity\HtmlElement('br');
+                            $selectValues .= $inputText . $inputButton .
+                                $removeIcon. $inputHidden . $label . $br;
                             break;
                           case Attribute::TYPE_TEXTAREA_OPTIONAL:
                           case Attribute::TYPE_TEXTAREA_MANDATORY:
@@ -2252,21 +2335,6 @@ die("Failed to update the Cart!");
                     self::$objTemplate->parse('shopProductOptionsValuesRow');
                 }
                 self::$objTemplate->parse('shopProductOptionsRow');
-                if ($isUpload) {
-                    //initialize the uploader
-                    $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader(); //create an uploader
-                    $uploader->setCallback('productOptionsUploaderCallback');
-                    $uploader->setOptions(array(
-                        'id' => 'productOptionsUploader',
-                        'allowed-extensions' => array('jpg', 'png', 'gif'),
-                        'data-upload-limit' => 1,
-                        'style' => 'display:none'
-                    ));
-                    self::$objTemplate->setVariable(array(
-                        'SHOP_PRODUCT_OPTIONS_UPLOADER_CODE' => $uploader->getXHtml(),
-                        'SHOP_PRODUCT_OPTIONS_UPLOADER_ID'   => $uploader->getId()
-                    ));
-                }
             }
         }
         return
@@ -4385,7 +4453,17 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (empty($uploaderId) || empty($fileName)) {
             return '';
         }
+
         $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (
+            \Cx\Lib\FileSystem\FileSystem::exists(
+                $cx->getWebsiteDocumentRootPath() . '/' .
+                Order::UPLOAD_FOLDER . urldecode($fileName)
+            )
+        ) {
+            return urldecode($fileName);
+        }
+
         $objSession = $cx->getComponent('Session')->getSession();
         $tmpFile    = $objSession->getTempPath() . '/' . $uploaderId . '/' . $fileName;
         if (!\Cx\Lib\FileSystem\FileSystem::exists($tmpFile)) {
@@ -4393,34 +4471,33 @@ die("Shop::processRedirect(): This method is obsolete!");
         }
         $originalFileName = $fileName;
         $arrMatch = array();
-        $filename = '';
-        $fileext = '';
         if (preg_match('/(.+)(\.[^.]+)/', $originalFileName, $arrMatch)) {
             $filename = $arrMatch[1];
             $fileext = $arrMatch[2];
         } else {
             $filename = $originalFileName;
+            $fileext  = '';
         }
-        if (   $fileext == '.jpg'
-            || $fileext == '.gif'
-            || $fileext == '.png') {
-            $newFileName = $filename.'['.uniqid().']'.$fileext;
-            $newFilePath = Order::UPLOAD_FOLDER.$newFileName;
-            //Move the uploaded file to the path specified in the variable $newFilePath
-            try {
-                $objFile = new \Cx\Lib\FileSystem\File($tmpFile);
-                if ($objFile->move(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath() . '/' . $newFilePath, false)) {
-                   return $newFileName;
-                } else {
-                    \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPLOADING_FILE']);
-                }
-            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                \DBG::msg($e->getMessage());
+
+        $newFileName = $filename.'['.uniqid().']'.$fileext;
+        $newFilePath = Order::UPLOAD_FOLDER.$newFileName;
+        //Move the uploaded file to the path specified in the variable $newFilePath
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File($tmpFile);
+            if (
+                $objFile->move(
+                    $cx->getWebsiteDocumentRootPath() . '/' . $newFilePath,
+                false
+                )
+            ) {
+               return $newFileName;
+            } else {
+                \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPLOADING_FILE']);
             }
-        } else {
-            \Message::error(sprintf(
-                $_ARRAYLANG['TXT_SHOP_ERROR_WRONG_FILETYPE'], $fileext));
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::msg($e->getMessage());
         }
+
         return '';
     }
 
