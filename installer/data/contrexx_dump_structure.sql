@@ -2597,16 +2597,6 @@ CREATE TABLE `contrexx_module_mediadir_rel_entry_inputfields` (
   UNIQUE KEY `entry_id` (`entry_id`,`lang_id`,`form_id`,`field_id`),
   FULLTEXT KEY `value` (`value`)
 ) ENGINE=MyISAM;
-CREATE TABLE `contrexx_module_mediadir_rel_entry_inputfields_clean1` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `entry_id` int(7) NOT NULL,
-  `lang_id` int(7) NOT NULL,
-  `form_id` int(7) NOT NULL,
-  `field_id` int(7) NOT NULL,
-  `value` longtext NOT NULL,
-  PRIMARY KEY (`id`),
-  FULLTEXT KEY `value` (`value`)
-) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_mediadir_rel_entry_levels` (
   `entry_id` int(10) NOT NULL,
   `level_id` int(10) NOT NULL,
