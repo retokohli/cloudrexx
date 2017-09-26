@@ -1328,6 +1328,11 @@ die("Failed to update the Cart!");
             }
             return true;
         }
+        if ($count == 0) {
+            if (self::$objTemplate->blockExists('products')) {
+                self::$objTemplate->hideBlock('products');
+            }
+        }
         if ($objCategory) {
         // Only indicate the category name when there are products
             if ($count) {
