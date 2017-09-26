@@ -2027,9 +2027,9 @@ INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`
 INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','payrexx_instance_name','config','text','','',16);
 INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','payrexx_api_secret','config','text','','',17);
 INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','num_categories_per_row','config','text','4','',17);
-INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','activate_product_attribute_children','config','checkbox','','',1);
-INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','force_select_option','config','checkbox','','',0);
-INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','verify_account_email','config','checkbox','','',1);
+INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','activate_product_attribute_children','config','checkbox','1','',1);
+INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','force_select_option','config','checkbox','0','',0);
+INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','verify_account_email','config','checkbox','1','',1);
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (1,1,'core','core_country_name','Afghanistan');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (1,1,'Shop','attribute_name','Zusatzleistungen');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (1,1,'Shop','core_mail_template_bcc','');
