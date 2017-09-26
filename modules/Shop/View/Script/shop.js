@@ -287,6 +287,7 @@ function centerY(height) {
     }
     return parseInt((y - height) / 2);
 }
+
 var uploaderInputBox;
 function getUploader(e) { // e => jQuery element
     var inputId = e.data('inputId');
@@ -301,6 +302,7 @@ function productOptionsUploaderCallback(data) {
         updateProductPrice(uploaderInputBox.closest('form'));
     }
 }
+
 var $jq = cx.jQuery;
 function updateProductPrice($form)
 {
@@ -365,5 +367,14 @@ $jq(function () {
     // hack: shop product price might be wrapped with <s>
     $jq('.shop-product-price, .shop-product-discount-price').each(function () {
        $jq(this).data( 'price', $jq(this).text() );
+    });
+
+    // empty autocompleted password-field
+    $jq('input[name=bsubmit]').closest('form').each(function() {
+        $jq(this).bind('submit', function() {
+            $jq('#dont_register:checked').each(function() {
+                $jq('input[name=password]').val('');
+            });
+        });
     });
 });

@@ -184,7 +184,7 @@ class MediaManager extends MediaLibrary
 
         switch ($this->archive) {
             case 'themes':
-                \Permission::checkAccess(21, 'static');
+                \Permission::checkAccess(\Cx\Core\ViewManager\Controller\ViewManager::VIEW_MANAGER_ACCESS_ID, 'static');
                 $objTemplate->setVariable("CONTENT_NAVIGATION",
                    "<a href='index.php?cmd=Media&amp;archive=content'>". $_ARRAYLANG['TXT_IMAGE_CONTENT'] ."</a>
                     <a href='index.php?cmd=Media&amp;archive=attach'>". $_ARRAYLANG['TXT_MODULE'] ."</a>
@@ -718,7 +718,8 @@ class MediaManager extends MediaLibrary
                         'MEDIA_FILE_NAME_PRE'       => 'preview_' . $fileName,
                         'MEDIA_FILE_NAME_IMG_HREF'  => $mediaWebPath . $fileName,
                         'MEDIA_FILE_NAME_IMG_SRC'   => $thumb,
-                        'MEDIA_FILE_NAME_IMG_SIZE'  => $thumbnails[0]['size']
+                        // TODO: size of thumbnails not supported by ThumbnailGenerator
+                        //'MEDIA_FILE_NAME_IMG_SIZE'  => $thumbnails[0]['size']
                     ));
                     $this->_objTpl->parse('mediaShowThumbnail');
 

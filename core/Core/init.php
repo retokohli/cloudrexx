@@ -49,7 +49,7 @@
 
 // Check php version (5.3 or newer is required)
 $php = phpversion();
-if (version_compare($php, '5.3.0') < 0) {
+if (version_compare($php, '7.0.0') < 0) {
     die('Das Cloudrexx CMS ben&ouml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
 }
 
