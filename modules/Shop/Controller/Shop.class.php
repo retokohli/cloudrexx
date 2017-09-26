@@ -2580,20 +2580,29 @@ die("Shop::processRedirect(): This method is obsolete!");
 
         $birthdayDaySelect= new \Cx\Core\Html\Model\Entity\DataElement(
             'shop_birthday_day',
-            \Html::getOptions(array_combine(range(1, 31), range(1, 31)), $selectedBirthdayDay),
-            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+            $selectedBirthdayDay,
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+            null,
+            array_combine(range(1, 31), range(1, 31))
         );
+        $birthdayDaySelect->setAttribute('class', 'birthday');
         $birthdayMonthSelect = new \Cx\Core\Html\Model\Entity\DataElement(
             'shop_birthday_month',
-            \Html::getOptions(array_combine(range(1, 12), range(1, 12)), $selectedBirthdayMonth),
-            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+            $selectedBirthdayMonth,
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+            null,
+            array_combine(range(1, 12), range(1, 12))
         );
+        $birthdayMonthSelect->setAttribute('class', 'birthday');
         $birthdayYearSelect= new \Cx\Core\Html\Model\Entity\DataElement(
             'shop_birthday_year',
-            \Html::getOptions(array_combine(range(1900, date('Y')), range(1900, date('Y'))), $selectedBirthdayYear),
-            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+            $selectedBirthdayYear,
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+            null,
+            array_combine(range(1900, date('Y')), range(1900, date('Y')))
         );
 
+        $birthdayYearSelect->setAttribute('class', 'birthday');
         self::$objTemplate->setVariable(array(
             'SHOP_ACCOUNT_COMPANY' => htmlentities($company, ENT_QUOTES, CONTREXX_CHARSET),
             'SHOP_ACCOUNT_PREFIX' => Customers::getGenderMenuoptions($gender),
@@ -3689,9 +3698,11 @@ die("Shop::processRedirect(): This method is obsolete!");
         self::$objCustomer->country_id($_SESSION['shop']['countryId']);
         self::$objCustomer->phone($_SESSION['shop']['phone']);
         self::$objCustomer->fax($_SESSION['shop']['fax']);
-        self::$objCustomer->setProfile(array(
-            'birthday' => array(0 => date(ASCMS_DATE_FORMAT_DATE, $_SESSION['shop']['birthday']))
-        ));
+        if (!empty($_SESSION['shop']['birthday'])) {
+            self::$objCustomer->setProfile(array(
+                'birthday' => array(0 => date(ASCMS_DATE_FORMAT_DATE, $_SESSION['shop']['birthday']))
+            ));
+        }
 
         $arrGroups = self::$objCustomer->getAssociatedGroupIds();
         $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller','Shop');
