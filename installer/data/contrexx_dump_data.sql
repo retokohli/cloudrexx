@@ -1911,7 +1911,7 @@ INSERT INTO `contrexx_core_mail_template` (`key`, `section`, `text_id`, `html`, 
 INSERT INTO `contrexx_core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES ('notify_undelivered_email','Newsletter',27,0,1);
 INSERT INTO `contrexx_core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES ('notify_subscription_list_same','Newsletter',28,0,1);
 INSERT INTO `contrexx_core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES ('notify_subscription_list_additional','Newsletter',29,0,1);
-INSERT INTO `contrexx_core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES ('new_asset_notification','Downloads',30,1,1);
+INSERT INTO `contrexx_core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES ('new_asset_notification','Downloads',30,0,0);
 INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (1, 'Cx\\Modules\\Calendar\\Model\\Entity\\Event', '', 'doctrineRepository');
 INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (2, 'Cx\\Modules\\Calendar\\Model\\Entity\\Category', '', 'doctrineRepository');
 INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (3, 'Cx\\Modules\\Calendar\\Model\\Entity\\CategoryName', '', 'doctrineRepository');
