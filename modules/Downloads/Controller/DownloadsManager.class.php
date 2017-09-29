@@ -768,7 +768,7 @@ class DownloadsManager extends DownloadsLibrary
             'DOWNLOADS_CATEGORY_ID'                         => $objCategory->getId(),
             'DOWNLOADS_CATEGORY_PARENT_ID'                  => $objCategory->getParentId(),
             'DOWNLOADS_CATEGORY_OPERATION_TITLE'            => $objCategory->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'] : $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'],
-            'DOWNLOADS_CATEGORY_OWNER'                      => \Permission::checkAccess(143, 'static', true) ? $this->getUserDropDownMenu($objCategory->getOwnerId(), $objFWUser->objUser->getId()) : $this->getParsedUsername($objCategory->getOwnerId()),
+            'DOWNLOADS_CATEGORY_OWNER'                      => \Permission::checkAccess(143, 'static', true) ? $this->getUserDropDownMenu($objCategory->getOwnerId(), $objFWUser->objUser->getId()) : contrexx_raw2xhtml($this->getParsedUsername($objCategory->getOwnerId())),
             'DOWNLOADS_CATEGORY_OWNER_CONFIG_DISPLAY'       => \Permission::checkAccess(143, 'static', true) && $objCategory->getOwnerId() != $objFWUser->objUser->getId() ? '' : 'none',
             'DOWNLOADS_CATEGORY_DELETABLE_BY_OWNER_CHECKED' => $objCategory->getDeletableByOwner() ? 'checked="checked"' : '',
             'DOWNLOADS_CATEGORY_MANAGE_BY_OWNER_CHECKED'    => $objCategory->getModifyAccessByOwner() ? 'checked="checked"' : '',
@@ -1120,7 +1120,7 @@ class DownloadsManager extends DownloadsLibrary
                 //'DOWNLOADS_DOWNLOAD_ICON'                   => $objDownload->getIcon(),
                 'DOWNLOADS_DOWNLOAD_NAME'                   => htmlentities($objDownload->getName(), ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_DOWNLOAD_DESCRIPTION'            => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
-                'DOWNLOADS_DOWNLOAD_OWNER'                  => $this->getParsedUsername($objDownload->getOwnerId()),
+                'DOWNLOADS_DOWNLOAD_OWNER'                  => contrexx_raw2xhtml($this->getParsedUsername($objDownload->getOwnerId())),
                 'DOWNLOADS_DOWNLOAD_DOWNLOADED'             => $objDownload->getDownloadCount(),
                 'DOWNLOADS_DOWNLOAD_VIEWED'                 => $objDownload->getViewCount()
                 //'DOWNLOADS_DOWNLOAD_SOURCE'                 => htmlentities($source, ENT_QUOTES, CONTREXX_CHARSET),
@@ -2313,7 +2313,7 @@ class DownloadsManager extends DownloadsLibrary
                     'DOWNLOADS_CATEGORY_PROTECTED'          => $objSubcategory->getReadAccessId() ? '_locked' : '',
                     'DOWNLOADS_CATEGORY_DOWNLOADS_COUNT'    => intval($objSubcategory->getAssociatedDownloadsCount()),
                     'DOWNLOADS_CATEGORY_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
-                    'DOWNLOADS_CATEGORY_AUTHOR'             => $this->getParsedUsername($objSubcategory->getOwnerId())
+                    'DOWNLOADS_CATEGORY_AUTHOR'             => contrexx_raw2xhtml($this->getParsedUsername($objSubcategory->getOwnerId()))
                 ));
                 $this->objTemplate->parse('downloads_category_list');
                 $objSubcategory->next();
@@ -2580,7 +2580,7 @@ class DownloadsManager extends DownloadsLibrary
                 'DOWNLOADS_DOWNLOAD_ID'             => $objDownload->getId(),
                 'DOWNLOADS_DOWNLOAD_NAME'           => htmlentities($objDownload->getName(), ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_DOWNLOAD_DESCRIPTION'    => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
-                'DOWNLOADS_DOWNLOAD_OWNER'          => $this->getParsedUsername($objDownload->getOwnerId()),
+                'DOWNLOADS_DOWNLOAD_OWNER'          => contrexx_raw2xhtml($this->getParsedUsername($objDownload->getOwnerId())),
                 'DOWNLOADS_DOWNLOAD_DOWNLOADED'     => $objDownload->getDownloadCount(),
                 'DOWNLOADS_DOWNLOAD_VIEWED'         => $objDownload->getViewCount(),
                 'DOWNLOADS_DOWNLOAD_STATUS_LED'     => $objDownload->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',

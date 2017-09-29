@@ -2627,7 +2627,7 @@ INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VAL
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Downloads','core_mail_template_bcc','');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Downloads','core_mail_template_cc','');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Downloads','core_mail_template_from','');
-INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Downloads','core_mail_template_message','A new asset has been published on [DOMAIN_URL]\r\n\nUser: [FILE_AUTHOR]\r\n\nFilename: [FILE_NAME]\r\n\nCategory: [CATEGORY_NAME]\r\n\nDownload: [FILE_DOWNLOAD_LINK_SRC]');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Downloads','core_mail_template_message','A new asset has been published on [DOMAIN_URL]\r\n\nUser: [FILE_OWNER]\r\n\nFilename: [FILE_NAME]\r\n\nCategory: [CATEGORY_NAME]\r\n\nDownload: [FILE_DOWNLOAD_LINK_SRC]');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Downloads','core_mail_template_name','Notification on new asset');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Downloads','core_mail_template_reply','');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Downloads','core_mail_template_sender','');
@@ -2636,7 +2636,7 @@ INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VAL
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_bcc','');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_cc','');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_from','');
-INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_message','A new asset has been published on [DOMAIN_URL]\r\n\nUser: [FILE_AUTHOR]\r\n\nFilename: [FILE_NAME]\r\n\nCategory: [CATEGORY_NAME]\r\n\nDownload: [FILE_DOWNLOAD_LINK_SRC]');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_message','A new asset has been published on [DOMAIN_URL]\r\n\nUser: [FILE_OWNER]\r\n\nFilename: [FILE_NAME]\r\n\nCategory: [CATEGORY_NAME]\r\n\nDownload: [FILE_DOWNLOAD_LINK_SRC]');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_name','Notification on new asset');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_reply','');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_sender','');

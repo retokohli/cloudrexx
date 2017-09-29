@@ -570,7 +570,7 @@ class Downloads extends DownloadsLibrary
                     'key'     => 'new_asset_notification',
                     'substitution' => array(
                         'DOMAIN_URL'    => \Env::get('config')['domainUrl'],
-                        'FILE_AUTHOR'   => contrexx_raw2xhtml($objDownload->getAuthor()),
+                        'FILE_OWNER'    => $data['owner'],
                         'FILE_NAME'     => contrexx_raw2xhtml($objDownload->getName(FRONTEND_LANG_ID)),
                         'CATEGORY_NAME' => contrexx_raw2xhtml($objCategory->getName(FRONTEND_LANG_ID)),
                         'FILE_DOWNLOAD_LINK_SRC' => $downloadUrl->toString(),
@@ -685,6 +685,7 @@ class Downloads extends DownloadsLibrary
                 'webPath'       => $cx->getWebsiteImagesDownloadsWebPath(),
                 'category_id'   => $objCategory->getId(),
                 'appCmd'        => $this->moduleParamsHtml,
+                'owner'         => $this->getParsedUsername($this->userId),
             );
             $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
             $uploader->setFinishedCallback(array(
@@ -1292,7 +1293,7 @@ JS_CODE;
             'DOWNLOADS_'.$variablePrefix.'FILE_FILE_TYPE_ICON'     => $this->getHtmlImageTag($objDownload->getFileIcon(), htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_'.$variablePrefix.'FILE_DELETE_ICON'        => $deleteIcon,
             'DOWNLOADS_'.$variablePrefix.'FILE_DOWNLOAD_LINK_SRC'  => CONTREXX_SCRIPT_PATH . $this->moduleParamsHtml . '&amp;download=' . $objDownload->getId(),
-            'DOWNLOADS_'.$variablePrefix.'FILE_OWNER'              => $this->getParsedUsername($objDownload->getOwnerId()),
+            'DOWNLOADS_'.$variablePrefix.'FILE_OWNER'              => contrexx_raw2xhtml($this->getParsedUsername($objDownload->getOwnerId())),
             'DOWNLOADS_'.$variablePrefix.'FILE_OWNER_ID'           => $objDownload->getOwnerId(),
             'DOWNLOADS_'.$variablePrefix.'FILE_SRC'                => htmlentities($objDownload->getSourceName(), ENT_QUOTES, CONTREXX_CHARSET),
             'DOWNLOADS_'.$variablePrefix.'FILE_LAST_UPDATED'       => date(ASCMS_DATE_FORMAT, $objDownload->getMTime()),
