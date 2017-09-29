@@ -2840,7 +2840,6 @@ class DownloadsManager extends DownloadsLibrary
 
         //Parse Email template overview tab (if any exist)
         if ($count) {
-        $result &=
             \Cx\Core\Setting\Controller\Setting::show_external(
                 $objTemplate,
                 $_CORELANG['TXT_CORE_MAILTEMPLATES'],
@@ -2860,14 +2859,13 @@ class DownloadsManager extends DownloadsLibrary
         if (empty($_REQUEST['key'])) {
             $tabName = $_CORELANG['TXT_CORE_MAILTEMPLATE_ADD'];
         }
-        $result &=
-            \Cx\Core\Setting\Controller\Setting::show_external(
-                $objTemplate,
-                $tabName,
-                \Cx\Core\MailTemplate\Controller\MailTemplate::edit(
-                    'Downloads'
-                )->get()
-            );
+        \Cx\Core\Setting\Controller\Setting::show_external(
+            $objTemplate,
+            $tabName,
+            \Cx\Core\MailTemplate\Controller\MailTemplate::edit(
+                'Downloads'
+            )->get()
+        );
 
         //Parse Placeholder tab
         $template = new \Cx\Core\Html\Sigma(
@@ -2879,7 +2877,7 @@ class DownloadsManager extends DownloadsLibrary
             'module_downloads_settings_placeholders.html'
         );
         $template->setGlobalVariable($_ARRAYLANG);
-        $result &= \Cx\Core\Setting\Controller\Setting::show_external(
+        \Cx\Core\Setting\Controller\Setting::show_external(
             $objTemplate,
             $_ARRAYLANG['TXT_DOWNLOADS_PLACEHOLDERS'],
             $template->get()
