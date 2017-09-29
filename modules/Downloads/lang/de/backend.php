@@ -329,4 +329,4 @@ $_ARRAYLANG['TXT_DOWNLOADS_DOMAIN_URL_DESC'] = 'Haupt Domain der Website';
 $_ARRAYLANG['TXT_DOWNLOADS_FILE_AUTHOR_DESC'] = 'The name of Download file author';
 $_ARRAYLANG['TXT_DOWNLOADS_FILE_NAME_DESC'] = 'Dateiname des Downloads';
 $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_NAME_DESC'] = 'Name der zugehörigen Kategorie des Downloads';
-$_ARRAYLANG['TXT_DOWNLOADS_FILE_DOWNLOAD_LINK_SRC_DESC'] = 'URL zur Website des Downloads';
+$_ARRAYLANG['TXT_DOWNLOADS_FILE_DOWNLOAD_LINK_SRC_DESC'] = 'Download-URL des Downloads';
