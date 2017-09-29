@@ -2832,8 +2832,14 @@ class DownloadsManager extends DownloadsLibrary
             $_REQUEST['active_tab'] = 2;
         }
 
-        //Parse Email template overview tab
+        // reinitialize MailTemplates to fetch the current number of MailTemplates
+        $count = 0;
+        \Cx\Core\MailTemplate\Controller\MailTemplate::init('Downloads', null, '', 0, -1, $count);
+
         $objTemplate = null;
+
+        //Parse Email template overview tab (if any exist)
+        if ($count) {
         $result &=
             \Cx\Core\Setting\Controller\Setting::show_external(
                 $objTemplate,
@@ -2847,6 +2853,7 @@ class DownloadsManager extends DownloadsLibrary
                     )
                 )->get()
             );
+        }
 
         //Parse Add/Edit Mail Template tab
         $tabName = $_CORELANG['TXT_CORE_MAILTEMPLATE_EDIT'];
