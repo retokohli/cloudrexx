@@ -571,8 +571,8 @@ class Downloads extends DownloadsLibrary
                     'substitution' => array(
                         'DOMAIN_URL'    => \Env::get('config')['domainUrl'],
                         'FILE_OWNER'    => $data['owner'],
-                        'FILE_NAME'     => contrexx_raw2xhtml($objDownload->getName(FRONTEND_LANG_ID)),
-                        'CATEGORY_NAME' => contrexx_raw2xhtml($objCategory->getName(FRONTEND_LANG_ID)),
+                        'FILE_NAME'     => $objDownload->getName(FRONTEND_LANG_ID),
+                        'CATEGORY_NAME' => $objCategory->getName(FRONTEND_LANG_ID),
                         'FILE_DOWNLOAD_LINK_SRC' => $downloadUrl->toString(),
                     )
                 )
