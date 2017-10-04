@@ -882,6 +882,7 @@ class Gallery
                 'GALLERY_IMAGE_ID'.$placeholderNumber           => contrexx_raw2xhtml($objResult->fields['id']),
                 'GALLERY_IMAGE_TITLE'.$placeholderNumber        => $strImageTitle,
                 'GALLERY_IMAGE_PATH'.$placeholderNumber         => contrexx_raw2xhtml($strImagePath),
+                'GALLERY_IMAGE_THUMBNAIL_PATH'.$placeholderNumber=>contrexx_raw2xhtml($imageThumbPath),
                 'GALLERY_IMAGE_WIDTH'.$placeholderNumber        => $intImageWidth,
                 'GALLERY_IMAGE_HEIGHT'.$placeholderNumber       => $intImageHeigth,
                 'GALLERY_IMAGE_DETAIL_LINK'.$placeholderNumber  => $this->getPictureDetailLink($intParentId, $objResult->fields['id']),

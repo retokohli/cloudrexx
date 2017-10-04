@@ -185,7 +185,7 @@ class Resolver {
         } else {
             // if the current URL points to a file:
             if (
-                empty($this->url->getLangDir()) &&
+                empty($this->url->getLangDir(true)) &&
                 preg_match('/^[^?]*\.[a-z0-9]{2,4}$/', $this->url->toString())
             ) {
                 global $url;
@@ -478,8 +478,13 @@ class Resolver {
             throw new ResolverException('Alias found, but it is not active.');
         }
 
-        $langDir = $this->url->getLangDir();
+        $langDir = $this->url->getLangDir(true);
         $frontendLang = defined('FRONTEND_LANG_ID') ? FRONTEND_LANG_ID : null;
+
+        // In case the request does contain a virtual language directory,
+        // we have to ensure that there does not exist a page by the requested path.
+        // Pages do have a higher precidence than aliases, if a virtual language directory
+        // is set.
         if (!empty($langDir) && $this->pageRepo->getPagesAtPath($langDir.'/'.$path, null, $frontendLang, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY)) {
             return null;
         }

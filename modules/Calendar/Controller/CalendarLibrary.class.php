@@ -211,7 +211,7 @@ class CalendarLibrary
      * 
      * @param string $tplPath Template path
      */
-    function __construct($tplPath){                                                                      
+    public function __construct($tplPath = '') {
         $this->_objTpl = new \Cx\Core\Html\Sigma($tplPath);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);    
         
