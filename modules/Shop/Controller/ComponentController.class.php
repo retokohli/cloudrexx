@@ -116,8 +116,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * {@inheritdoc}
      */
     public function adjustResponse(\Cx\Core\Routing\Model\Entity\Response $response) {
+        // in case of an ESI request, the request URL will be set through Referer-header
+        $headers = $response->getRequest()->getHeaders();
+        if (isset($headers['Referer'])) {
+            $refUrl = new \Cx\Lib\Net\Model\Entity\Url($headers['Referer']);
+        } else {
+            $refUrl = new \Cx\Lib\Net\Model\Entity\Url($response->getRequest()->getUrl()->toString());
+        }
+
         $page   = $response->getPage();
-        $params = $response->getRequest()->getUrl()->getParamArray();
+        $params = $refUrl->getParamArray();
         unset($params['section']);
         unset($params['cmd']);
         $canonicalUrl = \Cx\Core\Routing\Url::fromPage($page, $params);
