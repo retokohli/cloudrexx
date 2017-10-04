@@ -258,8 +258,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $pageCmd = array('', 'overview');
         $matches = array();
 
+        // in case of an ESI request, the request URL will be set through Referer-header
+        $headers = $response->getRequest()->getHeaders();
+        if (isset($headers['Referer'])) {
+            $refUrl = new \Cx\Lib\Net\Model\Entity\Url($headers['Referer']);
+        } else {
+            $refUrl = new \Cx\Lib\Net\Model\Entity\Url($response->getRequest()->getUrl()->toString());
+        }
+
         $canonicalUrlArguments = array('eid', 'cid', 'lid', 'preview', 'pos');
-        if (in_array('eid', array_keys($response->getRequest()->getUrl()->getParamArray()))) {
+        if (in_array('eid', array_keys($refUrl->getParamArray()))) {
             $canonicalUrlArguments = array_filter(
                 $canonicalUrlArguments, 
                 function($key) {return !in_array($key, array('cid', 'lid'));}
@@ -275,7 +283,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
          \ARRAY_FILTER_USE_KEY
         );*/
 
-        foreach ($response->getRequest()->getUrl()->getParamArray() as $key => $value) {
+        foreach ($refUrl->getParamArray() as $key => $value) {
             if (!in_array($key, $canonicalUrlArguments)) {
                 continue;
             }
