@@ -209,12 +209,12 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                     $headers = $params['response']->getRequest()->getHeaders();
                     $fragments = array();
                     if (isset($headers['Referer'])) {
-                        // -> get additional path fragments
                         $refUrl = new \Cx\Lib\Net\Model\Entity\Url($headers['Referer']);
-                        $pathParts = $refUrl->getPathParts();
-                        $offsetPathParts = explode('/', $this->cx->getWebsiteOffsetPath());
-                        $offsetPathParts[] = \Env::get('virtualLanguageDirectory');
-                        $fragments = array_diff_assoc($pathParts, $offsetPathParts);
+                        $referer = $refUrl->getPath();
+                        $additionalPath = substr($referer, strlen(\Cx\Core\Routing\Url::fromPage(static::$esiParamPage)->toString(false)));
+                        if (!empty($additionalPath)) {
+                            $fragments = explode('/', substr($additionalPath, 1));
+                        }
                     }
                     // get the component
                     $pageComponent = $this->getComponent($page->getModule());
