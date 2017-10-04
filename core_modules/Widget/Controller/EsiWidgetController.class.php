@@ -221,7 +221,7 @@ abstract class EsiWidgetController extends \Cx\Core\Core\Model\Entity\Controller
                         if (isset($headers['Referer'])) {
                             $refUrl = new \Cx\Lib\Net\Model\Entity\Url($headers['Referer']);
                             $referer = $refUrl->getPath();
-                            $additionalPath = substr($referer, strlen(\Cx\Core\Routing\Url::fromPage(static::$esiParamPage)->toString(false)));
+                            $additionalPath = substr($referer, strlen(\Cx\Core\Routing\Url::fromPage($page)->toString(false)));
                             if (!empty($additionalPath)) {
                                 $fragments = explode('/', substr($additionalPath, 1));
                             }
