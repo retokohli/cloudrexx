@@ -1,0 +1,30 @@
+<!-- BEGIN contact_form_special_field_select -->
+<div class="contact row form-group">
+	<label for="contactFormFieldId_{CONTACT_FORM_FIELD_ID}">{CONTACT_FORM_FIELD_LABEL}
+		<!-- BEGIN contact_form_field_required -->
+		<strong class="is_required">*</strong>
+		<!-- END contact_form_field_required -->
+	</label>
+	<select class="contactFormClass_special"
+		name="contactFormField_{CONTACT_FORM_FIELD_ID}"
+		id="contactFormFieldId_{CONTACT_FORM_FIELD_ID}">
+		<!-- BEGIN contact_form_field_options -->
+		<option value="{CONTACT_FORM_FIELD_VALUE_ID}" {CONTACT_FORM_FIELD_SELECTED}>{CONTACT_FORM_FIELD_VALUE}</option>
+		<!-- END contact_form_field_options -->
+	</select>
+</div>
+<!-- END contact_form_special_field_select -->
+
+<!-- BEGIN contact_form_special_field_input -->
+<div class="contact row form-group">
+	<label for="contactFormFieldId_{CONTACT_FORM_FIELD_ID}">{CONTACT_FORM_FIELD_LABEL}
+		<!-- BEGIN contact_form_field_required -->
+		<strong class="is_required">*</strong>
+		<!-- END contact_form_field_required -->
+	</label> <input
+		class="contactFormClass_special {CONTACT_FORM_FIELD_ADDITIONAL_CLASS}"
+		id="contactFormFieldId_{CONTACT_FORM_FIELD_ID}" type="text"
+		name="contactFormField_{CONTACT_FORM_FIELD_ID}"
+		value="{CONTACT_FORM_FIELD_VALUE}">
+</div>
+<!-- END contact_form_special_field_input -->
