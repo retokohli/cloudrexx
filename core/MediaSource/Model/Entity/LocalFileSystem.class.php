@@ -96,7 +96,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
              */
             $extension = 'Dir';
             if (!$file->isDir()) {
-                $extension = ucfirst(
+                $extension = strtolower(
                     pathinfo($file->getFilename(), PATHINFO_EXTENSION)
                 );
             }
@@ -234,7 +234,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
     public function isImage(
         $extension
     ) {
-        return preg_match("/(jpg|jpeg|gif|png)/i", ucfirst($extension));
+        return preg_match("/(jpg|jpeg|gif|png)/i", $extension);
     }
 
     /**
@@ -253,8 +253,8 @@ class LocalFileSystem extends EntityBase implements FileSystem
             $thumbnail
         ) {
             $thumbnails[$thumbnail['size']] = preg_replace(
-                '/\.' . lcfirst($extension) . '$/',
-                $thumbnail['value'] . '.' . lcfirst($extension),
+                '/\.' . $extension . '$/i',
+                $thumbnail['value'] . '.' . strtolower($extension),
                  str_replace(
                     $this->cx->getWebsitePath(), '',
                     $file->getRealPath()

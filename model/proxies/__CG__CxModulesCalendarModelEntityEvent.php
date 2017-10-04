@@ -1806,6 +1806,17 @@ class Event extends \Cx\Modules\Calendar\Model\Entity\Event implements \Doctrine
     /**
      * {@inheritDoc}
      */
+    public function addInvite(\Cx\Modules\Calendar\Model\Entity\Invite $invite)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addInvite', array($invite));
+
+        return parent::addInvite($invite);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getInvite()
     {
 

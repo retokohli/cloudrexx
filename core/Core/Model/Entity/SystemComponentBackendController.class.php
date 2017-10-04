@@ -315,14 +315,15 @@ class SystemComponentBackendController extends Controller {
      * To show messages, use \Message class
      * @param \Cx\Core\Html\Sigma $template Template for current CMD
      * @param array $cmd CMD separated by slashes
+     * @param boolean $isSingle Wether edit view or not
      */
-    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd, &$isSingle = false) {
         global $_ARRAYLANG;
 
         // Parse entity view generation pages
         $entityClassName = $this->getNamespace() . '\\Model\\Entity\\' . current($cmd);
         if (in_array($entityClassName, $this->getEntityClasses())) {
-            $this->parseEntityClassPage($template, $entityClassName, current($cmd));
+            $this->parseEntityClassPage($template, $entityClassName, current($cmd), array(), $isSingle);
             return;
         }
 
@@ -378,7 +379,7 @@ class SystemComponentBackendController extends Controller {
     }
 
     /**
-     * Returns the object to parse a wiew with
+     * Returns the object to parse a view with
      *
      * If you overwrite this and return anything else than string, filter will not work
      * @return string|array|object An entity class name, entity, array of entities or DataSet

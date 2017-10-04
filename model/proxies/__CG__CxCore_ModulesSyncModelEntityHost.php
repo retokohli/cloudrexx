@@ -73,10 +73,10 @@ class Host extends \Cx\Core_Modules\Sync\Model\Entity\Host implements \Doctrine\
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', 'id', 'host', 'active', 'apiKey', 'apiVersion', 'urlTemplate', 'hostEntities', 'validators', 'virtual');
+            return array('__isInitialized__', 'id', 'host', 'active', 'apiKey', 'apiVersion', 'urlTemplate', 'hostEntities', 'changes', 'state', 'defaultUrlTemplate', 'validators', 'virtual');
         }
 
-        return array('__isInitialized__', 'id', 'host', 'active', 'apiKey', 'apiVersion', 'urlTemplate', 'hostEntities', 'validators', 'virtual');
+        return array('__isInitialized__', 'id', 'host', 'active', 'apiKey', 'apiVersion', 'urlTemplate', 'hostEntities', 'changes', 'state', 'defaultUrlTemplate', 'validators', 'virtual');
     }
 
     /**
@@ -338,6 +338,128 @@ class Host extends \Cx\Core_Modules\Sync\Model\Entity\Host implements \Doctrine\
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'setHostEntities', array($hostEntities));
 
         return parent::setHostEntities($hostEntities);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addChange(\Cx\Core_Modules\Sync\Model\Entity\Change $change)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addChange', array($change));
+
+        return parent::addChange($change);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getChanges()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getChanges', array());
+
+        return parent::getChanges();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setChanges($changes)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setChanges', array($changes));
+
+        return parent::setChanges($changes);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setState($state)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setState', array($state));
+
+        return parent::setState($state);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getState()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getState', array());
+
+        return parent::getState();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getToUri($dataSourceName, $entityIndexData = array (
+))
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getToUri', array($dataSourceName, $entityIndexData));
+
+        return parent::getToUri($dataSourceName, $entityIndexData);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function handleChange($change)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'handleChange', array($change));
+
+        return parent::handleChange($change);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isLocked()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'isLocked', array());
+
+        return parent::isLocked();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function lock()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'lock', array());
+
+        return parent::lock();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeLock()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeLock', array());
+
+        return parent::removeLock();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function disable()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'disable', array());
+
+        return parent::disable();
     }
 
     /**

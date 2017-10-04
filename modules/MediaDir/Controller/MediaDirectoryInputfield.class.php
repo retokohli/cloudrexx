@@ -367,8 +367,8 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 break;
             case 2:
                 //modify (add/edit) View
-                $objAddStep       = new MediaDirectoryAddStep($this->moduleName);
-        $i                = 0;
+                $objAddStep = new MediaDirectoryAddStep($this->moduleName);
+                $i = 0;
                 $isFileInputFound = false;
                 foreach ($this->arrInputfields as $key => $arrInputfield) {
                     $strInputfield = null;

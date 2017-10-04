@@ -1128,6 +1128,9 @@ class MediaDirectory extends MediaDirectoryLibrary
                     $objEntry = new MediaDirectoryEntry($this->moduleName);
                     $strStatus = $objEntry->saveEntry($_POST, intval($_POST['entryId']));
 
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('MediaDir');
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Home');
+
                     if(!empty($_POST['entryId'])) {
                         $objEntry->getEntries(intval($_POST['entryId']));
                         if($strStatus == true) {
@@ -1450,7 +1453,8 @@ class MediaDirectory extends MediaDirectoryLibrary
                 // but instead already the processed HTML-links.
                 //
                 // Load HTML code of navtree element into a DOMDocument
-                $domDocument = \DOMDocument::loadHTML($strName);
+                $domDocument = new \DOMDocument();
+                $domDocument->loadHTML($strName);
                 if ($domDocument) {
                     // fetch link tags
                     $nodeList = $domDocument->getElementsByTagName('a');

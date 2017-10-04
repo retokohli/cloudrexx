@@ -398,18 +398,21 @@ class CrmInterface extends CrmLibrary
                            c.customer_id,
                            c.customer_name,
                            c.contact_familyname,
+                           c.contact_title,
                            c.contact_type,
                            c.added_date,
+                           c.updated_date,
                            c.customer_website,
                            c.contact_role,
                            c.notes,
                            c.gender,
                            c.customer_addedby,
                            c.user_account,
+                           c.contact_amount,
+                           c.contact_language,
                            con.customer_name AS contactCustomer,
                            t.label AS cType,
                            Inloc.value AS industryType,
-                           lang.name AS language,
                            cur.name AS currency
                        FROM `".DBPREFIX."module_{$this->moduleNameLC}_contacts` AS c
                        LEFT JOIN `".DBPREFIX."module_{$this->moduleNameLC}_contacts` AS con
@@ -430,8 +433,6 @@ class CrmInterface extends CrmLibrary
                          ON Intype.id = Inloc.entry_id AND Inloc.lang_id = ".$_LANGID."
                        LEFT JOIN `".DBPREFIX."module_{$this->moduleNameLC}_currency` AS cur
                          ON cur.id = c.customer_currency
-                       LEFT JOIN `".DBPREFIX."languages` AS lang
-                         ON lang.id = c.contact_language
                 $filter
                        ORDER BY c.id DESC";
         $objResult = $objDatabase->Execute($query);
@@ -446,7 +447,10 @@ class CrmInterface extends CrmLibrary
                 $_ARRAYLANG['TXT_CRM_INDUSTRY_TYPE'],
                 $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'],
                 $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'],
-                $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMER_ADDEDBY']
+                $_ARRAYLANG['TXT_CRM_AMOUNT'],
+                $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'],
+                $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMER_ADDEDBY'],
+                $_ARRAYLANG['TXT_CRM_LASTUPDATE']
             );
             break;
         case '2':
@@ -454,6 +458,7 @@ class CrmInterface extends CrmLibrary
                 $_ARRAYLANG['TXT_CRM_CONTACT_TYPE'],
                 $_ARRAYLANG['TXT_CRM_CONTACT_NAME'],
                 $_ARRAYLANG['TXT_CRM_FAMILY_NAME'],
+                $_ARRAYLANG['TXT_CRM_TITLE'],
                 $_ARRAYLANG['TXT_CRM_GENDER'],
                 $_ARRAYLANG['TXT_CRM_ROLE'],
                 $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
@@ -461,9 +466,11 @@ class CrmInterface extends CrmLibrary
                 $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
                 $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'],
                 $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'],
+                $_ARRAYLANG['TXT_CRM_AMOUNT'],
                 $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'],
                 $_ARRAYLANG['TXT_CRM_ACCOUNT_EMAIL'],
-                $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMER_ADDEDBY']
+                $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMER_ADDEDBY'],
+                $_ARRAYLANG['TXT_CRM_LASTUPDATE']
             );
             break;
         default:
@@ -471,6 +478,7 @@ class CrmInterface extends CrmLibrary
                 $_ARRAYLANG['TXT_CRM_CONTACT_TYPE'],
                 $_ARRAYLANG['TXT_CRM_CONTACT_NAME'],
                 $_ARRAYLANG['TXT_CRM_FAMILY_NAME'],
+                $_ARRAYLANG['TXT_CRM_TITLE'],
                 $_ARRAYLANG['TXT_CRM_GENDER'],
                 $_ARRAYLANG['TXT_CRM_ROLE'],
                 $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
@@ -479,9 +487,11 @@ class CrmInterface extends CrmLibrary
                 $_ARRAYLANG['TXT_CRM_INDUSTRY_TYPE'],
                 $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'],
                 $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'],
+                $_ARRAYLANG['TXT_CRM_AMOUNT'],
                 $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'],
                 $_ARRAYLANG['TXT_CRM_ACCOUNT_EMAIL'],
-                $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMER_ADDEDBY']
+                $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMER_ADDEDBY'],
+                $_ARRAYLANG['TXT_CRM_LASTUPDATE']
             );
             break;
         }
@@ -537,6 +547,8 @@ class CrmInterface extends CrmLibrary
                 $membership   = implode(', ', $membership);
                 $personCmyNme = $objResult->fields['contactCustomer'];
                 $gender = ($objResult->fields['gender'] == 1) ? $_ARRAYLANG['TXT_CRM_GENDER_FEMALE'] : (($objResult->fields['gender'] == 2) ? $_ARRAYLANG['TXT_CRM_GENDER_MALE'] : '');
+                $langId = $objResult->fields['contact_language'];
+                $langName = \FWLanguage::getLanguageParameter($langId, 'name');
                 switch ($process) {
                 case '1':
                         print ($objResult->fields['contact_type'] == 1 ? 'Company' : 'Person').$this->_csvSeparator;
@@ -546,12 +558,16 @@ class CrmInterface extends CrmLibrary
                         print $this->_escapeCsvValue($objResult->fields['industryType']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($membership).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['currency'])).$this->_csvSeparator;
+                        print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['contact_amount'])).$this->_csvSeparator;
+                        print $this->_escapeCsvValue($objResult->fields['language']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($this->getUserName($objResult->fields['customer_addedby'])).$this->_csvSeparator;
+                        print $this->_escapeCsvValue($objResult->fields['updated_date']).$this->_csvSeparator;
                     break;
                 case '2':
                         print ($objResult->fields['contact_type'] == 1 ? 'Company' : 'Person').$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 1 ? '' : $this->_escapeCsvValue($objResult->fields['customer_name'])).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 1 ? '' : $this->_escapeCsvValue($objResult->fields['contact_familyname'])).$this->_csvSeparator;
+                        print ($objResult->fields['contact_type'] == 1 ? '' : $this->_escapeCsvValue($objResult->fields['contact_title'])).$this->_csvSeparator;
                         print $this->_escapeCsvValue($gender).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['contact_role']).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 2 ? $this->_escapeCsvValue($objResult->fields['contactCustomer']) : $this->_escapeCsvValue($objResult->fields['customer_name'])).$this->_csvSeparator;
@@ -559,14 +575,17 @@ class CrmInterface extends CrmLibrary
                         print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['cType'])).$this->_csvSeparator;
                         print $this->_escapeCsvValue($membership).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['currency'])).$this->_csvSeparator;
-                        print $this->_escapeCsvValue($objResult->fields['language']).$this->_csvSeparator;
+                        print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['contact_amount'])).$this->_csvSeparator;
+                        print $this->_escapeCsvValue($langName).$this->_csvSeparator;
                         print $this->_escapeCsvValue($this->getEmail($objResult->fields['user_account'])).$this->_csvSeparator;
                         print $this->_escapeCsvValue($this->getUserName($objResult->fields['customer_addedby'])).$this->_csvSeparator;
+                        print $this->_escapeCsvValue($objResult->fields['updated_date']).$this->_csvSeparator;
                     break;
                 default:
                         print ($objResult->fields['contact_type'] == 1 ? 'Company' : 'Person').$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 1 ? '' : $this->_escapeCsvValue($objResult->fields['customer_name'])).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 1 ? '' : $this->_escapeCsvValue($objResult->fields['contact_familyname'])).$this->_csvSeparator;
+                        print ($objResult->fields['contact_type'] == 1 ? '' : $this->_escapeCsvValue($objResult->fields['contact_title'])).$this->_csvSeparator;
                         print $this->_escapeCsvValue($gender).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['contact_role']).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 2 ? $this->_escapeCsvValue($objResult->fields['contactCustomer']) : $this->_escapeCsvValue($objResult->fields['customer_name'])).$this->_csvSeparator;
@@ -575,9 +594,11 @@ class CrmInterface extends CrmLibrary
                         print $this->_escapeCsvValue($objResult->fields['industryType']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($membership).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['currency'])).$this->_csvSeparator;
-                        print $this->_escapeCsvValue($objResult->fields['language']).$this->_csvSeparator;
+                        print ($objResult->fields['contact_type'] == 2 && !empty($personCmyNme) ? '' : $this->_escapeCsvValue($objResult->fields['contact_amount'])).$this->_csvSeparator;
+                        print $this->_escapeCsvValue($langName).$this->_csvSeparator;
                         print $this->_escapeCsvValue($this->getEmail($objResult->fields['user_account'])).$this->_csvSeparator;
                         print $this->_escapeCsvValue($this->getUserName($objResult->fields['customer_addedby'])).$this->_csvSeparator;
+                        print $this->_escapeCsvValue($objResult->fields['updated_date']).$this->_csvSeparator;
                     break;
                 }
 
@@ -674,6 +695,9 @@ class CrmInterface extends CrmLibrary
             array("value" => 'firstname', 'title' => $_ARRAYLANG['TXT_CRM_CONTACT_NAME'], 'Header' => false),
             array("value" => 'lastname', 'title' => $_ARRAYLANG['TXT_CRM_FAMILY_NAME'], 'Header' => false),
             array("value" => 'gender', 'title' => $_ARRAYLANG['TXT_CRM_GENDER'], 'Header' => false),
+            array("value" => 'title', 'title' => $_ARRAYLANG['TXT_CRM_TITLE'], 'Header' => false),
+            array("value" => 'amount', 'title' => $_ARRAYLANG['TXT_CRM_AMOUNT'], 'Header' => false),
+            array("value" => 'changed_date', 'title' => $_ARRAYLANG['TXT_CRM_LASTUPDATE'], 'Header' => false),
             array("value" => 'company', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'], 'Header' => false),
             array("value" => 'role', 'title' => $_ARRAYLANG['TXT_CRM_ROLE'], 'Header' => false),
             array("value" => 'customertype', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'], 'Header' => false),
@@ -1007,11 +1031,11 @@ class CrmInterface extends CrmLibrary
      */
     function getLanguageIdByName($language)
     {
-        global $objDatabase;
-
-        $objResult = $objDatabase->Execute("SELECT  `id` FROM `".DBPREFIX."languages` WHERE `name` = '". contrexx_raw2db($language)."' LIMIT 0, 1");
-
-        return (int) $objResult->fields['id'];
+        foreach(\FWLanguage::getActiveFrontendLanguages() as $frontendLanguage) {
+            if ($frontendLanguage['name'] == $language) {
+                return (int) $language['id'];
+            }
+        }
     }
 
     /**

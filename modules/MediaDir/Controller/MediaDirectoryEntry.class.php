@@ -1905,6 +1905,10 @@ JSCODE;
                 continue;
             }
 
+            if (!$pageUrlResult) {
+                continue;
+            }
+
             //Get the search results title and content from the form context field 'title' and 'content'
             $title          = current($entry['entryFields']);
             $content        = '';

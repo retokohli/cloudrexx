@@ -257,10 +257,16 @@ class CalendarRegistration extends CalendarLibrary
             $this->type = intval($objResult->fields['type']);        
             $this->hostName = htmlentities($objResult->fields['host_name'], ENT_QUOTES, CONTREXX_CHARSET);      
             $this->ipAddress = htmlentities($objResult->fields['ip_address'], ENT_QUOTES, CONTREXX_CHARSET);        
-            $this->invite = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Invite')->findOneById($objResult->fields['invite_id']);
             $this->firstExport = intval($objResult->fields['first_export']);
             $this->paymentMethod = intval($objResult->fields['payment_method']);
             $this->paid = intval($objResult->fields['paid']);
+
+            // fetch associated Invite (if any)
+            if (!empty($objResult->fields['invite_id'])) {
+                $this->invite = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Invite')->findOneById($objResult->fields['invite_id']);
+            } else {
+                $this->invite = null;
+            }
             
             $this->submissionDate = '';
             if ($objResult->fields['submission_date'] !== '0000-00-00 00:00:00') {
@@ -278,6 +284,7 @@ class CalendarRegistration extends CalendarLibrary
                 WHERE
                     `field`.`reg_id` = "' . $regId . '" AND
                     `field`.`field_id` IN (' . implode(',', array_column($this->getForm()->inputfields, 'id')) . ')
+                ORDER BY `field`.`field_id` DESC
             ';
             $fieldsQueryResult = $objDatabase->Execute($fieldsQuery);
             if ($fieldsQueryResult === false) {
@@ -407,7 +414,18 @@ class CalendarRegistration extends CalendarLibrary
         $hostName = 0;
         $ipAddress = 0;
 
-        if (!$this->invite->getId()) {
+        if (!$this->invite) {
+            $eventRepo = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Event');
+            $event = $eventRepo->findOneById($eventId);
+            $this->invite = new \Cx\Modules\Calendar\Model\Entity\Invite();
+            $this->invite->setEvent($event);
+            $this->invite->setDate($objEvent->startDate);
+            $this->invite->setToken($this->generateKey());
+            $event->setVirtual(true);
+            $this->em->persist($this->invite);
+            $this->em->merge($event);
+            $this->em->flush();
+        } elseif (!$this->invite->getId()) {
             $this->invite->getEvent()->setVirtual(true);
             $this->em->persist($this->invite);
             $this->em->merge($this->invite->getEvent());
@@ -905,6 +923,9 @@ class CalendarRegistration extends CalendarLibrary
             }
         }
 
+        if (!isset($formDatas['relation'])) {
+            return $registration;
+        }
         $relations = $formDatas['relation'];
         if (!$relations) {
             return $registration;
