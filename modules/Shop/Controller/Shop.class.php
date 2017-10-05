@@ -669,6 +669,14 @@ die("Failed to get Customer for ID $customer_id");
             if (!$objTemplate->blockExists('shopJsCart')) {
                 continue;
             }
+
+            // placeholder SHOP_FORCE_JS_CART will allow multiple parsing of shopJsCart
+            // TODO: drop placeholder/feature as soon as placeholder-modification-
+            //       feature of Locale component is live
+            if (self::$use_js_cart && !$objTemplate->placeholderExists('SHOP_FORCE_JS_CART')) {
+                break;
+            }
+
 //\DBG::log("Shop::setJsCart(): In themespage $index: {$themesPages[$index]}");
             $objTemplate->setCurrentBlock('shopJsCart');
             // Set all language entries and replace formats
@@ -704,7 +712,10 @@ die("Failed to get Customer for ID $customer_id");
             }
             // One instance only (mind that there's a unique id attribute)
             self::$use_js_cart = true;
-            break;
+
+            // TODO: reactivate 'break' statement as soon as placeholder-modification-
+            //       feature of Locale component is live
+            //break;
         }
         if (!self::$use_js_cart) {
             return;

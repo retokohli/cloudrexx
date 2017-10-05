@@ -212,5 +212,31 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             $dateTime->setTime(23, 59, 59);
             $response->setExpirationDate($dateTime);
         }
+
+        //Parse the next birthday users
+        if ($name == 'access_next_birthday_member_list') {
+            if (
+                \FWUser::showNextBirthdayUsers() &&
+                (
+                    $template->blockExists('access_next_birthday_female_members') ||
+                    $template->blockExists('access_next_birthday_male_members') ||
+                    $template->blockExists('access_next_birthday_members')
+                )
+            ) {
+                if ($template->blockExists('access_next_birthday_female_members')) {
+                    $objAccessBlocks->setNextBirthdayUsers('female');
+                }
+
+                if ($template->blockExists('access_next_birthday_male_members')) {
+                    $objAccessBlocks->setNextBirthdayUsers('male');
+                }
+
+                if ($template->blockExists('access_next_birthday_members')) {
+                    $objAccessBlocks->setNextBirthdayUsers();
+                }
+            } else {
+                $template->hideBlock($name);
+            }
+        }
     }
 }

@@ -252,13 +252,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'access_currently_online_member_list',
             'access_last_active_member_list',
             'access_latest_registered_member_list',
-            'access_birthday_member_list'
+            'access_birthday_member_list',
+            'access_next_birthday_member_list',
         );
         foreach ($widgetNames as $widgetName) {
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
                 $widgetName,
                 true
+            );
+            $widget->setEsiVariable(
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
             );
             $widgetController->registerWidget(
                 $widget
