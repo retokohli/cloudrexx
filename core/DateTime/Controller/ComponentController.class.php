@@ -168,22 +168,19 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         $widgetController = $this->getComponent('Widget');
 
-        //EsiWidget
         $widgets = array(
-            'DATE',
-            'TIME',
-            'DATE_YEAR',
-            'DATE_MONTH',
-            'DATE_DAY',
-            'DATE_TIME',
+            'DATE'      => '$strftime(\'%A %e. %B %Y\')',
+            'TIME'      => '$strftime(\'%H:%M\')',
+            'DATE_YEAR' => '$strftime(\'%Y\')',
+            'DATE_MONTH'=> '$strftime(\'%m\')',
+            'DATE_DAY'  => '$strftime(\'%d\')',
+            'DATE_TIME' => '$strftime(\'%H:%M\')',
         );
-        foreach ($widgets as $widgetName) {
-            $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+        foreach ($widgets as $widgetName => $func) {
+            $widget = new \Cx\Core_Modules\Widget\Model\Entity\FinalStringWidget(
                 $this,
-                $widgetName
-            );
-            $widget->setEsiVariable(
-                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_LANG
+                $widgetName,
+                $func
             );
             $widgetController->registerWidget($widget);
         }
