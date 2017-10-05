@@ -216,6 +216,9 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
             },
         );
 
+        // TODO: $dynFuncs needs to be built dynamically (via event handler)
+        $this->dynFuncs = array();
+
         if (!$this->boolIsEnabled) {
             return null;
         }
@@ -635,6 +638,21 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                         $htmlCode = str_replace($esiPlaceholder, $varValue, $htmlCode);
                     }
                 }
+            }
+
+            // apply ESI dynamic functions
+            foreach ($this->dynFuncs as $function => $callback) {
+                $replace = function() use ($callback) {
+                    // extract arguments from function call
+                    $arglist = func_get_arg(0)[1];
+                    preg_match_all('([^,]+)', $arglist, $args);
+
+                    // pass extracted arguments to dynamic function
+                    return $callback($args[0]);
+                };
+
+                // execute ESI dynamic functions in content
+                $htmlCode = preg_replace_callback('/\$' . $function . '\(' . '([^)]*)' . '\)/', $replace, $htmlCode);
             }
 
             // Random include tags
