@@ -870,13 +870,15 @@ class MediaDirectory extends MediaDirectoryLibrary
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         //get searchform
-        if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
+        $searchTerm = null;
+        if ($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')) {
             $objSearch = new MediaDirectorySearch($this->moduleName);
             $objSearch->getSearchform($this->_objTpl);
+            $searchTerm = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : null;
         }
 
         $objEntry = new MediaDirectoryEntry($this->moduleName);
-        $objEntry->getEntries(null, null, null, null, true, null, true, null, $this->arrSettings['settingsLatestNumFrontend']);
+        $objEntry->getEntries(null, null, null, $searchTerm, true, null, true, null, $this->arrSettings['settingsLatestNumFrontend']);
         $objEntry->listEntries($this->_objTpl, 2);
     }
 

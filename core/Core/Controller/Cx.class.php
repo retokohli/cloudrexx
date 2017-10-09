@@ -659,12 +659,6 @@ namespace Cx\Core\Core\Controller {
          * @param   boolean $setAsPreferred Whether or not to set the Cx instance as preferred instance to be used
          */
         public static function registerInstance($cx, $configFilePath = null, $setAsPreferred = false) {
-            if (!isset(self::$instances[null])) {
-                $key = null;
-            } else {
-                $key = spl_object_hash($cx);
-            }
-
             self::$autoIncrementValueOfId++;
             $cx->setId(self::$autoIncrementValueOfId);
 
@@ -1363,12 +1357,11 @@ namespace Cx\Core\Core\Controller {
          * (Env, API and InitCMS are deprecated)
          * @todo Remove deprecated elements
          * @todo Remove usage of globals
-         * @global array $_CONFIG
-         * @global type $_FTPCONFIG
+         * @global type $_DBCONFIG
          * @global type $objDatabase
          */
         protected function init() {
-            global $objDatabase, $_DBCONFIG, $_CONFIG;
+            global $objDatabase, $_DBCONFIG;
 
             $this->tryToSetMemoryLimit();
 
