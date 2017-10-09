@@ -2127,7 +2127,6 @@ namespace Cx\Core\Core\Controller {
                     'SIDEBAR_FILE' => $themesPages['sidebar'],
                     'JAVASCRIPT_FILE' => $themesPages['javascript'],
                     'BUILDIN_STYLE_FILE' => $themesPages['buildin_style'],
-                    'BUILDIN_STYLE_FILE' => $themesPages['buildin_style'],
                     'JAVASCRIPT_LIGHTBOX' =>
                         '<script type="text/javascript" src="lib/lightbox/javascript/mootools.js"></script>
                         <script type="text/javascript" src="lib/lightbox/javascript/slimbox.js"></script>',
