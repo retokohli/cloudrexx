@@ -218,107 +218,36 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
         // TODO: $dynFuncs needs to be built dynamically (via event handler)
         $this->dynFuncs = array(
-            'strftime' => function($args) {
+            'strftime' => function($args) use ($cx) {
+                // Notes:
+                //   This function does not support the ESI dynamic function
+                //   modifiers %E, %O and %+.
+                //   This function does yet implement locales.
+                //   Therefore, the return value of locale specific format
+                //   parameters is unknown.
+                //   If you need locale specific parameters, do implement
+                //   an EsiWidget for it. For reference see EsiWidget
+                //   DATE of DateTime component
+
                 $time = time();
-                $esiFormat = '';
+                $format = '';
 
                 switch (count($args)) {
                     case 1:
-                        $esiFormat = $args[0];
+                        $format = $args[0];
                         break;
                     case 2:
                         $time = $args[0];
-                        $esiFormat = $args[1];
+                        $format = $args[1];
                         break;
 
                     default:
                         \DBG::msg('Invalid arguments supplied to $strftime()');
                         return;
                 }
-                $esiFormat = trim($esiFormat, '\'');
+                $format = trim($format, '\'');
 
-                $esi2phpFormat = array(
-                    '%a' => 'D',
-                    '%A' => 'l',
-                    '%b' => 'M',
-                    '%B' => 'F',
-                    '%c' => 'r',
-                    '%C' => function($time) {
-                        return substr(date('Y', $time), 0, 2);
-                    },
-                    '%d' => 'd',
-                    '%D' => 'm/d/y',
-                    '%e' => function($time) {
-                        return str_pad(date('j', $time), 2);
-                    },
-                    '%E' => '', // not yet suppored
-                    '%G' => 'o',
-                    '%g' => function($time) {
-                        return substr(date('0', $time), 2, 2);
-                    },
-                    '%h' => 'M',
-                    '%H' => 'H',
-                    '%I' => 'h',
-                    '%j' => function($time) {
-                        return str_pad(date('z', $time) + 1, 3, '0', STR_PAD_LEFT);
-                    },
-                    '%k' => function($time) {
-                        return str_pad(date('G', $time), 2, ' ', STR_PAD_LEFT);
-                    },
-                    '%l' => function($time) {
-                        return str_pad(date('g', $time), 2, ' ', STR_PAD_LEFT);
-                    },
-                    '%m' => 'm',
-                    '%M' => 'i',
-                    '%n' => '\n',
-                    '%O' => '', // not yet suppored
-                    '%p' => 'A',
-                    '%P' => 'a',
-                    '%r' => 'h:i:s A',
-                    '%R' => 'H:i',
-                    '%s' => 'U',
-                    '%S' => 's',
-                    '%t' => '\t',
-                    '%T' => 'H:i:s',
-                    '%u' => 'N',
-                    '%U' => '', // not yet suppored
-                    '%V' => 'W',
-                    '%w' => 'w',
-                    '%W' => '', // not yet suppored
-                    '%x' => '', // not yet suppored
-                    '%X' => '', // not yet suppored
-                    '%y' => 'y',
-                    '%Y' => 'Y',
-                    '%Z' => 'e',
-                    '%+' => '', // not yet suppored
-                    '%%' => '%',
-                );
-
-                $esiFormatCharacters = array_keys($esi2phpFormat);
-                array_walk($esiFormatCharacters, function(&$char) {$char = '/' . $char . '/';});
-
-                return preg_replace_callback(
-                    $esiFormatCharacters,
-                    function($matches) use ($time, $esi2phpFormat) {
-                        if (empty($matches[0])) {
-                            return;
-                        }
-
-                        if (!isset($esi2phpFormat[$matches[0]])) {
-                            return '';
-                        }
-
-                        $replacement = $esi2phpFormat[$matches[0]];
-                        if (is_callable($replacement)) {
-                            return $replacement($time);
-                        } else {
-                            return date($replacement, $time);
-                        }
-                    },
-                    $esiFormat
-                );
-                return date($format, $time);
-
+                return strftime($format, $time);
             },
         );
 
