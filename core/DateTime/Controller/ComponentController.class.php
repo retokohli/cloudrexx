@@ -168,13 +168,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         $widgetController = $this->getComponent('Widget');
 
+        // register FinalStringWidgets
         $widgets = array(
-            'DATE'      => '$strftime(\'%A %e. %B %Y\')',
             'TIME'      => '$strftime(\'%H:%M\')',
             'DATE_YEAR' => '$strftime(\'%Y\')',
             'DATE_MONTH'=> '$strftime(\'%m\')',
             'DATE_DAY'  => '$strftime(\'%d\')',
             'DATE_TIME' => '$strftime(\'%H:%M\')',
+            'DATE_TIMESTAMP'    => '$strftime(\'%s\')',
         );
         foreach ($widgets as $widgetName => $func) {
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\FinalStringWidget(
@@ -184,5 +185,100 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             );
             $widgetController->registerWidget($widget);
         }
+
+        // register EsiWidget
+        $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+            $this,
+            'DATE'
+        );
+        $widget->setEsiVariable(
+            \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_LOCALE
+        );
+        $widgetController->registerWidget($widget);
+    }
+
+    /**
+     * Localized version of PHP's strftime() function
+     *
+     * See PHP documentation of strftime() for the reference of $format.
+     *
+     * @param   string  $format Format according to http://php.net/strftime
+     * @param   integer $timestamp  The timestamp to be formatted (optional)
+     * @global  array   $_CORELANG
+     * @return  string  Returns a string formatted according format using the
+     *                  given timestamp or the current local time if no
+     *                  timestamp is given. Month and weekday names and other
+     *                  language-dependent strings respect the current set
+     *                  locale.
+     */
+    public function strftime($format, $timestamp = null) {
+        global $_CORELANG;
+
+        if (!$timestamp) {
+            $timestamp = time();
+        }
+
+        $customFormatHandlers = array(
+            '%a' => function($time) use ($_CORELANG) {
+                $days = explode(',', $_CORELANG['TXT_CORE_DAY_ABBREV3_ARRAY']);
+                $dayIdx = strftime('%w', $time);
+                return $days[$dayIdx];
+            },
+            '%A' => function($time) use ($_CORELANG) {
+                $days = explode(',', $_CORELANG['TXT_CORE_DAY_ARRAY']);
+                $dayIdx = strftime('%w', $time);
+                return $days[$dayIdx];
+            },
+            '%b' => function($time) use ($_CORELANG) {
+                $months = explode(',', $_CORELANG['TXT_CORE_MONTH_ABBREV3_ARRAY']);
+                $monthIdx = strftime('%m', $time);
+                return $months[$monthIdx];
+            },
+            '%B' => function($time) use ($_CORELANG) {
+                $months = explode(',', $_CORELANG['TXT_CORE_MONTH_ARRAY']);
+                $monthIdx = strftime('%m', $time);
+                return $months[$monthIdx];
+            },
+            '%c' => null, // not yet suppored
+            '%E' => null, // not yet suppored
+            '%h' => function($time) use ($_CORELANG) {
+                $months = explode(',', $_CORELANG['TXT_CORE_MONTH_ABBREV3_ARRAY']);
+                $monthIdx = strftime('%m', $time);
+                return $months[$monthIdx];
+            },
+            '%O' => null, // not yet suppored
+            '%x' => null, // not yet suppored
+            '%X' => null, // not yet suppored
+            '%+' => null, // not yet suppored
+        );
+
+        // escape format characters to be used in preg_replace_callback()
+        $formatCharacters = array_keys($customFormatHandlers);
+        array_walk(
+            $formatCharacters,
+            function(&$char) {
+                $char = '/' . preg_quote($char) . '/';
+            }
+        );
+
+        // parse custom format handlers on $format
+        $format = preg_replace_callback(
+            $formatCharacters,
+            function($matches) use ($timestamp, $customFormatHandlers) {
+                if (empty($matches[0])) {
+                    return;
+                }
+
+                $replacement = $customFormatHandlers[$matches[0]];
+                if (is_callable($replacement)) {
+                    return $replacement($timestamp);
+                }
+            },
+            $format
+        );
+
+        // finish parsing of $format by applying PHP's native strftime()
+        // function
+        return strftime($format, $timestamp);
     }
 }

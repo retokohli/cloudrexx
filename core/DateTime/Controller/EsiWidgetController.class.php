@@ -4,7 +4,7 @@
  * Cloudrexx
  *
  * @link      http://www.cloudrexx.com
- * @copyright Cloudrexx AG 2007-2015
+ * @copyright Cloudrexx AG 2007-2017
  *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
@@ -30,6 +30,7 @@
  *
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Project Team SS4U <info@cloudrexx.com>
+ * @author      Thomas Däppen <thomas.daeppen@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  core_datetime
  * @version     1.0.0
@@ -45,6 +46,7 @@ namespace Cx\Core\DateTime\Controller;
  *
  * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Project Team SS4U <info@cloudrexx.com>
+ * @author      Thomas Däppen <thomas.daeppen@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  core_datetime
  * @version     1.0.0
@@ -65,50 +67,20 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         if ($name === 'DATE') {
             global $_CORELANG;
 
-            //The global $_CORELANG is required by the method showFormattedDate()
+            //The global $_CORELANG is required by
+            // Cx\Core\DateTime\Controller\ComponentController::strftime()
+            // TODO: move the required language variables to component DateTime
             $langId = $params['locale']->getId();
             $_CORELANG = \Env::get('init')->getComponentSpecificLanguageData(
                 'Core',
                 true,
                 $langId
             );
-            $template->setVariable($name, showFormattedDate());
+            $template->setVariable($name, $this->getComponent('DateTime')->strftime('%A, %e. %B %Y'));
             $setTimeout = new \DateTime();
             $setTimeout->setTime(23, 59, 59);
             $response->setExpirationDate($setTimeout);
             return;
         }
-
-        $dateTime = $this->getComponent('DateTime');
-        $date     = $dateTime->createDateTimeForUser('now');
-        if ($name === 'TIME' || $name === 'DATE_TIME') {
-            $template->setVariable($name, $date->format('H:i'));
-            $date->setTime($date->format('H'), $date->format('i'), 59);
-            $response->setExpirationDate($date);
-            return;
-        }
-
-        if ($name === 'DATE_YEAR') {
-            $template->setVariable($name, $date->format('Y'));
-            $date->modify($date->format('Y') . '-12-31');
-            $date->setTime(23, 59, 59);
-            $response->setExpirationDate($date);
-            return;
-        }
-
-        if ($name === 'DATE_MONTH') {
-            $template->setVariable($name, $date->format('m'));
-            $date->modify('last day of this month');
-            $date->setTime(23, 59, 59);
-            $response->setExpirationDate($date);
-            return;
-        }
-
-        if ($name === 'DATE_DAY') {
-            $template->setVariable($name, $date->format('d'));
-            $date->setTime(23, 59, 59);
-            $response->setExpirationDate($date);
-        }
-
     }
 }
