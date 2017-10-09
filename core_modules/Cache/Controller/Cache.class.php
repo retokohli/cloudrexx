@@ -677,10 +677,28 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 $replace = function() use ($callback) {
                     // extract arguments from function call
                     $arglist = func_get_arg(0)[1];
-                    preg_match_all('([^,]+)', $arglist, $args);
+                    $args = preg_split(
+                        '/
+                            # argument enclosed in double quotes
+                            [\s,]* "([^"]+)"[\s,]*
+
+                            |
+
+                            # argument enclosed in single quotes
+                            [\s,]* \'([^\']+)\'[\s,]*
+
+                            |
+
+                            # end of argument list
+                            [\s,]+
+                        /x',
+                        $arglist,
+                        0,
+                        PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE
+                    );
 
                     // pass extracted arguments to dynamic function
-                    return $callback($args[0]);
+                    return $callback($args);
                 };
 
                 // execute ESI dynamic functions in content
