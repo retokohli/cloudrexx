@@ -48,11 +48,6 @@ use Cx\Modules\MediaDir\Model\Event\MediaDirEventListener;
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
 
     /**
-     * @var \Cx\Core\ContentManager\Model\Entity\Page Canonical page
-     */
-    protected $canonicalPage = null;
-
-    /**
      * @var \Cx\Core\Routing\Url Canonical url
      */
     protected $canonicalUrl = null;
@@ -283,11 +278,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page Resolved virtual page
      */
     public function resolve($parts, $page) {
+        // in case the requested URL does not contain any slug-parts
+        // there is nothing for us to do as it is a regular page request
         if (empty($parts)) {
-            $this->setCanonicalPage($page);
             return;
         }
 
+        // abort resolving in case pretty-URLs is not in case
         $objMediaDirectoryEntry = new MediaDirectoryEntry($this->getName());
         if (!$objMediaDirectoryEntry->arrSettings['usePrettyUrls']) {
             return;
@@ -299,9 +296,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $detailPage = $page;
         $slugCount = count($parts);
         $cmd = $page->getCmd();
+
+        // Extract slug part from the end of the requested URL.
+        // This might be the slug of an entry, level or category
         $slug = array_pop($parts);
 
-        // fetch category & level from page's CMD
+        // fetch category & level from page's CMD in case the requested URL
+        // does not contain a category nor a level 
         if (count($parts) == 0) {
             if ($cmd &&
                 preg_match('/^\d*-?\d*+$/', $cmd)
@@ -318,32 +319,45 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
         }
 
-        // detect entry
+        // check if the extracted slug is an entry
         $entryId = $objMediaDirectoryEntry->findOneBySlug($slug, null, $categoryId, $levelId);
         if ($entryId) {
-            // set canonical url
-            $this->setCanonicalUrlByEntryId(intval($entryId));
-
+            // in case the requested URL points to an application page of
+            // a form, category or level, then we have to manually load
+            // the contents of the associated detail application page
+            // of the resolved entry
             if (substr($cmd,0,6) != 'detail') {
+
+                // check if the requested URL points to the application page
+                // of a form
                 $formId = null;
                 $formData = $objMediaDirectoryEntry->getFormData();
                 foreach ($formData as $arrForm) {
                     if ($arrForm['formCmd'] == $cmd) {
-                        $formId= $arrForm['formId'];
+                        $formId = $arrForm['formId'];
                         break;
                     }
                 }
 
+                // The requested URL does not point to the application page
+                // of a form. Therefore, we have to identify the form that
+                // is associated to the resolved entry
                 if (!$formId) {
                     $objMediaDirectoryEntry->getEntries(intval($entryId),null,null,null,null,null,1,null,1);
                     $formDefinition = $objMediaDirectoryEntry->getFormDefinitionOfEntry($entryId);
                     $formId = $formDefinition['formId'];
                 }
 
+                // Fetch the entry-detail-application page that matches best
+                // to the resolved entry
                 $detailPage = $objMediaDirectoryEntry->getApplicationPageByEntry($formId);
+
+                // in case there exists no entry-detail-application page for
+                // the resolved entry, we can abort here
                 if (!$detailPage) {
                     return;
                 }
+
                 // TODO: we need an other method that does also load the additional infos (template, css, etc.)
                 //       this new method must also be used for symlink pages
                 $page->setContentOf($detailPage, true);
@@ -371,103 +385,79 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
 
                 //$page->getFallbackContentFrom($detailPage);
+                // TODO: the system should not access superglobals directly.
+                // Instead they should only be accessed by the Request object
                 $_GET['cmd']     = $_POST['cmd']     = $_REQUEST['cmd']     = $detailPage->getCmd();
             }
 
+            // inject URL argument eid into the request
             $this->cx->getRequest()->getUrl()->setParam('eid', $entryId);
 
-            // inject level & category as request arguments from page's CMD
+            // inject level as request arguments from page's CMD
             if ($levelId) {
                 $this->cx->getRequest()->getUrl()->setParam('lid', $levelId);
             }
+
+            // inject category as request arguments from page's CMD
             if ($categoryId) {
                 $this->cx->getRequest()->getUrl()->setParam('cid', $categoryId);
             }
 
+            // Request does not contain any virtual category or level path.
+            // Therefore, we can finish the resolve process here.
+            // We've successfully resolved the requested entry.
             if (empty($parts)) {
-                $this->setCanonicalPage($detailPage);
                 return;
             }
 
+            // fetch the next slug part from the requested URL
+            // which might be a category or a level
             $slug = array_pop($parts);
         }
 
-        // detect level and/or category
-        while ($slug && (!$levelId || !$categoryId)) {
-            // let's check if a category exists by the supplied slug
+        // in case we have not yet identified a category and a level
+        // lets check if the requested URL does contain any
+        // virtual level or category
+        while (
+            $slug &&
+            !($levelId && $categoryId)
+        ) {
+            // let's check if a level exists by the supplied slug
             if (!$levelId && $objMediaDirectoryEntry->arrSettings['settingsShowLevels']) {
                 $objMediaDirectoryLevel = new MediaDirectoryLevel(null, null, 0, $this->getName());
                 $levelId = $objMediaDirectoryLevel->findOneBySlug($slug);
-                if ($levelId) {
-                    $this->cx->getRequest()->getUrl()->setParam('lid', $levelId);
-                }
             }
 
             // let's check if a category exists by the supplied slug
             if (!$categoryId) {
                 $objMediaDirectoryCategory = new MediaDirectoryCategory(null, null, 0, $this->getName());
                 $categoryId = $objMediaDirectoryCategory->findOneBySlug($slug);
-                if ($categoryId) {
-                    $this->cx->getRequest()->getUrl()->setParam('cid', $categoryId);
-                }
             }
 
+            // fetch parent slug (if any is left)
             $slug = array_pop($parts);
         }
 
-        if ($levelId || $categoryId) {
-            $this->setCanonicalPage($detailPage);
+        // inject level (URL argument lid) into the request
+        if ($levelId) {
+            $this->cx->getRequest()->getUrl()->setParam('lid', $levelId);
+        }
+
+        // inject category (URL argument cid) into the request
+        if ($categoryId) {
+            $this->cx->getRequest()->getUrl()->setParam('cid', $categoryId);
         }
     }
 
     /**
-     * Sets the canonical page
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $canonicalPage Canonical page
+     * {@inheritdoc}
      */
-    protected function setCanonicalPage($canonicalPage) {
-        $this->canonicalPage = $canonicalPage;
-    }
-    
-    /**
-     * Do something with a Response object
-     * You may do page alterations here (like changing the metatitle)
-     * You may do response alterations here (like set headers)
-     * PLEASE MAKE SURE THIS METHOD IS MOCKABLE. IT MAY ONLY INTERACT WITH
-     * resolve() HOOK.
-     *
-     * @param \Cx\Core\Routing\Model\Entity\Response $response Response object to adjust
-     */
-    public function adjustResponse(\Cx\Core\Routing\Model\Entity\Response $response) {
+    public function adjustResponse(
+        \Cx\Core\Routing\Model\Entity\Response $response
+    ) {
+        // resolve canonical-link
         if (!$this->canonicalUrl) {
-        $canonicalUrlArguments = array('eid', 'cid', 'lid', 'preview', 'pos');
-        if (in_array('eid', array_keys($response->getRequest()->getUrl()->getParamArray()))) {
-            $canonicalUrlArguments = array_filter($canonicalUrlArguments, function($key) {return !in_array($key, array('cid', 'lid'));});
-        }
-
-        $params = array();
-
-        // filter out all non-relevant URL arguments
-        /*$params = array_filter(
-            $this->cx->getRequest()->getUrl()->getParamArray(),
-            function($key) {return in_array($key, $canonicalUrlArguments);},
-            \ARRAY_FILTER_USE_KEY
-        );*/
-
-        foreach ($response->getRequest()->getUrl()->getParamArray() as $key => $value) {
-            if (!in_array($key, $canonicalUrlArguments)) {
-                continue;
-            }
-            $params[$key] = $value;
-        }
-
-            if (isset($params['eid'])) {
-                // set correct canonical url for detail pages
-                $this->setCanonicalUrlByEntryId(intval($params['eid']));
-            } elseif ($this->canonicalPage) {
-                $this->canonicalUrl = \Cx\Core\Routing\Url::fromPage($this->canonicalPage, $params);
-            } else {
-                return;
-            }
+            $this->setCanonicalUrl();
         }
 
         $response->setHeader(
@@ -476,14 +466,81 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         );
     }
 
-    /**
-     * Gets the slug path from a mediadir entry and sets it as canonical url
-     * @param int $entryId The ID of the entry
-     */
-    protected function setCanonicalUrlByEntryId($entryId) {
-        $entry = new MediaDirectoryEntry($this->getName());
-        $entry->getEntries($entryId, null, null, null, null, null, 1, null, 1);
+    protected function setCanonicalUrl(
+        \Cx\Core\Routing\Model\Entity\Response $response
+    ) {
+        // in case of an ESI request, the request URL will be set through Referer-header
+        $headers = $response->getRequest()->getHeaders();
+        if (isset($headers['Referer'])) {
+            $refUrl = new \Cx\Lib\Net\Model\Entity\Url($headers['Referer']);
+        } else {
+            $refUrl = new \Cx\Lib\Net\Model\Entity\Url($response->getRequest()->getUrl()->toString());
+        }
 
-        $this->canonicalUrl = $entry->getAutoSlugPath($entry->arrEntries[$entryId]);
+        if ($refUrl->hasParam('eid')) {
+            $canonicalUrlArguments = array('eid');
+        } else {
+            $canonicalUrlArguments = array('cid', 'lid', 'pos');
+        }
+
+        // filter out all non-relevant URL arguments
+        $params = array_filter(
+            $refUrl->getParamArray(),
+            function($key) use ($canonicalUrlArguments) {
+                return in_array($key, $canonicalUrlArguments);
+            },
+            \ARRAY_FILTER_USE_KEY
+        );
+
+        // set canonical-link for detail section of entry
+        if (isset($params['eid'])) {
+            $entryId = intval($params['eid']);
+            $entry = new MediaDirectoryEntry($this->getName());
+            $entry->getEntries($entryId, null, null, null, null, null, 1, null, 1);
+            $this->canonicalUrl = $entry->getAutoSlugPath($entry->arrEntries[$entryId]);
+            return;
+        }
+
+        // Check if a specific application page does exist for the
+        // requested category/level.
+        // If so, do use that page as canonical-link
+
+        if (isset($params['lid'])) {
+            $levelId = intval($params['lid']);
+        }
+        if (isset($params['cid'])) {
+            $categoryId = intval($params['cid']);
+        }
+
+        if ($levelId && $categoryId) {
+            $page = $this->getApplicationPageByLevelAndCategory($levelId, $categoryId);
+            if ($page) {
+                unset($params['lid']);
+                unset($params['cid']);
+            }
+        }
+
+        // fetch level specific page
+        if (!$page && $levelId) {
+            $page = $this->getApplicationPageByLevel($levelId);
+            if ($page) {
+                unset($params['lid']);
+            }
+        }
+
+        // fetch category specific page
+        if (!$page && $categoryId) {
+            $page = $this->getApplicationPageByCategory($categoryId);
+            if ($page) {
+                unset($params['cid']);
+            }
+        }
+
+        // fallback, set canonical-link to currently resolved page
+        if (!$page) {
+            $page = $response->getPage();
+        }
+
+        $this->canonicalUrl = \Cx\Core\Routing\Url::fromPage($page, $params);
     }
 }

@@ -337,43 +337,37 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
         $totalRecords =$objDatabase->Execute("SELECT FOUND_ROWS() AS found_rows");
 
-        $arrEntries = array();
-
         if ($objEntries !== false) {
             while (!$objEntries->EOF) {
                 $arrEntry = array();
                 $arrEntryFields = array();
 
-                if(array_key_exists($objEntries->fields['id'], $arrEntries)) {
-                    $arrEntries[intval($objEntries->fields['id'])]['entryFields'][] = !empty($objEntries->fields['value']) ? $objEntries->fields['value'] : '-';
-                } else {
-                    $arrEntryFields[] = !empty($objEntries->fields['value']) ? $objEntries->fields['value'] : '-';
+                $arrEntryFields[] = !empty($objEntries->fields['value']) ? $objEntries->fields['value'] : '-';
 
-                    $arrEntry['entryId'] = intval($objEntries->fields['id']);
-                    $arrEntry['entryOrder'] = intval($objEntries->fields['order']);
-                    $arrEntry['entryFormId'] = intval($objEntries->fields['form_id']);
-                    $arrEntry['entryFields'] = $arrEntryFields;
-                    $arrEntry['entryCreateDate'] = intval($objEntries->fields['create_date']);
-                    $arrEntry['entryValdateDate'] = intval($objEntries->fields['validate_date']);
-                    $arrEntry['entryAddedBy'] = intval($objEntries->fields['added_by']);
-                    $arrEntry['entryHits'] = intval($objEntries->fields['hits']);
-                    $arrEntry['entryPopularHits'] = intval($objEntries->fields['popular_hits']);
-                    $arrEntry['entryPopularDate'] = intval($objEntries->fields['popular_date']);
-                    $arrEntry['entryLastIp'] = htmlspecialchars($objEntries->fields['last_ip'], ENT_QUOTES, CONTREXX_CHARSET);
-                    $arrEntry['entryConfirmed'] = intval($objEntries->fields['confirmed']);
-                    $arrEntry['entryActive'] = intval($objEntries->fields['active']);
-                    $arrEntry['entryDurationType'] = intval($objEntries->fields['duration_type']);
-                    $arrEntry['entryDurationStart'] = intval($objEntries->fields['duration_start']);
-                    $arrEntry['entryDurationEnd'] = intval($objEntries->fields['duration_end']);
-                    $arrEntry['entryDurationNotification'] = intval($objEntries->fields['duration_notification']);
-                    $arrEntry['entryTranslationStatus'] = explode(",",$objEntries->fields['translation_status']);
-                    $arrEntry['entryReadyToConfirm'] = intval($objEntries->fields['ready_to_confirm']);
-                    $arrEntry['slug_field_id'] = $objEntries->fields['slug_field_id'];
-                    $arrEntry['slug'] = $objEntries->fields['slug'];
-                    $arrEntry['field_id'] = intval($objEntries->fields['field_id']);
+                $arrEntry['entryId'] = intval($objEntries->fields['id']);
+                $arrEntry['entryOrder'] = intval($objEntries->fields['order']);
+                $arrEntry['entryFormId'] = intval($objEntries->fields['form_id']);
+                $arrEntry['entryFields'] = $arrEntryFields;
+                $arrEntry['entryCreateDate'] = intval($objEntries->fields['create_date']);
+                $arrEntry['entryValdateDate'] = intval($objEntries->fields['validate_date']);
+                $arrEntry['entryAddedBy'] = intval($objEntries->fields['added_by']);
+                $arrEntry['entryHits'] = intval($objEntries->fields['hits']);
+                $arrEntry['entryPopularHits'] = intval($objEntries->fields['popular_hits']);
+                $arrEntry['entryPopularDate'] = intval($objEntries->fields['popular_date']);
+                $arrEntry['entryLastIp'] = htmlspecialchars($objEntries->fields['last_ip'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrEntry['entryConfirmed'] = intval($objEntries->fields['confirmed']);
+                $arrEntry['entryActive'] = intval($objEntries->fields['active']);
+                $arrEntry['entryDurationType'] = intval($objEntries->fields['duration_type']);
+                $arrEntry['entryDurationStart'] = intval($objEntries->fields['duration_start']);
+                $arrEntry['entryDurationEnd'] = intval($objEntries->fields['duration_end']);
+                $arrEntry['entryDurationNotification'] = intval($objEntries->fields['duration_notification']);
+                $arrEntry['entryTranslationStatus'] = explode(",",$objEntries->fields['translation_status']);
+                $arrEntry['entryReadyToConfirm'] = intval($objEntries->fields['ready_to_confirm']);
+                $arrEntry['slug_field_id'] = $objEntries->fields['slug_field_id'];
+                $arrEntry['slug'] = $objEntries->fields['slug'];
+                $arrEntry['field_id'] = intval($objEntries->fields['field_id']);
 
-                    $this->arrEntries[$objEntries->fields['id']] = $arrEntry;
-                }
+                $this->arrEntries[$objEntries->fields['id']] = $arrEntry;
 
                 $objEntries->MoveNext();
             }

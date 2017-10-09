@@ -1146,15 +1146,17 @@ EOF;
     }
 
     public function getApplicationPageByCategory($categoryId) {
-        // abort in case levels are in use
+        $cmdPrefix = '';
+
+        // in case levels are in use, the cmd of a category is prefixed by a dash
         if ($this->arrSettings['settingsShowLevels']) {
-            return null;
+            $cmdPrefix = '-';
         }
 
         $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 
         // fetch category specific application page (i.e. section=MediaDir&cmd=3)
-        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $categoryId, FRONTEND_LANG_ID);
+        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $cmdPrefix.$categoryId, FRONTEND_LANG_ID);
         if ($page && $page->isActive()) {
             return $page;
         }
