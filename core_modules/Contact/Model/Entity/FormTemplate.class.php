@@ -253,7 +253,7 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
             $this->cx->getCodeBaseCoreModulePath() . '/Contact/View/Template/Frontend/'
             . $fileName . '.html'
         );
-        if ($this->hasPreview()) {
+        if ($this->hasPreview() || !$this->theme) {
             return file_get_contents($defaultPath);
         }
 
