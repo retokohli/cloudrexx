@@ -33,7 +33,6 @@
  * @package     cloudrexx
  * @subpackage  coremodule_mediabrowser
  */
-
 namespace Cx\Core_Modules\MediaBrowser\Model\Entity;
 
 use Cx\Core\Html\Sigma;

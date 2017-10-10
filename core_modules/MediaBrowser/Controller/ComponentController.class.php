@@ -64,8 +64,7 @@ class ComponentController extends
     /**
      * {@inheritdoc }
      */
-    public function getControllerClasses()
-    {
+    public function getControllerClasses() {
         if (
         in_array(
             'Workbench',
