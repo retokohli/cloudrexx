@@ -176,6 +176,20 @@ class Change extends \Cx\Model\Base\EntityBase {
     }
     
     /**
+     * Removes a related Host object
+     * @param \Cx\Core_Modules\Sync\Model\Entity\Host $host Host to remove
+     */
+    public function removeHost($host) {
+        $this->hosts->removeElement($host);
+        return;
+        $key = array_search($host, $this->hosts);
+        if ($key === false) {
+            return;
+        }
+        unset($this->hosts[$key]);
+    }
+    
+    /**
      * Sets related Host objects
      * @param array $hosts New Hosts
      */

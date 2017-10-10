@@ -78,7 +78,7 @@ class BackendController extends SystemComponentBackendController
      * @param \Cx\Core\Html\Sigma $template Template for current CMD
      * @param array $cmd CMD separated by slashes
      */
-    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd)
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd, &$isSingle = false)
     {
         $uploader = new Uploader();
         $uploader->setFinishedCallback(

@@ -367,8 +367,8 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 break;
             case 2:
                 //modify (add/edit) View
-                $objAddStep       = new MediaDirectoryAddStep($this->moduleName);
-        $i                = 0;
+                $objAddStep = new MediaDirectoryAddStep($this->moduleName);
+                $i = 0;
                 $isFileInputFound = false;
                 foreach ($this->arrInputfields as $key => $arrInputfield) {
                     $strInputfield = null;
@@ -1250,14 +1250,15 @@ EOF;
         global $_ARRAYLANG;
 
         $arrContexts = array(
-          'none'    => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_NONE"],
-          'title'   => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_TITLE"],
-          'content' => $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_CONTEXT_CONTENT'],
-          'address' => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_ADDRESS"],
-          'zip'     => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_ZIP"],
-          'city'    => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_CITY"],
-          'country' => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_COUNTRY"],
-          'image'   => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_IMAGE"],
+          'none'     => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_NONE"],
+          'title'    => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_TITLE"],
+          'content'  => $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_CONTEXT_CONTENT'],
+          'address'  => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_ADDRESS"],
+          'zip'      => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_ZIP"],
+          'city'     => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_CITY"],
+          'country'  => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_COUNTRY"],
+          'image'    => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_IMAGE"],
+          'keywords' => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_KEYWORDS"],
         );
 
         return $arrContexts;

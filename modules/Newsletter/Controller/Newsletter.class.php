@@ -586,12 +586,10 @@ class Newsletter extends NewsletterLib
         }
 
         $languages = '<select name="language" class="selectLanguage" id="language" >';
-        $objLanguage = $objDatabase->Execute("SELECT id, name FROM ".DBPREFIX."languages WHERE frontend = 1 ORDER BY name");
         $languages .= '<option value="0">'.$_ARRAYLANG['TXT_NEWSLETTER_LANGUAGE_PLEASE_CHOSE'].'</option>';
-        while (!$objLanguage->EOF) {
-            $selected = ($objLanguage->fields['id'] == $recipientLanguage) ? 'selected' : '';
-            $languages .= '<option value="'.$objLanguage->fields['id'].'" '.$selected.'>'.contrexx_raw2xhtml($objLanguage->fields['name']).'</option>';
-            $objLanguage->MoveNext();
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $frontendLanguage) {
+            $selected = ($frontendLanguage['id'] == $recipientLanguage) ? 'selected' : '';
+            $languages .= '<option value="'.$frontendLanguage['id'].'" '.$selected.'>'.contrexx_raw2xhtml($frontendLanguage['name']).'</option>';
         }
         $languages .= '</select>';
 

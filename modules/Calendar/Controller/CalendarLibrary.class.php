@@ -211,7 +211,7 @@ class CalendarLibrary
      * 
      * @param string $tplPath Template path
      */
-    function __construct($tplPath){                                                                      
+    public function __construct($tplPath = '') {
         $this->_objTpl = new \Cx\Core\Html\Sigma($tplPath);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);    
         
@@ -398,9 +398,9 @@ class CalendarLibrary
                     
                     if($objInit->mode == 'backend') {
                         // This is for the preview in settings > Date
-                        $arrSettings["{$objSettings->fields['name']}_value"] = htmlspecialchars($_ARRAYLANG["{$value}_VALUE"], ENT_QUOTES, CONTREXX_CHARSET);
+                        $arrSettings["{$objSettings->fields['name']}_value"] = isset($_ARRAYLANG["{$value}_VALUE"]) ? htmlspecialchars($_ARRAYLANG["{$value}_VALUE"], ENT_QUOTES, CONTREXX_CHARSET) : '';
                     }
-                    $value = $_ARRAYLANG[$value];                    
+                    $value = isset($_ARRAYLANG[$value]) ? $_ARRAYLANG[$value] : '';
                     $arrSettings[$objSettings->fields['name']] = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
                 } else {
                     //return all exept date settings
@@ -413,25 +413,6 @@ class CalendarLibrary
         
         static::$settings[$this->moduleTablePrefix] = $arrSettings;
         $this->arrSettings = $arrSettings;
-    }
-    
-    /**
-     * Used to bulid the option menu from the array
-     * 
-     * @param type    $arrOptions  options value for the select menu
-     * @param integer $intSelected selected option in the select menu
-     * 
-     * @return string drop down options
-     */
-    function buildDropdownmenu($arrOptions, $intSelected=null)
-    {
-        $strOptions = '';
-        foreach ($arrOptions as $intValue => $strName) {
-            $checked = $intValue==$intSelected ? 'selected="selected"' : '';
-            $strOptions .= "<option value='".$intValue."' ".$checked.">".htmlspecialchars($strName, ENT_QUOTES, CONTREXX_CHARSET)."</option>";
-        }
-
-        return $strOptions;
     }
     
     /**
@@ -658,30 +639,7 @@ EOF;
      */
     function generateKey()
     {
-        $arrRandom = array();
-        $arrChars = array ('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'); 
-        $arrNumerics =  array (0,1,2,3,4,5,6,7,8,9); 
-        
-        for ($i = 0; $i <= rand(15,40); $i++) {
-            $charOrNum = rand(0,1);
-            if($charOrNum == 1) {
-                $posChar = rand(0,25);
-                $upOrLow = rand(0,1);
-
-                if($upOrLow == 0) {
-                    $arrRandom[$i] = strtoupper($arrChars[$posChar]);
-                } else {
-                    $arrRandom[$i] = strtolower($arrChars[$posChar]);
-                }
-            } else {
-                $posNum = rand(0,9);
-                $arrRandom[$i] = $arrNumerics[$posNum];
-            }
-        }
-        
-        $key = join($arrRandom);
-            
-        return $key;
+        return bin2hex(openssl_random_pseudo_bytes(16));
     }
     
     /**
@@ -935,8 +893,9 @@ EOF;
         if ($isDetach) {
             if (!empty($relations) && $relations['relations']) {
                 $this->detachJoinedEntity(
-                    $entity, $relations['relations'],
-                    $relations['joinEntityRelations']
+                    $entity,
+                    $relations['relations'],
+                    isset($relations['joinEntityRelations']) ? $relations['joinEntityRelations'] : array()
                 );
             }
             $this->em->detach($entity);
@@ -978,7 +937,7 @@ EOF;
 
         if ($relation == 'oneToMany') {
             foreach ($entity->$methodName() as $subEntity) {
-                if ($joinEntityRelation[$methodName]) {
+                if (isset($joinEntityRelation[$methodName])) {
                     $this->detachJoinedEntity(
                         $subEntity,
                         $joinEntityRelation[$methodName],
@@ -988,7 +947,7 @@ EOF;
                 $this->em->detach($subEntity);
             }
         } else if ($relation == 'manyToOne') {
-            if ($joinEntityRelation[$methodName]) {
+            if (isset($joinEntityRelation[$methodName])) {
                 $this->detachJoinedEntity(
                     $entity->$methodName(),
                     $joinEntityRelation[$methodName],
@@ -1020,16 +979,20 @@ EOF;
         foreach ($relations as $relation => $methodName) {
             if (!is_array($methodName)) {
                 $this->detachEntity(
-                    $entity, $methodName,
-                    $relation, $joinEntityRelation
+                    $entity,
+                    $methodName,
+                    $relation,
+                    $joinEntityRelation
                 );
                 continue;
             }
 
             foreach ($methodName as $functionName) {
                 $this->detachEntity(
-                    $entity, $functionName,
-                    $relation, $joinEntityRelation
+                    $entity,
+                    $functionName,
+                    $relation,
+                    $joinEntityRelation
                 );
             }
         }
@@ -1043,7 +1006,7 @@ EOF;
     public function getHeadlinePlaceholders()
     {
         $placeholders = array();
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 20; $i++) {
             $id = '';
             if ($i > 1) {
                 $id = $i;

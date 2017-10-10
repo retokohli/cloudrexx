@@ -997,8 +997,12 @@ $this->arrRows[2] = '';
         }
 
         // set variables
+        $formattedValidateDate = '';
+        if (!empty($validatedate)) {
+            $formattedValidateDate = date('d. M Y', $validatedate);
+        }
         $this->_objTpl->setVariable(array(
-            'DIRECTORY_FEED_VALIDATE_DATE' => date("d. M Y", $validatedate),
+            'DIRECTORY_FEED_VALIDATE_DATE' => $formattedValidateDate,
             'DIRECTORY_FEED_DATE' => date("d. M Y", $date),
             'DIRECTORY_FEED_HITS' => $hits,
         ));
@@ -1290,17 +1294,18 @@ $this->arrRows[2] = '';
 
                     //get title
                     if ($fieldName =="title") {
-                        $newTime = $this->settings['mark_new_entrees']['value'];
-                        $now = mktime(date("G"),  date("i"), date("s"), date("m"), date("d"), date("Y"));
-                        $d = date("d",$arrFeedContent['validatedate']);
-                        $m = date("m",$arrFeedContent['validatedate']);
-                        $Y = date("Y",$arrFeedContent['validatedate']);
-                        $d = $d+$newTime;
-                        $newFeed = mktime(0, 0, 0, $m, $d, $Y);
-                        if ($now <= $newFeed) {
-                            $content = $arrFeedContent[$fieldName]."&nbsp;<img src='".$this->imageWebPath."/new.gif' border='0' alt='' />";
-                        } else {
-                            $content = $arrFeedContent[$fieldName];
+                        $content = $arrFeedContent[$fieldName];
+                        if (!empty($arrFeedContent['validatedate'])) {
+                            $newTime = $this->settings['mark_new_entrees']['value'];
+                            $now = mktime(date("G"),  date("i"), date("s"), date("m"), date("d"), date("Y"));
+                            $d = date("d",$arrFeedContent['validatedate']);
+                            $m = date("m",$arrFeedContent['validatedate']);
+                            $Y = date("Y",$arrFeedContent['validatedate']);
+                            $d = $d+$newTime;
+                            $newFeed = mktime(0, 0, 0, $m, $d, $Y);
+                            if ($now <= $newFeed) {
+                                $content = $arrFeedContent[$fieldName]."&nbsp;<img src='".$this->imageWebPath."/new.gif' border='0' alt='' />";
+                            }
                         }
                     }
                     $setVariable["DIRECTORY_FEED_".strtoupper($fieldName)] = nl2br($content);
@@ -2241,7 +2246,8 @@ $this->arrRows[2] = '';
     {
         if (isset($_SERVER['HTTP_VIA']) && $_SERVER['HTTP_VIA']) { // client does use a proxy
             $this->arrProxy['ip'] = $_SERVER['REMOTE_ADDR'];
-            $this->arrProxy['host'] = @gethostbyaddr($this->arrProxy['ip']);
+            $net = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Net');
+            $this->arrProxy['host'] = $net->getHostByAddr($this->arrProxy['ip']);
             $proxyUseragent = trim(addslashes(urldecode(strstr($_SERVER['HTTP_VIA'],' '))));
             $startPos = strpos($proxyUseragent, '(');
             $this->arrProxy['useragent'] = substr($proxyUseragent,$startPos+1);

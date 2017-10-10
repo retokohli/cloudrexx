@@ -73,10 +73,10 @@ class MediaSource extends \Cx\Core\MediaSource\Model\Entity\MediaSource implemen
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', 'name', 'position', 'humanName', 'directory', 'accessIds', 'fileSystem', 'id', 'identifier', 'type', 'options', 'dataAccesses', 'validators', 'virtual');
+            return array('__isInitialized__', 'name', 'position', 'humanName', 'directory', 'accessIds', 'fileSystem', 'systemComponentController', 'id', 'identifier', 'type', 'options', 'dataAccesses', 'validators', 'virtual');
         }
 
-        return array('__isInitialized__', 'name', 'position', 'humanName', 'directory', 'accessIds', 'fileSystem', 'id', 'identifier', 'type', 'options', 'dataAccesses', 'validators', 'virtual');
+        return array('__isInitialized__', 'name', 'position', 'humanName', 'directory', 'accessIds', 'fileSystem', 'systemComponentController', 'id', 'identifier', 'type', 'options', 'dataAccesses', 'validators', 'virtual');
     }
 
     /**
@@ -301,6 +301,17 @@ class MediaSource extends \Cx\Core\MediaSource\Model\Entity\MediaSource implemen
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getFileSystem', array());
 
         return parent::getFileSystem();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSystemComponentController()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSystemComponentController', array());
+
+        return parent::getSystemComponentController();
     }
 
     /**

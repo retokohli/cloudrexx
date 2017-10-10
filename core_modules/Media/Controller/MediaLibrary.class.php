@@ -721,7 +721,9 @@ class MediaLibrary
             $icon = strtoupper($fileType);
         } elseif (is_file($file)) {
             $info = pathinfo($file);
-            $icon = strtoupper($info['extension']);
+            if (isset($info['extension'])) {
+                $icon = strtoupper($info['extension']);
+            }
         }
 
         $arrImageExt        = array('JPEG', 'JPG', 'TIFF', 'GIF', 'BMP', 'PNG');

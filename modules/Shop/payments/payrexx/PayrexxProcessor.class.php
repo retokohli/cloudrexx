@@ -81,9 +81,9 @@ class PayrexxProcessor
         $invoice->setReferenceId('Shop-' . $order->id());
         $invoice->setTitle($_CONFIG['coreGlobalPageTitle']);
         $invoice->setDescription('&nbsp;');
-        // We have to set all known PSPs to support all PSPs.
         // Known PSP are listed on https://payrexx.readme.io/docs/miscellaneous
-        $invoice->setPsp(array(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20,21,22,23));
+        // Let Payrexx set the available PSP automatically
+        $invoice->setPsp([]);
         $invoice->setName('Contrexx Shop Order: #' . $_SESSION['shop']['order_id']);
         $invoice->setPurpose('Shop Order #' . $_SESSION['shop']['order_id']);
         $invoice->setAmount(intval(bcmul($_SESSION['shop']['grand_total_price'], 100, 0)));

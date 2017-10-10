@@ -127,7 +127,6 @@ $_ARRAYLANG['TXT_PAGE_NAME'] = "Nombre del sitio";
 $_ARRAYLANG['TXT_SECONDS'] = "segundos";
 $_ARRAYLANG['TXT_TRANSLATION'] = "Traducción";
 $_ARRAYLANG['TXT_BROWSERLANGUAGE'] = "Idioma";
-$_ARRAYLANG['TXT_LANGUAGE_SETTINGS'] = "Idiomas";
 $_ARRAYLANG['TXT_START_DATE'] = "Fecha de inicio";
 $_ARRAYLANG['TXT_STATS'] = "Estad&iacute;sticas";
 $_ARRAYLANG['TXT_PROTECTION_CHANGE'] = "Autorizaci&oacute;n de acceso a la zona p&uacute;blica";

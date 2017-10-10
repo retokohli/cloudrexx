@@ -126,7 +126,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 level.`picture` AS `picture`,
                 level.`active` AS `active`,
                 level_names.`level_name` AS `name`,
-                level_names.`level_description` AS `description`
+                level_names.`level_description` AS `description`,
+                level_names.`level_metadesc` AS `metadesc`
             FROM
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_levels AS level,
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names AS level_names
@@ -182,17 +183,20 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $arrLevel = array();
                 $arrLevelName = array();
                 $arrLevelDesc = array();
+                $arrLevelMetaDesc = array();
                 $this->intNumEntries = 0;
 
                 //get lang attributes
                 $arrLevelName[0] = $objLevels->fields['name'];
                 $arrLevelDesc[0] = $objLevels->fields['description'];
+                $arrLevelMetaDesc[0] = $objLevels->fields['metadesc'];
 
                 $objLevelAttributes = $objDatabase->Execute("
                     SELECT
                         `lang_id` AS `lang_id`,
                         `level_name` AS `name`,
-                        `level_description` AS `description`
+                        `level_description` AS `description`,
+                        `level_metadesc` AS `metadesc`
                     FROM
                         ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names
                     WHERE
@@ -203,6 +207,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     while (!$objLevelAttributes->EOF) {
                         $arrLevelName[$objLevelAttributes->fields['lang_id']] = htmlspecialchars($objLevelAttributes->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
                         $arrLevelDesc[$objLevelAttributes->fields['lang_id']] = $objLevelAttributes->fields['description'];
+                        $arrLevelMetaDesc[$objLevelAttributes->fields['lang_id']] = $objLevelAttributes->fields['metadesc'];
 
                         $objLevelAttributes->MoveNext();
                     }
@@ -213,6 +218,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $arrLevel['levelParentId'] = intval($objLevels->fields['parent_id']);
                 $arrLevel['levelName'] = $arrLevelName;
                 $arrLevel['levelDescription'] = $arrLevelDesc;
+                $arrLevel['levelMetaDesc'] = $arrLevelMetaDesc;
                 $arrLevel['levelPicture'] = htmlspecialchars($objLevels->fields['picture'], ENT_QUOTES, CONTREXX_CHARSET);
                 if($weAreCountingEntries) {
                     $arrLevel['levelNumEntries'] = isset($arrEntryCounts[$arrLevel['levelId']]) ? $arrEntryCounts[$arrLevel['levelId']] : 0;
@@ -338,6 +344,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     $categoryId = intval($requestParams['cid']);
                 }
 
+                $thumbnailFormats = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
+
                 foreach ($arrLevels as $key => $arrLevel) {
                     if($this->arrSettings['settingsLevelOrder'] == 2) {
                         $strIndexHeader = strtoupper(substr($arrLevel['levelName'][0],0,1));
@@ -379,6 +387,24 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                         $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevel['levelPicture'],
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => isset($arrLevel['levelNumEntries']) ? $arrLevel['levelNumEntries'] : '',
                     ));
+
+                    // parse thumbnails
+                    if (!empty($arrLevel['levelPicture'])) {
+                        $arrThumbnails = array();
+                        $imagePath = pathinfo($arrLevel['levelPicture'], PATHINFO_DIRNAME);
+                        $imageFilename = pathinfo($arrLevel['levelPicture'], PATHINFO_BASENAME);
+                        $thumbnails = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($imagePath, $imageFilename, true);
+                        foreach ($thumbnailFormats as $thumbnailFormat) {
+                            if (!isset($thumbnails[$thumbnailFormat['size']])) {
+                                continue;
+                            }
+                            $format = strtoupper($thumbnailFormat['name']);
+                            $thumbnail = $thumbnails[$thumbnailFormat['size']];
+                            $objTpl->setVariable(
+                                $this->moduleLangVar.'_CATEGORY_LEVEL_THUMBNAIL_FORMAT_' . $format, $thumbnail
+                            );
+                        }
+                    }
 
                     $intBlockId = $arrExistingBlocks[$i];
 
@@ -497,6 +523,25 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => isset($arrLevels[$intLevelId]['levelNumEntries']) ? $arrLevels[$intLevelId]['levelNumEntries'] : 0,
                 ));
 
+                // parse thumbnails
+                if ($thumbImage) {
+                    $thumbnailFormats = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
+                    $arrThumbnails = array();
+                    $imagePath = pathinfo($arrLevels[$intLevelId]['levelPicture'], PATHINFO_DIRNAME);
+                    $imageFilename = pathinfo($arrLevels[$intLevelId]['levelPicture'], PATHINFO_BASENAME);
+                    $thumbnails = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($imagePath, $imageFilename, true);
+                    foreach ($thumbnailFormats as $thumbnailFormat) {
+                        if (!isset($thumbnails[$thumbnailFormat['size']])) {
+                            continue;
+                        }
+                        $format = strtoupper($thumbnailFormat['name']);
+                        $thumbnail = $thumbnails[$thumbnailFormat['size']];
+                        $objTpl->setVariable(
+                            $this->moduleLangVar.'_CATEGORY_LEVEL_THUMBNAIL_FORMAT_' . $format, $thumbnail
+                        );
+                    }
+                }
+
                 // parse GoogleMap
                 $this->parseGoogleMapPlaceholder($objTpl, $this->moduleLangVar.'_CATEGORY_LEVEL_GOOGLE_MAP');
 
@@ -612,6 +657,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
         $arrName = $arrData['levelName'];
         $arrDescription = $arrData['levelDescription'];
+        $arrMetaDesc = $arrData['levelMetaDesc'];
 
         if(empty($intId)) {
             //insert new category
@@ -634,12 +680,15 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                     if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
                     if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[$_LANGID]) ? $arrDescription[$_LANGID] : '';
+                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[$_LANGID]) ? $arrMetaDesc[$_LANGID] : '';
 
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
+                    $metaDesc = $arrMetaDesc[$arrLang['id']];
 
                     if(empty($strName)) $strName = $arrName[0];
                     if(empty($strDescription)) $strDescription = $arrDescription[0];
+                    if(empty($metaDesc)) $metaDesc = $arrMetaDesc[0];
 
                     $objInsertNames = $objDatabase->Execute("
                         INSERT INTO
@@ -648,7 +697,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                             `lang_id`='".intval($arrLang['id'])."',
                             `level_id`='".intval($intId)."',
                             `level_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
-                            `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."'
+                            `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."',
+                            `level_metadesc`='".contrexx_input2db($metaDesc)."'
                     ");
                 }
 
@@ -689,12 +739,15 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                     if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
                     if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[$_LANGID]) ? $arrDescription[$_LANGID] : '';
+                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[$_LANGID]) ? $arrMetaDesc[$_LANGID] : '';
 
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
+                    $metaDesc = $arrMetaDesc[$arrLang['id']];
 
                     if(empty($strName)) $strName = $arrName[0];
                     if(empty($strDescription)) $strDescription = $arrDescription[0];
+                    if(empty($metaDesc)) $metaDesc = $arrMetaDesc[0];
 
                     $objInsertNames = $objDatabase->Execute("
                         INSERT INTO
@@ -703,7 +756,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                             `lang_id`='".intval($arrLang['id'])."',
                             `level_id`='".intval($intId)."',
                             `level_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
-                            `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."'
+                            `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."',
+                            `level_metadesc`='".contrexx_input2db($metaDesc)."'
                     ");
                 }
 
