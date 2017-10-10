@@ -97,6 +97,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         switch ($_REQUEST['cmd']) {
         case 'details':
+            // cache timeout: this article's end date
             return $this->getDetails();
             break;
         case 'submit':
@@ -106,17 +107,22 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             return $this->_showFeed();
             break;
         case 'archive':
+            // cache timeout: next start or end date over all articles
             return $this->getArchive();
             break;
         case 'topnews':
+            // cache timeout: next start or end date over all articles
              return $this->getTopNews();
             break;
         default:
             if (substr($_REQUEST['cmd'], 0, 7) == 'details') {
+                // cache timeout: this article's end date
                 return $this->getDetails();
             } elseif (substr($_REQUEST['cmd'], 0, 7) == 'archive') {
+                // cache timeout: next start or end date over all articles
                 return $this->getArchive();
             } else {
+                // cache timeout: next start or end date over all articles
                 return $this->getHeadlines();
             }
             break;

@@ -174,11 +174,11 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
         if ($objResult !== false && $objResult->RecordCount() >= 0) {
             while (!$objResult->EOF) {
                 if (
-                    $objResult->fields['startdate'] != '0000-00-00 00:00:00' &&
+                    $objResult->fields['startdate'] != '0000-00-00 00:00:00' ||
                     $objResult->fields['enddate'] != '0000-00-00 00:00:00'
                 ) {
                     $startDate = new \DateTime($objResult->fields['startdate']);
-                    $endDate = new \DateTime($objResult->field['enddate']);
+                    $endDate = new \DateTime($objResult->fields['enddate']);
                     if (
                         $endDate > new \DateTime() &&
                         (
