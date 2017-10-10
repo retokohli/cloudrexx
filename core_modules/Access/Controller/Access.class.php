@@ -100,7 +100,6 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
     private function user(&$metaPageTitle, &$pageTitle)
     {
         global $_CONFIG;
-
         $objFWUser = \FWUser::getFWUserObject();
         $objUser = $objFWUser->objUser->getUser(!empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
         if ($objUser) {
@@ -126,6 +125,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 'ACCESS_USER_ID'            => $objUser->getId(),
                 'ACCESS_USER_USERNAME'      => contrexx_raw2xhtml($objUser->getUsername()),
                 'ACCESS_USER_PRIMARY_GROUP' => contrexx_raw2xhtml($objUser->getPrimaryGroupName()),
+                'ACCESS_USER_REGDATE'       => date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate()),
             ));
 
             if ($objUser->getEmailAccess() == 'everyone' ||
@@ -142,11 +142,13 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $nr = 0;
             while (!$objUser->objAttribute->EOF) {
                 $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-                $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, true, array('_CLASS' => $nr % 2 + 1)) ? $nr++ : false;
+                if ($objAttribute->checkReadPermission()) {
+                    $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, true, array('_CLASS' => $nr % 2 + 1)) ? $nr++ : false;
+                }
                 $objUser->objAttribute->next();
             }
 
-            $this->_objTpl->setVariable("ACCESS_REFERER", $_SERVER['HTTP_REFERER']);
+            $this->_objTpl->setVariable("ACCESS_REFERER", '$(HTTP_REFERER)');
         } else {
             // or would it be better to redirect to the home page?
             \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Access&cmd=members');
@@ -265,6 +267,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $this->parseAccountAttributes($objUser);
                 $this->_objTpl->setVariable('ACCESS_USER_ID', $objUser->getId());
                 $this->_objTpl->setVariable('ACCESS_USER_CLASS', $nr++ % 2 + 1);
+                $this->_objTpl->setVariable('ACCESS_USER_REGDATE', date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate()));
 
                 if ($objUser->getProfileAccess() == 'everyone' ||
                     $objFWUser->objUser->login() &&
@@ -278,12 +281,18 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
                     while (!$objUser->objAttribute->EOF) {
                         $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-                        $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
+                        if ($objAttribute->checkReadPermission()) {
+                            $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
+                        }
                         $objUser->objAttribute->next();
                     }
                 } else {
-                    $this->parseAttribute($objUser, 'picture', 0, false, false, false, false, false);
-                    $this->parseAttribute($objUser, 'gender', 0, false, false, false, false, false);
+                    foreach (array('picture', 'gender') as $attributeId) {
+                        $objAttribute = $objUser->objAttribute->getById($attributeId);
+                        if ($objAttribute->checkReadPermission()) {
+                            $this->parseAttribute($objUser, $attributeId, 0, false, false, false, false, false);
+                        }
+                    }
                 }
 
                 if($this->_objTpl->blockExists('u2u_addaddress')){

@@ -586,6 +586,7 @@ class Cart
                             : utf8_encode($objProduct->name())),
                           ENT_QUOTES, CONTREXX_CHARSET)),
                 'options' => $product['options'],
+                'options_count' => count($product['options']),
                 'options_long' => $options_strings[0],
                 'options_cart' => $options_strings[1],
                 'price' => Currency::formatPrice($price),

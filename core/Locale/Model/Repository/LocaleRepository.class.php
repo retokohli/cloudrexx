@@ -103,9 +103,18 @@ class LocaleRepository extends EntityRepository
         ) {
             return null;
         }
-        return $this->findOneBy(array(
-            'iso1' => $matches[1], // [a-z]{1,2}
-            'country' => $matches[2], // [A-Z]{2,4}
-        ));
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('l')->from('Cx\Core\Locale\Model\Entity\Locale', 'l');
+        $qb->andWhere($qb->expr()->eq('l.iso1', '?1'));
+        $qb->setParameter(1, $matches[1]);
+        if (empty($matches[2])) {
+            $qb->andWhere($qb->expr()->isNull('l.country'));
+        } else {
+            $qb->andWhere($qb->expr()->eq('l.country', '?2'));
+            $qb->setParameter(2, $matches[2]);
+        }
+        return $qb->getQuery()->getSingleResult();
     }
 }

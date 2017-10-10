@@ -829,7 +829,6 @@ class InitCMS
                         case 'ComponentManager':
                         case 'ViewManager':
                         case 'LanguageManager':
-                        case 'Locale':
                         case 'ContentWorkflow':
                         case 'Config':
                         case 'SystemLog':
@@ -837,6 +836,9 @@ class InitCMS
                         case 'Wysiwyg':
                         case 'Routing':
                         case 'Html':
+                        case 'Locale':
+                        case 'Country':
+                        case 'View':
                             $this->arrModulePath[$objResult->fields['name']] = ASCMS_CORE_PATH.'/'. $objResult->fields['name'] . '/lang/';
                             break;
                         default:
@@ -1048,7 +1050,7 @@ class InitCMS
             $themesId=intval($themesId);
             if ($themesId>0){
                 $customizedTheme = $this->themeRepository->findById($themesId);
-                if ($customizedTheme !== false) {
+                if ($customizedTheme) {
                     $this->currentThemesId=intval($customizedTheme->getId());
                 }
             }
