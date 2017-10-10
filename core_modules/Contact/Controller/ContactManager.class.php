@@ -1791,22 +1791,15 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             ));
             $contentSiteExists = $page !== null;
 
-            $cx       = \Cx\Core\Core\Controller\Cx::instanciate();
-            $em       = $cx->getDb()->getEntityManager();
-            $formRepo = $em->getRepository(
-                'Cx\Core_Modules\Contact\Model\Entity\Form'
-            );
-            $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
-            $form  = $formRepo->find($formId);
-            $theme = $themeRepo->findById(\Env::get('init')->arrLang[FRONTEND_LANG_ID]['themesid']);
-            $cx->getPage()->setContent('{APPLICATION_DATA}');
+            $formRepo = $this->em->getRepository('Cx\Core_Modules\Contact\Model\Entity\Form');
+            $form     = $formRepo->find($formId);
             $formTemplate = new \Cx\Core_Modules\Contact\Model\Entity\FormTemplate(
                 $form,
-                $cx->getPage(),
-                $theme
+                $page,
+                null,
+                true
             );
             $sourceCode = $formTemplate->getHtml(true);
-            $formTemplate->setPreview(true);
             $formTemplate->parseFormTemplate();
 
             $this->_objTpl->setVariable(array(

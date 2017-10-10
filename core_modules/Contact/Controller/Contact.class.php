@@ -113,40 +113,21 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
     protected $hasFileField = false;
 
     /**
-     * @var \Cx\Core\ContentManager\Model\Entity\Page
-     */
-    protected $page;
-
-    /**
-     * Contact constructor
-     *
-     * The constructor does initialize a template system
-     * which will be used to display the contact form or the
-     * feedback/error message.
-     *
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page
-     * @see objTemplate, \Cx\Core\Html\Sigma::setErrorHandling(), \Cx\Core\Html\Sigma::setTemplate()
-     */
-    public function __construct(\Cx\Core\ContentManager\Model\Entity\Page $page)
-    {
-        $this->page = $page;
-    }
-
-    /**
      * Parse contact form page
+     *
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page object
      */
-    public function getContactPage()
-    {
+    public function getContactPage(
+        \Cx\Core\ContentManager\Model\Entity\Page $page
+    ) {
         $formId   = isset($_GET['cmd']) ? contrexx_input2int($_GET['cmd']) : 0;
         $cx       = \Cx\Core\Core\Controller\Cx::instanciate();
         $em       = $cx->getDb()->getEntityManager();
-        $formRepo = $em->getRepository(
-            'Cx\Core_Modules\Contact\Model\Entity\Form'
-        );
+        $formRepo = $em->getRepository('Cx\Core_Modules\Contact\Model\Entity\Form');
         $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
         $form  = $formRepo->find($formId);
         if (!$form) {
-            $this->page->setContent('');
+            $page->setContent('');
             return;
         }
         $theme = $themeRepo->findById(\Env::get('init')->getCurrentThemeId());
@@ -157,7 +138,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
         //Create object for FormTemplate to initialize the Form and FormField Templates
         $formTemplate = new \Cx\Core_Modules\Contact\Model\Entity\FormTemplate(
             $form,
-            $this->page,
+            $page,
             $theme
         );
         //Parse Form and FormField values
@@ -196,7 +177,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
             $formTemplate->setCaptcha($useCaptcha);
         }
         //Set the parsed submission form content as resolved page content
-        $this->page->setContent($formTemplate->getHtml());
+        $page->setContent($formTemplate->getHtml());
     }
 
     /**
@@ -1040,7 +1021,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
         }
 
         $template->setVariable(
-            'CONTACT_FEEDBACK_TEXT',
+            'CONTACT_FORM_FEEDBACK_TEXT',
             $this->_getError() . stripslashes($feedback) . '<br /><br />'
         );
     }

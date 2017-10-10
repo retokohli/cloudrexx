@@ -99,8 +99,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         global $moduleStyleFile, $objTemplate, $_CORELANG, $subMenuTitle;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-                $contact = new \Cx\Core_Modules\Contact\Controller\Contact($this->cx->getPage());
-                $contact->getContactPage();
+                $contact = new \Cx\Core_Modules\Contact\Controller\Contact();
+                $contact->getContactPage($this->cx->getPage());
                 $moduleStyleFile = $this->cx->getCodeBaseOffsetPath() . self::getPathForType($this->getType()) . '/' . $this->getName() . '/View/Style/frontend_style.css';
                 break;
 
