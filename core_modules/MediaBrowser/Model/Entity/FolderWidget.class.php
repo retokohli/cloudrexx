@@ -98,23 +98,21 @@ class FolderWidget extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Get the folder widget id
-     *
-     * @return integer
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
      * Set the folder widget id
      *
      * @param integer $id
      */
-    public function setId($id)
-    {
+    public function setId($id) {
         $this->id = $id;
+    }
+
+    /**
+     * Get the folder widget id
+     *
+     * @return integer
+     */
+    public function getId() {
+        return $this->id;
     }
 
     /**
@@ -122,19 +120,8 @@ class FolderWidget extends \Cx\Model\Base\EntityBase
      *
      * @param string $folder
      */
-    public function setFolder($folder)
-    {
+    public function setFolder($folder) {
         $this->folder = $folder;
-    }
-
-    /**
-     * Php magic method. calls the $this->getXhtml()
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->getXhtml();
     }
 
     /**
@@ -155,5 +142,15 @@ class FolderWidget extends \Cx\Model\Base\EntityBase
         ));
 
         return $tpl->get();
+    }
+
+    /**
+     * Php magic method. calls the $this->getXhtml()
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getXhtml();
     }
 }

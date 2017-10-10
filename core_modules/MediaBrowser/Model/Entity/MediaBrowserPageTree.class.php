@@ -38,23 +38,7 @@ class MediaBrowserPageTree extends \Cx\Core\PageTree\PageTree
 {
     protected $return = array();
 
-    public function preRenderLevel($level, $lang, $parentNode)
-    {
-        // TODO: Implement preRenderLevel() method.
-    }
-
-    public function postRenderLevel($level, $lang, $parentNode)
-    {
-        // TODO: Implement postRenderLevel() method.
-    }
-
-    public function getFlatTree()
-    {
-        return $this->return;
-    }
-
-    protected function preRenderElement($level, $hasChilds, $lang, $page)
-    {
+    protected function preRenderElement($level, $hasChilds, $lang, $page) {
         // TODO: Implement preRenderElement() method.
     }
 
@@ -72,8 +56,7 @@ class MediaBrowserPageTree extends \Cx\Core\PageTree\PageTree
      */
     protected function renderElement(
         $title, $level, $hasChilds, $lang, $path, $current, $page
-    )
-    {
+    ) {
         $url = (string)\Cx\Core\Routing\NodePlaceholder::fromNode($page->getNode(), null, array());
         $pages = $page->getNode()->getPages();
         $titles = array();
@@ -95,41 +78,46 @@ class MediaBrowserPageTree extends \Cx\Core\PageTree\PageTree
         );
     }
 
-    protected function postRenderElement($level, $hasChilds, $lang, $page)
-    {
+    protected function postRenderElement($level, $hasChilds, $lang, $page) {
         // TODO: Implement postRenderElement() method.
     }
 
-    protected function renderHeader($lang)
-    {
+    public function preRenderLevel($level, $lang, $parentNode) {
+        // TODO: Implement preRenderLevel() method.
+    }
+
+    public function postRenderLevel($level, $lang, $parentNode) {
+        // TODO: Implement postRenderLevel() method.
+    }
+
+    protected function renderHeader($lang) {
         // TODO: Implement renderHeader() method.
     }
 
-    protected function renderFooter($lang)
-    {
+    protected function renderFooter($lang) {
         // TODO: Implement renderFooter() method.
     }
 
-    protected function preRender($lang)
-    {
+    protected function preRender($lang) {
         // TODO: Implement preRender() method.
     }
 
-    protected function postRender($lang)
-    {
+    protected function postRender($lang) {
         // TODO: Implement postRender() method.
+    }
+
+    public function getFlatTree() {
+        return $this->return;
     }
 
     /**
      * Called on construction. Override if you do not want to override the ctor.
      */
-    protected function init()
-    {
+    protected function init() {
         // TODO: Implement init() method.
     }
 
-    protected function getFullNavigation()
-    {
+    protected function getFullNavigation() {
         return true;
     }
 }

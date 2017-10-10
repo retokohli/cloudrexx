@@ -40,8 +40,8 @@ namespace Cx\Core_Modules\MediaBrowser\Controller;
 
 use Cx\Core\Core\Model\Entity\SystemComponentController;
 use Cx\Core\Html\Sigma;
-use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
 use Cx\Core_Modules\MediaBrowser\Model\Event\MediaBrowserEventListener;
+use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
 
 /**
  * Class ComponentController
@@ -85,16 +85,14 @@ class ComponentController extends
      * Register a mediabrowser instance
      * @param MediaBrowser $mediaBrowser
      */
-    public function addMediaBrowser(MediaBrowser $mediaBrowser)
-    {
+    public function addMediaBrowser(MediaBrowser $mediaBrowser) {
         $this->mediaBrowserInstances[] = $mediaBrowser;
     }
 
     /**
      * {@inheritdoc }
      */
-    public function getControllersAccessableByJson()
-    {
+    public function getControllersAccessableByJson() {
         return array(
             'JsonMediaBrowser',
         );
@@ -122,8 +120,7 @@ class ComponentController extends
      * list statements like
      * $this->cx->getEvents()->addEventListener($eventName, $listener);
      */
-    public function registerEventListeners()
-    {
+    public function registerEventListeners() {
         $this->cx->getEvents()->addEventListener(
             'mediasource.load', new MediaBrowserEventListener($this->cx)
         );
@@ -132,8 +129,7 @@ class ComponentController extends
     /**
      * @param Sigma $template
      */
-    public function preFinalize(Sigma $template)
-    {
+    public function preFinalize(Sigma $template) {
         if (count($this->mediaBrowserInstances) == 0) {
             return;
         }

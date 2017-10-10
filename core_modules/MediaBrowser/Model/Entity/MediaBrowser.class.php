@@ -45,9 +45,7 @@ use Cx\Model\Base\EntityBase;
  * @copyright   Cloudrexx AG
  * @author      Manuel Schenk <manuel.schenk@comvation.com>
  */
-class MediaBrowserException extends \Exception
-{
-}
+class MediaBrowserException extends \Exception {}
 
 /**
  * Class MediaBrowser
@@ -125,6 +123,31 @@ class MediaBrowser extends EntityBase
     }
 
     /**
+     * Set a mediabrowser option
+     *
+     * @param $options
+     */
+    function setOptions($options)
+    {
+        $this->options = array_merge($this->options, $options);
+    }
+
+    /**
+     * Get a option
+     *
+     * @param $option
+     *
+     * @return string
+     */
+    function getOption($option)
+    {
+        if (isset($this->options[$option])) {
+            return $this->options[$option];
+        }
+        return null;
+    }
+
+    /**
      * Set a Javascript callback when the modal gets closed
      *
      * @param $callback array Callback function name
@@ -132,24 +155,6 @@ class MediaBrowser extends EntityBase
     function setCallback($callback)
     {
         $this->options['data-cx-Mb-Cb-Js-Modalclosed'] = $callback;
-    }
-
-    /**
-     * Get the rendered mediabrowser button
-     *
-     * @param string $buttonName
-     *
-     * @return string
-     */
-    function getXHtml($buttonName = "MediaBrowser")
-    {
-        $button = new Sigma();
-        $button->loadTemplateFile($this->cx->getCodeBaseCoreModulePath() . '/MediaBrowser/View/Template/MediaBrowserButton.html');
-        $button->setVariable(array(
-            'MEDIABROWSER_BUTTON_NAME' => $buttonName,
-            'MEDIABROWSER_BUTTON_OPTIONS' => $this->getOptionsString()
-        ));
-        return $button->get();
     }
 
     /**
@@ -174,50 +179,41 @@ class MediaBrowser extends EntityBase
     }
 
     /**
+     * Get the rendered mediabrowser button
+     *
+     * @param string $buttonName
+     *
+     * @return string
+     */
+    function getXHtml($buttonName = "MediaBrowser")
+    {
+        $button = new Sigma();
+        $button->loadTemplateFile($this->cx->getCodeBaseCoreModulePath() . '/MediaBrowser/View/Template/MediaBrowserButton.html');
+        $button->setVariable(array(
+            'MEDIABROWSER_BUTTON_NAME' => $buttonName,
+            'MEDIABROWSER_BUTTON_OPTIONS' => $this->getOptionsString()
+        ));
+        return $button->get();
+    }
+
+    /**
      * Add a class to the button
      *
      * @param $class
      *
      * @return self
      */
-    public function addClass($class)
-    {
+    public function addClass($class) {
         $this->addOption('class', $class);
         return $this;
     }
 
-    protected function addOption($optionName, $value)
-    {
+    protected function addOption($optionName, $value) {
         $option = $this->getOption($optionName);
         $optionValues = explode(' ', $option);
         if (!in_array($value, $optionValues)) {
             $optionValues[] = $value;
         }
         $this->setOptions(array($optionName => implode(' ', $optionValues)));
-    }
-
-    /**
-     * Get a option
-     *
-     * @param $option
-     *
-     * @return string
-     */
-    function getOption($option)
-    {
-        if (isset($this->options[$option])) {
-            return $this->options[$option];
-        }
-        return null;
-    }
-
-    /**
-     * Set a mediabrowser option
-     *
-     * @param $options
-     */
-    function setOptions($options)
-    {
-        $this->options = array_merge($this->options, $options);
     }
 }

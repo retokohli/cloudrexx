@@ -33,9 +33,9 @@
 
 namespace Cx\Core_Modules\MediaBrowser\Model\Event;
 
-use Cx\Core\Event\Model\Entity\DefaultEventListener;
-use Cx\Core\MediaSource\Model\Entity\MediaSource;
 use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
+use Cx\Core\MediaSource\Model\Entity\MediaSource;
+use Cx\Core\Event\Model\Entity\DefaultEventListener;
 
 /**
  * Class MediaBrowserEventListener
@@ -50,8 +50,7 @@ class MediaBrowserEventListener extends DefaultEventListener
      */
     public function mediasourceLoad(
         MediaSourceManager $mediaBrowserConfiguration
-    )
-    {
+    ) {
         global $_ARRAYLANG;
         \Env::get('init')->loadLanguageData('MediaBrowser');
         $mediaType = new MediaSource('files', $_ARRAYLANG['TXT_FILEBROWSER_FILES'], array(
