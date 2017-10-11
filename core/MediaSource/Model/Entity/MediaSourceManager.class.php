@@ -256,7 +256,8 @@ class MediaSourceManager extends EntityBase
      * Get MediaSourceFile from the given path
      *
      * @param string $path File path
-     * @return LocalFile | ViewManagerFile File object
+     * @return \Cx\Core\MediaSource\Model\Entity\LocalFile.class.php |
+     *         \Cx\Core\ViewManager\Model\Entity\ViewManagerFile File object
      */
     public function getMediaSourceFileFromPath($path)
     {
@@ -267,10 +268,10 @@ class MediaSourceManager extends EntityBase
 
         try {
             // Get MediaSource and MediaSourceFile object
-            $mediaSource = $this->getMediaSourceByPath($path);
-            $strPath     = str_replace($mediaSource->getDirectory()[1], '', $path);
+            $mediaSource     = $this->getMediaSourceByPath($path);
+            $mediaSourcePath = $mediaSource->getDirectory();
             $mediaSourceFile = $mediaSource->getFileSystem()
-                ->getFileFromPath($strPath);
+                ->getFileFromPath(str_replace($mediaSourcePath[1], '', $path));
         } catch (MediaSourceManagerException $e) {
             \DBG::log($e->getMessage());
             return;
@@ -313,8 +314,8 @@ class MediaSourceManager extends EntityBase
     public function getMediaSourceByPath($path)
     {
         foreach ($this->mediaTypes as $mediaSource) {
-            $mediaSourcePath = $mediaSource->getDirectory()[1];
-            if (strpos($path, $mediaSourcePath) === 0) {
+            $mediaSourcePath = $mediaSource->getDirectory();
+            if (strpos($path, $mediaSourcePath[1]) === 0) {
                 return $mediaSource;
             }
         }
