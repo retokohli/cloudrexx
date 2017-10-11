@@ -304,7 +304,6 @@ class ClassLoader {
      *                              in /images, /media or /themes.
      * @param   boolean $webPath    Whether or not to return the absolute file
      *                              path or MediaSource file system path.
-     *
      * @return  mixed               Returns absolute file path or MediaSource
      *                              file path or FALSE if none exists.
      */
@@ -332,7 +331,7 @@ class ClassLoader {
 
         // check if file exists in any of the registered MediaSource filesystems
         $mediaSourceFile = $mediaSourceManager->getMediaSourceFileFromPath($file);
-        if (empty($mediaSourceFile)) {
+        if (!$mediaSourceFile) {
             return false;
         }
 

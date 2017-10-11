@@ -253,39 +253,34 @@ class MediaSourceManager extends EntityBase
     }
 
     /**
-     * Get MediaSourceFile from given path
+     * Get MediaSourceFile from the given path
      *
-     * @param string $path file path
-     *
-     * @return string MediaSourceFile
+     * @param string $path File path
+     * @return LocalFile | ViewManagerFile File object
      */
-    public function getMediaSourceFileFromPath($path) {
-        if (strpos($path, '/') === 0) {
-            $path = substr($path, 1);
+    public function getMediaSourceFileFromPath($path)
+    {
+        //If the path does not have leading backslash then add it
+        if (strpos($path, '/') !== 0) {
+            $path = '/' . $path;
         }
-        $pathArray = explode('/', $path);
-        // Shift off the first element of the array to get the media type.
-        $mediaTypePathArray[] = array_shift($pathArray);
-        $strPath    = '/' . implode('/', $pathArray);
 
-        // Adjust the mediaTypePath, if the path is not related to themes
-        if (\Cx\Core\Core\Controller\Cx::FOLDER_NAME_THEMES !== '/' . $mediaTypePathArray[0]) {
-            $mediaTypePathArray[] = array_shift($pathArray);
-        }
-        $mediaTypePath = '/' . implode('/', $mediaTypePathArray);
-
-        // Get MediaType
-        $mediaType = $this->getMediaTypeByPath($mediaTypePath);
-
-        // fetch file from related MediaType file system
         try {
-            $mediaSourceFile = $this->getMediaType($mediaType)->getFileSystem()->getFileFromPath($strPath);
+            // Get MediaSource and MediaSourceFile object
+            $mediaSource = $this->getMediaSourceByPath($path);
+            $strPath     = str_replace($mediaSource->getDirectory()[1], '', $path);
+            $mediaSourceFile = $mediaSource->getFileSystem()
+                ->getFileFromPath($strPath);
         } catch (MediaSourceManagerException $e) {
-            return '';
+            \DBG::log($e->getMessage());
+            return;
         }
+
+        // If MediaSourceFile not exists then return it
         if (!$mediaSourceFile) {
-            return '';
+            return;
         }
+
         return $mediaSourceFile;
     }
 
@@ -309,19 +304,22 @@ class MediaSourceManager extends EntityBase
     }
 
     /**
-     * Get path related 'MediaType' by the given path
+     * Get MediaSource by the given path
      *
-     * @param string $path File path
-     *
-     * @return string MediaSource name
+     * @param  string $path File path
+     * @return \Cx\Core\MediaSource\Model\Entity\MediaSource MediaSource object
+     * @throws MediaSourceManagerException
      */
-    public function getMediaTypeByPath($path)
+    public function getMediaSourceByPath($path)
     {
         foreach ($this->mediaTypes as $mediaSource) {
-            if (in_array($path, $mediaSource->getDirectory())) {
-                return $mediaSource->getName();
+            $mediaSourcePath = $mediaSource->getDirectory()[1];
+            if (strpos($path, $mediaSourcePath) === 0) {
+                return $mediaSource;
             }
         }
-        return '';
+        throw new MediaSourceManagerException(
+            'No such mediasource found by the path: '. $path
+        );
     }
 }
