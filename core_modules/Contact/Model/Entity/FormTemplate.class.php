@@ -177,7 +177,6 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
      *
      * @param string $fieldType   Form Field type
      * @param string $specialType Form Field special type
-     *
      * @return string Content of formfield
      */
     protected function getFormFieldContent($fieldType, $specialType)
@@ -239,7 +238,6 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
      * Get Form/Form Field template content
      *
      * @param string $fileName Name of the file
-     *
      * @return string Template content
      */
     protected function getTemplateContent($fileName)
@@ -331,8 +329,7 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
      *
      * @param boolean $show If it is true then source code of form will be return
      *                      otherwise form content will be return
-     *
-     * @return string
+     * @return string Form content
      */
     public function getHtml($show = false)
     {
@@ -537,7 +534,6 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
      * @param integer $fieldId      FormField ID
      * @param array   $arrField     Array of FormField values
      * @param array   $profileData  Array of User Profile data
-     *
      * @return string Parsed content of Form field
      */
     protected function parseFormField(
@@ -957,7 +953,7 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
      * @param integer             $fieldId                   Field ID
      * @param boolean             $restrictUpload2SingleFile If true Uploader accept only SingleFile
      *                                                       otherwise Uploader handle Multiple Files
-     * @return string
+     * @return string Uploader code
      */
     protected function initUploader(
         \Cx\Core\Html\Sigma $template,

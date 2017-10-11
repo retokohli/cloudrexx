@@ -1030,8 +1030,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
      * Show Error
      *
      * @param \Cx\Core\Html\Sigma $template Template object
-     *
-     * @return string
+     * @return string Form content with Error message
      */
     protected function showError(\Cx\Core\Html\Sigma $template)
     {
