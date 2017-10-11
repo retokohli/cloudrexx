@@ -115,7 +115,7 @@ class FileSystem extends Engine{
                             );
                             $objDataSet['value'] = $objFile->getData();
                         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                            \DBG::msg($e->getMessage());
+                            \DBG::log($e->getMessage());
                             $objDataSet['value'] = '';
                         }
                     }
