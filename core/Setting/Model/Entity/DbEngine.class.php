@@ -91,18 +91,40 @@ class DbEngine extends Engine{
         $this->section = $section;
         $this->group = $group;
         $this->arrSettings = array();
+        $websitePath = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getWebsiteDocumentRootPath();
         while (!$objResult->EOF) {
+            $value      = $objResult->fields['value'];
+            $type       = $objResult->fields['type'];
+            $values     = $objResult->fields['values'];
+            if (
+                $type == \Cx\Core\Setting\Controller\Setting::TYPE_FILECONTENT &&
+                $values &&
+                \Cx\Lib\FileSystem\FileSystem::exists(
+                    $websitePath . '/' . $values
+                )
+            ) {
+                try {
+                    $objFile  = new \Cx\Lib\FileSystem\File(
+                        $websitePath . '/' . $values
+                    );
+                    $value = $objFile->getData();
+                } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                    \DBG::log($e->getMessage());
+                    $value = '';
+                }
+            }
             $this->arrSettings[$objResult->fields['name']] = array(
-                'name' => $objResult->fields['name'],
+                'name'    => $objResult->fields['name'],
                 'section' => $section,
-                'group' => $objResult->fields['group'],
-                'value' => $objResult->fields['value'],
-                'type' => $objResult->fields['type'],
-                'values' => $objResult->fields['values'],
-                'ord' => $objResult->fields['ord'],
+                'group'   => $objResult->fields['group'],
+                'value'   => $value,
+                'type'    => $type,
+                'values'  => $values,
+                'ord'     => $objResult->fields['ord'],
             );
             //echo("Setting ".$objResult->fields['name']." = ".$objResult->fields['value']."<br />");
-            $objResult->MoveNext();
+        $objResult->MoveNext();
         }
     }
 
