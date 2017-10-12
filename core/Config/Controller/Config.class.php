@@ -1533,6 +1533,21 @@ class Config
                     \Cx\Core\Setting\Controller\Setting::TYPE_IMAGE, '{"type":"reference"}', 'otherConfigurations')) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default meta image");
             }
+            if (
+                !\Cx\Core\Setting\Controller\Setting::isDefined('robotstxt') &&
+                !\Cx\Core\Setting\Controller\Setting::add(
+                    'robotstxt',
+                    '',
+                    9,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_FILECONTENT,
+                    'robots.txt',
+                    'otherConfigurations'
+                )
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException(
+                    'Failed to add Setting entry for robots.txt'
+                );
+            }
             $defaultDnsHostnameLookup = 'off';
             if (isset($existingConfig['dnsHostnameLookup'])) {
                 $defaultDnsHostnameLookup = $existingConfig['dnsHostnameLookup'];
@@ -1542,7 +1557,7 @@ class Config
                 !\Cx\Core\Setting\Controller\Setting::add(
                     'dnsHostnameLookup',
                     $defaultDnsHostnameLookup,
-                    9,
+                    10,
                     \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
                     'on:TXT_ACTIVATED,off:TXT_DEACTIVATED',
                     'otherConfigurations'
