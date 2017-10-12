@@ -456,7 +456,7 @@ INPUT;
             'TXT_MEDIADIR_INPUTFIELD_NAME' => htmlspecialchars(
                 $arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET),
             'MEDIADIR_INPUTFIELD_VALUE' =>
-                '<a rel="shadowbox[1];options={slideshowDelay:5}" href="'.$strValue.'">'.
+                '<a rel="shadowbox[' . $intEntryId . '];options={slideshowDelay:5}" href="'.$strValue.'">'.
                 '<img src="'.$strValue.'.thumb" alt="'.$arrInputfield['name'][0].'" border="0" title="'.$arrInputfield['name'][0].'" '.
                 'width="'.intval($this->arrSettings['settingsThumbSize']).'" /></a>',
             'MEDIADIR_INPUTFIELD_VALUE_SRC' => $strValue,

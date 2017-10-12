@@ -92,7 +92,9 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $objUser->objAttribute->first();
                 while (!$objUser->objAttribute->EOF) {
                     $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-                    $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
+                    if ($objAttribute->checkReadPermission()) {
+                        $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
+                    }
                     $objUser->objAttribute->next();
                 }
 
@@ -146,7 +148,9 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $objUser->objAttribute->first();
                 while (!$objUser->objAttribute->EOF) {
                     $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-                    $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
+                    if ($objAttribute->checkReadPermission()) {
+                        $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
+                    }
                     $objUser->objAttribute->next();
                 }
 
@@ -200,7 +204,9 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $objUser->objAttribute->first();
                 while (!$objUser->objAttribute->EOF) {
                     $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-                    $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
+                    if ($objAttribute->checkReadPermission()) {
+                        $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
+                    }
                     $objUser->objAttribute->next();
                 }
 
@@ -258,7 +264,9 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $objUser->objAttribute->first();
                 while (!$objUser->objAttribute->EOF) {
                     $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-                    $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
+                    if ($objAttribute->checkReadPermission()) {
+                        $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
+                    }
                     $objUser->objAttribute->next();
                 }
 
@@ -364,7 +372,9 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
             $user->objAttribute->first();
             while (!$user->objAttribute->EOF) {
                 $objAttribute = $user->objAttribute->getById($user->objAttribute->getId());
-                $this->parseAttribute($user, $objAttribute->getId(), 0, false, false, false, false, false);
+                if ($objAttribute->checkReadPermission()) {
+                    $this->parseAttribute($user, $objAttribute->getId(), 0, false, false, false, false, false);
+                }
                 $user->objAttribute->next();
             }
 
@@ -398,4 +408,3 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
 
 }
 
-?>

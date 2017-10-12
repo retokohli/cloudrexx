@@ -225,10 +225,13 @@ cx.ready(function() {
     });
     cx.jQuery('#page_target_edit').click(function() {
         cx.jQuery('#page_target_cancel').show();
-        cx.jQuery('.page_target_text_wrapper').hide().prev().show();
+        cx.jQuery('#page_target_text_wrapper_redirect').hide().prev().show();
     });
     cx.jQuery('#page_target_cancel').click(function() {
-        cx.cm.setPageTarget(cx.jQuery(".page_target_backup").val(), cx.jQuery(".page_target_text").text());
+        cx.cm.setPageTarget(
+            cx.jQuery(".page_target_backup").val(),
+            cx.jQuery(this).parent().next(".page_target_text_wrapper").find(".page_target_text").text()
+        );
     });
     cx.jQuery('#page_target_check').click(function() {
         cx.jQuery(this).hide();

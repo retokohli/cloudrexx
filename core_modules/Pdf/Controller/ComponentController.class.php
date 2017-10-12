@@ -115,20 +115,30 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $convertToHtmlEntities
         );
 
-        $session    = $this->getComponent('Session')->getSession();
-        $datetime   = $this->getComponent('DateTime')->createDateTimeForUser('now')->format('d_m_Y_h_s_i');
-        $title      = $mailTplKey . '.pdf';
-        $fileName   = $mailTplKey . '_' . $datetime . '.pdf';
-        $pdf        = new \Cx\Core_Modules\Pdf\Model\Entity\PdfDocument();
-        $pdf->SetTitle($title);
+        $fileName = $pdfTemplates->getFileName();
+        if (!empty($fileName)) {
+            \Cx\Core\MailTemplate\Controller\MailTemplate::substitute(
+                $fileName,
+                $substitution,
+                $convertToHtmlEntities
+            );
+        } else {
+            $datetime = $this->getComponent('DateTime')
+                ->createDateTimeForUser('now')->format('d_m_Y_h_s_i');
+            $fileName = $mailTplKey . '_' . $datetime;
+        }
+
+        $session = $this->getComponent('Session')->getSession();
+        $pdf     = new \Cx\Core_Modules\Pdf\Model\Entity\PdfDocument();
+        $pdf->SetTitle($fileName . '.pdf');
         $pdf->setContent($tplContent);
         $pdf->setDestination('F');
-        $pdf->setFilePath($session->getTempPath() . '/' . $fileName);
+        $pdf->setFilePath($session->getTempPath() . '/' . $fileName . '.pdf');
         $pdf->Create();
 
         return array(
-            'filePath' => $session->getWebTempPath() . '/' . $fileName,
-            'fileName' => $title
+            'filePath' => $session->getWebTempPath() . '/' . $fileName . '.pdf',
+            'fileName' => $fileName . '.pdf'
         );
     }
 }

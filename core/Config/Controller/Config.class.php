@@ -1548,6 +1548,25 @@ class Config
                     'Failed to add Setting entry for robots.txt'
                 );
             }
+            $defaultDnsHostnameLookup = 'off';
+            if (isset($existingConfig['dnsHostnameLookup'])) {
+                $defaultDnsHostnameLookup = $existingConfig['dnsHostnameLookup'];
+            }
+            if (
+                !\Cx\Core\Setting\Controller\Setting::isDefined('dnsHostnameLookup') &&
+                !\Cx\Core\Setting\Controller\Setting::add(
+                    'dnsHostnameLookup',
+                    $defaultDnsHostnameLookup,
+                    10,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'on:TXT_ACTIVATED,off:TXT_DEACTIVATED',
+                    'otherConfigurations'
+                )
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException(
+                    'Failed to add Setting entry for DNS Hostname Lookup'
+                );
+            }
 
             // core
             \Cx\Core\Setting\Controller\Setting::init('Config', 'core','Yaml', $configPath);

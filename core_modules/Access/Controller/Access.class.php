@@ -100,7 +100,6 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
     private function user(&$metaPageTitle, &$pageTitle)
     {
         global $_CONFIG;
-
         $objFWUser = \FWUser::getFWUserObject();
         $objUser = $objFWUser->objUser->getUser(!empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
         if ($objUser) {
@@ -143,7 +142,9 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $nr = 0;
             while (!$objUser->objAttribute->EOF) {
                 $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-                $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, true, array('_CLASS' => $nr % 2 + 1)) ? $nr++ : false;
+                if ($objAttribute->checkReadPermission()) {
+                    $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, true, array('_CLASS' => $nr % 2 + 1)) ? $nr++ : false;
+                }
                 $objUser->objAttribute->next();
             }
 
@@ -280,12 +281,18 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
                     while (!$objUser->objAttribute->EOF) {
                         $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-                        $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
+                        if ($objAttribute->checkReadPermission()) {
+                            $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
+                        }
                         $objUser->objAttribute->next();
                     }
                 } else {
-                    $this->parseAttribute($objUser, 'picture', 0, false, false, false, false, false);
-                    $this->parseAttribute($objUser, 'gender', 0, false, false, false, false, false);
+                    foreach (array('picture', 'gender') as $attributeId) {
+                        $objAttribute = $objUser->objAttribute->getById($attributeId);
+                        if ($objAttribute->checkReadPermission()) {
+                            $this->parseAttribute($objUser, $attributeId, 0, false, false, false, false, false);
+                        }
+                    }
                 }
 
                 if($this->_objTpl->blockExists('u2u_addaddress')){
