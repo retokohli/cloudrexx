@@ -81,9 +81,6 @@ $_CONFIG['searchDescriptionLength']       = 150;
 $_CONFIG['googleMapsAPIKey']              = "";
 $_CONFIG['googleAnalyticsTrackingId']     = "";
 $_CONFIG['defaultMetaimage']              = "/themes/standard_4_0/images/og_logo_social_media.jpg";
-$_CONFIG['robotstxt']                     = "User-agent: *
-Disallow:
-";
 $_CONFIG['dnsHostnameLookup']             = "off";
 
 /**
