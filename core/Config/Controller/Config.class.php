@@ -693,6 +693,10 @@ class Config
         $intMaxLen = 0;
         $ymlArrayValues = array();
         foreach ($ymlArray as $key => $ymlValue){
+            // do not dump the content of file-sources into the PHP cache
+            if ($ymlValue['type'] == \Cx\Core\Setting\Controller\Setting::TYPE_FILECONTENT) {
+                continue;
+            }
             $_CONFIG[$key] = $ymlValue['value'];
             $ymlArrayValues[$ymlValue['group']][$key] = $ymlValue['value'];
 
