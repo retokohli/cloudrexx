@@ -1796,8 +1796,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             $formTemplate = new \Cx\Core_Modules\Contact\Model\Entity\FormTemplate(
                 $form,
                 $page,
-                null,
-                true
+                null
             );
             $sourceCode = $formTemplate->getHtml(true);
             $formTemplate->parseFormTemplate();

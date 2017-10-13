@@ -383,7 +383,7 @@ class ContactLib
      * @param       int $formID
      * @return      array
      */
-    protected function getRecipients($formID, $allLanguages = true)
+    public function getRecipients($formID, $allLanguages = true)
     {
         global $objDatabase;
 

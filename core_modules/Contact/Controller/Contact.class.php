@@ -1021,7 +1021,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
         }
 
         $template->setVariable(
-            'CONTACT_FORM_FEEDBACK_TEXT',
+            'CONTACT_FEEDBACK_TEXT',
             $this->_getError() . stripslashes($feedback) . '<br /><br />'
         );
     }
