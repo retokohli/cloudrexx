@@ -551,15 +551,19 @@ class Config
      * @param string $protocol the protocol to check for access
      * @return bool true if the domain is accessable
      */
-    public static function checkAccessibility($protocol = 'http') {
+    public static function checkAccessibility($protocol = 'http', $domain = '') {
         global $_CONFIG;
         if (!in_array($protocol, array('http', 'https'))) {
             return false;
         }
 
+        if (empty($domain)) {
+            $domain = $_CONFIG['domainUrl'];
+        }
+
         try {
             // create request to port 443 (https), to check whether the request works or not
-            $request = new \HTTP_Request2($protocol . '://' . $_CONFIG['domainUrl'] . ASCMS_ADMIN_WEB_PATH . '/index.php?cmd=JsonData');
+            $request = new \HTTP_Request2($protocol . '://' . $domain . ASCMS_ADMIN_WEB_PATH . '/index.php?cmd=JsonData');
 
             // ignore ssl issues
             // otherwise, cloudrexx does not activate 'https' when the server doesn't have an ssl certificate installed
@@ -585,6 +589,7 @@ class Config
                 return false;
             }
         } catch (\HTTP_Request2_Exception $e) {
+            \DBG::msg($e->getMessage());
             // https is not available, exception thrown
             return false;
         }

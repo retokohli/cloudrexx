@@ -72,32 +72,44 @@ class YamlSettingEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventL
                     }
                     break;
 
-                case 'domainUrl':
-                    $arrMatch = array();
-                    if (preg_match('#^https?://(.*)$#', $value, $arrMatch)) {
-                        $value = $arrMatch[1];
+                case 'mainDomainId':
+                    if ($_CONFIG['mainDomainId'] != $value) {
+                        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+                        $objMainDomain = $domainRepository->findOneBy(array('id' => $value));
+                        if ($objMainDomain) {
+                            $domainUrl = $objMainDomain->getName();
+                            $protocol = 'http';
+                            if ($_CONFIG['forceProtocolFrontend'] != 'none') {
+                                $protocol = $_CONFIG['forceProtocolFrontend'];
+                            }
+                            if (\Cx\Core\Config\Controller\Config::checkAccessibility($protocol, $domainUrl)) {
+                                $this->getComponent('Cache')->deleteNonPagePageCache();
+                            } else {
+                                \Message::add(sprintf($_ARRAYLANG['TXT_CONFIG_UNABLE_TO_SET_MAINDOMAIN'], $domainUrl), \Message::CLASS_ERROR);
+                                $objSetting->setValue($_CONFIG['mainDomainId']);
+                            }
+                        }
                     }
-                    $value = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
-                    $objSetting->setValue($value);
-                    $this->getComponent('Cache')->deleteNonPagePageCache();
                     break;
 
                 case 'forceProtocolFrontend':
                     if ($_CONFIG['forceProtocolFrontend'] != $value) {
                         if (!\Cx\Core\Config\Controller\Config::checkAccessibility($value)) {
-                            $value = 'none';
+                            \Message::add($_ARRAYLANG['TXT_CONFIG_UNABLE_TO_SET_PROTOCOL'], \Message::CLASS_ERROR);
+                            $objSetting->setValue('none');
                         }
-                        $objSetting->setValue($value);
                     }
-                    $this->getComponent('Cache')->deleteNonPagePageCache();
+                    if ($_CONFIG[$objSetting->getName()] != $objSetting->getValue()) {
+                        $this->getComponent('Cache')->deleteNonPagePageCache();
+                    }
                     break;
 
                 case 'forceProtocolBackend':
                     if ($_CONFIG['forceProtocolBackend'] != $value) {
                         if (!\Cx\Core\Config\Controller\Config::checkAccessibility($value)) {
-                            $value = 'none';
+                            \Message::add($_ARRAYLANG['TXT_CONFIG_UNABLE_TO_SET_PROTOCOL'], \Message::CLASS_ERROR);
+                            $objSetting->setValue('none');
                         }
-                        $objSetting->setValue($value);
                     }
                     break;
 
@@ -107,9 +119,13 @@ class YamlSettingEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventL
                     if ($useHttps == 'https') {
                         $protocol = 'https';
                     }
-                    $value = \Cx\Core\Config\Controller\Config::checkAccessibility($protocol) ? $value : 'off';
-                    $objSetting->setValue($value);
-                    $this->getComponent('Cache')->deleteNonPagePageCache();
+                    if (!\Cx\Core\Config\Controller\Config::checkAccessibility($protocol)) {
+                        \Message::add($_ARRAYLANG['TXT_CONFIG_UNABLE_TO_FORCE_MAINDOMAIN'], \Message::CLASS_ERROR);
+                        $objSetting->setValue('off');
+                    }
+                    if ($_CONFIG[$objSetting->getName()] != $objSetting->getValue()) {
+                        $this->getComponent('Cache')->deleteNonPagePageCache();
+                    }
                     break;
                 
                 case 'cacheReverseProxy':
