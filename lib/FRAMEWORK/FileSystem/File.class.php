@@ -65,8 +65,8 @@ class File implements FileInterface
 
     public function __construct($file)
     {
-        if (strpos($file, '..') !== false) {
-            throw new FileException('Invalid file path: '.$path);
+        if (preg_match('#(?:^\.\.|/\.\.)/#', $file)) {
+            throw new FileException('Invalid file path: '.$file);
         }
 
         $this->file = str_replace('\\', '/', $file);
