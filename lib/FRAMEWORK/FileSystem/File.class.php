@@ -44,7 +44,7 @@ namespace Cx\Lib\FileSystem;
  * @package     cloudrexx
  * @subpackage  lib_filesystem
  */
-class FileException extends \Exception {};
+class FileException extends FileSystemException {};
 
 /**
  * File
@@ -65,6 +65,10 @@ class File implements FileInterface
 
     public function __construct($file)
     {
+        if (strpos($file, '..') !== false) {
+            throw new FileException('Invalid file path: '.$path);
+        }
+
         $this->file = str_replace('\\', '/', $file);
         $this->setAccessMode();
     }
