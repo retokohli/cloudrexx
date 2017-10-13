@@ -1444,45 +1444,45 @@ function checkAllFields() {
     for (var field in fields) {
         var type = fields[field][3];
         if (type != null && type != undefined) {
-        if ((type == 'text') || (type == 'password') || (type == 'textarea') || (type == 'date') || ((type.match(/access_/) != null) && (type != 'access_country') && (type != 'access_title') && (type != 'access_gender'))) {
+        if ((type == 'text') || (type == 'password') || (type == 'textarea') || (type == 'date') || (type == 'datetime') || ((type.match(/access_/) != null) && (type != 'access_country') && (type != 'access_title') && (type != 'access_gender'))) {
             value = document.getElementsByName('contactFormField_' + field)[0].value;
             if ((\$J.trim(value) == '') && isRequiredNorm(fields[field][1], value)) {
                 isOk = false;
-                \$J('#contactFormFieldId_'+field).css('border', '1px solid red');
+                \$J('#contactFormFieldId_'+field).addClass('error');
             } else if ((value != '') && !matchType(fields[field][2], value)) {
                 isOk = false;
-                \$J('#contactFormFieldId_'+field).css('border', '1px solid red');
+                \$J('#contactFormFieldId_'+field).addClass('error');
             } else {
-                \$J('#contactFormFieldId_'+field).attr('style', '');
+                \$J('#contactFormFieldId_'+field).removeClass('error');
             }
         } else if (type == 'checkbox') {
             if (!isRequiredCheckbox(fields[field][1], field)) {
                 isOk = false;
-                \$J('#contactFormFieldId_'+field).css('outline', '1px solid red');
+                \$J('#contactFormFieldId_'+field).addClass('error');
             } else {
-                \$J('#contactFormFieldId_'+field).css('outline', '');
+                \$J('#contactFormFieldId_'+field).removeClass('error');
             }
         } else if (type == 'checkboxGroup') {
             if (!isRequiredCheckBoxGroup(fields[field][1], field)) {
                 isOk = false;
-                \$J('#contactFormFieldId_'+field).css('outline', '1px solid red');
+                \$J('#contactFormFieldId_'+field).addClass('error');
             } else {
-                \$J('#contactFormFieldId_'+field).css('outline', '');
+                \$J('#contactFormFieldId_'+field).removeClass('error');
             }
         } else if (type == 'radio') {
             if (!isRequiredRadio(fields[field][1], field)) {
                 isOk = false;
-                \$J('#contactFormFieldId_'+field).css('outline', '1px solid red');
+                \$J('#contactFormFieldId_'+field).addClass('error');
             } else {
-                \$J('#contactFormFieldId_'+field).css('outline', '');
+                \$J('#contactFormFieldId_'+field).removeClass('error');
             }
         } else if (type == 'file' || type == 'multi_file') {
             var required = fields[field][1];
             if(required && angular.element('#contactFormUpload_'+field+ ' div.mediaBrowserfolderWidget').scope().isEmpty()) {
                 isOk = false;
-                \$J('#contactFormFieldId_'+field).css('outline', '1px solid red');
+                \$J('#contactFormFieldId_'+field).addClass('error');
             } else {
-                \$J('#contactFormFieldId_'+field).css('outline', '');
+                \$J('#contactFormFieldId_'+field).removeClass('error');
             }
         } else if (type == 'select' || type == 'country' || type == 'access_country' || type == 'access_title' || type == 'access_gender') {
             if (!isRequiredSelect(fields[field][1], field)) {
@@ -1599,11 +1599,11 @@ function isRequiredSelect(required, field){
     if(required == 1){
         menuIndex = document.getElementById('contactFormFieldId_' + field).selectedIndex;
         if (menuIndex == 0) {
-            document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
+            jQuery('#contactFormFieldId_' + field).addClass('error');
             return false;
         }
     }
-    document.getElementsByName('contactFormField_' + field)[0].style.borderColor = '';
+    jQuery('#contactFormFieldId_' + field).removeClass('error');
     return true;
 }
 
