@@ -692,14 +692,24 @@ class Config
         $ymlArray = \Cx\Core\Setting\Controller\Setting::getArray('Config', null);
         $intMaxLen = 0;
         $ymlArrayValues = array();
+        $updateXmlSitemap = false;
         foreach ($ymlArray as $key => $ymlValue){
             // do not dump the content of file-sources into the PHP cache
             if ($ymlValue['type'] == \Cx\Core\Setting\Controller\Setting::TYPE_FILECONTENT) {
                 continue;
             }
+
+            // TODO: this should be done in the model-event-listener
+            if ($key == 'forceProtocolFrontend' &&
+                $_CONFIG[$key] != $ymlValue['value']
+            ) {
+                $updateXmlSitemap = true;
+            }
+
             $_CONFIG[$key] = $ymlValue['value'];
             $ymlArrayValues[$ymlValue['group']][$key] = $ymlValue['value'];
 
+            // TODO: this should be done in the model-event-listener
             // special case to add legacy domainUrl configuration option
             if ($key == 'mainDomainId') {
                 $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
@@ -710,8 +720,9 @@ class Config
                     $domainUrl = $_SERVER['SERVER_NAME'];
                 }
                 $ymlArrayValues[$ymlValue['group']]['domainUrl'] = $domainUrl;
+                $_CONFIG['domainUrl'] = $domainUrl;
                 if ($_CONFIG['xmlSitemapStatus'] == 'on') {
-                    \Cx\Core\PageTree\XmlSitemapPageTree::write();
+                    $updateXmlSitemap = true;
                 }
             }
 
@@ -719,8 +730,14 @@ class Config
         }
         $intMaxLen += strlen('$_CONFIG[\'\']') + 1; //needed for formatted output
 
+        // TODO: this should be done in the model-event-listener
         // update environment
         \Env::set('config', $_CONFIG);
+
+        // TODO: this should be done in the model-event-listener
+        if ($updateXmlSitemap) {
+            \Cx\Core\PageTree\XmlSitemapPageTree::write();
+        }
 
         $strHeader  = "<?php\n";
         $strHeader .= "/**\n";
