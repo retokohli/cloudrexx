@@ -98,6 +98,7 @@ class Setting{
     const TYPE_DATE  = 'date';
     const TYPE_DATETIME  = 'datetime';
     const TYPE_IMAGE  = 'image';
+    const TYPE_FILECONTENT = 'file';
     // Not implemented
     //const TYPE_SUBMIT = 'submit';
     /**
@@ -778,6 +779,19 @@ class Setting{
                         });
                     ');
                     break;
+              case self::TYPE_FILECONTENT:
+                  $disable  = '';
+                  if ($readOnly) {
+                      $disable = \Html::ATTRIBUTE_DISABLED;
+                  }
+                  $element = \Html::getTextarea(
+                      $name,
+                      $value,
+                      80,
+                      8,
+                      $disable
+                  );
+                  break;
                 // Default to text input fields
               case self::TYPE_TEXT:
               case self::TYPE_EMAIL:
@@ -992,6 +1006,23 @@ class Setting{
                           );
                           $value = $arrSettings[$name]['value'];
                       }
+                      break;
+                    case self::TYPE_FILECONTENT:
+                        $cx       = \Cx\Core\Core\Controller\Cx::instanciate();
+                        $filePath = $cx->getWebsiteDocumentRootPath() . '/' .
+                            $arrSettings[$name]['values'];
+                        try {
+                            $objFile  = new \Cx\Lib\FileSystem\File($filePath);
+                            $objFile->write($value);
+                        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                            \Message::error(
+                                sprintf(
+                                    $_CORELANG['TXT_CORE_SETTING_ERROR_STORING_FILECONTENT'],
+                                    $name
+                                )
+                             );
+                        }
+                        $value = '';
                       break;
                   default:
                         // Regular value of any other type
