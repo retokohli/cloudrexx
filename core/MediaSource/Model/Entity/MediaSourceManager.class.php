@@ -256,12 +256,11 @@ class MediaSourceManager extends EntityBase
      * Get MediaSourceFile from the given path
      *
      * @param string $path File path
-     * @return \Cx\Core\MediaSource\Model\Entity\LocalFile.class.php |
-     *         \Cx\Core\ViewManager\Model\Entity\ViewManagerFile File object
+     * @return LocalFile
      */
     public function getMediaSourceFileFromPath($path)
     {
-        //If the path does not have leading backslash then add it
+        // If the path does not have leading backslash then add it
         if (strpos($path, '/') !== 0) {
             $path = '/' . $path;
         }
@@ -271,14 +270,9 @@ class MediaSourceManager extends EntityBase
             $mediaSource     = $this->getMediaSourceByPath($path);
             $mediaSourcePath = $mediaSource->getDirectory();
             $mediaSourceFile = $mediaSource->getFileSystem()
-                ->getFileFromPath(str_replace($mediaSourcePath[1], '', $path));
+                ->getFileFromPath(substr($path, strlen($mediaSourcePath[1])));
         } catch (MediaSourceManagerException $e) {
             \DBG::log($e->getMessage());
-            return;
-        }
-
-        // If MediaSourceFile not exists then return it
-        if (!$mediaSourceFile) {
             return;
         }
 
@@ -320,7 +314,7 @@ class MediaSourceManager extends EntityBase
             }
         }
         throw new MediaSourceManagerException(
-            'No such mediasource found by the path: '. $path
+            'No MediaSource found for: '. $path
         );
     }
 }
