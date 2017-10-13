@@ -1125,6 +1125,7 @@ $_ARRAYLANG['TXT_CORE_SETTING_WARNING_EMPTY'] = "Hinweis: Leerer Wert für Einst
 $_ARRAYLANG['TXT_CORE_SETTING_WARNING_MISSING_LANGUAGE'] = "Fehlender Spracheintrag für Schlüssel '%2\$s' (Index '%1\$s')";
 $_ARRAYLANG['TXT_CORE_SETTING_WARNING_NONE_FOUND_FOR_TAB_AND_SECTION'] = "Hinweis: Keine Einstellungen gefunden für Tab %1\$s, Sektion %2\$s";
 $_ARRAYLANG['TXT_CORE_SETTING_ERROR_STORING_FILECONTENT'] = 'Failed to store the setting option %s value.';
+$_ARRAYLANG['TXT_CORE_SETTING_ERROR_STORING_IMAGE'] = 'Failed to store the setting option %s.';
 $_ARRAYLANG['TXT_CORE_STORE'] = "Speichern";
 $_ARRAYLANG['TXT_CORE_TODAY'] = "Heute";
 $_ARRAYLANG['TXT_CORE_TOTAL'] = "(total %1\$u)";

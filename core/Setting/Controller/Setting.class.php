@@ -996,17 +996,27 @@ class Setting{
                   case self::TYPE_RADIO:
                       break;
                   case self::TYPE_IMAGE:
-                      $cx      = \Cx\Core\Core\Controller\Cx::instanciate();
-                      $options = json_decode($arrSettings[$name]['values'], true);
-                      if ($options['type'] && $options['type'] == 'copy') {
-                          \Cx\Lib\FileSystem\FileSystem::copy_file(
-                              $cx->getWebsitePath() . $value,
-                              $cx->getWebsitePath() . '/' . $arrSettings[$name]['value'],
-                              true
-                          );
-                          $value = $arrSettings[$name]['value'];
-                      }
-                      break;
+                        $cx      = \Cx\Core\Core\Controller\Cx::instanciate();
+                        $filePath = $cx->getWebsiteDocumentRootPath() . '/' . $value;
+                        $options = json_decode($arrSettings[$name]['values'], true);
+                        if ($options['type'] && $options['type'] == 'copy' &&
+                            $value != $arrSettings[$name]['value']
+                        ) {
+                            try {
+                                $objFile  = new \Cx\Lib\FileSystem\File($filePath);
+                                $objFile->copy($cx->getWebsiteDocumentRootPath() . '/' . $arrSettings[$name]['value'], true);
+                            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                                \Message::error(
+                                    sprintf(
+                                        $_CORELANG['TXT_CORE_SETTING_ERROR_STORING_IMAGE'],
+                                        $name
+                                    )
+                                );
+                            }
+
+                            $value = $arrSettings[$name]['value'];
+                        }
+                        break;
                     case self::TYPE_FILECONTENT:
                         $cx       = \Cx\Core\Core\Controller\Cx::instanciate();
                         $filePath = $cx->getWebsiteDocumentRootPath() . '/' .
