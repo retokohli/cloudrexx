@@ -827,6 +827,7 @@ namespace Cx\Core\Core\Controller {
                 $this->template->setVariable('ADMIN_CONTENT', $e->getBackendViewMessage());
                 $this->setPostContentLoadPlaceholders();
                 $this->finalize();
+                $this->getResponse()->send();
                 die;
             }
 
