@@ -135,13 +135,13 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
             !\FWUser::getFWUserObject()->objUser->login() &&
             $this->getContactFormCaptchaStatus($formId);
         $this->initContactForms($formId);
-        //Create object for FormTemplate to initialize the Form and FormField Templates
+        // Create object for FormTemplate to initialize the Form and FormField Templates
         $formTemplate = new \Cx\Core_Modules\Contact\Model\Entity\FormTemplate(
             $form,
             $page,
             $theme
         );
-        //Parse Form and FormField values
+        // Parse Form and FormField values
         $formTemplate->parseFormTemplate();
         $this->hasFileField = $formTemplate->hasFileField();
 
@@ -176,7 +176,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
             $formTemplate->showFormText();
             $formTemplate->setCaptcha($useCaptcha);
         }
-        //Set the parsed submission form content as resolved page content
+        // Set the parsed submission form content as resolved page content
         $page->setContent($formTemplate->getHtml());
     }
 

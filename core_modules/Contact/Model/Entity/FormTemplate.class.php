@@ -113,7 +113,7 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
         \Cx\Core\View\Model\Entity\Theme $theme = null,
         $preview = false
     ) {
-        //Initialize the class variables, Contact form and Form template
+        // Initialize the class variables, Contact form and Form template
         $this->form  = $form;
         $this->page  = $page;
         $this->theme = $theme;
@@ -136,10 +136,10 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
         $this->template->setTemplate($this->page->getContent());
 
         if ($this->template->placeholderExists('APPLICATION_DATA')) {
-            //Load the Form template from 'theme specific form template' for eg:
-            //(/themes/<theme>/core_modules/Contact/Template/Frontend/Form.html)
-            //or 'default form template' for eg:
-            //(/core_modules/Contact/View/Template/Frontend/Form.html)
+            // Load the Form template from 'theme specific form template' for eg:
+            // (/themes/<theme>/core_modules/Contact/Template/Frontend/Form.html)
+            // or 'default form template' for eg:
+            // (/core_modules/Contact/View/Template/Frontend/Form.html)
             $formTemplate = $this->getTemplateContent('Form');
             \LinkGenerator::parseTemplate($formTemplate);
             $this->template->addBlock(
@@ -149,13 +149,13 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
             );
         }
 
-        //Check if the loaded form has form fields otherwise return.
+        // Check if the loaded form has form fields otherwise return.
         $formFields = $this->getFormFields($this->form->getId());
         if (!$formFields) {
             return;
         }
 
-        //Load form fields template content
+        // Load form fields template content
         foreach ($formFields as $arrField) {
             $fieldType = $arrField['type'];
             if ($fieldType == 'special') {
@@ -186,7 +186,7 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
             $customBlock = $this->blockPrefix . $specialType;
         }
 
-        //Check if the template block 'contact_form_field_<TYPE>' exists
+        // Check if the template block 'contact_form_field_<TYPE>' exists
         if ($this->template->blockExists($customBlock)) {
             return $this->template->getUnparsedBlock($customBlock);
         }
@@ -196,21 +196,21 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
             $fileName = 'FieldMultiFile';
         }
 
-        //Get form field content from theme specific form field template
+        // Get form field content from theme specific form field template
         // if the form field template exists in theme
-        //(/themes/<theme>/core_modules/Contact/Template/Frontend/FieldText.html),
-        //otherwise from default form field template(core_modules/Contact/View/Template/Frontend/)
+        // (/themes/<theme>/core_modules/Contact/Template/Frontend/FieldText.html),
+        // otherwise from default form field template(core_modules/Contact/View/Template/Frontend/)
         $fieldTemplateContent = $this->getTemplateContent($fileName);
         if ($fieldType != 'special') {
             return $fieldTemplateContent;
         }
 
-        //The special form field template(FieldSpecial.html) have two blocks:
-        //'contact_form_special_field_select' and 'contact_form_special_field_input'
-        //The block 'contact_form_special_field_select' content for the following
-        //special fields: 'access_title', 'access_gender', 'access_country'.
-        //The remaining special fields using the block
-        //'contact_form_special_field_input' content.
+        // The special form field template(FieldSpecial.html) have two blocks:
+        // 'contact_form_special_field_select' and 'contact_form_special_field_input'
+        // The block 'contact_form_special_field_select' content for the following
+        // special fields: 'access_title', 'access_gender', 'access_country'.
+        // The remaining special fields using the block
+        // 'contact_form_special_field_input' content.
         $specialBlock = $this->blockPrefix . 'special_input';
         if (
             in_array(
@@ -246,7 +246,7 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
             return '';
         }
 
-        //Check and return file content if the file exists in the Contact Component.
+        // Check and return file content if the file exists in the Contact Component.
         $defaultPath = $this->cx->getClassLoader()->getFilePath(
             $this->cx->getCodeBaseCoreModulePath() . '/Contact/View/Template/Frontend/'
             . $fileName . '.html'
@@ -255,7 +255,7 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
             return file_get_contents($defaultPath);
         }
 
-        //Check and return file content if the file exists in the theme.
+        // Check and return file content if the file exists in the theme.
         $themePath = $this->cx->getClassLoader()->getFilePath(
             $this->cx->getWebsiteThemesPath() . '/' . $this->theme->getFoldername() .
             '/' . $this->cx->getCoreModuleFolderName() . '/Contact/Template/Frontend/'
@@ -356,13 +356,13 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
         $profileData = $this->getProfileData();
         $this->handleUniqueId();
 
-        //Check if the loaded form has form fields and
-        //the template block 'contact_form' is exists otherwise return empty.
+        // Check if the loaded form has form fields and
+        // the template block 'contact_form' is exists otherwise return empty.
         if (!$formFields || !$this->template->blockExists('contact_form')) {
             return;
         }
 
-        //Parse Form related values
+        // Parse Form related values
         $formName = $this->arrForms[$formId]['lang'][$this->langId]['name'];
         $formText = $this->arrForms[$formId]['lang'][$this->langId]['text'];
         $actionUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
@@ -382,9 +382,9 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
             'CONTACT_FORM_CUSTOM_STYLE_ID' => $customStyleId
         ));
 
-        //Parse FormField related values
+        // Parse FormField related values
         foreach ($formFields as $fieldId => $arrField) {
-            //Set values for special field types
+            // Set values for special field types
             $this->setSpecialFieldValue($arrField, $fieldId);
 
             $fieldValue = preg_replace(
@@ -399,8 +399,8 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
                 );
             }
             $customBlockName = $this->blockPrefix . $fieldId;
-            //Check if the placeholder {<ID>_VALUE} or {<ID>_LABEL} exists,
-            //if so, parse its content directly
+            // Check if the placeholder {<ID>_VALUE} or {<ID>_LABEL} exists,
+            // if so, parse its content directly
             if (
                 $this->template->placeholderExists($fieldId . '_VALUE') ||
                 $this->template->placeholderExists($fieldId . '_LABEL')
@@ -416,12 +416,12 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
                 ));
                 $content = '';
             } elseif ($this->template->blockExists($customBlockName)) {
-                //check if the template-block contact_form_field_<ID> exists
-                //if so, parse that block content
+                // check if the template-block contact_form_field_<ID> exists
+                // if so, parse that block content
                 $content = $this->template->getUnparsedBlock($customBlockName);
             } else {
-                //Use the content of the associated object of
-                //$this->fieldTemplates for parsing
+                // Use the content of the associated object of
+                // $this->fieldTemplates for parsing
                 $fieldType = $arrField['type'];
                 if ($fieldType == 'special') {
                     $fieldType = $arrField['special_type'];
@@ -442,7 +442,7 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
             }
         }
 
-        //Use stylesheet 'form.css' if the form is loaded for the preview
+        // Use stylesheet 'form.css' if the form is loaded for the preview
         if ($this->preview) {
             $this->template->setVariable(
                 'CONTACT_FORM_CSS_HREF',
@@ -454,7 +454,7 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
             $this->template->hideBlock('contact_form_css_link');
         }
 
-        //Parse language text and JS source code for form validation, uploader code.
+        // Parse language text and JS source code for form validation, uploader code.
         $this->template->setVariable(array(
             'CONTACT_FORM_JAVASCRIPT' => $this->_getJsSourceCode($formId, $formFields),
             'CONTACT_FORM_UPLOADER'   => $this->uploaderCode,
@@ -568,7 +568,7 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
         }
 
         // Check if the template have block like any one of the following formats:
-        //'contact_form_field_required' or 'contact_form_field_required_<Type>'
+        // 'contact_form_field_required' or 'contact_form_field_required_<Type>'
         // or 'contact_form_field_required_<ID> for required'
         $requiedBlock = $this->blockPrefix . 'required';
         if ($template->blockExists($requiedBlock . '_' . $fieldId)) {
@@ -619,7 +619,7 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
                 // get options
                 $arrAttribute = $objAttribute->getChildren();
                 foreach ($arrAttribute as $attributeId) {
-                    //In case the selection of the field is mandatory,
+                    // In case the selection of the field is mandatory,
                     // we shall skip the unknown option of the user profile attribute
                     if (
                         $arrField['is_required'] &&
@@ -630,7 +630,7 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
                     $objAttribute = $objUser->objAttribute->getById($attributeId);
                     $arrOptions[] = $objAttribute->getName($this->langId);
                 }
-                //Options will be used for select input generation
+                // Options will be used for select input generation
                 $fieldValue = implode(',', $arrOptions);
             case 'select':
                 $options = explode(',', $fieldValue);
@@ -727,7 +727,7 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
         }
 
         // Check if the template have block like any one of the following formats:
-        //'contact_form_field_options' or 'contact_form_field_options_<Type>'
+        // 'contact_form_field_options' or 'contact_form_field_options_<Type>'
         // or 'contact_form_field_options_<ID> for parsing option values'
         $blockName = $this->blockPrefix . 'options';
         if ($template->blockExists($blockName . '_' . $fieldId)) {
@@ -823,7 +823,7 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
         $fieldValue,
         $valuePlaceholder
     ) {
-        //Set default field value through User profile attribute
+        // Set default field value through User profile attribute
         if (preg_match('/\{([A-Z_]+)\}/', $fieldValue)) {
             $valuePlaceholderBlock =
                 'contact_value_placeholder_block_' . $fieldId;
@@ -932,9 +932,9 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
 
         $id = 0;
         if (isset($_REQUEST['unique_id'])) {
-            //an id is specified - we're handling a page reload
+            // an id is specified - we're handling a page reload
             $id = intval($_REQUEST['unique_id']);
-        } else { //generate a new id
+        } else { // generate a new id
             if (!isset($_SESSION['contact_last_id'])) {
                 $_SESSION['contact_last_id'] = 1;
             } else {
@@ -964,10 +964,10 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
             $this->cx->getComponent('Session')->getSession();
 
             $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
-            //set instance name so we are able to catch the instance with js
+            // set instance name so we are able to catch the instance with js
             $uploader->setCallback('contactFormUploader_' . $fieldId);
 
-            //specifies the function to call when upload is finished.
+            // specifies the function to call when upload is finished.
             // must be a static function
             $uploader->setFinishedCallback(array(
                 $this->cx->getCodeBaseCoreModulePath() .
@@ -988,7 +988,7 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
                 'style'  => 'display: none'
             ));
 
-            //initialize the widget displaying the folder contents
+            // initialize the widget displaying the folder contents
             $folderWidget = new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget(
                 $_SESSION->getTempPath() . '/'. $uploaderId
             );
@@ -1007,7 +1007,7 @@ class FormTemplate extends \Cx\Core_Modules\Contact\Controller\ContactLib {
                     }).removeAttr('disabled');
             });
 
-            //uploader javascript callback function
+            // uploader javascript callback function
             function contactFormUploader_$fieldId(callback) {
                     angular.element('#mediaBrowserfolderWidget_$folderWidgetId').scope().refreshBrowser();
             }
