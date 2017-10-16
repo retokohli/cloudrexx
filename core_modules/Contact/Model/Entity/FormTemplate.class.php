@@ -106,6 +106,11 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
     protected $blockPrefix = 'contact_form_field_';
 
     /**
+     * @var \Cx\Core_Modules\Contact\Controller\ContactLib
+     */
+    protected $contactLib;
+
+    /**
      * Constructor
      *
      * @param Form                                      $form  Form instance
@@ -132,7 +137,20 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
         $this->page   = $page;
         $this->theme  = $theme;
         $this->langId = $_LANGID;
+        $this->initContactForm();
         $this->initTemplate();
+    }
+
+    /**
+     * Initialize the Contact Form
+     */
+    protected function initContactForm()
+    {
+        if (!$this->contactLib) {
+            $this->contactLib = new \Cx\Core_Modules\Contact\Controller\ContactLib();
+        }
+
+        $this->contactLib->initContactForms($this->form->getId());
     }
 
     /**
@@ -161,9 +179,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
         }
 
         // Check if the loaded form has form fields otherwise return.
-        $contactLib = new \Cx\Core_Modules\Contact\Controller\ContactLib();
-        $contactLib->initContactForms($this->form->getId());
-        $formFields = $contactLib->getFormFields($this->form->getId());
+        $formFields = $this->contactLib->getFormFields($this->form->getId());
         if (!$formFields) {
             return;
         }
@@ -236,12 +252,13 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
 
         $matches = array();
         preg_match(
-            '#(<!--\s*BEGIN\s+(' . $specialBlock . ')\s*-->(.*?)<!--\s*END\s+\2\s*-->)#s',
+            '#(?:<!--\s*BEGIN\s+(' . $specialBlock . ')\s*-->(.*?)<!--\s*END\s+\1\s*-->)#s',
             $fieldTemplateContent,
             $matches
         );
-        if (isset($matches[3])) {
-            return $matches[3];
+
+        if (isset($matches[2])) {
+            return $matches[2];
         }
 
         return '';
@@ -363,9 +380,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
 
         \JS::activate('cx');
         $formId      = $this->form->getId();
-        $contactLib  = new \Cx\Core_Modules\Contact\Controller\ContactLib();
-        $contactLib->initContactForms($formId);
-        $formFields  = $contactLib->getFormFields($formId);
+        $formFields  = $this->contactLib->getFormFields($formId);
         $profileData = $this->getProfileData();
         $this->handleUniqueId();
 
@@ -376,15 +391,15 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
         }
 
         // Parse Form related values
-        $formName = $contactLib->arrForms[$formId]['lang'][$this->langId]['name'];
-        $formText = $contactLib->arrForms[$formId]['lang'][$this->langId]['text'];
+        $formName = $this->contactLib->arrForms[$formId]['lang'][$this->langId]['name'];
+        $formText = $this->contactLib->arrForms[$formId]['lang'][$this->langId]['text'];
         $actionUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
             'Contact',
             $formId,
             $this->langId
         );
         $customStyleId = '';
-        if ($contactLib->arrForms[$formId]['useCustomStyle'] > 0) {
+        if ($this->contactLib->arrForms[$formId]['useCustomStyle'] > 0) {
             $customStyleId = '_' . $formId;
         }
         $this->template->setGlobalVariable($profileData);
@@ -473,7 +488,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
 
         // Parse language text and JS source code for form validation, uploader code.
         $jsSourceCode =
-            $contactLib->_getJsSourceCode($formId, $formFields) . $this->uploaderCode;
+            $this->contactLib->_getJsSourceCode($formId, $formFields) . $this->uploaderCode;
         $this->template->setVariable(array(
             'CONTACT_JAVASCRIPT'  => $jsSourceCode,
             'TXT_NEW_ENTRY_ERORR' => $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'],
@@ -650,7 +665,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                     $arrOptions[] = $objAttribute->getName($this->langId);
                 }
                 // Options will be used for select input generation
-                $fieldValue = implode(',', $arrOptions);
+                $fieldValue = implode(',', contrexx_raw2xhtml($arrOptions));
             case 'select':
                 $options = explode(',', $fieldValue);
                 if ($arrField['is_required']) {
@@ -662,8 +677,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                 $this->parseFormFieldSelectOptions($template, $fieldId, $fieldType, $options);
                 break;
             case 'recipient':
-                $contactLib = new \Cx\Core_Modules\Contact\Controller\ContactLib();
-                $recipients = $contactLib->getRecipients($this->form->getId());
+                $recipients = $this->contactLib->getRecipients($this->form->getId());
                 $options    = array();
                 foreach ($recipients as $index => $recipient) {
                     $options[$index] = preg_replace($regex, '{$1}', $recipient['lang'][$this->langId]);
@@ -775,8 +789,8 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
             }
 
             $template->setVariable(array(
-                'CONTACT_FORM_FIELD_OPTION_KEY' => $index,
-                'CONTACT_FORM_BLOCK_FIELD_ID'   => $fieldId,
+                'CONTACT_FORM_FIELD_OPTION_KEY'      => $index,
+                'CONTACT_FORM_FIELD_OPTION_FIELD_ID' => $fieldId,
             ));
             // Set selected or checked attribute to the form field based on
             // post, get and default value of that form field
