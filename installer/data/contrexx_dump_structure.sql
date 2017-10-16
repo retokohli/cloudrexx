@@ -765,7 +765,6 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `pic` varchar(255) NOT NULL DEFAULT '',
   `attach` varchar(255) NOT NULL,
   `place_mediadir_id` int(11) NOT NULL,
-  `catid` int(11) NOT NULL DEFAULT '0',
   `show_in` varchar(255) NOT NULL,
   `invited_groups` varchar(255) DEFAULT NULL,
   `invited_crm_groups` varchar(255) DEFAULT NULL,
@@ -817,8 +816,7 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `org_phone` varchar(20) NOT NULL DEFAULT '',
   `org_email` varchar(255) NOT NULL,
   `host_mediadir_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_contrexx_module_calendar_notes_contrexx_module_calendar_ca1` (`catid`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_calendar_event_field` (
   `event_id` int(11) NOT NULL DEFAULT '0',
@@ -837,6 +835,12 @@ CREATE TABLE `contrexx_module_calendar_event_field` (
   KEY `fk_contrexx_module_calendar_note_field_contrexx_module_calend1` (`event_id`),
   FULLTEXT KEY `eventIndex` (`title`,`teaser`,`description`)
 ) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_calendar_events_categories` (
+  `event_id` int(11) UNSIGNED NOT NULL,
+  `category_id` int(11) UNSIGNED NOT NULL,
+  PRIMARY KEY (`event_id`, `category_id`),
+  KEY `category_id` (`category_id`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_calendar_invite` (
   `id` int NOT NULL AUTO_INCREMENT,
   `event_id` int(11) NOT NULL,
