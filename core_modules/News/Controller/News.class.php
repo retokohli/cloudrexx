@@ -819,7 +819,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         ) {
             while (!$objResult->EOF) {
                 $newsid = $parameters['newsid'] = $objResult->fields['newsid'];
-                array_push($newsIds, $newsid);
+                $newsIds[] = $newsid;
                 $arrNewsCategories = $this->getCategoriesByNewsId($newsid);
                 $newsUrl        = empty($objResult->fields['redirect'])
                                     ? (empty($objResult->fields['newscontent'])
@@ -1037,7 +1037,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $htmlLink = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('[' . $_ARRAYLANG['TXT_NEWS_MORE'] . '...]'), $redirectNewWindow);
                 $htmlLinkTitle = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle), $redirectNewWindow);
                 $linkTarget = $redirectNewWindow ? '_blank' : '_self';
-                array_push($newsIds, $newsid);
+                $newsIds[] = $newsid;
                 // in case that the message is a stub, we shall just display the news title instead of a html-a-tag with no href target
                 if (empty($htmlLinkTitle)) {
                     $htmlLinkTitle = contrexx_raw2xhtml($newstitle);
@@ -1791,7 +1791,7 @@ RSS2JSCODE;
                     $redirectNewWindow = !empty($news['newsredirect']) && !empty($news['redirectNewWindow']);
                     $htmlLink = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('[' . $_ARRAYLANG['TXT_NEWS_MORE'] . '...]'), $redirectNewWindow);
                     $linkTarget = $redirectNewWindow ? '_blank' : '_self';
-                    array_push($newsIds, $newsid);
+                    $newsIds[] = $newsid;
 
                     list($image, $htmlLinkImage, $imageSource) = self::parseImageThumbnail($news['teaser_image_path'],
                                                                                            $news['teaser_image_thumbnail_path'],
