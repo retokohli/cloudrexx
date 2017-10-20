@@ -811,15 +811,14 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $paging = getPaging($count, $pos, '&section=News'.$category.$type, $_ARRAYLANG['TXT_NEWS_MESSAGES'], true);
         }
         $this->_objTpl->setVariable('NEWS_PAGING', $paging);
+        $expirationDate = $this->getExpirationDate();
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
         /*** end paging ***/
-        $newsIds = array();
         if (    $count>=1
             &&  $validToShowList
         ) {
             while (!$objResult->EOF) {
                 $newsid = $parameters['newsid'] = $objResult->fields['newsid'];
-                $newsIds[] = $newsid;
                 $arrNewsCategories = $this->getCategoriesByNewsId($newsid);
                 $newsUrl        = empty($objResult->fields['redirect'])
                                     ? (empty($objResult->fields['newscontent'])
@@ -853,11 +852,6 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             if ($this->_objTpl->blockExists('news_status_message')) {
                 $this->_objTpl->hideBlock('news_status_message');
             }
-
-            $sortedExpirationDate = $this->getSortedExpirationDate($newsIds);
-            $expirationDate       = $this->getInternDateTimeFromDb(
-                $sortedExpirationDate
-            );
         } else {
             $this->_objTpl->setVariable('TXT_NEWS_NO_NEWS_FOUND', $_ARRAYLANG['TXT_NEWS_NO_NEWS_FOUND']);
 
@@ -1018,10 +1012,10 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $paging = getPaging($count, $pos, '&section=News&cmd=topnews', $_ARRAYLANG['TXT_NEWS_MESSAGES'], true);
         }
         $this->_objTpl->setVariable('NEWS_PAGING', $paging);
+        $expirationDate = $this->getExpirationDate();
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
         /*** end paging ***/
 
-        $newsIds = array();
         if ($count>=1) {
             while (!$objResult->EOF) {
                 $newsid         = $objResult->fields['newsid'];
@@ -1037,7 +1031,6 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $htmlLink = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('[' . $_ARRAYLANG['TXT_NEWS_MORE'] . '...]'), $redirectNewWindow);
                 $htmlLinkTitle = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle), $redirectNewWindow);
                 $linkTarget = $redirectNewWindow ? '_blank' : '_self';
-                $newsIds[] = $newsid;
                 // in case that the message is a stub, we shall just display the news title instead of a html-a-tag with no href target
                 if (empty($htmlLinkTitle)) {
                     $htmlLinkTitle = contrexx_raw2xhtml($newstitle);
@@ -1102,11 +1095,6 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             if ($this->_objTpl->blockExists('news_status_message')) {
                 $this->_objTpl->hideBlock('news_status_message');
             }
-
-            $sortedExpirationDate = $this->getSortedExpirationDate($newsIds);
-            $expirationDate       = $this->getInternDateTimeFromDb(
-                $sortedExpirationDate
-            );
         } else {
             $this->_objTpl->setVariable('TXT_NEWS_NO_NEWS_FOUND', $_ARRAYLANG['TXT_NEWS_NO_NEWS_FOUND']);
 
@@ -1765,8 +1753,8 @@ RSS2JSCODE;
             $categories = $this->getCatIdsFromNestedSetArray($this->getNestedSetCategories(explode(',', $categories)));
         }
 
-        $monthlyStats = $this->getMonthlyNewsStats($categories);
-        $newsIds      = array();
+        $monthlyStats   = $this->getMonthlyNewsStats($categories);
+        $expirationDate = $this->getExpirationDate();
 
         if (!empty($monthlyStats)) {
             foreach ($monthlyStats as $key => $value) {
@@ -1791,7 +1779,6 @@ RSS2JSCODE;
                     $redirectNewWindow = !empty($news['newsredirect']) && !empty($news['redirectNewWindow']);
                     $htmlLink = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('[' . $_ARRAYLANG['TXT_NEWS_MORE'] . '...]'), $redirectNewWindow);
                     $linkTarget = $redirectNewWindow ? '_blank' : '_self';
-                    $newsIds[] = $newsid;
 
                     list($image, $htmlLinkImage, $imageSource) = self::parseImageThumbnail($news['teaser_image_path'],
                                                                                            $news['teaser_image_thumbnail_path'],
@@ -1857,11 +1844,6 @@ RSS2JSCODE;
             if ($this->_objTpl->blockExists('news_archive_status_message')) {
                 $this->_objTpl->hideBlock('news_archive_status_message');
             }
-
-            $sortedExpirationDate = $this->getSortedExpirationDate($newsIds);
-            $expirationDate       = $this->getInternDateTimeFromDb(
-                $sortedExpirationDate
-            );
         } else {
             $this->_objTpl->setVariable('TXT_NEWS_NO_NEWS_FOUND', $_ARRAYLANG['TXT_NEWS_NO_NEWS_FOUND']);
 
@@ -1893,16 +1875,12 @@ RSS2JSCODE;
     }
 
     /**
-     * Get a sorted expiration date
+     * Get a expiration date
      *
-     * @return datetime expiration date with time
+     * @return \DateTime \DateTime object for expiration date
      */
-    protected function getSortedExpirationDate($newsIds)
+    protected function getExpirationDate()
     {
-        if(empty($newsIds)){
-            return;
-        }
-        $ids         = "'" . implode ( "', '", $newsIds ) . "'";
         $objDatabase = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
         $query       = 'SELECT startdate AS expirationdate
             FROM ' . DBPREFIX . 'module_news as tblStart
@@ -1910,7 +1888,6 @@ RSS2JSCODE;
                     tblStart.startdate !="0000-00-00 00:00:00" AND
                     tblStart.startdate >= "'. date('Y-m-d H:i:s') .'"
                 )
-                AND tblStart.id IN ('. $ids .')
             UNION
                 SELECT enddate AS expirationdate
                     FROM ' . DBPREFIX . 'module_news as tblEnd
@@ -1918,12 +1895,15 @@ RSS2JSCODE;
                     tblEnd.enddate !="0000-00-00 00:00:00" AND
                     tblEnd.enddate >= "'. date('Y-m-d H:i:s') .'"
                 )
-                AND tblEnd.id IN ('. $ids .')
             ORDER BY expirationdate LIMIT 1';
 
         $result = $objDatabase->Execute($query);
 
-        return $result->fields['expirationdate'];
+        if (empty($result->fields['expirationdate'])) {
+            return;
+        }
+
+        return $this->getInternDateTimeFromDb($result->fields['expirationdate']);
     }
 
 }
