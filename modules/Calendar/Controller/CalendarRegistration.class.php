@@ -207,7 +207,7 @@ class CalendarRegistration extends CalendarLibrary
      * Returns the form of this registration
      * @return \Cx\Modules\Calendar\Controller\CalendarForm Associated form object
      */
-    protected function getForm() {
+    public function getForm() {
         if ($this->form) {
             return $this->form;
         }

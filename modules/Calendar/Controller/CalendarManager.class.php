@@ -1501,7 +1501,8 @@ class CalendarManager extends CalendarLibrary
 
             $firstKey = key($objRegistrationManager->registrationList);
 
-            foreach ($objRegistrationManager->registrationList[$firstKey]->fields as $id => $arrField) {
+            foreach ($objRegistrationManager->registrationList[$firstKey]->getForm()->inputfields as $arrInputfield) {
+                $arrField = $objRegistrationManager->registrationList[$firstKey]->fields[$arrInputfield['id']];
                 if ($arrField['type'] != 'fieldset') {
                     print (self::escapeCsvValue($this->parseCsvData($arrField['name'], $fileFormat)).$this->csvSeparator);
                 }
@@ -1545,7 +1546,8 @@ class CalendarManager extends CalendarLibrary
                     print ($this->arrFrontendLanguages[$objRegistration->langId]['name'].$this->csvSeparator);
                 }
 
-                foreach ($objRegistration->fields as $id => $arrField) {
+                foreach ($objRegistration->getForm()->inputfields as $arrInputfield) {
+                    $arrField = $objRegistration->fields[$arrInputfield['id']];
                     $output = array();
                     switch($arrField['type']) {
                         case 'inputtext':
