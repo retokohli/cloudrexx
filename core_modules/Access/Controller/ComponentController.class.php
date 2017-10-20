@@ -219,6 +219,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function postInit(\Cx\Core\Core\Controller\Cx $cx)
     {
+        $userSettings     = \User_Setting::getSettings();
         $widgetController = $this->getComponent('Widget');
         foreach (
             array(
@@ -265,19 +266,24 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $widget
             );
         }
-        $widget = new \Cx\Core_Modules\Widget\Model\Entity\RandomEsiWidget(
-            $this,
-            'access_random_users',
-            \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK
-        );
-        $widget->setEsiVariable(
-            \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
-        );
-        // TODO: Make this number configurable
-        $widget->setUniqueRepetitionCount(5);
-        $widgetController->registerWidget(
-            $widget
-        );
+
+        if ($userSettings['block_random_access_users']['status']) {
+            $widget = new \Cx\Core_Modules\Widget\Model\Entity\RandomEsiWidget(
+                $this,
+                'access_random_users',
+                \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK
+            );
+            $widget->setEsiVariable(
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
+            );
+            $widget->setUniqueRepetitionCount(
+                $userSettings['block_random_access_users']['value']
+            );
+            $widgetController->registerWidget(
+                $widget
+            );
+        }
+
         $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
             $this,
             'access_user',
