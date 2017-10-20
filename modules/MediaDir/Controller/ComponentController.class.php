@@ -457,7 +457,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     ) {
         // resolve canonical-link
         if (!$this->canonicalUrl) {
-            $this->setCanonicalUrl();
+            $this->setCanonicalUrl($response);
         }
 
         $response->setHeader(
@@ -486,16 +486,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // filter out all non-relevant URL arguments
         $params = array_filter(
             $refUrl->getParamArray(),
-            function($key) use ($canonicalUrlArguments) {
+            function($key) use ($canonicalUrlArguments, $refUrl) {
+                if ($key == 'pos' && in_array($key, $canonicalUrlArguments)) {
+                    return !empty($refUrl->getParam($key));
+                }
                 return in_array($key, $canonicalUrlArguments);
             },
             \ARRAY_FILTER_USE_KEY
         );
 
+        $entry = new MediaDirectoryEntry($this->getName());
+
         // set canonical-link for detail section of entry
         if (isset($params['eid'])) {
             $entryId = intval($params['eid']);
-            $entry = new MediaDirectoryEntry($this->getName());
             $entry->getEntries($entryId, null, null, null, null, null, 1, null, 1);
             $this->canonicalUrl = $entry->getAutoSlugPath($entry->arrEntries[$entryId]);
             return;
@@ -505,42 +509,23 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // requested category/level.
         // If so, do use that page as canonical-link
 
+        $levelId = 0;
         if (isset($params['lid'])) {
             $levelId = intval($params['lid']);
         }
+        $categoryId = 0;
         if (isset($params['cid'])) {
             $categoryId = intval($params['cid']);
         }
 
-        if ($levelId && $categoryId) {
-            $page = $this->getApplicationPageByLevelAndCategory($levelId, $categoryId);
-            if ($page) {
-                unset($params['lid']);
-                unset($params['cid']);
-            }
-        }
-
-        // fetch level specific page
-        if (!$page && $levelId) {
-            $page = $this->getApplicationPageByLevel($levelId);
-            if ($page) {
-                unset($params['lid']);
-            }
-        }
-
-        // fetch category specific page
-        if (!$page && $categoryId) {
-            $page = $this->getApplicationPageByCategory($categoryId);
-            if ($page) {
-                unset($params['cid']);
-            }
-        }
+        $url = $entry->getAutoSlugPath(null, $categoryId, $levelId);
 
         // fallback, set canonical-link to currently resolved page
-        if (!$page) {
+        if (!$url) {
             $page = $response->getPage();
+            $url = \Cx\Core\Routing\Url::fromPage($page, $params);
         }
 
-        $this->canonicalUrl = \Cx\Core\Routing\Url::fromPage($page, $params);
+        $this->canonicalUrl = $url;
     }
 }
