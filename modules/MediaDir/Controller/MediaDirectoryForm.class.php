@@ -71,7 +71,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
         // LANG_ID is set to backend or frontend interface language.
         // If LANG_ID is not yet set, then we've been requested from
         // the frontend and the resolver did already set FRONTEND_LANG_ID
-        $langId = defined('LANG_ID') && LANG_ID ? LANG_ID : FRONTEND_LANG_ID;
+        $langId = FRONTEND_LANG_ID;
 
         if(!empty($intFormId)) {
             $whereFormId = "form.id='".$intFormId."' AND";
@@ -177,7 +177,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
 
     function listForms($objTpl, $intView, $intFormId=null)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $i = 0;
 
@@ -302,7 +302,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
      */
     public function updateFormLocale($arrName, $arrDescription, $intFormId)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         if (empty($intFormId)) {
             return false;
@@ -315,7 +315,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
             FROM
                 '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_form_names
             WHERE
-                lang_id='.$_LANGID.'
+                lang_id='.FRONTEND_LANG_ID.'
                 AND `form_id` = "'.$intFormId.'"
             LIMIT
                 1
@@ -339,7 +339,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
             $strName        = $arrName[$arrLang['id']];
             $strDescription = $arrDescription[$arrLang['id']];
 
-            if ($arrLang['id'] == $_LANGID) {
+            if ($arrLang['id'] == FRONTEND_LANG_ID) {
                 if ($arrName[0] != $strOldDefaultName) {
                     $strName = $arrName[0];
                 }
@@ -376,7 +376,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
 
     function saveForm($arrData, $intFormId=null)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $intId = intval($intFormId);
         $strPicture = contrexx_addslashes(contrexx_strip_tags($arrData['formImage']));

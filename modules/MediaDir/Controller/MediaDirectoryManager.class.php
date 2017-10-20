@@ -382,7 +382,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
     function modifyEntry()
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         \JS::activate('cx');
         \JS::activate('jqueryui');
@@ -673,7 +673,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 $this->moduleLangVar.'_JAVASCRIPT' =>  $this->getJavascript(),
                 $this->moduleLangVar.'_FORM_ONSUBMIT' =>  $strOnSubmit,
                 'TXT_'.$this->moduleLangVar.'_PLEASE_CHECK_INPUT' =>  $_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHECK_INPUT'],
-                $this->moduleLangVar.'_DEFAULT_LANG_ID' =>  $_LANGID,
+                $this->moduleLangVar.'_DEFAULT_LANG_ID' =>  FRONTEND_LANG_ID,
                 'TXT_'.$this->moduleLangVar.'_SPEZ_FIELDS' => $_ARRAYLANG['TXT_MEDIADIR_SPEZ_FIELDS'],
                 'TXT_'.$this->moduleLangVar.'_DISPLAYDURATION' =>  $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION'],
                 'TXT_'.$this->moduleLangVar.'_DISPLAYDURATION_ALWAYS' =>  $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_ALWAYS'],
@@ -699,7 +699,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
     function modifyCategory()
     {
         \Permission::checkAccess(MediaDirectoryAccessIDs::ManageCategories, 'static');
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleNameLC.'_modify_category.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_CATEGORIES'];
@@ -817,7 +817,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             'TXT_'.$this->moduleLangVar.'_NEW_CATEGORY' =>  "--- ".$_ARRAYLANG['TXT_MEDIADIR_NEW_CATEGORY']." ---",
             'TXT_'.$this->moduleLangVar.'_VISIBLE_CATEGORY_INFO' =>  $_ARRAYLANG['TXT_MEDIADIR_VISIBLE_CATEGORY_INFO'],
             $this->moduleLangVar.'_CATEGORIES_DROPDOWN_OPTIONS' => $catDropdown,
-            $this->moduleLangVar.'_CATEGORY_DEFAULT_LANG_ID' => $_LANGID,
+            $this->moduleLangVar.'_CATEGORY_DEFAULT_LANG_ID' => FRONTEND_LANG_ID,
             'TXT_'.$this->moduleLangVar.'_BASIC_DATA' => $_ARRAYLANG['TXT_MEDIADIR_BASIC_DATA'],
             'TXT_'.$this->moduleLangVar.'_CATEGORY_DETAILS' => $_ARRAYLANG['TXT_MEDIADIR_CATEGORY_DETAILS'],
             $this->moduleLangVar.'_CATEGORY_IMAGE_BROWSE' => $this->getMediaBrowserButton(
@@ -925,7 +925,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
     function modifyLevel()
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         \Permission::checkAccess(MediaDirectoryAccessIDs::ManageLevels, 'static');
 
@@ -1052,7 +1052,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             'TXT_'.$this->moduleLangVar.'_SUBMIT' =>  $_ARRAYLANG['TXT_'.$this->moduleLangVar.'_SUBMIT'],
             'TXT_'.$this->moduleLangVar.'_NEW_LEVEL' =>  "--- ".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']." ---",
             'TXT_'.$this->moduleLangVar.'_VISIBLE_LEVEL_INFO' =>  $_ARRAYLANG['TXT_MEDIADIR_VISIBLE_LEVEL_INFO'],
-            $this->moduleLangVar.'_LEVEL_DEFAULT_LANG_ID' => $_LANGID,
+            $this->moduleLangVar.'_LEVEL_DEFAULT_LANG_ID' => FRONTEND_LANG_ID,
             'TXT_'.$this->moduleLangVar.'_BASIC_DATA' => $_ARRAYLANG['TXT_MEDIADIR_BASIC_DATA'],
             'TXT_'.$this->moduleLangVar.'_LEVEL_DETAILS' => $_ARRAYLANG['TXT_MEDIADIR_LEVEL_DETAILS'],
             $this->moduleLangVar.'_LEVEL_IMAGE_BROWSE' => $this->getMediaBrowserButton(
@@ -1165,7 +1165,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
     function manageEntries()
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleNameLC.'_manage_entries.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_MANAGE_ENTRIES'];
@@ -1460,7 +1460,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
     function manageComments()
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         \Permission::checkAccess(MediaDirectoryAccessIDs::ModifyEntry, 'static');
 

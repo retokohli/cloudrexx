@@ -1291,7 +1291,7 @@ EOF;
 
     function settings_forms($objTpl)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         switch ($_GET['tpl']) {
             case 'delete_form':
@@ -1336,7 +1336,7 @@ EOF;
 
     function settings_modify_form($objTpl)
     {
-        global $_ARRAYLANG, $_CORELANG, $_LANGID, $objDatabase;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_'.$this->moduleNameLC.'_settings_modify_form.html');
 
@@ -1361,8 +1361,8 @@ EOF;
             'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELD_SYSTEM_FIELD_CANT_DELETE' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_INPUTFIELD_SYSTEM_FIELD_CANT_DELETE'],
             'TXT_'.$this->moduleLangVar.'_DELETE' => $_ARRAYLANG['TXT_MEDIADIR_DELETE'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELDS_EXP_SEARCH' => $_ARRAYLANG['TXT_MEDIADIR_EXP_SEARCH'],
-            $this->moduleLangVar.'_SETTINGS_INPUTFIELDS_DEFAULT_LANG_ID' => $_LANGID,
-            $this->moduleLangVar.'_SETTINGS_FORM_DEFAULT_LANG_ID' => $_LANGID,
+            $this->moduleLangVar.'_SETTINGS_INPUTFIELDS_DEFAULT_LANG_ID' => FRONTEND_LANG_ID,
+            $this->moduleLangVar.'_SETTINGS_FORM_DEFAULT_LANG_ID' => FRONTEND_LANG_ID,
             'TXT_'.$this->moduleLangVar.'_NAME' =>  $_CORELANG['TXT_NAME'],
             'TXT_'.$this->moduleLangVar.'_DESCRIPTION' =>  $_CORELANG['TXT_DESCRIPTION'],
             'TXT_'.$this->moduleLangVar.'_PICTURE' =>  $_CORELANG['TXT_IMAGE'],
