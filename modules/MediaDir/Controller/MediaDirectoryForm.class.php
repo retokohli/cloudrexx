@@ -76,7 +76,23 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
         if(!empty($intFormId)) {
             $whereFormId = "form.id='".$intFormId."' AND";
         } else {
-            $whereFormId = null;
+            $whereFormId = '';
+        }
+
+        $strSlugField = '';
+        $strJoinSlugField = '';
+
+        if ($this->arrSettings['usePrettyUrls']) {
+            $strSlugField = ",
+                slug_field.`id` as `slug_field_id`
+            ";
+            $strJoinSlugField = "
+                LEFT JOIN
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS slug_field
+                ON
+                    slug_field.`form` = form.`id`
+                    AND slug_field.`context_type` = 'slug'
+            ";
         }
 
         $objFormsRS = $objDatabase->Execute("
@@ -92,13 +108,15 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                 form.`active` AS `active`,
                 form_names.`form_name` AS `name`,
                 form_names.`form_description` AS `description`
+                ".$strSlugField."
             FROM
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_forms AS form,
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names AS form_names
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_forms AS form
+            INNER JOIN ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names AS form_names
+                ON form_names.form_id=form.id
+                ".$strJoinSlugField."
             WHERE
-                ($whereFormId form_names.form_id=form.id)
-            AND
-                (form_names.lang_id='".$langId."')
+                $whereFormId 
+                form_names.lang_id='".$langId."'
             ORDER BY
                 `order` ASC
             ");
@@ -145,6 +163,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                 $arrForm['formUseLevel']          = intval($objFormsRS->fields['use_level']);
                 $arrForm['formUseReadyToConfirm'] = intval($objFormsRS->fields['use_ready_to_confirm']);
                 $arrForm['formEntriesPerPage']    = $objFormsRS->fields['entries_per_page'];
+                $arrForm['slug_field_id']         = intval($objFormsRS->fields['slug_field_id']) ? intval($objFormsRS->fields['slug_field_id']) : 0;
 
                 $arrForms[$objFormsRS->fields['id']] = $arrForm;
                 $objFormsRS->MoveNext();

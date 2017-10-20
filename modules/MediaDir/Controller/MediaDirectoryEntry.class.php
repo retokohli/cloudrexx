@@ -85,6 +85,12 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
     protected $objForm = null;
 
     /**
+     * Contains the form fields as key and their slug field's id as value
+     * @var array
+     */
+    protected $formSlugFields = null;
+
+    /**
      * Constructor
      */
     function __construct($name)
@@ -118,14 +124,16 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
         $strWhereEntryId = '';
         $strWhereLevel = '';
-        $strFromLevel = '';
+        $strJoinLevel = '';
         $strWhereActive = '';
         $strWhereTerm = '';
         $strWhereLangId = '';
         $strWhereFormId = '';
-        $strFromCategory = '';
+        $strJoinCategory = '';
         $strWhereCategory = '';
         $strOrder = "rel_inputfield.`value` ASC";
+        $strSlugField = '';
+        $strJoinSlug = '';
 
         if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             $langId = FRONTEND_LANG_ID;
@@ -153,13 +161,13 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         }
 
         if(!empty($this->intLevelId)) {
-            $strWhereLevel = "AND ((level.`level_id` = ".$this->intLevelId.") AND (level.`entry_id` = entry.`id`)) ";
-            $strFromLevel = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS level";
+            $strWhereLevel = "AND (level.`level_id` = ".$this->intLevelId.")";
+            $strJoinLevel = "INNER JOIN ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS level ON level.`entry_id` = entry.`id`";
         }
 
         if(!empty($this->intCatId)) {
-            $strWhereCategory = "AND ((category.`category_id` = ".$this->intCatId.") AND (category.`entry_id` = entry.`id`)) ";
-            $strFromCategory = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS category";
+            $strWhereCategory = "AND (category.`category_id` = ".$this->intCatId.")";
+            $strJoinCategory = "INNER JOIN ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS category ON category.`entry_id` = entry.`id`";
         }
 
         if(!empty($this->bolLatest)) {
@@ -241,6 +249,33 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             $strWhereDuration = null;
         }
 
+        if ($this->arrSettings['usePrettyUrls']) {
+            $strSlugField = ",
+                rel_slug_inputfield.`value` AS `slug`,
+                rel_slug_inputfield.`field_id` AS `slug_field_id`
+            ";
+            $strJoinSlug = "
+            LEFT JOIN
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_slug_inputfield
+            ON
+                rel_slug_inputfield.`entry_id` = entry.`id`
+                AND rel_slug_inputfield.`lang_id` = ".$langId."
+                AND (rel_slug_inputfield.`field_id` = (
+                    SELECT 
+                        slug_inputfield.`id` 
+                    FROM
+                        ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS slug_inputfield
+                    WHERE
+                        slug_inputfield.`context_type` = 'slug'
+                        AND slug_inputfield.`form` = rel_slug_inputfield.`form_id`
+                    ORDER BY
+                        FIELD(slug_inputfield.`context_type`, 'slug') DESC
+                    LIMIT 1
+                    )
+                )
+            ";
+        }
+
         $query = "
             SELECT SQL_CALC_FOUND_ROWS
                 entry.`id` AS `id`,
@@ -264,14 +299,20 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 entry.`duration_notification` AS `duration_notification`,
                 entry.`translation_status` AS `translation_status`,
                 entry.`ready_to_confirm` AS `ready_to_confirm`,
+                rel_inputfield.`field_id` AS `field_id`,
                 rel_inputfield.`value` AS `value`
+                ".$strSlugField."
             FROM
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_entries AS entry,
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_entries AS entry
+            INNER JOIN
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield
-                ".$strFromCategory."
-                ".$strFromLevel."
+            ON
+                rel_inputfield.`entry_id` = entry.`id`
+            ".$strJoinSlug."
+            ".$strJoinCategory."
+            ".$strJoinLevel."
             WHERE
-                (rel_inputfield.`entry_id` = entry.`id`)
+                rel_inputfield.`entry_id` = entry.`id`
                 ".$strWhereFirstInputfield."
                 ".$strWhereTerm."
                 ".$strWhereUnconfirmed."
@@ -291,44 +332,42 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             ".$strLimit."
             ".$strOffset."
         ";
+
         $objEntries = $objDatabase->Execute($query);
 
         $totalRecords =$objDatabase->Execute("SELECT FOUND_ROWS() AS found_rows");
-
-        $arrEntries = array();
 
         if ($objEntries !== false) {
             while (!$objEntries->EOF) {
                 $arrEntry = array();
                 $arrEntryFields = array();
 
-                if(array_key_exists($objEntries->fields['id'], $arrEntries)) {
-                    $arrEntries[intval($objEntries->fields['id'])]['entryFields'][] = !empty($objEntries->fields['value']) ? $objEntries->fields['value'] : '-';
-                } else {
-                    $arrEntryFields[] = !empty($objEntries->fields['value']) ? $objEntries->fields['value'] : '-';
+                $arrEntryFields[] = !empty($objEntries->fields['value']) ? $objEntries->fields['value'] : '-';
 
-                    $arrEntry['entryId'] = intval($objEntries->fields['id']);
-                    $arrEntry['entryOrder'] = intval($objEntries->fields['order']);
-                    $arrEntry['entryFormId'] = intval($objEntries->fields['form_id']);
-                    $arrEntry['entryFields'] = $arrEntryFields;
-                    $arrEntry['entryCreateDate'] = intval($objEntries->fields['create_date']);
-                    $arrEntry['entryValdateDate'] = intval($objEntries->fields['validate_date']);
-                    $arrEntry['entryAddedBy'] = intval($objEntries->fields['added_by']);
-                    $arrEntry['entryHits'] = intval($objEntries->fields['hits']);
-                    $arrEntry['entryPopularHits'] = intval($objEntries->fields['popular_hits']);
-                    $arrEntry['entryPopularDate'] = intval($objEntries->fields['popular_date']);
-                    $arrEntry['entryLastIp'] = htmlspecialchars($objEntries->fields['last_ip'], ENT_QUOTES, CONTREXX_CHARSET);
-                    $arrEntry['entryConfirmed'] = intval($objEntries->fields['confirmed']);
-                    $arrEntry['entryActive'] = intval($objEntries->fields['active']);
-                    $arrEntry['entryDurationType'] = intval($objEntries->fields['duration_type']);
-                    $arrEntry['entryDurationStart'] = intval($objEntries->fields['duration_start']);
-                    $arrEntry['entryDurationEnd'] = intval($objEntries->fields['duration_end']);
-                    $arrEntry['entryDurationNotification'] = intval($objEntries->fields['duration_notification']);
-                    $arrEntry['entryTranslationStatus'] = explode(",",$objEntries->fields['translation_status']);
-                    $arrEntry['entryReadyToConfirm'] = intval($objEntries->fields['ready_to_confirm']);
+                $arrEntry['entryId'] = intval($objEntries->fields['id']);
+                $arrEntry['entryOrder'] = intval($objEntries->fields['order']);
+                $arrEntry['entryFormId'] = intval($objEntries->fields['form_id']);
+                $arrEntry['entryFields'] = $arrEntryFields;
+                $arrEntry['entryCreateDate'] = intval($objEntries->fields['create_date']);
+                $arrEntry['entryValdateDate'] = intval($objEntries->fields['validate_date']);
+                $arrEntry['entryAddedBy'] = intval($objEntries->fields['added_by']);
+                $arrEntry['entryHits'] = intval($objEntries->fields['hits']);
+                $arrEntry['entryPopularHits'] = intval($objEntries->fields['popular_hits']);
+                $arrEntry['entryPopularDate'] = intval($objEntries->fields['popular_date']);
+                $arrEntry['entryLastIp'] = htmlspecialchars($objEntries->fields['last_ip'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrEntry['entryConfirmed'] = intval($objEntries->fields['confirmed']);
+                $arrEntry['entryActive'] = intval($objEntries->fields['active']);
+                $arrEntry['entryDurationType'] = intval($objEntries->fields['duration_type']);
+                $arrEntry['entryDurationStart'] = intval($objEntries->fields['duration_start']);
+                $arrEntry['entryDurationEnd'] = intval($objEntries->fields['duration_end']);
+                $arrEntry['entryDurationNotification'] = intval($objEntries->fields['duration_notification']);
+                $arrEntry['entryTranslationStatus'] = explode(",",$objEntries->fields['translation_status']);
+                $arrEntry['entryReadyToConfirm'] = intval($objEntries->fields['ready_to_confirm']);
+                $arrEntry['slug_field_id'] = $objEntries->fields['slug_field_id'];
+                $arrEntry['slug'] = $objEntries->fields['slug'];
+                $arrEntry['field_id'] = intval($objEntries->fields['field_id']);
 
-                    $this->arrEntries[$objEntries->fields['id']] = $arrEntry;
-                }
+                $this->arrEntries[$objEntries->fields['id']] = $arrEntry;
 
                 $objEntries->MoveNext();
             }
@@ -338,11 +377,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         $this->setCurrentFetchedEntryDataObject($this);
     }
 
-    public function findOneBySlug($slug) {
-        return $this->findOneByName($this->getNameFromSlug($slug));
-    }
-
-    public function findOneByName($name, $formId = null, $catId = null, $levelId = null, $autoload = false) {
+    public function findOneBySlug($slug, $formId = null, $catId = null, $levelId = null, $autoload = false) {
 		$strWhereLevel = '';
 		$strFromLevel = '';
 		$strWhereLangId = '';
@@ -380,9 +415,9 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             WHERE
                     entry.`active` = 1
                 AND entry.`confirmed` = 1
-                AND inputfield.`context_type` = 'title'
+                AND inputfield.`context_type` = 'slug'
                 AND (entry.`duration_type` = 1 OR (entry.`duration_type` = 2 AND (entry.`duration_start` < '" . time() . "' AND entry.`duration_end` > '" . time() . "')))
-                AND rel_inputfield.`value` = '".contrexx_raw2db($name)."'
+                AND rel_inputfield.`value` = '".contrexx_raw2db($slug)."'
                 ".$strWhereCategory."
                 ".$strWhereLevel."
                 ".$strWhereLangId."
@@ -1338,6 +1373,16 @@ JSCODE;
                 || ($arrInputfield['show_in'] != $intShowIn && $arrInputfield['show_in'] != 1)
             ) {
                 continue;
+            }
+
+            // slugify slug value
+            if ($arrInputfield['context_type'] == 'slug') {
+                $slugValues = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']];
+                array_walk(
+                    $slugValues,
+                    array($this, 'slugify')
+                );
+                $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] = $slugValues;
             }
 
             // truncate attribute's data ($arrInputfield) from database if it's VALUE is not set (empty) or set to it's default value

@@ -51,6 +51,7 @@ class MediaDirectory extends MediaDirectoryLibrary
     var $metaDescription;
     var $metaImage;
     var $metaKeys;
+    var $slug;
 
 
     var $arrNavtree = array();
@@ -392,11 +393,13 @@ class MediaDirectory extends MediaDirectoryLibrary
             $objLevel->listLevels($this->_objTpl, 5, $intLevelId);
         }
 
+        $metaTitle = array();
         if ($objLevel) {
             // only set page's title to level's name
             // if not in legacy mode
             if (!$this->arrSettings['legacyBehavior']) {
                 $this->pageTitle = $objLevel->arrLevels[$intLevelId]['levelName'][0];
+                $metaTitle[] = $objLevel->arrLevels[$intLevelId]['levelName'][0];
             }
             if (empty($objLevel->arrLevels[$intLevelId]['levelMetaDesc'][0])) {
                 $this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelDescription'][0];
@@ -416,6 +419,7 @@ class MediaDirectory extends MediaDirectoryLibrary
             // if not in legacy mode
             if (!$this->arrSettings['legacyBehavior']) {
                 $this->pageTitle = $objCategory->arrCategories[$intCategoryId]['catName'][0];
+                $metaTitle[] = $objCategory->arrCategories[$intCategoryId]['catName'][0];
             }
             if (empty($objCategory->arrCategories[$intCategoryId]['catMetaDesc'][0])) {
                 $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catDescription'][0];
@@ -423,6 +427,9 @@ class MediaDirectory extends MediaDirectoryLibrary
                 $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catMetaDesc'][0];
             }
             $this->metaImage = $objCategory->arrCategories[$intCategoryId]['catPicture'];
+        }
+        if (empty($this->arrNavtree) && !empty($metaTitle)) {
+            $this->metaTitle .= ' - ' . implode(' - ', $metaTitle);
         }
 
         //list levels / categories
@@ -734,7 +741,7 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         foreach ($inputFields as $arrInputfield) {
             $contextType = isset($arrInputfield['context_type']) ? $arrInputfield['context_type'] : '';
-            if (!in_array($contextType, array('title', 'content', 'image', 'keywords'))) {
+            if (!in_array($contextType, array('title', 'content', 'image', 'keywords', 'slug'))) {
                 continue;
             }
             $strType = isset($arrInputfield['type_name']) ? $arrInputfield['type_name'] : '';
@@ -1559,5 +1566,9 @@ class MediaDirectory extends MediaDirectoryLibrary
      */
     public function getMetaKeys() {
         return $this->metaKeys;
+    }
+
+    public function getSlug() {
+        return $this->slug;
     }
 }

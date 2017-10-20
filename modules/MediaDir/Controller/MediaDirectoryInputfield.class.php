@@ -809,7 +809,6 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
         ");
 
         $intInsertId = $objDatabase->Insert_ID();
-        $objDatabase->debug = 1;
         //insert blank field name
         $objAddInputfieldName = $objDatabase->Execute("
             INSERT INTO
@@ -1259,6 +1258,7 @@ EOF;
           'country'  => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_COUNTRY"],
           'image'    => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_IMAGE"],
           'keywords' => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_KEYWORDS"],
+          'slug'    => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_SLUG"],
         );
 
         return $arrContexts;
