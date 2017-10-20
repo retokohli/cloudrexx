@@ -645,9 +645,9 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
                 // execute ESI dynamic functions in content
                 $htmlCode = preg_replace_callback(
                     '/\$' . $function . '\(' . '([^)]*)' . '\)/',
-                    function() use ($callback) {
+                    function($matches) use ($callback) {
                         // extract arguments from function call
-                        $arglist = func_get_arg(0)[1];
+                        $arglist = $matches[1];
                         $args = preg_split(
                             '/
                                 # argument enclosed in double quotes
