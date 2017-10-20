@@ -642,35 +642,37 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
 
             // apply ESI dynamic functions
             foreach ($this->dynFuncs as $function => $callback) {
-                $replace = function() use ($callback) {
-                    // extract arguments from function call
-                    $arglist = func_get_arg(0)[1];
-                    $args = preg_split(
-                        '/
-                            # argument enclosed in double quotes
-                            [\s,]* "([^"]+)"[\s,]*
-
-                            |
-
-                            # argument enclosed in single quotes
-                            [\s,]* \'([^\']+)\'[\s,]*
-
-                            |
-
-                            # end of argument list
-                            [\s,]+
-                        /x',
-                        $arglist,
-                        0,
-                        PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE
-                    );
-
-                    // pass extracted arguments to dynamic function
-                    return $callback($args);
-                };
-
                 // execute ESI dynamic functions in content
-                $htmlCode = preg_replace_callback('/\$' . $function . '\(' . '([^)]*)' . '\)/', $replace, $htmlCode);
+                $htmlCode = preg_replace_callback(
+                    '/\$' . $function . '\(' . '([^)]*)' . '\)/',
+                    function() use ($callback) {
+                        // extract arguments from function call
+                        $arglist = func_get_arg(0)[1];
+                        $args = preg_split(
+                            '/
+                                # argument enclosed in double quotes
+                                [\s,]* "([^"]+)"[\s,]*
+
+                                |
+
+                                # argument enclosed in single quotes
+                                [\s,]* \'([^\']+)\'[\s,]*
+
+                                |
+
+                                # end of argument list
+                                [\s,]+
+                            /x',
+                            $arglist,
+                            0,
+                            PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE
+                        );
+
+                        // pass extracted arguments to dynamic function
+                        return $callback($args);
+                    },
+                    $htmlCode
+                );
             }
 
             // Random include tags
