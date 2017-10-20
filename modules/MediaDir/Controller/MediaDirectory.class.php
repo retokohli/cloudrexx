@@ -741,7 +741,7 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         foreach ($inputFields as $arrInputfield) {
             $contextType = isset($arrInputfield['context_type']) ? $arrInputfield['context_type'] : '';
-            if (!in_array($contextType, array('title', 'content', 'image', 'keywords', 'slug'))) {
+            if (!in_array($contextType, array('title', 'content', 'image', 'keywords'))) {
                 continue;
             }
             $strType = isset($arrInputfield['type_name']) ? $arrInputfield['type_name'] : '';
