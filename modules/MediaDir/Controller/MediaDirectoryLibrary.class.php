@@ -1095,7 +1095,11 @@ EOF;
 
         // create human readable url if option has been enabled to do so
         if ($this->arrSettings['usePrettyUrls']) {
-            $url->setPath($url->getPath() . $this->getLevelSlugPath($levelId) . $this->getCategorySlugPath($categoryId) . '/' . $entrySlug);
+            $path = $url->getPath() . $this->getLevelSlugPath($levelId) . $this->getCategorySlugPath($categoryId);
+            if (isset($entrySlug)) {
+                $path .= '/' . $entrySlug;
+            }
+            $url->setPath($path);
         } else {
             if ($entryId) {
                 $url->setParam('eid', $entryId);

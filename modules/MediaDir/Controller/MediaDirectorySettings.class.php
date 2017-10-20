@@ -1852,7 +1852,7 @@ EOF;
             // check if entry already has a slug value set
             if (!$arrEntry['slug']) {
 
-                // get first field value of each lang
+                // get primary field value of each lang
                 $firstFieldQuery = "
                     SELECT
                         r.`lang_id` AS `lang_id`,
@@ -1869,7 +1869,7 @@ EOF;
                 if ($firstField) {
                     while (!$firstField->EOF) {
                         $langId = $firstField->fields['lang_id'];
-                        $slugFromFirstField = $this->getSlugFromName(
+                        $slugFromFirstField = $this->slugify(
                             $firstField->fields['value']
                         );
 

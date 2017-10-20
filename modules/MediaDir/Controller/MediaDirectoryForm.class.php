@@ -87,7 +87,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                 slug_field.`id` as `slug_field_id`
             ";
             $strJoinSlugField = "
-                INNER JOIN
+                LEFT JOIN
                     ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS slug_field
                 ON
                     slug_field.`form` = form.`id`
