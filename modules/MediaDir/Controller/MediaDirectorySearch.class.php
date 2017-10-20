@@ -70,7 +70,7 @@ class MediaDirectorySearch extends MediaDirectoryLibrary
      */
     public function getSearchform($objTpl, $actionUrl = null)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         if (isset($_GET['term'])) {
             $strSearchFormTerm = $_GET['term'];
@@ -130,7 +130,7 @@ EOF;
 
     function getExpandedInputfields()
     {
-        global $_ARRAYLANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $objDatabase;
 
         $formId = null;
         $strPleaseChoose = $_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHOOSE'];
@@ -254,7 +254,7 @@ EOF;
 
     function searchEntries($arrData)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID, $objInit;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;
 
         $arrSelect = array();
         $arrWhere = array();

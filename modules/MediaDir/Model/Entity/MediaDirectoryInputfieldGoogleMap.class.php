@@ -62,7 +62,7 @@ class MediaDirectoryInputfieldGoogleMap extends \Cx\Modules\MediaDir\Controller\
 
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
-        global $objDatabase,$_CORELANG, $_ARRAYLANG, $_LANGID, $objInit, $_CONFIG;
+        global $objDatabase,$_CORELANG, $_ARRAYLANG, $objInit, $_CONFIG;
 
         switch ($intView) {
             default:

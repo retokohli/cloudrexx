@@ -578,7 +578,8 @@ class MediaDirectoryLibrary
 
 
     function getSelectorJavascript(){
-        global $objInit, $_LANGID;
+        global $objInit;
+        $langId = FRONTEND_LANG_ID;
 
         if($objInit->mode == 'frontend') {
             self::getSettings();
@@ -709,7 +710,7 @@ function deselectAll(control){
         control.options[i].selected = false;
     }
 }
-var defaultLang = '$_LANGID';
+var defaultLang = '$langId';
 var activeLang = [$arrActiveLang];
 \$J(function(){
     \$J('.mediadirInputfieldDefault').each(function(){

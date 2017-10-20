@@ -135,11 +135,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         $strSlugField = '';
         $strJoinSlug = '';
 
-        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
-            $langId = FRONTEND_LANG_ID;
-        } else {
-            $langId = LANG_ID;
-        }
+        $langId = FRONTEND_LANG_ID;
 
         if(($strSearchTerm != $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM']) && !empty($strSearchTerm)) {
             $this->strSearchTerm = contrexx_addslashes($strSearchTerm);
@@ -1140,9 +1136,9 @@ JSCODE;
      */
     public function updateEntries()
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
-        $objEntries = $objDatabase->Execute('SELECT t1.* FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields` as t1 WHERE `lang_id` = '.$_LANGID.' OR `lang_id` =  "SELECT
+        $objEntries = $objDatabase->Execute('SELECT t1.* FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields` as t1 WHERE `lang_id` = '.FRONTEND_LANG_ID.' OR `lang_id` =  "SELECT
                                             first_rel_inputfield.`lang_id` AS `id`
                                         FROM
                                             '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields AS first_rel_inputfield
@@ -1178,7 +1174,7 @@ JSCODE;
 
     function saveEntry($arrData, $intEntryId=null)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID, $objInit;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;
 
         $objFWUser = \FWUser::getFWUserObject();
         $translationStatus = isset($arrData['translationStatus']) ? $arrData['translationStatus'] : array();
@@ -1252,7 +1248,7 @@ JSCODE;
                        `validate_date`='".$strValidateDate."',
                        `update_date`='".$strValidateDate."',
                        `added_by`='".$intUserId."',
-                       `lang_id`='".$_LANGID."',
+                       `lang_id`='".FRONTEND_LANG_ID."',
                        `hits`='0',
                        `last_ip`='".$strLastIp."',
                        `confirmed`='".$intConfirmed."',
@@ -1387,7 +1383,7 @@ JSCODE;
 
             // truncate attribute's data ($arrInputfield) from database if it's VALUE is not set (empty) or set to it's default value
             if (   empty($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']])
-                || $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] == $arrInputfield['default_value'][$_LANGID]
+                || $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']] == $arrInputfield['default_value'][FRONTEND_LANG_ID]
             ) {
                 $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE entry_id='".$intId."' AND field_id='".intval($arrInputfield['id'])."'");
                 if (!$objResult) {
@@ -1441,11 +1437,11 @@ JSCODE;
                     if ($arrInputfield['type_dynamic'] == 1) {
                         $arrDefault = array();
                         foreach ($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0] as $intKey => $arrValues) {
-                            $arrNewDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID][$intKey];
+                            $arrNewDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][FRONTEND_LANG_ID][$intKey];
                             $arrOldDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']]['old'][$intKey];
                             $arrNewValues = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId][$intKey];
                             foreach ($arrValues as $strKey => $strMasterValue) {
-                                if ($intLangId == $_LANGID) {
+                                if ($intLangId == FRONTEND_LANG_ID) {
                                     if ($arrNewDefault[$strKey] != $strMasterValue) {
                                         if ($strMasterValue != $arrOldDefault[$strKey] && $arrNewDefault[$strKey] == $arrOldDefault[$strKey]) {
                                             $arrDefault[$intKey][$strKey] = $strMasterValue;
@@ -1470,14 +1466,14 @@ JSCODE;
                         // attribute's VALUE of certain frontend language ($intLangId) is empty
                         empty($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId])
                         // or the process is parsing the user's current interface language
-                        || $intLangId == $_LANGID
+                        || $intLangId == FRONTEND_LANG_ID
                     ) {
                         $strMaster =
                             (isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0])
                               ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0]
                               : null);
-                        $strNewDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID])
-                                            ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID]
+                        $strNewDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][FRONTEND_LANG_ID])
+                                            ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][FRONTEND_LANG_ID]
                                             : '';
                         if ($strNewDefault != $strMaster) {
                             $strDefault = $strMaster;
@@ -1715,7 +1711,7 @@ JSCODE;
 
 
     protected function getCategories($intEntryId = null) {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
         $query = "SELECT
             cat_rel.`category_id` AS `elm_id`,
             cat_name.`category_name` AS `elm_name`
@@ -1733,12 +1729,12 @@ JSCODE;
             cat_name.`category_name` ASC
           ";
 
-        return $objDatabase->Execute($query, array($intEntryId, $_LANGID));
+        return $objDatabase->Execute($query, array($intEntryId, FRONTEND_LANG_ID));
     }
 
 
     protected function getLevels($intEntryId = null) {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
         $query = "SELECT
             level_rel.`level_id` AS `elm_id`,
             level_name.`level_name` AS `elm_name`
@@ -1756,7 +1752,7 @@ JSCODE;
             level_name.`level_name` ASC
           ";
 
-        return $objDatabase->Execute($query, array($intEntryId, $_LANGID));
+        return $objDatabase->Execute($query, array($intEntryId, FRONTEND_LANG_ID));
     }
 
 
