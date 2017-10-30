@@ -1,0 +1,15 @@
+# from https://medium.com/@jay_proulx/aws-codecommit-from-atlassian-bitbucket-and-bitbucket-pipelines-for-ci-offloading-4f1131695802
+pipelines:
+  default:
+    - step:
+        script:
+          - echo $CodeCommitKey > ~/.ssh/id_rsa.tmp
+          - base64 -d ~/.ssh/id_rsa.tmp > ~/.ssh/id_rsa
+          - chmod 400 ~/.ssh/id_rsa
+          - echo $CodeCommitConfig > ~/.ssh/config.tmp
+          - base64 -d  ~/.ssh/config.tmp > ~/.ssh/config
+          - set +e
+          - ssh -o StrictHostKeyChecking=no $CodeCommitHost
+          - set -e
+          - git remote add codecommit ssh://$CodeCommitRepo
+          - git push codecommit $BITBUCKET_BRANCH
