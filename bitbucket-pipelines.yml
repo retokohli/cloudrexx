@@ -5,7 +5,7 @@ pipelines:
         script:
           - echo $CodeCommitKey > ~/.ssh/codecommit-pipelines.tmp
           - base64 -d ~/.ssh/codecommit-pipelines.tmp > ~/.ssh/codecommit-pipelines
-          - chmod 400 ~/.ssh/id_rsa
+          - chmod 400 ~/.ssh/codecommit-pipelines
           - echo $CodeCommitConfig > ~/.ssh/config.tmp
           - base64 -d  ~/.ssh/config.tmp > ~/.ssh/config
           - set +e
