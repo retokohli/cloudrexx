@@ -12,9 +12,9 @@ These are the instructions for the installation/setup of a clone of GitHub branc
 *`DbName="<databaseName>";mysql -u<username> -p -e 'CREATE DATABASE $DbName COLLATE utf8_unicode_ci;USE $DbName;SOURCE installer/data/contrexx_dump_structure.sql;SOURCE installer/data/contrexx_dump_data.sql;'`*  
 3. 
    Create a default user by executing the following queries in the created database:
-*`DbName="<databaseName>";mysql -u<username> -p $DbName -e 'INSERT INTO contrexx_access_users (id, is_admin, username, password, regdate, expiration, validity, last_auth, last_activity, email, email_access, frontend_lang_id, backend_lang_id, active, profile_access, restore_key, restore_key_time, u2u_active) VALUES (1,1,'system','e10adc3949ba59abbe56e057f20f883e',0,0,0,0,0,'noreply@contrexx.com','nobody', 0,0,1,'members_only','',0,'0');
+*`DbName="<databaseName>";ClxMail="<mail>";ClxPass="<password>";mysql -u<username> -p $DbName -e "INSERT INTO contrexx_access_users (id, is_admin, username, password, regdate, expiration, validity, last_auth, last_activity, email, email_access, frontend_lang_id, backend_lang_id, active, profile_access, restore_key, restore_key_time, u2u_active) VALUES (1,1,'system',MD5('$ClxPass'),0,0,0,0,0,'$ClxMail','nobody', 0,0,1,'members_only','',0,'0');
 INSERT INTO contrexx_access_user_profile (user_id, gender, title, firstname, lastname, company, address, city, zip, country, phone_office, phone_private, phone_mobile, phone_fax, birthday, website, profession, interests, signature, picture) VALUES (1,'gender_undefined',2,'CMS','System Benutzer','','','','',0,'','','','','','','','','','');
-INSERT INTO contrexx_access_user_attribute_value (attribute_id, user_id, history_id, value) VALUES (0,1,0,'');'`*  
+INSERT INTO contrexx_access_user_attribute_value (attribute_id, user_id, history_id, value) VALUES (0,1,0,'');"`*  
 4. 
    Set up the configuration file (**/config/configuration.php**)  
     - set **`$_DBCONFIG['host']`**, **`$_DBCONFIG['database']`**, **`$_DBCONFIG['user']`** and **`$_DBCONFIG['password']`** to the appropriate values
