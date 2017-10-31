@@ -11,12 +11,17 @@ These are the instructions for the installation/setup of a clone of GitHub branc
    Create a new mysql database (use **utf8_unicode_ci** as collation) and import the structure (**/installer/data/contrexx_dump_structure.sql**) and data (**/installer/data/contrexx_dump_data.sql**) into the newly created database:  
 *`DbName="<databaseName>";mysql -u<username> -p -e 'CREATE DATABASE $DbName COLLATE utf8_unicode_ci;USE $DbName;SOURCE installer/data/contrexx_dump_structure.sql;SOURCE installer/data/contrexx_dump_data.sql;'`*  
 3. 
+   Create a default user by executing the following queries in the created database:
+*`DbName="<databaseName>";mysql -u<username> -p $DbName -e 'INSERT INTO contrexx_access_users (id, is_admin, username, password, regdate, expiration, validity, last_auth, last_activity, email, email_access, frontend_lang_id, backend_lang_id, active, profile_access, restore_key, restore_key_time, u2u_active) VALUES (1,1,'system','e10adc3949ba59abbe56e057f20f883e',0,0,0,0,0,'noreply@contrexx.com','nobody', 0,0,1,'members_only','',0,'0');
+INSERT INTO contrexx_access_user_profile (user_id, gender, title, firstname, lastname, company, address, city, zip, country, phone_office, phone_private, phone_mobile, phone_fax, birthday, website, profession, interests, signature, picture) VALUES (1,'gender_undefined',2,'CMS','System Benutzer','','','','',0,'','','','','','','','','','');
+INSERT INTO contrexx_access_user_attribute_value (attribute_id, user_id, history_id, value) VALUES (0,1,0,'');'`*  
+4. 
    Set up the configuration file (**/config/configuration.php**)  
     - set **`$_DBCONFIG['host']`**, **`$_DBCONFIG['database']`**, **`$_DBCONFIG['user']`** and **`$_DBCONFIG['password']`** to the appropriate values
     - set the constant **`CONTREXX_INSTALLED`** to **true**
-4. 
-   In case you did setup Cloudrexx in a subdirectory of the webserver's *DocumentRoot*, you'll have do set the option **`RewriteBase`** in the file *.htaccess* accordingly  
 5. 
+   In case you did setup Cloudrexx in a subdirectory of the webserver's *DocumentRoot*, you'll have do set the option **`RewriteBase`** in the file *.htaccess* accordingly  
+6. 
    Open section *Administration > Global Configuration* in backend (http://your-cloudrexx-git-clone/cadmin/) so that the system can initialize the base configuration  
 
 ## Bugtracker ##
@@ -30,7 +35,7 @@ Bugs are tracked on [bugs.cloudrexx.com](http://bugs.cloudrexx.com).
 ## License ##
 Cloudrexx  
 http://www.cloudrexx.com  
-Cloudrexx AG 2007-2015  
+Cloudrexx AG 2007-2017  
  
 According to our dual licensing model, this program can be used either under the terms of the GNU Affero General Public License, version 3, or under a proprietary license.  
 
@@ -39,3 +44,4 @@ The texts of the GNU Affero General Public License with an additional permission
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.  
 
 "Cloudrexx" is a registered trademark of Cloudrexx AG. The licensing of the program under the AGPLv3 does not imply a trademark license. Therefore any rights, title and interest in our trademarks remain entirely with us.  
+
