@@ -1266,7 +1266,7 @@ class InitCMS
             || strpos($ua, 'gt-p7100') !== false
             || strpos($ua, 'gt-p1000') !== false
             || strpos($ua, 'at100') !== false
-            || strpos($ua, 'a43') !== false;
+            || (strpos($ua, 'a43') !== false && strpos($ua, 'iphone') === false);
         return $isTablet;
     }
 
