@@ -865,6 +865,10 @@ namespace Cx\Core\Core\Controller {
          * Starts time measurement for page parsing time
          */
         protected function startTimer() {
+            if ($this->startTime) {
+                return;
+            }
+
             $this->startTime = explode(' ', microtime());
         }
 
@@ -1075,11 +1079,11 @@ namespace Cx\Core\Core\Controller {
                     if (!isset($_GET['__cap'])) {
                         break;
                     }
-                    if (preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{2})?' . self::FOLDER_NAME_COMMAND_MODE . '#', $_GET['__cap'])) {
+                    if (preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{1,2}(?:-[A-Za-z]{2,4})?)?' . self::FOLDER_NAME_COMMAND_MODE . '#', $_GET['__cap'])) {
                         $this->mode = self::MODE_COMMAND;
                         return;
                     }
-                    if (!preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{2})?(/admin|' . $this->getBackendFolderName() . ')#', $_GET['__cap'])) {
+                    if (!preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{1,2}(?:-[A-Za-z]{2,4})?)?(/admin|' . $this->getBackendFolderName() . ')#', $_GET['__cap'])) {
                         break;
                     }
                     // this does not belong here:
@@ -1362,10 +1366,9 @@ namespace Cx\Core\Core\Controller {
          * @global array $_CONFIG
          * @global type $_FTPCONFIG
          * @global type $objDatabase
-         * @global type $objInit
          */
         protected function init() {
-            global $objDatabase, $objInit, $_DBCONFIG, $_CONFIG;
+            global $objDatabase, $_DBCONFIG, $_CONFIG;
 
             $this->tryToSetMemoryLimit();
 
@@ -1410,10 +1413,6 @@ namespace Cx\Core\Core\Controller {
             $this->eventManager->addEvent('preComponent');
             $this->eventManager->addEvent('postComponent');
 
-            // Initialize base system
-            // TODO: Get rid of InitCMS class, merge it with this class instead
-            $objInit = new \InitCMS($this->mode == self::MODE_FRONTEND ? 'frontend' : 'backend', \Env::get('em'));
-            \Env::set('init', $objInit);
             //$bla = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             //$bla->findAll();
         }
@@ -1906,9 +1905,18 @@ namespace Cx\Core\Core\Controller {
                 $themeFolderName  = \Env::get('init')->getCurrentThemesPath();
 
                 // use application template for all output channels
-                if ($page->getUseCustomApplicationTemplateForAllChannels() && $page->getSkin()) {
-                    $themeRepo       = new \Cx\Core\View\Model\Repository\ThemeRepository();
-                    $themeFolderName = $themeRepo->findById($page->getSkin())->getFoldername();
+                if ($page->getUseCustomApplicationTemplateForAllChannels()) {
+                    $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
+                    // Skin is '0' if set to "default"
+                    if (!$page->getSkin()) {
+                        $theme = $themeRepo->getDefaultTheme(
+                            \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB,
+                            $page->getLang()
+                        );
+                    } else {
+                        $theme = $themeRepo->findById($page->getSkin());
+                    }
+                    $themeFolderName = $theme->getFoldername();
                 }
 
                 // use default theme in case a custom set theme is no longer available
@@ -2115,10 +2123,6 @@ namespace Cx\Core\Core\Controller {
                     $subMenuTitle, $_CORELANG, $plainCmd, $cmd;
 
             if ($this->mode == self::MODE_FRONTEND) {
-                // parse system
-                $parsingTime = $this->stopTimer();
-                $this->template->setVariable('PARSING_TIME', $parsingTime);
-
                 $this->parseGlobalPlaceholders($themesPages['sidebar']);
 
                 $this->template->setVariable(array(
@@ -2218,20 +2222,6 @@ namespace Cx\Core\Core\Controller {
                     $this->template->touchBlock('backend_metanavigation');
                 }
 
-                // page parsing
-                $parsingTime = $this->stopTimer();
-//                var_dump($parsingTime);
-    /*echo ($finishTime[0] - $startTime[0]) . '<br />';
-    if (!isset($_SESSION['asdf1']) || isset($_GET['reset'])) {
-        $_SESSION['asdf1'] = 0;
-        $_SESSION['asdf2'] = 0;
-    }
-    echo $_SESSION['asdf1'] . '<br />';
-    if ($_SESSION['asdf1'] > 0) {
-        echo $_SESSION['asdf2'] / $_SESSION['asdf1'];
-    }
-    $_SESSION['asdf1']++;
-    $_SESSION['asdf2'] += ($finishTime[0] - $startTime[0]);//*/
                 $objAdminNav = new \adminMenu($plainCmd);
                 $objAdminNav->getAdminNavbar();
                 $this->template->setVariable(array(
@@ -2240,7 +2230,6 @@ namespace Cx\Core\Core\Controller {
                     'TXT_GENERATED_IN' => $_CORELANG['TXT_GENERATED_IN'],
                     'TXT_SECONDS' => $_CORELANG['TXT_SECONDS'],
                     'TXT_LOGOUT_WARNING' => $_CORELANG['TXT_LOGOUT_WARNING'],
-                    'PARSING_TIME'=> $parsingTime,
                     'LOGGED_NAME' => htmlentities($this->getUser()->objUser->getProfileAttribute('firstname').' '.$this->getUser()->objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET),
                     'TXT_LOGGED_IN_AS' => $_CORELANG['TXT_LOGGED_IN_AS'],
                     'TXT_LOG_OUT' => $_CORELANG['TXT_LOG_OUT'],
@@ -2295,8 +2284,6 @@ namespace Cx\Core\Core\Controller {
                 );
                 $this->getResponse()->setParsedContent($ls->replace());
             }
-
-            \DBG::log("(Cx: {$this->id}) Request parsing completed after $parsingTime");
         }
 
         /**
@@ -2306,6 +2293,9 @@ namespace Cx\Core\Core\Controller {
             $endcode = $this->getResponse()->getParsedContent();
             $this->ch->callPostFinalizeHooks($endcode);
             $this->getResponse()->setParsedContent($endcode);
+
+            $parsingTime = $this->stopTimer();
+            \DBG::log("(Cx: {$this->id}) Request parsing completed after $parsingTime");
         }
 
         /* GETTERS */

@@ -77,9 +77,15 @@ class ContrexxJavascript {
     private function __construct()
     {
         global $objInit;
-        $langId = ($objInit->mode == "frontend"
-            ? $objInit->getFrontendLangId() : $objInit->getBackendLangId());
-        $langCode = FWLanguage::getLanguageCodeById($langId);
+
+        $backOrFrontend = $objInit->mode;
+// TODO: Unused
+//        global $objFWUser;
+//        $langId;
+        if($backOrFrontend == "frontend")
+            $langCode = FWLanguage::getLanguageCodeById($objInit->getFrontendLangId());
+        else //backend
+            $langCode = FWLanguage::getBackendLanguageCodeById($objInit->getBackendLangId());
         $this->setVariable(
             array(
                 'path' => ASCMS_PATH_OFFSET . '/' . $langCode . '/',
