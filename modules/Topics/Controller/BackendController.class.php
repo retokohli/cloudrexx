@@ -754,8 +754,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'delete' => true,
                     'sorting' => true,
                     'paging' => true,
-// TODO: Implement search/filtering (doesn't appear to be implemented):
-                    'filtering' => true,
+// TODO: Implement search/filtering (doesn't appear to work with translatable):
+                    'filtering' => false,
+                    'searching' => false,
                 ),
             ),
             $this->getNamespace() . '\\Model\\Entity\\Category' => array(
@@ -766,7 +767,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'delete' => true,
                     'sorting' => true,
                     'paging' => true,
-                    'filtering' => true,
+// TODO: Implement search/filtering (doesn't appear to work with translatable):
+                    'filtering' => false,
+                    'searching' => false,
                 ),
                 'fields' => array(
                     'description' => array(
