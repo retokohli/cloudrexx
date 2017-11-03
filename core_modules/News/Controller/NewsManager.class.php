@@ -3227,9 +3227,10 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     $itemUrl->setParam('teaserId', $arrNewsItem['teaser_frames'][0]);
                 }
 
-                $link = contrexx_raw2xml($arrNewsItem['redirect']);
                 if (empty($arrNewsItem['redirect'])) {
                     $link = contrexx_raw2xml($itemUrl->toString());
+                } else {
+                    $link = contrexx_raw2xml($arrNewsItem['redirect']);
                 }
 
                 $objRSSWriter->addItem(
@@ -3242,7 +3243,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     '',
                     array('guid' => $link),
                     $arrNewsItem['date'],
-                    array('url' => htmlspecialchars($arrNewsItem['source'], ENT_QUOTES, CONTREXX_CHARSET), 'title' => contrexx_raw2xml($arrNewsItem['title']))
+                    array('url' => contrexx_raw2xml($arrNewsItem['source']), 'title' => contrexx_raw2xml($arrNewsItem['title']))
                 );
             }
             $objRSSWriter->write();
@@ -3266,9 +3267,10 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     $itemUrl->setParam('teaserId', $arrNewsItem['teaser_frames'][0]);
                 }
 
-                $link = contrexx_raw2xml($arrNewsItem['redirect']);
                 if (empty($arrNewsItem['redirect'])) {
                     $link = (contrexx_raw2xml($itemUrl->toString()));
+                } else {
+                    $link = contrexx_raw2xml($arrNewsItem['redirect']);
                 }
 
                 $objRSSWriter->addItem(
