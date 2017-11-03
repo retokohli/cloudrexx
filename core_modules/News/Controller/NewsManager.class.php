@@ -3268,7 +3268,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 }
 
                 if (empty($arrNewsItem['redirect'])) {
-                    $link = (contrexx_raw2xml($itemUrl->toString()));
+                    $link = contrexx_raw2xml($itemUrl->toString());
                 } else {
                     $link = contrexx_raw2xml($arrNewsItem['redirect']);
                 }
