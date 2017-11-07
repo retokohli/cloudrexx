@@ -1911,6 +1911,7 @@ INSERT INTO `contrexx_core_mail_template` (`key`, `section`, `text_id`, `html`, 
 INSERT INTO `contrexx_core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES ('notify_undelivered_email','Newsletter',27,0,1);
 INSERT INTO `contrexx_core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES ('notify_subscription_list_same','Newsletter',28,0,1);
 INSERT INTO `contrexx_core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES ('notify_subscription_list_additional','Newsletter',29,0,1);
+INSERT INTO `contrexx_core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES ('new_asset_notification','Downloads',30,0,0);
 INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (1, 'Cx\\Modules\\Calendar\\Model\\Entity\\Event', '', 'doctrineRepository');
 INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (2, 'Cx\\Modules\\Calendar\\Model\\Entity\\Category', '', 'doctrineRepository');
 INSERT INTO `contrexx_core_data_source` (`id`, `identifier`, `options`, `type`) VALUES (3, 'Cx\\Modules\\Calendar\\Model\\Entity\\CategoryName', '', 'doctrineRepository');
@@ -2623,6 +2624,24 @@ INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VAL
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (29,2,'Newsletter','core_mail_template_sender','');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (29,2,'Newsletter','core_mail_template_subject','[NEWSLETTER_DOMAIN_URL] - Newsletter subscription');
 INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (29,2,'Newsletter','core_mail_template_to','');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Downloads','core_mail_template_bcc','');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Downloads','core_mail_template_cc','');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Downloads','core_mail_template_from','');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Downloads','core_mail_template_message','Eine neue Datei wurde auf [DOMAIN_URL] hochgeladen.\r\n\nBenutzer: [FILE_OWNER]\r\n\nDateiname: [FILE_NAME]\r\n\nKategorie: [CATEGORY_NAME]\r\n\nDownload: [FILE_DOWNLOAD_LINK_SRC]');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Downloads','core_mail_template_name','Benachrichtigung bei neuem Upload');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Downloads','core_mail_template_reply','');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Downloads','core_mail_template_sender','');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Downloads','core_mail_template_subject','Neue Datei auf [DOMAIN_URL] verfügbar');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,1,'Downloads','core_mail_template_to','');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_bcc','');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_cc','');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_from','');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_message','A new file has been uploaded on [DOMAIN_URL]\r\n\nUser: [FILE_OWNER]\r\n\nFilename: [FILE_NAME]\r\n\nCategory: [CATEGORY_NAME]\r\n\nDownload: [FILE_DOWNLOAD_LINK_SRC]');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_name','Notification on new upload');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_reply','');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_sender','');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_subject','New download available on [DOMAIN_URL]');
+INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (30,2,'Downloads','core_mail_template_to','');
 INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (1, 1, 'default');
 INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (1, 2, 'mobile');
 INSERT INTO `contrexx_core_view_frontend` (`language`, `theme`, `channel`) VALUES (1, 4, 'print');
@@ -3433,8 +3452,8 @@ INSERT INTO `contrexx_module_checkout_settings_yellowpay` (`id`, `name`, `value`
 INSERT INTO `contrexx_module_checkout_settings_yellowpay` (`id`, `name`, `value`) VALUES (4,'testserver','1');
 INSERT INTO `contrexx_module_checkout_settings_yellowpay` (`id`, `name`, `value`) VALUES (5,'operation','SAL');
 INSERT INTO `contrexx_module_checkout_transactions` (`id`, `time`, `status`, `invoice_number`, `invoice_currency`, `invoice_amount`, `contact_title`, `contact_forename`, `contact_surname`, `contact_company`, `contact_street`, `contact_postcode`, `contact_place`, `contact_country`, `contact_phone`, `contact_email`) VALUES (1,1346661560,'confirmed','987654321',1,48000,'mister','Hans','Muster','Musterfirma','Musterstrasse 123','1234','Musterort',204,'012 345 67 89','info@example.com');
-INSERT INTO `contrexx_module_contact_form` (`id`, `mails`, `showForm`, `use_captcha`, `use_custom_style`, `save_data_in_crm`, `send_copy`, `use_email_of_sender`, `html_mail`, `send_attachment`, `crm_customer_groups`) VALUES (1,'',0,1,0,0,0,0,1,0,NULL);
-INSERT INTO `contrexx_module_contact_form` (`id`, `mails`, `showForm`, `use_captcha`, `use_custom_style`, `save_data_in_crm`, `send_copy`, `use_email_of_sender`, `html_mail`, `send_attachment`, `crm_customer_groups`) VALUES (2,'',0,1,0,1,0,0,1,0,NULL);
+INSERT INTO `contrexx_module_contact_form` (`id`, `mails`, `showForm`, `use_captcha`, `use_custom_style`, `save_data_in_crm`, `send_copy`, `use_email_of_sender`, `html_mail`, `send_attachment`, `crm_customer_groups`, `send_multiple_reply`) VALUES (1,'',0,1,0,0,0,0,1,0,NULL,0);
+INSERT INTO `contrexx_module_contact_form` (`id`, `mails`, `showForm`, `use_captcha`, `use_custom_style`, `save_data_in_crm`, `send_copy`, `use_email_of_sender`, `html_mail`, `send_attachment`, `crm_customer_groups`, `send_multiple_reply`) VALUES (2,'',0,1,0,1,0,0,1,0,NULL,0);
 INSERT INTO `contrexx_module_contact_form_field` (`id`, `id_form`, `type`, `special_type`, `is_required`, `check_type`, `order_id`) VALUES (74,1,'textarea','','1',1,4);
 INSERT INTO `contrexx_module_contact_form_field` (`id`, `id_form`, `type`, `special_type`, `is_required`, `check_type`, `order_id`) VALUES (73,1,'special','access_email','1',2,3);
 INSERT INTO `contrexx_module_contact_form_field` (`id`, `id_form`, `type`, `special_type`, `is_required`, `check_type`, `order_id`) VALUES (72,1,'special','access_company','',1,2);
@@ -5663,7 +5682,3 @@ INSERT INTO `contrexx_voting_system` (`id`, `date`, `title`, `question`, `status
 INSERT INTO `contrexx_voting_system` (`id`, `date`, `title`, `question`, `status`, `submit_check`, `votes`, `additional_nickname`, `additional_forename`, `additional_surname`, `additional_phone`, `additional_street`, `additional_zip`, `additional_email`, `additional_city`, `additional_comment`) VALUES (11,'2010-12-13 06:44:39','Webprojekte','Mit wem würden Sie Ihr Webprojekt besprechen?',0,'cookie',4,1,1,0,0,0,0,0,1,0);
 INSERT INTO `contrexx_voting_system` (`id`, `date`, `title`, `question`, `status`, `submit_check`, `votes`, `additional_nickname`, `additional_forename`, `additional_surname`, `additional_phone`, `additional_street`, `additional_zip`, `additional_email`, `additional_city`, `additional_comment`) VALUES (12,'2010-12-13 06:44:45','Wie gefällt Ihnen das neue Layout?','Wie gefällt Ihnen das neue Layout?',1,'cookie',2,0,0,0,0,0,0,0,0,0);
 SET FOREIGN_KEY_CHECKS = 1;
-INSERT INTO contrexx_access_users (id, is_admin, username, password, regdate, expiration, validity, last_auth, last_activity, email, email_access, frontend_lang_id, backend_lang_id, active, profile_access, restore_key, restore_key_time, u2u_active) VALUES (1,1,'system','e10adc3949ba59abbe56e057f20f883e',0,0,0,0,0,'noreply@contrexx.com','nobody', 0,0,1,'members_only','',0,'0');
-INSERT INTO contrexx_access_user_profile (user_id, gender, title, firstname, lastname, company, address, city, zip, country, phone_office, phone_private, phone_mobile, phone_fax, birthday,
-website, profession, interests, signature, picture) VALUES (1,'gender_undefined',2,'CMS','System Benutzer','','','','',0,'','','','','','','','','','');
-INSERT INTO contrexx_access_user_attribute_value (attribute_id, user_id, history_id, value) VALUES (0,1,0,'');

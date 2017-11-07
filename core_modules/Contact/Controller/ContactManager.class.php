@@ -783,6 +783,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
         $sendAttachment = 0;
         $emails         = $_CONFIG['contactFormEmail'];
         $crmCustomerGroups = array();
+        $sendMultipleReply = 0;
 
         $arrActiveSystemFrontendLanguages = \FWLanguage::getActiveFrontendLanguages();
 
@@ -803,6 +804,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             $sendAttachment = $this->arrForms[$formId]['sendAttachment'];
             $emails         = $this->arrForms[$formId]['emails'];
             $crmCustomerGroups = !empty($this->arrForms[$formId]['crmCustomerGroups']) ? $this->arrForms[$formId]['crmCustomerGroups'] : array();
+            $sendMultipleReply = $this->arrForms[$formId]['sendMultipleReply'];
         }
 
         if (count($arrActiveSystemFrontendLanguages) > 0) {
@@ -1057,6 +1059,8 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             'CONTACT_MAIL_TEMPLATE_STYLE'                   => $sendHtmlMail    ? 'table-row' : 'none',
             'CONTACT_FORM_SEND_COPY_YES'                    => $sendCopy        ? 'checked="checked"' : '',
             'CONTACT_FORM_SEND_COPY_NO'                     => $sendCopy        ? '' : 'checked="checked"',
+            'CONTACT_FORM_SEND_MULTIPLE_REPLY_YES'          => $sendMultipleReply   ? 'checked="checked"' : '',
+            'CONTACT_FORM_SEND_MULTIPLE_REPLY_NO'           => $sendMultipleReply   ? '' : 'checked="checked"',
             'CONTACT_FORM_USE_EMAIL_OF_SENDER_YES'          => $useEmailOfSender? 'checked="checked"' : '',
             'CONTACT_FORM_USE_EMAIL_OF_SENDER_NO'           => $useEmailOfSender? '' : 'checked="checked"',
             'CONTACT_FORM_SEND_ATTACHMENT'                  => $sendAttachment  ? 'checked="checked"' : '',
@@ -1105,6 +1109,8 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             'TXT_CONTACT_CAPTCHA_DESCRIPTION'               => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'],
             'TXT_CONTACT_SEND_COPY_DESCRIPTION'             => $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'],
             'TXT_CONTACT_SEND_COPY'                         => $_ARRAYLANG['TXT_CONTACT_SEND_COPY'],
+            'TXT_CONTACT_SEND_MULTIPLE_REPLY_DESCRIPTION'   => $_ARRAYLANG['TXT_CONTACT_SEND_MULTIPLE_REPLY_DESCRIPTION'],
+            'TXT_CONTACT_SEND_MULTIPLE_REPLY'               => $_ARRAYLANG['TXT_CONTACT_SEND_MULTIPLE_REPLY'],
             'TXT_CONTACT_USE_EMAIL_OF_SENDER_DESCRIPTION'   => $_ARRAYLANG['TXT_CONTACT_USE_EMAIL_OF_SENDER_DESCRIPTION'],
             'TXT_CONTACT_USE_EMAIL_OF_SENDER'               => $_ARRAYLANG['TXT_CONTACT_USE_EMAIL_OF_SENDER'],
             'TXT_CONTACT_SEND_ATTACHMENT'                   => $_ARRAYLANG['TXT_CONTACT_SEND_ATTACHMENT'],
@@ -1243,9 +1249,10 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             $saveDataInCrm  = !empty($_POST['contactFormUseCrmModule']) ? 1 : 0;
             $useCustomStyle = !empty($_POST['contactFormUseCustomStyle']) ? 1 : 0;
             $sendCopy       = !empty($_POST['contactFormSendCopy']) ? 1 : 0;
-            $useEmailOfSender = !empty($_POST['contactFormUseEmailOfSender']) ? 1 : 0;
             $sendHtmlMail   = !empty($_POST['contactFormHtmlMail']) ? 1 : 0;
             $sendAttachment = !empty($_POST['contactFormSendAttachment']) ? 1 : 0;
+            $sendMultipleReply = $sendCopy && !empty($_POST['contactFormSendMultipleReply']) ? 1 : 0;
+            $useEmailOfSender = !$sendMultipleReply && !empty($_POST['contactFormUseEmailOfSender']) ? 1 : 0;
 
             // do the fields
             $fields = $this->_getFormFieldsFromPost();
@@ -1284,7 +1291,8 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                         $sendHtmlMail,
                         $sendAttachment,
                         $saveDataInCrm,
-                        $crmCustomerGroups
+                        $crmCustomerGroups,
+                        $sendMultipleReply
                 );
             } else {
                 $formId = $this->addForm(
@@ -1297,7 +1305,8 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                         $sendHtmlMail,
                         $sendAttachment,
                         $saveDataInCrm,
-                        $crmCustomerGroups
+                        $crmCustomerGroups,
+                        $sendMultipleReply
                 );
             }
 

@@ -97,13 +97,33 @@ class YamlEngine extends Engine{
         if (!empty($this->yamlSettingRepo)) {
             $yamlSettings = $this->yamlSettingRepo->findAll();
             $yamlSettingArray = array();
+            $websitePath      = \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getWebsiteDocumentRootPath();
             if (isset($yamlSettings)) {
-                foreach ($yamlSettings As $yamlSetting) {
+                foreach ($yamlSettings as $yamlSetting) {
+                    $value = $yamlSetting->getValue();
+                    if (
+                        $yamlSetting->getType() == \Cx\Core\Setting\Controller\Setting::TYPE_FILECONTENT &&
+                        $yamlSetting->getValues() &&
+                        \Cx\Lib\FileSystem\FileSystem::exists(
+                            $websitePath . '/' . $yamlSetting->getValues() 
+                        )
+                    ) {
+                        try {
+                            $objFile  = new \Cx\Lib\FileSystem\File(
+                                $websitePath . '/' . $yamlSetting->getValues()
+                            );
+                            $value = $objFile->getData();
+                        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                            \DBG::log($e->getMessage());
+                            $value = '';
+                        }
+                    }
                     $yamlSettingArray[$yamlSetting->getName()] = array(
                         'name'    => $yamlSetting->getName(),
                         'section' => $yamlSetting->getSection(),
                         'group'   => $yamlSetting->getGroup(),
-                        'value'   => $yamlSetting->getValue(),
+                        'value'   => $value,
                         'type'    => $yamlSetting->getType(),
                         'values'  => $yamlSetting->getValues(),
                         'ord'     => $yamlSetting->getOrd()

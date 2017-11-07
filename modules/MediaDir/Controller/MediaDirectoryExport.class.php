@@ -57,7 +57,7 @@ class MediaDirectoryExport extends MediaDirectoryLibrary
 
     function exportCSV($intFormId, $arrCategoryIds=null, $arrLevelIds=null, $intMaskId=null)
     {
-        global $_ARRAYLANG, $_CORELANG, $_LANGID, $objDatabase;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         if($intFormId != null) {
             $objValidator = new \FWValidator();
@@ -140,7 +140,7 @@ class MediaDirectoryExport extends MediaDirectoryLibrary
                                                             WHERE
                                                                 entry.entry_id ='".$intEntryId."'
                                                             AND
-                                                                entry.lang_id ='".$_LANGID."'
+                                                                entry.lang_id ='".FRONTEND_LANG_ID."'
                                                            ");
                 if ($objResultEntry !== false) {
                     while (!$objResultEntry->EOF) {
@@ -220,7 +220,7 @@ class MediaDirectoryExport extends MediaDirectoryLibrary
 
     function getCategoriesLevels($intType, $intEntryId=null)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $arrList = array();
 
@@ -237,7 +237,7 @@ class MediaDirectoryExport extends MediaDirectoryLibrary
                   AND
                     cat_rel.`entry_id` = '".intval($intEntryId)."'
                   AND
-                    cat_name.`lang_id` = '".intval($_LANGID)."'
+                    cat_name.`lang_id` = '".intval(FRONTEND_LANG_ID)."'
                   ORDER BY
                     cat_name.`category_name` ASC
                   ";
@@ -254,7 +254,7 @@ class MediaDirectoryExport extends MediaDirectoryLibrary
                   AND
                     level_rel.`entry_id` = '".intval($intEntryId)."'
                   AND
-                    level_name.`lang_id` = '".intval($_LANGID)."'
+                    level_name.`lang_id` = '".intval(FRONTEND_LANG_ID)."'
                   ORDER BY
                     level_name.`level_name` ASC
                   ";

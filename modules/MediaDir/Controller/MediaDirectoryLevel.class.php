@@ -95,12 +95,11 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
             $whereLevelId = null;
         }
 
+        $langId = FRONTEND_LANG_ID;
         if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             $whereActive = "AND (level.active='1') ";
-            $langId = FRONTEND_LANG_ID;
         } else {
             $whereActive = '';
-            $langId = LANG_ID;
         }
 
         switch($this->arrSettings['settingsLevelOrder']) {
@@ -644,7 +643,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
     function saveLevel($arrData, $intLevelId=null)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         //get data
         $intId = intval($intLevelId);
@@ -679,8 +678,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                     if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
-                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[$_LANGID]) ? $arrDescription[$_LANGID] : '';
-                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[$_LANGID]) ? $arrMetaDesc[$_LANGID] : '';
+                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[FRONTEND_LANG_ID]) ? $arrDescription[FRONTEND_LANG_ID] : '';
+                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[FRONTEND_LANG_ID]) ? $arrMetaDesc[FRONTEND_LANG_ID] : '';
 
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
@@ -738,8 +737,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                     if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
-                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[$_LANGID]) ? $arrDescription[$_LANGID] : '';
-                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[$_LANGID]) ? $arrMetaDesc[$_LANGID] : '';
+                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[FRONTEND_LANG_ID]) ? $arrDescription[FRONTEND_LANG_ID] : '';
+                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[FRONTEND_LANG_ID]) ? $arrMetaDesc[FRONTEND_LANG_ID] : '';
 
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
