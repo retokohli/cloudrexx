@@ -704,8 +704,6 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (88,'JavaScript',
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (90,'Net','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (91,'Core','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (92,'Shell','core_module');
-INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (93,'Order','module');
-INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (94,'Pim','module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (95,'LinkManager','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (98,'Test','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (99,'Routing','core');
@@ -5582,8 +5580,8 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variab
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (87,'Message','Cloudrexx AG','TXT_MESSAGE_MODULE_DESCRIPTION','n',0,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (90,'Net','Cloudrexx AG','TXT_NET_MODULE_DESCRIPTION','n',1,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (92,'Shell','Cloudrexx AG','TXT_CORE_SHELL_DESCRIPTION','y',0,1,1,1,NULL);
-INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (93,'Order','Cloudrexx AG','TXT_MODULE_ORDER_DESCRIPTION','y',0,0,1,1,NULL);
-INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (94,'Pim','Cloudrexx AG','TXT_MODULE_PIM_DESCRIPTION','y',0,0,1,1,NULL);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (93,'Order','Cloudrexx AG','TXT_MODULE_ORDER_DESCRIPTION','y',0,0,0,0,NULL);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (94,'Pim','Cloudrexx AG','TXT_MODULE_PIM_DESCRIPTION','y',0,0,0,0,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (95,'LinkManager','Cloudrexx AG','TXT_MODULE_LINKMANAGER_DESCRIPTION','y',0,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (96,'CacheManager','Cloudrexx AG','','n',0,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (97,'LicenseManager','Cloudrexx AG','TXT_LICENSE','n',1,1,1,1,NULL);
