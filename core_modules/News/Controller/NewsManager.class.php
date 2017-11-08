@@ -3241,7 +3241,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     $categories,
                     '',
                     '',
-                    array('guid' => $link),
+                    array('guid' => contrexx_raw2xml($itemUrl->toString())),
                     $arrNewsItem['date'],
                     array('url' => contrexx_raw2xml($arrNewsItem['source']), 'title' => contrexx_raw2xml($arrNewsItem['title']))
                 );
@@ -3281,7 +3281,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     $categories,
                     '',
                     '',
-                    array('guid' => $link),
+                    array('guid' => contrexx_raw2xml($itemUrl->toString())),
                     $arrNewsItem['date']
                 );
             }
