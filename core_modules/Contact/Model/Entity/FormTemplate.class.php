@@ -404,7 +404,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
         }
         $this->template->setGlobalVariable($profileData);
         $this->template->setVariable(array(
-            'CONTACT_FORM_ACTION' => $actionUrl->toString(),
+            'CONTACT_FORM_ACTION' => $actionUrl->toString(false),
             'CONTACT_FORM_CUSTOM_STYLE_ID' => $customStyleId,
         ));
 
@@ -412,8 +412,10 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
         foreach ($formFields as $fieldId => $arrField) {
             // Set Form name and its description
             $this->template->setVariable(array(
-                'CONTACT_FORM_NAME'   => contrexx_raw2xhtml($formName),
-                'CONTACT_FORM_TEXT'   => $formText,
+                $formId . '_FORM_TEXT' => $formText,
+                $formId . '_FORM_NAME' => contrexx_raw2xhtml($formName),
+                'CONTACT_FORM_NAME'    => contrexx_raw2xhtml($formName),
+                'CONTACT_FORM_TEXT'    => $formText,
             ));
             // Set values for special field types
             $this->setSpecialFieldValue($arrField, $fieldId);
@@ -434,13 +436,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                 $this->template->placeholderExists($fieldId . '_VALUE') ||
                 $this->template->placeholderExists($fieldId . '_LABEL')
             ) {
-                $this->parseInputFieldValue(
-                    $this->template,
-                    $fieldId,
-                    $fieldValue,
-                    $fieldId . '_VALUE'
-                );
-                $this->template->setVariable($fieldId . '_LABEL', $fieldLabel);
+                $this->parseFormField($this->template, $fieldId, $arrField);
                 continue;
             } elseif ($this->template->blockExists($this->blockPrefix . $fieldId)) {
                 // check if the template-block contact_form_field_<ID> exists
@@ -456,14 +452,13 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                 $content = $this->fieldTemplates[$fieldType]->getContent();
             }
             if ($content) {
+                $template = new \Cx\Core\Html\Sigma('.');
+                $template->setErrorHandling(PEAR_ERROR_DIE);
+                $template->setTemplate($content);
+                $template->setGlobalVariable($profileData);
                 $this->template->setVariable(
                     'CONTACT_FORM_FIELD',
-                    $this->parseFormField(
-                        $content,
-                        $fieldId,
-                        $arrField,
-                        $profileData
-                    )
+                    $this->parseFormField($template, $fieldId, $arrField, true)
                 );
                 $this->template->parse($this->blockPrefix . 'list');
             }
@@ -563,27 +558,19 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
     /**
      * Parse Form Field
      *
-     * @param string  $fieldContent Content of the FormField
-     * @param integer $fieldId      FormField ID
-     * @param array   $arrField     Array of FormField values
-     * @param array   $profileData  Array of User Profile data
+     * @param \Cx\Core\Html\Sigma  $template Template object
+     * @param integer              $fieldId  FormField ID
+     * @param array                $arrField Array of FormField values
+     * @param boolean              $return   If true return the template content otherwise not
      * @return string Parsed content of Form field
      */
     protected function parseFormField(
-        $fieldContent,
+        \Cx\Core\Html\Sigma $template,
         $fieldId,
         $arrField,
-        $profileData
+        $return = false
     ) {
         global $_ARRAYLANG;
-        if (empty($fieldContent)) {
-            return '';
-        }
-
-        $template = new \Cx\Core\Html\Sigma('.');
-        $template->setErrorHandling(PEAR_ERROR_DIE);
-        $template->setTemplate($fieldContent);
-        $template->setGlobalVariable($profileData);
 
         $regex = '/\[\[([A-Z0-9_]+)\]\]/';
         $fieldValue = preg_replace(
@@ -593,36 +580,48 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
         );
         $fieldLabel = '&nbsp;';
         if (!empty($arrField['lang'][$this->langId]['name'])) {
-            $fieldLabel = contrexx_raw2xhtml($arrField['lang'][$this->langId]['name']);
+            $fieldLabel = $arrField['lang'][$this->langId]['name'];
         }
         $fieldType = $arrField['type'];
         if ($fieldType == 'special') {
             $fieldType = $arrField['special_type'];
         }
 
-        // Check if the template have block like any one of the following formats:
+        $hasDefaultPlaceholder =
+            $template->placeholderExists($fieldId . '_VALUE') ||
+            $template->placeholderExists($fieldId . '_LABEL');
+
+        // Check if the template does not have the placeholders {<ID>_VALUE} and {<ID>_LABEL}
+        // then check template have block like any one of the following formats:
         // 'contact_form_field_required' or 'contact_form_field_required_<Type>'
         // or 'contact_form_field_required_<ID> for required'
-        $requiedBlock = $this->blockPrefix . 'required';
-        if ($template->blockExists($requiedBlock . '_' . $fieldId)) {
-            $requiedBlockName = $requiedBlock . '_' . $fieldId;
-        } elseif ($template->blockExists($requiedBlock . '_' . $fieldType)) {
-            $requiedBlockName = $requiedBlock . '_' . $fieldType;
-        } else {
-            $requiedBlockName = $requiedBlock;
-        }
+        if (!$hasDefaultPlaceholder) {
+            $requiedBlock = $this->blockPrefix . 'required';
+            if ($template->blockExists($requiedBlock . '_' . $fieldId)) {
+                $requiedBlockName = $requiedBlock . '_' . $fieldId;
+            } elseif ($template->blockExists($requiedBlock . '_' . $fieldType)) {
+                $requiedBlockName = $requiedBlock . '_' . $fieldType;
+            } else {
+                $requiedBlockName = $requiedBlock;
+            }
 
-        if ($arrField['is_required']) {
-            $template->touchBlock($requiedBlockName);
-        } else {
-            $template->hideBlock($requiedBlockName);
+            if ($arrField['is_required']) {
+                $template->touchBlock($requiedBlockName);
+            } else {
+                $template->hideBlock($requiedBlockName);
+            }
         }
 
         // Parse Form field Id and Label values.
-        $template->setVariable(array(
-            'CONTACT_FORM_FIELD_ID'    => $fieldId,
-            'CONTACT_FORM_FIELD_LABEL' => $fieldLabel,
-        ));
+        if ($hasDefaultPlaceholder) {
+            $template->setVariable($fieldId . '_LABEL', $fieldLabel);
+        } else {
+            $template->setVariable(array(
+                'CONTACT_FORM_FIELD_ID'    => $fieldId,
+                'CONTACT_FORM_FIELD_LABEL' => $fieldLabel,
+            ));
+        }
+
         // Parse form field value based on its type.
         switch ($fieldType) {
             case 'checkbox':
@@ -633,14 +632,24 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                 ) {
                     $checkboxSelected = 'checked="checked"';
                 }
-                $template->setVariable(
-                    'CONTACT_FORM_FIELD_CHECKBOX_SELECTED', $checkboxSelected
-                );
+
+                if ($hasDefaultPlaceholder) {
+                    $selectPlaceholder = 'SELECTED_' . $fieldId;
+                } else {
+                    $selectPlaceholder = 'CONTACT_FORM_FIELD_CHECKBOX_SELECTED';
+                }
+                $template->setVariable($selectPlaceholder, $checkboxSelected);
                 break;
             case 'checkboxGroup':
             case 'radio':
                 $options = explode(',', $fieldValue);
-                $this->parseFormFieldSelectOptions($template, $fieldId, $fieldType, $options);
+                $this->parseFormFieldSelectOptions(
+                    $template,
+                    $fieldId,
+                    $fieldType,
+                    $options,
+                    $hasDefaultPlaceholder
+                );
                 break;
             case 'access_title':
             case 'access_gender':
@@ -665,7 +674,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                     $arrOptions[] = $objAttribute->getName($this->langId);
                 }
                 // Options will be used for select input generation
-                $fieldValue = implode(',', contrexx_raw2xhtml($arrOptions));
+                $fieldValue = implode(',', $arrOptions);
             case 'select':
                 $options = explode(',', $fieldValue);
                 if ($arrField['is_required']) {
@@ -674,7 +683,13 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                         $options
                     );
                 }
-                $this->parseFormFieldSelectOptions($template, $fieldId, $fieldType, $options);
+                $this->parseFormFieldSelectOptions(
+                    $template,
+                    $fieldId,
+                    $fieldType,
+                    $options,
+                    $hasDefaultPlaceholder
+                );
                 break;
             case 'recipient':
                 $recipients = $this->contactLib->getRecipients($this->form->getId());
@@ -682,7 +697,13 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                 foreach ($recipients as $index => $recipient) {
                     $options[$index] = preg_replace($regex, '{$1}', $recipient['lang'][$this->langId]);
                 }
-                $this->parseFormFieldSelectOptions($template, $fieldId, $fieldType, $options);
+                $this->parseFormFieldSelectOptions(
+                    $template,
+                    $fieldId,
+                    $fieldType,
+                    $options,
+                    $hasDefaultPlaceholder
+                );
                 break;
             case 'access_country':
             case 'country':
@@ -694,54 +715,87 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                     true,
                     $this->langId
                 );
-                $defaultOption = $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'];
-                if ($arrField['is_required']) {
-                    $defaultOption = $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'];
+                if (
+                    $template->placeholderExists('TXT_CONTACT_NOT_SPECIFIED') ||
+                    $template->placeholderExists('TXT_CONTACT_PLEASE_SELECT')
+                ) {
+                    $template->setVariable(array(
+                        'TXT_CONTACT_PLEASE_SELECT' => $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'],
+                        'TXT_CONTACT_NOT_SPECIFIED' => $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'],
+                    ));
+                    $options = $arrCountry;
+                } else {
+                    $defaultOption = $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'];
+                    if ($arrField['is_required']) {
+                        $defaultOption = $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'];
+                    }
+                    $options = array_merge(array($defaultOption), $arrCountry);
                 }
-                $options = array_merge(array($defaultOption), $arrCountry);
                 $this->parseFormFieldSelectOptions(
                     $template,
                     $fieldId,
                     $fieldType,
                     $options,
+                    $hasDefaultPlaceholder,
                     $fieldValue
                 );
                 break;
             case 'file':
                 $this->hasFileField  = true;
-                $this->uploaderCode .= $this->initUploader($template, $fieldId);
+                $this->uploaderCode .= $this->initUploader(
+                    $template,
+                    $fieldId,
+                    $hasDefaultPlaceholder
+                );
                 break;
             case 'multi_file':
                 $this->hasFileField  = true;
-                $this->uploaderCode .= $this->initUploader($template, $fieldId, false);
+                $this->uploaderCode .= $this->initUploader(
+                    $template,
+                    $fieldId,
+                    $hasDefaultPlaceholder,
+                    false
+                );
                 break;
+            case 'access_birthday':
+                if (!$hasDefaultPlaceholder) {
+                    $template->setVariable(
+                        'CONTACT_FORM_FIELD_ADDITIONAL_CLASS',
+                        'date'
+                    );
+                }
             default:
                 $this->parseInputFieldValue(
                     $template,
                     $fieldId,
                     $fieldValue,
-                    'CONTACT_FORM_FIELD_VALUE'
+                    $hasDefaultPlaceholder
                 );
                 break;
         }
 
-        return $template->get();
+        if ($return) {
+            return $template->get();
+        }
     }
 
     /**
      * Parse FormField's value
      *
-     * @param \Cx\Core\Html\Sigma $template   Template object
-     * @param integer             $fieldId    Field ID
-     * @param string              $fieldType  Field type
-     * @param array               $options    Field option values
-     * @param string              $fieldValue Field value
+     * @param \Cx\Core\Html\Sigma $template              Template object
+     * @param integer             $fieldId               Field ID
+     * @param string              $fieldType             Field type
+     * @param array               $options               Field option values
+     * @param boolean             $hasDefaultPlaceholder If true form has direct {<ID>_VALUE} and
+     *                                                   {<ID>_LABEL} placeholders otherwise false
+     * @param string              $fieldValue            Field value
      */
     protected function parseFormFieldSelectOptions(
         \Cx\Core\Html\Sigma $template,
         $fieldId,
         $fieldType,
         $options,
+        $hasDefaultPlaceholder,
         $fieldValue = ''
     ) {
         if (empty($options)) {
@@ -760,38 +814,70 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
             $selectedText = 'checked = "checked"';
         }
 
-        // Check if the template have block like any one of the following formats:
+        // Check if the template have the following placeholder {<ID>_VALUE} and {<ID>_LABEL}
+        // then check the block 'field_<ID>' exists or not otherwise
+        // check the template have block like any one of the following formats:
         // 'contact_form_field_options' or 'contact_form_field_options_<Type>'
-        // or 'contact_form_field_options_<ID> for parsing option values'
+        // or 'contact_form_field_options_<ID> or 'field_<ID>' for parsing option values'
         $blockName = $this->blockPrefix . 'options';
-        if ($template->blockExists($blockName . '_' . $fieldId)) {
-            $optionBlockName = $blockName . '_' . $fieldId;
-        } elseif ($template->blockExists($blockName . '_' . $fieldType)) {
-            $optionBlockName = $blockName . '_' . $fieldType;
+        if ($hasDefaultPlaceholder) {
+            $optionBlockName = 'field_' . $fieldId;
         } else {
-            $optionBlockName = $blockName;
+            if ($template->blockExists($blockName . '_' . $fieldId)) {
+                $optionBlockName = $blockName . '_' . $fieldId;
+            } elseif ($template->blockExists($blockName . '_' . $fieldType)) {
+                $optionBlockName = $blockName . '_' . $fieldType;
+            } else {
+                $optionBlockName = $blockName;
+            }
+        }
+
+        if (
+            !$template->blockExists($optionBlockName) &&
+            !in_array($fieldType, array('radio', 'checkboxGroup'))
+        ) {
+            return;
+        }
+
+        // Initialize the value and selected placeholder name
+        if ($hasDefaultPlaceholder) {
+            $valuePlaceholder  = $fieldId . '_VALUE';
+            $selectPlaceholder = 'SELECTED_' . $fieldId;
+        } else {
+            $valuePlaceholder  = 'CONTACT_FORM_FIELD_VALUE';
+            $selectPlaceholder = 'CONTACT_FORM_FIELD_SELECTED';
         }
 
         foreach ($options as $index => $option) {
+            if ($template->placeholderExists($fieldId . '_' . $index . '_VALUE')) {
+                $valuePlaceholder = $fieldId . '_' . $index . '_VALUE';
+            }
+            if ($template->placeholderExists('SELECTED_' . $fieldId . '_' . $index)) {
+                $selectPlaceholder = 'SELECTED_' . $fieldId . '_' . $index;
+            }
             // Parse form field value
             if (preg_match(static::USER_PROFILE_REGEXP, $option)) {
                 // Set form field value through User profile attribute
                 $valuePlaceholderBlock =
                     'contact_value_placeholder_block_' . $fieldId . '_' . $index;
                 $template->addBlock(
-                    'CONTACT_FORM_FIELD_VALUE',
+                    $valuePlaceholder,
                     $valuePlaceholderBlock,
                     $option
                 );
                 $template->touchBlock($valuePlaceholderBlock);
             } else {
-                $template->setVariable('CONTACT_FORM_FIELD_VALUE', $option);
+                $template->setVariable($valuePlaceholder, $option);
             }
 
-            $template->setVariable(array(
-                'CONTACT_FORM_FIELD_OPTION_KEY'      => $index,
-                'CONTACT_FORM_FIELD_OPTION_FIELD_ID' => $fieldId,
-            ));
+            if ($hasDefaultPlaceholder) {
+                $template->setVariable($fieldId . '_VALUE_ID', $index);
+            } else {
+                $template->setVariable(array(
+                    'CONTACT_FORM_FIELD_OPTION_KEY'      => $index,
+                    'CONTACT_FORM_FIELD_OPTION_FIELD_ID' => $fieldId,
+                ));
+            }
             // Set selected or checked attribute to the form field based on
             // post, get and default value of that form field
             $valueFromPost = '';
@@ -828,26 +914,35 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                 $isOptionInAccessAttr ||
                 $option == $fieldValue
             ) {
-                $template->setVariable('CONTACT_FORM_FIELD_SELECTED', $selectedText);
+                $template->setVariable($selectPlaceholder, $selectedText);
             }
-            $template->parse($optionBlockName);
+            if ($template->blockExists($optionBlockName)) {
+                $template->parse($optionBlockName);
+            }
         }
     }
 
     /**
      * Parse Input Field's value
      *
-     * @param \Cx\Core\Html\Sigma $template         Template object
-     * @param integer             $fieldId          Form Field ID
-     * @param string              $fieldValue       Form Field value
-     * @param string              $valuePlaceholder Value placeholder
+     * @param \Cx\Core\Html\Sigma $template              Template object
+     * @param integer             $fieldId               Form Field ID
+     * @param string              $fieldValue            Form Field value
+     * @param boolean             $hasDefaultPlaceholder If true form has direct {<ID>_VALUE} and
+     *                                                   {<ID>_LABEL} placeholders otherwise false
      */
     protected function parseInputFieldValue(
         \Cx\Core\Html\Sigma $template,
         $fieldId,
         $fieldValue,
-        $valuePlaceholder
+        $hasDefaultPlaceholder
     ) {
+        if ($hasDefaultPlaceholder) {
+            $valuePlaceholder = $fieldId . '_VALUE';
+        } else {
+            $valuePlaceholder = 'CONTACT_FORM_FIELD_VALUE';
+        }
+
         // Set default field value through User profile attribute
         if (preg_match(static::USER_PROFILE_REGEXP, $fieldValue)) {
             $valuePlaceholderBlock =
@@ -976,6 +1071,8 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
      *
      * @param \Cx\Core\Html\Sigma $template                  Template object
      * @param integer             $fieldId                   Field ID
+     * @param boolean             $hasDefaultPlaceholder     If true form has direct {<ID>_VALUE} an 
+     *                                                       {<ID>_LABEL} placeholders otherwise false
      * @param boolean             $restrictUpload2SingleFile If true Uploader accept only SingleFile
      *                                                       otherwise Uploader handle Multiple Files
      * @return string Uploader code
@@ -983,6 +1080,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
     protected function initUploader(
         \Cx\Core\Html\Sigma $template,
         $fieldId,
+        $hasDefaultPlaceholder,
         $restrictUpload2SingleFile = true
     ) {
         try {
@@ -1017,10 +1115,19 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
             $folderWidget = new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget(
                 $_SESSION->getTempPath() . '/'. $uploaderId
             );
-            $template->setVariable(array(
-                'CONTACT_UPLOADER_FOLDER_WIDGET' => $folderWidget->getXhtml(),
-                'CONTACT_FORM_FIELD_VALUE'       => $uploaderId,
-            ));
+
+            if ($hasDefaultPlaceholder) {
+                $placeholders = array(
+                    'CONTACT_UPLOADER_FOLDER_WIDGET_' . $fieldId => $folderWidget->getXhtml(),
+                    'CONTACT_UPLOADER_ID_' . $fieldId => $uploaderId,
+                );
+            } else {
+                $placeholders = array(
+                    'CONTACT_UPLOADER_FOLDER_WIDGET' => $folderWidget->getXhtml(),
+                    'CONTACT_FORM_FIELD_VALUE'       => $uploaderId,
+                );
+            }
+            $template->setVariable($placeholders);
 
             $folderWidgetId = $folderWidget->getId();
             return $uploader->getXHtml() . <<<CODE
