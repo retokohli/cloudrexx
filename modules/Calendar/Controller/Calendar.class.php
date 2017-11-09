@@ -778,7 +778,7 @@ UPLOADER;
             'TXT_'.$this->moduleLangVar.'_EVENT_TYPE'               => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE'],
             'TXT_'.$this->moduleLangVar.'_EVENT_TYPE_EVENT'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_EVENT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_TYPE_REDIRECT'      => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
-            'TXT_'.$this->moduleLangVar.'_EVENT_EVENT_DETAIL_VIEW'  => $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAIL_VIEW'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_DETAIL_VIEW'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAIL_VIEW'],
             'TXT_'.$this->moduleLangVar.'_EVENT_DETAIL_VIEW_LABEL'  => $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAIL_VIEW_LABEL'],
             'TXT_'.$this->moduleLangVar.'_EVENT_DESCRIPTION'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_DESCRIPTION'],
             'TXT_'.$this->moduleLangVar.'_EVENT_REDIRECT'           => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
@@ -791,7 +791,7 @@ UPLOADER;
 
             $this->moduleLangVar.'_EVENT_TYPE_EVENT'                => $eventId != 0 ? ($objEvent->type == 0 ? 'selected="selected"' : '') : '',
             $this->moduleLangVar.'_EVENT_TYPE_REDIRECT'             => $eventId != 0 ? ($objEvent->type == 1 ? 'selected="selected"' : '') : '',
-            $this->moduleLangVar.'_EVENT_SHOW_DETAIL_VIEW'          => $eventId  && $objEvent->showDetailView ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_EVENT_SHOW_DETAIL_VIEW'          => $eventId && $objEvent->showDetailView ? 'checked="checked"' : '',
             $this->moduleLangVar.'_EVENT_START_DATE'                => $eventStartDate,
             $this->moduleLangVar.'_EVENT_END_DATE'                  => $eventEndDate,
             $this->moduleLangVar.'_EVENT_PICTURE'                   => $objEvent->pic,
