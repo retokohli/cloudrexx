@@ -41,6 +41,12 @@
           <option value="1" {CALENDAR_EVENT_TYPE_REDIRECT}>{TXT_CALENDAR_EVENT_TYPE_REDIRECT}</option>
         </select>
       </div>
+      <div>
+        <label>{TXT_CALENDAR_EVENT_DETAIL_VIEW}</label>
+        <select class="form-control" id="event-type" name="type">
+          <input type="checkbox" name="show-detail-view" {CALENDAR_EVENT_SHOW_DETAIL_VIEW} value="1" />{TXT_CALENDAR_EVENT_DETAIL_VIEW_LABEL}</label>
+        </select>
+      </div>
       <div id="event-tabs">
         <ul style="{CALENDAR_HIDE_ON_SINGLE_LANG}">
           <!-- BEGIN eventTabMenuDescTab -->
