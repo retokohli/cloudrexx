@@ -402,7 +402,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
         if ($this->contactLib->arrForms[$formId]['useCustomStyle'] > 0) {
             $customStyleId = '_' . $formId;
         }
-        $this->template->setGlobalVariable($profileData);
+        $this->template->setGlobalVariable(contrexx_raw2xhtml($profileData));
         $this->template->setVariable(array(
             'CONTACT_FORM_ACTION' => $actionUrl->toString(false),
             'CONTACT_FORM_CUSTOM_STYLE_ID' => $customStyleId,
@@ -436,7 +436,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                 $this->template->placeholderExists($fieldId . '_VALUE') ||
                 $this->template->placeholderExists($fieldId . '_LABEL')
             ) {
-                $this->parseFormField($this->template, $fieldId, $arrField);
+                $this->parseFormField($this->template, $fieldId, $arrField, $profileData);
                 continue;
             } elseif ($this->template->blockExists($this->blockPrefix . $fieldId)) {
                 // check if the template-block contact_form_field_<ID> exists
@@ -455,10 +455,10 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                 $template = new \Cx\Core\Html\Sigma('.');
                 $template->setErrorHandling(PEAR_ERROR_DIE);
                 $template->setTemplate($content);
-                $template->setGlobalVariable($profileData);
+                $template->setGlobalVariable(contrexx_raw2xhtml($profileData));
                 $this->template->setVariable(
                     'CONTACT_FORM_FIELD',
-                    $this->parseFormField($template, $fieldId, $arrField, true)
+                    $this->parseFormField($template, $fieldId, $arrField, $profileData, true)
                 );
                 $this->template->parse($this->blockPrefix . 'list');
             }
@@ -558,16 +558,19 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
     /**
      * Parse Form Field
      *
-     * @param \Cx\Core\Html\Sigma  $template Template object
-     * @param integer              $fieldId  FormField ID
-     * @param array                $arrField Array of FormField values
-     * @param boolean              $return   If true return the template content otherwise not
+     * @param \Cx\Core\Html\Sigma $template    Template object
+     * @param integer             $fieldId     FormField ID
+     * @param array               $arrField    Array of FormField values
+     * @param array               $profileData Array of profile data
+     * @param boolean             $return      If true return the template content
+     *                                         otherwise not
      * @return string Parsed content of Form field
      */
     protected function parseFormField(
         \Cx\Core\Html\Sigma $template,
         $fieldId,
         $arrField,
+        $profileData,
         $return = false
     ) {
         global $_ARRAYLANG;
@@ -648,7 +651,8 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                     $fieldId,
                     $fieldType,
                     $options,
-                    $parseLegacyPlaceholder
+                    $parseLegacyPlaceholder,
+                    $profileData
                 );
                 break;
             case 'access_title':
@@ -688,7 +692,8 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                     $fieldId,
                     $fieldType,
                     $options,
-                    $parseLegacyPlaceholder
+                    $parseLegacyPlaceholder,
+                    $profileData
                 );
                 break;
             case 'recipient':
@@ -702,7 +707,8 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                     $fieldId,
                     $fieldType,
                     $options,
-                    $parseLegacyPlaceholder
+                    $parseLegacyPlaceholder,
+                    $profileData
                 );
                 break;
             case 'access_country':
@@ -737,6 +743,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                     $fieldType,
                     $options,
                     $parseLegacyPlaceholder,
+                    $profileData,
                     $fieldValue
                 );
                 break;
@@ -788,6 +795,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
      * @param array               $options                Field option values
      * @param boolean             $parseLegacyPlaceholder If true form has direct {<ID>_VALUE} and
      *                                                    {<ID>_LABEL} placeholders otherwise false
+*      @param array               $profileData            Array of profile data
      * @param string              $fieldValue             Field value
      */
     protected function parseFormFieldSelectOptions(
@@ -796,6 +804,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
         $fieldType,
         $options,
         $parseLegacyPlaceholder,
+        $profileData,
         $fieldValue = ''
     ) {
         if (empty($options)) {
@@ -906,8 +915,8 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                 );
             $isOptionInAccessAttr =
                 $isSpecialType &&
-                isset($template->_globalVariables[strtoupper($accessAttrId)]) &&
-                $option == $template->_globalVariables[strtoupper($accessAttrId)];
+                isset($profileData[strtoupper($accessAttrId)]) &&
+                $option == $profileData[strtoupper($accessAttrId)];
             if (
                 $isOptionInPost ||
                 $isOptionInGet ||
@@ -980,7 +989,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
 
         $objUser     = \FWUser::getFWUserObject()->objUser;
         $profileData = array(
-            'ACCESS_USER_EMAIL' => contrexx_raw2xhtml($objUser->getEmail())
+            'ACCESS_USER_EMAIL' => $objUser->getEmail()
         );
 
         $objUser->objAttribute->reset();
@@ -1036,7 +1045,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
 
             $attrPlaceholder =
                 'ACCESS_PROFILE_ATTRIBUTE_' . strtoupper($objAttribute->getId());
-            $profileData[$attrPlaceholder] = contrexx_raw2xhtml($value);
+            $profileData[$attrPlaceholder] = $value;
             $objUser->objAttribute->next();
         }
 
