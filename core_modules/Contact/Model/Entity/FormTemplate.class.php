@@ -587,7 +587,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
             $fieldType = $arrField['special_type'];
         }
 
-        $hasDefaultPlaceholder =
+        $parseLegacyPlaceholder =
             $template->placeholderExists($fieldId . '_VALUE') ||
             $template->placeholderExists($fieldId . '_LABEL');
 
@@ -595,7 +595,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
         // then check template have block like any one of the following formats:
         // 'contact_form_field_required' or 'contact_form_field_required_<Type>'
         // or 'contact_form_field_required_<ID> for required'
-        if (!$hasDefaultPlaceholder) {
+        if (!$parseLegacyPlaceholder) {
             $requiedBlock = $this->blockPrefix . 'required';
             if ($template->blockExists($requiedBlock . '_' . $fieldId)) {
                 $requiedBlockName = $requiedBlock . '_' . $fieldId;
@@ -613,7 +613,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
         }
 
         // Parse Form field Id and Label values.
-        if ($hasDefaultPlaceholder) {
+        if ($parseLegacyPlaceholder) {
             $template->setVariable($fieldId . '_LABEL', $fieldLabel);
         } else {
             $template->setVariable(array(
@@ -633,7 +633,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                     $checkboxSelected = 'checked="checked"';
                 }
 
-                if ($hasDefaultPlaceholder) {
+                if ($parseLegacyPlaceholder) {
                     $selectPlaceholder = 'SELECTED_' . $fieldId;
                 } else {
                     $selectPlaceholder = 'CONTACT_FORM_FIELD_CHECKBOX_SELECTED';
@@ -648,7 +648,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                     $fieldId,
                     $fieldType,
                     $options,
-                    $hasDefaultPlaceholder
+                    $parseLegacyPlaceholder
                 );
                 break;
             case 'access_title':
@@ -688,7 +688,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                     $fieldId,
                     $fieldType,
                     $options,
-                    $hasDefaultPlaceholder
+                    $parseLegacyPlaceholder
                 );
                 break;
             case 'recipient':
@@ -702,7 +702,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                     $fieldId,
                     $fieldType,
                     $options,
-                    $hasDefaultPlaceholder
+                    $parseLegacyPlaceholder
                 );
                 break;
             case 'access_country':
@@ -736,7 +736,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                     $fieldId,
                     $fieldType,
                     $options,
-                    $hasDefaultPlaceholder,
+                    $parseLegacyPlaceholder,
                     $fieldValue
                 );
                 break;
@@ -745,7 +745,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                 $this->uploaderCode .= $this->initUploader(
                     $template,
                     $fieldId,
-                    $hasDefaultPlaceholder
+                    $parseLegacyPlaceholder
                 );
                 break;
             case 'multi_file':
@@ -753,12 +753,12 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                 $this->uploaderCode .= $this->initUploader(
                     $template,
                     $fieldId,
-                    $hasDefaultPlaceholder,
+                    $parseLegacyPlaceholder,
                     false
                 );
                 break;
             case 'access_birthday':
-                if (!$hasDefaultPlaceholder) {
+                if (!$parseLegacyPlaceholder) {
                     $template->setVariable(
                         'CONTACT_FORM_FIELD_ADDITIONAL_CLASS',
                         'date'
@@ -769,7 +769,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                     $template,
                     $fieldId,
                     $fieldValue,
-                    $hasDefaultPlaceholder
+                    $parseLegacyPlaceholder
                 );
                 break;
         }
@@ -782,20 +782,20 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
     /**
      * Parse FormField's value
      *
-     * @param \Cx\Core\Html\Sigma $template              Template object
-     * @param integer             $fieldId               Field ID
-     * @param string              $fieldType             Field type
-     * @param array               $options               Field option values
-     * @param boolean             $hasDefaultPlaceholder If true form has direct {<ID>_VALUE} and
-     *                                                   {<ID>_LABEL} placeholders otherwise false
-     * @param string              $fieldValue            Field value
+     * @param \Cx\Core\Html\Sigma $template               Template object
+     * @param integer             $fieldId                Field ID
+     * @param string              $fieldType              Field type
+     * @param array               $options                Field option values
+     * @param boolean             $parseLegacyPlaceholder If true form has direct {<ID>_VALUE} and
+     *                                                    {<ID>_LABEL} placeholders otherwise false
+     * @param string              $fieldValue             Field value
      */
     protected function parseFormFieldSelectOptions(
         \Cx\Core\Html\Sigma $template,
         $fieldId,
         $fieldType,
         $options,
-        $hasDefaultPlaceholder,
+        $parseLegacyPlaceholder,
         $fieldValue = ''
     ) {
         if (empty($options)) {
@@ -820,7 +820,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
         // 'contact_form_field_options' or 'contact_form_field_options_<Type>'
         // or 'contact_form_field_options_<ID> or 'field_<ID>' for parsing option values'
         $blockName = $this->blockPrefix . 'options';
-        if ($hasDefaultPlaceholder) {
+        if ($parseLegacyPlaceholder) {
             $optionBlockName = 'field_' . $fieldId;
         } else {
             if ($template->blockExists($blockName . '_' . $fieldId)) {
@@ -840,7 +840,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
         }
 
         // Initialize the value and selected placeholder name
-        if ($hasDefaultPlaceholder) {
+        if ($parseLegacyPlaceholder) {
             $valuePlaceholder  = $fieldId . '_VALUE';
             $selectPlaceholder = 'SELECTED_' . $fieldId;
         } else {
@@ -870,7 +870,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                 $template->setVariable($valuePlaceholder, $option);
             }
 
-            if ($hasDefaultPlaceholder) {
+            if ($parseLegacyPlaceholder) {
                 $template->setVariable($fieldId . '_VALUE_ID', $index);
             } else {
                 $template->setVariable(array(
@@ -925,19 +925,19 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
     /**
      * Parse Input Field's value
      *
-     * @param \Cx\Core\Html\Sigma $template              Template object
-     * @param integer             $fieldId               Form Field ID
-     * @param string              $fieldValue            Form Field value
-     * @param boolean             $hasDefaultPlaceholder If true form has direct {<ID>_VALUE} and
-     *                                                   {<ID>_LABEL} placeholders otherwise false
+     * @param \Cx\Core\Html\Sigma $template               Template object
+     * @param integer             $fieldId                Form Field ID
+     * @param string              $fieldValue             Form Field value
+     * @param boolean             $parseLegacyPlaceholder If true form has direct {<ID>_VALUE} and
+     *                                                    {<ID>_LABEL} placeholders otherwise false
      */
     protected function parseInputFieldValue(
         \Cx\Core\Html\Sigma $template,
         $fieldId,
         $fieldValue,
-        $hasDefaultPlaceholder
+        $parseLegacyPlaceholder
     ) {
-        if ($hasDefaultPlaceholder) {
+        if ($parseLegacyPlaceholder) {
             $valuePlaceholder = $fieldId . '_VALUE';
         } else {
             $valuePlaceholder = 'CONTACT_FORM_FIELD_VALUE';
@@ -1071,7 +1071,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
      *
      * @param \Cx\Core\Html\Sigma $template                  Template object
      * @param integer             $fieldId                   Field ID
-     * @param boolean             $hasDefaultPlaceholder     If true form has direct {<ID>_VALUE} an 
+     * @param boolean             $parseLegacyPlaceholder    If true form has direct {<ID>_VALUE} an
      *                                                       {<ID>_LABEL} placeholders otherwise false
      * @param boolean             $restrictUpload2SingleFile If true Uploader accept only SingleFile
      *                                                       otherwise Uploader handle Multiple Files
@@ -1080,7 +1080,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
     protected function initUploader(
         \Cx\Core\Html\Sigma $template,
         $fieldId,
-        $hasDefaultPlaceholder,
+        $parseLegacyPlaceholder,
         $restrictUpload2SingleFile = true
     ) {
         try {
@@ -1116,7 +1116,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                 $_SESSION->getTempPath() . '/'. $uploaderId
             );
 
-            if ($hasDefaultPlaceholder) {
+            if ($parseLegacyPlaceholder) {
                 $placeholders = array(
                     'CONTACT_UPLOADER_FOLDER_WIDGET_' . $fieldId => $folderWidget->getXhtml(),
                     'CONTACT_UPLOADER_ID_' . $fieldId => $uploaderId,
