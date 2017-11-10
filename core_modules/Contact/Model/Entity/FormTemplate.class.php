@@ -402,7 +402,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
         if ($this->contactLib->arrForms[$formId]['useCustomStyle'] > 0) {
             $customStyleId = '_' . $formId;
         }
-        $this->template->setGlobalVariable(contrexx_raw2xhtml($profileData));
+        $this->template->setGlobalVariable($profileData);
         $this->template->setVariable(array(
             'CONTACT_FORM_ACTION' => $actionUrl->toString(false),
             'CONTACT_FORM_CUSTOM_STYLE_ID' => $customStyleId,
@@ -455,7 +455,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                 $template = new \Cx\Core\Html\Sigma('.');
                 $template->setErrorHandling(PEAR_ERROR_DIE);
                 $template->setTemplate($content);
-                $template->setGlobalVariable(contrexx_raw2xhtml($profileData));
+                $template->setGlobalVariable($profileData);
                 $this->template->setVariable(
                     'CONTACT_FORM_FIELD',
                     $this->parseFormField($template, $fieldId, $arrField, $profileData, true)
@@ -678,7 +678,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                     $arrOptions[] = $objAttribute->getName($this->langId);
                 }
                 // Options will be used for select input generation
-                $fieldValue = implode(',', $arrOptions);
+                $fieldValue = implode(',', contrexx_raw2xhtml($arrOptions));
             case 'select':
                 $options = explode(',', $fieldValue);
                 if ($arrField['is_required']) {
@@ -989,7 +989,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
 
         $objUser     = \FWUser::getFWUserObject()->objUser;
         $profileData = array(
-            'ACCESS_USER_EMAIL' => $objUser->getEmail()
+            'ACCESS_USER_EMAIL' => contrexx_raw2xhtml($objUser->getEmail())
         );
 
         $objUser->objAttribute->reset();
@@ -1045,7 +1045,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
 
             $attrPlaceholder =
                 'ACCESS_PROFILE_ATTRIBUTE_' . strtoupper($objAttribute->getId());
-            $profileData[$attrPlaceholder] = $value;
+            $profileData[$attrPlaceholder] = contrexx_raw2xhtml($value);
             $objUser->objAttribute->next();
         }
 
