@@ -791,7 +791,7 @@ UPLOADER;
 
             $this->moduleLangVar.'_EVENT_TYPE_EVENT'                => $eventId != 0 ? ($objEvent->type == 0 ? 'selected="selected"' : '') : '',
             $this->moduleLangVar.'_EVENT_TYPE_REDIRECT'             => $eventId != 0 ? ($objEvent->type == 1 ? 'selected="selected"' : '') : '',
-            $this->moduleLangVar.'_EVENT_SHOW_DETAIL_VIEW'          => $eventId && $objEvent->showDetailView ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_EVENT_SHOW_DETAIL_VIEW'          => !$eventId || $objEvent->showDetailView ? 'checked="checked"' : '',
             $this->moduleLangVar.'_EVENT_START_DATE'                => $eventStartDate,
             $this->moduleLangVar.'_EVENT_END_DATE'                  => $eventEndDate,
             $this->moduleLangVar.'_EVENT_PICTURE'                   => $objEvent->pic,
