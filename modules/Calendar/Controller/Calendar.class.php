@@ -746,6 +746,20 @@ UPLOADER;
         $eventStartDate = $this->format2userDateTime($startDate);
         $eventEndDate   = $this->format2userDateTime($endDate);
 
+        $attachLink = '';
+        if ($objEvent->attach) {
+            $attachName = contrexx_raw2xhtml(pathinfo($objEvent->attach, PATHINFO_FILENAME));
+            // TODO: create element using Html library
+            $attachLink = '<a href="'.$objEvent->attach.'" alt="'.$attachName.'" title="'.$attachName.'" target="_blank">'.$attachName.'</a>';
+        }
+
+        $placeMapLink = '';
+        if ($objEvent->place_map) {
+            $placeMapName = contrexx_raw2xhtml(pathinfo($objEvent->place_map, PATHINFO_FILENAME));
+            // TODO: create element using Html library
+            $placeMapLink= '<a href="'.$objEvent->place_map.'" alt="'.$placeMapName.'" title="'.$placeMapName.'" target="_blank">'.$placeMapName.'</a>';
+        }
+
         $this->_objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_EVENT'                    => $_ARRAYLANG['TXT_CALENDAR_EVENT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_DETAILS'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAILS'],
@@ -797,6 +811,7 @@ UPLOADER;
             $this->moduleLangVar.'_EVENT_PICTURE'                   => $objEvent->pic,
             $this->moduleLangVar.'_EVENT_PICTURE_THUMB'             => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'.thumb" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
             $this->moduleLangVar.'_EVENT_ATTACHMENT'                => $objEvent->attach,
+            $this->moduleLangVar.'_EVENT_ATTACHMENT_LINK'           => $attachLink,
             $this->moduleLangVar . '_EVENT_CATEGORIES' =>
                 $objCategoryManager->getCategoryDropdown(
                     array_flip($objEvent->category_ids),
@@ -809,6 +824,7 @@ UPLOADER;
             $this->moduleLangVar.'_EVENT_COUNTRY'                   => $objEvent->place_country,
             $this->moduleLangVar.'_EVENT_PLACE_WEBSITE'             => $objEvent->place_website,
             $this->moduleLangVar.'_EVENT_PLACE_MAP'                 => $objEvent->place_map,
+            $this->moduleLangVar.'_EVENT_PLACE_MAP_LINK'            => $placeMapLink,
             $this->moduleLangVar.'_EVENT_PLACE_LINK'                => $objEvent->place_link,
             $this->moduleLangVar.'_EVENT_PLACE_PHONE'               => $objEvent->place_phone,
             $this->moduleLangVar.'_EVENT_MAP'                       => $objEvent->google == 1 ? 'checked="checked"' : '',
