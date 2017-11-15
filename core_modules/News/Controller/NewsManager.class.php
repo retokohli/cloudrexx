@@ -3190,7 +3190,11 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
 
             if (!empty($this->arrSettings['news_feed_image'])) {
-                $channelImageUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
+                $channelImageUrl = \Cx\Core\Routing\Url::fromDocumentRoot(
+                    array(),
+                    '',
+                    $protocol
+                );
                 $channelImageUrl->setMode('backend');
                 $channelImageUrl->setPath(substr(
                     $this->arrSettings['news_feed_image'],
@@ -3198,12 +3202,13 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()
                     ) + 1
                 ));
-                $objRSSWriter->channelImageUrl = $channelImageUrl;
+                $objRSSWriter->channelImageUrl = $channelImageUrl->toString(true);
                 $objRSSWriter->channelImageTitle = $objRSSWriter->channelTitle;
                 $objRSSWriter->channelImageLink = $objRSSWriter->channelLink;
             }
-            $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
+            $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail']
+                . ' (' . $_CONFIG['coreAdminName'] . ')';
             // create rss feed
             $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
             foreach ($arrNews as $newsId => $arrNewsItem) {
@@ -3221,23 +3226,24 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 if (isset($arrNewsItem['teaser_frames'][0])) {
                     $itemUrl->setParam('teaserId', $arrNewsItem['teaser_frames'][0]);
                 }
+
+                if (empty($arrNewsItem['redirect'])) {
+                    $link = contrexx_raw2xml($itemUrl->toString());
+                } else {
+                    $link = contrexx_raw2xml($arrNewsItem['redirect']);
+                }
+
                 $objRSSWriter->addItem(
                     contrexx_raw2xml($arrNewsItem['title']),
-                    (empty($arrNewsItem['redirect'])) ?
-                        contrexx_raw2xml($itemUrl->toString()) :
-                        htmlspecialchars(
-                            $arrNewsItem['redirect'],
-                            ENT_QUOTES,
-                            CONTREXX_CHARSET
-                        ),
+                    $link,
                     contrexx_raw2xml($arrNewsItem['text']),
                     '',
                     $categories,
                     '',
                     '',
-                    '',
+                    array('guid' => contrexx_raw2xml($itemUrl->toString())),
                     $arrNewsItem['date'],
-                    array('url' => htmlspecialchars($arrNewsItem['source'], ENT_QUOTES, CONTREXX_CHARSET), 'title' => contrexx_raw2xml($arrNewsItem['title']))
+                    array('url' => contrexx_raw2xml($arrNewsItem['source']), 'title' => contrexx_raw2xml($arrNewsItem['title']))
                 );
             }
             $objRSSWriter->write();
@@ -3260,21 +3266,22 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 if (isset($arrNewsItem['teaser_frames'][0])) {
                     $itemUrl->setParam('teaserId', $arrNewsItem['teaser_frames'][0]);
                 }
+
+                if (empty($arrNewsItem['redirect'])) {
+                    $link = contrexx_raw2xml($itemUrl->toString());
+                } else {
+                    $link = contrexx_raw2xml($arrNewsItem['redirect']);
+                }
+
                 $objRSSWriter->addItem(
                     contrexx_raw2xml($arrNewsItem['title']),
-                    (empty($arrNewsItem['redirect'])) ?
-                        contrexx_raw2xml($itemUrl->toString()) :
-                        htmlspecialchars(
-                            $arrNewsItem['redirect'],
-                            ENT_QUOTES,
-                            CONTREXX_CHARSET
-                        ),
+                    $link,
                     '',
                     '',
                     $categories,
                     '',
                     '',
-                    '',
+                    array('guid' => contrexx_raw2xml($itemUrl->toString())),
                     $arrNewsItem['date']
                 );
             }
