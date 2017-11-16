@@ -610,6 +610,7 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
 
             if ($arrField['is_required']) {
                 $template->touchBlock($requiedBlockName);
+                $template->setVariable('CONTACT_FORM_FIELD_REQUIRED', 'required="required"');
             } else {
                 $template->hideBlock($requiedBlockName);
             }
