@@ -781,6 +781,93 @@ class FormTemplate extends \Cx\Model\Base\EntityBase {
                 break;
         }
 
+        // Parse form field html5 type 
+        $html5Type = '';
+        switch ($fieldType) {
+            case 'label':
+            case 'country':
+            case 'fieldset':
+            case 'horizontalLine':
+            case 'select':
+            case 'textarea':
+            case 'recipient':
+            case 'access_gender':
+            case 'access_country':
+                $html5Type = '';
+                break;
+
+            case 'checkboxGroup':
+                $html5Type = 'checkbox';
+                break;
+
+            case 'multi_file':
+                $html5Type = 'file';
+                break;
+
+            case 'access_email':
+                $html5Type = 'email';
+                break;
+
+            case 'access_title':
+            case 'access_firstname':
+            case 'access_lastname':
+            case 'access_company':
+            case 'access_address':
+            case 'access_city':
+            case 'access_zip':
+            case 'access_profession':
+            case 'access_interests':
+            case 'access_signature':
+            case 'datetime':
+                $html5Type = 'text';
+                break;
+            
+            case 'access_phone_office':
+            case 'access_phone_private':
+            case 'access_phone_mobile':
+            case 'access_phone_fax':
+                $html5Type = 'tel';
+                break;
+
+            case 'access_birthday':
+                $html5Type = 'date';
+                break;
+
+            case 'access_website':
+                $html5Type = 'url';
+                break;
+
+            case 'text':
+                switch ($arrField['check_type']) {
+                    case \Cx\Core_Modules\Contact\Controller\ContactLib::CHECK_TYPE_EMAIL:
+                        $html5Type = 'email';
+                        break 2;
+
+                    case \Cx\Core_Modules\Contact\Controller\ContactLib::CHECK_TYPE_URL:
+                        $html5Type = 'url';
+                        break 2;
+
+                    case \Cx\Core_Modules\Contact\Controller\ContactLib::CHECK_TYPE_INTEGER:
+                        $html5Type = 'number';
+                        break 2;
+
+                    default:
+                        break;
+                }
+                // intentionally no break here
+                // if the check_type is non of the above,
+                // then the HTML5 input type is 'text'
+
+            default:
+                $html5Type = $fieldType;
+                break;
+        }
+
+        $template->setVariable(
+            'CONTACT_FORM_FIELD_TYPE',
+            $html5Type 
+        );
+
         if ($return) {
             return $template->get();
         }

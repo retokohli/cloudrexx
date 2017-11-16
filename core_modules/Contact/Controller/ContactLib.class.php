@@ -60,6 +60,12 @@ class ContactLib
      */
     var $arrCheckTypes;
 
+    const CHECK_TYPE_ALL    = 1;
+    const CHECK_TYPE_EMAIL  = 2;
+    const CHECK_TYPE_URL    = 3;
+    const CHECK_TYPE_ALPHA  = 4;
+    const CHECK_TYPE_INTEGER= 5;
+
     /**
      * return the last recipient id
      *
@@ -202,30 +208,30 @@ class ContactLib
         global $objDatabase;
 
         $this->arrCheckTypes = array(
-            1   => array(
+            static::CHECK_TYPE_ALL   => array(
                 'regex' => '.*',
                 'name'  => 'TXT_CONTACT_REGEX_EVERYTHING'
             ),
-            2   => array(
+            static::CHECK_TYPE_EMAIL   => array(
                 'regex'     => \FWValidator::REGEX_EMAIL_JS,
                 'name'      => 'TXT_CONTACT_REGEX_EMAIL',
                 'modifiers' => 'i'
             ),
-            3   => array(
+            static::CHECK_TYPE_URL   => array(
                 'regex'     => \FWValidator::REGEX_URI_JS,
                 'name'      => 'TXT_CONTACT_REGEX_URL',
                 'modifiers' => 'i'
             ),
         /*a bit redundant, because we want a minimum of one non-space character.
           the query does a [spaceorchar]*[char]+[spaceorchar]* to ensure this. */
-            4   => array(
+            static::CHECK_TYPE_ALPHA   => array(
                 'regex'     => '^[a-zäàáüâûôñèöéè\ ]*'.
                                '[a-zäàáüâûôñèöéè]+'.
                                '[a-zäàáüâûôñèöéè\ ]*$',
                 'name'      => 'TXT_CONTACT_REGEX_TEXT',
                 'modifiers' => 'i'
             ),
-            5   => array(
+            static::CHECK_TYPE_INTEGER   => array(
                 'regex' => '^[0-9]*$',
                 'name'  => 'TXT_CONTACT_REGEX_NUMBERS'
             )
