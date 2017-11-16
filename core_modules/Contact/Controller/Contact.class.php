@@ -163,7 +163,8 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
                     }
                 } else { //found errors while validating
                     $formTemplate->setCaptcha($useCaptcha);
-                    return $this->showError($formTemplate->getTemplate());
+                    $page->setContent($this->showError($formTemplate->getTemplate()));
+                    return;
                 }
 
                 if (!$showThanks) {
@@ -214,7 +215,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
             $arrFormData['uploadedFiles'] = $this->_uploadFiles($arrFormData['fields']);
 
             foreach ($_POST as $key => $value) {
-                if ((($value == 0) || !empty($value)) && !in_array($key, array('Submit', 'submitContactForm', 'contactFormCaptcha'))) {
+                if ((($value === '0') || !empty($value)) && !in_array($key, array('Submit', 'submitContactForm', 'contactFormCaptcha'))) {
                     $id = intval(substr($key, 17));
                     if (isset($arrFormData['fields'][$id])) {
                         $key = $arrFormData['fields'][$id]['lang'][$_LANGID]['name'];
@@ -538,7 +539,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
                         break;
                 }
 
-                if ($isRequired && ($value != 0) && empty($value)) {
+                if ($isRequired && ($value !== '0') && empty($value)) {
                     $error = true;
                 } elseif (empty($value)) {
                     continue;
