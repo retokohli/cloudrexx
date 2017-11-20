@@ -773,6 +773,7 @@
     }
     cx.ready(function() {
         cx.jQuery("#calendar_event_invite_crm_memberships").chosen({ width: '250px' });
+        cx.jQuery("#calendar_event_excluded_crm_memberships").chosen({ width: '250px' });
     });
 </script>
 <form action="index.php?cmd={CALENDAR_MODULE_NAME}&act=modify_event" id="formModifyEvent" name="formModifyEvent" method="post" onsubmit="selectAll(document.formModifyEvent.elements['selectedGroups[]']); {CALENDAR_EVENT_ONSUBMIT_PUBLICATIONS} return formCheck();">
@@ -1280,13 +1281,28 @@
                 </td>
             </tr>
             <tr class="row2">
-                <td width="180" valign="top">{TXT_CALENDAR_CRM_MEMBERSHIPS}</td>
-                <td colspan="2">
+                <td width="180" valign="top">
+                    {TXT_CALENDAR_CRM_MEMBERSHIPS}
+                    <span class="icon-info tooltip-trigger"></span>
+                    <span class="tooltip-message">{TXT_CALENDAR_CRM_MEMBERSHIPS_TOOLTIP}</span>
+                </td>
+                <td>
+                    {TXT_CALENDAR_CRM_INVITED_MEMBERSHIPS}
                     <div>
-                        <select tabindex="7" data-placeholder="{TXT_CALENDAR_CHOOSE_CRM_MEMBERSHIPS}" name="calendar_event_invite_crm_memberships[]" id="calendar_event_invite_crm_memberships" size="1" multiple autocomplete="off">
+                        <select data-placeholder="{TXT_CALENDAR_CHOOSE_CRM_MEMBERSHIPS}" name="calendar_event_invite_crm_memberships[]" id="calendar_event_invite_crm_memberships" size="1" multiple autocomplete="off">
                             <!-- BEGIN calendar_event_invite_crm_membership -->
                             <option value="{CRM_MEMBERSHIP_ID}" {CRM_MEMBERSHIP_SELECTED}>{CRM_MEMBERSHIP_VALUE}</option>
                             <!-- END calendar_event_invite_crm_membership -->
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    {TXT_CALENDAR_CRM_EXCLUDED_MEMBERSHIPS}
+                    <div>
+                        <select data-placeholder="{TXT_CALENDAR_CHOOSE_CRM_MEMBERSHIPS}" name="calendar_event_excluded_crm_memberships[]" id="calendar_event_excluded_crm_memberships" size="1" multiple autocomplete="off">
+                            <!-- BEGIN calendar_event_excluded_crm_membership -->
+                            <option value="{CRM_MEMBERSHIP_ID}" {CRM_MEMBERSHIP_SELECTED}>{CRM_MEMBERSHIP_VALUE}</option>
+                            <!-- END calendar_event_excluded_crm_membership -->
                         </select>
                     </div>
                 </td>

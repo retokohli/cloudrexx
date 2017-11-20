@@ -175,6 +175,11 @@ class Event extends \Cx\Model\Base\EntityBase {
     protected $invitedCrmGroups;
 
     /**
+     * @var string $excludedCrmGroups
+     */
+    protected $excludedCrmGroups;
+
+    /**
      * @var text $invitedMails
      */
     protected $invitedMails;
@@ -950,6 +955,26 @@ class Event extends \Cx\Model\Base\EntityBase {
     public function getInvitedCrmGroups()
     {
         return $this->invitedCrmGroups;
+    }
+
+    /**
+     * Set excludedCrmGroups
+     *
+     * @param string $invitedCrmGroups
+     */
+    public function setExcludedCrmGroups($excludedCrmGroups)
+    {
+        $this->excludedCrmGroups = $excludedCrmGroups;
+    }
+
+    /**
+     * Get excludedCrmGroups
+     *
+     * @return string $excludedCrmGroups
+     */
+    public function getExcludedCrmGroups()
+    {
+        return $this->excludedCrmGroups;
     }
 
     /**
