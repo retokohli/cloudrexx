@@ -609,7 +609,11 @@ class NewsletterManager extends NewsletterLib
         $arrAttachment = array();
         $attachmentNr = 0;
         $arrAssociatedLists = array();
-        $crmMembershipFilter = array('include' => array(), 'exclude' => array());
+        $crmMembershipFilter = array(
+            'associate' => array(),
+            'include' => array(),
+            'exclude' => array()
+        );
         $arrAssociatedGroups = array();
         $status = true;
 
@@ -802,6 +806,14 @@ class NewsletterManager extends NewsletterLib
             }
         }
 
+        // get the Crm membership association
+        if (isset($_POST['newsletter_mail_crm_memberships'])) {
+            if (isset($_POST['newsletter_mail_crm_memberships']['associate'])) {
+                foreach ($_POST['newsletter_mail_crm_memberships']['associate'] as $crmMembershipId) {
+                    $crmMembershipFilter['associate'][] = intval($crmMembershipId);
+                }
+            }
+        }
         // get the Crm membership filter
         if (isset($_POST['newsletter_mail_crm_filter_memberships'])) {
             if (isset($_POST['newsletter_mail_crm_filter_memberships']['include'])) {
@@ -875,6 +887,7 @@ class NewsletterManager extends NewsletterLib
                 $this->_prepareNewsletterLinksForStore($mailId);
 
                 $this->_setMailLists($mailId, $arrAssociatedLists, $mailSendDate);
+                $this->setCrmMembershipFilter($mailId, $crmMembershipFilter['associate'], 'associate', $mailSendDate);
                 $this->setCrmMembershipFilter($mailId, $crmMembershipFilter['include'], 'include', $mailSendDate);
                 $this->setCrmMembershipFilter($mailId, $crmMembershipFilter['exclude'], 'exclude', $mailSendDate);
                 $this->setMailGroups($mailId, $arrAssociatedGroups, $mailSendDate);
@@ -992,10 +1005,12 @@ class NewsletterManager extends NewsletterLib
         // parse Crm membership filter
         $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
         $crmMemberships = array_keys($objCrmLibrary->getMemberships());
+        $objCrmLibrary->getMembershipDropdown($this->_objTpl, $crmMemberships, 'crmMembership', $crmMembershipFilter['associate']);
         $objCrmLibrary->getMembershipDropdown($this->_objTpl, $crmMemberships, 'crmMembershipFilterInclude', $crmMembershipFilter['include']);
         $objCrmLibrary->getMembershipDropdown($this->_objTpl, $crmMemberships, 'crmMembershipFilterExclude', $crmMembershipFilter['exclude']);
         $this->_objTpl->setVariable(array(
             'TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER'          => $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER'],
+            'TXT_NEWSLETTER_CRM_MEMBERSHIP'                 => $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP'],
             'TXT_NEWSLETTER_CHOOSE_CRM_MEMBERSHIPS'         => $_ARRAYLANG['TXT_NEWSLETTER_CHOOSE_CRM_MEMBERSHIPS'],
             'TXT_NEWSLETTER_CRM_MEMBERSHIP_INCLUDE_TXT'     => $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_INCLUDE_TXT'],
             'TXT_NEWSLETTER_CRM_MEMBERSHIP_EXCLUDE_TXT'     => $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_EXCLUDE_TXT'],
@@ -1187,7 +1202,11 @@ class NewsletterManager extends NewsletterLib
             DBPREFIX, $mail
         );
         $data = $objDatabase->Execute($query);
-        $list = array('include' => array(), 'exclude' => array());
+        $list = array(
+            'associate' => array(),
+            'include' => array(),
+            'exclude' => array()
+        );
         if ($data !== false) {
             while (!$data->EOF) {
                 $list[$data->fields['type']][] =  $data->fields['membership_id'];
@@ -1677,6 +1696,7 @@ class NewsletterManager extends NewsletterLib
      * @param       array $membershipFilter
      * @param       string  $type
      * @param       string $mailSentDate sent date
+     * @return      boolean true if modification was made, else otherwise
      */
     protected function setCrmMembershipFilter($mailID, $membershipFilter, $type, $mailSentDate) {
         global $objDatabase;
@@ -1730,6 +1750,7 @@ class NewsletterManager extends NewsletterLib
             );
             $objDatabase->Execute($query);
         }
+        return true;
     }
 
     /**
@@ -2816,6 +2837,24 @@ class NewsletterManager extends NewsletterLib
                                       FROM `%1$smodule_crm_customer_membership` AS `acrm_membership_exclude` 
                                      WHERE `acrm_membership_exclude`.`membership_id` IN ('.join(',', $crmMembershipFilter['exclude']).'))');
 
+        // select recipients based on selected crm memberships
+        $crmMembershipQuery = '';
+        if($crmMembershipFilter['associate']){
+            $crmMembershipQuery = 'UNION DISTINCT SELECT DISTINCT `email`.`email`' .($distinctByType ? ', "'.self::USER_TYPE_CRM.'" AS `type`' : '').'
+                                    FROM `contrexx_module_crm_contacts` AS contact
+                                    INNER JOIN `contrexx_module_crm_customer_membership` membership ON `membership`.`contact_id` = `contact`.`id`
+                                    INNER JOIN `contrexx_module_crm_customer_contact_emails` AS email ON `email`.`contact_id` = `contact`.`id`
+                                    WHERE 
+                                    
+                                    `membership`.`membership_id` IN (' . join(',', $crmMembershipFilter['associate']) . ')' .
+
+                                    (!$crmMembershipFilter['exclude']
+                                        ? ''
+                                        : ' AND `membership`.`membership_id` NOT IN (' . join(',', $crmMembershipFilter['exclude']) . ')' ).
+
+                                    ' AND `email`.`is_primary` = \'1\'';
+        }
+
         return sprintf(
                     // note: intentionally enclosed the following strings in a string to include line breaks
                     //
@@ -2825,7 +2864,8 @@ class NewsletterManager extends NewsletterLib
                     // 3. access users of one of the selected user groups
                     "$accessUserRecipientsQuery
                     $nativeRecipientsQuery
-                    $userGroupRecipientsQuery",
+                    $userGroupRecipientsQuery
+                    $crmMembershipQuery",
 
                     DBPREFIX, $mailId
         );
@@ -2977,8 +3017,12 @@ class NewsletterManager extends NewsletterLib
         $query = "
             SELECT (CASE WHEN `s`.`type` = '".self::USER_TYPE_NEWSLETTER."'
                          THEN `nu`.`id`
-                         ELSE `au`.`id`
-                                        END) AS `id`,
+                         ELSE (
+                         	CASE WHEN `s`.`type` = '".self::USER_TYPE_CRM."'
+                         	THEN `crm`.`contact_id`
+                         	ELSE `au`.`id`
+                        END)
+                        END) AS `id`,
                     `s`.email,
                     `s`.type,
                     # this code is used for newsletter browser view
@@ -2990,6 +3034,9 @@ class NewsletterManager extends NewsletterLib
                 ON `nu`.`email` = `s`.`email`
                AND `s`.`type` = '".self::USER_TYPE_NEWSLETTER."'
 
+        LEFT JOIN `".DBPREFIX."module_crm_customer_contact_emails` AS `crm`
+                ON `crm`.`email` = `s`.`email`
+               AND `s`.`type` = '".self::USER_TYPE_CRM."'
 
          LEFT JOIN `".DBPREFIX."access_users` AS `au`
                 ON `au`.`email` = `s`.`email`
@@ -2997,8 +3044,11 @@ class NewsletterManager extends NewsletterLib
 
              WHERE `s`.`newsletter` = ".intval($id)."
                AND `s`.`sendt` = 0
-               AND (`au`.`email` IS NOT NULL OR `nu`.`email` IS NOT NULL)";
-
+               AND (
+                `au`.`email` IS NOT NULL 
+                OR `nu`.`email` IS NOT NULL
+                OR `crm`.`email` IS NOT NULL
+               )";
         $res = $objDatabase->SelectLimit($query, $amount, 0);
         return new DBIterator($res);
     }
@@ -3290,7 +3340,9 @@ class NewsletterManager extends NewsletterLib
                             if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."module_newsletter_tmp_sending` WHERE `email` ='".addslashes($TargetEmail)."'") !== false) {
                                 switch ($type) {
                                     case self::USER_TYPE_CORE:
+                                    case self::USER_TYPE_CRM:
                                         // do nothing with system users
+                                        // crm users should also not be deactivated
                                         break;
 
                                     case self::USER_TYPE_ACCESS:
@@ -3309,7 +3361,9 @@ class NewsletterManager extends NewsletterLib
                         case 'delete':
                             switch ($type) {
                                 case self::USER_TYPE_CORE:
+                                case self::USER_TYPE_CRM:
                                     // do nothing with system users
+                                    // crm users should also not be deactivated
                                     break;
 
                                 case self::USER_TYPE_ACCESS:
@@ -3414,6 +3468,10 @@ class NewsletterManager extends NewsletterLib
     {
         global $_CONFIG;
 
+        // crm users can not be edited by the user itself
+        if($type == self::USER_TYPE_CORE) {
+            return '';
+        }
         $link = 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET;
 
         switch ($type) {
@@ -3767,6 +3825,26 @@ class NewsletterManager extends NewsletterLib
                 $arrUserData['birthday']        = $objUser->getProfileAttribute('birthday');
                 break;
 
+            case self::USER_TYPE_CRM:
+                $crmUser = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+                $crmUser->load($id);
+                // todo fill out all fields
+                $arrUserData['email']           = $crmUser->__get('email');
+                $arrUserData['website']         = '';
+                $arrUserData['salutation']      = $crmUser->__get('contact_gender');
+                $arrUserData['lastname']        = $crmUser->__get('family_name');
+                $arrUserData['firstname']       = $crmUser->__get('customerName');
+                $arrUserData['company']         = '';
+                $arrUserData['address']         = '';
+                $arrUserData['zip']             = '';
+                $arrUserData['city']            = '';
+                $arrUserData['country_id']      = '';
+                $arrUserData['phone_office']    = $crmUser->__get('phone');
+                $arrUserData['phone_private']   = $crmUser->__get('phone');
+                $arrUserData['phone_mobile']    = $crmUser->__get('phone');
+                $arrUserData['fax']             = '';
+                $arrUserData['birthday']        = '';
+                break;
             case self::USER_TYPE_NEWSLETTER:
             default:
                 $query = "
@@ -3818,7 +3896,10 @@ class NewsletterManager extends NewsletterLib
     {
         global $_ARRAYLANG, $_CONFIG;
 
-        if ($type == self::USER_TYPE_CORE) {
+        if (
+            $type == self::USER_TYPE_CORE ||
+            $type == self::USER_TYPE_CRM
+        ) {
             // recipients that will receive the newsletter through the selection of their user group don't have a profile
             return '';
         }
