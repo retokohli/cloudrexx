@@ -532,7 +532,7 @@ EOF;
         $term   = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
         $from   = isset($_GET['from']) ? contrexx_input2raw($_GET['from']) : '';
         $till   = isset($_GET['till']) ? contrexx_input2raw($_GET['till']) : '';
-        $catid  = isset($_GET['catid']) ? contrexx_input2raw($_GET['catid']) : '';
+        $catid  = isset($_GET['catid']) ? intval($_GET['catid']) : '';
         $search = isset($_GET['search']) ? contrexx_input2raw($_GET['search']) : '';
         $cmd    = isset($_GET['cmd']) ? contrexx_input2raw($_GET['cmd']) : '';
         $this->_objTpl->setGlobalVariable(array(
@@ -546,11 +546,13 @@ EOF;
             $this->moduleLangVar.'_SEARCH_TERM' => contrexx_raw2xhtml($term),
             $this->moduleLangVar.'_SEARCH_FROM' =>  contrexx_raw2xhtml($from),
             $this->moduleLangVar.'_SEARCH_TILL' => contrexx_raw2xhtml($till),
-            $this->moduleLangVar.'_SEARCH_CATEGORIES' =>  $objCategoryManager->getCategoryDropdown(intval($catid), 1),
+            $this->moduleLangVar.'_SEARCH_CATEGORIES' =>
+                $objCategoryManager->getCategoryDropdown(
+                    array($catid => null),
+                    CalendarCategoryManager::DROPDOWN_TYPE_FILTER),
             $this->moduleLangVar.'_JAVASCRIPT'  => $javascript
         ));
          self::showThreeBoxes();
-
         if($this->objEventManager->countEvents > $this->arrSettings['numPaging'] && (isset($_GET['search']) || $_GET['cmd'] == 'list' || $_GET['cmd'] == 'eventlist' || $_GET['cmd'] == 'archive')) {
             $pagingCmd = !empty($cmd) ? '&amp;cmd='.  contrexx_raw2xhtml($cmd) : '';
             $pagingCategory = !empty($catid) ? '&amp;catid='.intval($catid) : '';
@@ -616,30 +618,23 @@ EOF;
         global $_ARRAYLANG, $_CORELANG, $_LANGID;
         \JS::activate('cx');
         \JS::activate('jqueryui');
-
+        \JS::activate('chosen');
         \JS::registerJS('modules/Calendar/View/Script/Frontend.js');
-
         $this->getFrontendLanguages();
         $this->getSettings();
         $this->_objTpl->setTemplate($this->pageContent, true, true);
-
         $showFrom = true;
-
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent();
         $isEventLoaded = false;
-
         if (isset($_POST['submitFormModifyEvent'])) {
             $arrData = array();
             $arrData = $_POST;
-
             $arrData['access'] = 0;
             $arrData['priority'] = 3;
-
             if($objEvent->save($arrData)) {
                 $showFrom = false;
                 $this->_objTpl->hideBlock('calendarEventModifyForm');
                 $this->_objTpl->touchBlock('calendarEventOkMessage');
-
                 // refresh event data after save
                 $objEvent->get($objEvent->id);
                 $objEvent->getData();
@@ -751,6 +746,20 @@ UPLOADER;
         $eventStartDate = $this->format2userDateTime($startDate);
         $eventEndDate   = $this->format2userDateTime($endDate);
 
+        $attachLink = '';
+        if ($objEvent->attach) {
+            $attachName = contrexx_raw2xhtml(pathinfo($objEvent->attach, PATHINFO_FILENAME));
+            // TODO: create element using Html library
+            $attachLink = '<a href="'.$objEvent->attach.'" alt="'.$attachName.'" title="'.$attachName.'" target="_blank">'.$attachName.'</a>';
+        }
+
+        $placeMapLink = '';
+        if ($objEvent->place_map) {
+            $placeMapName = contrexx_raw2xhtml(pathinfo($objEvent->place_map, PATHINFO_FILENAME));
+            // TODO: create element using Html library
+            $placeMapLink= '<a href="'.$objEvent->place_map.'" alt="'.$placeMapName.'" title="'.$placeMapName.'" target="_blank">'.$placeMapName.'</a>';
+        }
+
         $this->_objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_EVENT'                    => $_ARRAYLANG['TXT_CALENDAR_EVENT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_DETAILS'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAILS'],
@@ -783,6 +792,8 @@ UPLOADER;
             'TXT_'.$this->moduleLangVar.'_EVENT_TYPE'               => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE'],
             'TXT_'.$this->moduleLangVar.'_EVENT_TYPE_EVENT'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_EVENT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_TYPE_REDIRECT'      => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_DETAIL_VIEW'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAIL_VIEW'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_DETAIL_VIEW_LABEL'  => $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAIL_VIEW_LABEL'],
             'TXT_'.$this->moduleLangVar.'_EVENT_DESCRIPTION'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_DESCRIPTION'],
             'TXT_'.$this->moduleLangVar.'_EVENT_REDIRECT'           => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
             'TXT_'.$this->moduleLangVar.'_PLACE_DATA_DEFAULT'       => $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_DEFAULT'],
@@ -794,12 +805,17 @@ UPLOADER;
 
             $this->moduleLangVar.'_EVENT_TYPE_EVENT'                => $eventId != 0 ? ($objEvent->type == 0 ? 'selected="selected"' : '') : '',
             $this->moduleLangVar.'_EVENT_TYPE_REDIRECT'             => $eventId != 0 ? ($objEvent->type == 1 ? 'selected="selected"' : '') : '',
+            $this->moduleLangVar.'_EVENT_SHOW_DETAIL_VIEW'          => !$eventId || $objEvent->showDetailView ? 'checked="checked"' : '',
             $this->moduleLangVar.'_EVENT_START_DATE'                => $eventStartDate,
             $this->moduleLangVar.'_EVENT_END_DATE'                  => $eventEndDate,
             $this->moduleLangVar.'_EVENT_PICTURE'                   => $objEvent->pic,
             $this->moduleLangVar.'_EVENT_PICTURE_THUMB'             => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'.thumb" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
             $this->moduleLangVar.'_EVENT_ATTACHMENT'                => $objEvent->attach,
-            $this->moduleLangVar.'_EVENT_CATEGORIES'                => $objCategoryManager->getCategoryDropdown(intval($objEvent->catId), 2),
+            $this->moduleLangVar.'_EVENT_ATTACHMENT_LINK'           => $attachLink,
+            $this->moduleLangVar . '_EVENT_CATEGORIES' =>
+                $objCategoryManager->getCategoryDropdown(
+                    array_flip($objEvent->category_ids),
+                    CalendarCategoryManager::DROPDOWN_TYPE_DEFAULT),
             $this->moduleLangVar.'_EVENT_LINK'                      => $objEvent->link,
             $this->moduleLangVar.'_EVENT_PLACE'                     => $objEvent->place,
             $this->moduleLangVar.'_EVENT_STREET'                    => $objEvent->place_street,
@@ -808,6 +824,7 @@ UPLOADER;
             $this->moduleLangVar.'_EVENT_COUNTRY'                   => $objEvent->place_country,
             $this->moduleLangVar.'_EVENT_PLACE_WEBSITE'             => $objEvent->place_website,
             $this->moduleLangVar.'_EVENT_PLACE_MAP'                 => $objEvent->place_map,
+            $this->moduleLangVar.'_EVENT_PLACE_MAP_LINK'            => $placeMapLink,
             $this->moduleLangVar.'_EVENT_PLACE_LINK'                => $objEvent->place_link,
             $this->moduleLangVar.'_EVENT_PLACE_PHONE'               => $objEvent->place_phone,
             $this->moduleLangVar.'_EVENT_MAP'                       => $objEvent->google == 1 ? 'checked="checked"' : '',
@@ -1368,7 +1385,11 @@ UPLOADER;
             $this->moduleLangVar.'_SEARCH_TERM' => isset($_GET['term']) ? contrexx_input2xhtml($_GET['term']) : '',
             $this->moduleLangVar.'_SEARCH_FROM' => isset($_GET['from']) ? contrexx_input2xhtml($_GET['from']) : '',
             $this->moduleLangVar.'_SEARCH_TILL' => isset($_GET['till']) ? contrexx_input2xhtml($_GET['till']) : '',
-            $this->moduleLangVar.'_SEARCH_CATEGORIES' =>  $objCategoryManager->getCategoryDropdown((isset($_GET['catid']) ? intval($_GET['catid']) : 0), 1)
+            $this->moduleLangVar.'_SEARCH_CATEGORIES' =>
+                $objCategoryManager->getCategoryDropdown(
+                    isset($_GET['catid'])
+                        ? array(intval($_GET['catid']) => null) : [],
+                    CalendarCategoryManager::DROPDOWN_TYPE_FILTER)
         ));
 
         if(isset($this->categoryId)) {
@@ -1593,7 +1614,10 @@ JAVASCRIPT;
             "TXT_{$this->moduleLangVar}_ALL_CAT" => $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
             "{$this->moduleLangVar}_BOX"	 => $calendarbox,
             "{$this->moduleLangVar}_JAVA_SCRIPT" => $objEventManager->getCalendarBoxJS(),
-            "{$this->moduleLangVar}_CATEGORIES"	 => $objCategoryManager->getCategoryDropdown($catid, 1),
+            "{$this->moduleLangVar}_CATEGORIES"	 =>
+                $objCategoryManager->getCategoryDropdown(
+                    array($catid => null),
+                    CalendarCategoryManager::DROPDOWN_TYPE_FILTER),
         ));
     }
 

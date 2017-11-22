@@ -168,8 +168,8 @@ class MediaBrowser extends EntityBase
             if (is_int($key)) {
                 $optionsString .= $value . ' ';
             } else {
-                if (in_array($key, self::$optionValues)){
-                    $key = 'data-cx-Mb-'.$key;
+                if (in_array($key, self::$optionValues)) {
+                    $key = 'data-cx-Mb-' . $key;
                 }
                 $optionsString .= $key . '="' . $value . '" ';
             }
@@ -190,7 +190,7 @@ class MediaBrowser extends EntityBase
         $button->loadTemplateFile($this->cx->getCodeBaseCoreModulePath() . '/MediaBrowser/View/Template/MediaBrowserButton.html');
         $button->setVariable(array(
             'MEDIABROWSER_BUTTON_NAME' => $buttonName,
-            'MEDIABROWSER_BUTTON_OPTIONS' =>  $this->getOptionsString()
+            'MEDIABROWSER_BUTTON_OPTIONS' => $this->getOptionsString()
         ));
         return $button->get();
     }
@@ -207,9 +207,8 @@ class MediaBrowser extends EntityBase
         return $this;
     }
 
-
     protected function addOption($optionName, $value) {
-        $option  = $this->getOption($optionName);
+        $option = $this->getOption($optionName);
         $optionValues = explode(' ', $option);
         if (!in_array($value, $optionValues)) {
             $optionValues[] = $value;
