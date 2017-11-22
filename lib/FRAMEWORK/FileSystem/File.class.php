@@ -112,7 +112,6 @@ class File implements FileInterface
             $ftpUserId = null;
         }
 
-
         // check if the file we're going to work with is owned by the FTP user
         if ($fileOwnerUserId == $ftpUserId) {
             $this->accessMode = self::FTP_ACCESS;
@@ -396,17 +395,15 @@ class File implements FileInterface
      */
     public function delete()
     {
+        $objFile = null;
+
         // use PHP
         if (   $this->accessMode == self::PHP_ACCESS
             || $this->accessMode == self::UNKNOWN_ACCESS
         ) {
             try {
-                $objFilePhp = new FileSystemFile($this->file);
-                $objFilePhp->delete();
-                clearstatcache(true, $objFilePhp->getAbsoluteFilePath());
-                if (!file_exists($objFilePhp->getAbsoluteFilePath())) {
-                    return true;
-                }
+                $objFile = new FileSystemFile($this->file);
+                $objFile->delete();
             } catch (FileSystemFileException $e) {
                 \DBG::msg('FileSystemFile: '.$e->getMessage());
             }
@@ -417,18 +414,21 @@ class File implements FileInterface
             || $this->accessMode == self::UNKNOWN_ACCESS
         ) {
             try {
-                $objFileFtp = new FTPFile($this->file);
-                $objFileFtp->delete();
-                clearstatcache(true, $objFileFtp->getAbsoluteFilePath());
-                if (!file_exists($objFileFtp->getAbsoluteFilePath())) {
-                    return true;
-                }
+                $objFile = new FTPFile($this->file);
+                $objFile->delete();
             } catch (FTPFileException $e) {
                 \DBG::msg('FTPFile: '.$e->getMessage());
             }
         }
 
-        throw new FileSystemException('File: Unable to delete file '.$this->file.'!');
+        if ($objFile) {
+            clearstatcache(true, $objFile->getAbsoluteFilePath());
+        }
+        if ($objFile && file_exists($objFile->getAbsoluteFilePath())) {
+            throw new FileSystemException('File: Unable to delete file '.$this->file.'!');
+        }
+
+        return true;
     }
 }
 
