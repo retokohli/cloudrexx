@@ -63,7 +63,7 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
      *
      * @return array
      */
-    public function getFileList($directory, $recursive = false)
+    public function getFileList($directory, $recursive = true)
     {
         $fileList = array();
 

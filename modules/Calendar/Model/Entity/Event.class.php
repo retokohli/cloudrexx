@@ -425,9 +425,9 @@ class Event extends \Cx\Model\Base\EntityBase {
     protected $registrations;
 
     /**
-     * @var Cx\Modules\Calendar\Model\Entity\Category
+     * @var \Doctrine\Common\Collections\Collection
      */
-    protected $category;
+    protected $categories;
 
     /**
      * @var Cx\Modules\Calendar\Model\Entity\RegistrationForm
@@ -438,8 +438,10 @@ class Event extends \Cx\Model\Base\EntityBase {
     {
         $this->eventFields = new \Doctrine\Common\Collections\ArrayCollection();
         $this->registrations = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->categories = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->invite = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+
     /**
      * Get id
      *
@@ -1935,6 +1937,16 @@ class Event extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Add invites
+     *
+     * @param Cx\Modules\Calendar\Model\Entity\Invite $invite
+     */
+    public function addInvite(\Cx\Modules\Calendar\Model\Entity\Invite $invite)
+    {
+        $this->invite[] = $invite;
+    }
+
+    /**
      * Get invite
      *
      * @return Cx\Modules\Calendar\Model\Entity\Invite
@@ -2006,23 +2018,33 @@ class Event extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set category
-     *
-     * @param Cx\Modules\Calendar\Model\Entity\Category $category
+     * Set categories
+     * @param \Doctrine\Common\Collections\Collection $categories
+     * @author Reto Kohli <reto.kohli@comvation.com>
      */
-    public function setCategory(\Cx\Modules\Calendar\Model\Entity\Category $category)
+    public function setCategories(\Doctrine\Common\Collections\Collection $categories)
     {
-        $this->category = $category;
+        $this->categories = $categories;
     }
 
     /**
-     * Get category
-     *
-     * @return Cx\Modules\Calendar\Model\Entity\Category $category
+     * Get categories
+     * @return \Doctrine\Common\Collections\Collection
+     * @author Reto Kohli <reto.kohli@comvation.com>
      */
-    public function getCategory()
+    public function getCategories()
     {
-        return $this->category;
+        return $this->categories;
+    }
+
+    /**
+     * Add a category
+     * @param Category $category Category to add
+     * @author Michael Ritter <michael.ritter@cloudrexx.com>
+     */
+    public function addCategories($category) {
+        $category->addEvents($this);
+        $this->categories[] = $category;
     }
 
     /**
@@ -2044,4 +2066,5 @@ class Event extends \Cx\Model\Base\EntityBase {
     {
         return $this->registrationForm;
     }
+
 }

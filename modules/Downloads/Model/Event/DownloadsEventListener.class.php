@@ -59,6 +59,4 @@ class DownloadsEventListener extends DefaultEventListener
         ),array(141));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
-
-
 }

@@ -79,7 +79,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         $catMatches = null;
         //The global $_LANGID is required in the method
         //CalendarHeadlines::getHeadlines()
-        $_LANGID    = $params['lang'];
+        $_LANGID    = $params['locale']->getId();
         if (!$params['theme']) {
             return;
         }

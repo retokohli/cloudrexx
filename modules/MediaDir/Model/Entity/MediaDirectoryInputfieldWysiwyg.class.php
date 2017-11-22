@@ -62,7 +62,7 @@ class MediaDirectoryInputfieldWysiwyg extends \Cx\Modules\MediaDir\Controller\Me
 
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
-        global $objDatabase, $_LANGID, $objInit, $_ARRAYLANG;;
+        global $objDatabase, $objInit, $_ARRAYLANG;;
 
         $intId = intval($arrInputfield['id']);
 
@@ -90,8 +90,8 @@ class MediaDirectoryInputfieldWysiwyg extends \Cx\Modules\MediaDir\Controller\Me
                         }
 // TODO: What if the current language value is missing?
 // The empty string is an inconvenient default!
-//                        $arrValue[0] = $arrValue[$_LANGID];
-                        $arrValue[0] = (isset($arrValue[$_LANGID]) ? $arrValue[$_LANGID] : '');
+//                        $arrValue[0] = $arrValue[FRONTEND_LANG_ID];
+                        $arrValue[0] = (isset($arrValue[FRONTEND_LANG_ID]) ? $arrValue[FRONTEND_LANG_ID] : '');
                     }
                 } else {
                     $arrValue = null;
@@ -190,20 +190,33 @@ class MediaDirectoryInputfieldWysiwyg extends \Cx\Modules\MediaDir\Controller\Me
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-        global $objDatabase, $_LANGID;
+        $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
+
+        if (!empty($strValue)) {
+            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValue;
+        } else {
+            $arrContent = null;
+        }
+
+        return $arrContent;
+    }
+
+    function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
+        global $objDatabase;
 
         $intId = intval($arrInputfield['id']);
         $objEntryDefaultLang = $objDatabase->Execute("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");
         $intEntryDefaultLang = intval($objEntryDefaultLang->fields['lang_id']);
 
         if ($this->arrSettings['settingsTranslationStatus'] == 1) {
-            if (in_array($_LANGID, $arrTranslationStatus)) {
-                $intLangId = $_LANGID;
+            if (in_array(FRONTEND_LANG_ID, $arrTranslationStatus)) {
+                $intLangId = FRONTEND_LANG_ID;
             } else {
                 $intLangId = $intEntryDefaultLang;
             }
         } else {
-            $intLangId = $_LANGID;
+            $intLangId = FRONTEND_LANG_ID;
         }
 
         $objInputfieldValue = $objDatabase->Execute("
@@ -249,16 +262,7 @@ class MediaDirectoryInputfieldWysiwyg extends \Cx\Modules\MediaDir\Controller\Me
             LIMIT 1
         "); */
 
-        $strValue = $objInputfieldValue->fields['value'];
-
-        if (!empty($strValue)) {
-            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValue;
-        } else {
-            $arrContent = null;
-        }
-
-        return $arrContent;
+        return $objInputfieldValue->fields['value'];
     }
 
 
