@@ -1777,6 +1777,21 @@ die("Failed to update the Cart!");
                 self::$objTemplate->hideBlock('orderQuantity');
             }
 
+            if ($objProduct->stock()) {
+                if (self::$objTemplate->blockExists('shop_product_in_stock')) {
+                    self::$objTemplate->touchBlock('shop_product_in_stock');
+                }
+                if (self::$objTemplate->blockExists('shop_product_not_in_stock')) {
+                    self::$objTemplate->hideBlock('shop_product_not_in_stock');
+                }
+            } else {
+                if (self::$objTemplate->blockExists('shop_product_in_stock')) {
+                    self::$objTemplate->hideBlock('shop_product_in_stock');
+                }
+                if (self::$objTemplate->blockExists('shop_product_not_in_stock')) {
+                    self::$objTemplate->touchBlock('shop_product_not_in_stock');
+                }
+            }
 
             if (self::$objTemplate->blockExists('shopProductRow')) {
                 self::$objTemplate->parse('shopProductRow');
