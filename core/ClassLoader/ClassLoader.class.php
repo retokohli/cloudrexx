@@ -452,6 +452,16 @@ class ClassLoader {
         return false;
     }
 
+    /**
+     * Get file path with filename from registered MediaSource filesystems.
+     *
+     * @param   string  $file       Path of file, it should be located
+     *                              in /images, /media or /themes.
+     * @param   boolean $webPath    Whether or not to return the absolute file
+     *                              path or MediaSource file system path.
+     * @return  mixed               Returns absolute file path or MediaSource
+     *                              file path or FALSE if none exists.
+     */
     public function getFileFromMediaSource($file, $webPath = false) {
         // media source files may only be located in /images, /media or /themes
         $cxClassName = get_class($this->cx);
@@ -480,7 +490,10 @@ class ClassLoader {
             return false;
         }
 
-        return $webPath ? $file : $mediaSourceFile->getFileSystem()->getFullPath($mediaSourceFile);
+        if ($webPath) {
+            return $file;
+        }
+        return $mediaSourceFile->getFileSystem()->getFullPath($mediaSourceFile) . $mediaSourceFile->getFullName();
     }
 
     /**
