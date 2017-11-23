@@ -295,7 +295,7 @@ class DBG
 // DO NOT OVERRIDE DEFAULT BEHAVIOR FROM INSIDE THE CLASS!
 // Call a method to do this from the outside.
 //        self::setup('dbg.log', 'w');
-        if (self::setup('dbg.log')) {
+        if (self::setup(dirname(__FILE__, 4) . '/tmp/log/dbg.log')) {
             self::$log_file = true;
         }
     }

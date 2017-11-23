@@ -22,6 +22,7 @@ $_CONFIG['forceDomainUrl']                = "off";
 $_CONFIG['forceProtocolFrontend']         = "none";
 $_CONFIG['portFrontendHTTP']              = 80;
 $_CONFIG['portFrontendHTTPS']             = 443;
+$_CONFIG['favicon']                       = "favicon.ico";
 
 /**
 * -------------------------------------------------------------------------
@@ -80,6 +81,7 @@ $_CONFIG['searchDescriptionLength']       = 150;
 $_CONFIG['googleMapsAPIKey']              = "";
 $_CONFIG['googleAnalyticsTrackingId']     = "";
 $_CONFIG['defaultMetaimage']              = "/themes/standard_4_0/images/og_logo_social_media.jpg";
+$_CONFIG['dnsHostnameLookup']             = "off";
 
 /**
 * -------------------------------------------------------------------------

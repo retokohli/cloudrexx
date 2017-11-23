@@ -290,7 +290,7 @@ CREATE TABLE `contrexx_core_locale_locale` (
   `country` char(2) DEFAULT NULL,
   `fallback` int DEFAULT NULL,
   `source_language` char(2) NOT NULL,
-  `order_no` int(11) COLLATE utf8_unicode_ci NOT NULL,
+  `order_no` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `iso_1` (`iso_1`, `country`),
   CONSTRAINT `contrexx_core_locale_locale_ibfk_country` FOREIGN KEY (`country`) REFERENCES `contrexx_core_country_country` (`alpha2`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -527,6 +527,7 @@ CREATE TABLE `contrexx_core_wysiwyg_toolbar` (
 CREATE TABLE `contrexx_core_module_pdf_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
+  `file_name` varchar(255) NOT NULL,
   `html_content` longtext NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY(`id`)
@@ -1014,6 +1015,7 @@ CREATE TABLE `contrexx_module_contact_form` (
   `html_mail` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `send_attachment` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `crm_customer_groups` text,
+  `send_multiple_reply` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_contact_form_data` (
@@ -1759,6 +1761,7 @@ CREATE TABLE `contrexx_module_egov_orders` (
   `order_ip` varchar(255) NOT NULL DEFAULT '',
   `order_product` int(11) NOT NULL DEFAULT '0',
   `order_values` text NOT NULL,
+  `order_reservation_date` date NOT NULL DEFAULT '0000-00-00',
   `order_state` tinyint(4) NOT NULL DEFAULT '0',
   `order_quant` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`order_id`),
@@ -2525,7 +2528,7 @@ CREATE TABLE `contrexx_module_mediadir_inputfields` (
   `required` int(10) NOT NULL,
   `order` int(10) NOT NULL,
   `show_in` int(10) NOT NULL,
-  `context_type` enum('none','title','content','address','zip','city','country','image','keywords') NOT NULL,
+  `context_type` enum('none','title','content','address','zip','city','country','image','keywords','slug') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_mediadir_level_names` (
@@ -2595,16 +2598,6 @@ CREATE TABLE `contrexx_module_mediadir_rel_entry_inputfields` (
   UNIQUE KEY `entry_id` (`entry_id`,`lang_id`,`form_id`,`field_id`),
   FULLTEXT KEY `value` (`value`)
 ) ENGINE=MyISAM;
-CREATE TABLE `contrexx_module_mediadir_rel_entry_inputfields_clean1` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `entry_id` int(7) NOT NULL,
-  `lang_id` int(7) NOT NULL,
-  `form_id` int(7) NOT NULL,
-  `field_id` int(7) NOT NULL,
-  `value` longtext NOT NULL,
-  PRIMARY KEY (`id`),
-  FULLTEXT KEY `value` (`value`)
-) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_mediadir_rel_entry_levels` (
   `entry_id` int(10) NOT NULL,
   `level_id` int(10) NOT NULL,
@@ -2916,6 +2909,12 @@ CREATE TABLE `contrexx_module_newsletter_rel_cat_news` (
   `category` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`newsletter`,`category`)
 ) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_rel_crm_membership_newsletter` (
+  `membership_id` int(10) unsigned NOT NULL,
+  `newsletter_id` int(10) unsigned NOT NULL,
+  `type` enum('include', 'exclude') NOT NULL,
+  UNIQUE KEY `uniq` (`membership_id`,`newsletter_id`,`type`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_newsletter_rel_user_cat` (
   `user` int(11) NOT NULL DEFAULT '0',
   `category` int(11) NOT NULL DEFAULT '0',
