@@ -209,6 +209,10 @@ class DbEngine extends Engine{
             \DBG::log("\Cx\Core\Setting\Model\Entity\DbEngine::update(): ERROR: Unknown setting name '$name'!");
             return false;
         }
+        // do not flush file-content to setting repo
+        if ($this->arrSettings[$name]['type'] == \Cx\Core\Setting\Controller\Setting::TYPE_FILECONTENT) {
+            return true;
+        }
         $objResult = $objDatabase->Execute("
             UPDATE `".DBPREFIX."core_setting`
                SET `value`='".addslashes($this->arrSettings[$name]['value'])."'
