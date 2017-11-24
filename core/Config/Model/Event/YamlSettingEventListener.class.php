@@ -73,7 +73,7 @@ class YamlSettingEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventL
                     break;
 
                 case 'mainDomainId':
-                    if ($_CONFIG['mainDomainId'] != $value) {
+                    if ($_CONFIG['mainDomainId'] != $value && $_CONFIG['forceDomainUrl'] == 'on') {
                         $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
                         $objMainDomain = $domainRepository->findOneBy(array('id' => $value));
                         if ($objMainDomain) {
