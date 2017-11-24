@@ -205,6 +205,9 @@ class YamlEngine extends Engine{
         try {
             foreach ($this->arrSettings As $yamlSettingName => $yamlSettingValue) {
                 $objYamlSetting = $this->yamlSettingRepo->findOneBy(array('name' => $yamlSettingName, 'section' => $this->section));
+                if ($objYamlSetting->getType() == \Cx\Core\Setting\Controller\Setting::TYPE_FILECONTENT) {
+                    continue;
+                }
                 $objYamlSetting->setValue($yamlSettingValue['value']);
 
             }
@@ -257,6 +260,10 @@ class YamlEngine extends Engine{
         if (!empty($this->arrSettings)) {
             try {
                 $objYamlSetting = $this->yamlSettingRepo->findOneBy(array('name' => $name, 'section' => $this->section));
+                // do not flush file-content to setting repo
+                if ($objYamlSetting->getType() == \Cx\Core\Setting\Controller\Setting::TYPE_FILECONTENT) {
+                    return true;
+                }
                 $objYamlSetting->setValue($this->arrSettings[$name]['value']);
 
                 $this->yamlSettingRepo->flush();
