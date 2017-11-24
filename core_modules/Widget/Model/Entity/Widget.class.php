@@ -92,16 +92,20 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
                 $this->getName(),
                 function() {
                     $args = func_get_args();
-                    $template = current($args);
-                    if (!$template || !$template->getParseTarget()) {
+                    $template = array_shift($args);
+                    if (!$template) {
                         throw new \Exception('Wrong argument list for callback for widget "' . $this->getName() . '"');
+                    }
+                    if (!$template->getParseTarget()) {
+                        throw new \Exception('In order to use widgets of type "callback" you need to set a parse target to your Sigma template');
                     }
                     $this->parse(
                         $template,
                         $this->cx->getResponse(),
                         $template->getParseTarget()->getComponent->getName(),
                         get_class($template->getParseTarget()),
-                        $template->getParseTarget()->getId()
+                        $template->getParseTarget()->getId(),
+                        $args
                     );
                 }
             );
