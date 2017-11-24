@@ -1,5 +1,6 @@
 SET TIME_ZONE = '+00:00';
 SET FOREIGN_KEY_CHECKS = 0;
+SET SESSION `sql_mode`=(SELECT REPLACE(REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''),'STRICT_TRANS_TABLES',''));
 INSERT INTO `contrexx_access_group_dynamic_ids` (`access_id`, `group_id`) VALUES (5,1);
 INSERT INTO `contrexx_access_group_dynamic_ids` (`access_id`, `group_id`) VALUES (6,3);
 INSERT INTO `contrexx_access_group_dynamic_ids` (`access_id`, `group_id`) VALUES (6,4);
