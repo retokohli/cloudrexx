@@ -51,6 +51,7 @@ class MediaDirectory extends MediaDirectoryLibrary
     var $metaDescription;
     var $metaImage;
     var $metaKeys;
+    var $slug;
 
 
     var $arrNavtree = array();
@@ -392,11 +393,13 @@ class MediaDirectory extends MediaDirectoryLibrary
             $objLevel->listLevels($this->_objTpl, 5, $intLevelId);
         }
 
+        $metaTitle = array();
         if ($objLevel) {
             // only set page's title to level's name
             // if not in legacy mode
             if (!$this->arrSettings['legacyBehavior']) {
                 $this->pageTitle = $objLevel->arrLevels[$intLevelId]['levelName'][0];
+                $metaTitle[] = $objLevel->arrLevels[$intLevelId]['levelName'][0];
             }
             if (empty($objLevel->arrLevels[$intLevelId]['levelMetaDesc'][0])) {
                 $this->metaDescription = $objLevel->arrLevels[$intLevelId]['levelDescription'][0];
@@ -416,6 +419,7 @@ class MediaDirectory extends MediaDirectoryLibrary
             // if not in legacy mode
             if (!$this->arrSettings['legacyBehavior']) {
                 $this->pageTitle = $objCategory->arrCategories[$intCategoryId]['catName'][0];
+                $metaTitle[] = $objCategory->arrCategories[$intCategoryId]['catName'][0];
             }
             if (empty($objCategory->arrCategories[$intCategoryId]['catMetaDesc'][0])) {
                 $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catDescription'][0];
@@ -423,6 +427,9 @@ class MediaDirectory extends MediaDirectoryLibrary
                 $this->metaDescription = $objCategory->arrCategories[$intCategoryId]['catMetaDesc'][0];
             }
             $this->metaImage = $objCategory->arrCategories[$intCategoryId]['catPicture'];
+        }
+        if (empty($this->arrNavtree) && !empty($metaTitle)) {
+            $this->metaTitle .= ' - ' . implode(' - ', $metaTitle);
         }
 
         //list levels / categories
@@ -869,13 +876,15 @@ class MediaDirectory extends MediaDirectoryLibrary
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         //get searchform
-        if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
+        $searchTerm = null;
+        if ($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')) {
             $objSearch = new MediaDirectorySearch($this->moduleName);
             $objSearch->getSearchform($this->_objTpl);
+            $searchTerm = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : null;
         }
 
         $objEntry = new MediaDirectoryEntry($this->moduleName);
-        $objEntry->getEntries(null, null, null, null, true, null, true, null, $this->arrSettings['settingsLatestNumFrontend']);
+        $objEntry->getEntries(null, null, null, $searchTerm, true, null, true, null, $this->arrSettings['settingsLatestNumFrontend']);
         $objEntry->listEntries($this->_objTpl, 2);
     }
 
@@ -1557,5 +1566,9 @@ class MediaDirectory extends MediaDirectoryLibrary
      */
     public function getMetaKeys() {
         return $this->metaKeys;
+    }
+
+    public function getSlug() {
+        return $this->slug;
     }
 }

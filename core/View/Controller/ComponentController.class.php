@@ -92,7 +92,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
                 $widgetName,
-                false,
+                \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_PLACEHOLDER,
                 '',
                 '',
                 array(

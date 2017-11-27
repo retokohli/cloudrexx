@@ -562,6 +562,9 @@ class ContentManager extends \Module
             $theme = $themeRepo->getDefaultTheme(
                 \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB,
                 $frontendLanguage['id']);
+            if (!$theme) {
+                continue;
+            }
             $defaultThemes[$frontendLanguage['lang']] = $theme->getId();
         }
 

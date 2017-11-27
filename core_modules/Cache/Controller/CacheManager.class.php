@@ -354,6 +354,10 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
                     'key' => 'memcacheSetting',
                     'defaultPort' => 11211,
                 ),
+                'cacheUserCacheMemcachedConfig' => array(
+                    'key' => 'memcachedSetting',
+                    'defaultPort' => 11211,
+                ),
                 'cacheProxyCacheConfig' => array(
                     'key' => 'reverseProxy',
                     'defaultPort' => 8080,

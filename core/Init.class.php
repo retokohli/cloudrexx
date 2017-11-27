@@ -842,7 +842,6 @@ class InitCMS
                         case 'ComponentManager':
                         case 'ViewManager':
                         case 'LanguageManager':
-                        case 'Locale':
                         case 'ContentWorkflow':
                         case 'Config':
                         case 'SystemLog':
@@ -850,6 +849,9 @@ class InitCMS
                         case 'Wysiwyg':
                         case 'Routing':
                         case 'Html':
+                        case 'Locale':
+                        case 'Country':
+                        case 'View':
                             $this->arrModulePath[$objResult->fields['name']] = $cx->getCodeBaseCorePath() . '/'. $objResult->fields['name'] . '/lang/';
                             break;
                         default:
@@ -885,9 +887,17 @@ class InitCMS
         if(!isset($_CORELANG))
             $_CORELANG = array();
         if ($this->mode == 'backend') {
-            $langId = $this->backendLangId;
+            if (isset($this->arrBackendLang[$this->backendLangId])) {
+                $langCode = $this->arrBackendLang[$this->backendLangId]['lang'];
+            } else {
+                $langCode = $this->arrBackendLang[\FWLanguage::getDefaultBackendLangId()]['lang'];
+            }
         } else {
-            $langId = $this->frontendLangId;
+            if (isset($this->arrLang[$this->frontendLangId])) {
+                $langCode = $this->arrLang[$this->frontendLangId]['source_lang'];
+            } else {
+                $langCode = $this->arrLang[\FWLanguage::getDefaultLangId()]['source_lang'];
+            }
         }
 
         // check which module will be loaded
@@ -906,16 +916,14 @@ class InitCMS
             $module = '';
         } else {
             //load english language file first...
-            // TODO: load language file by iso code 'en'
-            $path = $this->getLangFilePath($module, 2);
+            $path = $this->getLangFilePathByCode($module, 'en');
             if (!empty($path)) {
                 $this->loadLangFile($path, $loadFromYaml, $module);
             }
             //...and overwrite with actual language where translated.
-            //...but only if $langId is set (otherwise it will overwrite English by the default language
-            // TODO: verify by iso code 'en'
-            if($langId && $langId != 2) { //don't do it for english, already loaded.
-                $path = $this->getLangFilePath($module, $langId);
+            //...but only if $langCode is set (otherwise it will overwrite English by the default language
+            if($langCode && $langCode != 'en') { //don't do it for english, already loaded.
+                $path = $this->getLangFilePathByCode($module, $langCode);
                 if (!empty($path)) {
                     $this->loadLangFile($path, $loadFromYaml, $module);
                 }
@@ -1031,36 +1039,31 @@ class InitCMS
         return $componentSpecificLanguageData;
     }
 
-    protected function getLangFilePath($module, $langId) {
+    protected function getLangFilePathByCode($module, $langCode) {
         // check whether the language file exists
         $mode = in_array($this->mode, array('backend', 'update')) ? 'backend' : 'frontend';
 
         if ($mode == 'backend') {
-            $defaultLangId = $this->getBackendDefaultLangId();
-            if (!isset($this->arrBackendLang[$langId])) {
-                $langId = $defaultLangId;
-            }
-            // file path with requested language ($langId parameter)
-            $path = \Env::get('ClassLoader')->getFilePath($this->arrModulePath[$module].$this->arrBackendLang[$langId]['lang'].'/'.$mode.'.php');
+            $path = \Env::get('ClassLoader')->getFilePath($this->arrModulePath[$module].$langCode.'/'.$mode.'.php');
         } else {
-            $defaultLangId = $this->getFrontendDefaultLangId();
-            if (!isset($this->arrLang[$langId])) {
-                $langId = $defaultLangId;
-            }
-            $path = \Env::get('ClassLoader')->getFilePath($this->arrModulePath[$module].$this->arrLang[$langId]['source_lang'].'/'.$mode.'.php');
+            $path = \Env::get('ClassLoader')->getFilePath($this->arrModulePath[$module].$langCode.'/'.$mode.'.php');
         }
 
         if ($path) {
             return $path;
         }
-
+        
         // file path of default language (if not yet requested)
-        if ($langId == $defaultLangId) {
+        if ($this->mode == 'backend') {
+            $defaultLangCode = $this->arrBackendLang[\FWLanguage::getDefaultBackendLangId()]['lang'];
+        } else {
+            $defaultLangCode = $this->arrLang[\FWLanguage::getDefaultLangId()]['iso1'];
+        }
+        if ($langCode == $defaultLangCode) {
             return '';
         }
-        return $this->getLangFilePath($module, $defaultLangId);
+        return $this->getLangFilePathByCode($module, $defaultLangCode);
     }
-
 
     /**
      * Loads the language file for the given file path
@@ -1094,23 +1097,28 @@ class InitCMS
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $em = $cx->getDb()->getEntityManager();
         $frontend = $cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND;
-        if ($frontend) {
-            // get language by frontend locale
-            // TODO: we must load the language specified by $path
-            $locale = $cx->getDb()->getEntityManager()->find(
-                'Cx\Core\Locale\Model\Entity\Locale',
-                $this->frontendLangId
-            );
-            $language = $locale->getSourceLanguage();
-        } elseif ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
-            // TODO: we must load the language specified by $path
-            $backendLangId = !empty($this->backendLangId) ? $this->backendLangId : $this->defaultBackendLangId;
-            $backend = $em->find(
-                'Cx\Core\Locale\Model\Entity\Backend',
-                $backendLangId
-            );
-            $language = $backend->getIso1();
-        } else {
+        try {
+            if ($frontend) {
+                // get language by frontend locale
+                // TODO: we must load the language specified by $path
+                $locale = $cx->getDb()->getEntityManager()->find(
+                    'Cx\Core\Locale\Model\Entity\Locale',
+                    $this->frontendLangId
+                );
+                $language = $locale->getSourceLanguage();
+            } elseif ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+                // TODO: we must load the language specified by $path
+                $backendLangId = !empty($this->backendLangId) ? $this->backendLangId : $this->defaultBackendLangId;
+                $backend = $em->find(
+                    'Cx\Core\Locale\Model\Entity\Backend',
+                    $backendLangId
+                );
+                $language = $backend->getIso1();
+            } else {
+                return $_ARRAYLANG;
+            }
+        } catch (\Throwable $e) {
+            \DBg::msg($e->getMessage());
             return $_ARRAYLANG;
         }
 
@@ -1369,7 +1377,7 @@ class InitCMS
             || strpos($ua, 'gt-p7100') !== false
             || strpos($ua, 'gt-p1000') !== false
             || strpos($ua, 'at100') !== false
-            || strpos($ua, 'a43') !== false;
+            || (strpos($ua, 'a43') !== false && strpos($ua, 'iphone') === false);
         return $isTablet;
     }
 

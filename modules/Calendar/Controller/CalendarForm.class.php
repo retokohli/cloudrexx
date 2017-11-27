@@ -102,7 +102,7 @@ class CalendarForm extends CalendarLibrary
      * @param integer $formId Form id
      */
     function get($formId) {
-        global $objDatabase, $_LANGID;  
+        global $objDatabase;  
         
         $this->getFrontendLanguages();
         
@@ -129,7 +129,7 @@ class CalendarForm extends CalendarLibrary
                                 FROM `".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form_field_name` AS `fieldName`
                                 WHERE `fieldName`.`field_id` = `field`.`id` AND `fieldName`.`form_id` = `field`.`form`
                                 ORDER BY CASE `fieldName`.`lang_id`
-                                            WHEN '$_LANGID' THEN 1
+                                            WHEN '" . FRONTEND_LANG_ID . "' THEN 1
                                             ELSE 2
                                             END
                                 LIMIT 1
@@ -139,7 +139,7 @@ class CalendarForm extends CalendarLibrary
                                 FROM `".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form_field_name` AS `fieldDefault`
                                 WHERE `fieldDefault`.`field_id` = `field`.`id` AND `fieldDefault`.`form_id` = `field`.`form`
                                 ORDER BY CASE `fieldDefault`.`lang_id`
-                                            WHEN '$_LANGID' THEN 1
+                                            WHEN '" . FRONTEND_LANG_ID . "' THEN 1
                                             ELSE 2
                                             END
                                 LIMIT 1
@@ -197,7 +197,7 @@ class CalendarForm extends CalendarLibrary
      * @return integer new form id
      */
     function copy() { 
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
                                        
         $queryOldForm = "SELECT id,title,status,`order`
                            FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form
@@ -596,8 +596,6 @@ class CalendarForm extends CalendarLibrary
      */
     public function getInputFieldsAsArray($data)
     {
-        global $_LANGID;
-
         if (empty($data)) {
             return null;
         }
@@ -626,16 +624,16 @@ class CalendarForm extends CalendarLibrary
                 $strFieldName         = $arrField['name'][$arrLang['id']];
                 $strFieldDefaultValue = $arrField['default_value'][$arrLang['id']];
 
-                if ($arrLang['id'] == $_LANGID) {
+                if ($arrLang['id'] == FRONTEND_LANG_ID) {
                     if (   $this->inputfields[$intFieldId]['name'][0] == $strFieldName
                         && $this->inputfields[$intFieldId]['name'][$arrLang['id']] != $strFieldName
                     ) {
-                        $strFieldName = $arrField['name'][$_LANGID];
+                        $strFieldName = $arrField['name'][FRONTEND_LANG_ID];
                     }
                     if (   $this->inputfields[$intFieldId]['default_value'][0] == $strFieldDefaultValue
                         && $this->inputfields[$intFieldId]['default_value'][$arrLang['id']] != $strFieldDefaultValue
                     ) {
-                        $strFieldDefaultValue = $arrField['default_value'][$_LANGID];
+                        $strFieldDefaultValue = $arrField['default_value'][FRONTEND_LANG_ID];
                     }
                     if (   (   $this->inputfields[$intFieldId]['name'][0] != $arrField['name'][0]
                             && $this->inputfields[$intFieldId]['name'][$arrLang['id']] == $strFieldName

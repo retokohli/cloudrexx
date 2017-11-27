@@ -551,15 +551,19 @@ class Config
      * @param string $protocol the protocol to check for access
      * @return bool true if the domain is accessable
      */
-    public static function checkAccessibility($protocol = 'http') {
+    public static function checkAccessibility($protocol = 'http', $domain = '') {
         global $_CONFIG;
         if (!in_array($protocol, array('http', 'https'))) {
             return false;
         }
 
+        if (empty($domain)) {
+            $domain = $_CONFIG['domainUrl'];
+        }
+
         try {
             // create request to port 443 (https), to check whether the request works or not
-            $request = new \HTTP_Request2($protocol . '://' . $_CONFIG['domainUrl'] . ASCMS_ADMIN_WEB_PATH . '/index.php?cmd=JsonData');
+            $request = new \HTTP_Request2($protocol . '://' . $domain . ASCMS_ADMIN_WEB_PATH . '/index.php?cmd=JsonData');
 
             // ignore ssl issues
             // otherwise, cloudrexx does not activate 'https' when the server doesn't have an ssl certificate installed
@@ -585,6 +589,7 @@ class Config
                 return false;
             }
         } catch (\HTTP_Request2_Exception $e) {
+            \DBG::msg($e->getMessage());
             // https is not available, exception thrown
             return false;
         }
@@ -692,10 +697,24 @@ class Config
         $ymlArray = \Cx\Core\Setting\Controller\Setting::getArray('Config', null);
         $intMaxLen = 0;
         $ymlArrayValues = array();
+        $updateXmlSitemap = false;
         foreach ($ymlArray as $key => $ymlValue){
+            // do not dump the content of file-sources into the PHP cache
+            if ($ymlValue['type'] == \Cx\Core\Setting\Controller\Setting::TYPE_FILECONTENT) {
+                continue;
+            }
+
+            // TODO: this should be done in the model-event-listener
+            if ($key == 'forceProtocolFrontend' &&
+                $_CONFIG[$key] != $ymlValue['value']
+            ) {
+                $updateXmlSitemap = true;
+            }
+
             $_CONFIG[$key] = $ymlValue['value'];
             $ymlArrayValues[$ymlValue['group']][$key] = $ymlValue['value'];
 
+            // TODO: this should be done in the model-event-listener
             // special case to add legacy domainUrl configuration option
             if ($key == 'mainDomainId') {
                 $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
@@ -706,8 +725,9 @@ class Config
                     $domainUrl = $_SERVER['SERVER_NAME'];
                 }
                 $ymlArrayValues[$ymlValue['group']]['domainUrl'] = $domainUrl;
+                $_CONFIG['domainUrl'] = $domainUrl;
                 if ($_CONFIG['xmlSitemapStatus'] == 'on') {
-                    \Cx\Core\PageTree\XmlSitemapPageTree::write();
+                    $updateXmlSitemap = true;
                 }
             }
 
@@ -715,8 +735,14 @@ class Config
         }
         $intMaxLen += strlen('$_CONFIG[\'\']') + 1; //needed for formatted output
 
+        // TODO: this should be done in the model-event-listener
         // update environment
         \Env::set('config', $_CONFIG);
+
+        // TODO: this should be done in the model-event-listener
+        if ($updateXmlSitemap) {
+            \Cx\Core\PageTree\XmlSitemapPageTree::write();
+        }
 
         $strHeader  = "<?php\n";
         $strHeader .= "/**\n";
@@ -1533,6 +1559,21 @@ class Config
                     \Cx\Core\Setting\Controller\Setting::TYPE_IMAGE, '{"type":"reference"}', 'otherConfigurations')) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default meta image");
             }
+            if (
+                !\Cx\Core\Setting\Controller\Setting::isDefined('robotstxt') &&
+                !\Cx\Core\Setting\Controller\Setting::add(
+                    'robotstxt',
+                    '',
+                    9,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_FILECONTENT,
+                    'robots.txt',
+                    'otherConfigurations'
+                )
+            ) {
+                throw new \Cx\Lib\Update_DatabaseException(
+                    'Failed to add Setting entry for robots.txt'
+                );
+            }
             $defaultDnsHostnameLookup = 'off';
             if (isset($existingConfig['dnsHostnameLookup'])) {
                 $defaultDnsHostnameLookup = $existingConfig['dnsHostnameLookup'];
@@ -1542,7 +1583,7 @@ class Config
                 !\Cx\Core\Setting\Controller\Setting::add(
                     'dnsHostnameLookup',
                     $defaultDnsHostnameLookup,
-                    9,
+                    10,
                     \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
                     'on:TXT_ACTIVATED,off:TXT_DEACTIVATED',
                     'otherConfigurations'
@@ -1848,6 +1889,11 @@ class Config
                     && !\Cx\Core\Setting\Controller\Setting::add('cacheUserCacheMemcacheConfig', isset($existingConfig['cacheUserCacheMemcacheConfig']) ? $existingConfig['cacheUserCacheMemcacheConfig'] : '{"ip":"127.0.0.1","port":11211}', 1,
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'cache')){
                         throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheUserCacheMemcacheConfig");
+                }
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheUserCacheMemcachedConfig')
+                    && !\Cx\Core\Setting\Controller\Setting::add('cacheUserCacheMemcachedConfig', isset($existingConfig['cacheUserCacheMemcachedConfig']) ? $existingConfig['cacheUserCacheMemcachedConfig'] : '{"ip":"127.0.0.1","port":11211}', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'cache')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheUserCacheMemcachedConfig");
                 }
                 // The following is temporary until the LanguageManager replacement (component 'Locale') is here:
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('useVirtualLanguageDirectories')

@@ -74,10 +74,19 @@ abstract class RandomEsiWidgetController extends EsiWidgetController {
     /**
      * @inheritdoc
      */
-    public function __construct(SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
+    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
         parent::__construct($systemComponentController, $cx);
         $this->subwidgetCountLimit = static::DEFAULT_SUBWIDGET_COUNT_LIMIT;
         $this->subwidgetCacheLifetime = static::DEFAULT_SUBWIDGET_CACHE_LIFETIME;
+    }
+
+    /**
+     * Returns the internal name used as identifier for this adapter
+     * @see \Cx\Core\Json\JsonAdapter::getName()
+     * @return string Name of this adapter
+     */
+    public function getName() {
+        return $this->getSystemComponent()->getName() . 'RandomWidget';
     }
 
     /**
@@ -108,6 +117,7 @@ abstract class RandomEsiWidgetController extends EsiWidgetController {
 
             if (count($esiInfos) > $this->getSubwidgetCountLimit()) {
                 // randomly pick some
+                // TODO: This randomly picks some instead of randomizing all
                 $randomIndexes = array_rand($esiInfos, $this->getSubwidgetCountLimit());
                 $limitedEsiInfos = array();
                 foreach ($randomIndexes as $index) {
@@ -123,7 +133,8 @@ abstract class RandomEsiWidgetController extends EsiWidgetController {
             }
 
             $esiContent = $this->getComponent('Cache')->getRandomizedEsiContent(
-                $esiInfos
+                $esiInfos,
+                $widget->getUniqueRepetitionCount()
             );
             return array(
                 'content' => $esiContent,
