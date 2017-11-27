@@ -2867,21 +2867,29 @@ class NewsletterManager extends NewsletterLib
      * Returns the where condition for the filtered crm newsletter recipients
      *
      * @param  array    $crmMembershipFilter  the filters for the given mail
+     * @param  boolean  $checkMailType        check if the e-mail address is
+     *                                        an crm address
      * @return string                         the WHERE statement of the sql query
      */
-    function getCrmMembershipConditions($crmMembershipFilter){
+    function getCrmMembershipConditions($crmMembershipFilter, $checkMailType = false){
         return '
             LEFT JOIN `' . DBPREFIX . 'module_crm_customer_membership` `membership` 
                 ON `membership`.`contact_id` = `contact`.`id`
             WHERE
-                `membership`.`membership_id` IN (' . join(',', $crmMembershipFilter['associate']) . ')' .
+                ((`membership`.`membership_id` IN (' . join(',', $crmMembershipFilter['associate']) . ')' .
                     (!$crmMembershipFilter['exclude'] ? '' :
                     ' AND `contact`.`id` NOT IN (
                                     SELECT `membership`.`contact_id`
                                       FROM `' . DBPREFIX . 'module_crm_customer_membership` AS `membership` 
                                      WHERE `membership`.`membership_id` IN ('.join(',', $crmMembershipFilter['exclude']).'))') .
                     ' AND `contact`.`customer_type` = \'1\'
-                      AND `crm`.`is_primary` = \'1\'';
+                      AND `crm`.`is_primary` = \'1\')' .
+                        (
+                            $checkMailType
+                                ? ' OR `s`.`type` != \'crm\')'
+                                : ')'
+                        )
+                      ;
     }
     /**
      * Send the mails
@@ -3059,7 +3067,7 @@ class NewsletterManager extends NewsletterLib
                AND (`s`.`type` = '".self::USER_TYPE_ACCESS."' OR `s`.`type` = '".self::USER_TYPE_CORE."')".
          (
             $crmMembershipFilter['associate']
-                ? $this->getCrmMembershipConditions($crmMembershipFilter) . ' AND '
+                ? $this->getCrmMembershipConditions($crmMembershipFilter, true) . ' AND '
                 : ' WHERE '
          ) . '
               
@@ -3798,7 +3806,7 @@ class NewsletterManager extends NewsletterLib
 
         if (!$id) return $arrUserData;
 
-        switch ($type) {
+        switch (strtolower($type)) {
             case self::USER_TYPE_ACCESS:
                 $query = "
                     SELECT code
