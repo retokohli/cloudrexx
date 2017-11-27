@@ -183,7 +183,8 @@ class InitCMS
         }
 
         $this->backendLangId = $this->arrBackendLang[$backendLangId]['id'];
-        $this->currentThemesId = $this->arrBackendLang[$backendLangId]['themesid'];
+        // TODO: this is obsolete, isn't it?
+        //$this->currentThemesId = $this->arrBackendLang[$backendLangId]['themesid'];
     }
 
 
