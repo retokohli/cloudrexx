@@ -1,4 +1,5 @@
 SET FOREIGN_KEY_CHECKS = 0;
+SET SESSION `sql_mode`=(SELECT REPLACE(REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''),'STRICT_TRANS_TABLES',''));
 CREATE TABLE `contrexx_access_group_dynamic_ids` (
   `access_id` int(11) unsigned NOT NULL DEFAULT '0',
   `group_id` int(11) unsigned NOT NULL DEFAULT '0',
@@ -1015,6 +1016,7 @@ CREATE TABLE `contrexx_module_contact_form` (
   `html_mail` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `send_attachment` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `crm_customer_groups` text,
+  `send_multiple_reply` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_contact_form_data` (
@@ -2527,7 +2529,7 @@ CREATE TABLE `contrexx_module_mediadir_inputfields` (
   `required` int(10) NOT NULL,
   `order` int(10) NOT NULL,
   `show_in` int(10) NOT NULL,
-  `context_type` enum('none','title','content','address','zip','city','country','image','keywords') NOT NULL,
+  `context_type` enum('none','title','content','address','zip','city','country','image','keywords','slug') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_mediadir_level_names` (

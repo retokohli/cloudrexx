@@ -60,7 +60,7 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
 
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
-        global $objDatabase, $_LANGID, $objInit, $_ARRAYLANG;
+        global $objDatabase, $objInit, $_ARRAYLANG;
 
         $intId = intval($arrInputfield['id']);
 
@@ -89,12 +89,12 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
                         $objPlaceholder = new \Cx\Modules\MediaDir\Controller\MediaDirectoryPlaceholder($this->moduleName);
                         $strValue = $objPlaceholder->getPlaceholder($arrInputfield['default_value'][0]);
                     } else {
-                        $strValue = empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID];
+                        $strValue = empty($arrInputfield['default_value'][FRONTEND_LANG_ID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][FRONTEND_LANG_ID];
                     }
                 }
 
                 if(!empty($arrInputfield['info'][0])){
-                    $strInfoValue = empty($arrInputfield['info'][$_LANGID]) ? 'title="'.$arrInputfield['info'][0].'"' : 'title="'.$arrInputfield['info'][$_LANGID].'"';
+                    $strInfoValue = empty($arrInputfield['info'][FRONTEND_LANG_ID]) ? 'title="'.$arrInputfield['info'][0].'"' : 'title="'.$arrInputfield['info'][FRONTEND_LANG_ID].'"';
                     $strInfoClass = 'mediadirInputfieldHint';
                 } else {
                     $strInfoValue = null;
@@ -116,7 +116,7 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
                 break;
             case 2:
                 //search View
-                $country = \Cx\Core\Country\Controller\Country::getNameArray(true, $_LANGID);
+                $country = \Cx\Core\Country\Controller\Country::getNameArray(true, FRONTEND_LANG_ID);
                 foreach ($country as $id => $name) {
                     $strInputfieldOptions .= '<option value="'.$id.'">'.$name.'</option>';
                 }
@@ -174,7 +174,7 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
     }
 
     function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $intId = intval($arrInputfield['id']);
 
@@ -195,7 +195,7 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
                 entry_id=".$intEntryId."
             ORDER BY
                 CASE ".DBPREFIX."core_text.lang_id
-                    WHEN ".$_LANGID." THEN 1
+                    WHEN ".FRONTEND_LANG_ID." THEN 1
                     ELSE 2
                 END
             LIMIT 1
