@@ -28,6 +28,7 @@
 /**
  * This is the main Controller for View
  * @copyright   Cloudrexx AG
+ * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     cloudrexx
  * @subpackage  core_view
@@ -39,6 +40,7 @@ namespace Cx\Core\View\Controller;
 /**
  * This is the main Controller for View
  * @copyright   Cloudrexx AG
+ * @author      Nicola Tommasi <nicola.tommasi@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     cloudrexx
  * @subpackage  core_view
@@ -90,7 +92,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
                 $widgetName,
-                false,
+                \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_PLACEHOLDER,
                 '',
                 '',
                 array(
@@ -102,6 +104,23 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $widget
             );
         }
+    }
+    /**
+     * Register your event listeners here
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * Keep in mind, that you can also register your events later.
+     * Do not do anything else here than initializing your event listeners and
+     * list statements like
+     * $this->cx->getEvents()->addEventListener($eventName, $listener);
+     */
+    public function registerEventListeners() {
+        $evm = $this->cx->getEvents();
+        // locale event listener
+        $localeLocaleEventListener = new \Cx\Core\View\Model\Event\LocaleLocaleEventListener($this->cx);
+        $evm->addModelListener('postPersist', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
+        $evm->addModelListener('preRemove', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
     }
 
     /**
@@ -231,7 +250,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             );
         }
         $em = $this->cx->getDb()->getEntityManager();
-        $themeRepo = $em->getRepository('Cx\Core\View\Model\Entity\Theme');
+        $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
         $defaultTheme = $themeRepo->getDefaultTheme(
             $channel,
             $page->getLang()

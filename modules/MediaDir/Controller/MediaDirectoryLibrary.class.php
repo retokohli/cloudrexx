@@ -370,22 +370,17 @@ class MediaDirectoryLibrary
         self::getSettings();
         $arrActiveLangs = explode(",",$this->arrSettings['settingsActiveLanguages']);
 
-        $objLanguages = $objDatabase->Execute("SELECT id,lang,name,frontend,is_default FROM ".DBPREFIX."languages ORDER BY is_default ASC");
-        if ($objLanguages !== false) {
-            while (!$objLanguages->EOF) {
-                if(in_array($objLanguages->fields['id'], $arrActiveLangs)) {
-                    $arrData = array();
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $frontendLanguage) {
+            if(in_array($frontendLanguage['id'], $arrActiveLangs)) {
+                $arrData = array();
 
-                    $arrData['id'] = intval($objLanguages->fields['id']);
-                    $arrData['lang'] = htmlspecialchars($objLanguages->fields['lang'], ENT_QUOTES, CONTREXX_CHARSET);
-                    $arrData['name'] = htmlspecialchars($objLanguages->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
-                    $arrData['frontend'] = intval($objLanguages->fields['frontend']);
-                    $arrData['is_default'] = htmlspecialchars($objLanguages->fields['is_default'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrData['id'] = intval($frontendLanguage['id']);
+                $arrData['lang'] = htmlspecialchars($frontendLanguage['lang'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrData['name'] = htmlspecialchars($frontendLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrData['frontend'] = intval($frontendLanguage['frontend']);
+                $arrData['is_default'] = htmlspecialchars($frontendLanguage['is_default'], ENT_QUOTES, CONTREXX_CHARSET);
 
-                    $arrLanguages[$objLanguages->fields['id']] = $arrData;
-                }
-
-                $objLanguages->MoveNext();
+                $arrLanguages[$frontendLanguage['id']] = $arrData;
             }
         }
 
@@ -583,7 +578,8 @@ class MediaDirectoryLibrary
 
 
     function getSelectorJavascript(){
-        global $objInit, $_LANGID;
+        global $objInit;
+        $langId = FRONTEND_LANG_ID;
 
         if($objInit->mode == 'frontend') {
             self::getSettings();
@@ -714,7 +710,7 @@ function deselectAll(control){
         control.options[i].selected = false;
     }
 }
-var defaultLang = '$_LANGID';
+var defaultLang = '$langId';
 var activeLang = [$arrActiveLang];
 \$J(function(){
     \$J('.mediadirInputfieldDefault').each(function(){
@@ -1022,7 +1018,7 @@ EOF;
      */
     public function getAutoSlugPath($arrEntry = null, $categoryId = null, $levelId = null, $useRequestedPageAsFallback = false, $includeDetailApplicationPage = true) {
         $entryId = null;
-        $entryName = null;
+        $entrySlug = null;
         $formId = null;
         $formCmd = null;
         $page = null;
@@ -1031,8 +1027,8 @@ EOF;
             $entryId = $arrEntry['entryId'];
         }
 
-        if (isset($arrEntry['entryFields'][0])) {
-            $entryName = $arrEntry['entryFields'][0];
+        if (isset($arrEntry['slug'])) {
+            $entrySlug = $arrEntry['slug'];
         }
 
         if (isset($arrEntry['entryFormId'])) {
@@ -1100,7 +1096,11 @@ EOF;
 
         // create human readable url if option has been enabled to do so
         if ($this->arrSettings['usePrettyUrls']) {
-            $url->setPath($url->getPath() . $this->getLevelSlugPath($levelId) . $this->getCategorySlugPath($categoryId) . $this->getEntrySlugPath($entryName));
+            $path = $url->getPath() . $this->getLevelSlugPath($levelId) . $this->getCategorySlugPath($categoryId);
+            if (isset($entrySlug)) {
+                $path .= '/' . $entrySlug;
+            }
+            $url->setPath($path);
         } else {
             if ($entryId) {
                 $url->setParam('eid', $entryId);
@@ -1151,15 +1151,17 @@ EOF;
     }
 
     public function getApplicationPageByCategory($categoryId) {
-        // abort in case levels are in use
+        $cmdPrefix = '';
+
+        // in case levels are in use, the cmd of a category is prefixed by a dash
         if ($this->arrSettings['settingsShowLevels']) {
-            return null;
+            $cmdPrefix = '-';
         }
 
         $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 
         // fetch category specific application page (i.e. section=MediaDir&cmd=3)
-        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $categoryId, FRONTEND_LANG_ID);
+        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $cmdPrefix.$categoryId, FRONTEND_LANG_ID);
         if ($page && $page->isActive()) {
             return $page;
         }
@@ -1250,14 +1252,6 @@ EOF;
         }
 
         return '';
-    }
-
-    public function getEntrySlugPath($entryName) {
-        if (!$entryName) {
-            return '';
-        }
-
-        return '/' . $this->getSlugFromName($entryName);
     }
 
     public function getLevelData() {
@@ -1405,9 +1399,10 @@ EOF;
             'list' => array(),
             'filter' => array(),
         );
-        $placeholderList = join("\n", $template->getPlaceholderList($block));
+        $placeholderList = $template->getPlaceholderList($block);
+        $placeholderListAsString = join("\n", $placeholderList);
 
-        if (preg_match_all('/MEDIADIR_CONFIG_(FILTER|LIST)_(LATEST|LIMIT|OFFSET|FORM|CATEGORY|LEVEL)(?:_([0-9]+))?/', $placeholderList, $match)) {
+        if (preg_match_all('/MEDIADIR_CONFIG_(FILTER|LIST)_(LATEST|LIMIT|OFFSET|FORM|CATEGORY|LEVEL)(?:_([0-9]+))?/', $placeholderListAsString, $match)) {
             foreach ($match[2] as $idx => $key) {
                 $configKey = strtolower($match[1][$idx]);
                 $option = strtolower($key);
@@ -1448,5 +1443,20 @@ EOF;
         }
 
         return $config;
+    }
+
+    /**
+     * Slugifies the given string
+     * @param $string The string to slugify
+     */
+    protected function slugify(&$string) {
+        // replace international characters
+        $string = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getComponent('LanguageManager')
+            ->replaceInternationalCharacters($string);
+        // replace spaces
+        $string = preg_replace('/\s+/', '-', $string);
+        // replace all non-url characters
+        $string = preg_replace('/[^a-zA-Z0-9-_]/', '', $string);
     }
 }

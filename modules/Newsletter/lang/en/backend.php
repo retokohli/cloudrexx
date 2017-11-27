@@ -391,6 +391,7 @@ $_ARRAYLANG['TXT_NEWSLETTER_CONNECT_SMTP_FAILED'] = "Unable To Connect To Mail S
 $_ARRAYLANG['TXT_NEWSLETTER_EXPORT_ALL_LISTS'] = "Export all lists into Excel";
 $_ARRAYLANG['TXT_NEWSLETTER_FILE_TYPE'] = "File type";
 $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_HELP'] = "Select a file that should be imported:";
+$_ARRAYLANG['TXT_NEWSLETTER_IMPORT_SEND_MAIL_DESC'] = "Select an email campaign to be sent automatically to the newly imported recipients. Important note: The automatic campaign delivery can't be controlled nor stopped!";
 $_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN'] = "Unknown";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTICE'] = "Notice";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTICE_TESTMAIL'] = "The place holders will not be replaced in the test newsletter.";

@@ -335,8 +335,6 @@ EOF;
 
 
     function refreshComments($intEnrtyId, $strPageSection, $strPageCmd) {
-        global $_LANGID;
-
         $arrComment = $this->getLastComment($intEnrtyId);
 
         $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
@@ -344,7 +342,7 @@ EOF;
             'module' => contrexx_addslashes($strPageSection),
             'cmd' => contrexx_addslashes($strPageCmd),
             'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
-            'lang' => intval($_LANGID),
+            'lang' => intval(FRONTEND_LANG_ID),
         ));
 
         if (count($pages)) {

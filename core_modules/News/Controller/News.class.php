@@ -911,6 +911,10 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     : contrexx_input2raw(array($_REQUEST['tag']));
             $parameters['filterTag[]'] = implode('&filterTag[]=', $searchTag);
             $searchedTag   = $this->getNewsTags(null, $searchTag);
+            if ($searchedTag['tagList']) {
+                $requestedTagString = implode(' ', $searchedTag['tagList']);
+                \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->setMetaTitle($requestedTagString);
+            }
             if (!empty($searchedTag['newsIds'])) {
                 $this->incrementViewingCount(array_keys($searchedTag['tagList']));
                 $newsfilter .= ' AND n.`id` IN ('

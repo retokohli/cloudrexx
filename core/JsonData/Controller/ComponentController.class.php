@@ -102,6 +102,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 unset($arguments[static::ARGUMENT_INDEX_DATA_ADAPTER]);
                 unset($arguments[static::ARGUMENT_INDEX_DATA_METHOD]);
                 $dataArguments = array('get' => $arguments);
+                if (!isset($arguments['response'])) {
+                    $arguments['response'] = $this->cx->getResponse();
+                }
                 
                 $json = new \Cx\Core\Json\JsonData();
                 $data = $json->data($dataAdapter, $dataMethod, $dataArguments);
@@ -117,6 +120,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         echo $data['data']['content'];
                         break;
                     case 'Json':
+                        $response = $arguments['response'];
+                        $response->setAbstractContent($data);
+                        $response->setParser($json->getParser());
+                        $response->send();
                         echo $json->parse($data, true);
                         break;
                     default:

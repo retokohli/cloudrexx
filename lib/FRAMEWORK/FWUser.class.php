@@ -213,10 +213,7 @@ class FWUser extends User_Setting
             'clearEsiCache',
             array(
                 'Widget',
-                array(
-                    'access_currently_online_member_list',
-                    'access_last_active_member_list'
-                )
+                $cx->getComponent('Access')->getSessionBasedWidgetNames(),
             )
         );
 
@@ -343,7 +340,8 @@ class FWUser extends User_Setting
         global $objDatabase;
 
         if (!isset($_SESSION['auth']['log'])) {
-            $remote_host = @gethostbyaddr($_SERVER['REMOTE_ADDR']);
+            $net = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Net');
+            $remoteHost = $net->getHostByAddr($_SERVER['REMOTE_ADDR']);
             $referer = isset($_SERVER['HTTP_REFERER']) ? contrexx_strip_tags(strtolower($_SERVER['HTTP_REFERER'])) : '';
             $httpUserAgent = get_magic_quotes_gpc() ? strip_tags($_SERVER['HTTP_USER_AGENT']) : addslashes(strip_tags($_SERVER['HTTP_USER_AGENT']));
             $httpAcceptLanguage = get_magic_quotes_gpc() ? strip_tags($_SERVER['HTTP_ACCEPT_LANGUAGE']) : addslashes(strip_tags($_SERVER['HTTP_ACCEPT_LANGUAGE']));
@@ -355,7 +353,7 @@ class FWUser extends User_Setting
                                             useragent = '".substr($httpUserAgent, 0, 250)."',
                                             userlanguage = '".substr($httpAcceptLanguage, 0, 250)."',
                                             remote_addr = '".substr(strip_tags($_SERVER['REMOTE_ADDR']), 0, 250)."',
-                                            remote_host = '".substr($remote_host, 0, 250)."',
+                                            remote_host = '" . substr($remoteHost, 0, 250) . "',
                                             http_x_forwarded_for = '".(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? substr(strip_tags($_SERVER['HTTP_X_FORWARDED_FOR']), 0, 250) : '')."',
                                             http_via = '".(isset($_SERVER['HTTP_VIA']) ? substr(strip_tags($_SERVER['HTTP_VIA']), 0, 250) : '')."',
                                             http_client_ip = '".(isset($_SERVER['HTTP_CLIENT_IP']) ? substr(strip_tags($_SERVER['HTTP_CLIENT_IP']), 0, 250) : '')."',
@@ -859,6 +857,17 @@ class FWUser extends User_Setting
     {
         $arrSettings = User_Setting::getSettings();
         return $arrSettings['block_birthday_users']['status'];
+    }
+
+    /**
+     * Returns status of next birthday users from user setting
+     *
+     * @return  bool    returns true if function is active
+     */
+    public static function showNextBirthdayUsers()
+    {
+        $arrSettings = User_Setting::getSettings();
+        return (bool) $arrSettings['block_next_birthday_users']['status'];
     }
 
 

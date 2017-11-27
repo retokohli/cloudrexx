@@ -68,6 +68,20 @@ class Request {
     protected $headers = array();
 
     /**
+     * POST data of request
+     *
+     * @var array Sanitized POST data
+     */
+    protected $postData = array();
+
+    /**
+     * COOKIE data of request
+     *
+     * @var array Sanitized COOKIE data
+     */
+    protected $cookieData = array();
+
+    /**
      * Constructor to initialize the $httpRequestMethod and $url
      *
      * @param String $method
@@ -77,6 +91,8 @@ class Request {
         $this->httpRequestMethod = strtolower($method);
         $this->url = $resolvedUrl;
         $this->headers = $headers;
+        $this->postData = contrexx_input2raw($_POST);
+        $this->cookieData = contrexx_input2raw($_COOKIE);
     }
 
     /**
@@ -108,38 +124,37 @@ class Request {
 
     /**
      * Tells whether a GET or POST parameter is set
-     * @todo This should be based on a member variable instead of superglobal
      * @param string $name Name of the param to check
      * @param boolean $get (optional) Set to false to check POST
      * @return boolean True of param is set, false otherwise
      */
     public function hasParam($name, $get = true) {
         if ($get) {
-            $params = $_GET;
-        } else {
-            $params = $_POST;
+            return isset($this->getUrl()->getParamArray()[$name]);
         }
-        return isset($params[$name]);
+
+        return isset($this->postData[$name]);
     }
 
     /**
      * Returns the param identified by $name
-     * @todo This should be based on a member variable instead of superglobal
      * @param string $name Name of the param to return value of
      * @param boolean $get (optional) Set to false to check POST
      * @throws \Exception If a param is requested that is not set
      * @return string Parameter value
      */
     public function getParam($name, $get = true) {
-        if (!$this->hasParam($name)) {
+        if (!$this->hasParam($name, $get)) {
             throw new \Exception('Param not set');
         }
+
+        // return data from GET
         if ($get) {
-            $params = $_GET;
-        } else {
-            $params = $_POST;
+            return $this->getUrl()->getParamArray()[$name];
         }
-        return $params[$name];
+
+        // return data from POST
+        return $this->postData[$name];
     }
 
     /**
@@ -149,7 +164,7 @@ class Request {
      * @return boolean True of param is set, false otherwise
      */
     public function hasCookie($name) {
-        return isset($_COOKIE[$name]);
+        return isset($this->cookieData[$name]);
     }
 
     /**
@@ -163,7 +178,7 @@ class Request {
         if (!$this->hasCookie($name)) {
             throw new \Exception('Cookie not set');
         }
-        return $_COOKIE[$name];
+        return $this->cookieData[$name];
     }
 
     /**
@@ -251,7 +266,7 @@ class Request {
             || strpos($ua, 'gt-p7100') !== false
             || strpos($ua, 'gt-p1000') !== false
             || strpos($ua, 'at100') !== false
-            || strpos($ua, 'a43') !== false;
+            || (strpos($ua, 'a43') !== false && strpos($ua, 'iphone') === false);
         return $isTablet;
     }
 }
