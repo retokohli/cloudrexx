@@ -206,3 +206,4 @@ $_ARRAYLANG['TXT_CALENDAR_MORE'] = "More";
 $_ARRAYLANG['TXT_CALENDAR_MINIMIZE'] = "Minimize";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAIL_VIEW'] = "Detail view";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAIL_VIEW_LABEL'] = "Show link to detail view of this event";
+$_ARRAYLANG['TXT_CALENDAR_MORE_INFO'] = "more information";
