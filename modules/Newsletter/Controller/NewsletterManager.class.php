@@ -2840,19 +2840,11 @@ class NewsletterManager extends NewsletterLib
         // select recipients based on selected crm memberships
         $crmMembershipQuery = '';
         if($crmMembershipFilter['associate']){
-            $crmMembershipQuery = 'UNION DISTINCT SELECT DISTINCT `email`.`email`' .($distinctByType ? ', "'.self::USER_TYPE_CRM.'" AS `type`' : '').'
-                                    FROM `contrexx_module_crm_contacts` AS contact
-                                    INNER JOIN `contrexx_module_crm_customer_membership` membership ON `membership`.`contact_id` = `contact`.`id`
-                                    INNER JOIN `contrexx_module_crm_customer_contact_emails` AS email ON `email`.`contact_id` = `contact`.`id`
-                                    WHERE 
-                                    
-                                    `membership`.`membership_id` IN (' . join(',', $crmMembershipFilter['associate']) . ')' .
-
-                                    (!$crmMembershipFilter['exclude']
-                                        ? ''
-                                        : ' AND `membership`.`membership_id` NOT IN (' . join(',', $crmMembershipFilter['exclude']) . ')' ).
-
-                                    ' AND `email`.`is_primary` = \'1\'';
+            $crmMembershipQuery = 'UNION DISTINCT SELECT DISTINCT `crm`.`email`' .($distinctByType ? ', "'.self::USER_TYPE_CRM.'" AS `type`' : '').'
+                                        FROM `' . DBPREFIX . 'module_crm_contacts` AS `contact` 
+                                        LEFT JOIN `' . DBPREFIX . 'module_crm_customer_contact_emails` AS `crm` 
+                                        ON `crm`.`contact_id` = `contact`.`id` ' .
+                                    $this->getCrmMembershipConditions($crmMembershipFilter);
         }
 
         return sprintf(
@@ -2871,7 +2863,26 @@ class NewsletterManager extends NewsletterLib
         );
     }
 
-
+    /**
+     * Returns the where condition for the filtered crm newsletter recipients
+     *
+     * @param  array    $crmMembershipFilter  the filters for the given mail
+     * @return string                         the WHERE statement of the sql query
+     */
+    function getCrmMembershipConditions($crmMembershipFilter){
+        return '
+            LEFT JOIN `' . DBPREFIX . 'module_crm_customer_membership` `membership` 
+                ON `membership`.`contact_id` = `contact`.`id`
+            WHERE
+                `membership`.`membership_id` IN (' . join(',', $crmMembershipFilter['associate']) . ')' .
+                    (!$crmMembershipFilter['exclude'] ? '' :
+                    ' AND `contact`.`id` NOT IN (
+                                    SELECT `membership`.`contact_id`
+                                      FROM `' . DBPREFIX . 'module_crm_customer_membership` AS `membership` 
+                                     WHERE `membership`.`membership_id` IN ('.join(',', $crmMembershipFilter['exclude']).'))') .
+                    ' AND `contact`.`customer_type` = \'1\'
+                      AND `crm`.`is_primary` = \'1\'';
+    }
     /**
      * Send the mails
      */
@@ -3009,13 +3020,16 @@ class NewsletterManager extends NewsletterLib
      * Get the emails from the tmp sending page
      *
      * @author      Stefan Heinemann <sh@adfinis.com>
-     * @return
+     * @return      DBIterator
      */
     protected function getTmpSending($id, $amount) {
         global $objDatabase;
 
+        // get custom crm filters
+        $crmMembershipFilter = $this->emailEditGetCrmMembershipFilter($id);
+
         $query = "
-            SELECT (CASE WHEN `s`.`type` = '".self::USER_TYPE_NEWSLETTER."'
+            SELECT DISTINCT (CASE WHEN `s`.`type` = '".self::USER_TYPE_NEWSLETTER."'
                          THEN `nu`.`id`
                          ELSE (
                          	CASE WHEN `s`.`type` = '".self::USER_TYPE_CRM."'
@@ -3037,18 +3051,25 @@ class NewsletterManager extends NewsletterLib
         LEFT JOIN `".DBPREFIX."module_crm_customer_contact_emails` AS `crm`
                 ON `crm`.`email` = `s`.`email`
                AND `s`.`type` = '".self::USER_TYPE_CRM."'
+         LEFT JOIN `contrexx_module_crm_contacts` AS `contact`
+                ON `crm`.`contact_id` = `contact`.`id`
 
          LEFT JOIN `".DBPREFIX."access_users` AS `au`
                 ON `au`.`email` = `s`.`email`
-               AND (`s`.`type` = '".self::USER_TYPE_ACCESS."' OR `s`.`type` = '".self::USER_TYPE_CORE."')
-
-             WHERE `s`.`newsletter` = ".intval($id)."
-               AND `s`.`sendt` = 0
-               AND (
-                `au`.`email` IS NOT NULL 
-                OR `nu`.`email` IS NOT NULL
-                OR `crm`.`email` IS NOT NULL
-               )";
+               AND (`s`.`type` = '".self::USER_TYPE_ACCESS."' OR `s`.`type` = '".self::USER_TYPE_CORE."')".
+         (
+            $crmMembershipFilter['associate']
+                ? $this->getCrmMembershipConditions($crmMembershipFilter) . ' AND '
+                : ' WHERE '
+         ) . '
+              
+           `s`.`newsletter` = '.intval($id).'
+           AND `s`.`sendt` = 0
+           AND (
+            `au`.`email` IS NOT NULL 
+            OR `nu`.`email` IS NOT NULL
+            OR `crm`.`email` IS NOT NULL
+           )';
         $res = $objDatabase->SelectLimit($query, $amount, 0);
         return new DBIterator($res);
     }
@@ -3828,22 +3849,29 @@ class NewsletterManager extends NewsletterLib
             case self::USER_TYPE_CRM:
                 $crmUser = new \Cx\Modules\Crm\Model\Entity\CrmContact();
                 $crmUser->load($id);
-                // todo fill out all fields
+
+                $gender = '';
+                if($crmUser->__get('gender') == 1){
+                    $gender = 'f';
+                } else if($crmUser->__get('gender') == 2){
+                    $gender = 'm';
+                }
+                // crm dos not support the following fields:
+                // salutation, birthday, industry_sector, company, country
                 $arrUserData['email']           = $crmUser->__get('email');
-                $arrUserData['website']         = '';
-                $arrUserData['salutation']      = $crmUser->__get('contact_gender');
                 $arrUserData['lastname']        = $crmUser->__get('family_name');
                 $arrUserData['firstname']       = $crmUser->__get('customerName');
-                $arrUserData['company']         = '';
-                $arrUserData['address']         = '';
-                $arrUserData['zip']             = '';
-                $arrUserData['city']            = '';
-                $arrUserData['country_id']      = '';
+                $arrUserData['address']         = $crmUser->__get('address');
+                $arrUserData['title']           = $crmUser->__get('contact_title');
+                $arrUserData['position']        = $crmUser->__get('contact_role');
+                $arrUserData['sex']             = $gender;
+                $arrUserData['zip']             = $crmUser->__get('zip');
+                $arrUserData['city']            = $crmUser->__get('city');
+                $arrUserData['website']         = $crmUser->__get('url');
                 $arrUserData['phone_office']    = $crmUser->__get('phone');
                 $arrUserData['phone_private']   = $crmUser->__get('phone');
                 $arrUserData['phone_mobile']    = $crmUser->__get('phone');
-                $arrUserData['fax']             = '';
-                $arrUserData['birthday']        = '';
+                $arrUserData['fax']             = $crmUser->__get('phone');
                 break;
             case self::USER_TYPE_NEWSLETTER:
             default:
