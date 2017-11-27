@@ -138,6 +138,7 @@ class CrmContact
 
                 $this->email            = $objResult->fields['email'];
                 $this->phone            = $objResult->fields['phone'];
+                $this->address          = $objResult->fields['address'];
                 $this->city             = $objResult->fields['city'];
                 $this->state            = $objResult->fields['state'];
                 $this->zip              = $objResult->fields['zip'];

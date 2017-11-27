@@ -3879,11 +3879,11 @@ class NewsletterManager extends NewsletterLib
                 $crmUser = new \Cx\Modules\Crm\Model\Entity\CrmContact();
                 $crmUser->load($id);
 
-                $gender = '';
-                if($crmUser->__get('gender') == 1){
-                    $gender = 'f';
-                } else if($crmUser->__get('gender') == 2){
-                    $gender = 'm';
+                $arrUserData['sex'] = '';
+                if($crmUser->__get('contact_gender') == 1){
+                    $arrUserData['sex'] = 'f';
+                } else if($crmUser->__get('contact_gender') == 2){
+                    $arrUserData['sex'] = 'm';
                 }
                 // crm dos not support the following fields:
                 // salutation, birthday, industry_sector, country
@@ -3894,7 +3894,6 @@ class NewsletterManager extends NewsletterLib
                 $arrUserData['company']         = $crmUser->__get('linkedCompany');
                 $arrUserData['title']           = $crmUser->__get('contact_title');
                 $arrUserData['position']        = $crmUser->__get('contact_role');
-                $arrUserData['sex']             = $gender;
                 $arrUserData['zip']             = $crmUser->__get('zip');
                 $arrUserData['city']            = $crmUser->__get('city');
                 $arrUserData['website']         = $crmUser->__get('url');
