@@ -2871,7 +2871,7 @@ class NewsletterManager extends NewsletterLib
      *                                        an crm address
      * @return string                         the WHERE statement of the sql query
      */
-    function getCrmMembershipConditions($crmMembershipFilter, $checkMailType = false){
+    protected function getCrmMembershipConditions($crmMembershipFilter, $checkMailType = false){
         return '
             LEFT JOIN `' . DBPREFIX . 'module_crm_customer_membership` `membership` 
                 ON `membership`.`contact_id` = `contact`.`id`
@@ -3865,11 +3865,12 @@ class NewsletterManager extends NewsletterLib
                     $gender = 'm';
                 }
                 // crm dos not support the following fields:
-                // salutation, birthday, industry_sector, company, country
+                // salutation, birthday, industry_sector, country
                 $arrUserData['email']           = $crmUser->__get('email');
                 $arrUserData['lastname']        = $crmUser->__get('family_name');
                 $arrUserData['firstname']       = $crmUser->__get('customerName');
                 $arrUserData['address']         = $crmUser->__get('address');
+                $arrUserData['company']         = $crmUser->__get('linkedCompany');
                 $arrUserData['title']           = $crmUser->__get('contact_title');
                 $arrUserData['position']        = $crmUser->__get('contact_role');
                 $arrUserData['sex']             = $gender;
@@ -3881,6 +3882,7 @@ class NewsletterManager extends NewsletterLib
                 $arrUserData['phone_mobile']    = $crmUser->__get('phone');
                 $arrUserData['fax']             = $crmUser->__get('phone');
                 break;
+
             case self::USER_TYPE_NEWSLETTER:
             default:
                 $query = "

@@ -91,7 +91,8 @@ class CrmContact
                              c.notes, c.contact_type,c.user_account,c.added_date,c.industry_type,
                              e.email,p.phone, c.datasource,
                              c.gender,c.profile_picture, c.`email_delivery`,
-                             a.address, a.city, a.state, a.zip, a.country, w.url
+                             a.address, a.city, a.state, a.zip, a.country, w.url, 
+                             `com`.`customer_name` as `linkedCompany`
                          FROM `".DBPREFIX."module_{$this->moduleName}_contacts` AS c
                          LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` as e
                              ON (c.`id` = e.`contact_id` AND e.`is_primary` = '1')
@@ -101,6 +102,8 @@ class CrmContact
                              ON (c.`id` = a.`contact_id` AND a.`is_primary` = '1')
                          LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_websites` as w
                              ON (c.`id` = w.`contact_id` AND w.`is_primary` = '1')
+                         LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_contacts` as `com`
+                             ON (c.`contact_customer` = `com`.`id`)
                          WHERE c.`id` = {$this->id}";
             $objResult = $objDatabase->Execute($query);
             if (false != $objResult) {
@@ -113,6 +116,7 @@ class CrmContact
                 $this->contact_role     = $objResult->fields['contact_role'];
                 $this->contact_language = $objResult->fields['contact_language'];
                 $this->companySize      = $objResult->fields['company_size'];
+                $this->linkedCompany    = $objResult->fields['linkedCompany'];
                 $this->contact_customer = $objResult->fields['contact_customer'];
                 $this->addedUser        = $objResult->fields['customer_addedby'];
                 $this->currency         = $objResult->fields['customer_currency'];
@@ -337,6 +341,7 @@ class CrmContact
         $this->contact_role     = '';
         $this->contact_title    = '';
         $this->contact_language = 0;
+        $this->linkedCompany    = '';
         $this->contact_customer = 0;
         $this->addedUser        = 0;
         $this->currency         = 0;
