@@ -266,6 +266,17 @@ class Change extends \Cx\Core_Modules\Sync\Model\Entity\Change implements \Doctr
     /**
      * {@inheritDoc}
      */
+    public function removeHost($host)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeHost', array($host));
+
+        return parent::removeHost($host);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setHosts($hosts)
     {
 

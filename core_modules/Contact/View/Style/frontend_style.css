@@ -319,3 +319,17 @@ table.month td.todayevent {
   color: inactivecaptiontext;
   border-width: 0px;
 }
+
+/* error style for required form input fields */
+.contactForm .row input[type=password].error,
+.contactForm .row textarea.error,
+.contactForm .row select.error,
+.contactForm .row input[type=text].error {
+    border: 1px solid red;
+}
+.contactForm .row .contactFormGroup.error,
+.contactForm .row input[type=file].error,
+.contactForm .row input[type=radio].error,
+.contactForm .row input[type=checkbox].error {
+    outline: 1px solid red;
+}

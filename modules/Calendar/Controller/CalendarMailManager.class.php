@@ -784,7 +784,8 @@ class CalendarMailManager extends CalendarLibrary {
 
         $registrationDataText = '';
         $registrationDataHtml = '<table align="top" border="0" cellpadding="3" cellspacing="0">';
-        foreach ($objRegistration->fields as $arrField) {
+        foreach ($objRegistration->getForm()->inputfields as $arrInputfield) {
+            $arrField = $objRegistration->fields[$arrInputfield['id']];
             $hide = false;
             switch ($arrField['type']) {
                 case 'select':
