@@ -205,6 +205,7 @@ $_ARRAYLANG['TXT_ACCESS_SET_ADDRESS_OF_WEBSITE'] = "Geben Sie die Adresse einer 
 $_ARRAYLANG['TXT_ACCESS_SIGNATURE'] = "Signatur";
 $_ARRAYLANG['TXT_ACCESS_SKYPE_NAME'] = "Skype-Name";
 $_ARRAYLANG['TXT_ACCESS_TITLE'] = "Anrede";
+$_ARRAYLANG['TXT_ACCESS_DESIGNATION'] = "Titel";
 $_ARRAYLANG['TXT_ACCESS_UNABLE_DELETE_YOUR_USER'] = "Sie können Ihren eigenen Benutzer nicht löschen!";
 $_ARRAYLANG['TXT_ACCESS_UNABLE_STORE_PROFILE_ATTIRBUTE'] = "Die Profileigenschaft %s konnte nicht gespeichert werden!";
 $_ARRAYLANG['TXT_ACCESS_NOT_SPECIFIED'] = "Keine Angabe";

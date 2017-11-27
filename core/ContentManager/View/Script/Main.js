@@ -225,10 +225,13 @@ cx.ready(function() {
     });
     cx.jQuery('#page_target_edit').click(function() {
         cx.jQuery('#page_target_cancel').show();
-        cx.jQuery('.page_target_text_wrapper').hide().prev().show();
+        cx.jQuery('#page_target_text_wrapper_redirect').hide().prev().show();
     });
     cx.jQuery('#page_target_cancel').click(function() {
-        cx.cm.setPageTarget(cx.jQuery(".page_target_backup").val(), cx.jQuery(".page_target_text").text());
+        cx.cm.setPageTarget(
+            cx.jQuery(".page_target_backup").val(),
+            cx.jQuery(this).parent().next(".page_target_text_wrapper").find(".page_target_text").text()
+        );
     });
     cx.jQuery('#page_target_check').click(function() {
         cx.jQuery(this).hide();
@@ -1045,11 +1048,30 @@ cx.cm.loadApplicationTemplate = function(application, area, template) {
                     }).text(templateFile[i]));
                 }
             }
+
+            var page = cx.cm.page;
             cx.jQuery('span.area').text(response.data.area);
             cx.jQuery('span.folderPath').text(response.data.path);
-            cx.cm.pageApplicationTemplate = '';
-            cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('disabled', 'disabled');
-            cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
+            cx.jQuery('#page select[name="page[customContent]"]').val(page.customContent);
+            cx.cm.pageContentTemplate = page.customContent;
+
+            if (page.useCustomContentForAllChannels == '1') {
+                cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').attr('checked', 'checked');
+            } else {
+                cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').removeAttr('checked');
+            }
+            cx.jQuery('#page select[name="page[customContent]"]').trigger('change');
+
+
+            cx.jQuery('#page select[name="page[applicationTemplate]"]').val(page.applicationTemplate);
+            cx.cm.pageApplicationTemplate = page.applicationTemplate;
+
+            if (page.useCustomApplicationTemplateForAllChannels == '1') {
+                cx.jQuery('#page input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('checked', 'checked');
+            } else {
+                cx.jQuery('#page input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
+            }
+            cx.jQuery('#page select[name="page[applicationTemplate]"]').trigger('change');
         }
     }).always(function(response) {
         if(response.hasOwnProperty('area')){
@@ -1747,7 +1769,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         }
         catch (e) {}
     });
-    if (typeof(langPreset) == 'string' && langPreset.length == 2) {
+    if (typeof(langPreset) == 'string' && langPreset.length >= 2) {
         cx.cm.setCurrentLang(langPreset);
     }
 };
@@ -1883,10 +1905,17 @@ cx.cm.performAction = function(action, pageId, nodeId) {
             url = "index.php?cmd=JsonData&object=node&act=copy&id=" + nodeId;
             break;
         case "activate":
+            // do not try to activate inexisting pages, open them in editor instead
+            if (!page.existing) {
+                cx.cm.setCurrentLang(pageLang);
+                cx.cm.loadPage(undefined, nodeId, null, "content");
+                return;
+            }
+            // intentionally no "break" here!
         case "deactivate":
             // do not toggle activity for drafts
             if (page.publishing.hasDraft != "no") {
-                return
+                return;
             }
             break;
         case "show":
@@ -2731,6 +2760,7 @@ cx.cm.loadPage = function(pageId, nodeId, historyId, selectTab, reloadHistory) {
 };
 cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     cx.cm.showEditView();
+    cx.cm.page = page;
 
     // make sure history tab is shown
     cx.jQuery('.tab.page_history').show();
@@ -2827,27 +2857,6 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     }
     cx.jQuery('#page select[name="page[skin]"]').trigger('change');
 
-    cx.jQuery('#page select[name="page[customContent]"]').val(page.customContent);
-    cx.cm.pageContentTemplate = page.customContent;
-
-    if (page.useCustomContentForAllChannels == '1') {
-        cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').attr('checked', 'checked');
-    } else {
-        cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').removeAttr('checked');
-    }
-    cx.jQuery('#page select[name="page[customContent]"]').trigger('change');
-
-
-    cx.jQuery('#page select[name="page[applicationTemplate]"]').val(page.applicationTemplate);
-    cx.cm.pageApplicationTemplate = page.applicationTemplate;
-
-    if (page.useCustomApplicationTemplateForAllChannels == '1') {
-        cx.jQuery('#page input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('checked', 'checked');
-    } else {
-        cx.jQuery('#page input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
-    }
-    cx.jQuery('#page select[name="page[applicationTemplate]"]').trigger('change');
-
     cx.jQuery('#page input[name="page[cssName]"]').val(page.cssName);
 
     if (page.module === 'Home') {
@@ -2874,7 +2883,6 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
 
     if (reloadHistory) {
         cx.jQuery('#page_history').empty();
-        cx.cm.loadHistory(page.id);
     }
 
     if (page.editingStatus == 'hasDraftWaiting') {

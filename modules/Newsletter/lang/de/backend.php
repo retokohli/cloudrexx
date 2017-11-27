@@ -391,6 +391,7 @@ $_ARRAYLANG['TXT_NEWSLETTER_CONNECT_SMTP_FAILED'] = "Es konnte keine Verbindung 
 $_ARRAYLANG['TXT_NEWSLETTER_EXPORT_ALL_LISTS'] = "Alle Listen ins Excel exportieren";
 $_ARRAYLANG['TXT_NEWSLETTER_FILE_TYPE'] = "Dateityp";
 $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_HELP'] = "Wählen Sie hier eine Datei aus, deren Inhalt importiert werden soll:";
+$_ARRAYLANG['TXT_NEWSLETTER_IMPORT_SEND_MAIL_DESC'] = "Wählen Sie eine E-Mail-Kampagne aus, welche automatisch nach dem Import an die neuen Teilnehmer gesendet werden soll. Achtung: Der automatische Versand kann nicht gesteuert oder abgebrochen werden!";
 $_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN'] = "Unbekannt";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTICE'] = "Hinweis";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTICE_TESTMAIL'] = "Beim Testnewsletter werden die Platzhalter und die Profillinks nicht ersetzt";

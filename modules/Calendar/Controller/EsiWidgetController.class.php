@@ -79,7 +79,7 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         $catMatches = null;
         //The global $_LANGID is required in the method
         //CalendarHeadlines::getHeadlines()
-        $_LANGID    = $params['lang'];
+        $_LANGID    = $params['locale']->getId();
         if (!$params['theme']) {
             return;
         }
@@ -98,7 +98,9 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
             return;
         }
 
-        $content = file_get_contents($fileSystem->getFullPath($file));
+        $content = file_get_contents(
+            $fileSystem->getFullPath($file) . $file->getFullName()
+        );
         if (
             preg_match(
                 '/\{CALENDAR_CATEGORY_([0-9]+)\}/',
