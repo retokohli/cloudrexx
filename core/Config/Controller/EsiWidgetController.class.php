@@ -70,8 +70,8 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
                 break;
 
             case 'DOMAIN_URL':
-                $url = \Cx\Core\Routing\Url::fromDocumentRoot();
-                $widgetValue = $url->getDomain();
+                $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
+                $widgetValue = $domainRepo->getMainDomain()->getName();
                 $template->setVariable($name, $widgetValue);
                 break;
 
