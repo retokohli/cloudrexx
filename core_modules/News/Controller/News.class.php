@@ -1903,7 +1903,7 @@ RSS2JSCODE;
             return;
         }
 
-        return $this->getInternDateTimeFromDb($result->fields['expirationdate']);
+        return new \DateTime($result->fields['expirationdate']);
     }
 
 }
