@@ -207,3 +207,4 @@ $_ARRAYLANG['TXT_CALENDAR_MORE'] = "Erweitert";
 $_ARRAYLANG['TXT_CALENDAR_MINIMIZE'] = "Vereinfacht";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAIL_VIEW'] = "Detailansicht";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAIL_VIEW_LABEL'] = "Verlinkung zur Detailansicht dieser Veranstaltung anzeigen";
+$_ARRAYLANG['TXT_CALENDAR_MORE_INFO'] = "Mehr erfahren";
