@@ -240,9 +240,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                : '';
 
         if ($objResult->fields['enddate'] != '0000-00-00 00:00:00') {
-            $expirationDate = $this->getInternDateTimeFromDb(
-                $objResult->fields['enddate']
-            );
+            $expirationDate = new \DateTime($objResult->fields['enddate']);
         }
 
         if (!empty($url1)) {
@@ -1859,22 +1857,6 @@ RSS2JSCODE;
     }
 
     /**
-     * Returns a \DateTime object from a date/time string.
-     *
-     * The SUPPLIED date/time string must be in DB timezone.
-     * The RETURNED \DateTime object will be in INTERNAL timezone.
-     *
-     * @param string $time A date/time string in db timezone
-     * @return \DateTime \DateTime object in internal timezone
-     */
-    protected function getInternDateTimeFromDb($time = 'now')
-    {
-        $cx       = \Cx\Core\Core\Controller\Cx::instanciate();
-        $dateTime = $cx->getComponent('DateTime')->createDateTimeForDb($time);
-        return $cx->getComponent('DateTime')->db2intern($dateTime);
-    }
-
-    /**
      * Get a expiration date
      *
      * @return \DateTime \DateTime object for expiration date
@@ -1905,5 +1887,4 @@ RSS2JSCODE;
 
         return new \DateTime($result->fields['expirationdate']);
     }
-
 }
