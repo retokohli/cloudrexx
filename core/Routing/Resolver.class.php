@@ -185,7 +185,7 @@ class Resolver {
         } else {
             // if the current URL points to a file:
             if (
-                empty($this->url->getLangDir()) &&
+                empty($this->url->getLangDir(true)) &&
                 preg_match('/^[^?]*\.[a-z0-9]{2,4}$/', $this->url->toString())
             ) {
                 global $url;
@@ -478,9 +478,25 @@ class Resolver {
             throw new ResolverException('Alias found, but it is not active.');
         }
 
-        $langDir = $this->url->getLangDir();
+        $langDir = $this->url->getLangDir(true);
         $frontendLang = defined('FRONTEND_LANG_ID') ? FRONTEND_LANG_ID : null;
-        if (!empty($langDir) && $this->pageRepo->getPagesAtPath($langDir.'/'.$path, null, $frontendLang, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY)) {
+
+        // In case the request does contain a virtual language directory,
+        // we have to ensure that there does not exist a page by the requested path.
+        // Pages do have a higher precidence than aliases, if a virtual language directory
+        // is set.
+        // If the request does not contain a virtual language directory, but
+        // the request does contain a slash (/), then the request does most
+        // likely point to a page, as an alias can not contain a slash
+        // character. In such case, we also have to check if the request might
+        // match an actual page.
+        if (
+            (
+                !empty($langDir) ||
+                strpos($path, '/')
+            ) &&
+            $this->pageRepo->getPagesAtPath($langDir.'/'.$path, null, $frontendLang, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY)
+        ) {
             return null;
         }
 
@@ -575,7 +591,11 @@ class Resolver {
             }
 
             //(I) see what the model has for us
-            $result = $this->pageRepo->getPagesAtPath($this->url->getLangDir().'/'.$path, null, $this->lang, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
+            $langDirPath = '';
+            if (\Cx\Core\Routing\Url::isVirtualLanguageDirsActive()) {
+                $langDirPath = $this->url->getLangDir().'/';
+            }
+            $result = $this->pageRepo->getPagesAtPath($langDirPath . $path, null, $this->lang, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
             if (isset($result['page']) && $result['page'] && $this->pagePreview) {
                 if (empty($this->sessionPage)) {
                     if (\Permission::checkAccess(6, 'static', true)) {

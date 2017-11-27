@@ -678,13 +678,22 @@ class PageRepository extends EntityRepository {
             $path = substr($path, 1);
         }
         $parts = explode('/', $path);
-        $lang = \FWLanguage::getLanguageIdByCode($parts[0]);
+        $lang = false;
+        if ($search_mode == self::SEARCH_MODE_PAGES_ONLY) {
+            if (\Cx\Core\Routing\Url::isVirtualLanguageDirsActive()) {
+                $lang = \FWLanguage::getLanguageIdByCode($parts[0]);
+            } else {
+                $lang = \FWLanguage::getDefaultLangId();
+            }
+        }
         // let's see if path starts with a language (which it should)
         if ($lang !== false) {
             if ($search_mode != self::SEARCH_MODE_PAGES_ONLY) {
                 return false;
             }
-            unset($parts[0]);
+            if (\Cx\Core\Routing\Url::isVirtualLanguageDirsActive()) {
+                unset($parts[0]);
+            }
         } else {
             if ($search_mode != self::SEARCH_MODE_ALIAS_ONLY) {
                 return false;

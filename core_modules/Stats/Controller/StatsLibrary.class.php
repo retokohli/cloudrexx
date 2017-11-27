@@ -133,6 +133,7 @@ class StatsLibrary
             //JS::activate('jquery');
             $searchTerm = '';
             $searchTermPlain = '';
+            $searchTermNoScript = '';
             if (isset($_REQUEST['term']) && !empty($_REQUEST['term']) && $_REQUEST['section'] == "Search") {
                 $searchTerm = "&amp;searchTerm=".urlencode($_REQUEST['term'])."' + '";
                 $searchTermNoScript = "&amp;searchTerm=".urlencode($_REQUEST['term']);

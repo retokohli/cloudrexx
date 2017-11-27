@@ -78,7 +78,7 @@ class MediaDirectoryInputfieldRelationGroup extends \Cx\Modules\MediaDir\Control
 
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
-        global $objDatabase, $_LANGID, $objInit, $_ARRAYLANG;
+        global $objDatabase, $objInit, $_ARRAYLANG;
 
         $intId = intval($arrInputfield['id']);
 
@@ -104,7 +104,7 @@ class MediaDirectoryInputfieldRelationGroup extends \Cx\Modules\MediaDir\Control
                     $strValue = null;
                 }
 
-                $intFormType = empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID];
+                $intFormType = empty($arrInputfield['default_value'][FRONTEND_LANG_ID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][FRONTEND_LANG_ID];
                 $arrSelectorOptions = array();
                 $arrValue = explode(",",$strValue);
 
@@ -238,7 +238,7 @@ class MediaDirectoryInputfieldRelationGroup extends \Cx\Modules\MediaDir\Control
 
                 $listElementsJSON = json_encode($arrSelectedList);
 
-                $editPageCmd = 'edit'.(empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID]);*/
+                $editPageCmd = 'edit'.(empty($arrInputfield['default_value'][FRONTEND_LANG_ID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][FRONTEND_LANG_ID]);*/
                 /*$strInputfield = '<div class="'.$strSelectorWrapperClass.'" style="overflow: hidden;">';
                 $strInputfield .= '<ul id="'.$strNotSelectedId.'" class="'.$strSelectorListClass.'" '.$strStyle.'>';
                 $strInputfield .= '</ul>';
@@ -388,7 +388,7 @@ EOF;
                     $strValue = null;
                 }
 
-                $intFormType = empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID];
+                $intFormType = empty($arrInputfield['default_value'][FRONTEND_LANG_ID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][FRONTEND_LANG_ID];
                 $arrValue = explode(",",$strValue);
                 $arrSelectorOptions = array();
 
@@ -509,7 +509,7 @@ EOF;
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $strValue = static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus);
 
@@ -544,13 +544,13 @@ EOF;
                 $intRelationDefaultLang = intval($objRelationDefaultLang->fields['lang_id']);
 
                 if($this->arrSettings['settingsTranslationStatus'] == 1) {
-                    if(in_array($_LANGID, $arrTranslationStatus)) {
-                        $intRelationLangId = $_LANGID;
+		            if(in_array(FRONTEND_LANG_ID, $arrTranslationStatus)) {
+		                $intRelationLangId = FRONTEND_LANG_ID;
                     } else {
                         $intRelationLangId = $intRelationDefaultLang;
                     }
                 } else {
-                    $intRelationLangId = $_LANGID;
+		            $intRelationLangId = FRONTEND_LANG_ID;
                 }
                 $objRelationValues = $objDatabase->Execute("
                     SELECT
