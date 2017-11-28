@@ -13,3 +13,10 @@ pipelines:
           - set -e
           - git remote add codecommit ssh://$CodeCommitRepo
           - git push codecommit $BITBUCKET_BRANCH
+  branches:
+    master:
+      - step:
+          script:
+            - RESULT=`curl -X POST -H "Content-Type: application/json" -u $BITBUCKET_USER:$BITBUCKET_PASS  https://api.bitbucket.org/2.0/repositories/cloudrexx/cloudrexx/pullrequests -d "{\"title\":\"Automatic merge from $SOURCE_BRANCH into $DEST_BRANCH\",\"description\":\"$MERGE_DESCRIPTION\",\"source\":{\"branch\":{\"name\":\"$SOURCE_BRANCH\"}},\"destination\":{\"branch\":{\"name\":\"$DEST_BRANCH\"}},\"close_source_branch\":false }"`
+            - if [[ $RESULT =~ $REGEX ]]; then; MERGE_URI=${BASH_REMATCH[1]}; else; echo "Error while creating merge request, aborting. Result was:\ $RESULT"; exit -1; fi
+            - curl -X POST -H "Content-Type: application/json" -u $BITBUCKET_USER:$BITBUCKET_PASS "$MERGE_URI" -d "{}"
