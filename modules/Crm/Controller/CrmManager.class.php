@@ -1083,7 +1083,36 @@ class CrmManager extends CrmLibrary
                     $objMembership->MoveNext();
                 }
             }
-
+            if(isset($custDetails['contact_amount'])){
+                $objTpl->setVariable(
+                    array(
+                        'CRM_CONTACT_AMOUNT' => $custDetails['contact_amount'],
+                        'TXT_CRM_AMOUNT' => $_ARRAYLANG['TXT_CRM_AMOUNT'],
+                    )
+                );
+            } else {
+                $objTpl->hideBlock('contactAmount');
+            }
+            if(isset($custDetails['updated_date'])){
+                $objTpl->setVariable(
+                    array(
+                        'CRM_CONTACT_LAST_UPDATE' => $custDetails['updated_date'],
+                        'TXT_CRM_CONTACT_LAST_UPDATE' => $_ARRAYLANG['TXT_CRM_LASTUPDATE'],
+                    )
+                );
+            } else {
+                $objTpl->hideBlock('contactLastUpdate');
+            }
+            if(isset($custDetails['updated_date'])){
+                $objTpl->setVariable(
+                    array(
+                        'CRM_CONTACT_NOTES' => $custDetails['notes'],
+                        'TXT_CRM_CONTACT_NOTES' => $_ARRAYLANG['TXT_DESCRIPTION'],
+                    )
+                );
+            } else {
+                $objTpl->hideBlock('contactNotes');
+            }
             if ($custDetails['contact_type'] == 1) {
                 $custDetails['cType'] ? $objTpl->touchBlock('companyCustomerType') : $objTpl->hideBlock('companyCustomerType');
                 $custDetails['industry_name'] ? $objTpl->touchBlock('companyIndustryType') : $objTpl->hideBlock('companyIndustryType');
