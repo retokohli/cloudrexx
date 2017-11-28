@@ -841,17 +841,25 @@ namespace Cx\Core\Core\Controller {
              *
              * Enable \DBG to see what happened
              */
-            catch (\Exception $e) {
+            catch (\Throwable $e) {
                 \header($_SERVER['SERVER_PROTOCOL'] . ' 500 Server Error');
                 if (file_exists($this->websiteDocumentRootPath . '/offline.html')) {
                     $offlinePath = $this->websiteDocumentRootPath;
                 } else {
                     $offlinePath = $this->codeBaseDocumentRootPath;
                 }
+                // remove CSRF token
+                output_reset_rewrite_vars();
                 echo file_get_contents($offlinePath . '/offline.html');
                 \DBG::msg('Cloudrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
                 \DBG::msg('In file ' . $e->getFile() . ' on Line ' . $e->getLine());
                 \DBG::dump($e->getTrace());
+                \DBG::msg('GET:');
+                \DBG::dump($_GET);
+                \DBG::msg('POST:');
+                \DBG::dump($_POST);
+                \DBG::msg('COOKIE:');
+                \DBG::dump($_COOKIE);
                 die();
             }
         }
