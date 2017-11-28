@@ -2882,7 +2882,7 @@ class NewsletterManager extends NewsletterLib
                                     SELECT `membership`.`contact_id`
                                       FROM `' . DBPREFIX . 'module_crm_customer_membership` AS `membership` 
                                      WHERE `membership`.`membership_id` IN ('.join(',', $crmMembershipFilter['exclude']).'))') .
-                    ' AND `contact`.`customer_type` = \'1\'
+                    ' AND `contact`.`contact_type` = \'2\'
                       AND `crm`.`is_primary` = \'1\')' .
                         (
                             $checkMailType
