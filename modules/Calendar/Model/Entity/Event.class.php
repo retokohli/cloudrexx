@@ -960,7 +960,7 @@ class Event extends \Cx\Model\Base\EntityBase {
     /**
      * Set excludedCrmGroups
      *
-     * @param string $invitedCrmGroups
+     * @param string $excludedCrmGroups
      */
     public function setExcludedCrmGroups($excludedCrmGroups)
     {
