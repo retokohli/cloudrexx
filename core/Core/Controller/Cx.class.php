@@ -2292,7 +2292,10 @@ namespace Cx\Core\Core\Controller {
             $cx = $this;
             register_shutdown_function(function() use ($cx, $requestInfo, $requestIp, $requestHost, $requestUserAgent) {
                 $parsingTime = $cx->stopTimer();
-                \DBG::log("(Cx: {$cx->id}) Request parsing completed after $parsingTime \"uncached\" \"$requestInfo\" \"$requestIp\" \"$requestHost\" \"$requestUserAgent\"");
+                \DBG::log(
+                    "(Cx: {$cx->id}) Request parsing completed after $parsingTime \"uncached\" \"$requestInfo\" \"$requestIp\" \"$requestHost\" \"$requestUserAgent\" \"" .
+                    memory_get_peak_usage(true) . "\""
+                );
             });
         }
 
