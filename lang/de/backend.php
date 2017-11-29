@@ -129,7 +129,6 @@ $_ARRAYLANG['TXT_PAGE_NAME'] = "Seitenname";
 $_ARRAYLANG['TXT_SECONDS'] = "Sekunden";
 $_ARRAYLANG['TXT_TRANSLATION'] = "Übersetzung";
 $_ARRAYLANG['TXT_BROWSERLANGUAGE'] = "Sprache";
-$_ARRAYLANG['TXT_LANGUAGEMANAGER_MODULE_DESCRIPTION'] = "Language";
 $_ARRAYLANG['TXT_START_DATE'] = "Startdatum";
 $_ARRAYLANG['TXT_STATS'] = "Statistik";
 $_ARRAYLANG['TXT_STATS_SETTINGS'] = "Einstellungen";
@@ -1163,6 +1162,7 @@ $_ARRAYLANG['TXT_CORE_SETTING_VALUE'] = "Einstellung";
 $_ARRAYLANG['TXT_CORE_SETTING_WARNING_EMPTY'] = "Hinweis: Leerer Wert für Einstellung '%1\$s' (Schlüssel '%2\$s')";
 $_ARRAYLANG['TXT_CORE_SETTING_WARNING_MISSING_LANGUAGE'] = "Fehlender Spracheintrag für Schlüssel '%2\$s' (Index '%1\$s')";
 $_ARRAYLANG['TXT_CORE_SETTING_WARNING_NONE_FOUND_FOR_TAB_AND_SECTION'] = "Hinweis: Keine Einstellungen gefunden für Tab %1\$s, Sektion %2\$s";
+$_ARRAYLANG['TXT_CORE_SETTING_ERROR_STORING_IMAGE'] ='Die Einstellung %s konnte nicht gespeichert werden';
 $_ARRAYLANG['TXT_CORE_SETTING_ERROR_STORING_UNKNOWN_SETTING'] = "Fehler: Die unbekanne Einstellung \"%1\$s\" konnte nicht aktualisiert werden";
 // UNUSED -- keep it anyway
 //$_ARRAYLANG['TXT_CORE_SETTING_ERROR_STORING_SETTINGS'] = "Fehler: Die Einstellungen konnten nicht aktualisiert werden";

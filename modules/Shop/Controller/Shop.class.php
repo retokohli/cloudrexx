@@ -590,6 +590,8 @@ die("Failed to get Customer for ID $customer_id");
                 $objTpl->setVariable(array(
                     'SHOP_CATEGORY_STYLE' => $style,
                     'SHOP_CATEGORY_ID' => $id,
+                    'SHOP_CATEGORY_NAME_FLAT' =>
+                        str_replace('"', '&quot;', $arrShopCategory['name']),
                     'SHOP_CATEGORY_NAME' =>
                         str_repeat('&nbsp;', 3*$level).
                         str_replace('"', '&quot;', $arrShopCategory['name']),
@@ -1326,6 +1328,11 @@ die("Failed to update the Cart!");
             }
             return true;
         }
+        if ($count == 0) {
+            if (self::$objTemplate->blockExists('products')) {
+                self::$objTemplate->hideBlock('products');
+            }
+        }
         if ($objCategory) {
         // Only indicate the category name when there are products
             if ($count) {
@@ -1380,6 +1387,8 @@ die("Failed to update the Cart!");
         $arrDefaultImageSize = $arrSize = null;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $thumbnailFormats = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
+        $isFileAttrExistsInPdt = false;
+        $uploader = false;
         foreach ($arrProduct as $objProduct) {
             $id = $objProduct->id();
             $productSubmitFunction = '';
@@ -1580,6 +1589,22 @@ die("Failed to update the Cart!");
                     $id, $formId, $cart_id, $flagMultipart
                 );
             }
+            if ($flagMultipart) {
+                $isFileAttrExistsInPdt = $flagMultipart;
+                if (!$uploader) {
+                    //initialize the uploader
+                    $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+                    $uploader->setCallback('productOptionsUploaderCallback');
+                    $uploader->setOptions(array(
+                        'id'                => 'productOptionsUploader',
+                        'data-upload-limit' => 1,
+                        'style'             => 'display:none'
+                    ));
+                }
+                self::$objTemplate->setVariable(array(
+                    'SHOP_PRODUCT_OPTIONS_UPLOADER_ID'   => $uploader->getId()
+                ));
+            }
             $shopProductFormName = "shopProductForm$formId";
             $row = $formId % 2 + 1;
             self::$objTemplate->setVariable(array(
@@ -1752,11 +1777,31 @@ die("Failed to update the Cart!");
                 self::$objTemplate->hideBlock('orderQuantity');
             }
 
+            if ($objProduct->stock()) {
+                if (self::$objTemplate->blockExists('shop_product_in_stock')) {
+                    self::$objTemplate->touchBlock('shop_product_in_stock');
+                }
+                if (self::$objTemplate->blockExists('shop_product_not_in_stock')) {
+                    self::$objTemplate->hideBlock('shop_product_not_in_stock');
+                }
+            } else {
+                if (self::$objTemplate->blockExists('shop_product_in_stock')) {
+                    self::$objTemplate->hideBlock('shop_product_in_stock');
+                }
+                if (self::$objTemplate->blockExists('shop_product_not_in_stock')) {
+                    self::$objTemplate->touchBlock('shop_product_not_in_stock');
+                }
+            }
 
             if (self::$objTemplate->blockExists('shopProductRow')) {
                 self::$objTemplate->parse('shopProductRow');
             }
             ++$formId;
+        }
+        if ($isFileAttrExistsInPdt) {
+            self::$objTemplate->setVariable(array(
+                'SHOP_PRODUCT_OPTIONS_UPLOADER_CODE' => $uploader->getXHtml(),
+            ));
         }
         return true;
     }
@@ -1944,7 +1989,7 @@ die("Failed to update the Cart!");
                 self::$objTemplate->hideBlock('shopProductOptionsRow');
                 self::$objTemplate->hideBlock('shopProductOptionsValuesRow');
             } else {
-                $isUpload = false;
+                $forceSelectOption = \Cx\Core\Setting\Controller\Setting::getValue('force_select_option','Shop');
                 // Loop through the Attribute Names for the Product
                 foreach ($arrAttributes as $attribute_id => $objAttribute) {
                     $mandatory = false;
@@ -2006,6 +2051,7 @@ die("Failed to update the Cart!");
                         $checkOptionIds .= "$attribute_id;";
                         break;
                       case Attribute::TYPE_MENU_MANDATORY:
+                        $arrAssignedOptions = array_intersect_key($arrOptions, $arrRelation);
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
                             $product_id.'-'.$attribute_id.
@@ -2016,8 +2062,7 @@ die("Failed to update the Cart!");
                             '" class="product-option-field" style="width:180px;">'."\n".
                             // If there is only one option to choose from,
                             // why bother the customer at all?
-// NOTE: To always prepend the default "please choose" option, comment the condition
-                            (count($arrOptions) > 1
+                            ($forceSelectOption || count($arrAssignedOptions) > 1
                                 ? '<option value="0">'.
                                   $objAttribute->getName().'&nbsp;'.
                                   $_ARRAYLANG['TXT_CHOOSE']."</option>\n"
@@ -2164,15 +2209,76 @@ die("Failed to update the Cart!");
                           case Attribute::TYPE_UPLOAD_OPTIONAL:
                           case Attribute::TYPE_UPLOAD_MANDATORY:
 //                            $option_price = '&nbsp;';
-                            $isUpload = true;
-                            $selectValues .='<input type="input" name="productOption['.$attribute_id.
-                                ']" id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
-                                '" style="width:180px; float:left" />'.
-                                  '<input type="button" name="productOption['.$attribute_id.
-                                ']" onClick="getUploader(cx.jQuery(this));" data-input-id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
-                                '" value="'.$_ARRAYLANG['TXT_SHOP_CHOOSE_FILE'].'"/>'.
-                                  '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
-                                $option_price."</label><br />\n";
+                            $inputName = 'productOption[' . $attribute_id . ']';
+                            $inputId   = 'productOption-' . $product_id . '-' .
+                                $attribute_id . '-' . $domId;
+                            $inputText =
+                                new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                    'input'
+                                );
+                            $inputText->setAttribute('type', 'text');
+                            $inputText->setAttribute('id', $inputId);
+                            $inputText->setAttribute('disabled', 'disabled');
+                            $inputText->setClass(
+                                'product-option-upload-text
+                                 product-option-field ' . $inputId
+                            );
+                            if ($arrOption['price'] != 0) {
+                                $inputText->setAttribute(
+                                    'data-price',
+                                    $arrOption['price']
+                                );
+                            }
+                            $inputHidden =
+                                new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                    'input'
+                                );
+                            $inputHidden->setAttribute('type', 'text');
+                            $inputHidden->setAttribute('name', $inputName);
+                            $inputHidden->setClass(
+                                'product-option-upload-hidden
+                                 product-option-upload ' . $inputId
+                            );
+                            $inputButton =
+                                new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                    'input'
+                                );
+                            $inputButton->setAttribute('type', 'button');
+                            $inputButton->setClass(
+                                'product-option-upload-button'
+                            );
+                            $inputButton->setAttribute(
+                                'data-input-id',
+                                $inputId
+                            );
+                            $inputButton->setAttribute(
+                                'value',
+                                $_ARRAYLANG['TXT_SHOP_CHOOSE_FILE']
+                            );
+                            $removeIcon = new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                'img'
+                            );
+                            $removeIcon->setClass('product-option-remove-file');
+                            $removeIcon->setAttribute('data-input-id', $inputId);
+                            $removeIcon->setAttribute(
+                                'src',
+                                '/core/Core/View/Media/icons/delete.gif'
+                            );
+                            $removeIcon->setAttribute(
+                                'title',
+                                $_ARRAYLANG['TXT_SHOP_REMOVE_FILE']
+                            );
+                            $label = new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                'label'
+                            );
+                            $label->setAttribute('for', $inputId);
+                            $value = new \Cx\Core\Html\Model\Entity\TextElement(
+                                $option_price
+                            );
+                            $label->addChild($value);
+                            $br = new \Cx\Core\Html\Model\Entity\HtmlElement('br');
+                            $selectValues .= $inputText . $inputButton .
+                                $removeIcon. $inputHidden . $label . $br;
                             break;
                           case Attribute::TYPE_TEXTAREA_OPTIONAL:
                           case Attribute::TYPE_TEXTAREA_MANDATORY:
@@ -2249,21 +2355,6 @@ die("Failed to update the Cart!");
                     self::$objTemplate->parse('shopProductOptionsValuesRow');
                 }
                 self::$objTemplate->parse('shopProductOptionsRow');
-                if ($isUpload) {
-                    //initialize the uploader
-                    $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader(); //create an uploader
-                    $uploader->setCallback('productOptionsUploaderCallback');
-                    $uploader->setOptions(array(
-                        'id' => 'productOptionsUploader',
-                        'allowed-extensions' => array('jpg', 'png', 'gif'),
-                        'data-upload-limit' => 1,
-                        'style' => 'display:none'
-                    ));
-                    self::$objTemplate->setVariable(array(
-                        'SHOP_PRODUCT_OPTIONS_UPLOADER_CODE' => $uploader->getXHtml(),
-                        'SHOP_PRODUCT_OPTIONS_UPLOADER_ID'   => $uploader->getId()
-                    ));
-                }
             }
         }
         return
@@ -2569,6 +2660,39 @@ die("Shop::processRedirect(): This method is obsolete!");
         $fax = (isset($_SESSION['shop']['fax'])
             ? $_SESSION['shop']['fax']
             : (self::$objCustomer ? self::$objCustomer->fax() : ''));
+        $birthday = (isset($_SESSION['shop']['birthday'])
+            ? $_SESSION['shop']['birthday']
+            : (self::$objCustomer ? self::$objCustomer->getProfileAttribute('birthday') : mktime(0, 0, 0)));
+
+        $selectedBirthdayDay = date('j', $birthday);
+        $selectedBirthdayMonth = date('n', $birthday);
+        $selectedBirthdayYear = date('Y', $birthday);
+
+        $birthdayDaySelect= new \Cx\Core\Html\Model\Entity\DataElement(
+            'shop_birthday_day',
+            $selectedBirthdayDay,
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+            null,
+            array_combine(range(1, 31), range(1, 31))
+        );
+        $birthdayDaySelect->setAttribute('class', 'birthday');
+        $birthdayMonthSelect = new \Cx\Core\Html\Model\Entity\DataElement(
+            'shop_birthday_month',
+            $selectedBirthdayMonth,
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+            null,
+            array_combine(range(1, 12), range(1, 12))
+        );
+        $birthdayMonthSelect->setAttribute('class', 'birthday');
+        $birthdayYearSelect= new \Cx\Core\Html\Model\Entity\DataElement(
+            'shop_birthday_year',
+            $selectedBirthdayYear,
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+            null,
+            array_combine(range(1900, date('Y')), range(1900, date('Y')))
+        );
+
+        $birthdayYearSelect->setAttribute('class', 'birthday');
         self::$objTemplate->setVariable(array(
             'SHOP_ACCOUNT_COMPANY' => htmlentities($company, ENT_QUOTES, CONTREXX_CHARSET),
             'SHOP_ACCOUNT_PREFIX' => Customers::getGenderMenuoptions($gender),
@@ -2587,6 +2711,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             // Old template
             // Compatibility with 2.0 and older versions
             'SHOP_ACCOUNT_COUNTRY' => \Cx\Core\Country\Controller\Country::getMenu('countryId', $country_id),
+            'SHOP_ACCOUNT_BIRTHDAY' => $birthdayDaySelect . $birthdayMonthSelect . $birthdayYearSelect,
         ));
         $register = \Cx\Core\Setting\Controller\Setting::getValue('register','Shop');
 
@@ -2727,6 +2852,17 @@ die("Shop::processRedirect(): This method is obsolete!");
             $_SESSION['shop']['password'] = '';
         }
 
+        // set customer birthday
+        if (isset($_POST['shop_birthday_day']) &&
+            isset($_POST['shop_birthday_month']) &&
+            isset($_POST['shop_birthday_year'])) {
+            $day = contrexx_input2raw($_POST['shop_birthday_day']);
+            $month = contrexx_input2raw($_POST['shop_birthday_month']);
+            $year = contrexx_input2raw($_POST['shop_birthday_year']);
+            $birthday = mktime(0, 0, 0, $month, $day, $year);
+            $_SESSION['shop']['birthday'] = $birthday;
+        }
+
         if (   empty($_SESSION['shop']['gender2'])
             || empty($_SESSION['shop']['lastname2'])
             || empty($_SESSION['shop']['firstname2'])
@@ -2818,6 +2954,18 @@ die("Shop::processRedirect(): This method is obsolete!");
             if (Customer::getUnregisteredByEmail($_SESSION['shop']['email'])) {
                 return true;
             }
+
+            // Allow registered Customers (active Users!) to place orders without logging in.
+            // Important: this does not ensure data privacy!!
+            $verifyAccountEmail = \Cx\Core\Setting\Controller\Setting::getValue('verify_account_email','Shop');
+            if (!$verifyAccountEmail) {
+                $objCustomer =
+                    Customer::getRegisteredByEmail($_SESSION['shop']['email']);
+                if ($objCustomer) {
+                    return $status;
+                }
+            }
+
             $objUser = new \User();
             $objUser->setUsername($_SESSION['shop']['email']);
             $objUser->setEmail($_SESSION['shop']['email']);
@@ -3482,6 +3630,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             'SHOP_EMAIL' => stripslashes($_SESSION['shop']['email']),
             'SHOP_PHONE' => stripslashes($_SESSION['shop']['phone']),
             'SHOP_FAX' => stripslashes($_SESSION['shop']['fax']),
+            'SHOP_BIRTHDAY' => date(ASCMS_DATE_FORMAT_DATE, $_SESSION['shop']['birthday']),
         ));
         if (!empty($_SESSION['shop']['lastname2'])) {
             self::$objTemplate->setVariable(array(
@@ -3584,10 +3733,12 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (self::$objCustomer) {
 //\DBG::log("Shop::process(): Existing User username ".$_SESSION['shop']['username'].", email ".$_SESSION['shop']['email']);
         } else {
+            $verifyAccountEmail = \Cx\Core\Setting\Controller\Setting::getValue('verify_account_email','Shop');
+
             // Registered Customers are required to be logged in!
             self::$objCustomer = Customer::getRegisteredByEmail(
                 $_SESSION['shop']['email']);
-            if (self::$objCustomer) {
+            if ($verifyAccountEmail && self::$objCustomer) {
                 \Message::error($_ARRAYLANG['TXT_SHOP_CUSTOMER_REGISTERED_EMAIL']);
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
                     \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'login').
@@ -3597,8 +3748,10 @@ die("Shop::processRedirect(): This method is obsolete!");
             }
 // Unregistered Customers are stored as well, as their information is needed
 // nevertheless.  Their active status, however, is set to false.
-            self::$objCustomer = Customer::getUnregisteredByEmail(
-                $_SESSION['shop']['email']);
+            if (!self::$objCustomer) {
+                self::$objCustomer = Customer::getUnregisteredByEmail(
+                    $_SESSION['shop']['email']);
+            }
             if (!self::$objCustomer) {
                 self::$objCustomer = new Customer();
                 // Currently, the e-mail address is set as the user name
@@ -3635,6 +3788,11 @@ die("Shop::processRedirect(): This method is obsolete!");
         self::$objCustomer->country_id($_SESSION['shop']['countryId']);
         self::$objCustomer->phone($_SESSION['shop']['phone']);
         self::$objCustomer->fax($_SESSION['shop']['fax']);
+        if (!empty($_SESSION['shop']['birthday'])) {
+            self::$objCustomer->setProfile(array(
+                'birthday' => array(0 => date(ASCMS_DATE_FORMAT_DATE, $_SESSION['shop']['birthday']))
+            ));
+        }
 
         $arrGroups = self::$objCustomer->getAssociatedGroupIds();
         $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller','Shop');
@@ -4315,7 +4473,17 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (empty($uploaderId) || empty($fileName)) {
             return '';
         }
+
         $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (
+            \Cx\Lib\FileSystem\FileSystem::exists(
+                $cx->getWebsiteDocumentRootPath() . '/' .
+                Order::UPLOAD_FOLDER . urldecode($fileName)
+            )
+        ) {
+            return urldecode($fileName);
+        }
+
         $objSession = $cx->getComponent('Session')->getSession();
         $tmpFile    = $objSession->getTempPath() . '/' . $uploaderId . '/' . $fileName;
         if (!\Cx\Lib\FileSystem\FileSystem::exists($tmpFile)) {
@@ -4323,34 +4491,33 @@ die("Shop::processRedirect(): This method is obsolete!");
         }
         $originalFileName = $fileName;
         $arrMatch = array();
-        $filename = '';
-        $fileext = '';
         if (preg_match('/(.+)(\.[^.]+)/', $originalFileName, $arrMatch)) {
             $filename = $arrMatch[1];
             $fileext = $arrMatch[2];
         } else {
             $filename = $originalFileName;
+            $fileext  = '';
         }
-        if (   $fileext == '.jpg'
-            || $fileext == '.gif'
-            || $fileext == '.png') {
-            $newFileName = $filename.'['.uniqid().']'.$fileext;
-            $newFilePath = Order::UPLOAD_FOLDER.$newFileName;
-            //Move the uploaded file to the path specified in the variable $newFilePath
-            try {
-                $objFile = new \Cx\Lib\FileSystem\File($tmpFile);
-                if ($objFile->move(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath() . '/' . $newFilePath, false)) {
-                   return $newFileName;
-                } else {
-                    \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPLOADING_FILE']);
-                }
-            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                \DBG::msg($e->getMessage());
+
+        $newFileName = $filename.'['.uniqid().']'.$fileext;
+        $newFilePath = Order::UPLOAD_FOLDER.$newFileName;
+        //Move the uploaded file to the path specified in the variable $newFilePath
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File($tmpFile);
+            if (
+                $objFile->move(
+                    $cx->getWebsiteDocumentRootPath() . '/' . $newFilePath,
+                false
+                )
+            ) {
+               return $newFileName;
+            } else {
+                \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPLOADING_FILE']);
             }
-        } else {
-            \Message::error(sprintf(
-                $_ARRAYLANG['TXT_SHOP_ERROR_WRONG_FILETYPE'], $fileext));
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::msg($e->getMessage());
         }
+
         return '';
     }
 

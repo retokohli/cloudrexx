@@ -136,23 +136,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array('EsiWidgetController');
     }
 
-     /**
+    /**
      * Load your component.
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $subMenuTitle, $_ARRAYLANG;
-        $subMenuTitle = $_ARRAYLANG['TXT_LANGUAGE_SETTINGS'];
-
-        $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'LegacyContentMaster.html');
-        $cachedRoot = $this->cx->getTemplate()->getRoot();
-
-        \Permission::checkAccess(22, 'static');
-        $objLanguageManager = new \Cx\Core\LanguageManager\Controller\LanguageManager();
-        $objLanguageManager->getLanguagePage();
-
-        $this->cx->getTemplate()->setRoot($cachedRoot);
+        $localeUri = $this->cx->getWebsiteOffsetPath() .
+            $this->cx->getBackendFolderName() .
+             '/Locale';
+        \Cx\Core\Csrf\Controller\Csrf::redirect($localeUri);
     }
 
     /**
@@ -307,7 +300,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function postInit(\Cx\Core\Core\Controller\Cx $cx)
     {
         $widgetController = $this->getComponent('Widget');
-        $langManager      = new LanguageManager();
         $widgetNames      = array(
             'CHARSET',
             'LANGUAGE_NAVBAR',
@@ -318,7 +310,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         foreach (
             array_merge(
                 $widgetNames,
-                $langManager->getLanguagePlaceholderNames()
+                $this->getLanguagePlaceholderNames()
             ) as $widgetName
         ) {
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
@@ -333,5 +325,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $widget
             );
         }
+    }
+
+    /**
+     * Get language placeholder names
+     *
+     * @return array
+     */
+    protected function getLanguagePlaceholderNames()
+    {
+        $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
+        foreach ($activeLanguages as $langData) {
+            $placeholders[] = 'LANG_CHANGE_' . str_replace('-', '_', strtoupper($langData['lang']));
+            $placeholders[] = 'LANG_SELECTED_' . str_replace('-', '_', strtoupper($langData['lang']));
+        }
+        return $placeholders;
     }
 }

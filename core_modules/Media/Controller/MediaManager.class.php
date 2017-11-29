@@ -1016,7 +1016,7 @@ class MediaManager extends MediaLibrary
                 'TXT_MEDIA_SAVE'                  => $_ARRAYLANG['TXT_MEDIA_SAVE'],
                 'TXT_MEDIA_RESET'                 => $_ARRAYLANG['TXT_MEDIA_RESET'],
                 'TXT_MEDIA_SET_IMAGE_NAME'        => $_ARRAYLANG['TXT_MEDIA_SET_IMAGE_NAME'],
-                'TXT_MEDIA_CONFIRM_REPLACE_IMAGE' => $_ARRAYLANG['TXT_MEDIA_CONFIRM_REPLACE_IMAGE'],
+                'TXT_MEDIA_CONFIRM_REPLACE_IMAGE' => addslashes($_ARRAYLANG['TXT_MEDIA_CONFIRM_REPLACE_IMAGE']),
                 'TXT_MEDIA_REPLACE'               => $_ARRAYLANG['TXT_MEDIA_REPLACE'],
                 'TXT_MEDIA_OR'                    => $_ARRAYLANG['TXT_MEDIA_OR'],
                 'TXT_MEDIA_SAVE_NEW_COPY'         => $_ARRAYLANG['TXT_MEDIA_SAVE_NEW_COPY'],
