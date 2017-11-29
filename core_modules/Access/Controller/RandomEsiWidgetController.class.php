@@ -62,17 +62,34 @@ class RandomEsiWidgetController extends \Cx\Core_Modules\Widget\Controller\Rando
      */
     public function getRandomEsiWidgetContentInfos($widget, $params, $template) {
         $userIds = array();
+
+        // filter active users
+        $filter = array('active' => true);
         
-        if ($objUser = \FWUser::getFWUserObject()->objUser->getUsers()) {
-            // Das Objekt $objUser repräsentiert nun den ersten der angeforderten Benutzer
-            while (!$objUser->EOF) {
-                $userIds[] = $objUser->getId();
-                
-                // Nächsten Benutzer im Objekt $objUser laden
-                $objUser->next();
-            }
-        } else {
-            print "Beim Laden der Benutzer trat ein Fehler auf!";
+        // fetch all placeholders from current application template
+        $placeholders = $template->getPlaceholderList($widget->getName());
+
+        // filter out special placeholders that identify a group filter
+        $groupFilterPlaceholderPrefix = 'ACCESS_FILTER_GROUP_';
+        $groupFilterPlaceholders = preg_grep('/^' . $groupFilterPlaceholderPrefix . '/', $placeholders);
+        $groupFilter = preg_filter('/^' . $groupFilterPlaceholderPrefix . '/', '', $groupFilterPlaceholders);
+
+        // filter users by group association
+        if ($groupFilter) {
+            $filter['group_id'] = $groupFilter;
+        }
+
+        // fetch users
+        $objUser = \FWUser::getFWUserObject()->objUser->getUsers($filter);
+
+        if (!$objUser) {
+            \DBG::msg(__METHOD__ . ': failed to fetch users');
+            return array();
+        }
+
+        while (!$objUser->EOF) {
+            $userIds[] = $objUser->getId();
+            $objUser->next();
         }
         
         // foreach user, get ESI infos:
