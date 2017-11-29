@@ -407,7 +407,7 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
      *
      * @param   \Cx\Core\Html\Sigma $template   Template to look for group filter placeholders for
      * @param   string  $blockName  The template block in which to look for the placeholders for
-     * @return  mixed   Array of group-IDs
+     * @return  array Array of group-IDs
      */
     public static function fetchGroupFilter($template, $blockName) {
         // fetch all placeholders from current application template
@@ -416,11 +416,7 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
         // filter out special placeholders that identify a group filter
         $groupFilterPlaceholderPrefix = 'ACCESS_FILTER_GROUP_';
         $groupFilterPlaceholders = preg_grep('/^' . $groupFilterPlaceholderPrefix . '/', $placeholders);
-        $groupIds = preg_filter('/^' . $groupFilterPlaceholderPrefix . '/', '', $groupFilterPlaceholders);
-        if (!$groupIds) {
-            return array();
-        }
-        return $groupIds;
+        return preg_filter('/^' . $groupFilterPlaceholderPrefix . '/', '', $groupFilterPlaceholders);
     }
 }
 
