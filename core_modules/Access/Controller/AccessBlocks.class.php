@@ -71,6 +71,12 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
             $filter['gender'] = 'gender_'.$gender;
         }
 
+        // filter users by group association
+        $groupFilter = static::fetchGroupFilter($this->_objTpl, 'access_currently_online_member_list');
+        if ($groupFilter) {
+            $filter['group_id'] = $groupFilter;
+        }
+
         $objUser = $objFWUser->objUser->getUsers(
             $filter,
             null,
@@ -111,6 +117,12 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         if (!empty($gender)) {
             $filter['gender'] = 'gender_'.$gender;
+        }
+
+        // filter users by group association
+        $groupFilter = static::fetchGroupFilter($this->_objTpl, 'access_last_active_member_list');
+        if ($groupFilter) {
+            $filter['group_id'] = $groupFilter;
         }
 
         $objFWUser = \FWUser::getFWUserObject();
@@ -154,6 +166,12 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         if (!empty($gender)) {
             $filter['gender'] = 'gender_'.$gender;
+        }
+
+        // filter users by group association
+        $groupFilter = static::fetchGroupFilter($this->_objTpl, 'access_latest_registered_member_list');
+        if ($groupFilter) {
+            $filter['group_id'] = $groupFilter;
         }
 
         $objFWUser = \FWUser::getFWUserObject();
@@ -201,6 +219,12 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         if (!empty($gender)) {
             $filter['gender'] = 'gender_'.$gender;
+        }
+
+        // filter users by group association
+        $groupFilter = static::fetchGroupFilter($this->_objTpl, 'access_birthday_member_list');
+        if ($groupFilter) {
+            $filter['group_id'] = $groupFilter;
         }
 
         $objFWUser = \FWUser::getFWUserObject();
@@ -253,6 +277,7 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
      * their birthday coming up.
      *
      * @param   string  $gender Optional set to 'female' or 'male' to filter the list by gender
+     * @todo    Implement feature to filter by filter group placeholder (see fetchGroupFilter())
      */
     public function setNextBirthdayUsers($gender = '')
     {
@@ -375,5 +400,27 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
         return false;
     }
 
+    /**
+     * Scan the supplied template for group-filter-placeholders and return
+     * the parsed group-IDs.
+     * Scheme of a group-filter-placeholder: ACCESS_FILTER_GROUP_<ID>
+     *
+     * @param   \Cx\Core\Html\Sigma $template   Template to look for group filter placeholders for
+     * @param   string  $blockName  The template block in which to look for the placeholders for
+     * @return  mixed   Array of group-IDs
+     */
+    public static function fetchGroupFilter($template, $blockName) {
+        // fetch all placeholders from current application template
+        $placeholders = $template->getPlaceholderList($blockName);
+
+        // filter out special placeholders that identify a group filter
+        $groupFilterPlaceholderPrefix = 'ACCESS_FILTER_GROUP_';
+        $groupFilterPlaceholders = preg_grep('/^' . $groupFilterPlaceholderPrefix . '/', $placeholders);
+        $groupIds = preg_filter('/^' . $groupFilterPlaceholderPrefix . '/', '', $groupFilterPlaceholders);
+        if (!$groupIds) {
+            return array();
+        }
+        return $groupIds;
+    }
 }
 
