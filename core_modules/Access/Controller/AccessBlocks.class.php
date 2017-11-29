@@ -83,20 +83,7 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
         );
         if ($objUser) {
             while (!$objUser->EOF) {
-                $this->_objTpl->setVariable(array(
-                    'ACCESS_USER_ID'    => $objUser->getId(),
-                    'ACCESS_USER_USERNAME'    => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-                    'ACCESS_USER_REGDATE'     => date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate()),
-                ));
-
-                $objUser->objAttribute->first();
-                while (!$objUser->objAttribute->EOF) {
-                    $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-                    if ($objAttribute->checkReadPermission()) {
-                        $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
-                    }
-                    $objUser->objAttribute->next();
-                }
+                $this->parseBasePlaceholders($objUser);
 
                 $this->_objTpl->parse('access_currently_online_'.(!empty($gender) ? $gender.'_' : '').'members');
 
@@ -139,20 +126,7 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
         );
         if ($objUser) {
             while (!$objUser->EOF) {
-                $this->_objTpl->setVariable(array(
-                    'ACCESS_USER_ID'    => $objUser->getId(),
-                    'ACCESS_USER_USERNAME'    => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-                    'ACCESS_USER_REGDATE'     => date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate()),
-                ));
-
-                $objUser->objAttribute->first();
-                while (!$objUser->objAttribute->EOF) {
-                    $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-                    if ($objAttribute->checkReadPermission()) {
-                        $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
-                    }
-                    $objUser->objAttribute->next();
-                }
+                $this->parseBasePlaceholders($objUser);
 
                 $this->_objTpl->parse('access_last_active_'.(!empty($gender) ? $gender.'_' : '').'members');
 
@@ -195,20 +169,7 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
         );
         if ($objUser) {
             while (!$objUser->EOF) {
-                $this->_objTpl->setVariable(array(
-                    'ACCESS_USER_ID'    => $objUser->getId(),
-                    'ACCESS_USER_USERNAME'    => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-                    'ACCESS_USER_REGDATE'     => date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate()),
-                ));
-
-                $objUser->objAttribute->first();
-                while (!$objUser->objAttribute->EOF) {
-                    $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-                    if ($objAttribute->checkReadPermission()) {
-                        $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
-                    }
-                    $objUser->objAttribute->next();
-                }
+                $this->parseBasePlaceholders($objUser);
 
                 $this->_objTpl->parse('access_latest_registered_'.(!empty($gender) ? $gender.'_' : '').'members');
 
@@ -255,20 +216,7 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
         );
         if ($objUser) {
             while (!$objUser->EOF) {
-                $this->_objTpl->setVariable(array(
-                    'ACCESS_USER_ID'    => $objUser->getId(),
-                    'ACCESS_USER_USERNAME'    => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-                    'ACCESS_USER_REGDATE'     => date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate()),
-                ));
-
-                $objUser->objAttribute->first();
-                while (!$objUser->objAttribute->EOF) {
-                    $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-                    if ($objAttribute->checkReadPermission()) {
-                        $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
-                    }
-                    $objUser->objAttribute->next();
-                }
+                $this->parseBasePlaceholders($objUser);
 
                 $this->_objTpl->parse('access_birthday_'.(!empty($gender) ? $gender.'_' : '').'members');
 
@@ -276,6 +224,27 @@ class AccessBlocks extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
         } else {
             $this->_objTpl->hideBlock('access_birthday_'.(!empty($gender) ? $gender.'_' : '').'members');
+        }
+    }
+
+    /**
+     * Parses ACCESS_USER_ID, -USERNAME and -REGDATE placeholders and the user's attributes
+     * @param \User User object to parse placeholders for
+     */
+    public function parseBasePlaceholders($objUser) {
+        $this->_objTpl->setVariable(array(
+            'ACCESS_USER_ID'    => $objUser->getId(),
+            'ACCESS_USER_USERNAME'    => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
+            'ACCESS_USER_REGDATE'     => date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate()),
+        ));
+
+        $objUser->objAttribute->first();
+        while (!$objUser->objAttribute->EOF) {
+            $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
+            if ($objAttribute->checkReadPermission()) {
+                $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
+            }
+            $objUser->objAttribute->next();
         }
     }
 
