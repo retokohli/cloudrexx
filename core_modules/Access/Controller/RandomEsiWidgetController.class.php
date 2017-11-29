@@ -66,15 +66,8 @@ class RandomEsiWidgetController extends \Cx\Core_Modules\Widget\Controller\Rando
         // filter active users
         $filter = array('active' => true);
         
-        // fetch all placeholders from current application template
-        $placeholders = $template->getPlaceholderList($widget->getName());
-
-        // filter out special placeholders that identify a group filter
-        $groupFilterPlaceholderPrefix = 'ACCESS_FILTER_GROUP_';
-        $groupFilterPlaceholders = preg_grep('/^' . $groupFilterPlaceholderPrefix . '/', $placeholders);
-        $groupFilter = preg_filter('/^' . $groupFilterPlaceholderPrefix . '/', '', $groupFilterPlaceholders);
-
         // filter users by group association
+        $groupFilter = AccessBlocks::fetchGroupFilter($template, $widget->getName());
         if ($groupFilter) {
             $filter['group_id'] = $groupFilter;
         }
