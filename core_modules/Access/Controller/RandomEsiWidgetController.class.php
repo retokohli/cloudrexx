@@ -126,8 +126,10 @@ class RandomEsiWidgetController extends \Cx\Core_Modules\Widget\Controller\Rando
             // get origin template and parse it instead
             $subTemplate = $this->getComponent('Widget')->getWidgetContent(
                 'access_random_users',
-                $params['theme'],
-                $params['page'],
+                // TODO: this is a workaround
+                is_object($params['theme']) ? $params['theme']->getId() : $params['theme'],
+                is_object($params['page']) ? $params['page']->getId() : $params['page'],
+                // END workaround
                 $params['targetComponent'],
                 $params['targetEntity'],
                 $params['targetId'],
