@@ -57,9 +57,10 @@ class RandomEsiWidgetController extends \Cx\Core_Modules\Widget\Controller\Rando
      * )
      * @param \Cx\Core_Modules\Widget\Model\Entity\Widget $widget The RandomEsiWidget
      * @param array $params ESI request params
+     * @param \Cx\Core\Html\Sigma Widget template
      * @return array List of URLs
      */
-    public function getRandomEsiWidgetContentInfos($widget, $params) {
+    public function getRandomEsiWidgetContentInfos($widget, $params, $template) {
         $userIds = array();
         
         if ($objUser = \FWUser::getFWUserObject()->objUser->getUsers()) {
