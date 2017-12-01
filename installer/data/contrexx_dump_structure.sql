@@ -1,4 +1,5 @@
 SET FOREIGN_KEY_CHECKS = 0;
+SET SESSION `sql_mode`=(SELECT REPLACE(REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''),'STRICT_TRANS_TABLES',''));
 CREATE TABLE `contrexx_access_group_dynamic_ids` (
   `access_id` int(11) unsigned NOT NULL DEFAULT '0',
   `group_id` int(11) unsigned NOT NULL DEFAULT '0',

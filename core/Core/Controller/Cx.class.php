@@ -2022,8 +2022,6 @@ namespace Cx\Core\Core\Controller {
             $boolShop = \Cx\Modules\Shop\Controller\Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
             $this->template->setVariable(array(
-                'GLOBAL_TITLE'                   => $_CONFIG['coreGlobalPageTitle'],
-                'DOMAIN_URL'                     => $_CONFIG['domainUrl'],
                 'CONTENT_TEXT'                   => $this->resolvedPage->getContent(),
                 'LOGOUT_URL'                     => contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'logout')),
                 'PAGE_URL'                       => htmlspecialchars(\Env::get('init')->getPageUri()),
@@ -2046,7 +2044,6 @@ namespace Cx\Core\Core\Controller {
                 'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
                 'MODULE_INDEX'                   => MODULE_INDEX,
                 'LOGIN_URL'                      => '<a href="' . contrexx_raw2xhtml(\Env::get('init')->getUriBy('section', 'Login')) . '" class="start-frontend-editing">' . $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'] . '</a>',
-                'GOOGLE_MAPS_API_KEY'            => isset($_CONFIG['googleMapsAPIKey']) ? contrexx_raw2xhtml($_CONFIG['googleMapsAPIKey']) : '',
                 'FACEBOOK_LIKE_IFRAME'           => '<div id="fb-root"></div>
                                                     <script type="text/javascript">
                                                         (function(d, s, id) {

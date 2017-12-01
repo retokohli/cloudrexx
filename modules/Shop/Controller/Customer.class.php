@@ -878,7 +878,6 @@ class Customer extends \User
             }
             if (!$objCustomer) {
                 $lang_id = Order::getLanguageIdByCustomerId($old_customer_id);
-                $lang_id = \FWLanguage::getLangIdByIso639_1($lang_id);
                 if (!$lang_id) $lang_id = $default_lang_id;
                 $objCustomer = new Customer();
                 if (preg_match('/^(?:frau|mad|mme|signora|miss)/i',
