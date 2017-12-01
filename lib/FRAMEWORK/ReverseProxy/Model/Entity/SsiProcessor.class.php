@@ -74,7 +74,12 @@ abstract class SsiProcessor {
     public function getIncludeCode($url) {
         $template = $this->getTemplateFile('IncludeTag');
         $template->setVariable('INCLUDE_FILE', $url);
-        return $template->get();
+        $includeCode = $template->get();
+
+        // trim trailing new line
+        $includeCode = preg_replace('/\n$/', '', $includeCode);
+
+        return $includeCode;
     }
     
     /**
