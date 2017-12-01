@@ -617,27 +617,17 @@ class Cart
                     $product['id'], $payment_id);
                 if ($objCoupon) {
                     $hasCoupon = true;
-//DBG::log("Cart::update(): PRODUCT; Coupon available: $coupon_code, Product ID {$product['id']}");
-//DBG::log("Cart::update(): Loop 2: Product: ".var_export($product, true));
                     $discount_amount = $objCoupon->getDiscountAmount(
                         $product['price'], $customer_id);
                     if (   $objCoupon->discount_amount() > 0
                         && ($total_discount_amount + $discount_amount)
                             > $objCoupon->discount_amount()) {
-//DBG::log("Cart::update(): COUPON prelimit: PRODUCT: price ".$product['price'].", coupon discount amount ".$objCoupon->discount_amount().", discount_amount $discount_amount, total discount amount $total_discount_amount");
                         $discount_amount =
                             $objCoupon->discount_amount()
                           - $total_discount_amount;
-//DBG::log("Cart::update(): COUPON postlimit: PRODUCT: price ".$product['price'].", coupon discount amount ".$objCoupon->discount_amount().", discount_amount $discount_amount, total discount amount $total_discount_amount");
                     }
                     $total_discount_amount += $discount_amount;
-//                    $product['price'] = Currency::formatPrice(
-//                        $product['price'] - $discount_amount);
                     $product['discount_amount'] = $discount_amount;
-// UNUSED
-//                        $arrProduct['coupon_string'] =
-//                            $objCoupon->getString($discount_amount);
-//DBG::log("Cart::update(): PRODUCT: price ".$product['price'].", discount_amount $discount_amount, total discount $total_discount_amount");
                 }
             }
             // Calculate the amount if it's excluded; we might add it later:
