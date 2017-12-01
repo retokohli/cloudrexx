@@ -610,6 +610,7 @@ class Cart
         foreach (self::$products as $cart_id => &$product) {
             $discount_amount = 0;
             $product['discount_amount'] = 0;
+            // Coupon case #1: Product specific coupon
             // Coupon:  Either the payment ID or the code are needed
             if ($payment_id || $coupon_code) {
                 $objCoupon = Coupon::available(
@@ -622,6 +623,7 @@ class Cart
                     if (   $objCoupon->discount_amount() > 0
                         && ($total_discount_amount + $discount_amount)
                             > $objCoupon->discount_amount()) {
+                        // coupon has discount in value
                         $discount_amount =
                             $objCoupon->discount_amount()
                           - $total_discount_amount;
@@ -630,7 +632,8 @@ class Cart
                     $product['discount_amount'] = $discount_amount;
                 }
             }
-            // Calculate the amount if it's excluded; we might add it later:
+            // Calculate the amount if it's excluded.
+            // We might add it later:
             // - If it's included, we don't care.
             // - If it's disabled, it's set to zero.
             $vat_amount = Vat::amount($product['vat_rate'],
@@ -645,6 +648,7 @@ class Cart
             self::$products[$cart_id]['vat_amount'] =
                 Currency::formatPrice($vat_amount);
         }
+        // Coupon case #2: Non-Product specific coupon
         // Global Coupon:  Either the payment ID or the code are needed
         if (!$objCoupon && ($payment_id || $coupon_code)) {
             $discount_amount = 0;
@@ -664,9 +668,16 @@ class Cart
 //DBG::log("Cart::update(): GLOBAL; total price $total_price, discount_amount $discount_amount, total discount $total_discount_amount");
             }
         }
+
+        // if coupon targets a specific product (Coupon case #1),
+        //      then $total_discount_amount is the discount for that specific product (incl. variations)
+        // if coupon targets a specific product and payment method (Coupon case #1),
+        //      then $total_discount_amount is the discount for that specific product (incl. variations)
+        // if coupon targets a specific payment method (Coupon case #2),
+        //      then $total_discount_amount is the discount for all products (of the cart)
         if ($objCoupon) {
 //DBG::log("Cart::update(): Got Coupon ".var_export($objCoupon, true));
-            $total_price -= $discount_amount;
+            $total_price -= $total_discount_amount;
 //DBG::log("Cart::update(): COUPON; total price $total_price, discount_amount $discount_amount, total discount $total_discount_amount");
         }
         if ($hasCoupon) {
