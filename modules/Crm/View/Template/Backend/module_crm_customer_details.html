@@ -219,6 +219,22 @@
         $J( ".change-photo" ).click(function() {
             $J( "#proPhotoUploader" ).trigger( "click" );
         });
+
+        var orginal = $J('#description').text();
+        $J('#description').click(function(){
+            var limit = 280;
+            var t = $J(this).text();
+            if(t.length < limit) return;
+
+            if($J(this).hasClass('open')){
+                $J(this).html(t.slice(0,limit) + '...');
+                $J(this).removeClass('open');
+            } else {
+                $J(this).html(orginal);
+                $J(this).addClass('open');
+            }
+        });
+        $J('#description').click();
     });
     $J(".add-document").live('click', function(){
         $J( "#documentUploader" ).trigger( "click" );
@@ -512,7 +528,7 @@
                                     <!-- BEGIN contactNotes -->
                                     <tr class="row1">
                                         <td width="145px;"><strong>{TXT_CRM_CONTACT_NOTES}</strong></td>
-                                        <td width="350px;">{CRM_CONTACT_NOTES}</td>
+                                        <td width="350px;" id="description" class="open">{CRM_CONTACT_NOTES}</td>
                                     </tr>
                                     <!-- END contactNotes -->
                                     <!-- BEGIN contactLastUpdate -->
