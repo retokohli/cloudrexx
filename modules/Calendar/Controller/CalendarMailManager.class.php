@@ -671,27 +671,6 @@ class CalendarMailManager extends CalendarLibrary {
                     }
                     $objUser->next();
                 }
-                if($exclude_registered){
-                    $query = '
-                          SELECT `v`.`value` AS mail
-                            FROM `'.DBPREFIX.'module_calendar_registration_form_field_value` AS `v`
-                            INNER JOIN `contrexx_module_calendar_registration_form_field` AS `f`
-                              ON `v`.`field_id` = `f`.`id`
-                            INNER JOIN contrexx_module_calendar_registration AS r
-                              ON `v`.`reg_id` = r.id
-                            WHERE r.event_id = ' . $objEvent->getId() . '
-                            AND `f`.`type` = \'mail\'';
-                    $result = $db->Execute($query);
-
-                    if ($result !== false) {
-                        while (!$result->EOF) {
-                            if (($key = array_search($result->fields['mail'], $recipients)) !== false) {
-                                unset($recipients[$key]);
-                            }
-                            $result->MoveNext();
-                        }
-                    }
-                }
                 break;
 
             case static::MAIL_CONFIRM_REG:
@@ -754,6 +733,27 @@ class CalendarMailManager extends CalendarLibrary {
         foreach ($this->mailList as $langId => $mailList) {
             foreach ($mailList['recipients'] as $email => $langId) {
                 $recipients[$email] = (new MailRecipient())->setLang($langId)->setAddress($email);
+            }
+        }
+
+        // exclude all guests which are already registered on any of the lists
+        if($exclude_registered && $actionId == static::MAIL_INVITATION) {
+            // get all guests which are on a list
+            $query = 'SELECT `v`.`value` AS `mail`
+                        FROM `'.DBPREFIX.'module_calendar_registration_form_field_value` AS `v`
+                        INNER JOIN `'.DBPREFIX.'module_calendar_registration_form_field` AS `f`
+                          ON `v`.`field_id` = `f`.`id`
+                        INNER JOIN `'.DBPREFIX.'module_calendar_registration` AS `r`
+                          ON `v`.`reg_id` = `r`.`id`
+                        WHERE `r`.`event_id` = ' . $objEvent->getId() . '
+                        AND `f`.`type` = \'mail\'';
+            $result = $db->Execute($query);
+            if ($result !== false) {
+                while (!$result->EOF) {
+                    // delete all registered guests out of the recipients
+                    unset($recipients[$result->fields['mail']]);
+                    $result->MoveNext();
+                }
             }
         }
 
