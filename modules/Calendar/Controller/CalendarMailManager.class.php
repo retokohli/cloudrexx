@@ -585,6 +585,14 @@ class CalendarMailManager extends CalendarLibrary {
 
                 // fetch users from Crm groups
                 $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
+                $excludeQuery = '';
+                if($objEvent->excludedCrmGroups) {
+                    $excludeQuery = 'AND `crm_contact`.`id` NOT IN (
+                                   SELECT m.`contact_id`
+                                    FROM `' . DBPREFIX . 'module_crm_customer_membership` AS m 
+                                        WHERE m.`membership_id` IN (' . join(',', $objEvent->excludedCrmGroups) . ')
+                            )';
+                }
                 $result = $db->Execute('
                     SELECT
                          crm_contact.id
@@ -612,12 +620,8 @@ class CalendarMailManager extends CalendarLibrary {
                              (   
                              `crm_contact_membership`.`membership_id` IN (' . join(',', $objEvent->invitedCrmGroups) . ')
                               OR `crm_company_membership`.`membership_id` IN (' . join(',', $objEvent->invitedCrmGroups) . ')
-                              )
-                        AND `crm_contact`.`id` NOT IN (
-                                           SELECT m.`contact_id`
-                                            FROM `' . DBPREFIX . 'module_crm_customer_membership` AS m 
-                                                WHERE m.`membership_id` IN (\'\', ' . join(',', $objEvent->excludedCrmGroups) . ')
-                            ))'
+                              ) ' . $excludeQuery .'
+                        )'
                 );
                 if ($result !== false) {
                     $crmContact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
