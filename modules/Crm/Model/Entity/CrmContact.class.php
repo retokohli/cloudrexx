@@ -95,8 +95,8 @@ class CrmContact
                              c.customer_name, c.customer_addedby,
                              c.customer_currency, c.contact_amount, c.contact_familyname, c.contact_title,
                              c.contact_role, c.contact_customer, c.contact_language,c.company_size,
-                             c.notes, c.contact_type,c.user_account,c.added_date,c.industry_type,
-                             e.email,p.phone, c.datasource,
+                             c.notes, c.contact_type,c.user_account, c.updated_date, c.added_date,
+                             c.industry_type, e.email,p.phone, c.datasource,
                              c.gender,c.profile_picture, c.`email_delivery`,
                              a.address, a.city, a.state, a.zip, a.country, w.url, 
                              `com`.`customer_name` as `linkedCompany`
@@ -355,7 +355,6 @@ class CrmContact
         $this->family_name      = '';
         $this->contact_title    = '';
         $this->contact_role     = '';
-        $this->contact_title    = '';
         $this->contact_language = 0;
         $this->linkedCompany    = '';
         $this->contact_customer = 0;
