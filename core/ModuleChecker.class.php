@@ -168,7 +168,14 @@ class ModuleChecker {
         $arrCmInstalledModules[] = 'upload';
         $arrCmActiveModules[] = 'upload';
 
-        $objResult = $this->db->Execute('SELECT `name`, `is_core`, `is_required` FROM `'.DBPREFIX.'modules`');
+        $objResult = $this->db->Execute('
+            SELECT
+                `name`,
+                `is_core`,
+                `is_required`
+            FROM
+                `'.DBPREFIX.'modules`
+        ');
         if ($objResult === false) {
             return;
         }
@@ -201,14 +208,36 @@ class ModuleChecker {
                 $this->arrModules[] = $moduleName;
             }
 
-            if ((in_array($moduleName, $arrCmInstalledModules)) &&
-                ($isCore || (!$isCore && is_dir($this->cl->getFilePath(ASCMS_MODULE_PATH.'/'.$moduleName))))
+            if (
+                in_array($moduleName, $arrCmInstalledModules) &&
+                (
+                    $isCore ||
+                    (
+                        !$isCore &&
+                        is_dir(
+                            $this->cl->getFilePath(
+                                ASCMS_MODULE_PATH.'/'.$moduleName
+                            )
+                        )
+                    )
+                )
             ) {
                 $this->arrInstalledModules[] = $moduleName;
             }
 
-            if ((in_array($moduleName, $arrCmActiveModules)) &&
-                ($isCore || (!$isCore && is_dir($this->cl->getFilePath(ASCMS_MODULE_PATH.'/'.$moduleName))))
+            if (
+                in_array($moduleName, $arrCmActiveModules) &&
+                (
+                    $isCore ||
+                    (
+                        !$isCore &&
+                        is_dir(
+                            $this->cl->getFilePath(
+                                ASCMS_MODULE_PATH.'/'.$moduleName
+                            )
+                        )
+                    )
+                )
             ) {
                 $this->arrActiveModules[] = $moduleName;
             }
