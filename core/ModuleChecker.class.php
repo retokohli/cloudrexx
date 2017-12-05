@@ -30,6 +30,7 @@
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @author      Michael Ritter <michael.ritter@cloudrexx.com>
  * @version     2.0.0
  * @package     cloudrexx
  * @subpackage  core
@@ -43,6 +44,7 @@ namespace Cx\Core;
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @author      Michael Ritter <michael.ritter@cloudrexx.com>
  * @version     2.0.0
  * @package     cloudrexx
  * @subpackage  core
@@ -105,6 +107,13 @@ class ModuleChecker {
      */
     protected $arrInstalledModules = array();
 
+    /**
+     * Sets all modules activated
+     *
+     * @var boolean
+     */
+    protected $allActivated = false;
+
     protected static $instance = null;
 
     public static function getInstance($em, $db, $cl) {
@@ -131,42 +140,52 @@ class ModuleChecker {
     }
 
     /**
+     * Sets all modules as activated (as if they would have content pages)
+     * Only use in preComponentLoad or earlier!
+     */
+    public function setAllActivated() {
+        $this->allActivated = true;
+    }
+
+    /**
      * Initialisation
      *
      * @access  protected
      */
     protected function init() {
-        // check the content for installed and used modules
-        $arrCmActiveModules = array();
-        $arrCmInstalledModules = array();
-        $qb = $this->em->createQueryBuilder();
-        $qb->add('select', 'p')
-            ->add('from', 'Cx\Core\ContentManager\Model\Entity\Page p')
-            ->add('where',
-// TODO: what is the proper syntax for non-empty values?
-// TODO: add additional check for module != NULL
-                $qb->expr()->neq('p.module', $qb->expr()->literal(''))
-            );
-        $pages = $qb->getQuery()->getResult();
-        foreach ($pages as $page) {
-            $arrCmInstalledModules[] = $page->getModule();
-            if ($page->isActive()) {
-                $arrCmActiveModules[] = $page->getModule();
+        if (!$this->allActivated()) {
+            // check the content for installed and used modules
+            $arrCmActiveModules = array();
+            $arrCmInstalledModules = array();
+            $qb = $this->em->createQueryBuilder();
+            $qb->add('select', 'p')
+                ->add('from', 'Cx\Core\ContentManager\Model\Entity\Page p')
+                ->add('where',
+                    // TODO: what is the proper syntax for non-empty values?
+                    // TODO: add additional check for module != NULL
+                    $qb->expr()->neq('p.module', $qb->expr()->literal(''))
+                );
+            $pages = $qb->getQuery()->getResult();
+            foreach ($pages as $page) {
+                $arrCmInstalledModules[] = $page->getModule();
+                if ($page->isActive()) {
+                    $arrCmActiveModules[] = $page->getModule();
+                }
             }
+
+            $arrCmInstalledModules = array_unique($arrCmInstalledModules);
+            $arrCmActiveModules = array_unique($arrCmActiveModules);
+
+            // add static modules
+            $arrCmInstalledModules[] = 'Block';
+            $arrCmInstalledModules[] = 'Crm';
+            $arrCmInstalledModules[] = 'Order';
+            $arrCmInstalledModules[] = 'Pim';
+            $arrCmInstalledModules[] = 'Support';
+            $arrCmActiveModules[] = 'Block';
+            $arrCmInstalledModules[] = 'upload';
+            $arrCmActiveModules[] = 'upload';
         }
-
-        $arrCmInstalledModules = array_unique($arrCmInstalledModules);
-        $arrCmActiveModules = array_unique($arrCmActiveModules);
-
-        // add static modules
-        $arrCmInstalledModules[] = 'Block';
-        $arrCmInstalledModules[] = 'Crm';
-        $arrCmInstalledModules[] = 'Order';
-        $arrCmInstalledModules[] = 'Pim';
-        $arrCmInstalledModules[] = 'Support';
-        $arrCmActiveModules[] = 'Block';
-        $arrCmInstalledModules[] = 'upload';
-        $arrCmActiveModules[] = 'upload';
 
         $objResult = $this->db->Execute('
             SELECT
@@ -190,9 +209,15 @@ class ModuleChecker {
             if ($moduleName == 'News') {
                 $this->arrModules[] = $moduleName;
                 //$this->arrCoreModules[] = $moduleName;
-                if (in_array($moduleName, $arrCmInstalledModules)) {
+                if (
+                    $this->allActivated ||
+                    in_array($moduleName, $arrCmInstalledModules)
+                ) {
                     $this->arrInstalledModules[] = $moduleName;
-                    if (in_array($moduleName, $arrCmInstalledModules)) {
+                    if (
+                        $this->allActivated ||
+                        in_array($moduleName, $arrCmInstalledModules)
+                    ) {
                         $this->arrActiveModules[] = $moduleName;
                     }
                 }
@@ -209,14 +234,17 @@ class ModuleChecker {
             }
 
             if (
-                in_array($moduleName, $arrCmInstalledModules) &&
+                $this->allActivated ||
                 (
-                    $isCore ||
+                    in_array($moduleName, $arrCmInstalledModules) &&
                     (
-                        !$isCore &&
-                        is_dir(
-                            $this->cl->getFilePath(
-                                ASCMS_MODULE_PATH.'/'.$moduleName
+                        $isCore ||
+                        (
+                            !$isCore &&
+                            is_dir(
+                                $this->cl->getFilePath(
+                                    ASCMS_MODULE_PATH.'/'.$moduleName
+                                )
                             )
                         )
                     )
@@ -226,14 +254,17 @@ class ModuleChecker {
             }
 
             if (
-                in_array($moduleName, $arrCmActiveModules) &&
+                $this->allActivated ||
                 (
-                    $isCore ||
+                    in_array($moduleName, $arrCmActiveModules) &&
                     (
-                        !$isCore &&
-                        is_dir(
-                            $this->cl->getFilePath(
-                                ASCMS_MODULE_PATH.'/'.$moduleName
+                        $isCore ||
+                        (
+                            !$isCore &&
+                            is_dir(
+                                $this->cl->getFilePath(
+                                    ASCMS_MODULE_PATH.'/'.$moduleName
+                                )
                             )
                         )
                     )
