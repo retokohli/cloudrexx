@@ -52,66 +52,66 @@ class ModuleChecker {
     /**
      * Entity Manager
      *
-     * @access  private
+     * @access  protected
      * @var     EntityManager
      */
-    private $em = null;
+    protected $em = null;
 
     /**
      * Database
      *
-     * @access  private
+     * @access  protected
      * @var     ADONewConnection
      */
-    private $db = null;
+    protected $db = null;
 
     /**
      * ClassLoader
      *
-     * @access  private
+     * @access  protected
      * @var     \Cx\Core\ClassLoader\ClassLoader
      */
-    private $cl = null;
+    protected $cl = null;
 
     /**
      * Names of all core modules
      *
-     * @access  private
+     * @access  protected
      * @var     array
      */
-    private $arrCoreModules = array();
+    protected $arrCoreModules = array();
 
     /**
      * Names of all modules (except core modules)
      *
-     * @access  private
+     * @access  protected
      * @var     array
      */
-    private $arrModules = array();
+    protected $arrModules = array();
 
     /**
      * Names of active modules
      *
-     * @access  private
+     * @access  protected
      * @var     array
      */
-    private $arrActiveModules = array();
+    protected $arrActiveModules = array();
 
     /**
      * Names of installed modules
      *
-     * @access  private
+     * @access  protected
      * @var     array
      */
-    private $arrInstalledModules = array();
+    protected $arrInstalledModules = array();
 
-    private static $instance = null;
+    protected static $instance = null;
 
     public static function getInstance($em, $db, $cl) {
-        if (!self::$instance) {
-            self::$instance = new static($em, $db, $cl);
+        if (!static::$instance) {
+            static::$instance = new static($em, $db, $cl);
         }
-        return self::$instance;
+        return static::$instance;
     }
 
     /**
@@ -122,7 +122,7 @@ class ModuleChecker {
      * @param   ADONewConnection                  $db
      * @param   \Cx\Core\ClassLoader\ClassLoader  $cl
      */
-    private function __construct($em, $db, $cl) {
+    protected function __construct($em, $db, $cl) {
         $this->em = $em;
         $this->db = $db;
         $this->cl = $cl;
@@ -133,9 +133,9 @@ class ModuleChecker {
     /**
      * Initialisation
      *
-     * @access  private
+     * @access  protected
      */
-    private function init() {
+    protected function init() {
         // check the content for installed and used modules
         $arrCmActiveModules = array();
         $arrCmInstalledModules = array();
