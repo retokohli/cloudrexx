@@ -234,17 +234,17 @@ class ModuleChecker {
             }
 
             if (
-                $this->allActivated ||
                 (
-                    in_array($moduleName, $arrCmInstalledModules) &&
+                    $this->allActivated ||
+                    in_array($moduleName, $arrCmInstalledModules)
+                ) &&
+                (
+                    $isCore ||
                     (
-                        $isCore ||
-                        (
-                            !$isCore &&
-                            is_dir(
-                                $this->cl->getFilePath(
-                                    ASCMS_MODULE_PATH.'/'.$moduleName
-                                )
+                        !$isCore &&
+                        is_dir(
+                            $this->cl->getFilePath(
+                                ASCMS_MODULE_PATH.'/'.$moduleName
                             )
                         )
                     )
@@ -254,17 +254,17 @@ class ModuleChecker {
             }
 
             if (
-                $this->allActivated ||
                 (
-                    in_array($moduleName, $arrCmActiveModules) &&
+                    $this->allActivated ||
+                    in_array($moduleName, $arrCmActiveModules)
+                ) &&
+                (
+                    $isCore ||
                     (
-                        $isCore ||
-                        (
-                            !$isCore &&
-                            is_dir(
-                                $this->cl->getFilePath(
-                                    ASCMS_MODULE_PATH.'/'.$moduleName
-                                )
+                        !$isCore &&
+                        is_dir(
+                            $this->cl->getFilePath(
+                                ASCMS_MODULE_PATH.'/'.$moduleName
                             )
                         )
                     )
