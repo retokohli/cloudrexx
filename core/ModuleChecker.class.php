@@ -234,43 +234,29 @@ class ModuleChecker {
             }
 
             if (
+                $isCore ||
                 (
+                    !$isCore &&
+                    is_dir(
+                        $this->cl->getFilePath(
+                            ASCMS_MODULE_PATH.'/'.$moduleName
+                        )
+                    )
+                )
+            ) {
+                if (
                     $this->allActivated ||
                     in_array($moduleName, $arrCmInstalledModules)
-                ) &&
-                (
-                    $isCore ||
-                    (
-                        !$isCore &&
-                        is_dir(
-                            $this->cl->getFilePath(
-                                ASCMS_MODULE_PATH.'/'.$moduleName
-                            )
-                        )
-                    )
-                )
-            ) {
-                $this->arrInstalledModules[] = $moduleName;
-            }
+                ) {
+                    $this->arrInstalledModules[] = $moduleName;
+                }
 
-            if (
-                (
+                if (
                     $this->allActivated ||
                     in_array($moduleName, $arrCmActiveModules)
-                ) &&
-                (
-                    $isCore ||
-                    (
-                        !$isCore &&
-                        is_dir(
-                            $this->cl->getFilePath(
-                                ASCMS_MODULE_PATH.'/'.$moduleName
-                            )
-                        )
-                    )
-                )
-            ) {
-                $this->arrActiveModules[] = $moduleName;
+                ) {
+                    $this->arrActiveModules[] = $moduleName;
+                }
             }
 
             $objResult->MoveNext();
