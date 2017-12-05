@@ -169,47 +169,51 @@ class ModuleChecker {
         $arrCmActiveModules[] = 'upload';
 
         $objResult = $this->db->Execute('SELECT `name`, `is_core`, `is_required` FROM `'.DBPREFIX.'modules`');
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $moduleName = $objResult->fields['name'];
+        if ($objResult === false) {
+            return;
+        }
+        while (!$objResult->EOF) {
+            $moduleName = $objResult->fields['name'];
 
-                if ($moduleName == 'News') {
-                    $this->arrModules[] = $moduleName;
-                    //$this->arrCoreModules[] = $moduleName;
+            if (empty($moduleName)) {
+                $objResult->MoveNext();
+                continue;
+            }
+
+            if ($moduleName == 'News') {
+                $this->arrModules[] = $moduleName;
+                //$this->arrCoreModules[] = $moduleName;
+                if (in_array($moduleName, $arrCmInstalledModules)) {
+                    $this->arrInstalledModules[] = $moduleName;
                     if (in_array($moduleName, $arrCmInstalledModules)) {
-                        $this->arrInstalledModules[] = $moduleName;
-                        if (in_array($moduleName, $arrCmInstalledModules)) {
-                            $this->arrActiveModules[] = $moduleName;
-                        }
-                    }
-                    $objResult->MoveNext();
-                    continue;
-                }
-
-                if (!empty($moduleName)) {
-                    $isCore = $objResult->fields['is_core'];
-
-                    if ($isCore == 1) {
-                        $this->arrCoreModules[] = $moduleName;
-                    } else {
-                        $this->arrModules[] = $moduleName;
-                    }
-
-                    if ((in_array($moduleName, $arrCmInstalledModules)) &&
-                        ($isCore || (!$isCore && is_dir($this->cl->getFilePath(ASCMS_MODULE_PATH.'/'.$moduleName))))
-                    ) {
-                        $this->arrInstalledModules[] = $moduleName;
-                    }
-
-                    if ((in_array($moduleName, $arrCmActiveModules)) &&
-                        ($isCore || (!$isCore && is_dir($this->cl->getFilePath(ASCMS_MODULE_PATH.'/'.$moduleName))))
-                    ) {
                         $this->arrActiveModules[] = $moduleName;
                     }
                 }
-
                 $objResult->MoveNext();
+                continue;
             }
+
+            $isCore = $objResult->fields['is_core'];
+
+            if ($isCore == 1) {
+                $this->arrCoreModules[] = $moduleName;
+            } else {
+                $this->arrModules[] = $moduleName;
+            }
+
+            if ((in_array($moduleName, $arrCmInstalledModules)) &&
+                ($isCore || (!$isCore && is_dir($this->cl->getFilePath(ASCMS_MODULE_PATH.'/'.$moduleName))))
+            ) {
+                $this->arrInstalledModules[] = $moduleName;
+            }
+
+            if ((in_array($moduleName, $arrCmActiveModules)) &&
+                ($isCore || (!$isCore && is_dir($this->cl->getFilePath(ASCMS_MODULE_PATH.'/'.$moduleName))))
+            ) {
+                $this->arrActiveModules[] = $moduleName;
+            }
+
+            $objResult->MoveNext();
         }
     }
 
