@@ -636,6 +636,8 @@ class CrmManager extends CrmLibrary
                 'TXT_DELETE_SELECTED_ENTRIES'   =>  $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES'],
                 'TXT_CRM_TITLE_COMPANY_NAME'    =>  $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
                 'TXT_CRM_TITLE_NAME'            =>  $_ARRAYLANG['TXT_CRM_TITLE_NAME'],
+                'TXT_CRM_NAME'                  =>  $_ARRAYLANG['TXT_CRM_NAME'],
+                'TXT_CRM_FAMILY_NAME'           =>  $_ARRAYLANG['TXT_CRM_FAMILY_NAME'],
                 'TXT_CRM_TITLE_CUSTOMERTYPE'    =>  $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE']  ,
                 'TXT_CRM_TITLE_POSTAL_CODE'     =>  $_ARRAYLANG['TXT_CRM_TITLE_POSTAL_CODE']  ,
                 'TXT_CUSTOMER_ID'               =>  $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'],
@@ -707,6 +709,7 @@ class CrmManager extends CrmLibrary
                 'CRM_NAME_SORT'                 =>  "&sortf=0&sorto=$sortOrder",
                 'CRM_ACTIVITIES_SORT'           =>  "&sortf=1&sorto=$sortOrder",
                 'CRM_DATE_SORT'                 =>  "&sortf=2&sorto=$sortOrder",
+                'CRM_LAST_NAME_SORT'            =>  "&sortf=3&sorto=$sortOrder",
 
                 'CRM_CUSTOMER_CHECKED'          =>  in_array(1, $searchContactTypeFilter) ? "checked" : '',
                 'CRM_CONTACT_CHECKED'           =>  in_array(2, $searchContactTypeFilter) ? "checked" : '',
@@ -721,6 +724,18 @@ class CrmManager extends CrmLibrary
                 'TXT_CRM_ENTER_SEARCH_TERM'     =>  $_ARRAYLANG['TXT_CRM_ENTER_SEARCH_TERM'],
                 'CRM_REDIRECT_LINK'             =>  '&redirect='.base64_encode($searchLink.$sortLink.$pageLink),
         ));
+
+        // There are two different options for filtering by name:
+        // 1.) Filter first- or lastname if contact only filter is set
+        // 2.) Filter first- / company-name if contacts and companies are shown
+        if(
+            count($searchFields['contactSearch']) == 1 &&
+            in_array('2', $searchFields['contactSearch'])
+        ){
+            $this->_objTpl->touchBlock('contactNameFilter');
+        } else {
+            $this->_objTpl->touchBlock('standardNameFilter');
+        }
 
         $this->getCustomerTypeDropDown($this->_objTpl, isset($_GET['customer_type']) ? $_GET['customer_type'] : 0, 'customerTypes', array('is_hide' => true));
 
