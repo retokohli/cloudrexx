@@ -634,12 +634,11 @@ class Cart
         // Global Coupon:  Either the payment ID or the code are needed
         if (!$hasCoupon && ($payment_id || $coupon_code)) {
             $discount_amount = 0;
-            $total_price_incl_vat = $total_price;
-            if (!Vat::isIncluded()) {
-                $total_price_incl_vat += $total_vat_amount;
-            }
+
+            // supply $total_price (without VAT) to Coupon::available()
+            // for checking if minimum order amount has reached
             $objCoupon = Coupon::available(
-                $coupon_code, $total_price_incl_vat, $customer_id, 0, $payment_id);
+                $coupon_code, $total_price, $customer_id, 0, $payment_id);
 
             // verify that coupon is valid with VAT
             if ($objCoupon) {
@@ -660,7 +659,7 @@ class Cart
             if ($objCoupon) {
                 $hasCoupon = true;
                 $discount_amount = $objCoupon->getDiscountAmount(
-                    $total_price_incl_vat, $customer_id);
+                    $total_price, $customer_id);
                 $total_discount_amount = $discount_amount;
             }
         }
