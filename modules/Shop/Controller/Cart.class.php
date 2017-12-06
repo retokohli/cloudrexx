@@ -477,6 +477,10 @@ class Cart
         $total_vat_amount = 0;
         $total_weight = 0;
         $total_discount_amount = 0;
+
+        // will contain all VAT rates of the products currently in cart
+        $usedVatRates = array();
+
         // Loop 1: Collect necessary Product data
         $products = $_SESSION['shop']['cart']['items']->toArray();
         foreach ($products as $cart_id => &$product) {
@@ -536,6 +540,12 @@ class Cart
             $vat_rate = Vat::getRate($objProduct->vat_id());
             $total_price += $price;
             $total_weight += $weight;
+
+            // remember VAT rate of product
+            if (Vat::isEnabled()) {
+                $usedVatRates[] = $vat_rate;
+            }
+
             self::$products[$cart_id] = array(
                 'id' => $objProduct->id(),
                 'product_id' => $objProduct->code(),
@@ -564,6 +574,10 @@ class Cart
                 'minimum_order_quantity' => $objProduct->minimum_order_quantity(),
             );
         }
+
+        // ensure each VAT rate only occurs once
+        $usedVatRates = array_unique($usedVatRates);
+
         $_SESSION['shop']['cart']['items'] = $products;
 
         // Loop 2: Calculate Coupon discounts and VAT
@@ -626,6 +640,23 @@ class Cart
             }
             $objCoupon = Coupon::available(
                 $coupon_code, $total_price_incl_vat, $customer_id, 0, $payment_id);
+
+            // verify that coupon is valid with VAT
+            if ($objCoupon) {
+                // in case the coupon is of type value (amount of money)
+                // and the cart contains several products with different
+                // VAT rate, we can't process the coupon
+                // TODO: extend the Shop system to support different VAT
+                //       rates on coupons
+                if (Vat::isEnabled() &&
+                    $objCoupon->discount_amount() > 0 &&
+                    count($usedVatRates) > 1
+                ) {
+                    $objCoupon = null;
+                    \Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_MULTIPLE_MWST']);
+                }
+            }
+
             if ($objCoupon) {
                 $hasCoupon = true;
                 $discount_amount = $objCoupon->getDiscountAmount(
