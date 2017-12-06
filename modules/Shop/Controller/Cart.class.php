@@ -621,7 +621,7 @@ class Cart
                 $product['price']
               - $product['discount_amount']
             );
-            if (!Vat::isIncluded()) {
+            if (Vat::isEnabled() && !Vat::isIncluded()) {
                 self::$products[$cart_id]['price'] += $vat_amount;
                 self::$products[$cart_id]['price'] = Currency::formatPrice(self::$products[$cart_id]['price']);
             }
