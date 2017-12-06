@@ -153,7 +153,7 @@ class ModuleChecker {
      * @access  protected
      */
     protected function init() {
-        if (!$this->allActivated()) {
+        if (!$this->allActivated) {
             // check the content for installed and used modules
             $arrCmActiveModules = array();
             $arrCmInstalledModules = array();
