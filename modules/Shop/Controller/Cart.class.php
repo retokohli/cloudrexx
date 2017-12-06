@@ -1024,6 +1024,54 @@ die("Cart::view(): ERROR: No template");
                         Currency::formatPrice(self::get_price() - self::get_vat_amount()).'&nbsp;'.
                         Currency::getActiveCurrencySymbol(),
                 ));
+
+                if ($objTemplate->blockExists('shopVatIncl')) {
+                    // parse specific VAT-incl template block
+                    $objTemplate->parse('shopVatIncl');
+
+                    // hide non-specific VAT template block
+                    if ($objTemplate->blockExists('shopVat')) {
+                        $objTemplate->hideBlock('shopVat');
+                    }
+                } elseif ($objTemplate->blockExists('shopVat')) {
+                    // parse non-specific VAT template block
+                    $objTemplate->parse('shopVat');
+                }
+
+                // hide specific VAT-excl template block
+                if ($objTemplate->blockExists('shopVatExcl')) {
+                    $objTemplate->hideBlock('shopVatExcl');
+                }
+            } else {
+                if ($objTemplate->blockExists('shopVatExcl')) {
+                    // parse specific VAT-excl template block
+                    $objTemplate->parse('shopVatExcl');
+
+                    // hide non-specific VAT template block
+                    if ($objTemplate->blockExists('shopVat')) {
+                        $objTemplate->hideBlock('shopVat');
+                    }
+                } elseif ($objTemplate->blockExists('shopVat')) {
+                    // parse non-specific VAT template block
+                    $objTemplate->parse('shopVat');
+                }
+
+                // hide specific VAT-incl template block
+                if ($objTemplate->blockExists('shopVatIncl')) {
+                    $objTemplate->hideBlock('shopVatIncl');
+                }
+            }
+        } else {
+            // hide all VAT related template blocks
+            $vatBlocks = array(
+                'shopVat',
+                'shopVatIncl',
+                'shopVatExcl',
+            );
+            foreach ($vatBlocks as $vatBlock) {
+                if ($objTemplate->blockExists($vatBlock)) {
+                    $objTemplate->hideBlock($vatBlock);
+                }
             }
         }
         if (self::needs_shipment()) {

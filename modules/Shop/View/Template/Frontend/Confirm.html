@@ -67,16 +67,22 @@
                         </td>
                     </tr>
                     <!-- END totalExclTaxRow -->
-                    <!-- BEGIN taxrow -->
-                    <tr class="row1" valign="top">
+                    <!-- BEGIN shopVatExcl -->
+                    <tr class="row3 active" valign="top">
                         <td colspan="6">{TXT_TAX_PREFIX}</td>
                         <td nowrap="nowrap" style="text-align: right;">{TXT_TAX_PART} {SHOP_TAX_PRICE} {SHOP_UNIT}</td>
                     </tr>
-                    <!-- END taxrow -->
+                    <!-- END shopVatExcl -->
                     <tr class="row3 active">
                         <td colspan="6" valign="top" nowrap="nowrap"><strong>{TXT_TOTAL_PRICE}</strong></td>
                         <td nowrap="nowrap" style="text-align: right;"><strong>{SHOP_GRAND_TOTAL} {SHOP_UNIT}</strong></td>
                     </tr>
+                    <!-- BEGIN shopVatIncl -->
+                    <tr class="row1" valign="top">
+                        <td colspan="6">{TXT_TAX_PREFIX}</td>
+                        <td nowrap="nowrap" style="text-align: right;">{TXT_TAX_PART} {SHOP_TAX_PRICE} {SHOP_UNIT}</td>
+                    </tr>
+                    <!-- END shopVatIncl -->
                 </table>
             </div>
             <div class="table-responsive">

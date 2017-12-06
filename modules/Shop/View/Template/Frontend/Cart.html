@@ -49,16 +49,6 @@
                     </td>
                 </tr>
                 <!-- END totalExclTaxRow -->
-                <!-- BEGIN shopVat -->
-                <tr class="row1">
-                    <td colspan="5" valign="top">
-                        {TXT_TAX_PREFIX}
-                    </td>
-                    <td valign="top" nowrap="nowrap" class="a_right">
-                        {SHOP_TOTAL_TAX_AMOUNT}
-                    </td>
-                </tr>
-                <!-- END shopVat -->
                 <!-- BEGIN shopCouponTotal -->
                 <tr valign="top" class="row3 active">
                     <td colspan="5">{SHOP_DISCOUNT_COUPON_TOTAL}</td>
@@ -67,6 +57,16 @@
                     </td>
                 </tr>
                 <!-- END shopCouponTotal -->
+                <!-- BEGIN shopVatExcl -->
+                <tr class="row1">
+                    <td colspan="5" valign="top">
+                        {TXT_TAX_PREFIX}
+                    </td>
+                    <td valign="top" nowrap="nowrap" class="a_right">
+                        {SHOP_TOTAL_TAX_AMOUNT}
+                    </td>
+                </tr>
+                <!-- END shopVatExcl -->
                 <tr class="row3 active">
                     <td colspan="5" valign="top">
                         <strong>{TXT_INTER_TOTAL}</strong>
@@ -75,6 +75,16 @@
                         <strong>{SHOP_PRODUCT_TOTALPRICE_PLUS_VAT} {SHOP_PRODUCT_TOTALPRICE_UNIT}</strong>
                     </td>
                 </tr>
+                <!-- BEGIN shopVatIncl -->
+                <tr class="row1">
+                    <td colspan="5" valign="top">
+                        {TXT_TAX_PREFIX}
+                    </td>
+                    <td valign="top" nowrap="nowrap" class="a_right">
+                        {SHOP_TOTAL_TAX_AMOUNT}
+                    </td>
+                </tr>
+                <!-- END shopVatIncl -->
                 <!-- BEGIN shopCoupon -->
                 <tr>
                     <td colspan="6">&nbsp;</td>

@@ -3497,6 +3497,54 @@ die("Shop::processRedirect(): This method is obsolete!");
                         $_SESSION['shop']['grand_total_price'] - $_SESSION['shop']['vat_price']
                     ),
                 ));
+
+                if (self::$objTemplate->blockExists('shopVatIncl')) {
+                    // parse specific VAT-incl template block
+                    self::$objTemplate->parse('shopVatIncl');
+
+                    // hide non-specific VAT template block
+                    if (self::$objTemplate->blockExists('shopTax')) {
+                        self::$objTemplate->hideBlock('shopTax');
+                    }
+                } elseif (self::$objTemplate->blockExists('shopTax')) {
+                    // parse non-specific VAT template block
+                    self::$objTemplate->parse('shopTax');
+                }
+
+                // hide specific VAT-excl template block
+                if (self::$objTemplate->blockExists('shopVatExcl')) {
+                    self::$objTemplate->hideBlock('shopVatExcl');
+                }
+            } else {
+                if (self::$objTemplate->blockExists('shopVatExcl')) {
+                    // parse specific VAT-excl template block
+                    self::$objTemplate->parse('shopVatExcl');
+
+                    // hide non-specific VAT template block
+                    if (self::$objTemplate->blockExists('shopTax')) {
+                        self::$objTemplate->hideBlock('shopTax');
+                    }
+                } elseif (self::$objTemplate->blockExists('shopTax')) {
+                    // parse non-specific VAT template block
+                    self::$objTemplate->parse('shopTax');
+                }
+
+                // hide specific VAT-incl template block
+                if (self::$objTemplate->blockExists('shopVatIncl')) {
+                    self::$objTemplate->hideBlock('shopVatIncl');
+                }
+            }
+        } else {
+            // hide all VAT related template blocks
+            $vatBlocks = array(
+                'shopTax',
+                'shopVatIncl',
+                'shopVatExcl',
+            );
+            foreach ($vatBlocks as $vatBlock) {
+                if (self::$objTemplate->blockExists($vatBlock)) {
+                    self::$objTemplate->hideBlock($vatBlock);
+                }
             }
         }
         self::viewpart_lsv();
@@ -3672,6 +3720,54 @@ die("Shop::processRedirect(): This method is obsolete!");
                             - $_SESSION['shop']['vat_price']
                     ),
                 ));
+
+                if (self::$objTemplate->blockExists('shopVatIncl')) {
+                    // parse specific VAT-incl template block
+                    self::$objTemplate->parse('shopVatIncl');
+
+                    // hide non-specific VAT template block
+                    if (self::$objTemplate->blockExists('taxrow')) {
+                        self::$objTemplate->hideBlock('taxrow');
+                    }
+                } elseif (self::$objTemplate->blockExists('taxrow')) {
+                    // parse non-specific VAT template block
+                    self::$objTemplate->parse('taxrow');
+                }
+
+                // hide specific VAT-excl template block
+                if (self::$objTemplate->blockExists('shopVatExcl')) {
+                    self::$objTemplate->hideBlock('shopVatExcl');
+                }
+            } else {
+                if (self::$objTemplate->blockExists('shopVatExcl')) {
+                    // parse specific VAT-excl template block
+                    self::$objTemplate->parse('shopVatExcl');
+
+                    // hide non-specific VAT template block
+                    if (self::$objTemplate->blockExists('taxrow')) {
+                        self::$objTemplate->hideBlock('taxrow');
+                    }
+                } elseif (self::$objTemplate->blockExists('taxrow')) {
+                    // parse non-specific VAT template block
+                    self::$objTemplate->parse('taxrow');
+                }
+
+                // hide specific VAT-incl template block
+                if (self::$objTemplate->blockExists('shopVatIncl')) {
+                    self::$objTemplate->hideBlock('shopVatIncl');
+                }
+            }
+        } else {
+            // hide all VAT related template blocks
+            $vatBlocks = array(
+                'taxrow',
+                'shopVatIncl',
+                'shopVatExcl',
+            );
+            foreach ($vatBlocks as $vatBlock) {
+                if (self::$objTemplate->blockExists($vatBlock)) {
+                    self::$objTemplate->hideBlock($vatBlock);
+                }
             }
         }
 // TODO: Make sure in payment() that those two are either both empty or
