@@ -618,7 +618,7 @@ class Cart
 
         // Coupon case #2: Non-Product specific coupon
         // Global Coupon:  Either the payment ID or the code are needed
-        if (!$objCoupon && ($payment_id || $coupon_code)) {
+        if (!$hasCoupon && ($payment_id || $coupon_code)) {
             $discount_amount = 0;
             $total_price_incl_vat = $total_price;
             if (!Vat::isIncluded()) {
@@ -640,7 +640,7 @@ class Cart
         //      then $total_discount_amount is the discount for that specific product (incl. variations)
         // if coupon targets a specific payment method (Coupon case #2),
         //      then $total_discount_amount is the discount for all products (of the cart)
-        if ($objCoupon) {
+        if ($hasCoupon) {
             $total_price -= $total_discount_amount;
         }
         if ($hasCoupon) {
