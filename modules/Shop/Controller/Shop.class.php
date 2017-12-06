@@ -3652,6 +3652,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                     $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_AMOUNT_TOTAL'],
                 'SHOP_DISCOUNT_COUPON_TOTAL_AMOUNT' =>
                     Currency::formatPrice(-$total_discount_amount),
+                'SHOP_DISCOUNT_COUPON_CODE' => $_SESSION['shop']['coupon_code'],
             ));
         }
         self::$objTemplate->setVariable(array(
