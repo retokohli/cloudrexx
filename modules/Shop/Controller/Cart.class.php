@@ -563,6 +563,7 @@ class Cart
                 'options_long' => $options_strings[0],
                 'options_cart' => $options_strings[1],
                 'price' => Currency::formatPrice($price),
+                'sale_price' => Currency::formatPrice($price),
                 'quantity' => $quantity,
                 'itemprice' => Currency::formatPrice($itemprice),
                 'vat_rate' => $vat_rate,
@@ -911,6 +912,7 @@ die("Cart::view(): ERROR: No template");
                     'SHOP_PRODUCT_CART_ID' => $arrProduct['cart_id'],
                     'SHOP_PRODUCT_TITLE' => str_replace('"', '&quot;', contrexx_raw2xhtml($arrProduct['title'])),
                     'SHOP_PRODUCT_PRICE' => $arrProduct['price'],  // items * qty
+                    'SHOP_PRODUCT_SALE_PRICE' => $arrProduct['sale_price'],  // items * qty (without added VAT, if VAT is configured as excl)
                     'SHOP_PRODUCT_PRICE_UNIT' => Currency::getActiveCurrencySymbol(),
                     'SHOP_PRODUCT_QUANTITY' => $arrProduct['quantity'],
                     'SHOP_PRODUCT_ITEMPRICE' => $arrProduct['itemprice'],
