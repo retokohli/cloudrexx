@@ -3771,6 +3771,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                 }
             }
         }
+
 // TODO: Make sure in payment() that those two are either both empty or
 // both non-empty!
         if (   !Cart::needs_shipment()
