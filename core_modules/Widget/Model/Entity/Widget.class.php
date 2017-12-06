@@ -89,7 +89,7 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
         $this->type = $type;
         if ($this->getType() == static::TYPE_CALLBACK) {
             \Cx\Core\Html\Sigma::addCallbackPlaceholder(
-                $this->getName(),
+                strtolower($this->getName()),
                 function() {
                     $args = func_get_args();
                     $template = array_shift($args);
@@ -125,7 +125,10 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
      * @return string Name of this widget
      */
     public function getName() {
-        return $this->name;
+        if ($this->getType() == static::TYPE_BLOCK) {
+            return strtolower($this->name);
+        }
+        return strtoupper($this->name);
     }
 
     /**
