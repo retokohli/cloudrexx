@@ -169,21 +169,22 @@ abstract class Widget extends \Cx\Model\Base\EntityBase {
         switch ($this->getType()) {
             case static::TYPE_CALLBACK:
             case static::TYPE_PLACEHOLDER:
-            if (!$template->placeholderExists($this->getName())) {
-                return;
-            }
-            $content = $this->internalParse(
-                $template,
-                $response,
-                $targetComponent,
-                $targetEntity,
-                $targetId
-            );
-            \LinkGenerator::parseTemplate($content);
-            $template->setVariable(
-                $this->getName(),
-                $content
-            );
+                if (!$template->placeholderExists($this->getName())) {
+                    return;
+                }
+                $content = $this->internalParse(
+                    $template,
+                    $response,
+                    $targetComponent,
+                    $targetEntity,
+                    $targetId,
+                    $arguments
+                );
+                \LinkGenerator::parseTemplate($content);
+                $template->setVariable(
+                    $this->getName(),
+                    $content
+                );
                 break;
             case static::TYPE_BLOCK:
                 if (!$template->blockExists($this->getName())) {
