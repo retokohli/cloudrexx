@@ -3662,6 +3662,9 @@ die("Shop::processRedirect(): This method is obsolete!");
             // costs for payment handler (CC, invoice, etc.)
             'SHOP_PAYMENT_PRICE' => Currency::formatPrice(
                 $_SESSION['shop']['payment_price']),
+            // costs of all goods (before subtraction of discount) without payment and shippment costs
+            'SHOP_PRODUCT_TOTAL_GOODS' => Currency::formatPrice(
+                  Cart::get_price() + Cart::get_discount_amount()),
             // order costs after discount subtraction (incl VAT) but without payment and shippment costs
             'SHOP_TOTALPRICE' => Currency::formatPrice(Cart::get_price()),
             'SHOP_PAYMENT' =>

@@ -974,6 +974,9 @@ die("Cart::view(): ERROR: No template");
         $objTemplate->setGlobalVariable(array(
             'TXT_PRODUCT_ID' => $_ARRAYLANG['TXT_ID'],
             'SHOP_PRODUCT_TOTALITEM' => self::get_item_count(),
+            // total costs of goods (before subtraction of discount)
+            'SHOP_PRODUCT_TOTAL_GOODS' => Currency::formatPrice(
+                  self::get_price() + self::get_discount_amount()),
             // total costs of goods (after subtraction of discount)
             'SHOP_PRODUCT_TOTALPRICE' => Currency::formatPrice(
                   self::get_price()),
