@@ -3500,7 +3500,7 @@ die("Shop::processRedirect(): This method is obsolete!");
 
                 if (self::$objTemplate->blockExists('shopVatIncl')) {
                     // parse specific VAT-incl template block
-                    self::$objTemplate->parse('shopVatIncl');
+                    self::$objTemplate->touchBlock('shopVatIncl');
 
                     // hide non-specific VAT template block
                     if (self::$objTemplate->blockExists('shopTax')) {
@@ -3508,7 +3508,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                     }
                 } elseif (self::$objTemplate->blockExists('shopTax')) {
                     // parse non-specific VAT template block
-                    self::$objTemplate->parse('shopTax');
+                    self::$objTemplate->touchBlock('shopTax');
                 }
 
                 // hide specific VAT-excl template block
@@ -3518,7 +3518,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             } else {
                 if (self::$objTemplate->blockExists('shopVatExcl')) {
                     // parse specific VAT-excl template block
-                    self::$objTemplate->parse('shopVatExcl');
+                    self::$objTemplate->touchBlock('shopVatExcl');
 
                     // hide non-specific VAT template block
                     if (self::$objTemplate->blockExists('shopTax')) {
@@ -3526,7 +3526,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                     }
                 } elseif (self::$objTemplate->blockExists('shopTax')) {
                     // parse non-specific VAT template block
-                    self::$objTemplate->parse('shopTax');
+                    self::$objTemplate->touchBlock('shopTax');
                 }
 
                 // hide specific VAT-incl template block
@@ -3724,7 +3724,7 @@ die("Shop::processRedirect(): This method is obsolete!");
 
                 if (self::$objTemplate->blockExists('shopVatIncl')) {
                     // parse specific VAT-incl template block
-                    self::$objTemplate->parse('shopVatIncl');
+                    self::$objTemplate->touchBlock('shopVatIncl');
 
                     // hide non-specific VAT template block
                     if (self::$objTemplate->blockExists('taxrow')) {
@@ -3732,7 +3732,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                     }
                 } elseif (self::$objTemplate->blockExists('taxrow')) {
                     // parse non-specific VAT template block
-                    self::$objTemplate->parse('taxrow');
+                    self::$objTemplate->touchBlock('taxrow');
                 }
 
                 // hide specific VAT-excl template block
@@ -3742,7 +3742,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             } else {
                 if (self::$objTemplate->blockExists('shopVatExcl')) {
                     // parse specific VAT-excl template block
-                    self::$objTemplate->parse('shopVatExcl');
+                    self::$objTemplate->touchBlock('shopVatExcl');
 
                     // hide non-specific VAT template block
                     if (self::$objTemplate->blockExists('taxrow')) {
@@ -3750,7 +3750,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                     }
                 } elseif (self::$objTemplate->blockExists('taxrow')) {
                     // parse non-specific VAT template block
-                    self::$objTemplate->parse('taxrow');
+                    self::$objTemplate->touchBlock('taxrow');
                 }
 
                 // hide specific VAT-incl template block

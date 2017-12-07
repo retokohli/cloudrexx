@@ -1029,7 +1029,7 @@ die("Cart::view(): ERROR: No template");
 
                 if ($objTemplate->blockExists('shopVatIncl')) {
                     // parse specific VAT-incl template block
-                    $objTemplate->parse('shopVatIncl');
+                    $objTemplate->touchBlock('shopVatIncl');
 
                     // hide non-specific VAT template block
                     if ($objTemplate->blockExists('shopVat')) {
@@ -1037,7 +1037,7 @@ die("Cart::view(): ERROR: No template");
                     }
                 } elseif ($objTemplate->blockExists('shopVat')) {
                     // parse non-specific VAT template block
-                    $objTemplate->parse('shopVat');
+                    $objTemplate->touchBlock('shopVat');
                 }
 
                 // hide specific VAT-excl template block
@@ -1047,7 +1047,7 @@ die("Cart::view(): ERROR: No template");
             } else {
                 if ($objTemplate->blockExists('shopVatExcl')) {
                     // parse specific VAT-excl template block
-                    $objTemplate->parse('shopVatExcl');
+                    $objTemplate->touchBlock('shopVatExcl');
 
                     // hide non-specific VAT template block
                     if ($objTemplate->blockExists('shopVat')) {
@@ -1055,7 +1055,7 @@ die("Cart::view(): ERROR: No template");
                     }
                 } elseif ($objTemplate->blockExists('shopVat')) {
                     // parse non-specific VAT template block
-                    $objTemplate->parse('shopVat');
+                    $objTemplate->touchBlock('shopVat');
                 }
 
                 // hide specific VAT-incl template block
