@@ -3650,6 +3650,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             self::$objTemplate->setVariable(array(
                 'SHOP_DISCOUNT_COUPON_TOTAL' =>
                     $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_AMOUNT_TOTAL'],
+                // total discount amount
                 'SHOP_DISCOUNT_COUPON_TOTAL_AMOUNT' =>
                     Currency::formatPrice(-$total_discount_amount),
                 'SHOP_DISCOUNT_COUPON_CODE' => $_SESSION['shop']['coupon_code'],
@@ -3658,11 +3659,14 @@ die("Shop::processRedirect(): This method is obsolete!");
         self::$objTemplate->setVariable(array(
             'SHOP_UNIT' => Currency::getActiveCurrencySymbol(),
             'SHOP_TOTALITEM' => Cart::get_item_count(),
+            // costs for payment handler (CC, invoice, etc.)
             'SHOP_PAYMENT_PRICE' => Currency::formatPrice(
                 $_SESSION['shop']['payment_price']),
+            // order costs after discount subtraction (incl VAT) but without payment and shippment costs
             'SHOP_TOTALPRICE' => Currency::formatPrice(Cart::get_price()),
             'SHOP_PAYMENT' =>
                 Payment::getProperty($_SESSION['shop']['paymentId'], 'name'),
+            // final order costs
             'SHOP_GRAND_TOTAL' => Currency::formatPrice(
                   $_SESSION['shop']['grand_total_price']),
             'SHOP_COMPANY' => stripslashes($_SESSION['shop']['company']),
@@ -3703,6 +3707,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (Vat::isEnabled()) {
             self::$objTemplate->setVariable(array(
                 'TXT_TAX_RATE' => $_ARRAYLANG['TXT_SHOP_VAT_RATE'],
+                // total VAT on products (after subtraction of discount)
                 'SHOP_TAX_PRICE' => Currency::formatPrice(
                     $_SESSION['shop']['vat_price']),
                 'SHOP_TAX_PRODUCTS_TXT' => $_SESSION['shop']['vat_products_txt'],
@@ -3715,6 +3720,8 @@ die("Shop::processRedirect(): This method is obsolete!");
             ));
             if (Vat::isIncluded()) {
                 self::$objTemplate->setVariable(array(
+                    // final order costs without VAT, but including
+                    // payment and shipping costs
                     'SHOP_GRAND_TOTAL_EXCL_TAX' =>
                         Currency::formatPrice(
                             $_SESSION['shop']['grand_total_price']

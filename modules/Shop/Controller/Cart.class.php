@@ -698,10 +698,14 @@ class Cart
             \Message::clear();
         }
 
+        // total discount amount
         $_SESSION['shop']['cart']['total_discount_amount'] =
             $total_discount_amount;
+
+        // order costs after discount subtraction (incl VAT) but without payment and shippment costs
         $_SESSION['shop']['cart']['total_price'] =
             Currency::formatPrice($total_price);
+
         $_SESSION['shop']['cart']['total_vat_amount'] =
             Currency::formatPrice($total_vat_amount);
         $_SESSION['shop']['cart']['total_items'] = $items;
@@ -970,6 +974,7 @@ die("Cart::view(): ERROR: No template");
         $objTemplate->setGlobalVariable(array(
             'TXT_PRODUCT_ID' => $_ARRAYLANG['TXT_ID'],
             'SHOP_PRODUCT_TOTALITEM' => self::get_item_count(),
+            // total costs of goods (after subtraction of discount)
             'SHOP_PRODUCT_TOTALPRICE' => Currency::formatPrice(
                   self::get_price()),
             // Add the VAT in the intermediate sum, if active and excluded
