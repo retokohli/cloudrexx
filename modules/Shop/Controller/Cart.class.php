@@ -599,12 +599,18 @@ class Cart
                     $hasCoupon = true;
                     $discount_amount = $objCoupon->getDiscountAmount(
                         $product['price'], $customer_id);
+                    // In case the loaded coupon is a coupon of type value (of
+                    // a certain amount) and if it has been used on a previous
+                    // product, then we have to check if the discount (to be
+                    // applied on the current product) will exceed the total
+                    // coupon value
                     if (   $objCoupon->discount_amount() > 0
                         && ($total_discount_amount + $discount_amount)
                             > $objCoupon->discount_amount()) {
-                        // coupon has discount in value
-                        // therefore we must only partially subtract
-                        // the discount from the product's price
+                        // The discount to be applied on the current product
+                        // does exceed the coupons total value.
+                        // Therefore we must only subtract the remaining
+                        // value of the coupond on the product
                         $discount_amount =
                             $objCoupon->discount_amount()
                           - $total_discount_amount;
