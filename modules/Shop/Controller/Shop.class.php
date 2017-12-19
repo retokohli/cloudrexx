@@ -3493,13 +3493,19 @@ die("Shop::processRedirect(): This method is obsolete!");
                 &&  $paymentMethods = Payment::getPaymentMethods($_SESSION['shop']['countryId'])
             ) {
                 foreach ($paymentMethods as $paymentId => $paymentName) {
-                    $selected = ($_SESSION['shop']['paymentId'] == $paymentId)
-                        ? 'selected="selected"' : '';
                     self::$objTemplate->setVariable(array(
                         'SHOP_PAYMENT_PAYMENT_METHOD_ID'       => contrexx_raw2xhtml($paymentId),
                         'SHOP_PAYMENT_PAYMENT_METHOD_NAME'     => contrexx_raw2xhtml($paymentName),
-                        'SHOP_PAYMENT_PAYMENT_METHOD_SELECTED' => $selected,
                     ));
+
+                    // selected?
+                    if (self::$objTemplate->blockExists('shop_payment_payment_selected')) {
+                        if ($_SESSION['shop']['paymentId'] == $paymentId) {
+                            self::$objTemplate->touchBlock('shop_payment_payment_selected');
+                        } else {
+                            self::$objTemplate->hideBlock('shop_payment_payment_selected');
+                        }
+                    }
                     self::$objTemplate->parse('shop_payment_payment_methods');
                 }
             }
