@@ -3450,7 +3450,6 @@ die("Shop::processRedirect(): This method is obsolete!");
                         'SHOP_SHIPMENT_SHIPMENT_METHOD_NAME' => contrexx_raw2xhtml(
                             Shipment::getShipperName($shipperId)
                         ),
-                        'SHOP_SHIPMENT_SHIPMENT_METHOD_SELECTED' => $selected,
                     ));
 
                     // selected?
