@@ -3417,6 +3417,63 @@ die("Shop::processRedirect(): This method is obsolete!");
                     $_SESSION['shop']['shipment_price']),
                 'SHOP_SHIPMENT_MENU' => self::_getShipperMenu(),
             ));
+
+            if (static::$objTemplate->blockExists('shop_payment_payment_methods')) {
+                // Get available shipment IDs
+                $shipmentMethods = Shipment::getCountriesRelatedShippingIdArray(
+                    $_SESSION['shop']['countryId2']
+                );
+
+                // Fetch selected shipment
+                if (empty($_SESSION['shop']['shipperId'])) {
+                    // First is the default shipment ID
+                    $_SESSION['shop']['shipperId'] = current($shipmentMethods);
+                }
+
+                // parse blocks
+                $i = 0;
+                foreach ($shipmentMethods as $shipperId) {
+                    // Skip unavailable shipment methods
+                    if (
+                        Shipment::calculateShipmentPrice(
+                            $shipperId,
+                            $_SESSION['shop']['cart']['total_price'],
+                            $_SESSION['shop']['cart']['total_weight']
+                        ) < 0
+                    ) {
+                        continue;
+                    }
+                    self::$objTemplate->setVariable(array(
+                        'SHOP_SHIPMENT_SHIPMENT_METHOD_ID' => contrexx_raw2xhtml(
+                            $shipperId
+                        ),
+                        'SHOP_SHIPMENT_SHIPMENT_METHOD_NAME' => contrexx_raw2xhtml(
+                            Shipment::getShipperName($shipperId)
+                        ),
+                        'SHOP_SHIPMENT_SHIPMENT_METHOD_SELECTED' => $selected,
+                    ));
+
+                    // selected?
+                    if (self::$objTemplate->blockExists('shop_shipment_shipment_selected')) {
+                        if ($_SESSION['shop']['shipperId'] == $shipperId) {
+                            self::$objTemplate->touchBlock('shop_shipment_shipment_selected');
+                        } else {
+                            self::$objTemplate->hideBlock('shop_shipment_shipment_selected');
+                        }
+                    }
+                    self::$objTemplate->parse('shop_shipment_shipment_methods');
+                    $i++;
+                }
+
+                // no shipment method applicable
+                if (self::$objTemplate->blockExists('shop_shipment_no_shipment_methods')) {
+                    if (!$i) {
+                        self::$objTemplate->touchBlock('shop_shipment_no_shipment_methods');
+                    } else {
+                        self::$objTemplate->hideBlock('shop_shipment_no_shipment_methods');
+                    }
+                }
+            }
         }
         if (   Cart::get_price()
             || $_SESSION['shop']['shipment_price']
@@ -3428,6 +3485,9 @@ die("Shop::processRedirect(): This method is obsolete!");
                 'SHOP_PAYMENT_MENU' => self::get_payment_menu(),
             ));
 
+            // If cart has a value or needs a shipment (which might cost) we
+            // need to parse payment options
+            // TODO: Check if the first line is not already checked above
             if (    !(!Cart::needs_shipment() && Cart::get_price() <= 0)
                 &&  self::$objTemplate->blockExists('shop_payment_payment_methods')
                 &&  $paymentMethods = Payment::getPaymentMethods($_SESSION['shop']['countryId'])
