@@ -3418,7 +3418,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                 'SHOP_SHIPMENT_MENU' => self::_getShipperMenu(),
             ));
 
-            if (static::$objTemplate->blockExists('shop_payment_payment_methods')) {
+            if (static::$objTemplate->blockExists('shop_shipment_shipment_methods')) {
                 // Get available shipment IDs
                 $shipmentMethods = Shipment::getCountriesRelatedShippingIdArray(
                     $_SESSION['shop']['countryId2']
