@@ -45,7 +45,14 @@ namespace Cx\Modules\MediaDir\Model\Entity;
  */
 class MediaDirectoryInputfieldGoogleMap extends \Cx\Modules\MediaDir\Controller\MediaDirectoryLibrary implements Inputfield
 {
-    public $arrPlaceholders = array('TXT_MEDIADIR_INPUTFIELD_NAME','MEDIADIR_INPUTFIELD_VALUE','MEDIADIR_INPUTFIELD_LINK', 'MEDIADIR_INPUTFIELD_LINK_HREF');
+    public $arrPlaceholders = array(
+        'TXT_MEDIADIR_INPUTFIELD_NAME',
+        'MEDIADIR_INPUTFIELD_VALUE',
+        'MEDIADIR_INPUTFIELD_LINK',
+        'MEDIADIR_INPUTFIELD_LINK_HREF',
+        'MEDIADIR_INPUTFIELD_MAP_LAT',
+        'MEDIADIR_INPUTFIELD_MAP_LONG',
+    );
 
     private $imagePath;
     private $imageWebPath;
@@ -301,6 +308,8 @@ EOF;
             $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $objGoogleMap->getMap();
             $arrContent[$this->moduleLangVar.'_INPUTFIELD_LINK'] = $strValueLink;
             $arrContent[$this->moduleLangVar.'_INPUTFIELD_LINK_HREF'] = $strValueLinkHref;
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_MAP_LAT'] = $strValueLat;
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_MAP_LONG'] = $strValueLon;
         } else {
             $arrContent = null;
         }
