@@ -913,7 +913,9 @@ class Resolver {
                 }
             } catch (\Exception $e) {
                 \DBG::msg(__METHOD__ . ': '. $e->getMessage());
-                return;
+                //page not found, redirect to error page.
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Error'));
+                exit;
             }
 
             // due that the fallback is located within a different language
