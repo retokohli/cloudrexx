@@ -99,7 +99,7 @@
                                 </td>
                                 <td style="width:127px;">{TXT_CRM_TITLE_LANGUAGE}&nbsp;<font color="red">*</font></td>
                                 <td>
-                                    <select tabindex="7" id="language" name="contact_language" style="width: 262px !important;">
+                                    <select tabindex="8" id="language" name="contact_language" style="width: 262px !important;">
                                         <option value="">--{TXT_CRM_TITLE_SELECT_LANGUAGE}--</option>
                                         <!-- BEGIN showAddtionalContactLanguages2 -->
                                         <option {TXT_LANG_SELECT} value="{TXT_LANG_ID}">{TXT_LANG_NAME}</option>
@@ -112,7 +112,7 @@
                                 <td><input tabindex="2" type="text" id="contact_title" name="contact_title" value="{CRM_CONTACT_TITLE}" style="width: 254px;"  /></td>
                                 <td valign="top">{TXT_CRM_MEMBERSHIP}</td>
                                 <td valign="top">
-                                    <select tabindex="8" data-placeholder="{TXT_CRM_CHOOSE_MEMBERSHIPS}" name="assigned_memberships[]" id="assigned_memberships" size="1" multiple>
+                                    <select tabindex="9" data-placeholder="{TXT_CRM_CHOOSE_MEMBERSHIPS}" name="assigned_memberships[]" id="assigned_memberships" size="1" multiple>
                                         <!-- BEGIN contactMembership -->
                                         <option value="{CRM_MEMBERSHIP_ID}" {CRM_MEMBERSHIP_SELECTED}>{CRM_MEMBERSHIP_VALUE}</option>
                                         <!-- END contactMembership -->
@@ -126,7 +126,7 @@
                                 </td>
                                 <td><span class="customerTypeRow">{TXT_CRM_CUSTOMERTYPE}&nbsp;<font color="red">*</font></span></td>
                                 <td>
-                                    <select tabindex="9" class="customerTypeRow" name="customer_type" id="customer_type" style="width:262px !important;">
+                                    <select tabindex="10" class="customerTypeRow" name="customer_type" id="customer_type" style="width:262px !important;">
                                         <option value="">--{TXT_CRM_PLEASE_SELECT}--</option>
                                         <!-- BEGIN contactCustomerTypes -->
                                         <option value="{CRM_CUSTOMER_TYPE_ID}" {CRM_CUSTOMER_TYPE_SELECTED}>{CRM_CUSTOMER_TYPE}</option>
@@ -138,7 +138,7 @@
                                 <td>{TXT_CRM_FAMILY_NAME}&nbsp;<font color="red">*</font></td>
                                 <td> <input tabindex="4" type="text" id="family_name" name="family_name" value="{TXT_CON_FAMILY}" style="width: 254px;"  /></td>
                                 <td><span class="customerTypeRow">{TXT_CRM_CURRENCY}&nbsp;<font color="red">*</font></span></td>
-                                <td><select tabindex="10" class="customerTypeRow" name="currency" id="currency" style="width: 262px !important;">
+                                <td><select tabindex="11" class="customerTypeRow" name="currency" id="currency" style="width: 262px !important;">
                                     <option value="">--{TXT_CRM_PLEASE_SELECT}--</option>
                                     <!-- BEGIN contactCurrency -->
                                     <option value="{CRM_CURRENCYID}" {CRM_CURRENCY_SELECTED}>{CRM_CURRENCYNAME}</option>
@@ -153,16 +153,21 @@
                                     <input tabindex="5" type="text" id="company" class="selectCustomer" placeholder="{TXT_CRM_FIND_COMPANY_BY_NAME}" value="{CRM_CONTACT_COMPANY}" style="width: 237px;"  />
                                     <span class="delete-customer"></span>
                                 </td>
-                                <!-- BEGIN customeramount2 -->
-                                    <td class="customerTypeRow" style="width:127px;">{TXT_CRM_AMOUNT}</td>
-                                    <td class="customerTypeRow"><input tabindex="10" type="text" id="contact_amount" name="contact_amount" value="{CRM_CONTACT_AMOUNT}" style="width: 254px;" /></td>
-                                <!-- END customeramount2 -->
-                                </tr>
+                                <td><span class="customerTypeRow">{TXT_CRM_CUSTOMERID}</span></td>
+                                <td><input class="customerTypeRow" tabindex="12" type="text" value="{CRM_CUSTOMERID}" style="width: 255px;" name="customerId" id="customerId" /></td>
+                            </tr>
                             <tr>
                                 <td style="width:127px;">{TXT_CRM_ROLE}</td>
                                 <td><input tabindex="6" type="text" id="contact_role" name="contact_role" value="{TXT_CON_ROLE}" style="width: 254px;"  /></td>
-                                <td><span class="customerTypeRow">{TXT_CRM_CUSTOMERID}</span></td>
-                                <td><input class="customerTypeRow" tabindex="11" type="text" value="{CRM_CUSTOMERID}" style="width: 255px;" name="customerId" id="customerId" /></td>
+                            </tr>
+
+                            <tr>
+                                <!-- BEGIN customeramount2 -->
+                                <td style="width:127px;">{TXT_CRM_AMOUNT}</td>
+                                <td>
+                                    <input tabindex="7" type="text" id="contact_amount" name="contact_amount" value="{CRM_CONTACT_AMOUNT}" style="width: 254px;" />
+                                </td>
+                                <!-- END customeramount2 -->
                             </tr>
                             <tr>
                                 <td colspan="2">&nbsp;</td>
@@ -175,7 +180,7 @@
                                     <div class="multiple_input" id="emailContainer">
                                         <div class="email_list_container" style="display: none !important;">
                                             <div class="email_list">
-                                                <input tabindex="11" class="mInput" type="text" name="" value="{TXT_SESSION_SECONDARYEMAIL}" />
+                                                <input tabindex="13" class="mInput" type="text" name="" value="{TXT_SESSION_SECONDARYEMAIL}" />
                                                 <a onclick="showEmailCategoriesPanel(this);">{TXT_CRM_EMAIL_DEFAULT_OPTION}</a>
                                             </div>
                                             <div class="actions_for_item">
@@ -187,7 +192,7 @@
                                         <!-- BEGIN contactEmailContainer -->
                                         <div class="email_list_container">
                                             <div class="email_list">
-                                                <input tabindex="11" class="mInput" type="text" name="{CRM_CONTACT_EMAIL_NAME}" value="{CRM_CONTACT_EMAIL}" />
+                                                <input tabindex="13" class="mInput" type="text" name="{CRM_CONTACT_EMAIL_NAME}" value="{CRM_CONTACT_EMAIL}" />
                                                 <a onclick="showEmailCategoriesPanel(this);">{CRM_EMAIL_OPTION}</a>
                                             </div>
                                             <div class="actions_for_item">
@@ -206,7 +211,7 @@
                                     <div class="multiple_input" id="websiteContainer" style="float: left;">
                                         <div class="website_list_container" style="display: none !important;">
                                             <div class="website_list">
-                                                <input tabindex="12" class="mInput" type="text" name="" value="" />
+                                                <input tabindex="14" class="mInput" type="text" name="" value="" />
                                                 <a onclick="showwebsiteProfilesPanel(this);" class="category">{TXT_CRM_PROFILE_OPTION}</a>
                                             </div>
                                             <div class="actions_for_item">
@@ -218,7 +223,7 @@
                                         <!-- BEGIN contactwebsiteContainer -->
                                         <div class="website_list_container">
                                             <div class="website_list">
-                                                <input tabindex="12" class="mInput" type="text" name="{CRM_CONTACT_WEBSITE_NAME}" value="{CRM_CONTACT_WEBSITE}" />
+                                                <input tabindex="14" class="mInput" type="text" name="{CRM_CONTACT_WEBSITE_NAME}" value="{CRM_CONTACT_WEBSITE}" />
                                                 <a onclick="showwebsiteProfilesPanel(this);" class="category">{CRM_WEBSITE_PROFILE}</a>
                                             </div>
                                             <div class="actions_for_item">
@@ -238,7 +243,7 @@
                                     <div class="multiple_input" id="socialContainer" style="float: left;">
                                         <div class="social_list_container" style="display: none !important;">
                                             <div class="social_list">
-                                                <input tabindex="13" class="mInput" type="text" name="" value="" />
+                                                <input tabindex="15" class="mInput" type="text" name="" value="" />
                                                 <a onclick="showsocialProfilesPanel(this);" class="category">{TXT_CRM_SOCIAL_PROFILE_OPTION}</a>
                                             </div>
                                             <div class="actions_for_item">
@@ -250,7 +255,7 @@
                                         <!-- BEGIN contactSocialLinkContainer -->
                                         <div class="social_list_container">
                                             <div class="social_list">
-                                                <input tabindex="13" class="mInput" type="text" name="{CRM_CONTACT_SOCIAL_NAME}" value="{CRM_CONTACT_SOCIAL}" />
+                                                <input tabindex="15" class="mInput" type="text" name="{CRM_CONTACT_SOCIAL_NAME}" value="{CRM_CONTACT_SOCIAL}" />
                                                 <a onclick="showsocialProfilesPanel(this);" class="category">{CRM_SOCIAL_PROFILE}</a>
                                             </div>
                                             <div class="actions_for_item">
@@ -271,7 +276,7 @@
                                     <div class="multiple_input" id="phoneContainer">
                                         <div class="phone_list_container" style="display: none !important;">
                                             <div class="phone_list">
-                                                <input tabindex="14" class="mInput" type="text" name="" value="" />
+                                                <input tabindex="16" class="mInput" type="text" name="" value="" />
                                                 <a onclick="showphoneCategoriesPanel(this);" >{TXT_CRM_OPTION}</a>
                                             </div>
                                             <div class="actions_for_item">
@@ -283,7 +288,7 @@
                                         <!-- BEGIN contactPhoneContainer -->
                                         <div class="phone_list_container">
                                             <div class="phone_list">
-                                                <input tabindex="14" class="mInput" type="text" name="{CRM_CONTACT_PHONE_NAME}" value="{CRM_CONTACT_PHONE}" />
+                                                <input tabindex="16" class="mInput" type="text" name="{CRM_CONTACT_PHONE_NAME}" value="{CRM_CONTACT_PHONE}" />
                                                 <a onclick="showphoneCategoriesPanel(this);">{CRM_PHONE_OPTION}</a>
                                             </div>
                                             <div class="actions_for_item">
@@ -698,7 +703,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="2"></td>
                             <!-- BEGIN customeramount1 -->
                             <td style="width:127px;">{TXT_CRM_AMOUNT}</td>
                             <td><input tabindex="13" type="text" id="contact_amount" name="contact_amount" value="{CRM_CONTACT_AMOUNT}" style="width: 254px;" /></td>
