@@ -321,6 +321,17 @@ class Category extends \Cx\Modules\Calendar\Model\Entity\Category implements \Do
     /**
      * {@inheritDoc}
      */
+    public function addEvents($event)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addEvents', array($event));
+
+        return parent::addEvents($event);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getComponentController()
     {
 

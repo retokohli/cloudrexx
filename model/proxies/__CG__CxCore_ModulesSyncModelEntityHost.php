@@ -376,6 +376,17 @@ class Host extends \Cx\Core_Modules\Sync\Model\Entity\Host implements \Doctrine\
     /**
      * {@inheritDoc}
      */
+    public function removeChange($change)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeChange', array($change));
+
+        return parent::removeChange($change);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setState($state)
     {
 

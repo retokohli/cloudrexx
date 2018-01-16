@@ -53,7 +53,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return array List of Controller class names (without namespace)
      */
     public function getControllerClasses() {
-        return array('EsiWidget');
+        return array('EsiWidget', 'RandomEsiWidget');
     }
 
     /**
@@ -67,10 +67,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return array List of ComponentController classes
      */
     public function getControllersAccessableByJson() {
-        return array('EsiWidgetController');
+        return array('EsiWidgetController', 'RandomEsiWidgetController');
     }
 
-     /**
+    /**
      * Load your component.
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
@@ -128,10 +128,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'clearEsiCache',
                             array(
                                 'Widget',
-                                array(
-                                    'access_currently_online_member_list',
-                                    'access_last_active_member_list'
-                                )
+                                $this->getSessionBasedWidgetNames(),
                             )
                         );
                     }
@@ -222,6 +219,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function postInit(\Cx\Core\Core\Controller\Cx $cx)
     {
+        $userSettings     = \User_Setting::getSettings();
         $widgetController = $this->getComponent('Widget');
         foreach (
             array(
@@ -268,6 +266,35 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $widget
             );
         }
+
+        if ($userSettings['block_random_access_users']['status']) {
+            $widget = new \Cx\Core_Modules\Widget\Model\Entity\RandomEsiWidget(
+                $this,
+                'access_random_users',
+                \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK
+            );
+            $widget->setEsiVariable(
+                \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
+            );
+            $widget->setUniqueRepetitionCount(
+                $userSettings['block_random_access_users']['value']
+            );
+            $widgetController->registerWidget(
+                $widget
+            );
+        }
+
+        $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
+            $this,
+            'access_user',
+            \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_PLACEHOLDER
+        );
+        $widget->setEsiVariable(
+            \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
+        );
+        $widgetController->registerWidget(
+            $widget
+        );
     }
 
     /**
@@ -281,5 +308,57 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         // make all language data of Access component globally available
         $template->setVariable(\Env::get('init')->getComponentSpecificLanguageData($this->getName()));
+    }
+
+    /**
+     * Returns a list of widget names based on the given base name
+     * @param string $baseName Widget base name
+     * @return array List of widget names
+     */
+    protected function getRepeatableWidgetNames($baseName) {
+        $widgets = array();
+        for ($i = 0; $i <= 10; $i++) {
+            $widgetName = 'access_' . $baseName;
+            if ($i > 0) {
+                $widgetName .= $i;
+            }
+            $widgets[] = $widgetName;
+        }
+        return $widgets;
+    }
+
+    /**
+     * Get all session based widget names
+     * @return array List of widget names
+     */
+    public function getSessionBasedWidgetNames()
+    {
+        return array_merge(
+            array(
+                'access_currently_online_member_list',
+                'access_last_active_member_list',
+            ),
+            $this->getRepeatableWidgetNames('logged_in'),
+            $this->getRepeatableWidgetNames('logged_out')
+        );
+    }
+
+    /**
+     * Get all user data based widget names
+     * @return array List of widget names
+     */
+    public function getUserDataBasedWidgetNames() {
+        return array_merge(
+            array(
+                'access_currently_online_member_list',
+                'access_last_active_member_list',
+                'access_latest_registered_member_list',
+                'access_birthday_member_list',
+                'access_next_birthday_member_list',
+                'access_random_users',
+                'access_user',
+            ),
+            $this->getRepeatableWidgetNames('logged_in')
+        );
     }
 }

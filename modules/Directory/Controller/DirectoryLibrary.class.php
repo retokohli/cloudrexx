@@ -893,13 +893,14 @@ class DirectoryLibrary
                 }
             }
 
+            $net = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Net');
             $query .=
                 "rss_file='".(empty($rss_file) ? '' : $rss_file)."', ".
                 "date='".mktime(
                     date("H"), date("i"), date("s"),
                     date("m"), date("d"), date("Y")).
                 "', status='".intval($entryStatus).
-                "', provider='".gethostbyaddr($_SERVER['REMOTE_ADDR']).
+                "', provider='" . $net->getHostByAddr($_SERVER['REMOTE_ADDR']) .
                 "', ip='".$_SERVER['REMOTE_ADDR'].
                 "', validatedate='".mktime(
                     date("H"), date("i"), date("s"),
