@@ -608,6 +608,7 @@ CODE;
 
         $objUser->objAttribute->reset();
         while (!$objUser->objAttribute->EOF) {
+            $value = '';
             $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
 
             switch ($objAttribute->getType())
@@ -616,13 +617,22 @@ CODE;
                     if ($objAttribute->isCoreAttribute()) {
                         foreach ($objAttribute->getChildren() as $childAttributeId) {
                             $objChildAtrribute = $objAttribute->getById($childAttributeId);
+                            if (!$objChildAtrribute->getId()) {
+                                continue;
+                            }
                             if ($objChildAtrribute->getMenuOptionValue() == $objUser->getProfileAttribute($objAttribute->getId())) {
                                 $value = $objChildAtrribute->getName();
                                 break;
                             }
                         }
                     } else {
+                        if (!$objUser->getProfileAttribute($objAttribute->getId())) {
+                            break;
+                        }
                         $objSelectedAttribute = $objAttribute->getById($objUser->getProfileAttribute($objAttribute->getId()));
+                        if (!$objSelectedAttribute->getId()) {
+                            break;
+                        }
                         $value = $objSelectedAttribute->getName();
                     }
                 break;
@@ -680,7 +690,7 @@ CODE;
         if (isset($_POST) && !empty($_POST)) {
             $arrFormData = array();
             $arrFormData['id'] = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
-            if ($this->getContactFormDetails($arrFormData['id'], $arrFormData['emails'], $arrFormData['subject'], $arrFormData['feedback'], $arrFormData['mailTemplate'], $arrFormData['showForm'], $arrFormData['useCaptcha'], $arrFormData['sendCopy'], $arrFormData['useEmailOfSender'], $arrFormData['htmlMail'], $arrFormData['sendAttachment'], $arrFormData['saveDataInCRM'], $arrFormData['crmCustomerGroups'])) {
+            if ($this->getContactFormDetails($arrFormData['id'], $arrFormData['emails'], $arrFormData['subject'], $arrFormData['feedback'], $arrFormData['mailTemplate'], $arrFormData['showForm'], $arrFormData['useCaptcha'], $arrFormData['sendCopy'], $arrFormData['useEmailOfSender'], $arrFormData['htmlMail'], $arrFormData['sendAttachment'], $arrFormData['saveDataInCRM'], $arrFormData['crmCustomerGroups'], $arrFormData['sendMultipleReply'])) {
                 $arrFormData['fields'] = $this->getFormFields($arrFormData['id']);
                 foreach ($arrFormData['fields'] as $field) {
                     $this->arrFormFields[] = $field['lang'][$_LANGID]['name'];
@@ -718,8 +728,11 @@ CODE;
                 $arrFormData['meta']['ipaddress'] = contrexx_input2raw($_SERVER["REMOTE_ADDR"]);
             }
 
+            $net = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Net');
             $arrFormData['meta']['time'] = time();
-            $arrFormData['meta']['host'] = contrexx_input2raw(@gethostbyaddr($arrFormData['meta']['ipaddress']));
+            $arrFormData['meta']['host'] = contrexx_input2raw(
+                $net->getHostByAddr($arrFormData['meta']['ipaddress'])
+            );
             $arrFormData['meta']['lang'] = contrexx_input2raw($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
             $arrFormData['meta']['browser'] = contrexx_input2raw($_SERVER["HTTP_USER_AGENT"]);
 
@@ -1157,7 +1170,7 @@ CODE;
         global $_ARRAYLANG, $_CONFIG;
 
         $plaintextBody = '';
-        $replyAddress = '';
+        $replyAddresses = array();
         $firstname = '';
         $lastname = '';
         $senderName = '';
@@ -1200,14 +1213,7 @@ CODE;
         // try to fetch a user submitted e-mail address to which we will send a copy to
         if (!empty($arrFormData['fields'])) {
             foreach ($arrFormData['fields'] as $fieldId => $arrField) {
-                // check if field validation is set to e-mail
-                if ($arrField['check_type'] == '2') {
-                    $mail = trim($arrFormData['data'][$fieldId]);
-                    if (\FWValidator::isEmail($mail)) {
-                        $replyAddress = $mail;
-                        break;
-                    }
-                }
+                // fetch first- and lastname from user attributes
                 if ($arrField['type'] == 'special') {
                     switch ($arrField['special_type']) {
                          case 'access_firstname':
@@ -1222,6 +1228,29 @@ CODE;
                             break;
                     }
                 }
+
+                // in case notification email shall only be sent to one (the
+                // first) recipient, we can stop looking for additional
+                // recipient emails
+                if (count($replyAddresses) == 1 && !$arrFormData['sendMultipleReply']) {
+                    continue;
+                }
+
+                // if the input field validation is set to 'e-mail' (2)
+                // then the field might contain a potential recipient email
+                if ($arrField['check_type'] != '2') {
+                    continue;
+                }
+
+                // check if the input data is a valid email address
+                $mail = trim($arrFormData['data'][$fieldId]);
+                if (!\FWValidator::isEmail($mail)) {
+                    continue;
+                }
+
+                // add email address from submitted form data to list of
+                // recipients that shall receive the notification mail
+                $replyAddresses[] = $mail;
             }
 
         }
@@ -1295,11 +1324,13 @@ CODE;
 
             $fieldLabel = $arrField['lang'][FRONTEND_LANG_ID]['name'];
 
-            // try to fetch an e-mail address from submitted form date in case we were unable to fetch one from an input type with e-mail validation
-            if (empty($replyAddress)) {
+            // try to fetch an e-mail address from submitted form data in case
+            // we were unable to fetch one from an input type with e-mail
+            // validation
+            if (empty($replyAddresses)) {
                 $mail = $this->_getEmailAdressOfString($plaintextValue);
                 if (\FWValidator::isEmail($mail)) {
-                    $replyAddress = $mail;
+                    $replyAddresses[] = $mail;
                 }
             }
 
@@ -1331,11 +1362,6 @@ CODE;
             $tabCount = $maxlength - strlen($fieldLabel);
             $tabs     = ($tabCount == 0) ? 1 : $tabCount +1;
 
-// TODO: what is this all about? - $value is undefined
-            if($arrFormData['fields'][$fieldId]['type'] == 'recipient'){
-                $value  = $arrRecipients[$value]['lang'][FRONTEND_LANG_ID];
-            }
-
             if (in_array($fieldId, $textAreaKeys)) {
                 // we're dealing with a textarea, don't indent value
                 $plaintextBody .= $fieldLabel.":\n".$plaintextValue."\n";
@@ -1366,21 +1392,31 @@ CODE;
 
         $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-        if (!empty($replyAddress)) {
-            $objMail->AddReplyTo($replyAddress);
+        $objMail->SetFrom($_CONFIG['coreAdminEmail'], $senderName);
 
+        foreach ($replyAddresses as $replyAddress) {
             if ($arrFormData['sendCopy'] == 1) {
                 $objMail->AddAddress($replyAddress);
             }
-        }
 
-        if (!empty($replyAddress) && $arrFormData['useEmailOfSender'] == 1) {
+            if ($arrFormData['sendMultipleReply']) {
+                continue;
+            }
+
+            // if option sendMultipleReply is not set,
+            // then $replyAddresses does only contain one address
+            // therefore, the following statement will only be called once
+            $objMail->AddReplyTo($replyAddress);
+
+            if (!$arrFormData['useEmailOfSender']) {
+                break;
+            }
+
             $objMail->SetFrom(
                 $replyAddress,
                 ($senderName !== $_CONFIG['coreGlobalPageTitle']) ? $senderName : ''
             );
-        } else {
-            $objMail->SetFrom($_CONFIG['coreAdminEmail'], $senderName);
+            break;
         }
 
         $objMail->Subject = $arrFormData['subject'];

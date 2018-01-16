@@ -95,12 +95,11 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
             $whereLevelId = null;
         }
 
+        $langId = FRONTEND_LANG_ID;
         if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             $whereActive = "AND (level.active='1') ";
-            $langId = FRONTEND_LANG_ID;
         } else {
             $whereActive = '';
-            $langId = LANG_ID;
         }
 
         switch($this->arrSettings['settingsLevelOrder']) {
@@ -344,6 +343,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     $categoryId = intval($requestParams['cid']);
                 }
 
+                $thumbnailFormats = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
+
                 foreach ($arrLevels as $key => $arrLevel) {
                     if($this->arrSettings['settingsLevelOrder'] == 2) {
                         $strIndexHeader = strtoupper(substr($arrLevel['levelName'][0],0,1));
@@ -385,6 +386,24 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                         $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevel['levelPicture'],
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => isset($arrLevel['levelNumEntries']) ? $arrLevel['levelNumEntries'] : '',
                     ));
+
+                    // parse thumbnails
+                    if (!empty($arrLevel['levelPicture'])) {
+                        $arrThumbnails = array();
+                        $imagePath = pathinfo($arrLevel['levelPicture'], PATHINFO_DIRNAME);
+                        $imageFilename = pathinfo($arrLevel['levelPicture'], PATHINFO_BASENAME);
+                        $thumbnails = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($imagePath, $imageFilename, true);
+                        foreach ($thumbnailFormats as $thumbnailFormat) {
+                            if (!isset($thumbnails[$thumbnailFormat['size']])) {
+                                continue;
+                            }
+                            $format = strtoupper($thumbnailFormat['name']);
+                            $thumbnail = $thumbnails[$thumbnailFormat['size']];
+                            $objTpl->setVariable(
+                                $this->moduleLangVar.'_CATEGORY_LEVEL_THUMBNAIL_FORMAT_' . $format, $thumbnail
+                            );
+                        }
+                    }
 
                     $intBlockId = $arrExistingBlocks[$i];
 
@@ -503,6 +522,25 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => isset($arrLevels[$intLevelId]['levelNumEntries']) ? $arrLevels[$intLevelId]['levelNumEntries'] : 0,
                 ));
 
+                // parse thumbnails
+                if ($thumbImage) {
+                    $thumbnailFormats = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
+                    $arrThumbnails = array();
+                    $imagePath = pathinfo($arrLevels[$intLevelId]['levelPicture'], PATHINFO_DIRNAME);
+                    $imageFilename = pathinfo($arrLevels[$intLevelId]['levelPicture'], PATHINFO_BASENAME);
+                    $thumbnails = $this->cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($imagePath, $imageFilename, true);
+                    foreach ($thumbnailFormats as $thumbnailFormat) {
+                        if (!isset($thumbnails[$thumbnailFormat['size']])) {
+                            continue;
+                        }
+                        $format = strtoupper($thumbnailFormat['name']);
+                        $thumbnail = $thumbnails[$thumbnailFormat['size']];
+                        $objTpl->setVariable(
+                            $this->moduleLangVar.'_CATEGORY_LEVEL_THUMBNAIL_FORMAT_' . $format, $thumbnail
+                        );
+                    }
+                }
+
                 // parse GoogleMap
                 $this->parseGoogleMapPlaceholder($objTpl, $this->moduleLangVar.'_CATEGORY_LEVEL_GOOGLE_MAP');
 
@@ -605,7 +643,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
     function saveLevel($arrData, $intLevelId=null)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         //get data
         $intId = intval($intLevelId);
@@ -640,8 +678,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                     if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
-                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[$_LANGID]) ? $arrDescription[$_LANGID] : '';
-                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[$_LANGID]) ? $arrMetaDesc[$_LANGID] : '';
+                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[FRONTEND_LANG_ID]) ? $arrDescription[FRONTEND_LANG_ID] : '';
+                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[FRONTEND_LANG_ID]) ? $arrMetaDesc[FRONTEND_LANG_ID] : '';
 
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
@@ -699,8 +737,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                     if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
-                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[$_LANGID]) ? $arrDescription[$_LANGID] : '';
-                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[$_LANGID]) ? $arrMetaDesc[$_LANGID] : '';
+                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[FRONTEND_LANG_ID]) ? $arrDescription[FRONTEND_LANG_ID] : '';
+                    if(empty($arrMetaDesc[0])) $arrMetaDesc[0] = isset($arrMetaDesc[FRONTEND_LANG_ID]) ? $arrMetaDesc[FRONTEND_LANG_ID] : '';
 
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];

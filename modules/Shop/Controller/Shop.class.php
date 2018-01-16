@@ -116,6 +116,14 @@ class Shop extends ShopLibrary
     protected static $pageTitle = null;
 
     /**
+     * The current page's meta image
+     * If the user is on the detail or category page,
+     * show the product or category image
+     * @var string
+     */
+    protected static $pageMetaImage = '';
+
+    /**
      * Whether or not a session has been initialized
      * and is being used
      * @var boolean
@@ -400,6 +408,15 @@ die("Failed to get Customer for ID $customer_id");
     }
 
     /**
+     * Returns the category or product image if the use is on
+     * a product's or category's page
+     * @return string Relative image URL
+     */
+    public static function getPageMetaImage() {
+        return static::$pageMetaImage;
+    }
+
+    /**
      * Sets up the Shop Navbar content and returns it as a string
      *
      * Note that {@see init()} must have been called before.
@@ -573,6 +590,8 @@ die("Failed to get Customer for ID $customer_id");
                 $objTpl->setVariable(array(
                     'SHOP_CATEGORY_STYLE' => $style,
                     'SHOP_CATEGORY_ID' => $id,
+                    'SHOP_CATEGORY_NAME_FLAT' =>
+                        str_replace('"', '&quot;', $arrShopCategory['name']),
                     'SHOP_CATEGORY_NAME' =>
                         str_repeat('&nbsp;', 3*$level).
                         str_replace('"', '&quot;', $arrShopCategory['name']),
@@ -949,6 +968,7 @@ die("Failed to update the Cart!");
     static function showCategories($parent_id=0)
     {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $thumbnailFormats = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
         if ($parent_id) {
             $objCategory = ShopCategory::getById($parent_id);
             // If we can't get this ShopCategory, it most probably does
@@ -984,6 +1004,23 @@ die("Failed to update the Cart!");
                             'SHOP_CATEGORY_CURRENT_THUMBNAIL'       => contrexx_raw2encodedUrl($thumbnailPath),
                             'SHOP_CATEGORY_CURRENT_THUMBNAIL_SIZE'  => $arrSize[3],
                         ));
+                        static::$pageMetaImage = contrexx_raw2encodedUrl($cx->getWebsiteImagesShopWebPath() . '/' . $imageName);
+                    }
+
+                    // fetch all thumbnails of image and add as placeholders
+                    $arrThumbnails = array();
+                    $imagePath = pathinfo($imageName, PATHINFO_DIRNAME);
+                    $imageFilename = pathinfo($imageName, PATHINFO_BASENAME);
+                    $thumbnails = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($cx->getWebsiteImagesShopWebPath() . '/' . $imagePath, $imageFilename, true);
+                    foreach ($thumbnailFormats as $thumbnailFormat) {
+                        if (!isset($thumbnails[$thumbnailFormat['size']])) {
+                            continue;
+                        }
+                        $format = strtoupper($thumbnailFormat['name']);
+                        $thumbnail = contrexx_raw2encodedUrl($thumbnails[$thumbnailFormat['size']]);
+                        self::$objTemplate->setVariable(
+                            'SHOP_CATEGORY_CURRENT_THUMBNAIL_FORMAT_' . $format, $thumbnail
+                        );
                     }
                 }
             }
@@ -1049,6 +1086,23 @@ die("Failed to update the Cart!");
 //                'SHOP_CATEGORY_SUBMIT_FUNCTION' => 'location.replace("index.php?section=Shop'.MODULE_INDEX.'&catId='.$id.'")',
 //                'SHOP_CATEGORY_SUBMIT_TYPE' => "button",
             ));
+
+            // fetch all thumbnails of image and add as placeholders
+            $arrThumbnails = array();
+            $imagePath = pathinfo($imageName, PATHINFO_DIRNAME);
+            $imageFilename = pathinfo($imageName, PATHINFO_BASENAME);
+            $thumbnails = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($cx->getWebsiteImagesShopWebPath() . '/' . $imagePath, $imageFilename, true);
+            foreach ($thumbnailFormats as $thumbnailFormat) {
+                if (!isset($thumbnails[$thumbnailFormat['size']])) {
+                    continue;
+                }
+                $format = strtoupper($thumbnailFormat['name']);
+                $thumbnail = contrexx_raw2encodedUrl($thumbnails[$thumbnailFormat['size']]);
+                self::$objTemplate->setVariable(
+                    'SHOP_CATEGORY_THUMBNAIL_FORMAT_' . $format, $thumbnail
+                );
+            }
+
             // Add flag images for flagged ShopCategories
             $strImage = '';
             $arrVirtual = ShopCategories::getVirtualCategoryNameArray();
@@ -1274,6 +1328,11 @@ die("Failed to update the Cart!");
             }
             return true;
         }
+        if ($count == 0) {
+            if (self::$objTemplate->blockExists('products')) {
+                self::$objTemplate->hideBlock('products');
+            }
+        }
         if ($objCategory) {
         // Only indicate the category name when there are products
             if ($count) {
@@ -1327,10 +1386,10 @@ die("Failed to update the Cart!");
         $formId = 0;
         $arrDefaultImageSize = $arrSize = null;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $thumbnailFormats = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnails();
+        $isFileAttrExistsInPdt = false;
+        $uploader = false;
         foreach ($arrProduct as $objProduct) {
-            if (!empty($product_id)) {
-                self::$pageTitle = $objProduct->name();
-            }
             $id = $objProduct->id();
             $productSubmitFunction = '';
             $arrPictures = Products::get_image_array_from_base64($objProduct->pictures());
@@ -1338,6 +1397,7 @@ die("Failed to update the Cart!");
             $arrProductImages = array();
             foreach ($arrPictures as $index => $image) {
                 $thumbnailPath = $pictureLink = '';
+                $imageFilePath = '';
                 if (   empty($image['img'])
                     || $image['img'] == ShopLibrary::noPictureName) {
                     // We have at least one picture on display already.
@@ -1356,7 +1416,8 @@ die("Failed to update the Cart!");
                         $pictureLink =
                                 contrexx_raw2encodedUrl($cx->getWebsiteImagesShopWebPath() . '/' . $image['img']) .
                                 // Hack ahead!
-                            '" rel="shadowbox['.($formId+1).']';
+                                '" rel="shadowbox['.($formId+1).']';
+                        $imageFilePath = contrexx_raw2encodedUrl($cx->getWebsiteImagesShopWebPath() . '/' . $image['img']);
                         // Thumbnail display size
                         $arrSize = array($image['width'], $image['height']);
                     } else {
@@ -1375,16 +1436,37 @@ die("Failed to update the Cart!");
                         self::$objTemplate->setVariable(
                             'SHOP_PRODUCT_IMAGE', $picture_url->toString());
 //\DBG::log("Set image to ".$picture_url->toString());
+                        $imageFilePath = $picture_url->toString();
                     }
+                }
+
+                // fetch all thumbnails of image and add as placeholders
+                $arrThumbnails = array();
+                $imagePath = pathinfo($image['img'], PATHINFO_DIRNAME);
+                $imageFilename = pathinfo($image['img'], PATHINFO_BASENAME);
+                $thumbnails = $cx->getMediaSourceManager()->getThumbnailGenerator()->getThumbnailsFromFile($cx->getWebsiteImagesShopWebPath() . '/' . $imagePath, $imageFilename, true);
+                foreach ($thumbnailFormats as $thumbnailFormat) {
+                    if (!isset($thumbnails[$thumbnailFormat['size']])) {
+                        continue;
+                    }
+                    $arrThumbnails[strtoupper($thumbnailFormat['name'])] = contrexx_raw2encodedUrl($thumbnails[$thumbnailFormat['size']]);
                 }
                 $arrProductImages[] = array(
                     'THUMBNAIL' => contrexx_raw2encodedUrl($thumbnailPath),
                     'THUMBNAIL_SIZE' => $arrSize[3],
                     'THUMBNAIL_LINK' => $pictureLink,
                     'POPUP_LINK' => $pictureLink,
+                    'IMAGE_PATH' => $imageFilePath,
                     'POPUP_LINK_NAME' => $_ARRAYLANG['TXT_SHOP_IMAGE'].' '.$index,
+                    'THUMBNAIL_FORMATS' => $arrThumbnails,
                 );
                 $havePicture = true;
+            }
+            if (!empty($product_id)) {
+                self::$pageTitle = $objProduct->name();
+                if (count($arrProductImages)) {
+                    static::$pageMetaImage = current($arrProductImages)['IMAGE_PATH'];
+                }
             }
             $i = 1;
             foreach ($arrProductImages as $arrProductImage) {
@@ -1411,6 +1493,11 @@ die("Failed to update the Cart!");
                 self::$objTemplate->setVariable(
                     'SHOP_PRODUCT_POPUP_LINK_NAME_'.$i, $arrProductImage['POPUP_LINK_NAME']
                 );
+                foreach ($arrProductImage['THUMBNAIL_FORMATS'] as $format => $thumbnail) {
+                    self::$objTemplate->setVariable(
+                        'SHOP_PRODUCT_THUMBNAIL_FORMAT_' . $format . '_' . $i, $thumbnail
+                    );
+                }
                 ++$i;
             }
             $stock = ($objProduct->stock_visible()
@@ -1501,6 +1588,22 @@ die("Failed to update the Cart!");
                 $productSubmitFunction = self::productOptions(
                     $id, $formId, $cart_id, $flagMultipart
                 );
+            }
+            if ($flagMultipart) {
+                $isFileAttrExistsInPdt = $flagMultipart;
+                if (!$uploader) {
+                    //initialize the uploader
+                    $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+                    $uploader->setCallback('productOptionsUploaderCallback');
+                    $uploader->setOptions(array(
+                        'id'                => 'productOptionsUploader',
+                        'data-upload-limit' => 1,
+                        'style'             => 'display:none'
+                    ));
+                }
+                self::$objTemplate->setVariable(array(
+                    'SHOP_PRODUCT_OPTIONS_UPLOADER_ID'   => $uploader->getId()
+                ));
             }
             $shopProductFormName = "shopProductForm$formId";
             $row = $formId % 2 + 1;
@@ -1674,11 +1777,31 @@ die("Failed to update the Cart!");
                 self::$objTemplate->hideBlock('orderQuantity');
             }
 
+            if ($objProduct->stock()) {
+                if (self::$objTemplate->blockExists('shop_product_in_stock')) {
+                    self::$objTemplate->touchBlock('shop_product_in_stock');
+                }
+                if (self::$objTemplate->blockExists('shop_product_not_in_stock')) {
+                    self::$objTemplate->hideBlock('shop_product_not_in_stock');
+                }
+            } else {
+                if (self::$objTemplate->blockExists('shop_product_in_stock')) {
+                    self::$objTemplate->hideBlock('shop_product_in_stock');
+                }
+                if (self::$objTemplate->blockExists('shop_product_not_in_stock')) {
+                    self::$objTemplate->touchBlock('shop_product_not_in_stock');
+                }
+            }
 
             if (self::$objTemplate->blockExists('shopProductRow')) {
                 self::$objTemplate->parse('shopProductRow');
             }
             ++$formId;
+        }
+        if ($isFileAttrExistsInPdt) {
+            self::$objTemplate->setVariable(array(
+                'SHOP_PRODUCT_OPTIONS_UPLOADER_CODE' => $uploader->getXHtml(),
+            ));
         }
         return true;
     }
@@ -1866,7 +1989,7 @@ die("Failed to update the Cart!");
                 self::$objTemplate->hideBlock('shopProductOptionsRow');
                 self::$objTemplate->hideBlock('shopProductOptionsValuesRow');
             } else {
-                $isUpload = false;
+                $forceSelectOption = \Cx\Core\Setting\Controller\Setting::getValue('force_select_option','Shop');
                 // Loop through the Attribute Names for the Product
                 foreach ($arrAttributes as $attribute_id => $objAttribute) {
                     $mandatory = false;
@@ -1928,6 +2051,7 @@ die("Failed to update the Cart!");
                         $checkOptionIds .= "$attribute_id;";
                         break;
                       case Attribute::TYPE_MENU_MANDATORY:
+                        $arrAssignedOptions = array_intersect_key($arrOptions, $arrRelation);
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
                             $product_id.'-'.$attribute_id.
@@ -1938,8 +2062,7 @@ die("Failed to update the Cart!");
                             '" class="product-option-field" style="width:180px;">'."\n".
                             // If there is only one option to choose from,
                             // why bother the customer at all?
-// NOTE: To always prepend the default "please choose" option, comment the condition
-                            (count($arrOptions) > 1
+                            ($forceSelectOption || count($arrAssignedOptions) > 1
                                 ? '<option value="0">'.
                                   $objAttribute->getName().'&nbsp;'.
                                   $_ARRAYLANG['TXT_CHOOSE']."</option>\n"
@@ -2086,15 +2209,76 @@ die("Failed to update the Cart!");
                           case Attribute::TYPE_UPLOAD_OPTIONAL:
                           case Attribute::TYPE_UPLOAD_MANDATORY:
 //                            $option_price = '&nbsp;';
-                            $isUpload = true;
-                            $selectValues .='<input type="input" name="productOption['.$attribute_id.
-                                ']" id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
-                                '" style="width:180px; float:left" />'.
-                                  '<input type="button" name="productOption['.$attribute_id.
-                                ']" onClick="getUploader(cx.jQuery(this));" data-input-id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
-                                '" value="'.$_ARRAYLANG['TXT_SHOP_CHOOSE_FILE'].'"/>'.
-                                  '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
-                                $option_price."</label><br />\n";
+                            $inputName = 'productOption[' . $attribute_id . ']';
+                            $inputId   = 'productOption-' . $product_id . '-' .
+                                $attribute_id . '-' . $domId;
+                            $inputText =
+                                new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                    'input'
+                                );
+                            $inputText->setAttribute('type', 'text');
+                            $inputText->setAttribute('id', $inputId);
+                            $inputText->setAttribute('disabled', 'disabled');
+                            $inputText->setClass(
+                                'product-option-upload-text
+                                 product-option-field ' . $inputId
+                            );
+                            if ($arrOption['price'] != 0) {
+                                $inputText->setAttribute(
+                                    'data-price',
+                                    $arrOption['price']
+                                );
+                            }
+                            $inputHidden =
+                                new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                    'input'
+                                );
+                            $inputHidden->setAttribute('type', 'text');
+                            $inputHidden->setAttribute('name', $inputName);
+                            $inputHidden->setClass(
+                                'product-option-upload-hidden
+                                 product-option-upload ' . $inputId
+                            );
+                            $inputButton =
+                                new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                    'input'
+                                );
+                            $inputButton->setAttribute('type', 'button');
+                            $inputButton->setClass(
+                                'product-option-upload-button'
+                            );
+                            $inputButton->setAttribute(
+                                'data-input-id',
+                                $inputId
+                            );
+                            $inputButton->setAttribute(
+                                'value',
+                                $_ARRAYLANG['TXT_SHOP_CHOOSE_FILE']
+                            );
+                            $removeIcon = new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                'img'
+                            );
+                            $removeIcon->setClass('product-option-remove-file');
+                            $removeIcon->setAttribute('data-input-id', $inputId);
+                            $removeIcon->setAttribute(
+                                'src',
+                                '/core/Core/View/Media/icons/delete.gif'
+                            );
+                            $removeIcon->setAttribute(
+                                'title',
+                                $_ARRAYLANG['TXT_SHOP_REMOVE_FILE']
+                            );
+                            $label = new \Cx\Core\Html\Model\Entity\HtmlElement(
+                                'label'
+                            );
+                            $label->setAttribute('for', $inputId);
+                            $value = new \Cx\Core\Html\Model\Entity\TextElement(
+                                $option_price
+                            );
+                            $label->addChild($value);
+                            $br = new \Cx\Core\Html\Model\Entity\HtmlElement('br');
+                            $selectValues .= $inputText . $inputButton .
+                                $removeIcon. $inputHidden . $label . $br;
                             break;
                           case Attribute::TYPE_TEXTAREA_OPTIONAL:
                           case Attribute::TYPE_TEXTAREA_MANDATORY:
@@ -2171,21 +2355,6 @@ die("Failed to update the Cart!");
                     self::$objTemplate->parse('shopProductOptionsValuesRow');
                 }
                 self::$objTemplate->parse('shopProductOptionsRow');
-                if ($isUpload) {
-                    //initialize the uploader
-                    $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader(); //create an uploader
-                    $uploader->setCallback('productOptionsUploaderCallback');
-                    $uploader->setOptions(array(
-                        'id' => 'productOptionsUploader',
-                        'allowed-extensions' => array('jpg', 'png', 'gif'),
-                        'data-upload-limit' => 1,
-                        'style' => 'display:none'
-                    ));
-                    self::$objTemplate->setVariable(array(
-                        'SHOP_PRODUCT_OPTIONS_UPLOADER_CODE' => $uploader->getXHtml(),
-                        'SHOP_PRODUCT_OPTIONS_UPLOADER_ID'   => $uploader->getId()
-                    ));
-                }
             }
         }
         return
@@ -2491,6 +2660,39 @@ die("Shop::processRedirect(): This method is obsolete!");
         $fax = (isset($_SESSION['shop']['fax'])
             ? $_SESSION['shop']['fax']
             : (self::$objCustomer ? self::$objCustomer->fax() : ''));
+        $birthday = (isset($_SESSION['shop']['birthday'])
+            ? $_SESSION['shop']['birthday']
+            : (self::$objCustomer ? self::$objCustomer->getProfileAttribute('birthday') : mktime(0, 0, 0)));
+
+        $selectedBirthdayDay = date('j', $birthday);
+        $selectedBirthdayMonth = date('n', $birthday);
+        $selectedBirthdayYear = date('Y', $birthday);
+
+        $birthdayDaySelect= new \Cx\Core\Html\Model\Entity\DataElement(
+            'shop_birthday_day',
+            $selectedBirthdayDay,
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+            null,
+            array_combine(range(1, 31), range(1, 31))
+        );
+        $birthdayDaySelect->setAttribute('class', 'birthday');
+        $birthdayMonthSelect = new \Cx\Core\Html\Model\Entity\DataElement(
+            'shop_birthday_month',
+            $selectedBirthdayMonth,
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+            null,
+            array_combine(range(1, 12), range(1, 12))
+        );
+        $birthdayMonthSelect->setAttribute('class', 'birthday');
+        $birthdayYearSelect= new \Cx\Core\Html\Model\Entity\DataElement(
+            'shop_birthday_year',
+            $selectedBirthdayYear,
+            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+            null,
+            array_combine(range(1900, date('Y')), range(1900, date('Y')))
+        );
+
+        $birthdayYearSelect->setAttribute('class', 'birthday');
         self::$objTemplate->setVariable(array(
             'SHOP_ACCOUNT_COMPANY' => htmlentities($company, ENT_QUOTES, CONTREXX_CHARSET),
             'SHOP_ACCOUNT_PREFIX' => Customers::getGenderMenuoptions($gender),
@@ -2509,6 +2711,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             // Old template
             // Compatibility with 2.0 and older versions
             'SHOP_ACCOUNT_COUNTRY' => \Cx\Core\Country\Controller\Country::getMenu('countryId', $country_id),
+            'SHOP_ACCOUNT_BIRTHDAY' => $birthdayDaySelect . $birthdayMonthSelect . $birthdayYearSelect,
         ));
         $register = \Cx\Core\Setting\Controller\Setting::getValue('register','Shop');
 
@@ -2649,6 +2852,17 @@ die("Shop::processRedirect(): This method is obsolete!");
             $_SESSION['shop']['password'] = '';
         }
 
+        // set customer birthday
+        if (isset($_POST['shop_birthday_day']) &&
+            isset($_POST['shop_birthday_month']) &&
+            isset($_POST['shop_birthday_year'])) {
+            $day = contrexx_input2raw($_POST['shop_birthday_day']);
+            $month = contrexx_input2raw($_POST['shop_birthday_month']);
+            $year = contrexx_input2raw($_POST['shop_birthday_year']);
+            $birthday = mktime(0, 0, 0, $month, $day, $year);
+            $_SESSION['shop']['birthday'] = $birthday;
+        }
+
         if (   empty($_SESSION['shop']['gender2'])
             || empty($_SESSION['shop']['lastname2'])
             || empty($_SESSION['shop']['firstname2'])
@@ -2740,6 +2954,18 @@ die("Shop::processRedirect(): This method is obsolete!");
             if (Customer::getUnregisteredByEmail($_SESSION['shop']['email'])) {
                 return true;
             }
+
+            // Allow registered Customers (active Users!) to place orders without logging in.
+            // Important: this does not ensure data privacy!!
+            $verifyAccountEmail = \Cx\Core\Setting\Controller\Setting::getValue('verify_account_email','Shop');
+            if (!$verifyAccountEmail) {
+                $objCustomer =
+                    Customer::getRegisteredByEmail($_SESSION['shop']['email']);
+                if ($objCustomer) {
+                    return $status;
+                }
+            }
+
             $objUser = new \User();
             $objUser->setUsername($_SESSION['shop']['email']);
             $objUser->setEmail($_SESSION['shop']['email']);
@@ -3191,6 +3417,62 @@ die("Shop::processRedirect(): This method is obsolete!");
                     $_SESSION['shop']['shipment_price']),
                 'SHOP_SHIPMENT_MENU' => self::_getShipperMenu(),
             ));
+
+            if (static::$objTemplate->blockExists('shop_shipment_shipment_methods')) {
+                // Get available shipment IDs
+                $shipmentMethods = Shipment::getCountriesRelatedShippingIdArray(
+                    $_SESSION['shop']['countryId2']
+                );
+
+                // Fetch selected shipment
+                if (empty($_SESSION['shop']['shipperId'])) {
+                    // First is the default shipment ID
+                    $_SESSION['shop']['shipperId'] = current($shipmentMethods);
+                }
+
+                // parse blocks
+                $i = 0;
+                foreach ($shipmentMethods as $shipperId) {
+                    // Skip unavailable shipment methods
+                    if (
+                        Shipment::calculateShipmentPrice(
+                            $shipperId,
+                            $_SESSION['shop']['cart']['total_price'],
+                            $_SESSION['shop']['cart']['total_weight']
+                        ) < 0
+                    ) {
+                        continue;
+                    }
+                    self::$objTemplate->setVariable(array(
+                        'SHOP_SHIPMENT_SHIPMENT_METHOD_ID' => contrexx_raw2xhtml(
+                            $shipperId
+                        ),
+                        'SHOP_SHIPMENT_SHIPMENT_METHOD_NAME' => contrexx_raw2xhtml(
+                            Shipment::getShipperName($shipperId)
+                        ),
+                    ));
+
+                    // selected?
+                    if (self::$objTemplate->blockExists('shop_shipment_shipment_selected')) {
+                        if ($_SESSION['shop']['shipperId'] == $shipperId) {
+                            self::$objTemplate->touchBlock('shop_shipment_shipment_selected');
+                        } else {
+                            self::$objTemplate->hideBlock('shop_shipment_shipment_selected');
+                        }
+                    }
+                    self::$objTemplate->parse('shop_shipment_shipment_methods');
+                    $i++;
+                }
+
+                // no shipment method applicable
+                if (self::$objTemplate->blockExists('shop_shipment_no_shipment_methods')) {
+                    if (!$i) {
+                        self::$objTemplate->touchBlock('shop_shipment_no_shipment_methods');
+                    } else {
+                        self::$objTemplate->hideBlock('shop_shipment_no_shipment_methods');
+                    }
+                }
+            }
         }
         if (   Cart::get_price()
             || $_SESSION['shop']['shipment_price']
@@ -3202,18 +3484,27 @@ die("Shop::processRedirect(): This method is obsolete!");
                 'SHOP_PAYMENT_MENU' => self::get_payment_menu(),
             ));
 
+            // If cart has a value or needs a shipment (which might cost) we
+            // need to parse payment options
+            // TODO: Check if the first line is not already checked above
             if (    !(!Cart::needs_shipment() && Cart::get_price() <= 0)
                 &&  self::$objTemplate->blockExists('shop_payment_payment_methods')
                 &&  $paymentMethods = Payment::getPaymentMethods($_SESSION['shop']['countryId'])
             ) {
                 foreach ($paymentMethods as $paymentId => $paymentName) {
-                    $selected = ($_SESSION['shop']['paymentId'] == $paymentId)
-                        ? 'selected="selected"' : '';
                     self::$objTemplate->setVariable(array(
                         'SHOP_PAYMENT_PAYMENT_METHOD_ID'       => contrexx_raw2xhtml($paymentId),
                         'SHOP_PAYMENT_PAYMENT_METHOD_NAME'     => contrexx_raw2xhtml($paymentName),
-                        'SHOP_PAYMENT_PAYMENT_METHOD_SELECTED' => $selected,
                     ));
+
+                    // selected?
+                    if (self::$objTemplate->blockExists('shop_payment_payment_selected')) {
+                        if ($_SESSION['shop']['paymentId'] == $paymentId) {
+                            self::$objTemplate->touchBlock('shop_payment_payment_selected');
+                        } else {
+                            self::$objTemplate->hideBlock('shop_payment_payment_selected');
+                        }
+                    }
                     self::$objTemplate->parse('shop_payment_payment_methods');
                 }
             }
@@ -3271,6 +3562,54 @@ die("Shop::processRedirect(): This method is obsolete!");
                         $_SESSION['shop']['grand_total_price'] - $_SESSION['shop']['vat_price']
                     ),
                 ));
+
+                if (self::$objTemplate->blockExists('shopVatIncl')) {
+                    // parse specific VAT-incl template block
+                    self::$objTemplate->touchBlock('shopVatIncl');
+
+                    // hide non-specific VAT template block
+                    if (self::$objTemplate->blockExists('shopTax')) {
+                        self::$objTemplate->hideBlock('shopTax');
+                    }
+                } elseif (self::$objTemplate->blockExists('shopTax')) {
+                    // parse non-specific VAT template block
+                    self::$objTemplate->touchBlock('shopTax');
+                }
+
+                // hide specific VAT-excl template block
+                if (self::$objTemplate->blockExists('shopVatExcl')) {
+                    self::$objTemplate->hideBlock('shopVatExcl');
+                }
+            } else {
+                if (self::$objTemplate->blockExists('shopVatExcl')) {
+                    // parse specific VAT-excl template block
+                    self::$objTemplate->touchBlock('shopVatExcl');
+
+                    // hide non-specific VAT template block
+                    if (self::$objTemplate->blockExists('shopTax')) {
+                        self::$objTemplate->hideBlock('shopTax');
+                    }
+                } elseif (self::$objTemplate->blockExists('shopTax')) {
+                    // parse non-specific VAT template block
+                    self::$objTemplate->touchBlock('shopTax');
+                }
+
+                // hide specific VAT-incl template block
+                if (self::$objTemplate->blockExists('shopVatIncl')) {
+                    self::$objTemplate->hideBlock('shopVatIncl');
+                }
+            }
+        } else {
+            // hide all VAT related template blocks
+            $vatBlocks = array(
+                'shopTax',
+                'shopVatIncl',
+                'shopVatExcl',
+            );
+            foreach ($vatBlocks as $vatBlock) {
+                if (self::$objTemplate->blockExists($vatBlock)) {
+                    self::$objTemplate->hideBlock($vatBlock);
+                }
             }
         }
         self::viewpart_lsv();
@@ -3376,18 +3715,26 @@ die("Shop::processRedirect(): This method is obsolete!");
             self::$objTemplate->setVariable(array(
                 'SHOP_DISCOUNT_COUPON_TOTAL' =>
                     $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_AMOUNT_TOTAL'],
+                // total discount amount
                 'SHOP_DISCOUNT_COUPON_TOTAL_AMOUNT' =>
                     Currency::formatPrice(-$total_discount_amount),
+                'SHOP_DISCOUNT_COUPON_CODE' => $_SESSION['shop']['coupon_code'],
             ));
         }
         self::$objTemplate->setVariable(array(
             'SHOP_UNIT' => Currency::getActiveCurrencySymbol(),
             'SHOP_TOTALITEM' => Cart::get_item_count(),
+            // costs for payment handler (CC, invoice, etc.)
             'SHOP_PAYMENT_PRICE' => Currency::formatPrice(
                 $_SESSION['shop']['payment_price']),
+            // costs of all goods (before subtraction of discount) without payment and shippment costs
+            'SHOP_PRODUCT_TOTAL_GOODS' => Currency::formatPrice(
+                  Cart::get_price() + Cart::get_discount_amount()),
+            // order costs after discount subtraction (incl VAT) but without payment and shippment costs
             'SHOP_TOTALPRICE' => Currency::formatPrice(Cart::get_price()),
             'SHOP_PAYMENT' =>
                 Payment::getProperty($_SESSION['shop']['paymentId'], 'name'),
+            // final order costs
             'SHOP_GRAND_TOTAL' => Currency::formatPrice(
                   $_SESSION['shop']['grand_total_price']),
             'SHOP_COMPANY' => stripslashes($_SESSION['shop']['company']),
@@ -3404,6 +3751,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             'SHOP_EMAIL' => stripslashes($_SESSION['shop']['email']),
             'SHOP_PHONE' => stripslashes($_SESSION['shop']['phone']),
             'SHOP_FAX' => stripslashes($_SESSION['shop']['fax']),
+            'SHOP_BIRTHDAY' => date(ASCMS_DATE_FORMAT_DATE, $_SESSION['shop']['birthday']),
         ));
         if (!empty($_SESSION['shop']['lastname2'])) {
             self::$objTemplate->setVariable(array(
@@ -3427,6 +3775,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (Vat::isEnabled()) {
             self::$objTemplate->setVariable(array(
                 'TXT_TAX_RATE' => $_ARRAYLANG['TXT_SHOP_VAT_RATE'],
+                // total VAT on products (after subtraction of discount)
                 'SHOP_TAX_PRICE' => Currency::formatPrice(
                     $_SESSION['shop']['vat_price']),
                 'SHOP_TAX_PRODUCTS_TXT' => $_SESSION['shop']['vat_products_txt'],
@@ -3439,14 +3788,65 @@ die("Shop::processRedirect(): This method is obsolete!");
             ));
             if (Vat::isIncluded()) {
                 self::$objTemplate->setVariable(array(
+                    // final order costs without VAT, but including
+                    // payment and shipping costs
                     'SHOP_GRAND_TOTAL_EXCL_TAX' =>
                         Currency::formatPrice(
                             $_SESSION['shop']['grand_total_price']
                             - $_SESSION['shop']['vat_price']
                     ),
                 ));
+
+                if (self::$objTemplate->blockExists('shopVatIncl')) {
+                    // parse specific VAT-incl template block
+                    self::$objTemplate->touchBlock('shopVatIncl');
+
+                    // hide non-specific VAT template block
+                    if (self::$objTemplate->blockExists('taxrow')) {
+                        self::$objTemplate->hideBlock('taxrow');
+                    }
+                } elseif (self::$objTemplate->blockExists('taxrow')) {
+                    // parse non-specific VAT template block
+                    self::$objTemplate->touchBlock('taxrow');
+                }
+
+                // hide specific VAT-excl template block
+                if (self::$objTemplate->blockExists('shopVatExcl')) {
+                    self::$objTemplate->hideBlock('shopVatExcl');
+                }
+            } else {
+                if (self::$objTemplate->blockExists('shopVatExcl')) {
+                    // parse specific VAT-excl template block
+                    self::$objTemplate->touchBlock('shopVatExcl');
+
+                    // hide non-specific VAT template block
+                    if (self::$objTemplate->blockExists('taxrow')) {
+                        self::$objTemplate->hideBlock('taxrow');
+                    }
+                } elseif (self::$objTemplate->blockExists('taxrow')) {
+                    // parse non-specific VAT template block
+                    self::$objTemplate->touchBlock('taxrow');
+                }
+
+                // hide specific VAT-incl template block
+                if (self::$objTemplate->blockExists('shopVatIncl')) {
+                    self::$objTemplate->hideBlock('shopVatIncl');
+                }
+            }
+        } else {
+            // hide all VAT related template blocks
+            $vatBlocks = array(
+                'taxrow',
+                'shopVatIncl',
+                'shopVatExcl',
+            );
+            foreach ($vatBlocks as $vatBlock) {
+                if (self::$objTemplate->blockExists($vatBlock)) {
+                    self::$objTemplate->hideBlock($vatBlock);
+                }
             }
         }
+
 // TODO: Make sure in payment() that those two are either both empty or
 // both non-empty!
         if (   !Cart::needs_shipment()
@@ -3498,17 +3898,20 @@ die("Shop::processRedirect(): This method is obsolete!");
         self::$objTemplate->hideBlock('shopConfirm');
         // Store the customer, register the order
         $customer_ip = $_SERVER['REMOTE_ADDR'];
-        $customer_host = substr(@gethostbyaddr($_SERVER['REMOTE_ADDR']), 0, 100);
+        $net = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Net');
+        $customerHost = substr($net->getHostByAddr($_SERVER['REMOTE_ADDR']), 0, 100);
         $customer_browser = substr(getenv('HTTP_USER_AGENT'), 0, 100);
         $new_customer = false;
 //\DBG::log("Shop::process(): E-Mail: ".$_SESSION['shop']['email']);
         if (self::$objCustomer) {
 //\DBG::log("Shop::process(): Existing User username ".$_SESSION['shop']['username'].", email ".$_SESSION['shop']['email']);
         } else {
+            $verifyAccountEmail = \Cx\Core\Setting\Controller\Setting::getValue('verify_account_email','Shop');
+
             // Registered Customers are required to be logged in!
             self::$objCustomer = Customer::getRegisteredByEmail(
                 $_SESSION['shop']['email']);
-            if (self::$objCustomer) {
+            if ($verifyAccountEmail && self::$objCustomer) {
                 \Message::error($_ARRAYLANG['TXT_SHOP_CUSTOMER_REGISTERED_EMAIL']);
                 \Cx\Core\Csrf\Controller\Csrf::redirect(
                     \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'login').
@@ -3518,8 +3921,10 @@ die("Shop::processRedirect(): This method is obsolete!");
             }
 // Unregistered Customers are stored as well, as their information is needed
 // nevertheless.  Their active status, however, is set to false.
-            self::$objCustomer = Customer::getUnregisteredByEmail(
-                $_SESSION['shop']['email']);
+            if (!self::$objCustomer) {
+                self::$objCustomer = Customer::getUnregisteredByEmail(
+                    $_SESSION['shop']['email']);
+            }
             if (!self::$objCustomer) {
                 self::$objCustomer = new Customer();
                 // Currently, the e-mail address is set as the user name
@@ -3556,6 +3961,11 @@ die("Shop::processRedirect(): This method is obsolete!");
         self::$objCustomer->country_id($_SESSION['shop']['countryId']);
         self::$objCustomer->phone($_SESSION['shop']['phone']);
         self::$objCustomer->fax($_SESSION['shop']['fax']);
+        if (!empty($_SESSION['shop']['birthday'])) {
+            self::$objCustomer->setProfile(array(
+                'birthday' => array(0 => date(ASCMS_DATE_FORMAT_DATE, $_SESSION['shop']['birthday']))
+            ));
+        }
 
         $arrGroups = self::$objCustomer->getAssociatedGroupIds();
         $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller','Shop');
@@ -3645,7 +4055,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         $objOrder->payment_id($payment_id);
         $objOrder->payment_amount($_SESSION['shop']['payment_price']);
         $objOrder->ip($customer_ip);
-        $objOrder->host($customer_host);
+        $objOrder->host($customerHost);
         $objOrder->lang_id(FRONTEND_LANG_ID);
         $objOrder->browser($customer_browser);
         $objOrder->note($_SESSION['shop']['note']);
@@ -4236,7 +4646,17 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (empty($uploaderId) || empty($fileName)) {
             return '';
         }
+
         $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (
+            \Cx\Lib\FileSystem\FileSystem::exists(
+                $cx->getWebsiteDocumentRootPath() . '/' .
+                Order::UPLOAD_FOLDER . urldecode($fileName)
+            )
+        ) {
+            return urldecode($fileName);
+        }
+
         $objSession = $cx->getComponent('Session')->getSession();
         $tmpFile    = $objSession->getTempPath() . '/' . $uploaderId . '/' . $fileName;
         if (!\Cx\Lib\FileSystem\FileSystem::exists($tmpFile)) {
@@ -4244,34 +4664,33 @@ die("Shop::processRedirect(): This method is obsolete!");
         }
         $originalFileName = $fileName;
         $arrMatch = array();
-        $filename = '';
-        $fileext = '';
         if (preg_match('/(.+)(\.[^.]+)/', $originalFileName, $arrMatch)) {
             $filename = $arrMatch[1];
             $fileext = $arrMatch[2];
         } else {
             $filename = $originalFileName;
+            $fileext  = '';
         }
-        if (   $fileext == '.jpg'
-            || $fileext == '.gif'
-            || $fileext == '.png') {
-            $newFileName = $filename.'['.uniqid().']'.$fileext;
-            $newFilePath = Order::UPLOAD_FOLDER.$newFileName;
-            //Move the uploaded file to the path specified in the variable $newFilePath
-            try {
-                $objFile = new \Cx\Lib\FileSystem\File($tmpFile);
-                if ($objFile->move(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath() . '/' . $newFilePath, false)) {
-                   return $newFileName;
-                } else {
-                    \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPLOADING_FILE']);
-                }
-            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                \DBG::msg($e->getMessage());
+
+        $newFileName = $filename.'['.uniqid().']'.$fileext;
+        $newFilePath = Order::UPLOAD_FOLDER.$newFileName;
+        //Move the uploaded file to the path specified in the variable $newFilePath
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File($tmpFile);
+            if (
+                $objFile->move(
+                    $cx->getWebsiteDocumentRootPath() . '/' . $newFilePath,
+                false
+                )
+            ) {
+               return $newFileName;
+            } else {
+                \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPLOADING_FILE']);
             }
-        } else {
-            \Message::error(sprintf(
-                $_ARRAYLANG['TXT_SHOP_ERROR_WRONG_FILETYPE'], $fileext));
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::msg($e->getMessage());
         }
+
         return '';
     }
 

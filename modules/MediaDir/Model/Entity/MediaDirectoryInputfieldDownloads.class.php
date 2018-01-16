@@ -66,7 +66,7 @@ class MediaDirectoryInputfieldDownloads extends \Cx\Modules\MediaDir\Controller\
 
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
-        global $objDatabase, $_LANGID, $objInit, $_ARRAYLANG, $_CORELANG;
+        global $objDatabase, $objInit, $_ARRAYLANG, $_CORELANG;
 
         $intId = intval($arrInputfield['id']);
 
@@ -136,7 +136,7 @@ class MediaDirectoryInputfieldDownloads extends \Cx\Modules\MediaDir\Controller\
 
                             $objInputfieldValue->MoveNext();
                         }
-                        $arrValue[0] = $arrValue[$_LANGID];
+                        $arrValue[0] = $arrValue[FRONTEND_LANG_ID];
                         $intNumElements = count($arrParents);
                     }
                 } else {
@@ -353,7 +353,7 @@ EOF;
 
     function saveInputfield($intInputfieldId, $arrValue, $intLangId)
     {
-        global $objInit, $_LANGID;
+        global $objInit;
 
         $arrValues = array();
 
@@ -364,7 +364,7 @@ EOF;
         } else {
             $uploaderId = !empty($_POST['uploaderId']) ? $_POST['uploaderId'] : '';
             foreach($arrValue as $intKey => $arrValuesTmp) {
-                if ($_POST['mediadirInputfieldSource'][$intInputfieldId][0][$intKey] != ''  && $intLangId == $_LANGID) {
+                if ($_POST['mediadirInputfieldSource'][$intInputfieldId][0][$intKey] != ''  && $intLangId == FRONTEND_LANG_ID) {
                     $this->deleteFile($arrValuesTmp['file']);
                     $filePath   = $this->getUploadedFilePath($uploaderId, $_POST['mediadirInputfieldSource'][$intInputfieldId][0][$intKey]);
                     if ($filePath) {
@@ -496,20 +496,20 @@ EOF;
     }
 
     function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $intId = intval($arrInputfield['id']);
         $objEntryDefaultLang = $objDatabase->Execute("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");
         $intEntryDefaultLang = intval($objEntryDefaultLang->fields['lang_id']);
 
         if($this->arrSettings['settingsTranslationStatus'] == 1) {
-            if(in_array($_LANGID, $arrTranslationStatus)) {
-                $intLangId = $_LANGID;
+            if(in_array(FRONTEND_LANG_ID, $arrTranslationStatus)) {
+                $intLangId = FRONTEND_LANG_ID;
             } else {
                 $intLangId = $intEntryDefaultLang;
             }
         } else {
-            $intLangId = $_LANGID;
+            $intLangId = FRONTEND_LANG_ID;
         }
 
         $objInputfieldValue = $objDatabase->Execute("

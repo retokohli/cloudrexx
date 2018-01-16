@@ -44,17 +44,29 @@
  */
 class BackendTable extends HTML_Table {
 
+    /**
+     * Whether or not the table has a master table header.
+     * A master table header is used as a title and is being
+     * parsed as TH tags.
+     * If no master table header is set, then the column labels
+     * will be used as the master table header and are being
+     * parsed as TH tags.
+     * Otherwise, if a master table header is set, the column labels
+     * are being parsed as regular TD tags, but with row class row3.
+     */
+    protected $hasMasterTableHeader = false;
+
     public function __construct($attrs = array(), $options = array()) {
         global $_ARRAYLANG;
 
         if ($attrs instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
-            $hasMasterTableHeader = !empty($options['header']);
+            $this->hasMasterTableHeader = !empty($options['header']);
             // add master table-header-row
-            if ($hasMasterTableHeader) {
+            if ($this->hasMasterTableHeader) {
                 $this->addRow(array(0 => $options['header']), null, 'th');
             }
             $first = true;
-            $row = 1 + $hasMasterTableHeader;
+            $row = 1 + $this->hasMasterTableHeader;
             $sortBy     = (    isset($options['functions']['sortBy'])
                             && is_array($options['functions']['sortBy'])
                           )
@@ -140,7 +152,7 @@ class BackendTable extends HTML_Table {
                             }
                             $header = '<a href="' .  \Env::get('cx')->getRequest()->getUrl() . '&' . $sortParamName . '=' . $origHeader . $order . '" style="white-space: nowrap;">' . $header . ' ' . $img . '</a>';
                         }
-                        if ($hasMasterTableHeader) {
+                        if ($this->hasMasterTableHeader) {
                             $this->setCellContents(1, $col, $header, 'td', 0);
                         } else {
                             $this->setCellContents(0, $col, $header, 'th', 0);
@@ -209,7 +221,7 @@ class BackendTable extends HTML_Table {
                         if (isset($_ARRAYLANG['TXT_FUNCTIONS'])) {
                             $header = $_ARRAYLANG['TXT_FUNCTIONS'];
                         }
-                        if ($hasMasterTableHeader) {
+                        if ($this->hasMasterTableHeader) {
                             $this->setCellContents(1, $col, $header, 'td', 0, true);
                         } else {
                             $this->setCellContents(0, $col, $header, 'th', 0, true);
@@ -226,7 +238,8 @@ class BackendTable extends HTML_Table {
                 $row++;
             }
             // adjust colspan of master-table-header-row
-            if ($hasMasterTableHeader) {
+            $this->altRowAttributes(1 + $this->hasMasterTableHeader, array('class' => 'row1'), array('class' => 'row2'), true);
+            if ($this->hasMasterTableHeader) {
                 $this->setCellAttributes(0, 0, array('colspan' => $col + is_array($options['functions'])));
                 $this->updateRowAttributes(1, array('class' => 'row3'), true);
             }
@@ -253,8 +266,10 @@ class BackendTable extends HTML_Table {
                 }
                 $select = new \Cx\Core\Html\Model\Entity\DataElement(
                     'cxMultiAction',
-                    \Html::getOptions($multiActions),
-                    \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+                    '',
+                    \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+                    null,
+                    $multiActions
                 );
                 // this is not a nice place for this code
                 // but we should cleanup this complete class and make
@@ -357,16 +372,13 @@ class BackendTable extends HTML_Table {
         if (!is_array($functions)) {
             return false;
         }
-        if ($virtual) {
-            return false;
-        }
         if (isset($functions['actions'])) {
             return true;
         }
-        if (isset($functions['edit']) && $functions['edit']) {
+        if (!$virtual && isset($functions['edit']) && $functions['edit']) {
             return true;
         }
-        if (isset($functions['delete']) && $functions['delete']) {
+        if (!$virtual && isset($functions['delete']) && $functions['delete']) {
             return true;
         }
         return false;
@@ -377,40 +389,40 @@ class BackendTable extends HTML_Table {
 
         $baseUrl = $functions['baseUrl'];
         $code = '<span class="functions">';
+        $editUrl = clone $baseUrl;
+        $params = $editUrl->getParamArray();
+        $editId = '';
+        if (!empty($params['editid'])) {
+            $editId = $params['editid'] . ',';
+        }
+        $editId .= '{' . $functions['vg_increment_number'] . ',' . $rowname . '}';
+
+        /* We use json to do the action callback. So all callbacks are functions in the json controller of the
+         * corresponding component. The 'else if' is for backwards compatibility so you can declare the function
+         * directly without using json. This is not recommended and not working over session */
+        if (
+            isset($functions['actions']) &&
+            is_array($functions['actions']) &&
+            isset($functions['actions']['adapter']) &&
+            isset($functions['actions']['method'])
+        ){
+            $json = new \Cx\Core\Json\JsonData();
+            $jsonResult = $json->data(
+                $functions['actions']['adapter'],
+                $functions['actions']['method'],
+                array(
+                    'rowData' => $rowData,
+                    'editId' => $editId,
+                )
+            );
+            if ($jsonResult['status'] == 'success') {
+                $code .= $jsonResult["data"];
+            }
+        } else if (isset($functions['actions']) && is_callable($functions['actions'])) {
+            $code .= $functions['actions']($rowData, $editId);
+        }
+
         if(!$virtual){
-            $editUrl = clone $baseUrl;
-            $params = $editUrl->getParamArray();
-            $editId = '';
-            if (!empty($params['editid'])) {
-                $editId = $params['editid'] . ',';
-            }
-            $editId .= '{' . $functions['vg_increment_number'] . ',' . $rowname . '}';
-
-            /* We use json to do the action callback. So all callbacks are functions in the json controller of the
-            * corresponding component. The 'else if' is for backwards compatibility so you can declare the function
-            * directly without using json. This is not recommended and not working over session */
-            if (
-                isset($functions['actions']) &&
-                is_array($functions['actions']) &&
-                isset($functions['actions']['adapter']) &&
-                isset($functions['actions']['method'])
-            ){
-                $json = new \Cx\Core\Json\JsonData();
-                $jsonResult = $json->data(
-                    $functions['actions']['adapter'],
-                    $functions['actions']['method'],
-                    array(
-                        'rowData' => $rowData,
-                        'editId' => $editId,
-                    )
-                );
-                if ($jsonResult['status'] == 'success') {
-                    $code .= $jsonResult["data"];
-                }
-            } else if (isset($functions['actions']) && is_callable($functions['actions'])) {
-                $code .= $functions['actions']($rowData, $editId);
-            }
-
             if (isset($functions['edit']) && $functions['edit']) {
                 $editUrl->setParam('editid', $editId);
                 //remove the parameter 'vg_increment_number' from editUrl
@@ -524,7 +536,6 @@ class BackendTable extends HTML_Table {
      */
     function toHtml()
     {
-        $this->altRowAttributes(1, array('class' => 'row1'), array('class' => 'row2'), true);
         $strHtml = '';
         $tabs = $this->_getTabs();
         $tab = $this->_getTab();

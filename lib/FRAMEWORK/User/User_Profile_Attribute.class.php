@@ -741,13 +741,9 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     }
 
 
-    function getById($id)
+    public function getById($id)
     {
-        if (CONTREXX_PHP5) {
-            $objAttribute = clone $this;
-        } else {
-            $objAttribute = $this;
-        }
+        $objAttribute = clone $this;
         $objAttribute->arrAttributes = &$this->arrAttributes;
         $objAttribute->arrAttributeTree = &$this->arrAttributeTree;
         $objAttribute->arrAttributeRelations = &$this->arrAttributeRelations;
@@ -758,7 +754,9 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
         if ($objAttribute->load($id)) {
             return $objAttribute;
         }
-        $this->clean();
+
+        // reset attribute (ID=0)
+        $objAttribute->clean();
         return $objAttribute;
     }
 
@@ -860,7 +858,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
      * Clean attribute
      *
      */
-    function clean()
+    public function clean()
     {
         $this->id = 0;
         $this->type = $this->defaultAttributeType;
@@ -1722,7 +1720,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
         if ($this->isCoreAttribute($this->id)) {
             $this->arrName[$langId] = (string)$_CORELANG[$this->arrAttributes[$this->id]['desc']];
         } else {
-            $objResult = $objDatabase->SelectLimit('SELECT `name` FROM `'.DBPREFIX.'access_user_attribute_name` WHERE `lang_id` = '.$langId.' AND `attribute_id` = '.$this->id, 1);
+            $objResult = $objDatabase->SelectLimit('SELECT `name` FROM `'.DBPREFIX.'access_user_attribute_name` WHERE `lang_id` = '.$langId.' AND `attribute_id` = "' . contrexx_raw2db($this->id) . '"', 1);
             $this->arrName[$langId] = $objResult && $objResult->RecordCount() == 1 ? $objResult->fields['name'] : '';
         }
         $this->arrAttributes[$this->id]['names'][$langId] = $this->arrName[$langId];

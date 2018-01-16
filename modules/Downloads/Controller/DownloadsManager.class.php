@@ -225,6 +225,8 @@ class DownloadsManager extends DownloadsLibrary
                     $this->parseCategoryNavigation();
                 }
                 break;
+            case 'mailtemplate_edit':
+            case 'mailtemplate_overview':
             case 'settings':
                 $this->settings();
                 break;
@@ -766,7 +768,7 @@ class DownloadsManager extends DownloadsLibrary
             'DOWNLOADS_CATEGORY_ID'                         => $objCategory->getId(),
             'DOWNLOADS_CATEGORY_PARENT_ID'                  => $objCategory->getParentId(),
             'DOWNLOADS_CATEGORY_OPERATION_TITLE'            => $objCategory->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'] : $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'],
-            'DOWNLOADS_CATEGORY_OWNER'                      => \Permission::checkAccess(143, 'static', true) ? $this->getUserDropDownMenu($objCategory->getOwnerId(), $objFWUser->objUser->getId()) : $this->getParsedUsername($objCategory->getOwnerId()),
+            'DOWNLOADS_CATEGORY_OWNER'                      => \Permission::checkAccess(143, 'static', true) ? $this->getUserDropDownMenu($objCategory->getOwnerId(), $objFWUser->objUser->getId()) : contrexx_raw2xhtml($this->getParsedUsername($objCategory->getOwnerId())),
             'DOWNLOADS_CATEGORY_OWNER_CONFIG_DISPLAY'       => \Permission::checkAccess(143, 'static', true) && $objCategory->getOwnerId() != $objFWUser->objUser->getId() ? '' : 'none',
             'DOWNLOADS_CATEGORY_DELETABLE_BY_OWNER_CHECKED' => $objCategory->getDeletableByOwner() ? 'checked="checked"' : '',
             'DOWNLOADS_CATEGORY_MANAGE_BY_OWNER_CHECKED'    => $objCategory->getModifyAccessByOwner() ? 'checked="checked"' : '',
@@ -1118,7 +1120,7 @@ class DownloadsManager extends DownloadsLibrary
                 //'DOWNLOADS_DOWNLOAD_ICON'                   => $objDownload->getIcon(),
                 'DOWNLOADS_DOWNLOAD_NAME'                   => htmlentities($objDownload->getName(), ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_DOWNLOAD_DESCRIPTION'            => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
-                'DOWNLOADS_DOWNLOAD_OWNER'                  => $this->getParsedUsername($objDownload->getOwnerId()),
+                'DOWNLOADS_DOWNLOAD_OWNER'                  => contrexx_raw2xhtml($this->getParsedUsername($objDownload->getOwnerId())),
                 'DOWNLOADS_DOWNLOAD_DOWNLOADED'             => $objDownload->getDownloadCount(),
                 'DOWNLOADS_DOWNLOAD_VIEWED'                 => $objDownload->getViewCount()
                 //'DOWNLOADS_DOWNLOAD_SOURCE'                 => htmlentities($source, ENT_QUOTES, CONTREXX_CHARSET),
@@ -2311,7 +2313,7 @@ class DownloadsManager extends DownloadsLibrary
                     'DOWNLOADS_CATEGORY_PROTECTED'          => $objSubcategory->getReadAccessId() ? '_locked' : '',
                     'DOWNLOADS_CATEGORY_DOWNLOADS_COUNT'    => intval($objSubcategory->getAssociatedDownloadsCount()),
                     'DOWNLOADS_CATEGORY_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
-                    'DOWNLOADS_CATEGORY_AUTHOR'             => $this->getParsedUsername($objSubcategory->getOwnerId())
+                    'DOWNLOADS_CATEGORY_AUTHOR'             => contrexx_raw2xhtml($this->getParsedUsername($objSubcategory->getOwnerId()))
                 ));
                 $this->objTemplate->parse('downloads_category_list');
                 $objSubcategory->next();
@@ -2578,7 +2580,7 @@ class DownloadsManager extends DownloadsLibrary
                 'DOWNLOADS_DOWNLOAD_ID'             => $objDownload->getId(),
                 'DOWNLOADS_DOWNLOAD_NAME'           => htmlentities($objDownload->getName(), ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_DOWNLOAD_DESCRIPTION'    => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
-                'DOWNLOADS_DOWNLOAD_OWNER'          => $this->getParsedUsername($objDownload->getOwnerId()),
+                'DOWNLOADS_DOWNLOAD_OWNER'          => contrexx_raw2xhtml($this->getParsedUsername($objDownload->getOwnerId())),
                 'DOWNLOADS_DOWNLOAD_DOWNLOADED'     => $objDownload->getDownloadCount(),
                 'DOWNLOADS_DOWNLOAD_VIEWED'         => $objDownload->getViewCount(),
                 'DOWNLOADS_DOWNLOAD_STATUS_LED'     => $objDownload->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
@@ -2722,6 +2724,12 @@ class DownloadsManager extends DownloadsLibrary
         $this->parseSettingsDropDown($this->objTemplate, $this->downloadsSortingOptions, $this->arrConfig['downloads_sorting_order'], 'downloads');
         $this->parseSettingsDropDown($this->objTemplate, $this->categoriesSortingOptions, $this->arrConfig['categories_sorting_order'], 'categories');
 
+        $action = '';
+        if (isset($_GET['act'])) {
+            $action = $_GET['act'];
+        }
+        $isEmailTemplateTab =
+            ($action == 'mailtemplate_overview' || $action == 'mailtemplate_edit');
         $this->objTemplate->setVariable(array(
             'TXT_DOWNLOADS_SETTINGS_LISTING'                => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_LISTING'],
             'TXT_DOWNLOADS_OVERVIEW_PAGE'                   => $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW_PAGE'],
@@ -2759,6 +2767,7 @@ class DownloadsManager extends DownloadsLibrary
             'TXT_DOWNLOADS_CHECK_ALL'                       => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
             'TXT_DOWNLOADS_GENERAL'                         => $_ARRAYLANG['TXT_DOWNLOADS_GENERAL'],
             'TXT_DOWNLOADS_INTERFACES'                      => $_ARRAYLANG['TXT_DOWNLOADS_INTERFACES'],
+            'TXT_DOWNLOADS_EMAIL_TEMPLATES'                 => $_ARRAYLANG['TXT_DOWNLOADS_EMAIL_TEMPLATES'],
             'TXT_DOWNLOADS_USER_ADMIN'                      => $_ARRAYLANG['TXT_DOWNLOADS_USER_ADMIN'],
             'TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION'     => $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION'],
             'TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION_DESC'=> $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION_DESC'],
@@ -2791,10 +2800,93 @@ class DownloadsManager extends DownloadsLibrary
             'DOWNLOADS_SETTINGS_NEW_FILE_TIME_LIMIT'        => $this->arrConfig['new_file_time_limit'],
             'DOWNLOADS_SETTINGS_UPDATEDED_FILE_TIME_LIMIT'  => $this->arrConfig['updated_file_time_limit'],
             'DOWNLOADS_SETTINGS_NOT_ASSOCIATED_GROUPS'      => $notAssociatedGroups,
-            'DOWNLOADS_SETTINGS_ASSOCIATED_GROUPS'          => $associatedGroups
+            'DOWNLOADS_SETTINGS_ASSOCIATED_GROUPS'          => $associatedGroups,
+            'DOWNLOADS_SORTING_TAB_STATUS'                  => $isEmailTemplateTab ? 'inactive' : 'active',
+            'DOWNLOADS_EMAIL_TEMPLATE_TAB_STATUS'           => $isEmailTemplateTab ? 'active' : 'inactive',
+            'DOWNLOADS_SORTING_TAB_DIV_STATUS'              => $isEmailTemplateTab ? 'none' : 'block',
+            'DOWNLOADS_EMAIL_TEMPLATE_DIV_STATUS'           => $isEmailTemplateTab ? 'block' : 'none'
         ));
+
+        $this->parseEmailTemplates();
     }
 
+    /**
+     * Parse Email Templates
+     */
+    public function parseEmailTemplates()
+    {
+        global $_CORELANG, $_ARRAYLANG;
+
+        $_REQUEST['active_tab'] = 1;
+        if (isset($_REQUEST['act']) && $_REQUEST['act'] == 'mailtemplate_edit') {
+                $_REQUEST['active_tab'] = 2;
+        }
+        \Cx\Core\MailTemplate\Controller\MailTemplate::deleteTemplate('Downloads');
+        // If there is anything to be stored, and if that fails, return to
+        // the edit view in order to save the posted form content
+        $result_store =
+            \Cx\Core\MailTemplate\Controller\MailTemplate::storeFromPost(
+                'Downloads'
+            );
+        if ($result_store === false) {
+            $_REQUEST['active_tab'] = 2;
+        }
+
+        // reinitialize MailTemplates to fetch the current number of MailTemplates
+        $count = 0;
+        \Cx\Core\MailTemplate\Controller\MailTemplate::init('Downloads', null, '', 0, -1, $count);
+
+        $objTemplate = null;
+
+        //Parse Email template overview tab (if any exist)
+        if ($count) {
+            \Cx\Core\Setting\Controller\Setting::show_external(
+                $objTemplate,
+                $_CORELANG['TXT_CORE_MAILTEMPLATES'],
+                \Cx\Core\MailTemplate\Controller\MailTemplate::overview(
+                    'Downloads',
+                    'config',
+                    \Cx\Core\Setting\Controller\Setting::getValue(
+                        'numof_mailtemplate_per_page_backend',
+                        'Downloads'
+                    )
+                )->get()
+            );
+        }
+
+        //Parse Add/Edit Mail Template tab
+        $tabName = $_CORELANG['TXT_CORE_MAILTEMPLATE_EDIT'];
+        if (empty($_REQUEST['key'])) {
+            $tabName = $_CORELANG['TXT_CORE_MAILTEMPLATE_ADD'];
+        }
+        \Cx\Core\Setting\Controller\Setting::show_external(
+            $objTemplate,
+            $tabName,
+            \Cx\Core\MailTemplate\Controller\MailTemplate::edit(
+                'Downloads'
+            )->get()
+        );
+
+        //Parse Placeholder tab
+        $template = new \Cx\Core\Html\Sigma(
+            \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath() .
+            '/Downloads/View/Template/Backend'
+        );
+        $template->setErrorHandling(PEAR_ERROR_DIE);
+        $template->loadTemplateFile(
+            'module_downloads_settings_placeholders.html'
+        );
+        $template->setGlobalVariable($_ARRAYLANG);
+        \Cx\Core\Setting\Controller\Setting::show_external(
+            $objTemplate,
+            $_ARRAYLANG['TXT_DOWNLOADS_PLACEHOLDERS'],
+            $template->get()
+        );
+
+        $this->objTemplate->setVariable(array(
+            'DOWNLOADS_EMAIL_TEMPLATE_SETTINGS' => $objTemplate->get()
+        ));
+    }
 
     /**
      * placeholder

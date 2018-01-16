@@ -48,15 +48,6 @@
 class FWLanguage
 {
     /**
-     * @var array Mapping of language ID to locale
-     * @todo make it complete (at least six elements)
-     * @todo make it configurable
-     * @todo make it support full locale (ab_CD)
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    protected static $locales = array( 99 => 'sm_PL', );
-
-    /**
      * Array containing the active frontend languages
      * @var array
      */
@@ -602,9 +593,6 @@ class FWLanguage
      */
     public static function getLocaleByFrontendId($langId)
     {
-        if (array_key_exists($langId, static::$locales)) {
-            return static::$locales[$langId];
-        }
         // Note that this SHOULD NOT pretend the *code* to be a locale!
         // (FTTB, Language code and locale are identical)
         $locale = static::getLanguageParameter($langId, 'lang');
@@ -627,11 +615,6 @@ class FWLanguage
      */
     public static function getFrontendIdByLocale($locale)
     {
-        // TODO: Inefficient, and pointless FTTB (no locales!)
-        $key = array_search($locale, static::$locales);
-        if ($key !== false) {
-            return static::$locales[$key];
-        }
         // Note that this SHOULD NOT pretend the *code* to be a locale!
         // (FTTB, Language code and locale are identical)
         $id = static::getLanguageIdByCode($locale, 'lang');
