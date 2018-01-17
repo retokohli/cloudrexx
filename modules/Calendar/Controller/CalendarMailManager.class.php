@@ -297,7 +297,7 @@ class CalendarMailManager extends CalendarLibrary {
         $eventStart = $event->all_day ? $this->format2userDate($startDate) : $this->formatDateTime2user($startDate, $this->getDateFormat() . ' (H:i:s)');
         $eventEnd   = $event->all_day ? $this->format2userDate($endDate) : $this->formatDateTime2user($endDate, $this->getDateFormat() . ' (H:i:s)');
 
-        $placeholder = array('[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[LINK_EVENT]]', '[[LINK_REGISTRATION]]', '[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[URL]]', '[[DATE]]');
+        $placeholder = array('[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[LINK_EVENT]]', '[[LINK_REGISTRATION]]', '[[USERNAME]]', '[[SALUTATION]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[URL]]', '[[DATE]]');
 
         $recipients = $this->getSendMailRecipients($actionId, $event, $regId, $objRegistration);
 
@@ -325,6 +325,10 @@ class CalendarMailManager extends CalendarLibrary {
         // fetch published locales of event
         $publishedLanguages = explode(',',$event->showIn);
 
+        // load the title profile attributes from access user
+        $profileAttribute = new \User_Profile_Attribute();
+        $salutations = $profileAttribute->getCoreAttributeTitle();
+
         // send out mail for each recipient
         foreach ($recipients as $recipient) {
             // event invitation
@@ -343,6 +347,7 @@ class CalendarMailManager extends CalendarLibrary {
                     $recipient->setLang($objUser->getFrontendLanguage());
                     $recipient->setType(MailRecipient::RECIPIENT_TYPE_ACCESS_USER);
                     $recipient->setId($objUser->getId());
+                    $recipient->setSalutationId($objUser->getProfileAttribute('title'));
                     $recipient->setFirstname($objUser->getProfileAttribute('firstname'));
                     $recipient->setLastname($objUser->getProfileAttribute('lastname'));
                     $recipient->setUsername($objUser->getUsername());
@@ -477,7 +482,15 @@ class CalendarMailManager extends CalendarLibrary {
                 $regLink   = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', $langId, $params)->toString();
             }
 
-            $replaceContent  = array($eventTitle, $eventStart, $eventEnd, $eventLink, $regLink, $recipient->getUsername(), $recipient->getFirstname(), $recipient->getLastname(), $domain, $date);
+            $salutation = '';
+            $salutationId = $recipient->getSalutationId();
+            if (
+                isset($salutationId) &&
+                isset($salutations['title_' . $salutationId])
+            ) {
+                $salutation = $salutations['title_' . $salutationId]['desc'];
+            }
+            $replaceContent  = array($eventTitle, $eventStart, $eventEnd, $eventLink, $regLink, $recipient->getUsername(), $salutation, $recipient->getFirstname(), $recipient->getLastname(), $domain, $date);
 
             $mailTitle       = str_replace($placeholder, array_map('contrexx_xhtml2raw', $replaceContent), $mailTitle);
             $mailContentText = str_replace($placeholder, array_map('contrexx_xhtml2raw', $replaceContent), $mailContentText);
@@ -625,6 +638,7 @@ class CalendarMailManager extends CalendarLibrary {
                             ->setAddress($crmContact->email)
                             ->setType(MailRecipient::RECIPIENT_TYPE_CRM_CONTACT)
                             ->setId($crmContact->id)
+                            ->setSalutationId($crmContact->salutation)
                             ->setFirstname($crmContact->customerName)
                             ->setLastname($crmContact->family_name);
                         $result->MoveNext();
@@ -650,6 +664,7 @@ class CalendarMailManager extends CalendarLibrary {
                                 ->setAddress($objUser->getEmail())
                                 ->setType(MailRecipient::RECIPIENT_TYPE_ACCESS_USER)
                                 ->setId($objUser->getId())
+                                ->setSalutationId($objUser->getProfileAttribute('title'))
                                 ->setFirstname($objUser->getProfileAttribute('firstname'))
                                 ->setLastname($objUser->getProfileAttribute('lastname'))
                                 ->setUsername($objUser->getUsername());
@@ -674,6 +689,7 @@ class CalendarMailManager extends CalendarLibrary {
                             ->setAddress($objUser->getEmail())
                             ->setType(MailRecipient::RECIPIENT_TYPE_ACCESS_USER)
                             ->setId($objUser->getId())
+                            ->setSalutationId($objUser->getProfileAttribute('title'))
                             ->setFirstname($objUser->getProfileAttribute('firstname'))
                             ->setLastname($objUser->getProfileAttribute('lastname'))
                             ->setUsername($objUser->getUsername());
