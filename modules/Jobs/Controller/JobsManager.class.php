@@ -943,7 +943,7 @@ class JobsManager extends JobsLibrary
             'JOBS_SETTINGS_LATEST_JOBS'          => $showLatestJobInTemplate ? 'checked=checked' : '',
             'JOBS_SETTINGS_SOURCE_OF_JOBS'       => !$showLatestJobInTemplate ? 'checked=checked' : '',
             'JOBS_SETTINGS_LISTING_LIMIT'        => contrexx_raw2xhtml($settings['listingLimit']),
-            'JOBS_SETTINGS_DISPLAY_STATUS'       => $settings['templateIntegration'] ? 'display: inline-grid' : 'display: none'
+            'JOBS_SETTINGS_DISPLAY_STATUS'       => $settings['templateIntegration'] ? '' : 'display: none'
         ));
     }
 
