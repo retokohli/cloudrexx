@@ -138,7 +138,12 @@ class PdfDocument extends \mPDF
         if ($tagname == 'A') {
             $url = \Cx\Core\Routing\Url::fromMagic($path);
             if ($url->isInternal()) {
-                $path = $url->toString();
+                if (substr($path, 0, 1) == '/') {
+                    $path = substr($path, 1);
+                }
+                $docroot = \Cx\Core\Routing\Url::fromDocumentRoot();
+                $docroot->setMode('backend');
+                $path = $docroot->toString() . $path;
             }
             return;
         }
