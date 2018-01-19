@@ -169,6 +169,12 @@ class JobsManager extends JobsLibrary
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
+        //set the language variable
+        \ContrexxJavascript::getInstance()->setVariable(array(
+            'operationSuccessful' => $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'],
+            'operationFailed'     => $_ARRAYLANG['TXT_JOBS_RECORD_UPDATE_FAILED']
+        ),'contrexx/lang');
+
         // initialize variables
         $i=0;
         $jobslocationform = '';
@@ -198,32 +204,40 @@ class JobsManager extends JobsLibrary
             'TXT_DEACTIVATE'             => $_ARRAYLANG['TXT_DEACTIVATE'],
             'TXT_STATUS'                 => $_ARRAYLANG['TXT_STATUS'],
             'TXT_AUTHOR'                 => $_ARRAYLANG['TXT_AUTHOR'],
-            'TXT_JOBS_SEARCH'            => $_ARRAYLANG['TXT_JOBS_SEARCH']
+            'TXT_JOBS_SEARCH'            => $_ARRAYLANG['TXT_JOBS_SEARCH'],
+            'TXT_JOBS_OVERVIEW_HOT'      => $_ARRAYLANG['TXT_JOBS_OVERVIEW_HOT']
         ));
 
-        /* check if locations are activated */
-        $query = "
-            SELECT `value`
-              FROM `".DBPREFIX."module_jobs_settings`
-             WHERE name='show_location_fe'";
-        $objResult = $objDatabase->Execute($query);
+        //Get the settings value from DB
+        $settings = $this->getSettings();
 
         //return if location fields are not activated in the backend
-        if (!$objResult->EOF) {
-            if (intval($objResult->fields['value']) == 1) {
-                if (isset($_REQUEST['location']) &&
-                        is_numeric($_REQUEST['location'])) {
-                    $location = $_REQUEST['location'];
-                    $locationFilter = ", `".DBPREFIX."module_jobs_rel_loc_jobs` AS rel WHERE rel.job = n.id AND rel.location = '".$location."' AND ";
-                }
-                $jobslocationform =
-                    '<select name="location">'.
-                    '<option selected="selected" value="">'.
-                    $_ARRAYLANG['TXT_LOCATION'].'</option>'.
-                    $this->getLocationMenu($location).
-                    '</select>';
+        if (isset($settings['show_location_fe']) && $settings['show_location_fe'] == 1) {
+            if (    isset($_REQUEST['location']) 
+                &&  is_numeric($_REQUEST['location'])
+            ) {
+                $location = $_REQUEST['location'];
+                $locationFilter = ", `".DBPREFIX."module_jobs_rel_loc_jobs` AS rel WHERE rel.job = n.id AND rel.location = '".$location."' AND ";
             }
+            $jobslocationform =
+                '<select name="location">'.
+                '<option selected="selected" value="">'.
+                $_ARRAYLANG['TXT_LOCATION'].'</option>'.
+                $this->getLocationMenu($location).
+                '</select>';
         }
+
+        //Hide the column 'Hot' if the settings options 'templateIntegration' and 'sourceOfJobs' are active
+        $isHotOfferAvailable = (    isset($settings['templateIntegration']) 
+                                &&  ($settings['templateIntegration'] == 1) 
+                                &&  isset($settings['sourceOfJobs']) 
+                                &&  ($settings['sourceOfJobs'] == 'manual')
+                               );
+        if (!$isHotOfferAvailable) {
+            $this->_objTpl->hideBlock('jobs_modify_show_hot_offer_label');
+        }
+        $this->_objTpl->setVariable('JOBS_OVERVIEW_COLSPAN', !$isHotOfferAvailable ? 9 : 10);
+
         if (isset($_REQUEST['category']) &&
                 is_numeric($_REQUEST['category'])) {
             $category = $_REQUEST['category'];
@@ -247,13 +261,13 @@ class JobsManager extends JobsLibrary
                          n.title, n.status, n.author,
                          n.lang,
                          nc.name AS catname,
-                         n.userid
+                         n.userid, n.hot
                     FROM ".DBPREFIX."module_jobs_categories AS nc,
                          ".DBPREFIX."module_jobs AS n
                          $locationFilter
                      n.lang=$this->langId
                      AND $docFilter nc.catid=n.catid
-                   ORDER BY n.id DESC";
+                   ORDER BY " . ($isHotOfferAvailable ? 'n.hot DESC,' : '') . " n.id DESC";
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
         $pos = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
@@ -290,7 +304,11 @@ class JobsManager extends JobsLibrary
                 'JOBS_STATUS_PICTURE' => $statusPicture,
                 'TXT_TEMPLATE'    => $_ARRAYLANG['TXT_TEMPLATE'],
                 'TXT_EDIT'    => $_ARRAYLANG['TXT_EDIT'],
+                'JOBS_OVERVIEW_HOT_OFFER' => ($objResult->fields['hot'] == 1) ? 'checked=checked' : ''
             ));
+            if (!$isHotOfferAvailable) {
+                $this->_objTpl->hideBlock('jobs_overview_show_hot_offer');
+            }
             $this->_objTpl->parse('row');
             $objResult->MoveNext();
         }
@@ -315,19 +333,15 @@ class JobsManager extends JobsLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
-
-        $query = "
-            SELECT `value`
-              FROM `".DBPREFIX."module_jobs_settings`
-             WHERE name='show_location_fe'";
-        $objResult = $objDatabase->Execute($query);
         //return if location fields are not activated in the backend
-        if ($objResult && !$objResult->EOF) {
-            if (intval($objResult->fields['value']) == 0) {
-                $this->_objTpl->hideBlock('modify_location');
-                return ;
-            }
+        $settings = $this->getSettings();
+        if (    !isset($settings['show_location_fe']) 
+            ||  ($settings['show_location_fe'] == 0)
+        ) {
+            $this->_objTpl->hideBlock('modify_location');
+            return ;
         }
+
         $AssociatedLocations = '';
         $notAssociatedLocations = '';
         $this->_objTpl->setVariable(array(
@@ -426,7 +440,8 @@ class JobsManager extends JobsLibrary
                                `work_start`,
                                `startdate`,
                                `enddate`,
-                               `status`
+                               `status`,
+                               `hot`
                           FROM `".DBPREFIX."module_jobs`
                          WHERE id = '$id'
                          LIMIT 1";
@@ -460,6 +475,7 @@ class JobsManager extends JobsLibrary
                     'JOBS_ENDDATE'    => $endDate,
                     'JOBS_STATUS'        => $status,
                     'JOBS_DATE'       => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
+                    'JOBS_MODIFY_HOT_OFFER' => ($objResult->fields['hot'] == 1) ? 'checked=checked' : ''
                 ));
             }
 
@@ -508,6 +524,26 @@ class JobsManager extends JobsLibrary
                 $this->insert();
                 $this->createRSS();
             }
+        }
+
+        //Get the settings value from DB
+        $settings = $this->getSettings();
+        
+        //Hide the column 'Hot' if the settings options 'templateIntegration' and 'sourceOfJobs' are active
+        $isHotOfferAvailable = (    isset($settings['templateIntegration']) 
+                                &&  ($settings['templateIntegration'] == 1) 
+                                &&  isset($settings['sourceOfJobs']) 
+                                &&  ($settings['sourceOfJobs'] == 'manual')
+                               );
+
+        if ($isHotOfferAvailable) {
+            //set the language variables
+            $this->_objTpl->setVariable(array(
+                'TXT_JOBS_MODIFY_HOT_OFFER_LABEL' => $_ARRAYLANG['TXT_JOBS_MODIFY_HOT_OFFER_LABEL'],
+                'TXT_JOBS_MODIFY_HOT_OFFER'       => $_ARRAYLANG['TXT_JOBS_MODIFY_HOT_OFFER'],
+            ));
+        } else {
+            $this->_objTpl->hideBlock('jobs_modify_show_hot_offer');
         }
     }
 
@@ -599,6 +635,8 @@ class JobsManager extends JobsLibrary
             'TXT_DATE'            => $_ARRAYLANG['TXT_DATE'],
             'TXT_ACTIVE'=> $_ARRAYLANG['TXT_ACTIVE'],
             'TXT_AUTHOR' => $_ARRAYLANG['TXT_AUTHOR'],
+            'TXT_JOBS_MODIFY_HOT_OFFER_LABEL' => $_ARRAYLANG['TXT_JOBS_MODIFY_HOT_OFFER_LABEL'],
+            'TXT_JOBS_MODIFY_HOT_OFFER'       => $_ARRAYLANG['TXT_JOBS_MODIFY_HOT_OFFER']
         ));
 
         $this->getLocationTable($id);
@@ -606,7 +644,7 @@ class JobsManager extends JobsLibrary
             SELECT `catid`, `lang`, `date`, `id`,
                    `title`, `author`, `text`,
                    `workloc`, `workload`, `work_start`,
-                   `startdate`, `enddate`, `status`
+                   `startdate`, `enddate`, `status`, `hot`
               FROM `".DBPREFIX."module_jobs`
              WHERE id=$id";
         $objResult = $objDatabase->Execute($query);
@@ -641,8 +679,24 @@ class JobsManager extends JobsLibrary
                 'JOBS_ENDDATE'    => $endDate,
                 'JOBS_STATUS'        => $status,
                 'JOBS_DATE'       => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
+                'JOBS_MODIFY_HOT_OFFER' => ($objResult->fields['hot'] == 1) ? 'checked=checked' : ''
             ));
         }
+
+        //Get the settings value from DB
+        $settings = $this->getSettings();
+
+        //Hide the column 'Hot' if the settings options 'templateIntegration' and 'sourceOfJobs' are active
+        $isHotOfferAvailable = (    isset($settings['templateIntegration']) 
+                                &&  ($settings['templateIntegration'] == 1) 
+                                &&  isset($settings['sourceOfJobs']) 
+                                &&  ($settings['sourceOfJobs'] == 'manual')
+                               );
+
+        if (!$isHotOfferAvailable) {
+            $this->_objTpl->hideBlock('jobs_modify_show_hot_offer');
+        }
+
         $this->_objTpl->setVariable(array(
             'TXT_JOBS_CATEGORY_SELECT' => $_ARRAYLANG['TXT_JOBS_CATEGORY_SELECT'],
             'JOBS_CAT_MENU' => $this->getCategoryMenu($this->langId, $catId),
@@ -676,6 +730,7 @@ class JobsManager extends JobsLibrary
         $text = str_replace("ß","ss",$text);
         $workloc    = get_magic_quotes_gpc() ? strip_tags($_POST['workloc']) : addslashes(strip_tags($_POST['workloc']));
         $workload = get_magic_quotes_gpc() ? strip_tags($_POST['workload']) : addslashes(strip_tags($_POST['workload']));
+        $hotOffer = isset($_POST['hotOffer']) ? contrexx_input2int($_POST['hotOffer']) : 0;
         if (empty($_POST['work_start']))
             $work_start = "0000-00-00";
         else
@@ -753,6 +808,7 @@ class JobsManager extends JobsLibrary
             'userid' => array('val' => $userid, 'omitEmpty' => true),
             'changelog' => array('val' => $date, 'omitEmpty' => true),
             'catId' => array('val' => $catId, 'omitEmpty' => true),
+            'hot' => array('val' => $hotOffer, 'omitEmpty' => true),
         ))." WHERE id = $id;";
 
         if (!$objDatabase->Execute($query) or $dberr) {
@@ -800,118 +856,96 @@ class JobsManager extends JobsLibrary
         }
     }
 
-
     /**
-    * change Settings
-    * @global     object    $objDatabase
-    * @return    boolean   result
-    */
+     * Modify the settings
+     */
     function settings()
     {
         global $objDatabase, $_ARRAYLANG;
 
+        //Set the page title and load the template for settings page
         $this->pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
         $this->_objTpl->loadTemplateFile('module_jobs_settings.html',true,true);
+
+        //Parse the language variable
         $this->_objTpl->setVariable(array(
-            'TXT_SETTINGS' => $_ARRAYLANG['TXT_SETTINGS'],
-            'TXT_FOOTNOTE' => $_ARRAYLANG['TXT_JOBS_FOOTNOTE'],
-            'TXT_LINK' => $_ARRAYLANG['TXT_JOBS_LINK'],
-            'TXT_URL' => $_ARRAYLANG['TXT_JOBS_URL'],
-            'TXT_FOOTNOTE_HELP' => $_ARRAYLANG['TXT_JOBS_FOOTNOTE_HELP'],
-            'TXT_LINK_HELP' => $_ARRAYLANG['TXT_JOBS_LINK_HELP'],
-            'TXT_URL_HELP' => $_ARRAYLANG['TXT_JOBS_URL_HELP'],
-            'TXT_SUBMIT' => $_ARRAYLANG['TXT_ACCEPT_CHANGES'],
-            'TXT_URL_INFO' => $_ARRAYLANG['TXT_JOBS_URL_INFO'],
-            'TXT_SHOW_LOCATION_FE' => $_ARRAYLANG['TXT_JOBS_SHOW_LOCATION_FE']
+            'TXT_SETTINGS'          => $_ARRAYLANG['TXT_SETTINGS'],
+            'TXT_FOOTNOTE'          => $_ARRAYLANG['TXT_JOBS_FOOTNOTE'],
+            'TXT_LINK'              => $_ARRAYLANG['TXT_JOBS_LINK'],
+            'TXT_URL'               => $_ARRAYLANG['TXT_JOBS_URL'],
+            'TXT_FOOTNOTE_HELP'     => $_ARRAYLANG['TXT_JOBS_FOOTNOTE_HELP'],
+            'TXT_LINK_HELP'         => $_ARRAYLANG['TXT_JOBS_LINK_HELP'],
+            'TXT_URL_HELP'          => $_ARRAYLANG['TXT_JOBS_URL_HELP'],
+            'TXT_SUBMIT'            => $_ARRAYLANG['TXT_ACCEPT_CHANGES'],
+            'TXT_URL_INFO'          => $_ARRAYLANG['TXT_JOBS_URL_INFO'],
+            'TXT_SHOW_LOCATION_FE'  => $_ARRAYLANG['TXT_JOBS_SHOW_LOCATION_FE'],
+            'TXT_JOBS_SETTINGS_TEMPLATE_INTEGRATION'       => $_ARRAYLANG['TXT_JOBS_SETTINGS_TEMPLATE_INTEGRATION'],
+            'TXT_JOBS_SETTINGS_TEMPLATE_INTEGRATION_LABEL' => $_ARRAYLANG['TXT_JOBS_SETTINGS_TEMPLATE_INTEGRATION_LABEL'],
+            'TXT_JOBS_SETTINGS_SOURCE_OF_JOBS'             => $_ARRAYLANG['TXT_JOBS_SETTINGS_SOURCE_OF_JOBS'],
+            'TXT_JOBS_SETTINGS_LATEST_JOBS_LABEL'          => $_ARRAYLANG['TXT_JOBS_SETTINGS_LATEST_JOBS_LABEL'],
+            'TXT_JOBS_SETTINGS_MANUAL_JOBS_LABEL'          => $_ARRAYLANG['TXT_JOBS_SETTINGS_MANUAL_JOBS_LABEL'],
+            'TXT_JOBS_SETTINGS_LISTING_LIMIT'              => $_ARRAYLANG['TXT_JOBS_SETTINGS_LISTING_LIMIT'],
         ));
 
-// Unused
-//        $updaterrr = false;
-        if ($_POST['updateFootnote'] == "true" && !(preg_match('/^[A-Za-z0-9\.\/%&=\?\-_:#@;]+$/i', $_POST['url']) or empty($_POST['url']))) {
-            $this->strErrMessage = $_ARRAYLANG['TXT_JOBS_URL_ERROR'];
-            $updateerr = true;
+        //get the input values
+        $postValues = isset($_POST['settings']) ? $_POST['settings'] : array();
+        $settings   = array(
+            'footnote'  => isset($postValues['footnote']) ? contrexx_input2raw($postValues['footnote']) : '',
+            'link'      => isset($postValues['link']) ? contrexx_input2raw($postValues['link']) : '',
+            'url'       => isset($postValues['url']) ? contrexx_input2raw($postValues['url']) : '',
+            'show_location_fe'    => isset($postValues['show_location_fe']) ? contrexx_input2int($postValues['show_location_fe']) : 0,
+            'templateIntegration' => isset($postValues['templateIntegration']) ? contrexx_input2int($postValues['templateIntegration']) : 0,
+            'sourceOfJobs' => isset($postValues['sourceOfJobs']) ? contrexx_input2raw($postValues['sourceOfJobs']) : '',
+            'listingLimit' => isset($postValues['listingLimit']) ? contrexx_input2int($postValues['listingLimit']) : 0,
+        );
+        $isFormSubmitted     = isset($_POST['updateFootnote']);
+        $error               = false;
+
+        //Url validation
+        if ($isFormSubmitted) {
+            if (    empty($settings['url'])
+                ||  !preg_match('/^[A-Za-z0-9\.\/%&=\?\-_:#@;]+$/i', $settings['url']) 
+            ) {
+                $this->strErrMessage = $_ARRAYLANG['TXT_JOBS_URL_ERROR'];
+                $error = true;
+            }
         }
 
-        if ($_POST['updateFootnote'] == "true" && !$updateerr) {
-            $footnote = addslashes($_POST['footnote']);
-            $url = addslashes($_POST['url']);
-            $link = addslashes($_POST['link']);
-            $show_location_fe = intval($_POST['show_location_fe']);
-
-            $query = "UPDATE `".DBPREFIX."module_jobs_settings` SET value='$footnote' WHERE name='footnote';";
-
-            if (!$objDatabase->Execute($query)) {
-                $updateerr = true;
-            }
-            $query = "UPDATE `".DBPREFIX."module_jobs_settings` SET value='$url' WHERE name='url';";
-            if (!$objDatabase->Execute($query)) {
-                $updateerr = true;
-            }
-
-            $query = "UPDATE `".DBPREFIX."module_jobs_settings` SET value='$link' WHERE name='link';";
-            if (!$objDatabase->Execute($query)) {
-                $updateerr = true;
-            }
-
-            $query = "UPDATE `".DBPREFIX."module_jobs_settings` SET value='$show_location_fe' WHERE name='show_location_fe';";
-
-            if (!$objDatabase->Execute($query)) {
-                $updateerr = true;
-            }
-
-            if (!$updateerr) {
-                $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+        //update the settings value
+        if ($isFormSubmitted && !$error) {
+            $query = 'UPDATE `' . DBPREFIX . 'module_jobs_settings`
+                        SET `value` = (CASE WHEN `name` = "footnote"            THEN "' . contrexx_raw2db($settings['footnote']) . '"
+                                            WHEN `name` = "link"                THEN "' . contrexx_raw2db($settings['link']) . '" 
+                                            WHEN `name` = "url"                 THEN "' . contrexx_raw2db($settings['url']) . '" 
+                                            WHEN `name` = "show_location_fe"    THEN "' . contrexx_raw2db($settings['show_location_fe']) . '" 
+                                            WHEN `name` = "templateIntegration" THEN "' . contrexx_raw2db($settings['templateIntegration']) . '" 
+                                            WHEN `name` = "sourceOfJobs"        THEN "' . contrexx_raw2db($settings['sourceOfJobs']) . '" 
+                                            WHEN `name` = "listingLimit"        THEN "' . contrexx_raw2db($settings['listingLimit']) . '"
+                                       END)';
+            if ($objDatabase->Execute($query)) {
+                $this->strOkMessage  = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             } else {
                 $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
             }
-        }
-
-        /*
-        * just in case of a database or malformed URL Error, we put the POST Data back in the forms
-        */
-        if (isset($_POST['updateFootnote']) &&
-                $_POST['updateFootnote'] == "true") {
-            $footnote = $_POST['footnote'];
-            $url = $_POST['url'];
-            $link = $_POST['link'];
-            $show_location_fe = (intval($_POST['show_location_fe']) == 1) ? "checked" : "";
         } else {
-            $query = "SELECT *
-                         FROM `".DBPREFIX."module_jobs_settings`
-                         WHERE 1
-                         ";
-            $objResult = $objDatabase->Execute($query);
-            $footnote = "";
-            $link = "";
-            $url = "";
-            $show_location_fe = "";
-            $dberr = ($objResult === false);
-            while(!$objResult->EOF && !$dberr) {
-                if ($objResult->fields['name']== "footnote") {
-                    $footnote = stripslashes($objResult->fields['value']);
-                }
-                elseif ($objResult->fields['name']== "link") {
-                    $link = stripslashes($objResult->fields['value']);
-                }
-                elseif ($objResult->fields['name']== "url") {
-                    $url = stripslashes($objResult->fields['value']);
-                }
-                elseif ($objResult->fields['name']== "show_location_fe") {
-                    if (intval($objResult->fields['value']) == 1)
-                       $show_location_fe = " checked ";
-                }
-                $objResult->movenext();
-            }
+            //Fetch the setting values from DB
+            $settings = $this->getSettings();
         }
-        $this->_objTpl->setVariable(array(
-            'FOOTNOTE'            => stripslashes($footnote),
-            'LINK'                => stripslashes($link),
-            'URL'                 => stripslashes($url),
-            'SHOW_LOCATION_FE'    => $show_location_fe
-        ));
-        return true;
-    }
 
+        //Parse the settings value
+        $showLatestJobInTemplate = (isset($settings['sourceOfJobs']) && $settings['sourceOfJobs'] == 'latest');
+        $this->_objTpl->setVariable(array(
+            'FOOTNOTE'            => contrexx_raw2xhtml($settings['footnote']),
+            'LINK'                => contrexx_raw2xhtml($settings['link']),
+            'URL'                 => contrexx_raw2xhtml($settings['url']),
+            'SHOW_LOCATION_FE'    => !empty($settings['show_location_fe']) ? 'checked=checked' : '' ,
+            'JOBS_SETTINGS_TEMPLATE_INTEGRATION' => !empty($settings['templateIntegration']) ? 'checked=checked' : '',
+            'JOBS_SETTINGS_LATEST_JOBS'          => $showLatestJobInTemplate ? 'checked=checked' : '',
+            'JOBS_SETTINGS_SOURCE_OF_JOBS'       => !$showLatestJobInTemplate ? 'checked=checked' : '',
+            'JOBS_SETTINGS_LISTING_LIMIT'        => contrexx_raw2xhtml($settings['listingLimit']),
+            'JOBS_SETTINGS_DISPLAY_STATUS'       => $settings['templateIntegration'] ? 'display: inline-grid' : 'display: none'
+        ));
+    }
 
     /**
      * checks if date is valid
@@ -950,6 +984,7 @@ class JobsManager extends JobsLibrary
         $text = $this->filterBodyTag($text);
         $workloc = get_magic_quotes_gpc() ? strip_tags($_POST['workloc']) : addslashes(strip_tags($_POST['workloc']));
         $workload = get_magic_quotes_gpc() ? strip_tags($_POST['workload']) : addslashes(strip_tags($_POST['workload']));
+        $hotOffer = isset($_POST['hotOffer']) ? contrexx_input2int($_POST['hotOffer']) : 0;
         if (empty($_POST['work_start']))
              $work_start = "0000-00-00";
         else
@@ -990,6 +1025,7 @@ class JobsManager extends JobsLibrary
             'status' => array('val' => $status, 'omitEmpty' => true),
             'userid' => array('val' => $userid, 'omitEmpty' => true),
             'changelog' => array('val' => $date, 'omitEmpty' => true),
+            'hot' => array('val' => $hotOffer, 'omitEmpty' => true),
         ));
 
         if ($objDatabase->Execute($query)) {
@@ -1323,5 +1359,3 @@ class JobsManager extends JobsLibrary
     }
 
 }
-
-?>
