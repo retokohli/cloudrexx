@@ -337,10 +337,16 @@ class Url {
             unset($path[0]);
         }
 
+        //keep parameters to append them after setting the new path (since parameters are stored in path)
+        $params = '';
+        if (strpos($this->path, '?') !== false) {
+            $params = explode('?', $this->path);
+            $params = $params[1];
+        }
+
         $path = implode('/', $path);
         $this->path = $path;
-        //keep parameters to append them after setting the new path (since parameters are stored in path)
-        $this->path .= !empty($data['query']) ? '?' . $data['query'] : '';
+        $this->path .= !empty($params) ? '?'.$params : '';
         $this->suggest();
     }
 
