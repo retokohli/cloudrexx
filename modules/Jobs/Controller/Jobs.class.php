@@ -142,7 +142,7 @@ class Jobs extends JobsLibrary
         $footnotetext = "";
         $footnotelink = "";
         $footnotelinkSrc = "";
-    	$footnote = "";
+        $footnote = "";
         $link = "";
         $url = "";
 
@@ -160,7 +160,7 @@ class Jobs extends JobsLibrary
             $footnote = stripslashes($settings['footnote']);
             $link     = stripslashes($settings['link']);
             $url      = stripslashes($settings['url']);
-            
+
             $query = "SELECT id,
                                workloc,
                                changelog,
@@ -204,19 +204,19 @@ class Jobs extends JobsLibrary
 
                 $title = stripslashes($objResult->fields['title']);
 
-		        /*
-		        * Replace self defined placeholders in $url
-		        */
-		        if(!empty($footnote)) {
-					$footnotetext = nl2br($footnote);
-		        }
+                /*
+                * Replace self defined placeholders in $url
+                */
+                if(!empty($footnote)) {
+                    $footnotetext = nl2br($footnote);
+                }
 
-		        if(!empty($link)) {
-			        $url = str_replace("%URL%",urlencode($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']),$url);
-			        $url = htmlspecialchars(str_replace("%TITLE%",urlencode(stripslashes($title)),$url), ENT_QUOTES, CONTREXX_CHARSET);
-			        $footnotelink = "<a href='$url'>$link</a>";
+                if(!empty($link)) {
+                    $url = str_replace("%URL%",urlencode($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']),$url);
+                    $url = htmlspecialchars(str_replace("%TITLE%",urlencode(stripslashes($title)),$url), ENT_QUOTES, CONTREXX_CHARSET);
+                    $footnotelink = "<a href='$url'>$link</a>";
 			        $footnotelinkSrc = $url;
-		        }
+                }
 
 
                 $this->_objTpl->setVariable(array(
@@ -294,7 +294,7 @@ class Jobs extends JobsLibrary
          * This overwrites $_REQUEST['catid'] but it shouldnt be set parallel anyway
          */
         if(isset($_REQUEST['cmd']) && is_numeric($_REQUEST['cmd'])) {
-        	$category = $_REQUEST['cmd'];
+            $category = $_REQUEST['cmd'];
         }
 
 
@@ -315,13 +315,13 @@ class Jobs extends JobsLibrary
         if (    isset($settings['show_location_fe']) 
             &&  ($settings['show_location_fe'] == 1)
         ) {
-            if (!empty($_REQUEST['locid'])) {
+            if(!empty($_REQUEST['locid'])) {
                 $location = contrexx_input2int($_REQUEST['locid']);
                 $locationFilter = ", `".DBPREFIX."module_jobs_rel_loc_jobs` AS rel WHERE  rel.job = n.id AND rel.location = '".$location."' AND ";
             }
 
             $jobslocationform = "<select name=\"locid\" onchange=\"javascript:this.form.submit();\">
-                                 <option selected=\"selected\" value=''>".$_ARRAYLANG['TXT_JOBS_LOCATION_ALL']."</option>
+    <option selected=\"selected\" value=''>".$_ARRAYLANG['TXT_JOBS_LOCATION_ALL']."</option>
                                 ".$this->getLocationMenu($location)."</select>";
         }
 
@@ -399,7 +399,7 @@ class Jobs extends JobsLibrary
 
                 $this->_objTpl->setVariable(array(
                     'JOBS_STYLE'      => $class,
-                    'JOBS_ID'			=> $objResult->fields['docid'],
+                    'JOBS_ID'            => $objResult->fields['docid'],
                     'JOBS_LONG_DATE'  => date($this->dateLongFormat,$objResult->fields['date']),
                     'JOBS_DATE'       => date($this->dateFormat,$objResult->fields['date']),
                     'JOBS_LINK'         => "<a href=\"" . $detailUrl->toString() . "\" title=\"".stripslashes($objResult->fields['title'])."\">".stripslashes($objResult->fields['title'])."</a>",
@@ -412,8 +412,7 @@ class Jobs extends JobsLibrary
                 $this->_objTpl->parse("row");
                 $i++;
                 $objResult->MoveNext();
-
-        }
+            }
         }else{
             $this->_objTpl->setVariable('TXT_NO_DOCUMENTS_FOUND',$_ARRAYLANG['TXT_NO_DOCUMENTS_FOUND']);
             $this->_objTpl->parse("alternate_row");

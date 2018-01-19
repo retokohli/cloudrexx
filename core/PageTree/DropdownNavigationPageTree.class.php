@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * DropdownNavigationPageTree
  *
@@ -45,7 +45,7 @@ namespace Cx\Core\PageTree;
  * @subpackage  core_pagetree
  */
 class DropdownNavigationPageTree extends SigmaPageTree {
-   
+
     protected $subNavTag = '<ul id="menubuilder%s" class="menu">{SUB_MENU}</ul>';
     private $cache = array();
     private $previousLevel = 1;
@@ -54,10 +54,11 @@ class DropdownNavigationPageTree extends SigmaPageTree {
     const StyleNameNormal = "inactive";
     const StyleNameActiveStarter = 'starter_active';
     const StyleNameNormalStarter = 'starter_normal';
+    const StyleNameMenuNode = 'menu_node';
 
     protected $menuIndex = 0;
     protected $navigationIds = array();
-    
+
     protected function init() {
         $this->previousLevel = $this->rootNode->getLvl() + 1;
     }
@@ -70,12 +71,14 @@ class DropdownNavigationPageTree extends SigmaPageTree {
         $childBlockName = 'level_'.($level + 1);
         $parentBlockName = 'level_'.($level - 1);
 
+        $style = array();
+
         // check if there is a html-template present for the currently parsed level
         // if not, there is no point on going any further from here
         if (!$this->template->blockExists($blockName)) {
             return;
         }
-        
+
         // check if we're parsing a subnavigation point and if the parent block
         // even contains the {SUB_MENU} placeholder.
         // if not, we do obviously not wanna parse this level (aka subnavigation)
@@ -102,7 +105,7 @@ class DropdownNavigationPageTree extends SigmaPageTree {
         // set navigation IDs
         if (!isset($this->navigationIds[$level])) {
             $this->navigationIds[$level] = 1;
-        } else { 
+        } else {
             $this->navigationIds[$level]++;
         }
 
@@ -110,23 +113,29 @@ class DropdownNavigationPageTree extends SigmaPageTree {
         //\DBG::msg('LEVEL '.$level.' TEMPLATE: '.$output);
 
         if ($level == 1 && $current) {
-            $style = self::StyleNameActiveStarter;
+            $style[] = self::StyleNameActiveStarter;
         } elseif ($level == 1) {
-            $style = self::StyleNameNormalStarter;
+            $style[] = self::StyleNameNormalStarter;
         } elseif ($current) {
-            $style = self::StyleNameActive;
+            $style[] = self::StyleNameActive;
         } else {
-            $style = self::StyleNameNormal;
+            $style[] = self::StyleNameNormal;
         }
-        
+
+        if ($hasChilds) {
+            $style[] = self::StyleNameMenuNode;
+        }
+
         // parse navigation entry
         $output = str_replace('{NAME}', contrexx_raw2xhtml($title), $output);
         $output = str_replace('{URL}', \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath().$this->virtualLanguageDirectory./*contrexx_raw2encodedUrl(*/$path/*)*/, $output);
         $linkTarget = $page->getLinkTarget();
         $output = str_replace('{TARGET}', empty($linkTarget) ? '_self' : $linkTarget, $output);
         $output = str_replace('{CSS_NAME}', $page->getCssNavName(), $output);
+        $output = str_replace('{PAGE_ID}', $page->getId(), $output);
+        $output = str_replace('{PAGE_NODE_ID}', $page->getNode()->getId(), $output);
         $output = str_replace('{NAVIGATION_ID}', $this->navigationIds[$level], $output);
-        $output = str_replace('{STYLE}', $style, $output);
+        $output = str_replace('{STYLE}', join(' ', $style), $output);
 
         $this->injectParsedSubnavigations($level);
 
@@ -160,7 +169,7 @@ class DropdownNavigationPageTree extends SigmaPageTree {
         // if we're going to parse a subnavigation or not
         $this->previousLevel = $level;
     }
-    
+
     protected function getFirstLevel() {
         $match = array();
         if (preg_match_all('/level_(\d)*/', trim($this->template->_blocks['navigation_dropdown']), $match)) {
@@ -176,7 +185,7 @@ class DropdownNavigationPageTree extends SigmaPageTree {
         }
         return 0;
     }
-    
+
     protected function getFullNavigation() {
         return 1;
     }
@@ -223,7 +232,7 @@ class DropdownNavigationPageTree extends SigmaPageTree {
             }
         }
     }
-    
+
     protected function postRender($lang)
     {
         if (!isset($this->cache['level_1'])) {
@@ -234,18 +243,18 @@ class DropdownNavigationPageTree extends SigmaPageTree {
         unset($this->cache);
         return $ret;
     }
-    
+
     public function preRenderLevel($level, $lang, $parentNode) {}
-    
+
     public function postRenderLevel($level, $lang, $parentNode) {}
 
     protected function preRenderElement($level, $hasChilds, $lang, $page) {}
 
     protected function postRenderElement($level, $hasChilds, $lang, $page) {}
-    
+
     protected function renderHeader($lang) {}
-    
+
     protected function renderFooter($lang) {}
-    
+
     protected function realPreRender($lang) {}
 }

@@ -90,7 +90,7 @@ class JobsLibrary
         }
         return $strMenu;
     }
-    
+
     function getLocationMenu($selectedLocId="")
     {
         global $objDatabase;
@@ -99,7 +99,7 @@ class JobsLibrary
         $query="SELECT id,
                        name
                   FROM ".DBPREFIX."module_jobs_location
-                  WHERE 1 
+                  WHERE 1
               ORDER BY id";
 
         $objResult = $objDatabase->Execute($query);

@@ -76,7 +76,7 @@ class JobsManager extends JobsLibrary
         $this->pageTitle = $_ARRAYLANG["TXT_JOBS_MANAGER"];
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Jobs/View/Template/Backend');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
-        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);        
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->langId=$objInit->userFrontendLangId;
     }
     private function setNavigation()
@@ -259,15 +259,13 @@ class JobsManager extends JobsLibrary
         ));
         $query = "SELECT n.id AS jobsId, n.date, n.changelog,
                          n.title, n.status, n.author,
-                         l.name,
+                         n.lang,
                          nc.name AS catname,
                          n.userid, n.hot
                     FROM ".DBPREFIX."module_jobs_categories AS nc,
-                         ".DBPREFIX."module_jobs AS n,
-                         ".DBPREFIX."languages AS l
+                         ".DBPREFIX."module_jobs AS n
                          $locationFilter
-                         n.lang=l.id
-                     AND n.lang=$this->langId
+                     n.lang=$this->langId
                      AND $docFilter nc.catid=n.catid
                    ORDER BY " . ($isHotOfferAvailable ? 'n.hot DESC,' : '') . " n.id DESC";
         $objResult = $objDatabase->Execute($query);
@@ -279,7 +277,13 @@ class JobsManager extends JobsLibrary
             $this->_objTpl->hideBlock('row');
             return;
         }
+        // get array containing the active locale ids
+        $activeLangIds = \FWLanguage::getIdArray('frontend');
         while ($objResult !== false && !$objResult->EOF) {
+            // check if the job has assigned an existing language
+            if (!in_array($objResult->fields['lang'], $activeLangIds)) {
+                $objResult->MoveNext();
+            }
             $statusPicture = ($objResult->fields['status']==1) ? "status_green.gif" : "status_red.gif";
             $jobUser = \FWUser::getFWUserObject()->objUser->getUser($objResult->fields['userid']);
             $username = $_ARRAYLANG['TXT_ACCESS_UNKNOWN'];
@@ -806,7 +810,7 @@ class JobsManager extends JobsLibrary
             'catId' => array('val' => $catId, 'omitEmpty' => true),
             'hot' => array('val' => $hotOffer, 'omitEmpty' => true),
         ))." WHERE id = $id;";
-      
+
         if (!$objDatabase->Execute($query) or $dberr) {
             $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
         } else {

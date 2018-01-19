@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -179,10 +179,10 @@ class User extends \Cx\Model\Base\EntityBase {
         $this->restoreKey = '';
         $this->restoreKeyTime = '';
         $this->u2uActive = 0;
-        
+
         $this->group = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+
     /**
      * Get id
      *
@@ -192,13 +192,13 @@ class User extends \Cx\Model\Base\EntityBase {
     {
         return $this->id;
     }
-    
+
     /**
      * set id
      *
      * @param integer $id
      */
-    public function setId($id) 
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -671,9 +671,20 @@ class User extends \Cx\Model\Base\EntityBase {
      */
     public function addGroup(\Cx\Core\User\Model\Entity\Group $group)
     {
+        $group->addUser($this);
         $this->group[] = $group;
     }
 
+    /**
+     * Remove the group
+     * 
+     * @param \Cx\Core\User\Model\Entity\Group $group
+     */
+    public function removeGroup(\Cx\Core\User\Model\Entity\Group $group) {
+        $group->removeUser($this);
+        $this->group->removeElement($group);
+    }
+    
     /**
      * Get group
      *
@@ -682,5 +693,24 @@ class User extends \Cx\Model\Base\EntityBase {
     public function getGroup()
     {
         return $this->group;
+    }
+    
+    /**
+     * Check if the user is backend group 
+     * 
+     * @return boolean
+     */
+    public function isBackendGroupUser()
+    {
+        if (!$this->group) {
+            return false;
+        }
+        
+        foreach ($this->group as $group) {
+            if ($group->getType() === 'backend') {
+                return true;
+            }
+        }
+        return false;
     }
 }
