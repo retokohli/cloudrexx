@@ -437,13 +437,16 @@ SET FOREIGN_KEY_CHECKS = 1;"
                 return
             fi
             get_config_array
-            # TODO: Assiciative array copy does not work like that
             if [ ${#CONFIG[@]} -eq 0 ]; then
                 # load config, if its empty: load default config over it
-                CONFIG_OVERRIDE=$ARGUMENTS
+                for value in "${!ARGUMENTS[@]}"; do
+                    CONFIG_OVERRIDE[$value]=${ARGUMENTS[$value]}
+                done
             else
                 # else only load forced arguments over it
-                CONFIG_OVERRIDE=$FORCED_ARGUMENTS
+                for value in "${!FORCED_ARGUMENTS[@]}"; do
+                    CONFIG_OVERRIDE[$value]=${FORCED_ARGUMENTS[$value]}
+                done
             fi
             # loop over CONFIG_OVERRIDE and override all 
             for value in "${!CONFIG_OVERRIDE[@]}"; do
