@@ -49,7 +49,7 @@ class Doctrine2YamlFormatter extends \MwbExporter\Formatter\Doctrine2\Yaml\Forma
     /**
      * {@inheritdoc}
      */
-    public function createTable(\MwbExporter\Model\Base $parent, $node)
+    public function createTable(\MwbExporter\Model\Base $parent = null, $node)
     {
         return new MwbExporterTable($parent, $node);
     }
