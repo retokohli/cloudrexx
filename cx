@@ -516,9 +516,10 @@ function set_config_array {
     REGEX="(CONFIG\['port'\]\ +=\ +)[0-9]+(;)"
     REPLACE=$([[ "$FILE_CONTENTS" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}${CONFIG["port"]}${BASH_REMATCH[1]}")
     FILE_CONTENTS=${FILE_CONTENTS//${BASH_REMATCH[0]}/$REPLACE}
-    REGEX="(CONFIG\['domainUrl'\]\ +=\ +['\"])[^'\"]+(['\"];)"
-    REPLACE=$([[ "$FILE_CONTENTS" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}${CONFIG["hostname"]}${BASH_REMATCH[1]}")
-    FILE_CONTENTS=${FILE_CONTENTS//${BASH_REMATCH[0]}/$REPLACE}
+    REGEX="((CONFIG\['domainUrl'\]\ +=\ +['\"])[^'\"]+(['\"];))"
+    [[ "$FILE_CONTENTS" =~ $REGEX ]]
+    REPLACE="${BASH_REMATCH[2]}${CONFIG["hostname"]}${BASH_REMATCH[3]}"
+    FILE_CONTENTS=${FILE_CONTENTS//"${BASH_REMATCH[0]}"/"$REPLACE"}
     # save settings
     echo "$FILE_CONTENTS" > config/settings.php
     # load _meta/docker-compose.yml
