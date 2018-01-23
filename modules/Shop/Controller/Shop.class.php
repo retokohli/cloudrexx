@@ -2887,8 +2887,12 @@ die("Shop::processRedirect(): This method is obsolete!");
             $_SESSION['shop']['equal_address'] = true;
         }
         if (empty($_SESSION['shop']['countryId'])) {
-            // countryId2 is set in Cart::init() already
             $_SESSION['shop']['countryId'] = $_SESSION['shop']['countryId2'];
+        } else if (!Cart::needs_shipment()) {
+            // In case we have an order without shipment, shipment country
+            // will not be set. We set it to the customer's country in order
+            // to calculate VAT correctly.
+            $_SESSION['shop']['countryId2'] = $_SESSION['shop']['countryId'];
         }
         // Fill missing arguments with empty strings
         if (empty($_SESSION['shop']['company2']))   $_SESSION['shop']['company2'] = '';
