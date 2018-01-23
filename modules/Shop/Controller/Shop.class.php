@@ -244,10 +244,13 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
         // Do this *before* calling our friends, especially Customer methods!
         // Pick the default Country for delivery
         if (empty($_SESSION['shop']['countryId2'])) {
-            $_SESSION['shop']['countryId2'] =
-                (isset($_POST['countryId2'])
-                  ? intval($_POST['countryId2'])
-                  : \Cx\Core\Setting\Controller\Setting::getValue('country_id', 'Shop'));
+            if (isset($_POST['countryId2'])) {
+                $_SESSION['shop']['countryId2'] = intval($_POST['countryId2']);
+            } else if (isset($_SESSION['shop']['countryId'])) {
+                $_SESSION['shop']['countryId2'] = $_SESSION['shop']['countryId'];
+            } else {
+                $_SESSION['shop']['countryId2'] = 0;
+            }
         }
 // TODO: This should be set up in a more elegant way
         Vat::is_reseller(self::$objCustomer && self::$objCustomer->is_reseller());
