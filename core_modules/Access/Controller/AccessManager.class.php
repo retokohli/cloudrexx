@@ -1983,7 +1983,14 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         if (
             (
-                $objUserMail->load($mail2load, $_LANGID) ||
+                $objUserMail->load(
+                    $mail2load,
+                    $objUser->getFrontendLanguage()
+                ) ||
+                $objUserMail->load(
+                    $mail2load,
+                    $objUser->getBackendLanguage()
+                ) ||
                 $objUserMail->load($mail2load)
             ) &&
             ($objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail()) !== false
