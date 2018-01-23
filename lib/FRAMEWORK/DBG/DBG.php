@@ -78,7 +78,7 @@ DBG::deactivate();
  * @version     3.0.0
  * @since       2.1.3
  * @package     cloudrexx
- * @subpackage	lib_dbg
+ * @subpackage    lib_dbg
  */
 class DBG
 {
@@ -101,6 +101,7 @@ class DBG
     private static $memory_logs = array();
     protected static $enable_profiling = 0;
     protected static $logPrefix = '';
+    protected static $logHash= '';
 
 
     public function __construct()
@@ -119,6 +120,11 @@ class DBG
      */
     public static function activate($mode = null)
     {
+        // generate a hash to be used for associating all logs to the same request
+        if (empty(self::$logHash)) {
+            self::$logHash = base_convert(microtime(), 10, 36);
+        }
+
         if (!self::$fileskiplength) {
             self::$fileskiplength = strlen(dirname(dirname(dirname(dirname(__FILE__))))) + 1;
         }
@@ -158,7 +164,7 @@ class DBG
         );
         return join(' | ', $flags);
     }
-    
+
     public static function activateIf($condition, $mode = null) {
         if (
             (!is_callable($condition) && $condition) ||
@@ -167,15 +173,15 @@ class DBG
             static::activate($mode);
         }
     }
-    
+
     public static function isIp($ip) {
         return $_SERVER['REMOTE_ADDR'] == $ip;
     }
-    
+
     public static function hasCookie($cookieName) {
         return isset($_COOKIE[$cookieName]);
     }
-    
+
     public static function hasCookieValue($cookieName, $cookieValue) {
         if (!static::hasCookie($cookieName)) {
             return false;
@@ -289,7 +295,7 @@ class DBG
 // DO NOT OVERRIDE DEFAULT BEHAVIOR FROM INSIDE THE CLASS!
 // Call a method to do this from the outside.
 //        self::setup('dbg.log', 'w');
-        if (self::setup('dbg.log')) {
+        if (self::setup(dirname(__FILE__, 4) . '/tmp/log/dbg.log')) {
             self::$log_file = true;
         }
     }
@@ -456,13 +462,13 @@ class DBG
             $suffix = '.'.++$nr;
         }*/
         if ($file == 'php://output') {
-			self::$dbg_fh = fopen($file, $mode);
+            self::$dbg_fh = fopen($file, $mode);
             if (self::$dbg_fh) {
                 return true;
             } else {
                 return false;
             }
-		} elseif (class_exists('\Cx\Lib\FileSystem\File')) {
+        } elseif (class_exists('\Cx\Lib\FileSystem\File')) {
             try {
                 self::$dbg_fh = new \Cx\Lib\FileSystem\File($file.$suffix);
                 self::$dbg_fh->touch();
@@ -683,19 +689,11 @@ class DBG
             self::_log('DUMP:   '.$out);
         }
     }
-    
+
     private static function _escapeDoctrineDump(&$val)
     {
-        if (   $val instanceof \Cx\Model\Base\EntityBase
-            || $val instanceof \Doctrine\DBAL\Statement
-            || $val instanceof \Doctrine\DBAL\Connection
-            || $val instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain
-            || $val instanceof \Cx\Core\Core\Model\Entity\EntityBase
-            || $val instanceof \Doctrine\ORM\Mapping\ClassMetadata
-            || $val instanceof \Cx\Core\Core\Controller\Cx
-            || $val instanceof \Cx\Core\Html\Sigma
-            || $val instanceof \Cx\Core\Core\Model\Entity\SystemComponentController
-        ) {
+        // TODO: implement own dump-method that is able to handle recursive references
+        if (is_object($val)) {
             $val = \Doctrine\Common\Util\Debug::export($val, 2);
         } else if (is_array($val)) {
             foreach ($val as &$entry) {
@@ -804,6 +802,13 @@ class DBG
             } else {
                 self::_log("PHP: <strong>$type</strong>$suppressed: $errstr in <strong>$errfile</strong> on line <strong>$errline</strong>");
             }
+
+            // Catch infinite loop produced by var_export()
+            if ($errstr == 'var_export does not handle circular references') {
+                self::log('Cancelled script execution to prevent memory overflow caused by var_export()');
+                self::stack();
+                exit;
+            }
         }
     }
 
@@ -825,7 +830,9 @@ class DBG
         }
 
         if (self::$logPrefix !== '') {
-            $text = '(' . self::$logPrefix . ') ' . $text;
+            $text = '"(' . self::$logPrefix . ' - ' . self::$logHash . ')" ' . $text;
+        } else {
+            $text = '"(' . self::$logHash . ')" ' . $text;
         }
 
         if (self::$log_firephp
@@ -834,7 +841,7 @@ class DBG
         } elseif (self::$log_file) {
             // this constant might not exist when updating from older versions
             if (defined('ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME')) {
-                $dateFormat = ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME;	
+                $dateFormat = ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME;
             } else {
                 $dateFormat = 'Y-m-d H:i:s';
             }
@@ -851,7 +858,7 @@ class DBG
         } elseif (self::$log_memory) {
             // this constant might not exist when updating from older versions
             if (defined('ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME')) {
-                $dateFormat = ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME;	
+                $dateFormat = ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME;
             } else {
                 $dateFormat = 'Y-m-d H:i:s';
             }
@@ -982,4 +989,3 @@ function DBG_log_adodb($msg)
     $sql = preg_replace('#^\([^\)]+\):\s*#', '', $msg);
     DBG::logSQL($sql);
 }
-

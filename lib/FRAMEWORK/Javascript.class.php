@@ -170,7 +170,7 @@ cx.jQuery(document).ready(function(){
                      ),
                 ),
                 '1.6.1' => array(
-            		'jsfiles'       => array(
+                    'jsfiles'       => array(
                         'lib/javascript/jquery/1.6.1/js/jquery.min.js',
                      ),
                 ),
@@ -221,11 +221,19 @@ cx.jQuery(document).ready(function(){
             ),
             'dependencies' => array('jquery'),
         ),
-        'jquery-cookie' => array(
+        'js-cookie' => array(
             'jsfiles'       => array(
-                'lib/javascript/jquery/cookie/jquery.cookie.js',
+                'lib/javascript/js-cookie.min.js',
             ),
-            'dependencies' => array('jquery'),
+        ),
+        'jquery-nstslider' => array(
+            'jsfiles' => array(
+                'lib/javascript/jquery/plugins/nstSlider/jquery.nstSlider.min.js',
+            ),
+            'cssfiles' => array(
+                'lib/javascript/jquery/plugins/nstSlider/jquery.nstSlider.min.css',
+            ),
+            'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*|1\.6\.[^0-3])$'), // jquery needs to be version 1.9.0 or higher
         ),
         // Required by HTML::getDatepicker() (modules/shop)!
         // (Though other versions will do just as well)
@@ -311,7 +319,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'lib/javascript/jquery/jstree/jquery.jstree.js',
                 'lib/javascript/jquery/hotkeys/jquery.hotkeys.js',
             ),
-            'dependencies' => array('jquery', 'jquery-cookie'),
+            'dependencies' => array('jquery', 'js-cookie'),
         ),
         'ace' => array(
             'jsfiles'  => array(
@@ -623,7 +631,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             }
         }
         if (isset($data['loadcallback']) && isset($options)) {
-            self::$data['loadcallback']($options);
+            self::{$data['loadcallback']}($options);
         }
         return true;
     }
@@ -859,7 +867,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
 
             // set cx.variables with lazy loading file paths
             ContrexxJavascript::getInstance()->setVariable('lazyLoadingFiles', $lazyLoadingFiles, 'contrexx');
-            
+
             // Note the "reverse" here.  Dependencies are at the end of the
             // array, and must be loaded first!
             foreach (array_reverse(self::$active) as $name) {
@@ -882,7 +890,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                     $jsScripts[] = self::makeSpecialCode(array($data['specialcode']));
                 }
                 if (isset($data['makecallback'])) {
-                    self::$data['makecallback']();
+                    self::{$data['makecallback']}();
                 }
                 // Special case cloudrexx-API: fetch specialcode if activated
                 if ($name == 'cx') {
@@ -893,13 +901,13 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         }
 
         $jsScripts[] = self::makeJSFiles(self::$customJS);
-        
+
         // if jquery is activated, do a noConflict
         if (array_search('jquery', self::$active) !== false) {
             $jsScripts[] = self::makeSpecialCode('if (typeof jQuery != "undefined") { jQuery.noConflict(); }');
         }
         $jsScripts[] = self::makeJSFiles(self::$templateJS);
-        
+
         // no conflict for normal jquery version which has been included in template or by theme dependency
         $jsScripts[] = self::makeSpecialCode('if (typeof jQuery != "undefined") { jQuery.noConflict(); }');
         $retstring .= self::makeCSSFiles($cssfiles);
@@ -1004,7 +1012,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         if (empty($code)) {
             return '';
         }
-        
+
         $retcode = "<script type=\"text/javascript\">\n/* <![CDATA[ */\n";
         if (is_array($code)) {
             $retcode .= implode("\r\n", $code);
@@ -1049,7 +1057,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         $content = preg_replace_callback('/<script .*?src=(?:"|\')([^"\']*)(?:"|\').*?\/?>(?:<\/script>)?/i', array('JS', 'registerFromRegex'), $content);
         JS::restoreComments($content);
     }
-    
+
     /**
      * Finds all <link>-Tags in the passed HTML content, strips them out
      * and puts them in the internal CSS placeholder store.
@@ -1075,7 +1083,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         JS::restoreComments($content);
         return $css;
     }
-    
+
     /**
      * Get an array of libraries which are ready to load in different versions
      * @return array the libraries which are ready to configure for skin
@@ -1099,7 +1107,11 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      */
     private static function grabComments(&$content)
     {
+        // filter HTML-comments
         $content = preg_replace_callback('#<!--.*?-->#ms', array('JS', '_storeComment'), $content);
+
+        // filter esi-includes
+        $content = preg_replace_callback('#<esi:include src="([^"]+)" onerror="continue"/>#', array('JS', '_storeComment'), $content);
     }
 
 
@@ -1133,7 +1145,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      *
      * @param array $options options array
      */
-    private static function initScheduledPublishing($options)
+    protected static function initScheduledPublishing($options)
     {
         global $_CORELANG;
 

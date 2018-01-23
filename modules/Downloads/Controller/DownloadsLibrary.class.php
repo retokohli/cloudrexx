@@ -70,12 +70,13 @@ class DownloadsLibrary
         'updated_file_count'            => 5,
         'new_file_time_limit'           => 604800,
         'updated_file_time_limit'       => 604800,
-        'associate_user_to_groups'      => ''
+        'associate_user_to_groups'      => '',
+        'list_downloads_current_lang'   => 1
     );
 
     /**
      * Downloads setting option
-     * 
+     *
      * @var array
      */
     protected $downloadsSortingOptions = array(
@@ -100,7 +101,7 @@ class DownloadsLibrary
 
     /**
      * Categories setting option
-     * 
+     *
      * @var array
      */
     protected $categoriesSortingOptions = array(
@@ -148,7 +149,7 @@ class DownloadsLibrary
     {
         $this->defaultCategoryImage['src'] = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getWebFilePath(\Cx\Core\Core\Controller\Cx::instanciate()->getModuleFolderName() . '/Downloads/View/Media/no_picture.gif');
         $imageSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBasePath().$this->defaultCategoryImage['src']);
-        
+
         $this->defaultCategoryImage['width'] = $imageSize[0];
         $this->defaultCategoryImage['height'] = $imageSize[1];
     }
@@ -326,7 +327,6 @@ class DownloadsLibrary
             } else {
                 $author = $objUser->getUsername();
             }
-            $author = htmlentities($author, ENT_QUOTES, CONTREXX_CHARSET);
         } else {
             $author = $_ARRAYLANG['TXT_DOWNLOADS_UNKNOWN'];
         }
@@ -340,7 +340,7 @@ class DownloadsLibrary
         $objFWUser = \FWUser::getFWUserObject();
         $objUser = $objFWUser->objUser->getUsers(null, null, null, array('id', 'username', 'firstname', 'lastname'));
         while (!$objUser->EOF) {
-            $menu .= '<option value="'.$objUser->getId().'"'.($objUser->getId() == $selectedUserId ? ' selected="selected"' : '').'>'.$this->getParsedUsername($objUser->getId()).'</option>';
+            $menu .= '<option value="'.$objUser->getId().'"'.($objUser->getId() == $selectedUserId ? ' selected="selected"' : '').'>'.contrexx_raw2xhtml($this->getParsedUsername($objUser->getId())).'</option>';
             $objUser->next();
         }
         $menu .= '</select>';
@@ -353,7 +353,7 @@ class DownloadsLibrary
     {
         global $_ARRAYLANG;
 
-        $menu = '<select name="downloads_download_mime_type" id="downloads_download_mime_type" style="width:300px;">';
+        $menu = '<select name="downloads_download_mime_type" id="downloads_download_mime_type" style="width:300px;display:block;">';
         $arrMimeTypes = Download::$arrMimeTypes;
         foreach ($arrMimeTypes as $type => $arrMimeType) {
             $menu .= '<option value="'.$type.'"'.($type == $selectedType ? ' selected="selected"' : '').'>'.$_ARRAYLANG[$arrMimeType['description']].'</option>';
@@ -393,20 +393,20 @@ class DownloadsLibrary
             $objGroup->next();
         }
     }
-    
+
     /**
      * parse the settings dropdown
-     * 
+     *
      * @param object $objTemplate   template object
      * @param array  $settingValues array of setting values
      * @param string $selected      selected dropdown value
      * @param string $blockName     block name for template parsing
-     * 
+     *
      * @return null
      */
-    public function parseSettingsDropDown(  
-        \Cx\Core\Html\Sigma $objTemplate, 
-        $settingValues, 
+    public function parseSettingsDropDown(
+        \Cx\Core\Html\Sigma $objTemplate,
+        $settingValues,
         $selected,
         $blockName
     ) {

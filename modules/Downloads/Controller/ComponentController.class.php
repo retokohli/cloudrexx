@@ -27,7 +27,7 @@
 
 /**
  * Main controller for Downloads
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
@@ -35,11 +35,10 @@
  */
 
 namespace Cx\Modules\Downloads\Controller;
-use Cx\Modules\Downloads\Model\Event\DownloadsEventListener;
 
 /**
  * Main controller for Downloads
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
@@ -54,7 +53,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
      /**
      * Load your component.
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -69,7 +68,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     \Env::get('cx')->getPage()->setContentTitle($downloads_pagetitle);
                     \Env::get('cx')->getPage()->setMetaTitle($downloads_pagetitle);
                 }
-               
+
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
@@ -86,7 +85,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
     /**
      * Do something before content is loaded from DB
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -116,7 +115,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 break;
         }
 
-        
+
     }
 
     /**
@@ -153,8 +152,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * $this->cx->getEvents()->addEventListener($eventName, $listener);
      */
     public function registerEventListeners() {
-        $eventListener = new DownloadsEventListener($this->cx);
-        $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
+        $evm = $this->cx->getEvents();
+        $eventListener = new \Cx\Modules\Downloads\Model\Event\DownloadsEventListener($this->cx);
+        $evm->addEventListener('mediasource.load', $eventListener);
+
+        // locale event listener
+        $localeLocaleEventListener = new \Cx\Modules\Downloads\Model\Event\LocaleLocaleEventListener($this->cx);
+        $evm->addModelListener('postPersist', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
+        $evm->addModelListener('preRemove', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);
     }
 
 }
