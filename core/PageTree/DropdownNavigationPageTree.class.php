@@ -54,6 +54,7 @@ class DropdownNavigationPageTree extends SigmaPageTree {
     const StyleNameNormal = "inactive";
     const StyleNameActiveStarter = 'starter_active';
     const StyleNameNormalStarter = 'starter_normal';
+    const StyleNameMenuNode = 'menu_node';
 
     protected $menuIndex = 0;
     protected $navigationIds = array();
@@ -69,6 +70,8 @@ class DropdownNavigationPageTree extends SigmaPageTree {
         $blockName = 'level_'.$level;
         $childBlockName = 'level_'.($level + 1);
         $parentBlockName = 'level_'.($level - 1);
+
+        $style = array();
 
         // check if there is a html-template present for the currently parsed level
         // if not, there is no point on going any further from here
@@ -110,13 +113,17 @@ class DropdownNavigationPageTree extends SigmaPageTree {
         //\DBG::msg('LEVEL '.$level.' TEMPLATE: '.$output);
 
         if ($level == 1 && $current) {
-            $style = self::StyleNameActiveStarter;
+            $style[] = self::StyleNameActiveStarter;
         } elseif ($level == 1) {
-            $style = self::StyleNameNormalStarter;
+            $style[] = self::StyleNameNormalStarter;
         } elseif ($current) {
-            $style = self::StyleNameActive;
+            $style[] = self::StyleNameActive;
         } else {
-            $style = self::StyleNameNormal;
+            $style[] = self::StyleNameNormal;
+        }
+
+        if ($hasChilds) {
+            $style[] = self::StyleNameMenuNode;
         }
 
         // parse navigation entry
@@ -128,7 +135,7 @@ class DropdownNavigationPageTree extends SigmaPageTree {
         $output = str_replace('{PAGE_ID}', $page->getId(), $output);
         $output = str_replace('{PAGE_NODE_ID}', $page->getNode()->getId(), $output);
         $output = str_replace('{NAVIGATION_ID}', $this->navigationIds[$level], $output);
-        $output = str_replace('{STYLE}', $style, $output);
+        $output = str_replace('{STYLE}', join(' ', $style), $output);
 
         $this->injectParsedSubnavigations($level);
 

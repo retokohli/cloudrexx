@@ -48,6 +48,29 @@ cx.ready(function() {
     $J('input[name=durationStart]').datepicker();
     $J('input[name=durationEnd]').datepicker();
 });
+
+cx.slugify = function(string) {
+    // replace international characters
+    cx.jQuery.each(cx.variables.get("charReplaceList"), function(search, replace) {
+        string = string.replace(search, replace);
+    });
+    // replace spaces
+    string = string.replace(/\s+/g, '-');
+    // replace all non-url characters
+    string = string.replace(/[^a-zA-Z0-9-_]/g, '');
+    return string;
+}
+
+cx.jQuery(document).ready(function() {
+    var slugFieldId = cx.variables.get("slugFieldId", "Mediadir");
+    cx.jQuery("form[name='entryModfyForm'] input[data-id='" + slugFieldId + "']").keyup(function() {
+        var originalSlug  = cx.jQuery(this).val();
+        var slugifiedSlug = cx.slugify(originalSlug);
+        if (originalSlug != slugifiedSlug) {
+            cx.jQuery(this).val(slugifiedSlug);
+        }
+    });
+});
 </script>
 
 {MEDIADIR_JAVASCRIPT}

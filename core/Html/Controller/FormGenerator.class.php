@@ -317,9 +317,10 @@ class FormGenerator {
                     }
                     $select = new \Cx\Core\Html\Model\Entity\DataElement(
                         $name,
-                        \Html::getOptions($arrEntities, $selected),
+                        $selected,
                         \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
-                        $validator
+                        $validator,
+                        $arrEntities
                     );
                     if (isset($options['attributes'])) {
                         $select->setAttributes($options['attributes']);
@@ -382,9 +383,10 @@ class FormGenerator {
                 $options = \Cx\Core\Country\Controller\Country::getMenuoptions($value);
                 $select = new \Cx\Core\Html\Model\Entity\DataElement(
                     $name,
-                    $options,
+                    '',
                     \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
                 );
+                $select->addChild(new \Cx\Core\Html\Model\Entity\TextElement($options));
                 if (isset($options['attributes'])) {
                     $select->setAttributes($options['attributes']);
                 }
@@ -432,11 +434,12 @@ class FormGenerator {
                     $value = explode(',', $value);
                     $value = array_combine($value, $value);
                 }
-                $selectOptions = \Html::getOptions($values, $value);
                 $select = new \Cx\Core\Html\Model\Entity\DataElement(
                     $name,
-                    $selectOptions,
-                    \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+                    $value,
+                    \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+                    null,
+                    $values
                 );
                 if ($type == 'multiselect') {
                     $select->setAttribute('multiple');

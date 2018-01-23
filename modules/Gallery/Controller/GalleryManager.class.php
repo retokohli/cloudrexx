@@ -434,7 +434,7 @@ class GalleryManager extends GalleryLibrary
      */
     function overview()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
 
         $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'];
@@ -604,16 +604,15 @@ class GalleryManager extends GalleryLibrary
      * Get the Category Name by Language
      *
      * @global ADONewConnection $objDatabase
-     * @global Array            $_LANGID
      *
      * @return boolean|array
      */
     function getCategoryNameByLang() {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $objSubResult = $objDatabase->Execute('SELECT `name`, `value`, `gallery_id`
                                                     FROM `' . DBPREFIX . 'module_gallery_language`
-                                                        WHERE `lang_id` = ' . $_LANGID . '
+                                                        WHERE `lang_id` = ' . $this->intLangId . '
                                                             ORDER BY `name` ASC');
         if ($objSubResult && $objSubResult->RecordCount() > 0) {
             $arrCategoryName = array();
@@ -728,11 +727,9 @@ class GalleryManager extends GalleryLibrary
      */
     private function parseCategoryDropdown($selected=-1, $disabled=false, $name="showCategories", $parent_id=0, $level=0, $parseSubCategories = true)
     {
-        global $_LANGID;
-
 // TODO: Unused
 //        $objFWuser = \FWUser::getFWUserObject();
-        $categories = $this->sql->getCategoriesArray($_LANGID, $parent_id);
+        $categories = $this->sql->getCategoriesArray($this->intLangId, $parent_id);
 
         if ($disabled) {
             $this->_objTpl->setVariable('CAT_DROPDOWN_DISABLED', ' disabled="disabled"');
@@ -1173,7 +1170,7 @@ class GalleryManager extends GalleryLibrary
                 $objSubResult = $objDatabase->Execute('    SELECT        value
                                                         FROM        '.DBPREFIX.'module_gallery_language
                                                         WHERE        gallery_id='.$objResult->fields['id'].' AND
-                                                                    lang_id='.$objFWUser->objUser->getFrontendLanguage().' AND
+                                                                    lang_id='.$this->intLangId.' AND
                                                                     name="name"
                                                     ');
                 $this->_objTpl->setVariable(array(
@@ -1390,7 +1387,7 @@ class GalleryManager extends GalleryLibrary
         $objResult = $objDatabase->Execute('SELECT     value
                                             FROM     '.DBPREFIX.'module_gallery_language
                                             WHERE     gallery_id='.intval($intCatId).' AND
-                                                    lang_id='.$objFWUser->objUser->getFrontendLanguage().' AND
+                                                    lang_id='.$this->intLangId.' AND
                                                     name="desc"
                                         ');
         $strCategoryComment = $objResult->fields['value'];
@@ -1794,7 +1791,7 @@ class GalleryManager extends GalleryLibrary
                                                         `desc`
                                                 FROM    '.DBPREFIX.'module_gallery_language_pics
                                                 WHERE    picture_id='.$intPid.' AND
-                                                        lang_id='.$objFWUser->objUser->getFrontendLanguage().'
+                                                        lang_id='.$this->intLangId.'
                                                 LIMIT    1');
 
         // Hide "Show image size" checbox when the settings option "Show image size" is not set
@@ -2012,7 +2009,7 @@ class GalleryManager extends GalleryLibrary
             'TXT_SETTINGS_THUMB_PROZ_DESC'            =>    $_ARRAYLANG['TXT_SETTINGS_THUMB_PROZ_DESC'],
             'TXT_SETTINGS_QUALITY'                    =>    $_ARRAYLANG['TXT_SETTINGS_QUALITY'],
             'TXT_STANDARD_QUALITY_UPLOADED_PICS'    =>    $_ARRAYLANG['TXT_STANDARD_QUALITY_UPLOADED_PICS'],
-            'TXT_QUALITY'                            =>    $_ARRAYLANG['TXT_QUALITY'],
+            'TXT_GALLERY_QUALITY'                            =>    $_ARRAYLANG['TXT_GALLERY_QUALITY'],
             'TXT_BUTTON_SUBMIT'                        =>    $_ARRAYLANG['TXT_GALLERY_BUTTON_SAVE_SORT'],
             'TXT_GALLERY_SETTINGS_POPUP_ENABLED'    =>    $_ARRAYLANG['TXT_GALLERY_SETTINGS_POPUP_ENABLED'],
             'TXT_GALLERY_SETTINGS_IMAGE_WIDTH'        =>    $_ARRAYLANG['TXT_GALLERY_SETTINGS_IMAGE_WIDTH'],
@@ -2523,7 +2520,7 @@ class GalleryManager extends GalleryLibrary
                 $objSubResult = $objDatabase->Execute(' SELECT  name
                                                         FROM    '.DBPREFIX.'module_gallery_language_pics
                                                         WHERE   picture_id='.$objResult->fields['id'].' AND
-                                                                lang_id='.$objFWUser->objUser->getFrontendLanguage().'
+                                                                lang_id='.$this->intLangId.'
                                                         LIMIT   1
                                                     ');
 
@@ -2757,7 +2754,7 @@ class GalleryManager extends GalleryLibrary
                     $arrFileInfo = getimagesize($this->strImagePath.$objResult->fields['path']);
 
                     $arrImageCounter[$objResult->fields['id']]                 = $objResult->fields['id'];
-                    $arrImageInfo[$objResult->fields['id']]['name']         = contrexx_raw2xhtml($arrNames[$objResult->fields['id']][$objFWUser->objUser->getFrontendLanguage()]);
+                    $arrImageInfo[$objResult->fields['id']]['name']         = contrexx_raw2xhtml($arrNames[$objResult->fields['id']][$this->intLangId]);
                     $arrImageInfo[$objResult->fields['id']]['random_path']     = $this->strThumbnailWebPath.'temp_'.rand().'_'.$objResult->fields['path'];
                     $arrImageInfo[$objResult->fields['id']]['uploadtime']     = date('d.m.Y',$objResult->fields['lastedit']);
                     $arrImageInfo[$objResult->fields['id']]['size_o']         = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
