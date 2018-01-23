@@ -516,10 +516,7 @@ function set_config_array {
     REGEX="(CONFIG\['port'\]\ +=\ +)[0-9]+(;)"
     REPLACE=$([[ "$FILE_CONTENTS" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}${CONFIG["port"]}${BASH_REMATCH[1]}")
     FILE_CONTENTS=${FILE_CONTENTS//${BASH_REMATCH[0]}/$REPLACE}
-    REGEX="((CONFIG\['domainUrl'\]\ +=\ +['\"])[^'\"]+(['\"];))"
-    [[ "$FILE_CONTENTS" =~ $REGEX ]]
-    REPLACE="${BASH_REMATCH[2]}${CONFIG["hostname"]}${BASH_REMATCH[3]}"
-    FILE_CONTENTS=${FILE_CONTENTS//"${BASH_REMATCH[0]}"/"$REPLACE"}
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['domainUrl'\]\ +=\ +['\"])[^'\"]+(['\"];))" "${CONFIG["hostname"]}")
     # save settings
     echo "$FILE_CONTENTS" > config/settings.php
     # load _meta/docker-compose.yml
@@ -532,6 +529,20 @@ function set_config_array {
     FILE_CONTENTS=${FILE_CONTENTS//<db-image>/${CONFIG["db-image"]}}
     # save docker-compose.yml
     echo "$FILE_CONTENTS" > docker-compose.yml
+}
+
+# regex_replace <haystack> <regex> <replacement>
+# regex match 1 needs to be whole match
+# regex match 2 needs to be everything before replaced part
+# regex match 3 needs to be everything after replaced part
+function regex_replace {
+    local HAYSTACK="$1"
+    local REGEX="$2"
+    local REPLACEMENT="$3"
+    [[ "$HAYSTACK" =~ $REGEX ]]
+    REPLACE="${BASH_REMATCH[2]}${REPLACEMENT}${BASH_REMATCH[3]}"
+    HAYSTACK="${HAYSTACK//"${BASH_REMATCH[0]}"/"$REPLACE"}"
+    echo "$HAYSTACK"
 }
 
 #####################
