@@ -340,7 +340,7 @@ function cmd_env {
         update)
             # TODO: Update docker containers
             STRUCTMD5=$(/usr/bin/md5sum installer/data/contrexx_dump_structure.sql)
-            DATAMD5=$(/usr/bin/md5sum installer/date/contrexx_dump_data.sql)
+            DATAMD5=$(/usr/bin/md5sum installer/data/contrexx_dump_data.sql)
             get_config_array
             if [[ ${ARGUMENTS["db"]} != true || ${ARGUMENTS["git"]} = true ]]; then
                 if [[ ${ARGUMENTS["reset"]} == true ]]; then
@@ -362,7 +362,7 @@ function cmd_env {
                 fi
             fi
             STRUCTMD5NEW=$(/usr/bin/md5sum installer/data/contrexx_dump_structure.sql)
-            DATAMD5NEW=$(/usr/bin/md5sum installer/date/contrexx_dump_data.sql)
+            DATAMD5NEW=$(/usr/bin/md5sum installer/data/contrexx_dump_data.sql)
             if [[ "$STRUCTMD5NEW" != "$STRUCTMD5" || "$DATAMD5NEW" != "$DATAMD5" ]]; then
                 DB_UPDATE_NECESSARY=true
             else
@@ -535,7 +535,7 @@ function set_config_array {
 #####################
 function phpexec {
     # TODO: Check if we should run async
-    dockerexec exec -ti php bash -c "php index.php $@"
+    dockerexec exec php-master php index.php $@
 }
 
 function dockerexec {
@@ -577,7 +577,7 @@ case "${COMMANDS[0]}" in
         # if system looks installed
         if [ -f "index.php" ]; then
             # TODO: add help text if return value indicates a setup problem (db conn., .htaccess, ...)
-            phpexec $0
+            phpexec $@
         else
             echo "Cloudrexx does not seem to be installed. Did you already execute the \"env init\" command?"
             cmd_help "${COMMANDS[1]}"
