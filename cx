@@ -464,6 +464,9 @@ SET FOREIGN_KEY_CHECKS = 1;"
             fi
             set_config_array
             ;;
+        shell)
+            dockerexec exec -ti php-master bash
+            ;;
         *)
             (>&2 echo "No such subcommand")
             ;;
@@ -548,6 +551,8 @@ function phpexec {
 
 function dockerexec {
     # TODO: Check if --no-docker is set
+    # TODO: Add option to set "callback"
+    # TODO: Add option to run in default container for this env
     docker $@
 }
 
@@ -570,6 +575,10 @@ case "${COMMANDS[0]}" in
         cmd_env "${COMMANDS[@]/#/}"
         ;;
     debug)
+        if [[ ${ARGUMENTS["web"]} == true ]]; then
+            dockerexec logs -f php-master
+            exit
+        fi
         tac tmp/log/dbg.log | grep -m1 "initialization failed"
         ;;
     help)
