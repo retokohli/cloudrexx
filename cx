@@ -172,7 +172,8 @@ Available options are:
     --db                If set without setting --git only database is updated
     --git               If set without setting --db only GIT is updated
     --reset             Forces reset of the database even if dump has not changed
-    --drop-sessions     Skips restoring user sessions"
+    --drop-sessions     Skips restoring user sessions
+    --drop-users        Skips restoring users, implies --drop-sessions"
                     ;;
                 config)
                     echo "This command configures your installation.
@@ -199,6 +200,12 @@ Available options are:
     --hostname=<hostname>           Sets installation hostname to <hostname>, defaults to parent directory name
     --port=<port>                   Sets installation port to <port>, defaults to 80"
                     ;;
+                shell)
+                    echo "This command opens an interactive shell of the PHP docker container for this environment.
+
+Synopsis
+    ./cx env info"
+                    ;;
                 *)
                     echo "This command manages a Cloudrexx installation and its environment.
 
@@ -223,7 +230,14 @@ For more info about a subcommand type ./cx help env <subcommand>";
             echo "Shows this help"
             ;;
         debug)
-            echo "For now this command simply outputs the last fatal error. More to come..."
+            echo "Shows debug output. By default it outputs the last fatal error.
+
+Synopsis
+    ./cx debug [<options>]
+
+Available options are:
+    --web       Shows the log of the web docker container (Apache)
+    --request   Shows the log of the last request"
             ;;
         *)
             echo "Executes commands for Cloudrexx installations.
