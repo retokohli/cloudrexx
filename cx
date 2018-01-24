@@ -580,6 +580,9 @@ case "${COMMANDS[0]}" in
         if [[ ${ARGUMENTS["web"]} == true ]]; then
             dockerexec logs -f php-master
             exit
+        else if [[ ${ARGUMENTS["request"]} ]]; then
+            grep $(tail -n1 tmp/log/dbg.log | grep -o ' "([0-9a-z]\+)" ') tmp/log/dbg.log
+            exit
         fi
         tac tmp/log/dbg.log | grep -m1 "initialization failed"
         ;;
