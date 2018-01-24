@@ -226,7 +226,7 @@ cx.bind("loadingEnd", function(myArgs) {
                     var config = {
                         customConfig: cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'),
                         toolbar: 'Full',
-                        skin: 'moono-lisa'
+                        removePlugins: 'bbcode'
                     };
                     CKEDITOR.replace('page[content]', config);
                 }
