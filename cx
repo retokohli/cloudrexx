@@ -31,6 +31,7 @@ DEFAULT_CONFIG=(
     ["php-version"]=""
     ["db-image"]="mariadb:latest"
     ["php-image"]="cloudrexx/web:PHP<phpversion>-with-mysql"
+    ["db-name"]=""
     ["db-pass"]=""
     ["db-user"]=""
     ["db-host"]=""
@@ -527,17 +528,18 @@ function get_config_array {
         if [[ "${CONFIG["php-version"]}" != "" ]]; then
             CONFIG["php-image"]=${CONFIG["php-image"]//"${CONFIG["php-version"]}"/"<php-version>"}
         fi
-    else
+    fi
+    if [[ "${CONFIG["php-version"]}" == "" ]]; then
         CONFIG["php-version"]="5.6"
-        if [[ "${CONFIG["cmd-version"]:0:1}" -ge 5 ]]; then
+        if [[ "${CONFIG["cms-version"]:0:1}" -ge 5 ]]; then
             CONFIG["php-version"]="7.0"
         fi
-        if [[ "${CONFIG["php-image"]}" == "" ]]; then
-            CONFIG["php-image"]=${DEFAULT_CONFIG["php-image"]}
-        fi
-        if [[ "${CONFIG["db-image"]}" == "" ]]; then
-            CONFIG["db-image"]=${DEFAULT_CONFIG["db-image"]}
-        fi
+    fi
+    if [[ "${CONFIG["php-image"]}" == "" ]]; then
+        CONFIG["php-image"]=${DEFAULT_CONFIG["php-image"]}
+    fi
+    if [[ "${CONFIG["db-image"]}" == "" ]]; then
+        CONFIG["db-image"]=${DEFAULT_CONFIG["db-image"]}
     fi
 }
 
@@ -545,10 +547,10 @@ function set_config_array {
     # load config file
     FILE_CONTENTS=$(cat config/configuration.php)
     # replace db-host, db-name, db-user, db-pass
-    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((DBCONFIG\['host'\]\ +=\ +['\"])[^'\"]+(['\"];))" "${CONFIG["db-host"]}")
-    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((DBCONFIG\['database'\]\ +=\ +['\"])[^'\"]+(['\"];))" "${CONFIG["db-name"]}")
-    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((DBCONFIG\['user'\]\ +=\ +['\"])[^'\"]+(['\"];))" "${CONFIG["db-user"]}")
-    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((DBCONFIG\['password'\]\ +=\ +['\"])[^'\"]+(['\"];))" "${CONFIG["db-pass"]}")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((DBCONFIG\['host'\]\ +=\ +['\"])[^'\"]*(['\"];))" "${CONFIG["db-host"]}")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((DBCONFIG\['database'\]\ +=\ +['\"])[^'\"]*(['\"];))" "${CONFIG["db-name"]}")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((DBCONFIG\['user'\]\ +=\ +['\"])[^'\"]*(['\"];))" "${CONFIG["db-user"]}")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((DBCONFIG\['password'\]\ +=\ +['\"])[^'\"]*(['\"];))" "${CONFIG["db-pass"]}")
     # save config file
     echo "$FILE_CONTENTS" > config/configuration.php
 
@@ -556,7 +558,7 @@ function set_config_array {
     FILE_CONTENTS=$(cat config/settings.php)
     # replace hostname, port
     FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['port'\]\ +=\ +)[0-9]+(;))" "${CONFIG["port"]}")
-    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['domainUrl'\]\ +=\ +['\"])[^'\"]+(['\"];))" "${CONFIG["hostname"]}")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['domainUrl'\]\ +=\ +['\"])[^'\"]*(['\"];))" "${CONFIG["hostname"]}")
     # save settings
     echo "$FILE_CONTENTS" > config/settings.php
 
@@ -564,7 +566,7 @@ function set_config_array {
     FILE_CONTENTS=$(cat _meta/docker-compose.yml)
     # replace php-image with php-version internally
     PHP_IMAGE=${CONFIG["php-image"]}
-    PHP_IMAGE=${PHP_IMAGE//"<version>"/${CONFIG["php-version"]}}
+    PHP_IMAGE=${PHP_IMAGE//"<php-version>"/${CONFIG["php-version"]}}
     # replace hostname, php- and db-image
     FILE_CONTENTS=${FILE_CONTENTS//"<hostname>"/${CONFIG["hostname"]}}
     FILE_CONTENTS=${FILE_CONTENTS//"<php-image>"/$PHP_IMAGE}
