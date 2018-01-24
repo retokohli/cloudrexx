@@ -424,6 +424,7 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                         $teaserBlockCode = str_replace('{TEASER_TITLE}', contrexx_raw2xhtml($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['title']), $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_MORE}', $_CORELANG['TXT_READ_MORE'], $teaserBlockCode);
                         if ($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_show_link']) {
+                            $teaserBlockCode = str_replace('{TEASER_URL}', $teaserUrl, $teaserBlockCode);
                             $teaserBlockCode = str_replace('{TEASER_URL_TARGET}', empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect']) ? '_self' : '_blank', $teaserBlockCode);
                             $teaserBlockCode = str_replace('<!-- BEGIN teaser_link -->', '', $teaserBlockCode);
                             $teaserBlockCode = str_replace('<!-- END teaser_link -->', '', $teaserBlockCode);
@@ -435,7 +436,6 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                         $teaserBlockCode = str_replace('{TEASER_FULL_TEXT}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_full_text'], $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_AUTHOR}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['author'], $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_EXT_URL}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['ext_url'], $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_URL}', $teaserUrl, $teaserBlockCode);
 
                         $teaserBlockTpl = new \Cx\Core\Html\Sigma();
                         $teaserBlockTpl->setTemplate(
