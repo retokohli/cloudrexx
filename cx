@@ -1,16 +1,24 @@
 #!/bin/bash
 @GOTO WINDOOF \
 2>/dev/null
-
 #!/bin/bash
 # vim: syn=sh
 
+# current command, sub-command, sub-sub-command, etc.:
 COMMANDS=()
+# list of arguments, including default values
 declare -A ARGUMENTS
+# list of arguments set by user:
 declare -A FORCED_ARGUMENTS
+# list of default environment configs:
 declare -A DEFAULT_CONFIG
+# this env's config:
 declare -A CONFIG
+# list of commands which are handled completely within this script:
 INTERNAL_COMMANDS=("envs" "env" "debug")
+# temp files:
+declare -A TEMP_FILES
+trap 'for tempfile in "${!TEMP_FILES[@]}"; do rm -f "${TEMP_FILES[$tempfile]}"; done' EXIT
 
 #######################
 # Input param cleanup #
@@ -387,22 +395,23 @@ function cmd_env {
                     echo "DB update not necessary, run ./cx env update --db --reset to force db reload"
                     return
                 fi
-                DB_CONF=$(mktemp)
+                TEMP_FILES["db-conf"]=$(mktemp)
                 echo "[client]
 host=${CONFIG["db-host"]}
 database=${CONFIG["db-name"]}
 user=${CONFIG["db-user"]}
-password=${CONFIG["db-pass"]}" > "$DB_CONF"
+password=${CONFIG["db-pass"]}" > "${TEMP_FILES["db-conf"]}"
                 if [[ ${ARGUMENTS["drop-users"]} != true ]]; then
-                    # TODO: dump no longer contains users, handle them as we do sessions
+                    TEMP_FILES["user-backup"]="$(mktemp)"
+                    mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers contrexx_access_users contrexx_access_user_profile contrexx_access_user_attribute_value > "${TEMP_FILES["user-backup"]}"
                     if [[ ${ARGUMENTS["drop-sessions"]} != true ]]; then
-                        DB_SESSION_FILE="$(mktemp)"
-                        mysqldump --defaults-file="$DB_CONF" contrexx_sessions > "$DB_SESSION_FILE"
+                        TEMP_FILES["session-backup"]="$(mktemp)"
+                        mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers contrexx_sessions > "${TEMP_FILES["session-backup"]}"
                     fi
                 fi
                 # empty database if exists
 # from https://stackoverflow.com/questions/12403662/how-to-remove-all-mysql-tables-from-the-command-line-without-drop-database-permi
-                mysql --defaults-file="$DB_CONF" -A -e "
+                mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A -e "
 SET FOREIGN_KEY_CHECKS = 0;
 SET GROUP_CONCAT_MAX_LEN=32768;
 SET @tables = NULL;
@@ -427,15 +436,16 @@ EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 SET FOREIGN_KEY_CHECKS = 1;"
                 # create db if it does not exist
-                mysql --defaults-file="$DB_CONF" -A -e "CREATE DATABASE IF NOT EXISTS ${CONFIG["db-name"]} COLLATE utf8_unicode_ci"
+                mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A -e "CREATE DATABASE IF NOT EXISTS ${CONFIG["db-name"]} COLLATE utf8_unicode_ci"
                 # load db
-                mysql --defaults-file="$DB_CONF" -A < installer/data/contrexx_dump_structure.sql
-                mysql --defaults-file="$DB_CONF" -A < installer/data/contrexx_dump_data.sql
-                if [[ ${ARGUMENTS["drop-sessions"]} = false ]]; then
-                    mysql --defaults-file="$DB_CONF" -A < "$DB_SESSION_FILE"
-                    rm -f "$DB_SESSION_FILE"
+                mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < installer/data/contrexx_dump_structure.sql
+                mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < installer/data/contrexx_dump_data.sql
+                if [[ ${ARGUMENTS["drop-users"]} != true ]]; then
+                    mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < "${TEMP_FILES["user-backup"]}"
+                    if [[ ${ARGUMENTS["drop-sessions"]} != true ]]; then
+                        mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < "${TEMP_FILES["session-backup"]}"
+                    fi
                 fi
-                rm -f "$DB_CONF"
             else
                 if [[ $DB_UPDATE_NECESSARY = true && ${ARGUMENTS["silent"]} = false ]]; then
                     echo "DB update would be necessary, you may want to run ./cx env update --db"
@@ -594,8 +604,8 @@ case "${COMMANDS[0]}" in
         if [[ ${ARGUMENTS["web"]} == true ]]; then
             dockerexec logs -f php-master
             exit
-        else if [[ ${ARGUMENTS["request"]} ]]; then
-            grep $(tail -n1 tmp/log/dbg.log | grep -o ' "([0-9a-z]\+)" ') tmp/log/dbg.log
+        elif [[ ${ARGUMENTS["request"]} ]]; then
+            grep "$(tail -n1 tmp/log/dbg.log | grep -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log
             exit
         fi
         tac tmp/log/dbg.log | grep -m1 "initialization failed"
