@@ -893,13 +893,14 @@ class DirectoryLibrary
                 }
             }
 
+            $net = \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Net');
             $query .=
                 "rss_file='".(empty($rss_file) ? '' : $rss_file)."', ".
                 "date='".mktime(
                     date("H"), date("i"), date("s"),
                     date("m"), date("d"), date("Y")).
                 "', status='".intval($entryStatus).
-                "', provider='".gethostbyaddr($_SERVER['REMOTE_ADDR']).
+                "', provider='" . $net->getHostByAddr($_SERVER['REMOTE_ADDR']) .
                 "', ip='".$_SERVER['REMOTE_ADDR'].
                 "', validatedate='".mktime(
                     date("H"), date("i"), date("s"),
@@ -1107,31 +1108,20 @@ class DirectoryLibrary
         $subject = str_replace($array_1, $array_2, $subject);
         $message = str_replace($array_1, $array_2, $message);
         $sendTo = explode(';', $sendTo);
-        if (@\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') ) {
-            $objMail = new \phpmailer();
-            if ($_CONFIG['coreSmtpServer'] > 0 && @\Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/SmtpSettings.class.php') ) {
-                $arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
-                if ($arrSmtp !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
-            }
-            $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreAdminName']);
-            $objMail->Subject = $subject;
-            $objMail->IsHTML(false);
-            $objMail->Body = $message;
 
-            foreach($sendTo as $mailAdress) {
-                $objMail->ClearAddresses();
-                $objMail->AddAddress($mailAdress);
-                $objMail->Send();
-            }
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
+
+        $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreAdminName']);
+        $objMail->Subject = $subject;
+        $objMail->IsHTML(false);
+        $objMail->Body = $message;
+
+        foreach($sendTo as $mailAdress) {
+            $objMail->ClearAddresses();
+            $objMail->AddAddress($mailAdress);
+            $objMail->Send();
         }
+
         return true;
     }
 

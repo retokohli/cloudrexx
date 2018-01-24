@@ -92,12 +92,12 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
     function getInputfields()
     {
-        global $_ARRAYLANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $objDatabase;
 
         // LANG_ID is set to backend or frontend interface language.
         // If LANG_ID is not yet set, then we've been requested from
         // the frontend and the resolver did already set FRONTEND_LANG_ID
-        $langId = defined('LANG_ID') && LANG_ID ? LANG_ID : FRONTEND_LANG_ID;
+        $langId = FRONTEND_LANG_ID;
 
         $whereFormId  = 'AND (`form`.`active` = 1)';
         $joinFormsTbl = 'LEFT JOIN `' . DBPREFIX .'module_' . $this->moduleTablePrefix . '_forms` as form
@@ -242,7 +242,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
     function listInputfields($objTpl, $intView, $intEntryId)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID, $objInit;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;
 
         usort($this->arrInputfields, array(__CLASS__, "sortInputfields"));
 
@@ -367,8 +367,8 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 break;
             case 2:
                 //modify (add/edit) View
-                $objAddStep       = new MediaDirectoryAddStep($this->moduleName);
-        $i                = 0;
+                $objAddStep = new MediaDirectoryAddStep($this->moduleName);
+                $i = 0;
                 $isFileInputFound = false;
                 foreach ($this->arrInputfields as $key => $arrInputfield) {
                     $strInputfield = null;
@@ -393,7 +393,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
                             switch($strType) {
                                 case 'add_step':
-                                    $objAddStep->addNewStep(empty($arrInputfield['name'][$_LANGID]) ? $arrInputfield['name'][0].$strRequiered : $arrInputfield['name'][$_LANGID]);
+                                    $objAddStep->addNewStep(empty($arrInputfield['name'][FRONTEND_LANG_ID]) ? $arrInputfield['name'][0].$strRequiered : $arrInputfield['name'][FRONTEND_LANG_ID]);
                                     $strInputfield = $objInputfield->getInputfield(1, $arrInputfield, $intEntryId, $objAddStep);
                                     break;
                                 case 'field_group':
@@ -487,7 +487,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                             }
 
                             $objTpl->setVariable(array(
-                                'TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME' => $strStartTitle.(empty($arrInputfield['name'][$_LANGID]) ? $arrInputfield['name'][0].$strRequiered : $arrInputfield['name'][$_LANGID].$strRequiered).$strEndTitle,
+                                'TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME' => $strStartTitle.(empty($arrInputfield['name'][FRONTEND_LANG_ID]) ? $arrInputfield['name'][0].$strRequiered : $arrInputfield['name'][FRONTEND_LANG_ID].$strRequiered).$strEndTitle,
                                 $this->moduleLangVar.'_INPUTFIELD_FIELD' => $strInputfield,
                                 $this->moduleLangVar.'_INPUTFIELD_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
                             ));
@@ -549,6 +549,14 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                                 }
 
                                 if(!empty($arrInputfieldContent)) {
+                                    // Workaround as inputfields have placeholder prefix hard-coded to: MEDIADIR_
+                                    // Set placeholder prefix according to configured option $this->moduleLangVar
+                                    if ($this->moduleLangVar != 'MEDIADIR') {
+                                        foreach ($arrInputfieldContent as $key => $value) {
+                                            $arrInputfieldContent[preg_replace('/^MEDIADIR/', $this->moduleLangVar, $key)] = $value;
+                                        }
+                                    }
+
                                     if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND && \Cx\Core\Setting\Controller\Setting::getValue('blockStatus', 'Config')) {
                                         $arrInputfieldContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = preg_replace('/\\[\\[(BLOCK_[A-Z0-9_-]+)\\]\\]/', '{\\1}', $arrInputfieldContent[$this->moduleLangVar.'_INPUTFIELD_VALUE']);
                                         \Cx\Modules\Block\Controller\Block::setBlocks($arrInputfieldContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'], \Cx\Core\Core\Controller\Cx::instanciate()->getPage());
@@ -623,7 +631,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
      */
     public function updateInputFields($intFieldId, $arrFieldNames, $arrFieldDefaultValues, $arrFieldInfos)
     {
-        global $_LANGID, $objDatabase;
+        global $objDatabase;
 
         foreach ($this->arrFrontendLanguages as $key => $arrLang) {
             if (empty($arrFieldNames[0])){
@@ -633,16 +641,16 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
             $strFieldDefaultValue = $arrFieldDefaultValues[$arrLang['id']];
             $strFieldInfo = $arrFieldInfos[$arrLang['id']];
 
-            if ($arrLang['id'] == $_LANGID) {
+            if ($arrLang['id'] == FRONTEND_LANG_ID) {
                 if ($this->arrInputfields[$intFieldId]['name'][0] == $arrFieldNames[0] && $this->arrInputfields[$intFieldId]['name'][$arrLang['id']] != $arrFieldNames[$arrLang['id']]) {
-                    $strFieldName = $arrFieldNames[$_LANGID];
+                    $strFieldName = $arrFieldNames[FRONTEND_LANG_ID];
                 }
                 if ($this->arrInputfields[$intFieldId]['default_value'][0] == $strFieldDefaultValue && $this->arrInputfields[$intFieldId]['default_value'][$arrLang['id']] != $arrFieldDefaultValues[$arrLang['id']]) {
-                    $strFieldDefaultValue = $arrFieldDefaultValues[$_LANGID];
+                    $strFieldDefaultValue = $arrFieldDefaultValues[FRONTEND_LANG_ID];
                 }
 
                 if ($this->arrInputfields[$intFieldId]['info'][0] == $arrFieldInfos[0] && $this->arrInputfields[$intFieldId]['info'][$arrLang['id']] != $arrFieldInfos[$arrLang['id']]) {
-                    $strFieldInfo = $arrFieldInfos[$_LANGID];
+                    $strFieldInfo = $arrFieldInfos[FRONTEND_LANG_ID];
                 }
 
                 if ($this->arrInputfields[$intFieldId]['name'][0] != $arrFieldNames[0] && $this->arrInputfields[$intFieldId]['name'][$arrLang['id']] == $arrFieldNames[$arrLang['id']] ||
@@ -697,7 +705,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
     function saveInputfields($arrData)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields WHERE form='".$this->intFormId."'");
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfield_names WHERE form_id='".$this->intFormId."'");
@@ -770,7 +778,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
     function addInputfield()
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $objOrderInputfield = $objDatabase->Execute("
             SELECT
@@ -801,13 +809,12 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
         ");
 
         $intInsertId = $objDatabase->Insert_ID();
-        $objDatabase->debug = 1;
         //insert blank field name
         $objAddInputfieldName = $objDatabase->Execute("
             INSERT INTO
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfield_names
             SET
-                `lang_id` = '".intval($_LANGID)."',
+                `lang_id` = '".intval(FRONTEND_LANG_ID)."',
                 `form_id` = '".$this->intFormId."',
                 `field_id` = '".intval($intInsertId)."',
                 `field_name` = '',
@@ -926,7 +933,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
     function refreshInputfields($objTpl, $intEntryId)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $objTpl->loadTemplateFile('module_'.$this->moduleNameLC.'_settings_inputfields.html',true,true);
 
@@ -1242,14 +1249,16 @@ EOF;
         global $_ARRAYLANG;
 
         $arrContexts = array(
-          'none'    => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_NONE"],
-          'title'   => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_TITLE"],
-          'content' => $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_CONTEXT_CONTENT'],
-          'address' => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_ADDRESS"],
-          'zip'     => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_ZIP"],
-          'city'    => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_CITY"],
-          'country' => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_COUNTRY"],
-          'image'   => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_IMAGE"],
+          'none'     => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_NONE"],
+          'title'    => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_TITLE"],
+          'content'  => $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_CONTEXT_CONTENT'],
+          'address'  => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_ADDRESS"],
+          'zip'      => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_ZIP"],
+          'city'     => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_CITY"],
+          'country'  => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_COUNTRY"],
+          'image'    => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_IMAGE"],
+          'keywords' => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_KEYWORDS"],
+          'slug'    => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_SLUG"],
         );
 
         return $arrContexts;

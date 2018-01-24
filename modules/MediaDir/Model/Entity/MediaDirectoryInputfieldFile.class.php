@@ -66,7 +66,7 @@ class MediaDirectoryInputfieldFile extends \Cx\Modules\MediaDir\Controller\Media
 
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID, $objInit;
+        global $objDatabase, $_ARRAYLANG, $objInit;
 
         switch ($intView) {
             default:
@@ -88,7 +88,7 @@ class MediaDirectoryInputfieldFile extends \Cx\Modules\MediaDir\Controller\Media
                             $arrValue[intval($objInputfieldValue->fields['lang_id'])] = contrexx_raw2xhtml($objInputfieldValue->fields['value']);
                             $objInputfieldValue->MoveNext();
                         }
-                        $arrValue[0] = isset($arrValue[$_LANGID]) ? $arrValue[$_LANGID] : null;
+                        $arrValue[0] = isset($arrValue[FRONTEND_LANG_ID]) ? $arrValue[FRONTEND_LANG_ID] : null;
                     }
                 } else {
                     $arrValue = null;
@@ -399,35 +399,10 @@ INPUT;
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-        global $objDatabase, $_LANGID;
-
-        $intId = intval($arrInputfield['id']);
-        $intEntryDefaultLang = $objDatabase->getOne("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");
-
-        if($this->arrSettings['settingsTranslationStatus'] == 1) {
-            $intLangId = in_array($_LANGID, $arrTranslationStatus) ? $_LANGID : contrexx_input2int($intEntryDefaultLang);
-        } else {
-            $intLangId = $_LANGID;
-        }
-        $objResult = $objDatabase->Execute("
-            SELECT `value`
-              FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields
-             WHERE field_id=$intId
-               AND entry_id=$intEntryId
-               AND lang_id=$intLangId
-             LIMIT 1 ");
-
-        if(empty($objResult->fields['value'])) {
-            $objResult = $objDatabase->Execute("
-                SELECT `value`
-                  FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields
-                 WHERE field_id=$intId
-                   AND entry_id=$intEntryId
-                   AND lang_id=$intEntryDefaultLang
-                 LIMIT 1 ");
-        }
-
-        $arrValue = explode(",", $objResult->fields['value']);
+        $arrValue = explode(
+            ",",
+            static::getRawData($intEntryId, $arrInputfield, $arrTranslationStatus)
+        );
         $strValue = strip_tags(htmlspecialchars($arrValue[0], ENT_QUOTES, CONTREXX_CHARSET));
 
         if(!empty($strValue) && $strValue != 'new_file') {
@@ -449,6 +424,38 @@ INPUT;
         }
 
         return $arrContent;
+    }
+
+    function getRawData($intEntryId, $arrInputfield, $arrTranslationStatus) {
+        global $objDatabase;
+
+        $intId = intval($arrInputfield['id']);
+        $intEntryDefaultLang = $objDatabase->getOne("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");
+
+        if($this->arrSettings['settingsTranslationStatus'] == 1) {
+            $intLangId = in_array(FRONTEND_LANG_ID, $arrTranslationStatus) ? FRONTEND_LANG_ID : contrexx_input2int($intEntryDefaultLang);
+        } else {
+            $intLangId = FRONTEND_LANG_ID;
+        }
+        $objResult = $objDatabase->Execute("
+            SELECT `value`
+              FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields
+             WHERE field_id=$intId
+               AND entry_id=$intEntryId
+               AND lang_id=$intLangId
+             LIMIT 1 ");
+
+        if(empty($objResult->fields['value'])) {
+            $objResult = $objDatabase->Execute("
+                SELECT `value`
+                  FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                 WHERE field_id=$intId
+                   AND entry_id=$intEntryId
+                   AND lang_id=$intEntryDefaultLang
+                 LIMIT 1 ");
+        }
+
+        return $objResult->fields['value'];
     }
 
 

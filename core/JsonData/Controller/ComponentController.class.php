@@ -85,7 +85,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param array  $dataArguments (optional) List of data arguments for the command
      * @return void
      */
-    public function executeCommand($command, $arguments) {
+    public function executeCommand($command, $arguments, $dataArguments = array()) {
         switch ($command) {
             case 'Data':
                 if (
@@ -101,7 +101,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 unset($arguments[static::ARGUMENT_INDEX_OUTPUT_MODULE]);
                 unset($arguments[static::ARGUMENT_INDEX_DATA_ADAPTER]);
                 unset($arguments[static::ARGUMENT_INDEX_DATA_METHOD]);
-                $dataArguments = array('get' => $arguments);
+                $dataArguments = array('get' => $arguments, 'post' => $dataArguments);
+                if (!isset($arguments['response'])) {
+                    $arguments['response'] = $this->cx->getResponse();
+                }
                 
                 $json = new \Cx\Core\Json\JsonData();
                 $data = $json->data($dataAdapter, $dataMethod, $dataArguments);
@@ -109,7 +112,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     if (empty($data['message'])) {
                         throw new \Exception('Fetching data failed without message');
                     }
-                    throw new \Exception($data['message']);
                 }
                 
                 switch ($outputModule) {
@@ -117,7 +119,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         echo $data['data']['content'];
                         break;
                     case 'Json':
-                        echo $json->json($data, true);
+                        $response = $arguments['response'];
+                        $response->setAbstractContent($data);
+                        $response->setParser($json->getParser());
+                        $response->send();
+                        echo $json->parse($data, true);
                         break;
                     default:
                         throw new \Exception('No such output module: "' . $outputModule . '"');
@@ -141,14 +147,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
-                $json = new \Cx\Core\Json\JsonData();
-                // TODO: Verify that the arguments are actually present!
-                $adapter = contrexx_input2raw($_GET['object']);
-                $method = contrexx_input2raw($_GET['act']);
-                // TODO: Replace arguments by something reasonable
-                $arguments = array('get' => $_GET, 'post' => $_POST);
-                echo $json->jsondata($adapter, $method, $arguments);
-                die();
+                $this->routeToJsonData();
                 break;
         }
     }
@@ -163,19 +162,40 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 if ($section == 'JsonData') {
-                    // TODO: move this code to /core/Json/...
-                    // TODO: handle expired sessions in any xhr callers.
-                    $json = new \Cx\Core\Json\JsonData();
-                    // TODO: Verify that the arguments are actually present!
-                    $adapter = contrexx_input2raw($_GET['object']);
-                    $method = contrexx_input2raw($_GET['act']);
-                    // TODO: Replace arguments by something reasonable
-                    $arguments = array('get' => $_GET, 'post' => $_POST);
-                    echo $json->jsondata($adapter, $method, $arguments);
-                    die();
+                    $this->routeToJsonData();
                 }
                 break;
         }
     }
 
+    protected function routeToJsonData() {
+        // TODO: move this code to /core/Json/...
+        // TODO: handle expired sessions in any xhr callers.
+        $json = new \Cx\Core\Json\JsonData();
+        // TODO: Verify that the arguments are actually present!
+        $adapter = contrexx_input2raw($_GET['object']);
+        $method = contrexx_input2raw($_GET['act']);
+        // TODO: Replace arguments by something reasonable
+        $arguments = array(
+            'get' => $_GET,
+            'post' => $_POST,
+            'response' => $this->cx->getResponse(),
+        );
+        echo $json->jsondata($adapter, $method, $arguments);
+
+        $cx = $this->cx;
+        $requestInfo = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+        $requestIp = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+        $requestHost = isset($_SERVER['REMOTE_HOST']) ? $_SERVER['REMOTE_HOST'] : $requestIp;
+        $requestUserAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+
+        register_shutdown_function(function() use ($cx, $requestInfo, $requestIp, $requestHost, $requestUserAgent) {
+            $parsingTime = $cx->stopTimer();
+            \DBG::log(
+                "(Cx: {$cx->getId()}) Request parsing completed after $parsingTime \"uncached\" \"$requestInfo\" \"$requestIp\" \"$requestHost\" \"$requestUserAgent\" \"" .
+                memory_get_peak_usage(true) . "\" \"json\""
+            );
+        });
+        die();
+    }
 }

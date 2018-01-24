@@ -252,22 +252,74 @@ class MediaSourceManager extends EntityBase
         return $this->thumbnailGenerator;
     }
 
-    public function getMediaSourceFileFromPath($path) {
-        if (strpos($path, '/') === 0) {
-            $path = substr($path, 1);
+    /**
+     * Get MediaSourceFile from the given path
+     *
+     * @param string $path File path
+     * @return LocalFile
+     */
+    public function getMediaSourceFileFromPath($path)
+    {
+        // If the path does not have leading backslash then add it
+        if (strpos($path, '/') !== 0) {
+            $path = '/' . $path;
         }
-        $pathArray = explode('/', $path);
-        // Shift off the first element of the array to get the media type.
-        $mediaType  = array_shift($pathArray);
-        $strPath    = '/' . join('/', $pathArray);
+
         try {
-            $mediaSourceFile = $this->getMediaType($mediaType)->getFileSystem()->getFileFromPath($strPath);
+            // Get MediaSource and MediaSourceFile object
+            $mediaSource     = $this->getMediaSourceByPath($path);
+            $mediaSourcePath = $mediaSource->getDirectory();
+            $mediaSourceFile = $mediaSource->getFileSystem()
+                ->getFileFromPath(substr($path, strlen($mediaSourcePath[1])));
         } catch (MediaSourceManagerException $e) {
-            return false;
+            \DBG::log($e->getMessage());
+            return;
         }
-        if (!$mediaSourceFile) {
-            return false;
-        }
+
         return $mediaSourceFile;
+    }
+
+    /**
+     * Get MediaSource by given component
+     *
+     * @param \Cx\Core\Core\Model\Entity\SystemComponentController $component Component to look up for a MediaSource
+     *
+     * @return MediaSource  if a MediaSource of the given Component does exist
+     *                              returns MediaSource, otherwise NULL 
+     */
+    public function getMediaSourceByComponent($component)
+    {
+        foreach ($this->mediaTypes as $mediaSource) {
+            $mediaSourceComponent = $mediaSource->getSystemComponentController();
+            if ($component == $mediaSourceComponent) {
+                return $mediaSource;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get MediaSource by the given path
+     *
+     * @param  string $path File path
+     * @param boolean $ignorePermissions (optional) Defaults to false
+     * @return \Cx\Core\MediaSource\Model\Entity\MediaSource MediaSource object
+     * @throws MediaSourceManagerException
+     */
+    public function getMediaSourceByPath($path, $ignorePermissions = false)
+    {
+        $mediaSources = $this->mediaTypes;
+        if ($ignorePermissions) {
+            $this->allMediaTypePaths;
+        }
+        foreach ($mediaSources as $mediaSource) {
+            $mediaSourcePath = $mediaSource->getDirectory();
+            if (strpos($path, $mediaSourcePath[1]) === 0) {
+                return $mediaSource;
+            }
+        }
+        throw new MediaSourceManagerException(
+            'No MediaSource found for: '. $path
+        );
     }
 }

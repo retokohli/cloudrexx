@@ -126,7 +126,6 @@ $_ARRAYLANG['TXT_PAGE_NAME'] = "Название электронной стра
 $_ARRAYLANG['TXT_SECONDS'] = "Секунды";
 $_ARRAYLANG['TXT_TRANSLATION'] = "Перевод";
 $_ARRAYLANG['TXT_BROWSERLANGUAGE'] = "Язык";
-$_ARRAYLANG['TXT_LANGUAGE_SETTINGS'] = "Языковые установки";
 $_ARRAYLANG['TXT_START_DATE'] = "Стартовая дата";
 $_ARRAYLANG['TXT_STATS'] = "Статистика";
 $_ARRAYLANG['TXT_STATS_SETTINGS'] = "Settings";
