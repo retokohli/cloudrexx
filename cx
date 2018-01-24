@@ -500,25 +500,45 @@ SET FOREIGN_KEY_CHECKS = 1;"
 }
 
 function get_config_array {
-    CONFIG_FILE="config/configuration.php"
-    SETTINGS_FILE="config/settings.php"
-    COMPOSE_FILE="docker-compose.yml"
+    local CONFIG_FILE="config/configuration.php"
+    local SETTINGS_FILE="config/settings.php"
+    local COMPOSE_FILE="docker-compose.yml"
     if ! [[ -f $CONFIG_FILE ]] || ! [[ -f $SETTINGS_FILE ]] || ! [[ -f $COMPOSE_FILE ]]; then
         CONFIG=()
         return
     fi
-    # TODO: Add code for db-image, php-image and php-version magic
     CONFIG=(
         ["db-host"]=$(REGEX="DBCONFIG\['host'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
         ["db-name"]=$(REGEX="DBCONFIG\['database'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
         ["db-user"]=$(REGEX="DBCONFIG\['user'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
         ["db-pass"]=$(REGEX="DBCONFIG\['password'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
         ["hostname"]=$(REGEX="CONFIG\['domainUrl'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $SETTINGS_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
+        ["cms-version"]=$(REGEX="CONFIG\['coreCmsVersion'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $SETTINGS_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
         ["port"]=$(REGEX="CONFIG\['portFrontendHTTP'\]\ +=\ +([0-9]+);"; CFG=$(cat $SETTINGS_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
-        ["php-version"]="Not yet available"
-        ["php-image"]="Not yet available"
-        ["db-image"]="Not yet available"
+        ["php-version"]=""
+        ["php-image"]=""
+        ["db-image"]=""
     )
+
+    if [ -f "docker-compose.yml" ];then
+        CONFIG["db-image"]=$(REGEX="db:\s*image: \"([^\"]+)\""; CFG=$(cat $COMPOSE_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
+        CONFIG["php-image"]=$(REGEX="web:\s*image: \"([^\"]+)\""; CFG=$(cat $COMPOSE_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
+        CONFIG["php-version"]=$(REGEX="([0-9]+\.[0-9]+)"; [[ "${CONFIG["php-image"]}" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
+        if [[ "${CONFIG["php-version"]}" != "" ]]; then
+            CONFIG["php-image"]=${CONFIG["php-image"]//"${CONFIG["php-version"]}"/"<php-version>"}
+        fi
+    else
+        CONFIG["php-version"]="5.6"
+        if [[ "${CONFIG["cmd-version"]:0:1}" -ge 5 ]]; then
+            CONFIG["php-version"]="7.0"
+        fi
+        if [[ "${CONFIG["php-image"]}" == "" ]]; then
+            CONFIG["php-image"]=${DEFAULT_CONFIG["php-image"]}
+        fi
+        if [[ "${CONFIG["db-image"]}" == "" ]]; then
+            CONFIG["db-image"]=${DEFAULT_CONFIG["db-image"]}
+        fi
+    fi
 }
 
 function set_config_array {
@@ -549,6 +569,7 @@ function set_config_array {
     FILE_CONTENTS=${FILE_CONTENTS//"<hostname>"/${CONFIG["hostname"]}}
     FILE_CONTENTS=${FILE_CONTENTS//"<php-image>"/$PHP_IMAGE}
     FILE_CONTENTS=${FILE_CONTENTS//"<db-image>"/${CONFIG["db-image"]}}
+    FILE_CONTENTS=${FILE_CONTENTS//"<port>"/${CONFIG["port"]}}
     # save docker-compose.yml
     echo "$FILE_CONTENTS" > docker-compose.yml
 }
