@@ -1,5 +1,5 @@
 #!/bin/bash
-@GOTO WINDOOF \
+@ECHO off 2>nul & @GOTO WINDOOF \
 2>/dev/null
 #!/bin/bash
 # vim: syn=sh
@@ -659,13 +659,6 @@ esac
 
 exit
 :WINDOOF
-@ECHO off
 
-REM Make sure our wrapper-container is running
-docker run --rm -dti --name ubuntu -v %cd%/:/root ubuntu
-
-REM Route all calls to our linux environment
-REM TODO: Pass all params
-REM TODO: The linux environment should not start sub-containers but containers on the host-system
-docker exec -ti ubuntu bash -c "./clx.bat --no-docker"
-REM TODO: Handle return value in case its a docker command
+REM Pass everything through our wrapper
+docker run --rm -ti --name clx-win-wrapper -v %cd%/:/root -v /var/run/docker.sock:/var/run/docker.sock ubuntu ./cx %*
