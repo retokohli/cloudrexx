@@ -144,6 +144,14 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                    tblN.teaser_image_thumbnail_path,
                    tblN.startdate,
                    tblN.enddate,
+                   tblN.allow_comments,
+                   tblN.author_id,
+                   tblN.publisher_id,
+                   tblN.enable_tags,
+                   tblN.source,
+                   tblN.url1,
+                   tblN.url2,
+                   tblN.changelog,
                    tblL.title,
                    tblL.text AS teaser_full_text,
                    tblL.teaser_text
@@ -240,19 +248,32 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 }
                 $newsCategories = $this->getCategoriesByNewsId($objResult->fields['id']);
                 $this->arrTeasers[$objResult->fields['id']] = array(
-                    'id'                => $objResult->fields['id'],
-                    'date'              => $objResult->fields['date'],
-                    'title'             => $objResult->fields['title'],
-                    'teaser_frames'     => $objResult->fields['teaser_frames'],
-                    'redirect'          => $objResult->fields['redirect'],
-                    'ext_url'           => $extUrl,
-                    'category'          => implode(', ', contrexx_raw2xhtml($newsCategories)),
-                    'category_id'       => array_keys($newsCategories),
-                    'teaser_full_text'  => $objResult->fields['teaser_full_text'],
-                    'teaser_text'       => $objResult->fields['teaser_text'],
-                    'teaser_show_link'  => $objResult->fields['teaser_show_link'],
-                    'author'            => $author,
-                    'teaser_image_path' => $image,
+                    'id'                            => $objResult->fields['id'],
+                    'newsid'                        => $objResult->fields['id'],
+                    'date'                          => $objResult->fields['date'],
+                    'newsdate'                      => $objResult->fields['date'],
+                    'title'                         => $objResult->fields['title'],
+                    'newstitle'                     => $objResult->fields['title'],
+                    'teaser_frames'                 => $objResult->fields['teaser_frames'],
+                    'redirect'                      => $objResult->fields['redirect'],
+                    'commentactive'                 => $objResult->fields['allow_comments'],
+                    'author_id'                     => $objResult->fields['author_id'],
+                    'publisher_id'                  => $objResult->fields['publisher_id'],
+                    'enable_tags'                   => $objResult->fields['enable_tags'],
+                    'source'                        => $objResult->fields['source'],
+                    'url1'                          => $objResult->fields['url1'],
+                    'url2'                          => $objResult->fields['url2'],
+                    'changelog'                     => $objResult->fields['changelog'],
+                    'ext_url'                       => $extUrl,
+                    'category'                      => implode(', ', contrexx_raw2xhtml($newsCategories)),
+                    'category_id'                   => array_keys($newsCategories),
+                    'teaser_full_text'              => $objResult->fields['teaser_full_text'],
+                    'text'                          => $objResult->fields['teaser_full_text'],
+                    'teaser_text'                   => $objResult->fields['teaser_text'],
+                    'teaser_show_link'              => $objResult->fields['teaser_show_link'],
+                    'author'                        => $author,
+                    'teaser_image_path'             => $image,
+                    'teaser_image_thumbnail_path'   => $image,
                 );
                 $objResult->MoveNext();
             }
@@ -380,6 +401,22 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                     }
 
                     if (isset($this->arrFrameTeaserIds[$id][$nr])) {
+                        if (!empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'])) {
+                            $teaserUrl = $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'];
+                        } else {
+                            $teaserUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                'News',
+                                $this->findCmdById(
+                                    'details',
+                                    $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category_id']
+                                ),
+                                $this->langId,
+                                array(
+                                    'newsid' => $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['id'],
+                                    'teaserId' => $this->arrTeaserFrames[$id]['id'],
+                                )
+                            );
+                        }
                         $teaserBlockCode = str_replace('{TEASER_CATEGORY}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category'], $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_LONG_DATE}', date(ASCMS_DATE_FORMAT, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']), $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_DATE}', date(ASCMS_DATE_FORMAT_DATE, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']), $teaserBlockCode);
@@ -387,12 +424,7 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                         $teaserBlockCode = str_replace('{TEASER_TITLE}', contrexx_raw2xhtml($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['title']), $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_MORE}', $_CORELANG['TXT_READ_MORE'], $teaserBlockCode);
                         if ($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_show_link']) {
-                            $teaserBlockCode = str_replace(
-                                '{TEASER_URL}',
-                                empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'])
-                                    ? \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category_id']), $this->langId, array('newsid' => $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['id'], 'teaserId' => $this->arrTeaserFrames[$id]['id']))
-                                    : $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'], $teaserBlockCode
-                            );
+                            $teaserBlockCode = str_replace('{TEASER_URL}', $teaserUrl, $teaserBlockCode);
                             $teaserBlockCode = str_replace('{TEASER_URL_TARGET}', empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect']) ? '_self' : '_blank', $teaserBlockCode);
                             $teaserBlockCode = str_replace('<!-- BEGIN teaser_link -->', '', $teaserBlockCode);
                             $teaserBlockCode = str_replace('<!-- END teaser_link -->', '', $teaserBlockCode);
@@ -404,19 +436,22 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                         $teaserBlockCode = str_replace('{TEASER_FULL_TEXT}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_full_text'], $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_AUTHOR}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['author'], $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_EXT_URL}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['ext_url'], $teaserBlockCode);
+
+                        $teaserBlockTpl = new \Cx\Core\Html\Sigma();
+                        $teaserBlockTpl->setTemplate(
+                            $teaserBlockCode,
+                            false
+                        );
+                        $emulatedResult = new \stdClass();
+                        $emulatedResult->fields = $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]];
+                        $this->parseNewsPlaceholders(
+                            $teaserBlockTpl,
+                            $emulatedResult,
+                            $teaserUrl
+                        );
+                        $teaserBlockCode = $teaserBlockTpl->get();
                     } elseif ($this->administrate) {
-                        $teaserBlockCode = str_replace('{TEASER_CATEGORY}', 'TXT_CATEGORY', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_DATE}', 'TXT_DATE', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_LONG_DATE}', 'TXT_LONG_DATE', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_TITLE}', 'TXT_TITLE', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_MORE}', $_CORELANG['TXT_READ_MORE'], $teaserBlockCode);   
-                        $teaserBlockCode = str_replace('{TEASER_URL}', 'TXT_URL', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_URL_TARGET}', 'TXT_URL_TARGET', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_IMAGE_PATH}', 'TXT_IMAGE_PATH', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_TEXT}', $this->arrSettings['news_use_teaser_text'] ? 'TXT_TEXT' : '', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_FULL_TEXT}', 'TXT_FULL_TEXT', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_AUTHOR}', 'TEASER_AUTHOR', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_EXT_URL}', 'TEASER_EXT_URL', $teaserBlockCode);
+                        $teaserBlockCode = preg_replace('/{(NEWS|TEASER_[A-Z0-9_]+)}/', '\1', $teaserBlockCode);
                     } else {
                         $teaserBlockCode = '&nbsp;';
                     }
