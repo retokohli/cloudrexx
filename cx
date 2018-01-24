@@ -345,7 +345,7 @@ function cmd_env {
             fi
             ;;
         up)
-            dockercomposeexec up
+            dockercomposeexec up -d
             ;;
         down)
             dockercomposeexec down
@@ -595,19 +595,18 @@ function regex_replace {
 #####################
 function phpexec {
     # TODO: Check if we should run async
+    # TODO: Use correct container name
+    # TODO: Make work inside web container
     dockerexec exec php-master php index.php $@
 }
 
 function dockerexec {
-    # TODO: Check if --no-docker is set
-    # TODO: Add option to set "callback"
-    # TODO: Add option to run in default container for this env
     docker $@
 }
 
 function dockercomposeexec {
-    # TODO: Check if --no-docker is set
-    docker-compose $@
+    get_config_array
+    docker-compose --project-name "${CONFIG["hostname"]}" $@
 }
 
 #####################
