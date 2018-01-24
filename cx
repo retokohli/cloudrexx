@@ -379,10 +379,12 @@ host=${CONFIG["db-host"]}
 database=${CONFIG["db-name"]}
 user=${CONFIG["db-user"]}
 password=${CONFIG["db-pass"]}" > "$DB_CONF"
-# TODO: dump no longer contains users, handle them as we do sessions
-                if [[ ${ARGUMENTS["drop-sessions"]} = false ]]; then
-                    DB_SESSION_FILE="$(mktemp)"
-                    mysqldump --defaults-file="$DB_CONF" contrexx_sessions > "$DB_SESSION_FILE"
+                if [[ ${ARGUMENTS["drop-users"]} != true ]]; then
+                    # TODO: dump no longer contains users, handle them as we do sessions
+                    if [[ ${ARGUMENTS["drop-sessions"]} != true ]]; then
+                        DB_SESSION_FILE="$(mktemp)"
+                        mysqldump --defaults-file="$DB_CONF" contrexx_sessions > "$DB_SESSION_FILE"
+                    fi
                 fi
                 # empty database if exists
 # from https://stackoverflow.com/questions/12403662/how-to-remove-all-mysql-tables-from-the-command-line-without-drop-database-permi
