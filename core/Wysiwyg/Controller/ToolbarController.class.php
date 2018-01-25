@@ -264,7 +264,7 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
         // get the init object to change to te proper language file
         $init = \Env::get('init');
         // get the language file of the Wysiwyg component (this one btw.)
-        $_ARRAYLANG = $init->getComponentSpecificLanguageData('Wysiwyg', false, FRONTEND_LANG_ID);
+        $_ARRAYLANG = $init->getComponentSpecificLanguageData('Wysiwyg', false);
         // replace language variables
         $template->setVariable(array(
             'TXT_WYSIWYG_TOOLBAR_SAVE'  => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_SAVE'],
@@ -281,8 +281,8 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
 
         if ($isDefaultConfiguration) {
             // load language data of Access and Core component
-            $accessLang = $init->getComponentSpecificLanguageData('Access', false, FRONTEND_LANG_ID);
-            $coreLang = $init->getComponentSpecificLanguageData('Core', false, FRONTEND_LANG_ID);
+            $accessLang = $init->getComponentSpecificLanguageData('Access', false);
+            $coreLang = $init->getComponentSpecificLanguageData('Core', false);
             $link = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
             $link->setAttribute('href', new \Cx\Core\Routing\Url($this->cx->getBackendFolderName() . '/Access/group'));
             $link->setAttribute('target', '_blank');
