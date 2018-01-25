@@ -55,20 +55,28 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
      * @access  protected
      */
     protected $defaultFull = array(
-        array('Source','searchCode','-','NewPage','Templates'),
-        array('Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'),
-        array('Undo','Redo','-','CopyFormatting','-','Find','Replace','-','SelectAll','RemoveFormat'),
-        array('Bold','Italic','Underline','Strike','-','Subscript','Superscript'),
-        array('NumberedList','BulletedList','-','Outdent','Indent', 'Blockquote'),
+        array('Source'),
+        array('searchCode'),
+        array('NewPage'),
+        array('Templates'),
+        array('Cut','Copy','Paste','PasteText','PasteFromWord'),
+        array('Undo','Redo'),
+        array('Find','Replace'),
+        array('SelectAll'),
+        array('Scayt'),
+        array('Bold','Italic','Underline','Strike','Subscript','Superscript'),
+        array('CopyFormatting','RemoveFormat'),
+        array('NumberedList','BulletedList'),
+        array('Outdent','Indent'),
+        array('Blockquote','CreateDiv'),
         array('JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'),
         array('BidiLtr','BidiRtl'),
         array('Link','Unlink','Anchor'),
         array('Image','Flash','Table','HorizontalRule','SpecialChar'),
         array('Styles','Format','Font','FontSize'),
         array('TextColor','BGColor'),
-        array('ShowBlocks'),
-        array('Div','CreateDiv'),
         array('Maximize'),
+        array('ShowBlocks'),
     );
 
     /**
@@ -77,9 +85,15 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
      * @access  protected
      */
     protected $defaultBbcode = array(
-        array('Source','-','NewPage'),
-        array('Undo','Redo','-','Replace','-','SelectAll','RemoveFormat'),
-        array('Bold','Italic','Underline','Link','Unlink','SpecialChar'),
+        array('Source'),
+        array('NewPage'),
+        array('Undo','Redo'),
+        array('Find','Replace'),
+        array('SelectAll'),
+        array('Bold','Italic','Underline'),
+        array('CopyFormatting','RemoveFormat'),
+        array('Link','Unlink'),
+        array('SpecialChar'),
     );
 
     /**
@@ -88,18 +102,25 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
      * @access  protected
      */
     protected $defaultFrontendEditingContent = array(
-        array('Publish','Save','Templates'),
-        array('Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'),
-        array('Undo','Redo','-','CopyFormatting','-','Replace','-','SelectAll','RemoveFormat'),
-        array('Bold','Italic','Underline','Strike','-','Subscript','Superscript'),
-        array('NumberedList','BulletedList','-','Outdent','Indent', 'Blockquote'),
+        array('Templates'),
+        array('Cut','Copy','Paste','PasteText','PasteFromWord'),
+        array('Undo','Redo'),
+        array('Find','Replace'),
+        array('SelectAll'),
+        array('Scayt'),
+        array('Bold','Italic','Underline','Strike','Subscript','Superscript'),
+        array('CopyFormatting','RemoveFormat'),
+        array('NumberedList','BulletedList'),
+        array('Outdent','Indent'),
+        array('Blockquote'),
         '/',
         array('JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'),
+        array('BidiLtr','BidiRtl'),
         array('Link','Unlink','Anchor'),
         array('Image','Flash','Table','HorizontalRule','SpecialChar'),
         array('Styles','Format','Font','FontSize'),
         array('TextColor','BGColor'),
-        array('ShowBlocks')
+        array('ShowBlocks'),
     );
 
     /**
@@ -108,9 +129,10 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
      * @access  protected
      */
     protected $defaultFrontendEditingTitle = array(
-        array('Publish','Save'),
-        array('Cut','Copy','Paste','-','Scayt'),
-        array('Undo','Redo')
+        array('Cut','Copy','Paste'),
+        array('Undo','Redo'),
+        array('SelectAll'),
+        array('Scayt'),
     );
 
     /**
