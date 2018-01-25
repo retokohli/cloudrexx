@@ -477,6 +477,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
                     mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < "${TEMP_FILES["session-backup"]}"
                 fi
             fi
+            # TODO: Check if there's at least one admin, make the user's ID dynamic
             EXISTING_CX_USER=$(mysql --defaults-file="${TEMP_FILES["db-conf"]}" -e "SELECT id FROM contrexx_access_users WHERE id = 1")
             if [[ "$EXISTING_CX_USER" == "" ]]; then
                 if [[ ${ARGUMENTS["yes"]} != true ]]; then
