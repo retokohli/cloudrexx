@@ -183,7 +183,7 @@ Synopsis
 Available options are:
     --yes               Answer all questions with yes. Use with care!
     --silent            Do not output non-necessary messages
-    --db                If set without setting --git only database is updated
+    --db                If set without setting --git only database is updated, implies --force
     --git               If set without setting --db only GIT is updated
     --force             Forces reset of the database even if dump has not changed
     --reset             Resets local GIT clone to origin's state
@@ -344,7 +344,7 @@ function cmd_env {
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 echo "Configuring the environment"
             fi
-            if [[ ${ARGUMENTS["yes"]} = false ]]; then
+            if [[ ${ARGUMENTS["yes"]} != true ]]; then
                 ARGUMENTS["interactive"]=true
             fi
             cmd_env config
@@ -401,38 +401,43 @@ function cmd_env {
                     git pull
                     git stash pop
                 fi
+                STRUCTMD5NEW=$(/usr/bin/md5sum installer/data/contrexx_dump_structure.sql)
+                DATAMD5NEW=$(/usr/bin/md5sum installer/data/contrexx_dump_data.sql)
             fi
-            STRUCTMD5NEW=$(/usr/bin/md5sum installer/data/contrexx_dump_structure.sql)
-            DATAMD5NEW=$(/usr/bin/md5sum installer/data/contrexx_dump_data.sql)
             if [[ "$STRUCTMD5NEW" != "$STRUCTMD5" || "$DATAMD5NEW" != "$DATAMD5" ]]; then
                 DB_UPDATE_NECESSARY=true
             else
                 DB_UPDATE_NECESSARY=false
             fi
-            if [[ ${ARGUMENTS["git"]} != true || ${ARGUMENTS["db"]} = true ]]; then
-                if [[ ${ARGUMENTS["force"]} = false && $DB_UPDATE_NECESSARY = false && ${ARGUMENTS["silent"]} = false ]]; then
-                    echo "DB update not necessary, run ./cx env update --db --force to force db reload"
-                    return
+            if [[ ${ARGUMENTS["git"]} = true && ${ARGUMENTS["db"]} != true ]]; then
+                if [[ $DB_UPDATE_NECESSARY = true && ${ARGUMENTS["silent"]} != true ]]; then
+                    echo "DB update would be necessary, you may want to run ./cx env update --db"
                 fi
-                TEMP_FILES["db-conf"]=$(mktemp)
-                echo "[mysql]
+                return
+            fi
+            if [[ ${ARGUMENTS["force"]} != true && $DB_UPDATE_NECESSARY != true && ${ARGUMENTS["silent"]} != true ]]; then
+                echo "DB update not necessary, run ./cx env update --db --force to force db reload"
+                return
+            fi
+            TEMP_FILES["db-conf"]=$(mktemp)
+            echo "[mysql]
 database=${CONFIG["db-name"]}
 [client]
 host=${CONFIG["db-host"]}
 user=${CONFIG["db-user"]}
 password=${CONFIG["db-pass"]}" > "${TEMP_FILES["db-conf"]}"
-                if [[ ${ARGUMENTS["drop-users"]} != true ]]; then
-                    TEMP_FILES["user-backup"]="$(mktemp)"
-                    mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers "${CONFIG["db-name"]}" contrexx_access_users contrexx_access_user_profile > "${TEMP_FILES["user-backup"]}"
-                    mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers -w 'attribute_id=0' "${CONFIG["db-name"]}" contrexx_access_user_attribute_value >> "${TEMP_FILES["user-backup"]}"
-                    if [[ ${ARGUMENTS["drop-sessions"]} != true ]]; then
-                        TEMP_FILES["session-backup"]="$(mktemp)"
-                        mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers "${CONFIG["db-name"]}" contrexx_sessions > "${TEMP_FILES["session-backup"]}"
-                    fi
+            if [[ ${ARGUMENTS["drop-users"]} != true ]]; then
+                TEMP_FILES["user-backup"]="$(mktemp)"
+                mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers "${CONFIG["db-name"]}" contrexx_access_users contrexx_access_user_profile > "${TEMP_FILES["user-backup"]}"
+                mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers -w 'attribute_id=0' "${CONFIG["db-name"]}" contrexx_access_user_attribute_value >> "${TEMP_FILES["user-backup"]}"
+                if [[ ${ARGUMENTS["drop-sessions"]} != true ]]; then
+                    TEMP_FILES["session-backup"]="$(mktemp)"
+                    mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers "${CONFIG["db-name"]}" contrexx_sessions > "${TEMP_FILES["session-backup"]}"
                 fi
-                # empty database if exists
+            fi
+            # empty database if exists
 # from https://stackoverflow.com/questions/12403662/how-to-remove-all-mysql-tables-from-the-command-line-without-drop-database-permi
-                mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A -e "
+            mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A -e "
 SET FOREIGN_KEY_CHECKS = 0;
 SET GROUP_CONCAT_MAX_LEN=32768;
 SET @tables = NULL;
@@ -456,20 +461,15 @@ PREPARE stmt FROM @views;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 SET FOREIGN_KEY_CHECKS = 1;"
-                # create db if it does not exist
-                mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A -e "CREATE DATABASE IF NOT EXISTS ${CONFIG["db-name"]} COLLATE utf8_unicode_ci"
-                # load db
-                mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < installer/data/contrexx_dump_structure.sql
-                mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < installer/data/contrexx_dump_data.sql
-                if [[ ${ARGUMENTS["drop-users"]} != true ]]; then
-                    mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < "${TEMP_FILES["user-backup"]}"
-                    if [[ ${ARGUMENTS["drop-sessions"]} != true ]]; then
-                        mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < "${TEMP_FILES["session-backup"]}"
-                    fi
-                fi
-            else
-                if [[ $DB_UPDATE_NECESSARY = true && ${ARGUMENTS["silent"]} = false ]]; then
-                    echo "DB update would be necessary, you may want to run ./cx env update --db"
+            # create db if it does not exist
+            mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A -e "CREATE DATABASE IF NOT EXISTS ${CONFIG["db-name"]} COLLATE utf8_unicode_ci"
+            # load db
+            mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < installer/data/contrexx_dump_structure.sql
+            mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < installer/data/contrexx_dump_data.sql
+            if [[ ${ARGUMENTS["drop-users"]} != true ]]; then
+                mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < "${TEMP_FILES["user-backup"]}"
+                if [[ ${ARGUMENTS["drop-sessions"]} != true ]]; then
+                    mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < "${TEMP_FILES["session-backup"]}"
                 fi
             fi
             ;;
