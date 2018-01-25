@@ -410,7 +410,8 @@ user=${CONFIG["db-user"]}
 password=${CONFIG["db-pass"]}" > "${TEMP_FILES["db-conf"]}"
                 if [[ ${ARGUMENTS["drop-users"]} != true ]]; then
                     TEMP_FILES["user-backup"]="$(mktemp)"
-                    mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers contrexx_access_users contrexx_access_user_profile contrexx_access_user_attribute_value > "${TEMP_FILES["user-backup"]}"
+                    mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers contrexx_access_users contrexx_access_user_profile > "${TEMP_FILES["user-backup"]}"
+                    mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers -w 'attribute_id=0' contrexx_access_user_attribute_value >> "${TEMP_FILES["user-backup"]}"
                     if [[ ${ARGUMENTS["drop-sessions"]} != true ]]; then
                         TEMP_FILES["session-backup"]="$(mktemp)"
                         mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers contrexx_sessions > "${TEMP_FILES["session-backup"]}"
