@@ -508,7 +508,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
             set_config_array
             ;;
         shell)
-            dockerexec exec -ti php-master bash
+            dockerexec exec -ti "<env-name>_web_1" bash
             ;;
         *)
             (>&2 echo "No such subcommand")
@@ -613,15 +613,20 @@ function regex_replace {
 function phpexec {
     # TODO: Check if we should run async
     if type docker >/dev/null 2>&1; then
-        get_config_array
-        dockerexec exec "${CONFIG[hostname]//"."/}_web_1" php index.php "$@"
+        dockerexec exec "<env-name>_web_1" php index.php "$@"
     else
         php index.php "$@"
     fi
 }
 
 function dockerexec {
-    docker "$@"
+    get_config_array
+    local ENV_NAME="${CONFIG[hostname]//"."/}"
+    local ARGS=()
+    for index in "$@"; do
+        ARGS+=(${index//"<env-name>"/"$ENV_NAME"})
+    done
+    docker "${ARGS[@]}"
 }
 
 function dockercomposeexec {
@@ -644,7 +649,7 @@ case "${COMMANDS[0]}" in
         ;;
     debug)
         if [[ ${ARGUMENTS["web"]} == true ]]; then
-            dockerexec logs -f php-master
+            dockerexec logs -f "<env-name>_web_1"
             exit
         elif [[ ${ARGUMENTS["request"]} ]]; then
             grep "$(tail -n1 tmp/log/dbg.log | grep -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log
