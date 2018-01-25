@@ -351,7 +351,8 @@ function cmd_env {
             dockercomposeexec down
             ;;
         restart)
-            dockercomposeexec restart
+            cmd_env down
+            cmd_env up
             ;;
         status)
             dockercomposeexec ps
