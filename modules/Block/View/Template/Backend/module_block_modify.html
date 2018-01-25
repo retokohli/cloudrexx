@@ -109,7 +109,7 @@
                 var config = {
                     customConfig : cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'block'),
                     toolbar: 'Full',
-                    skin: 'moono',
+                    removePlugins: 'bbcode',
                     height: 380
                 };
                 CKEDITOR.replace('page[content]', config);
