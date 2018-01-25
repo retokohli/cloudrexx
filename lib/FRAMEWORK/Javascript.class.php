@@ -215,12 +215,6 @@ cx.jQuery(document).ready(function(){
             ),
             'dependencies' => array('jquery'),
         ),
-        'ckeditor'     => array(
-            'jsfiles'       => array(
-                'lib/ckeditor/ckeditor.js',
-            ),
-            'dependencies' => array('jquery'),
-        ),
         'js-cookie' => array(
             'jsfiles'       => array(
                 'lib/javascript/js-cookie.min.js',

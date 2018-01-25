@@ -51,6 +51,11 @@ use Cx\Core\Wysiwyg\Model\Event\WysiwygEventListener;
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController implements \Cx\Core\Event\Model\Entity\EventListener {
 
     /**
+     * Location of the CKeditor library
+     */
+    const LIB_PATH = '/ckeditor';
+
+    /**
      * Add the event listener
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
@@ -216,5 +221,34 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $toolbarController = $this->getController('Toolbar');
         $buttons = $toolbarController->getRemovedButtons();
         return $buttons;
+    }
+
+    /**
+     * Get the path to the CKeditor JavaScript library
+     *
+     * @return  string
+     */
+    public function getLibraryPath() {
+        return $this->cx->getLibraryFolderName() . static::LIB_PATH;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        // register CKeditor JavaScript library
+        $jsLibraryPath = $this->getLibraryPath() . '/ckeditor.js';
+        if (strpos($jsLibraryPath, '/') === 0) {
+            $jsLibraryPath = substr($jsLibraryPath, 1);
+        }
+        \JS::registerJsLibrary(
+            'ckeditor',
+            array(
+                'jsfiles'       => array(
+                    $jsLibraryPath,
+                ),
+                'dependencies' => array('jquery'),
+            )
+        );
     }
 }
