@@ -612,9 +612,9 @@ function regex_replace {
 #####################
 function phpexec {
     # TODO: Check if we should run async
-    # TODO: Use correct container name
     # TODO: Make work inside web container
-    dockerexec exec php-master php index.php "$@"
+    get_config_array
+    dockerexec exec "${CONFIG[hostname]//"."/}_web_1" php index.php "$@"
 }
 
 function dockerexec {
