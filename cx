@@ -185,7 +185,8 @@ Available options are:
     --silent            Do not output non-necessary messages
     --db                If set without setting --git only database is updated
     --git               If set without setting --db only GIT is updated
-    --reset             Forces reset of the database even if dump has not changed
+    --force             Forces reset of the database even if dump has not changed.
+    --reset             Resets local GIT clone to origin's state.
     --drop-sessions     Skips restoring user sessions
     --drop-users        Skips restoring users, implies --drop-sessions"
                     ;;
@@ -398,8 +399,8 @@ function cmd_env {
                 DB_UPDATE_NECESSARY=false
             fi
             if [[ ${ARGUMENTS["git"]} != true || ${ARGUMENTS["db"]} = true ]]; then
-                if [[ ${ARGUMENTS["reset"]} = false && $DB_UPDATE_NECESSARY = false && ${ARGUMENTS["silent"]} = false ]]; then
-                    echo "DB update not necessary, run ./cx env update --db --reset to force db reload"
+                if [[ ${ARGUMENTS["force"]} = false && $DB_UPDATE_NECESSARY = false && ${ARGUMENTS["silent"]} = false ]]; then
+                    echo "DB update not necessary, run ./cx env update --db --force to force db reload"
                     return
                 fi
                 TEMP_FILES["db-conf"]=$(mktemp)
