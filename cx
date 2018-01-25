@@ -75,41 +75,51 @@ function cmd_help {
     case "$1" in
         envs)
             case "$2" in
-                init)
-                    # TODO: Add help text
-                    ;;
                 up)
-                    # TODO: Add help text
+                    echo "Starts the multi-vhost environment.
+
+Synopsis:
+    ./cx envs up [<options>]
+
+Available options are:
+    --port=<port>   Port on which the vhosts are available."
                     ;;
                 down)
-                    # TODO: Add help text
+                    echo "Stops the multi-vhost environment.
+
+Synopsis:
+    ./cx envs down"
                     ;;
                 restart)
-                    # TODO: Add help text
+                    echo "Restarts the multi-vhost environment.
+
+Synopsis:
+    ./cx envs restart"
                     ;;
                 status)
-                    # TODO: Add help text
+                    echo "Shows the status of the multi-vhost environment.
+
+Synopsis:
+    ./cx envs status"
                     ;;
                 info)
-                    # TODO: Add help text
-                    ;;
-                update)
-                    # TODO: Add help text
+                    echo "Shows the status of all vhosts' containers.
+
+Synopsis:
+    ./cx envs info"
                     ;;
                 *)
-                    echo "This command manages the environment for multiple Cloudrexx installations on one host
+                    echo "This command manages the environment for multiple Cloudrexx installations on one host.
 
 Synopsis
     ./cx envs <subcommand> [<options>]
 
 Available subcommands are:
-    init        Initializes the docker containers (only needs to be called once per host).
-    up          Starts the docker containers.
-    down        Stops the docker containers.
-    restart     Restarts the docker containers.
-    status      Tells whether the containers are running.
-    info        Alias for 'status'.
-    update      Pulls the newest version of the containers.
+    up          Starts the docker containers
+    down        Stops the docker containers
+    restart     Restarts the docker containers
+    status      Tells whether the containers are running
+    info        Alias for 'status'
 
 For more info about a subcommand type ./cx help envs <subcommand>";
                     ;;
@@ -285,26 +295,21 @@ For more info about a command type ./cx help <command>"
 ##################
 function cmd_envs {
     case "$1" in
-        init)
-            # TODO: Add code
-            ;;
         up)
-            # TODO: Add code
+            dockerexec run --rm --name "clx-envs-proxy" -d -p "${ARGUMENTS["port"]}:80" -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
             ;;
         down)
-            # TODO: Add code
+            dockerexec stop "clx-envs-proxy"
             ;;
         restart)
-            # TODO: Add code
+            cmd_envs down
+            cmd_envs up
             ;;
         status)
-            # TODO: Add code
+            dockerexec ps -f "name=clx-envs-proxy"
             ;;
         info)
-            # TODO: Add code
-            ;;
-        update)
-            # TODO: Add code
+            dockerexec ps -f "name=clx-env*"
             ;;
         *)
             (>&2 echo "No such subcommand")
@@ -514,6 +519,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
             for value in "${!CONFIG_OVERRIDE[@]}"; do
                 CONFIG[$value]=${CONFIG_OVERRIDE[$value]}
             done
+            # TODO: Decide whether this is a vhost or not (based on existing config and presence of clx-envs-proxy container)
             # if interactive: loop over all options and let the user decide
             if [[ ${ARGUMENTS["interactive"]} = true ]]; then
                 # TODO: Only ask if argument is not in forced arguments
@@ -577,6 +583,8 @@ function get_config_array {
     if [[ "${CONFIG["db-image"]}" == "" ]]; then
         CONFIG["db-image"]=${DEFAULT_CONFIG["db-image"]}
     fi
+    # TODO: Decide whether this is a vhost or not (based on existing config and presence of clx-envs-proxy container)
+    # TODO: Propose hostname
 }
 
 function set_config_array {
@@ -608,6 +616,7 @@ function set_config_array {
     FILE_CONTENTS=${FILE_CONTENTS//"<php-image>"/$PHP_IMAGE}
     FILE_CONTENTS=${FILE_CONTENTS//"<db-image>"/${CONFIG["db-image"]}}
     FILE_CONTENTS=${FILE_CONTENTS//"<port>"/${CONFIG["port"]}}
+    # TODO: replace <vhost> and <novhost> placeholders.
     # save docker-compose.yml
     echo "$FILE_CONTENTS" > docker-compose.yml
 }
@@ -641,6 +650,12 @@ function phpexec {
 function dockerexec {
     get_config_array
     local ENV_NAME="${CONFIG[hostname]//"."/}"
+    # TODO: Replace <web-container>
+    # TODO: Add <container-prefix>
+    # TODO: Add <db-container>
+    # TODO: Add <cache-container>
+    # TODO: Add <phpma-container>
+    local WEB_CONTAINER="clx-env-${ENV_NAME}-web"
     local ARGS=()
     for index in "$@"; do
         ARGS+=(${index//"<env-name>"/"$ENV_NAME"})
