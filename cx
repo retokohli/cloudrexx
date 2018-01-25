@@ -472,7 +472,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
                     mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < "${TEMP_FILES["session-backup"]}"
                 fi
             fi
-            EXISTING_CX_USER=$(mysql -udev --database=clx_dev_env_master -e "SELECT id FROM contrexx_access_users WHERE id = 2")
+            EXISTING_CX_USER=$(mysql --defaults-file="${TEMP_FILES["db-conf"]}" -e "SELECT id FROM contrexx_access_users WHERE id = 1")
             if [[ "$EXISTING_CX_USER" == "" ]]; then
                 if [[ ${ARGUMENTS["yes"]} != true ]]; then
                     echo "There is no user, will create a default user. Ok?"
