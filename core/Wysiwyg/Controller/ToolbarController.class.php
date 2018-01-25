@@ -257,7 +257,7 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
             'js/toolbarmodifier',
             'js/toolbartextmodifier',
         );
-        $ckeditorLibPath = '/lib/ckeditor/samples';
+        $ckeditorLibPath = $this->getComponent('Wysiwyg')->getLibraryPath() . '/samples';
         \JS::registerJS($componentRoot . '/View/Script/Backend.js');
         \JS::registerJS($componentRoot . '/View/Script/ToolbarButtonsRemover.js');
         // register js and css files for the toolbarconfigurator

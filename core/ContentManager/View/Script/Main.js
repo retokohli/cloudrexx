@@ -2589,7 +2589,7 @@ cx.cm.createEditor = function() {
             return base + sep + key + '=' + value;
         }
         var config = {
-            customConfig: buildUrl(cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'), 'pageId', cx.jQuery('#pageId').val()),
+            customConfig: buildUrl(cx.variables.get('ckeditorconfigpath', 'contentmanager'), 'pageId', cx.jQuery('#pageId').val()),
             toolbar: 'Full',
             removePlugins: 'bbcode'
         };

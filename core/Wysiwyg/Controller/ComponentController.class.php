@@ -233,6 +233,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Get the path to the CKeditor config file
+     *
+     * @return  string
+     */
+    public function getConfigPath() {
+        return $this->getDirectory(true, true) . '/ckeditor.config.js.php';
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
