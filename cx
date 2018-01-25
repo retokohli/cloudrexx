@@ -18,7 +18,12 @@ declare -A CONFIG
 INTERNAL_COMMANDS=("envs" "env" "debug")
 # temp files:
 declare -A TEMP_FILES
-trap 'for tempfile in "${!TEMP_FILES[@]}"; do rm -f "${TEMP_FILES[$tempfile]}"; done' EXIT
+trap clean_temp_files EXIT
+function clean_temp_files {
+    for tempfile in "${!TEMP_FILES[@]}"; do
+        rm -f "${TEMP_FILES[$tempfile]}"
+    done
+}
 
 #######################
 # Input param cleanup #
@@ -484,7 +489,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
             if [[ ${ARGUMENTS["interactive"]} = true ]]; then
                 # TODO: Only ask if argument is not in forced arguments
                 for value in "${!DEFAULT_CONFIG[@]}"; do
-                    read -p "Enter value for '$value' [${CONFIG[$value]}]: " newvalue
+                    read -r -p "Enter value for '$value' [${CONFIG[$value]}]: " newvalue
                     if [[ "$newvalue" != "" ]]; then
                         CONFIG[$value]=$newvalue
                     fi
@@ -527,7 +532,7 @@ function get_config_array {
         CONFIG["php-image"]=$(REGEX="web:\s*image: \"([^\"]+)\""; CFG=$(cat $COMPOSE_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
         CONFIG["php-version"]=$(REGEX="([0-9]+\.[0-9]+)"; [[ "${CONFIG["php-image"]}" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
         if [[ "${CONFIG["php-version"]}" != "" ]]; then
-            CONFIG["php-image"]=${CONFIG["php-image"]//"${CONFIG["php-version"]}"/"<php-version>"}
+            CONFIG["php-image"]=${CONFIG[php-image]//"${CONFIG["php-version"]}"/"<php-version>"}
         fi
     fi
     if [[ "${CONFIG["php-version"]}" == "" ]]; then
@@ -598,16 +603,16 @@ function phpexec {
     # TODO: Check if we should run async
     # TODO: Use correct container name
     # TODO: Make work inside web container
-    dockerexec exec php-master php index.php $@
+    dockerexec exec php-master php index.php "$@"
 }
 
 function dockerexec {
-    docker $@
+    docker "$@"
 }
 
 function dockercomposeexec {
     get_config_array
-    docker-compose --project-name "${CONFIG["hostname"]}" $@
+    docker-compose --project-name "${CONFIG["hostname"]}" "$@"
 }
 
 #####################
@@ -646,7 +651,7 @@ case "${COMMANDS[0]}" in
         # if system looks installed
         if [ -f "index.php" ]; then
             # TODO: add help text if return value indicates a setup problem (db conn., .htaccess, ...)
-            phpexec $@
+            phpexec "$@"
         else
             echo "Cloudrexx does not seem to be installed. Did you already execute the \"env init\" command?"
             cmd_help "${COMMANDS[1]}"
