@@ -53,7 +53,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Location of the CKeditor library
      */
-    const LIB_PATH = '/ckeditor';
+    const LIB_PATH = '/ckeditor/4.6.2';
 
     /**
      * Add the event listener
