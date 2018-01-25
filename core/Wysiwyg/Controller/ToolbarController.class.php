@@ -319,8 +319,10 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
         $toolbarIds = $this->getToolbarIdsOfUserGroup();
         // Make sure that we do not have any redundant toolbar ids
         $toolbarIds = array_unique($toolbarIds);
+
         // Load the removedButtons of the given toolbars
         $removedButtons = $this->loadRemovedButtons($toolbarIds);
+
         // return the merged toolbars
         $mergedButtons = $this->mergeRemovedButtons($removedButtons);
         $toolbar = $this->getAsOldSyntax($mergedButtons, $type);
@@ -362,42 +364,60 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
     }
 
     /**
+     * Load system-wide removed buttons
+     *
+     * @return  array               Array containing the system-wide removed
+     *                              buttons
+     */
+    protected function loadSystemRemovedButtons() {
+        $removedButtons = array();
+        // Query to load the removed buttons which are specified in the settings
+        $defaultRemovedButtonsQuery = '
+        SELECT `removed_buttons` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
+        WHERE `is_default` = 1
+        LIMIT 1';
+        $defaultRemovedButtonsRes = $this->dbCon->Execute($defaultRemovedButtonsQuery);
+        // Check if a default selection has been made
+        if ($defaultRemovedButtonsRes) {
+            // Fetch the removed buttons
+            $defaultRemovedButtons = $defaultRemovedButtonsRes->fields;
+            // Check if the removed buttons list is not empty
+            if (!empty($defaultRemovedButtons)) {
+                // Add the default removed buttons to the array of removed buttons
+                $removedButtons = array_map(
+                    'trim',
+                    explode(',', $defaultRemovedButtons['removed_buttons'])
+                );
+            }
+        }
+        return $removedButtons;
+    }
+
+    /**
      * Load the removed button of the given toolbar ids
      *
-     * This method loads the removed buttons of the default settings as well.
      * @param   array   $toolbarIds Array containing all ids of the toolbars
      *                              that shall be loaded
      * @return  array               Array containing the removed buttons of
      *                              the given toolbar ids
      */
     protected function loadRemovedButtons(array $toolbarIds) {
-        // Initiate an empty removedButtons array
+        // Fetch system-wide removedButtons
+        $systemRemovedButtons = $this->loadSystemRemovedButtons();
+
         $removedButtons = array();
-        if (empty($toolbarIds)) {
-            // Query to load the removed buttons which are specified in the settings
-            $defaultRemovedButtonsQuery = '
-            SELECT `removed_buttons` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
-            WHERE `is_default` = 1
-            LIMIT 1';
-            $defaultRemovedButtonsRes = $this->dbCon->Execute($defaultRemovedButtonsQuery);
-            // Check if a default selection has been made
-            if ($defaultRemovedButtonsRes) {
-                // Fetch the removed buttons
-                $defaultRemovedButtons = $defaultRemovedButtonsRes->fields;
-                // Check if the removed buttons list is not empty
-                if (!empty($defaultRemovedButtons)) {
-                    // Add the default removed buttons to the array of removed buttons
-                    $removedButtons[] = $defaultRemovedButtons['removed_buttons'];
-                }
-            }
-            return $removedButtons;
-        }
         // Loop through each toolbar id
         foreach ($toolbarIds as $toolbarId) {
             $toolbarButtons = $this->getRemovedButtonsByToolbarId($toolbarId);
             if (!empty($toolbarButtons)) {
                 // Store the available functions for the current toolbar
-                $removedButtons[] = $toolbarButtons;
+                $removedButtons[] = array_merge(
+                    array_map(
+                        'trim',
+                        explode(',', $toolbarButtons)
+                    ),
+                    $systemRemovedButtons
+                );
             }
         }
         return $removedButtons;
@@ -411,46 +431,19 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
      *                                  string might be empty
      */
     protected function mergeRemovedButtons(array $removedButtons) {
+
         $mergedButtons = array();
         // Verify that there is anything to merge at all
         if (empty($removedButtons)) {
             return '';
         }
-        // Check if there is more than one list of buttons
-        if (count($removedButtons) < 2) {
-            // Merging only one list of buttons would be pointless
-            $mergedButtons = $removedButtons[0];
-        } else {
-            // Create arrays out of the removed button strings
-            foreach($removedButtons as $key => $removedButtonsList) {
-                $removedButtons[$key] = explode(',', $removedButtonsList);
-            }
-            // Initiate tmpMerged with the array containing the least amount of
-            // removed buttons
-            $tmpMerged = min($removedButtons);
-            // Unset the index
-            unset($removedButtons[array_search($tmpMerged, $removedButtons)]);
-            // Renumber the array
-            $removedButtons = array_reverse($removedButtons);
-            // Loop through all remaining lists of removed buttons
-            for ($i = 0; $i <= count($removedButtons) - 1; $i += 2) {
-                $buttonsOne = $removedButtons[$i];
-                // Check if we have more than one list of removed buttons
-                // remaining
-                if (array_key_exists($i + 1, $removedButtons)) {
-                    $buttonsTwo = $removedButtons[$i + 1];
-                    // Get the buttons that are definitely removed
-                    $mergedButtons = array_intersect($tmpMerged, $buttonsOne, $buttonsTwo);
-                } else {
-                    // Only one list of removed buttons left
-                    $mergedButtons = array_intersect($tmpMerged, $buttonsOne);
-                }
-            }
+
+        $mergedButtons = array_shift($removedButtons);
+        while ($removedButtonSet = array_shift($removedButtons)) {
+            $mergedButtons = array_intersect($mergedButtons, $removedButtonSet);
         }
-        // Combine the merged buttons into a string
-        if (is_array($mergedButtons)) {
-            $mergedButtons = join(',', $mergedButtons);
-        }
+    
+        $mergedButtons = join(',', $mergedButtons);
         return $mergedButtons;
     }
 
