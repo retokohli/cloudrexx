@@ -276,7 +276,28 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
         }
         $template->setVariable(array(
             'TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'  => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'],
+            'TXT_WYSIWYG_TOOLBAR_FUNC_DESC'     => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_FUNC_DESC'],
         ));
+
+        if ($isDefaultConfiguration) {
+            // load language data of Access and Core component
+            $accessLang = $init->getComponentSpecificLanguageData('Access', false, FRONTEND_LANG_ID);
+            $coreLang = $init->getComponentSpecificLanguageData('Core', false, FRONTEND_LANG_ID);
+            $link = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
+            $link->setAttribute('href', new \Cx\Core\Routing\Url($this->cx->getBackendFolderName() . '/Access/group'));
+            $link->setAttribute('target', '_blank');
+            $link->addChild(new \Cx\Core\Html\Model\Entity\TextElement(
+                join(' &gt; ', array(
+                    $coreLang['TXT_ADMINISTRATION'],
+                    $coreLang['TXT_USER_ADMINISTRATION'],
+                    $accessLang['TXT_ACCESS_GROUPS'],
+                ))
+            ));
+            $template->setVariable(
+                'TXT_WYSIWYG_TOOLBAR_FUNC_DESC_INFO_GROUPS',
+                sprintf($_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_FUNC_DESC_INFO_GROUPS'], $link)
+            );
+        }
 
         $this->getToolbarTranslations();
 
@@ -501,16 +522,13 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
     protected function getToolbarTranslations() {
         // Get the init object to change to te proper language file
         $init = \Env::get('init');
-        $init->_initBackendLanguage();
-        // Check if current language is english or not
-        if ($init->getBackendLangId() === 2) {
-            // Current language is english no need to translate anything
-            return;
-        }
+
         // Initiate $translations as empty stdClass object
         $translations = new \stdClass();
+
         // Get the language file of the Wysiwyg component (this one btw.)
         $_ARRAYLANG = $init->getComponentSpecificLanguageData('Wysiwyg', false);
+
         // Populate the std object with the translations
         $translations->mode = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_MODE'];
         $translations->document = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_DOCUMENT'];
@@ -532,6 +550,7 @@ class ToolbarController extends \Cx\Core\Core\Model\Entity\Controller {
         $translations->colors = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_COLORS'];
         $translations->tools = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_TOOLS'];
         $translations->bidi = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_BIDI'];
+
         \ContrexxJavascript::getInstance()->setVariable(
             'toolbarTranslations',
             $translations,

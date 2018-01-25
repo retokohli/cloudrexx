@@ -64,6 +64,8 @@ $_ARRAYLANG['TXT_CORE_WYSIWYG_REPLACEACTUALCONTENTS'] = 'Aktuellen Inhalt im WYS
 
 // Functions
 $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'] = 'Editorfunktionen';
+$_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_FUNC_DESC'] = 'Wählen Sie die Funktionen aus, welche im WYSIWYG-Editor zur Verfügung stehen sollen.';
+$_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_FUNC_DESC_INFO_GROUPS'] = 'Der Funktionsumfang des WYSIWYG-Editors kann pro Benutzergruppe (unter %s) weiter eingeschränkt werden.';
 $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_SAVE'] = 'Speichern';
 $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_MODE'] = 'Modus';
 $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_DOCUMENT'] = 'Inhalt löschen';

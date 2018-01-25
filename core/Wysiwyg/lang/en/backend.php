@@ -72,6 +72,8 @@ $_ARRAYLANG['TXT_CORE_WYSIWYG_REPLACEACTUALCONTENTS'] = 'Replace actual content 
 
 // Functions
 $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'] = 'Editor functions';
+$_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_FUNC_DESC'] = 'Select which functions shall be available in the WYSIWYG-editor.';
+$_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_FUNC_DESC_INFO_GROUPS'] = 'The available function-set can further be restricted per user group (under %s).';
 $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_SAVE'] = 'Save';
 $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_MODE'] = 'Mode';
 $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_DOCUMENT'] = 'Empty content';
