@@ -185,8 +185,8 @@ Available options are:
     --silent            Do not output non-necessary messages
     --db                If set without setting --git only database is updated
     --git               If set without setting --db only GIT is updated
-    --force             Forces reset of the database even if dump has not changed.
-    --reset             Resets local GIT clone to origin's state.
+    --force             Forces reset of the database even if dump has not changed
+    --reset             Resets local GIT clone to origin's state
     --drop-sessions     Skips restoring user sessions
     --drop-users        Skips restoring users, implies --drop-sessions"
                     ;;
