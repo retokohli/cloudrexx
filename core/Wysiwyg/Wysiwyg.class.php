@@ -97,7 +97,6 @@ class Wysiwyg extends \Cx\Model\Base\EntityBase
             'height' => 200,
             'fullPage' => 'false',
             'extraPlugins' => array(),
-            'removePlugins' => array('bbcode'),
         ),
     );
 
