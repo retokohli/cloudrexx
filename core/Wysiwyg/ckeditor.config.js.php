@@ -47,14 +47,13 @@ $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
 $mainDomain = $domainRepository->getMainDomain()->getName();
 
 //find the right css files and put it into the wysiwyg
-$em = $cx->getDb()->getEntityManager();
-$componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-$wysiwyg = $componentRepo->findOneBy(array('name'=>'Wysiwyg'));
-$pageRepo   = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+$wysiwyg= $cx->getComponent('Wysiwyg');
 \Cx\Core\Setting\Controller\Setting::init('Wysiwyg', 'config', 'Yaml');
 
 $skinId = 0;
 if (!empty($pageId) && $pageId != 'new') {
+    $em = $cx->getDb()->getEntityManager();
+    $pageRepo   = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
     $skinId = $pageRepo->find($pageId)->getSkin();
 }
 
@@ -131,7 +130,10 @@ CKEDITOR.on('instanceReady',function(){
             for(var i=0;i<this.length;i++){
                 (function(item){
                     CKEDITOR.addTemplates('default',{
-                        imagesPath: "../../",//CKEDITOR.getUrl(defaultPath),
+                        // CKeditor does not accept an empty imagesPath
+                        // therefore, we have to perform a virtual traversal
+                        // using a random folder path
+                        imagesPath: cx.variables.get('basePath', 'contrexx') + 'random/..',
                         templates: this
                     });
                 }).bind(this)(this[i])
