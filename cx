@@ -1,5 +1,5 @@
 #!/bin/bash
-@ECHO off 2>nul & @GOTO WINDOOF \
+@ECHO off 2>nul & @GOTO WIN \
 2>/dev/null
 #!/bin/bash
 # vim: syn=sh
@@ -664,7 +664,7 @@ esac
 #########################################
 
 exit
-:WINDOOF
+:WIN
 
 REM Pass everything through our wrapper
 docker run --rm -ti --name clx-win-wrapper -v %cd%/:/root -v /var/run/docker.sock:/var/run/docker.sock ubuntu ./cx %*
