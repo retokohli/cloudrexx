@@ -264,11 +264,18 @@ The following commands are available:
     envs        Manages development environments
     env         Manages a development environment
     help        Shows this help
-    debug       Returns the last fatal error
-
-All other commands are routed to the installed Cloudrexx installation (if available)
-
-For more infor about a command type ./cx help <command>"
+    debug       Returns the last fatal error"
+            REGEX="(\S+) - ?(.*)"
+            HELP_LIST="$(phpexec | grep $'^\t')"
+            spacepad="            "
+            while read -r line; do
+                [[ "$line" =~ $REGEX ]]
+                echo "    ${BASH_REMATCH[1]}${spacepad:${#BASH_REMATCH[1]}}${BASH_REMATCH[2]}"
+                #printf "    %5s    %s" "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
+                #echo ""
+            done <<< "$HELP_LIST"
+            echo "
+For more info about a command type ./cx help <command>"
             ;;
     esac
 }
@@ -642,23 +649,24 @@ case "${COMMANDS[0]}" in
         fi
         tac tmp/log/dbg.log | grep -m1 "initialization failed"
         ;;
-    help)
-        # wrapper for "help" command to deliver help for internal commands
-        if [[ " ${INTERNAL_COMMANDS[*]} " = " ${COMMANDS[1]} " ]]; then
-            COMMANDS=("${COMMANDS[@]:1}")
-            cmd_help "${COMMANDS[@]/#/}"
-        else
-            phpexec help "${COMMANDS[1]}"
-        fi
-        ;;
     *)
-        # if system looks installed
-        if [ -f "index.php" ]; then
-            # TODO: add help text if return value indicates a setup problem (db conn., .htaccess, ...)
-            phpexec "$@"
+        if [[ "${COMMANDS[0]}" == "" || "${COMMANDS[0]}" == "help" ]]; then
+            # wrapper for "help" command to deliver help for internal commands
+            if [[ "${COMMANDS[0]}" == "" || " ${INTERNAL_COMMANDS[@]} " =~ " ${COMMANDS[1]} " ]]; then
+                COMMANDS=("${COMMANDS[@]:1}")
+                cmd_help "${COMMANDS[@]/#/}"
+            else
+                phpexec help "${COMMANDS[1]}"
+            fi
         else
-            echo "Cloudrexx does not seem to be installed. Did you already execute the \"env init\" command?"
-            cmd_help "${COMMANDS[1]}"
+            # if system looks installed
+            if [ -f "index.php" ]; then
+                # TODO: add help text if return value indicates a setup problem (db conn., .htaccess, ...)
+                phpexec "$@"
+            else
+                echo "Cloudrexx does not seem to be installed. Did you already execute the \"env init\" command?"
+                cmd_help "${COMMANDS[1]}"
+            fi
         fi
         ;;
 esac
