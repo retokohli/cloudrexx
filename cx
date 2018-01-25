@@ -228,7 +228,7 @@ Synopsis
     ./cx env <subcommand> [<options>]
 
 Available subcommands are:
-    init        (Re-)Initializes the environment:
+    init        (Re-)Initializes the environment
     up          Starts the necessary docker containers
     down        Stops the necessary docker containers
     restart     Restarts the necessary docker containers
