@@ -403,18 +403,19 @@ function cmd_env {
                     return
                 fi
                 TEMP_FILES["db-conf"]=$(mktemp)
-                echo "[client]
-host=${CONFIG["db-host"]}
+                echo "[mysql]
 database=${CONFIG["db-name"]}
+[client]
+host=${CONFIG["db-host"]}
 user=${CONFIG["db-user"]}
 password=${CONFIG["db-pass"]}" > "${TEMP_FILES["db-conf"]}"
                 if [[ ${ARGUMENTS["drop-users"]} != true ]]; then
                     TEMP_FILES["user-backup"]="$(mktemp)"
-                    mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers contrexx_access_users contrexx_access_user_profile > "${TEMP_FILES["user-backup"]}"
-                    mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers -w 'attribute_id=0' contrexx_access_user_attribute_value >> "${TEMP_FILES["user-backup"]}"
+                    mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers ${CONFIG["db-name"]} contrexx_access_users contrexx_access_user_profile > "${TEMP_FILES["user-backup"]}"
+                    mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers -w 'attribute_id=0' ${CONFIG["db-name"]} contrexx_access_user_attribute_value >> "${TEMP_FILES["user-backup"]}"
                     if [[ ${ARGUMENTS["drop-sessions"]} != true ]]; then
                         TEMP_FILES["session-backup"]="$(mktemp)"
-                        mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers contrexx_sessions > "${TEMP_FILES["session-backup"]}"
+                        mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers ${CONFIG["db-name"]} contrexx_sessions > "${TEMP_FILES["session-backup"]}"
                     fi
                 fi
                 # empty database if exists
@@ -425,7 +426,7 @@ SET GROUP_CONCAT_MAX_LEN=32768;
 SET @tables = NULL;
 SELECT GROUP_CONCAT('\`', table_name, '\`') INTO @tables
       FROM information_schema.tables
-        WHERE table_schema = (SELECT DATABASE());
+        WHERE table_schema = (SELECT DATABASE()) AND table_name LIKE '${CONFIG["db-prefix"]}%';
 SELECT IFNULL(@tables,'dummy') INTO @tables;
 
 SET @tables = CONCAT('DROP TABLE IF EXISTS ', @tables);
@@ -435,7 +436,7 @@ DEALLOCATE PREPARE stmt;
 SET @views = NULL;
 SELECT GROUP_CONCAT('\`', TABLE_NAME, '\`') INTO @views
       FROM information_schema.views
-        WHERE table_schema = (SELECT DATABASE());
+        WHERE table_schema = (SELECT DATABASE()) AND table_name LIKE '${CONFIG["db-prefix"]}%';
 SELECT IFNULL(@views,'dummy') INTO @views;
 
 SET @views = CONCAT('DROP VIEW IF EXISTS ', @views);
@@ -520,6 +521,7 @@ function get_config_array {
         ["db-name"]=$(REGEX="DBCONFIG\['database'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
         ["db-user"]=$(REGEX="DBCONFIG\['user'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
         ["db-pass"]=$(REGEX="DBCONFIG\['password'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
+        ["db-prefix"]=$(REGEX="DBCONFIG\['tablePrefix'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
         ["hostname"]=$(REGEX="CONFIG\['domainUrl'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $SETTINGS_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
         ["cms-version"]=$(REGEX="CONFIG\['coreCmsVersion'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $SETTINGS_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
         ["port"]=$(REGEX="CONFIG\['portFrontendHTTP'\]\ +=\ +([0-9]+);"; CFG=$(cat $SETTINGS_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
