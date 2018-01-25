@@ -1575,7 +1575,20 @@ form[name="registrationForm"] .row {
     color: #ffffff;
     border: 0;
 }
-
+#shop input.product-option-upload-text {
+    width: 180px;
+    float: left;
+}
+#shop input.product-option-upload-hidden {
+    display: none;
+}
+#shop input.product-option-upload-button {
+    float: left;
+}
+#shop img.product-option-remove-file {
+    cursor: pointer;
+    padding: 8px 12px;
+}
 /***************************************************/
 /* CSS DEFINITIONS FOR E-CARD MODULE               */
 /***************************************************/
@@ -1754,6 +1767,7 @@ form[name="registrationForm"] .row {
     float: left;
     width: auto;
     background-color: #0A85C8;
+    margin-right: 5px;
 }
 ul#newsTags:hover {
     background: transparent;

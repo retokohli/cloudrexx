@@ -185,7 +185,7 @@ class Resolver {
         } else {
             // if the current URL points to a file:
             if (
-                empty($this->url->getLangDir()) &&
+                empty($this->url->getLangDir(true)) &&
                 preg_match('/^[^?]*\.[a-z0-9]{2,4}$/', $this->url->toString())
             ) {
                 global $url;
@@ -420,15 +420,6 @@ class Resolver {
             $canonicalPage = $this->pageRepo->getTargetPage($this->urlPage);
         }
 
-        // don't set canonical page when replying with an application page
-        // since we can't know which application pages share the same content.
-        // Exception to this rule: if we're not on main domain, we know that
-        // the canonical version is the same page using the main domain.
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $domainRepo = $cx->getDb()->getEntityManager()->getRepository(
-            'Cx\Core\Net\Model\Entity\Domain'
-        );
-
         // set canonical page only in case it hasn't been set already
         $linkHeader = preg_grep('/^Link:.*canonical["\']$/', headers_list());
         if ($linkHeader) {
@@ -438,9 +429,12 @@ class Resolver {
             $this->headers['Link'] = $link;
         }
 
+        // don't set canonical page when replying with an application page
+        // since we can't know which application pages share the same content.
+        // TODO: this should be handled by the affected components themself
         if (
             $canonicalPage->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION &&
-            $this->url->getDomain() == $domainRepo->getMainDomain()->getName()
+            !in_array($canonicalPage->getModule(), array('Home', 'Sitemap', 'Agb', 'Imprint', 'Privacy', 'Ids'))
         ) {
             return $this->page;
         }
@@ -484,9 +478,25 @@ class Resolver {
             throw new ResolverException('Alias found, but it is not active.');
         }
 
-        $langDir = $this->url->getLangDir();
+        $langDir = $this->url->getLangDir(true);
         $frontendLang = defined('FRONTEND_LANG_ID') ? FRONTEND_LANG_ID : null;
-        if (!empty($langDir) && $this->pageRepo->getPagesAtPath($langDir.'/'.$path, null, $frontendLang, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY)) {
+
+        // In case the request does contain a virtual language directory,
+        // we have to ensure that there does not exist a page by the requested path.
+        // Pages do have a higher precidence than aliases, if a virtual language directory
+        // is set.
+        // If the request does not contain a virtual language directory, but
+        // the request does contain a slash (/), then the request does most
+        // likely point to a page, as an alias can not contain a slash
+        // character. In such case, we also have to check if the request might
+        // match an actual page.
+        if (
+            (
+                !empty($langDir) ||
+                strpos($path, '/')
+            ) &&
+            $this->pageRepo->getPagesAtPath($langDir.'/'.$path, null, $frontendLang, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY)
+        ) {
             return null;
         }
 
@@ -504,14 +514,45 @@ class Resolver {
                 if (trim($this->page->getTargetQueryString()) != '') {
                     $params = array_merge($params, explode('&', $this->page->getTargetQueryString()));
                 }
-                $target = \Cx\Core\Routing\Url::fromNodeId($this->page->getTargetNodeId(), $this->page->getTargetLangId(), $params);
+                try {
+                    $target = \Cx\Core\Routing\Url::fromNodeId($this->page->getTargetNodeId(), $this->page->getTargetLangId(), $params);
+                } catch (UrlException $e) {
+                    \DBG::log($e->getMessage());
+                    return null;
+                }
             } else {
                 $target = $this->page->getTarget();
             }
+            // TODO: Cache this redirect. This is not done yet since we would
+            // need to drop the complete page cache (since we don't know which
+            // is the correct cache file for this redirect)
             header('HTTP/1.1 301 Moved Permanently');
             header('Location: ' . $target);
             header('Connection: close');
             exit;
+        }
+
+        // If an alias like /de/alias1 was resolved, redirect to /alias1
+        if (!empty($langDir)) {
+            $correctUrl = \Cx\Core\Routing\Url::fromPage($this->page);
+            // get additinal path parts (like /de/alias1/additional/path)
+            $splitQuery = explode('?', $this->url->getPath(), 2);
+            $pathParts = explode('/', $splitQuery[0]);
+            unset($pathParts[0]);
+            if (count($pathParts)) {
+                $additionalPath = '/' . implode('/', $pathParts);
+                $correctUrl->setPath($correctUrl->getPath() . $additionalPath);
+            }
+            // set query params (like /de/alias1?foo=bar)
+            $correctUrl->setParams($this->url->getParamArray());
+            // 301 redirect
+            // TODO: Cache this redirect. This is not done yet since we would
+            // need to drop the complete page cache (since we don't know which
+            // is the correct cache file for this redirect)
+            header('HTTP/1.1 301 Moved Permanently');
+            header('Location: ' . $correctUrl->toString());
+            header('Connection: close');
+            exit();
         }
         return $this->page;
     }
@@ -550,7 +591,11 @@ class Resolver {
             }
 
             //(I) see what the model has for us
-            $result = $this->pageRepo->getPagesAtPath($this->url->getLangDir().'/'.$path, null, $this->lang, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
+            $langDirPath = '';
+            if (\Cx\Core\Routing\Url::isVirtualLanguageDirsActive()) {
+                $langDirPath = $this->url->getLangDir().'/';
+            }
+            $result = $this->pageRepo->getPagesAtPath($langDirPath . $path, null, $this->lang, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
             if (isset($result['page']) && $result['page'] && $this->pagePreview) {
                 if (empty($this->sessionPage)) {
                     if (\Permission::checkAccess(6, 'static', true)) {
@@ -860,10 +905,17 @@ class Resolver {
             // if this page is protected, we do not follow fallback
             $this->checkPageFrontendProtection($page);
 
-            if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_SYMLINK) {
-                $fallbackPage = $this->pageRepo->getTargetPage($page);
-            } else {
-                $fallbackPage = $this->getFallbackPage($page);
+            try {
+                if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_SYMLINK) {
+                    $fallbackPage = $this->pageRepo->getTargetPage($page);
+                } else {
+                    $fallbackPage = $this->getFallbackPage($page);
+                }
+            } catch (\Exception $e) {
+                \DBG::msg(__METHOD__ . ': '. $e->getMessage());
+                //page not found, redirect to error page.
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Error'));
+                exit;
             }
 
             // due that the fallback is located within a different language
@@ -1015,6 +1067,10 @@ class Resolver {
      * @return array key=>value style array
      */
     public function getHeaders() {
+        $response = \Cx\Core\Core\Controller\Cx::instanciate()->getResponse();
+        if ($response->getExpirationDate()) {
+            $this->headers['Expires'] = $response->getExpirationDate()->format('r');
+        }
         return $this->headers;
     }
 }

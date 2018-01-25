@@ -68,6 +68,7 @@ if(!cx.variables.get('css', 'wysiwyg')) {
 }
 
 CKEDITOR.scriptLoader.load( '<?php echo $cx->getCodeBaseCoreModuleWebPath().'/MediaBrowser/View/Script/MediaBrowserCkeditorPlugin.js'   ?>' );
+CKEDITOR.scriptLoader.load( '<?php echo $cx->getCodeBaseCoreWebPath().'/Wysiwyg/View/Script/ImagePasteCkeditorPlugin.js'; ?>' );
 CKEDITOR.editorConfig = function( config )
 {
     config.skin = 'moono-lisa';
@@ -225,7 +226,7 @@ cx.bind("loadingEnd", function(myArgs) {
                     var config = {
                         customConfig: cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'),
                         toolbar: 'Full',
-                        skin: 'moono-lisa'
+                        removePlugins: 'bbcode'
                     };
                     CKEDITOR.replace('page[content]', config);
                 }

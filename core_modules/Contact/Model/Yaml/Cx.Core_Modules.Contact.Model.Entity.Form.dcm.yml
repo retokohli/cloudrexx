@@ -36,3 +36,6 @@ Cx\Core_Modules\Contact\Model\Entity\Form:
     crmCustomerGroups:
       type: array
       column: crm_customer_groups
+    sendMultipleReply:
+      type: boolean
+      column: send_multiple_reply

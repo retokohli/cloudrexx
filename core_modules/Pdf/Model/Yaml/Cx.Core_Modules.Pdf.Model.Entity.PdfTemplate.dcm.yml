@@ -12,6 +12,10 @@ Cx\Core_Modules\Pdf\Model\Entity\PdfTemplate:
       type: string
       length: 255
       nullable: false
+    fileName:
+      type: string
+      length: 255
+      column: file_name
     htmlContent:
       type: text
       column: html_content

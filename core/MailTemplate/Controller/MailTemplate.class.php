@@ -546,23 +546,9 @@ die("MailTemplate::init(): Empty section!");
     {
         global $_CONFIG; //, $_CORELANG;
 
-        if (!\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php')) {
-\DBG::log("MailTemplate::send(): ERROR: Failed to load phpMailer");
-            return false;
-        }
-        $objMail = new \phpmailer();
-        if (   !empty($_CONFIG['coreSmtpServer'])
-            && \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/SmtpSettings.class.php')) {
-            $arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
-            if ($arrSmtp) {
-                $objMail->IsSMTP();
-                $objMail->SMTPAuth = true;
-                $objMail->Host     = $arrSmtp['hostname'];
-                $objMail->Port     = $arrSmtp['port'];
-                $objMail->Username = $arrSmtp['username'];
-                $objMail->Password = $arrSmtp['password'];
-            }
-        }
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
+
         if (empty($arrField['lang_id'])) {
             $arrField['lang_id'] = FRONTEND_LANG_ID;
         }
@@ -621,14 +607,15 @@ die("MailTemplate::init(): Empty section!");
             if ($strip) self::clearEmptyPlaceholders($value);
         }
         if ($arrTemplate['attach_pdf'] && isset($arrTemplate['pdf_template'])) {
-            $pdf = \Cx\Core\Core\Controller\Cx::instanciate()
-                ->getComponent('Pdf');
-            $pdfAttachment = $pdf->generatePDF(
-                $arrTemplate['pdf_template'],
-                $substitution,
-                $arrTemplate['key'],
-                true
-            );
+            $pdf = $cx->getComponent('Pdf');
+            if ($pdf) {
+                $pdfAttachment = $pdf->generatePDF(
+                    $arrTemplate['pdf_template'],
+                    $substitution,
+                    $arrTemplate['key'],
+                    true
+                );
+            }
         }
 //DBG::log("MailTemplate::send(): Substituted: ".var_export($arrTemplate, true));
 //echo("MailTemplate::send(): Substituted:<br /><pre>".nl2br(htmlentities(var_export($arrTemplate, true), ENT_QUOTES, CONTREXX_CHARSET))."</PRE><hr />");
@@ -651,7 +638,6 @@ die("MailTemplate::init(): Empty section!");
 
         $objMail->SetFrom($arrTemplate['from'], $arrTemplate['sender']);
         $objMail->Subject = $arrTemplate['subject'];
-        $objMail->CharSet = CONTREXX_CHARSET;
 //        $objMail->IsHTML(false);
         if ($arrTemplate['html']) {
             $objMail->IsHTML(true);
@@ -696,25 +682,24 @@ die("MailTemplate::init(): Empty section!");
 //DBG::log("MailTemplate::send(): All Attachments: ".var_export($arrTemplate['attachments'], true));
         foreach ($arrTemplate['attachments'] as $path => $name) {
             if (is_numeric($path)) $path = $name;
-            $objMail->AddAttachment(ASCMS_DOCUMENT_ROOT.'/'.$path, $name);
+            $objMail->AddAttachment($cx->getWebsiteDocumentRootPath().'/'.$path, $name);
         }
         $arrTemplate['inline'] =
             self::attachmentsToArray($arrTemplate['inline']);
         if ($arrTemplate['inline']) $arrTemplate['html'] = true;
         foreach ($arrTemplate['inline'] as $path => $name) {
             if (is_numeric($path)) $path = $name;
-            $objMail->AddEmbeddedImage(ASCMS_DOCUMENT_ROOT.'/'.$path, uniqid(), $name);
+            $objMail->AddEmbeddedImage($cx->getWebsiteDocumentRootPath().'/'.$path, uniqid(), $name);
         }
         if (   isset($arrField['inline'])
             && is_array($arrField['inline'])) {
             $arrTemplate['html'] = true;
             foreach ($arrField['inline'] as $path => $name) {
                 if (is_numeric($path)) $path = $name;
-                $objMail->AddEmbeddedImage(ASCMS_DOCUMENT_ROOT.'/'.$path, uniqid(), $name);
+                $objMail->AddEmbeddedImage($cx->getWebsiteDocumentRootPath().'/'.$path, uniqid(), $name);
             }
         }
 //die("MailTemplate::send(): Attachments and inlines<br />".var_export($objMail, true));
-        $objMail->CharSet = CONTREXX_CHARSET;
         $objMail->IsHTML($arrTemplate['html']);
 //DBG::log("MailTemplate::send(): Sending: ".nl2br(htmlentities(var_export($objMail, true), ENT_QUOTES, CONTREXX_CHARSET))."<br />Sending...<hr />");
         $result = true;

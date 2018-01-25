@@ -68,7 +68,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @param \Cx\Core\Html\Sigma $template Template for current CMD
      * @param array $cmd CMD separated by slashes
      */
-    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd, &$isSingle = false) {
         // this class inherits from Controller, therefore you can get access to
         // Cx like this:
         $this->cx;
@@ -76,7 +76,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
         // instantiate the default View Controller
         $objController = new \Cx\Core\NetManager\Controller\DefaultController($this->getSystemComponentController(), $this->cx);
-        $objController->parsePage($this->template);
+        $objController->parsePage($this->template, array());
 
         \Message::show();
     }
@@ -93,15 +93,17 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             'Cx\Core\Net\Model\Entity\Domain',
         );
     }
+
     /**
      * This function returns the ViewGeneration options for a given entityClass
      *
      * @access protected
      * @global $_ARRAYLANG
      * @param $entityClassName contains the FQCN from entity
+     * @param $dataSetIdentifier if $entityClassName is DataSet, this is used for better partition
      * @return array with options
      */
-    protected function getViewGeneratorOptions($entityClassName) {
+    protected function getViewGeneratorOptions($entityClassName, $dataSetIdentifier = '') {
         global $_ARRAYLANG;
 
         $classNameParts = explode('\\', $entityClassName);

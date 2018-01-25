@@ -73,17 +73,22 @@ class ViewGenerator {
     protected $formGenerator = null;
 
     /**
+     * @var \Cx\Core\Core\Controller\Cx $cx
+     */
+    protected $cx;
+
+    /**
      *
      * @param mixed $object Array, instance of DataSet, instance of EntityBase, object
      * @param array $options component options
      * @throws ViewGeneratorException if there is any error in try catch statement
      */
     public function __construct($object, $options = array()) {
+        $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $this->componentOptions = $options;
         $this->viewId = static::$increment++;
         try {
-            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-            \JS::registerCSS($cx->getCoreFolderName() . '/Html/View/Style/Backend.css');
+            \JS::registerCSS($this->cx->getCoreFolderName() . '/Html/View/Style/Backend.css');
             $entityWithNS = preg_replace('/^\\\/', '', $this->findEntityClass($object));
 
             // this is a temporary "workaround" for combined keys, see todo
@@ -198,7 +203,8 @@ class ViewGenerator {
             return $this->object->getDataType();
         } else {
             if (!is_object($object)) {
-                $entityClassName = $object;
+                // Resolve proxies
+                $entityClassName = \Env::get('em')->getClassMetadata($object)->name;
                 $entityRepository = \Env::get('em')->getRepository($entityClassName);
                 $entities = $entityRepository->findAll();
                 if (empty($entities)) {
@@ -234,8 +240,7 @@ class ViewGenerator {
             $entityData = $_POST;
         }
 
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $em = $cx->getDb()->getEntityManager();
+        $em = $this->cx->getDb()->getEntityManager();
         $primaryKeyName = $entityClassMetadata->getSingleIdentifierFieldName(); //get primary key name
         $entityColumnNames = $entityClassMetadata->getColumnNames(); //get the names of all fields
 
@@ -396,8 +401,7 @@ class ViewGenerator {
             return;
         }
 
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $em = $cx->getDb()->getEntityManager();
+        $em = $this->cx->getDb()->getEntityManager();
         $sortBy = (     isset($this->options['functions']['sortBy'])
                     &&  is_array($this->options['functions']['sortBy'])
                   )
@@ -471,7 +475,7 @@ class ViewGenerator {
         $this->options['functions']['sortBy']['pagingPosition'] = $pagingPosition;
 
         //Register the script Backend.js and activate the jqueryui and cx for the row sorting
-        \JS::registerJS(substr($cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
+        \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
     }
 
     /**
@@ -545,6 +549,10 @@ class ViewGenerator {
             $isSingle = true;
             return $this->renderFormForEntry(null);
         }
+        $template = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath().'/Html/View/Template/Generic');
+        $template->loadTemplateFile('TableView.html');
+        $template->setGlobalVariable($_ARRAYLANG);
+        $template->setGlobalVariable('VG_ID', $this->viewId);
         $renderObject = $this->object;
         $entityId = $this->getEntryId();
 
@@ -557,7 +565,7 @@ class ViewGenerator {
         }
 
         // this case is used for the overview off all entities
-        if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+        if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet && !$isSingle) {
             if(!empty($this->options['order']['overview'])) {
                 $renderObject->sortColumns($this->options['order']['overview']);
             }
@@ -573,26 +581,28 @@ class ViewGenerator {
                 }
                 $addBtn = '<br /><br /><input type="button" name="addEtity" value="'.$_ARRAYLANG['TXT_ADD'].'" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'".'" />';
             }
+            $template->setVariable('ADD_BUTTON', $addBtn);
             if (!count($renderObject) || !count(current($renderObject))) {
                 // make this configurable
-                $tpl = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath().'/Html/View/Template/Generic');
-                $tpl->loadTemplateFile('NoEntries.html');
-                return $tpl->get().$addBtn;
+                $template->parse('no-entries');
+                return $template->get();
             }
 
             // replace foreign key search criteria
-            $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+            $em = $this->cx->getDb()->getEntityManager();
             $searchCriteria = contrexx_input2raw($this->getVgParam($_GET['search']));
             $entityClass = $this->findEntityClass($renderObject);
-            $metaData = $em->getClassMetadata($entityClass);
-            foreach ($metaData->associationMappings as $relationField => $associationMapping) {
-                if (!isset($searchCriteria[$relationField])) {
-                    continue;
+            if ($entityClass !== 'array') {
+                $metaData = $em->getClassMetadata($entityClass);
+                foreach ($metaData->associationMappings as $relationField => $associationMapping) {
+                    if (!isset($searchCriteria[$relationField])) {
+                        continue;
+                    }
+                    $relationClass = $associationMapping['targetEntity'];
+                    $relationRepo = $em->getRepository($relationClass);
+                    $relationEntity = $relationRepo->find($searchCriteria[$relationField]);
+                    $searchCriteria[$relationField] = $relationEntity;
                 }
-                $relationClass = $associationMapping['targetEntity'];
-                $relationRepo = $em->getRepository($relationClass);
-                $relationEntity = $relationRepo->find($searchCriteria[$relationField]);
-                $searchCriteria[$relationField] = $relationEntity;
             }
 
             $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController(
@@ -603,9 +613,103 @@ class ViewGenerator {
             );
             $renderObject = $listingController->getData();
             $this->options['functions']['vg_increment_number'] = $this->viewId;
-            $backendTable = new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
+            $backendTable = new \BackendTable($renderObject, $this->options);
+            $template->setVariable(array(
+                'TABLE' => $backendTable,
+                'PAGING' => $listingController,
+            ));
+            $searching = (
+                isset($this->options['functions']['searching']) &&
+                $this->options['functions']['searching']
+            );
+            $filtering = (
+                isset($this->options['functions']['filtering']) &&
+                $this->options['functions']['filtering']
+            );
+            if ($searching || $filtering) {
+                \JS::registerJS(substr($this->cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
+            }
+            if ($searching) {
+                // If filter is used for extended search,
+                // hide filter and add a toggle link
+                if (
+                    $filtering && (
+                        !isset($this->options['functions']['autoHideFiltering']) ||
+                        $this->options['functions']['autoHideFiltering']
+                    )
+                ) {
+                    $template->touchBlock('showExtendedSearch');
+                    $template->parse('showExtendedSearch');
+                    $template->touchBlock('hideFilter');
+                    $template->parse('hideFilter');
+                }
+                if (!$filtering) {
+                    $template->touchBlock('submitSearch');
+                    $template->hideBlock('buttonSearch');
+                } else {
+                    $template->touchBlock('buttonSearch');
+                    $template->hideBlock('submitSearch');
+                }
+                $template->touchBlock('search');
+                $template->parse('search');
+            }
+            if ($filtering) {
+                // find all filter-able fields
+                $filterableFields = array_keys($renderObject->rewind());
+                foreach ($filterableFields as $field) {
+                    if ($field == 'virtual') {
+                        continue;
+                    }
+                    if (
+                        isset($this->options['fields'][$field]['allowFiltering']) &&
+                        !$this->options['fields'][$field]['allowFiltering']
+                    ) {
+                        continue;
+                    }
+                    // set field ID
+                    $fieldId = 'vg-' . $this->viewId . '-filter-field-' . $field;
+                    $template->setVariable('FIELD_ID', $fieldId);
+                    // set field title
+                    $header = $field;
+                    if (isset($this->options['fields'][$field]['filterHeader'])) {
+                        $header = $this->options['fields'][$field]['filterHeader'];
+                    } else if (isset($this->options['fields'][$field]['header'])) {
+                        $header = $this->options['fields'][$field]['header'];
+                    }
+                    if (isset($_ARRAYLANG[$header])) {
+                        $header = $_ARRAYLANG[$header];
+                    }
+                    $template->setVariable('FIELD_TITLE', $header);
+                    // find options: Default is a text field, for more we need doctrine
+                    $optionsField = '';
+                    if (isset($this->options['fields'][$field]['filterOptionsField'])) {
+                        $optionsField = $this->options['fields'][$field]['filterOptionsField'](
+                            $renderObject,
+                            $field,
+                            $fieldId
+                        );
+                    } else {
+                        // parse options
+                        // TODO: This is quite a simple way of solving this
+                        $optionsField = new \Cx\Core\Html\Model\Entity\DataElement(
+                            $fieldId
+                        );
+                        $optionsField->setAttribute('id', $fieldId);
+                        $optionsField->setAttribute('form', 'vg-' . $this->viewId . '-searchForm');
+                        $optionsField->setAttribute('data-vg-attrgroup', 'search');
+                        $optionsField->setAttribute('data-vg-field', $field);
+                        $optionsField->addClass('vg-encode');
+                    }
+                    // set options
+                    $template->setVariable('FIELD_FILTER_OPTIONS', $optionsField);
+                    // parse block
+                    $template->parse('filter-field');
+                }
+                $template->touchBlock('filter');
+                $template->parse('filter');
+            }
 
-            return $backendTable.$addBtn;
+            return $template->get();
         }
 
         // render form for single entry view like editEntry
@@ -695,8 +799,14 @@ class ViewGenerator {
                         continue;
                     }
 
+                    $classMetadata = \Env::get('em')->getClassMetadata($entityClassWithNS);
+                    // check if the field isn't mapped and is not an associated one
+                    if (!$classMetadata->hasField($name) && !$classMetadata->hasAssociation($name)) {
+                        continue;
+                    }
+
                     $fieldDefinition['type'] = null;
-                    if (!\Env::get('em')->getClassMetadata($entityClassWithNS)->hasAssociation($name)) {
+                    if (!$classMetadata->hasAssociation($name)) {
                         $fieldDefinition = $entityObject->getFieldMapping($name);
                     }
                     $this->options[$name]['type'] = $fieldDefinition['type'];
@@ -794,8 +904,7 @@ class ViewGenerator {
     protected function saveEntry($entityWithNS) {
         global $_ARRAYLANG;
 
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $em = $cx->getDb()->getEntityManager();
+        $em = $this->cx->getDb()->getEntityManager();
         // if entityId is a number the user edited an existing entry. If it is null we create a new one
         $entityId = contrexx_input2raw($this->getEntryId());
         $this->renderFormForEntry($entityId);
@@ -952,7 +1061,7 @@ class ViewGenerator {
             \Message::add($successMessage);
         }
         // get the proper action url and redirect the user
-        $actionUrl = clone $cx->getRequest()->getUrl();
+        $actionUrl = clone $this->cx->getRequest()->getUrl();
         $actionUrl->setParam($param, null);
         \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
     }
@@ -970,8 +1079,7 @@ class ViewGenerator {
     protected function removeEntry($entityWithNS) {
         global $_ARRAYLANG;
 
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $em = $cx->getDb()->getEntityManager();
+        $em = $this->cx->getDb()->getEntityManager();
         $deleteId = !empty($_GET['deleteid']) ? contrexx_input2raw($_GET['deleteid']) : '';
         $entityObject = $this->object->getEntry($deleteId);
         if (empty($entityObject)) {
@@ -1011,7 +1119,7 @@ class ViewGenerator {
                 \Message::add($_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL']);
             }
         }
-        $actionUrl = clone $cx->getRequest()->getUrl();
+        $actionUrl = clone $this->cx->getRequest()->getUrl();
         $actionUrl->setParam('deleteid', null);
         \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
     }

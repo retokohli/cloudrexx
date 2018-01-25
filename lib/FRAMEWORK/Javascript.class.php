@@ -221,11 +221,19 @@ cx.jQuery(document).ready(function(){
             ),
             'dependencies' => array('jquery'),
         ),
-        'jquery-cookie' => array(
+        'js-cookie' => array(
             'jsfiles'       => array(
-                'lib/javascript/jquery/cookie/jquery.cookie.js',
+                'lib/javascript/js-cookie.min.js',
             ),
-            'dependencies' => array('jquery'),
+        ),
+        'jquery-nstslider' => array(
+            'jsfiles' => array(
+                'lib/javascript/jquery/plugins/nstSlider/jquery.nstSlider.min.js',
+            ),
+            'cssfiles' => array(
+                'lib/javascript/jquery/plugins/nstSlider/jquery.nstSlider.min.css',
+            ),
+            'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*|1\.6\.[^0-3])$'), // jquery needs to be version 1.9.0 or higher
         ),
         // Required by HTML::getDatepicker() (modules/shop)!
         // (Though other versions will do just as well)
@@ -311,7 +319,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'lib/javascript/jquery/jstree/jquery.jstree.js',
                 'lib/javascript/jquery/hotkeys/jquery.hotkeys.js',
             ),
-            'dependencies' => array('jquery', 'jquery-cookie'),
+            'dependencies' => array('jquery', 'js-cookie'),
         ),
         'ace' => array(
             'jsfiles'  => array(
@@ -1099,7 +1107,11 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      */
     private static function grabComments(&$content)
     {
+        // filter HTML-comments
         $content = preg_replace_callback('#<!--.*?-->#ms', array('JS', '_storeComment'), $content);
+
+        // filter esi-includes
+        $content = preg_replace_callback('#<esi:include src="([^"]+)" onerror="continue"/>#', array('JS', '_storeComment'), $content);
     }
 
 
