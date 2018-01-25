@@ -384,9 +384,9 @@ class Wysiwyg extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Set a list of plugins (as array) that shall be deactivated
+     * Set a list of plugins that shall be deactivated
      *
-     * @param array $removePlugins List of plugins to be deactivated
+     * @param array $removePlugins List of plugin names
      */
     public function setRemovePlugins($removePlugins)
     {
@@ -396,7 +396,7 @@ class Wysiwyg extends \Cx\Model\Base\EntityBase
     /**
      * Fetch the list of deactivated plugins
      *
-     * @return array
+     * @return array List of plugin names
      */
     public function getRemovePlugins()
     {
