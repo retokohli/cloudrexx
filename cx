@@ -1,2 +1,710 @@
 #!/bin/bash
-php index.php $@
+@ECHO off 2>nul & @GOTO WIN \
+2>/dev/null
+#!/bin/bash
+# vim: syn=sh
+
+# current command, sub-command, sub-sub-command, etc.:
+COMMANDS=()
+# list of arguments, including default values
+declare -A ARGUMENTS
+# list of arguments set by user:
+declare -A FORCED_ARGUMENTS
+# list of default environment configs:
+declare -A DEFAULT_CONFIG
+# this env's config:
+declare -A CONFIG
+# list of commands which are handled completely within this script:
+INTERNAL_COMMANDS=("envs" "env" "debug")
+# temp files:
+declare -A TEMP_FILES
+trap clean_temp_files EXIT
+function clean_temp_files {
+    for tempfile in "${!TEMP_FILES[@]}"; do
+        rm -f "${TEMP_FILES[$tempfile]}"
+    done
+}
+
+#######################
+# Input param cleanup #
+#######################
+
+# default values
+DEFAULT_CONFIG=(
+    ["port"]=80
+    ["hostname"]=""
+    ["php-version"]=""
+    ["db-image"]="mariadb:latest"
+    ["php-image"]="cloudrexx/web:PHP<phpversion>-with-mysql"
+    ["db-name"]=""
+    ["db-pass"]=""
+    ["db-user"]=""
+    ["db-host"]=""
+)
+ARGUMENTS=(
+    ["port"]=80
+    ["php-image"]="cloudrexx/web:PHP<phpversion>-with-mysql"
+    ["db-image"]="mariadb:latest"
+    ["source-repo"]="git@github.com:Cloudrexx/cloudrexx.git"
+    ["source-branch"]="master"
+    ["scripts-repo"]="git@github.com:Cloudrexx/scripts.git"
+    ["scripts-branch"]="master"
+)
+
+# iterate over all arguments to separate commands and arguments
+for arg in "$@"
+do
+    if [[ "$arg" == --* ]]; then
+        arg="${arg:2:${#arg}-2}"
+        if [[ "$arg" = --*=* ]]; then
+            IFS='='; read -r key value <<< "$arg"
+            ARGUMENTS[$key]=$value
+            FORCED_ARGUMENTS[$key]=$value
+        else
+            ARGUMENTS[$arg]=true
+        fi
+    else
+        COMMANDS+=("$arg")
+    fi
+done
+
+##################
+# "help" command #
+##################
+function cmd_help {
+    case "$1" in
+        envs)
+            case "$2" in
+                init)
+                    # TODO: Add help text
+                    ;;
+                up)
+                    # TODO: Add help text
+                    ;;
+                down)
+                    # TODO: Add help text
+                    ;;
+                restart)
+                    # TODO: Add help text
+                    ;;
+                status)
+                    # TODO: Add help text
+                    ;;
+                info)
+                    # TODO: Add help text
+                    ;;
+                update)
+                    # TODO: Add help text
+                    ;;
+                *)
+                    echo "This command manages the environment for multiple Cloudrexx installations on one host
+
+Synopsis
+    ./cx envs <subcommand> [<options>]
+
+Available subcommands are:
+    init        Initializes the docker containers (only needs to be called once per host).
+    up          Starts the docker containers.
+    down        Stops the docker containers.
+    restart     Restarts the docker containers.
+    status      Tells whether the containers are running.
+    info        Alias for 'status'.
+    update      Pulls the newest version of the containers.
+
+For more info about a subcommand type ./cx help envs <subcommand>";
+                    ;;
+            esac
+            ;;
+        env)
+            case "$2" in
+                init)
+                    echo "This command (re-)initializes a Cloudrexx installation and its environment.
+
+Basically it does the following:
+    - Checks out main source repository
+    - Checks out helper scripts repository
+    - Generates docker configuration (docker-compose.yml)
+    - Starts necessary docker containers
+    - Loads database
+
+Synopsis
+    ./cx env init [<options>]
+
+Available options are:
+    --yes                           Answer all questions with yes. Use with care!
+    --silent                        Do not output non-necessary messages
+    --scale=<int>                   Sets the number of PHP-Containers to spawn. Useful for testing.
+    --skip-source                   Skips GIT clone for source code repository
+    --source-repo=<repoUrl>         GIT-URL for the source code repository. Default is https://github.com/Cloudrexx/cloudrexx
+    --source-branch=<branchName>    GIT branch to check out of the source code repository. Default is master.
+    --skip-scripts                  Skips GIT clone for scripts repository
+    --scripts-dir=<dir>             Locale directory to use as scripts directory instead of cloning from GIT repository
+    --scripts-repo=<repoUrl>        GIT-URL for the scripts repository. Default is https://github.com/Cloudrexx/scripts
+    --scripts-branch=<branchName>   GIT branch to check out of the scripts repository. Default is master.
+
+In addition all options of ./cx env config can be used, see ./cx help env config."
+                    ;;
+                up)
+                    echo "This command starts the environment for your installation.
+
+Synopsis
+    ./cx env up"
+                    ;;
+                down)
+                    echo "This command stops the environment for your installation.
+
+Synopsis
+    ./cx env down"
+                    ;;
+                restart)
+                    echo "This command restarts the environment for your installation.
+
+Synopsis
+    ./cx env restart"
+                    ;;
+                status)
+                    echo "This command shows if the environment for your installation is up and running.
+
+Synopsis
+    ./cx env status"
+                    ;;
+                info)
+                    echo "This command shows the status and configuration of the environment for your installation.
+
+Synopsis
+    ./cx env info"
+                    ;;
+                update)
+                    echo "This command updates your installation.
+
+Synopsis
+    ./cx env update [<options>]
+
+Available options are:
+    --yes               Answer all questions with yes. Use with care!
+    --silent            Do not output non-necessary messages
+    --db                If set without setting --git only database is updated, implies --force
+    --git               If set without setting --db only GIT is updated
+    --force             Forces reset of the database even if dump has not changed
+    --reset             Resets local GIT clone to origin's state
+    --drop-sessions     Skips restoring user sessions
+    --drop-users        Skips restoring users, implies --drop-sessions"
+                    ;;
+                config)
+                    echo "This command configures your installation.
+
+Default behavior:
+    - If configuration does not yet exist, use default values (or arguments, if set)
+    - If configuration exists, only change values in arguments
+The option --interactive forces the command to ask for each value
+
+Synopsis
+    ./cx env config [<options>]
+
+Available options are:
+    --yes                           Answer all questions with yes / default. Use with care!
+    --silent                        Do not output non-necessary messages
+    --interactive                   Ask for each value instead of using default behavior
+    --db-host=<hostname>            Sets database host to <hostname>
+    --db-name=<dbname>              Sets database name to <dbname>
+    --db-user=<username>            Sets database user to <username>
+    --db-pass=<password>            Sets database password to <password>
+    --php-image=<dockerImageName>   Name of the docker image to use. Default is 'cloudrexx/web:PHP<php_version>-with-mysql'.
+    --db-image=<dockerImageName>    Name of the docker image to use. Default is 'mariadb'.
+    --php-version=<phpversion>      Sets PHP version to <phpversion> (example: 7.2), default is based on Cloudrexx version
+    --hostname=<hostname>           Sets installation hostname to <hostname>, defaults to parent directory name
+    --port=<port>                   Sets installation port to <port>, defaults to 80"
+                    ;;
+                shell)
+                    echo "This command opens an interactive shell of the PHP docker container for this environment.
+
+Synopsis
+    ./cx env info"
+                    ;;
+                *)
+                    echo "This command manages a Cloudrexx installation and its environment.
+
+Synopsis
+    ./cx env <subcommand> [<options>]
+
+Available subcommands are:
+    init        (Re-)Initializes the environment
+    up          Starts the necessary docker containers
+    down        Stops the necessary docker containers
+    restart     Restarts the necessary docker containers
+    status      Checks if all necessary docker containers are running
+    info        Calls 'status' and prints environment information
+    update      Updates docker images and GIT and reloads database
+    config      Configures Cloudrexx (config/configuration.php)
+
+For more info about a subcommand type ./cx help env <subcommand>";
+                    ;;
+            esac
+            ;;
+        help)
+            echo "Shows this help"
+            ;;
+        debug)
+            echo "Shows debug output. By default it outputs the last fatal error.
+
+Synopsis
+    ./cx debug [<options>]
+
+Available options are:
+    --web       Shows the log of the web docker container (Apache)
+    --request   Shows the log of the last request"
+            ;;
+        *)
+            echo "Executes commands for Cloudrexx installations.
+
+Synopsis
+    ./cx <command> [<subcommand> [...]] [<cmd_options>] [<cmd_arguments>]
+
+The following commands are available:
+    envs        Manages development environments
+    env         Manages a development environment
+    help        Shows this help
+    debug       Returns the last fatal error"
+            REGEX="(\S+) - ?(.*)"
+            HELP_LIST="$(phpexec | grep $'^\t')"
+            spacepad="            "
+            while read -r line; do
+                [[ "$line" =~ $REGEX ]]
+                echo "    ${BASH_REMATCH[1]}${spacepad:${#BASH_REMATCH[1]}}${BASH_REMATCH[2]}"
+                #printf "    %5s    %s" "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
+                #echo ""
+            done <<< "$HELP_LIST"
+            echo "
+For more info about a command type ./cx help <command>"
+            ;;
+    esac
+}
+
+##################
+# "envs" command #
+##################
+function cmd_envs {
+    case "$1" in
+        init)
+            # TODO: Add code
+            ;;
+        up)
+            # TODO: Add code
+            ;;
+        down)
+            # TODO: Add code
+            ;;
+        restart)
+            # TODO: Add code
+            ;;
+        status)
+            # TODO: Add code
+            ;;
+        info)
+            # TODO: Add code
+            ;;
+        update)
+            # TODO: Add code
+            ;;
+        *)
+            (>&2 echo "No such subcommand")
+            ;;
+    esac
+}
+
+#################
+# "env" command #
+#################
+function cmd_env {
+    case "$1" in
+        init)
+            if [[ ${ARGUMENTS["yes"]} != true ]]; then
+                echo "This will install Cloudrexx in the current directory ($(pwd))"
+                read -p "Continue [Yn]? " -n 1 -r
+                if ! [[ "$REPLY" =~ ^[Yy]$ ]]; then
+                    return
+                fi
+            fi
+            if [[ ${ARGUMENTS["skip-source"]} != true || ${ARGUMENTS["skip-scripts"]} != true && ${ARGUMENTS["silent"]} != true ]]; then
+                echo "Checking out source and scripts repository"
+            fi
+            if [[ ${ARGUMENTS["skip-source"]} != true ]]; then
+                git clone ${ARGUMENTS["source-repo"]} --branch=${ARGUMENTS["source-branch"]} .
+                # assume ./tmp/* and ./config/* are unchanged
+                git ls-files -z tmp/ | xargs -0 git update-index --assume-unchanged
+                git ls-files -z config/ | xargs -0 git update-index --assume-unchanged
+            fi
+            if [[ ${ARGUMENTS["skip-scripts"]} != true ]]; then
+                if [[ ${ARGUMENTS["scripts-dir"]} != "" ]]; then
+                    ln -s ${ARGUMENTS["scripts-dir"]} "_meta"
+                else
+                    git clone ${ARGUMENTS["scripts-repo"]} --branch=${ARGUMENTS["scripts-branch"]} _meta
+                fi
+            fi
+            if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                echo "Configuring the environment"
+            fi
+            if [[ ${ARGUMENTS["yes"]} != true ]]; then
+                ARGUMENTS["interactive"]=true
+            fi
+            cmd_env config
+            if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                echo "Loading docker containers"
+            fi
+            cmd_env up
+            if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                echo "Loading database"
+            fi
+            ARGUMENTS["db"]=true && cmd_env update
+            dockerexec exec "<env-name>_web_1" chown -R www-data: ./
+            if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                echo "Environment successfully initialized, you should be able to reach Cloudrexx at http://${ARGUMENTS["hostname"]}.lvh.me/"
+            fi
+            ;;
+        up)
+            dockercomposeexec up -d
+            ;;
+        down)
+            dockercomposeexec down
+            ;;
+        restart)
+            cmd_env down
+            cmd_env up
+            ;;
+        status)
+            dockercomposeexec ps
+            ;;
+        info)
+            cmd_env status
+            ARGUMENTS["show"]=true && cmd_env config
+            ;;
+        update)
+            # TODO: Update docker containers
+            STRUCTMD5=$(/usr/bin/md5sum installer/data/contrexx_dump_structure.sql)
+            DATAMD5=$(/usr/bin/md5sum installer/data/contrexx_dump_data.sql)
+            get_config_array
+            if [[ ${ARGUMENTS["db"]} != true || ${ARGUMENTS["git"]} = true ]]; then
+                if [[ ${ARGUMENTS["reset"]} == true ]]; then
+                    if [[ ${ARGUMENTS["yes"]} != true ]]; then
+                        echo "This will remove all local changes. Are you sure?"
+                        read -p "Continue [Ny]? " -n 1 -r
+                        if ! [[ "$REPLY" =~ ^[Yy]$ ]]; then
+                            return
+                        fi
+                    fi
+                    git fetch
+                    git reset --hard
+                    git clean -ffdx
+                    set_config_array
+                else
+                    git stash
+                    git pull
+                    git stash pop
+                fi
+                STRUCTMD5NEW=$(/usr/bin/md5sum installer/data/contrexx_dump_structure.sql)
+                DATAMD5NEW=$(/usr/bin/md5sum installer/data/contrexx_dump_data.sql)
+            fi
+            if [[ "$STRUCTMD5NEW" != "$STRUCTMD5" || "$DATAMD5NEW" != "$DATAMD5" ]]; then
+                DB_UPDATE_NECESSARY=true
+            else
+                DB_UPDATE_NECESSARY=false
+            fi
+            if [[ ${ARGUMENTS["git"]} = true && ${ARGUMENTS["db"]} != true ]]; then
+                if [[ $DB_UPDATE_NECESSARY = true && ${ARGUMENTS["silent"]} != true ]]; then
+                    echo "DB update would be necessary, you may want to run ./cx env update --db"
+                fi
+                return
+            fi
+            if [[ ${ARGUMENTS["force"]} != true && $DB_UPDATE_NECESSARY != true && ${ARGUMENTS["silent"]} != true ]]; then
+                echo "DB update not necessary, run ./cx env update --db --force to force db reload"
+                return
+            fi
+            TEMP_FILES["db-conf"]=$(mktemp)
+            echo "[mysql]
+database=${CONFIG["db-name"]}
+[client]
+host=${CONFIG["db-host"]}
+user=${CONFIG["db-user"]}
+password=${CONFIG["db-pass"]}" > "${TEMP_FILES["db-conf"]}"
+            if [[ ${ARGUMENTS["drop-users"]} != true ]]; then
+                TEMP_FILES["user-backup"]="$(mktemp)"
+                mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers "${CONFIG["db-name"]}" contrexx_access_users contrexx_access_user_profile > "${TEMP_FILES["user-backup"]}"
+                mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers -w 'attribute_id=0' "${CONFIG["db-name"]}" contrexx_access_user_attribute_value >> "${TEMP_FILES["user-backup"]}"
+                if [[ ${ARGUMENTS["drop-sessions"]} != true ]]; then
+                    TEMP_FILES["session-backup"]="$(mktemp)"
+                    mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers "${CONFIG["db-name"]}" contrexx_sessions > "${TEMP_FILES["session-backup"]}"
+                fi
+            fi
+            # empty database if exists
+# from https://stackoverflow.com/questions/12403662/how-to-remove-all-mysql-tables-from-the-command-line-without-drop-database-permi
+            mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A -e "
+SET FOREIGN_KEY_CHECKS = 0;
+SET GROUP_CONCAT_MAX_LEN=32768;
+SET @tables = NULL;
+SELECT GROUP_CONCAT('\`', table_name, '\`') INTO @tables
+      FROM information_schema.tables
+        WHERE table_schema = (SELECT DATABASE()) AND table_name LIKE '${CONFIG["db-prefix"]}%';
+SELECT IFNULL(@tables,'dummy') INTO @tables;
+
+SET @tables = CONCAT('DROP TABLE IF EXISTS ', @tables);
+PREPARE stmt FROM @tables;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+SET @views = NULL;
+SELECT GROUP_CONCAT('\`', TABLE_NAME, '\`') INTO @views
+      FROM information_schema.views
+        WHERE table_schema = (SELECT DATABASE()) AND table_name LIKE '${CONFIG["db-prefix"]}%';
+SELECT IFNULL(@views,'dummy') INTO @views;
+
+SET @views = CONCAT('DROP VIEW IF EXISTS ', @views);
+PREPARE stmt FROM @views;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+SET FOREIGN_KEY_CHECKS = 1;"
+            # create db if it does not exist
+            mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A -e "CREATE DATABASE IF NOT EXISTS ${CONFIG["db-name"]} COLLATE utf8_unicode_ci"
+            # load db
+            mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < installer/data/contrexx_dump_structure.sql
+            mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < installer/data/contrexx_dump_data.sql
+            if [[ ${ARGUMENTS["drop-users"]} != true ]]; then
+                mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < "${TEMP_FILES["user-backup"]}"
+                if [[ ${ARGUMENTS["drop-sessions"]} != true ]]; then
+                    mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < "${TEMP_FILES["session-backup"]}"
+                fi
+            fi
+            EXISTING_CX_USER=$(mysql --defaults-file="${TEMP_FILES["db-conf"]}" -e "SELECT id FROM contrexx_access_users WHERE id = 1")
+            if [[ "$EXISTING_CX_USER" == "" ]]; then
+                if [[ ${ARGUMENTS["yes"]} != true ]]; then
+                    echo "There is no user, will create a default user. Ok?"
+                    read -p "Continue [Yn]? " -n 1 -r
+                    if [[ "$REPLY" =~ ^[Nn]$ ]]; then
+                        return
+                    fi
+                fi
+                # there is no user and we decided to create one
+                ClxUser="system"
+                ClxMail="noreply@contrexx.com"
+                ClxPass="123456"
+                mysql --defaults-file="${TEMP_FILES["db-conf"]}" "${CONFIG["db-name"]}" -e "INSERT INTO contrexx_access_users (id, is_admin, username, password, regdate, expiration, validity, last_auth, last_activity, email, email_access, frontend_lang_id, backend_lang_id, active, profile_access, restore_key, restore_key_time, u2u_active, auth_token) VALUES (1,1,'${ClxUser}',MD5('${ClxPass}'),0,0,0,0,0,'${ClxMail}','nobody', 0,0,1,'members_only','',0,'0', '');INSERT INTO contrexx_access_user_profile (user_id, gender, title, firstname, lastname, company, address, city, zip, country, phone_office, phone_private, phone_mobile, phone_fax, birthday, website, profession, interests, signature, picture) VALUES (1,'gender_undefined',2,'CMS','System Benutzer','','','','',0,'','','','','','','','','','');INSERT INTO contrexx_access_user_attribute_value (attribute_id, user_id, history_id, value) VALUES (0,1,0,'');"
+            fi
+            ;;
+        config)
+            if [[ ${ARGUMENTS["show"]} = true ]]; then
+                echo -e "Key\t\tValue"
+                echo "========================"
+                get_config_array
+                for value in "${!CONFIG[@]}"; do
+                    echo -e "$value\t\t${CONFIG[$value]}"
+                done
+                return
+            fi
+            get_config_array
+            if [ ${#CONFIG[@]} -eq 0 ]; then
+                # load config, if its empty: load default config over it
+                for value in "${!ARGUMENTS[@]}"; do
+                    CONFIG_OVERRIDE[$value]=${ARGUMENTS[$value]}
+                done
+            else
+                # else only load forced arguments over it
+                for value in "${!FORCED_ARGUMENTS[@]}"; do
+                    CONFIG_OVERRIDE[$value]=${FORCED_ARGUMENTS[$value]}
+                done
+            fi
+            # loop over CONFIG_OVERRIDE and override all 
+            for value in "${!CONFIG_OVERRIDE[@]}"; do
+                CONFIG[$value]=${CONFIG_OVERRIDE[$value]}
+            done
+            # if interactive: loop over all options and let the user decide
+            if [[ ${ARGUMENTS["interactive"]} = true ]]; then
+                # TODO: Only ask if argument is not in forced arguments
+                for value in "${!DEFAULT_CONFIG[@]}"; do
+                    read -r -p "Enter value for '$value' [${CONFIG[$value]}]: " newvalue
+                    if [[ "$newvalue" != "" ]]; then
+                        CONFIG[$value]=$newvalue
+                    fi
+                done
+            fi
+            set_config_array
+            ;;
+        shell)
+            dockerexec exec -ti "<env-name>_web_1" bash
+            ;;
+        *)
+            (>&2 echo "No such subcommand")
+            ;;
+    esac
+}
+
+function get_config_array {
+    local CONFIG_FILE="config/configuration.php"
+    local SETTINGS_FILE="config/settings.php"
+    local COMPOSE_FILE="docker-compose.yml"
+    if ! [[ -f $CONFIG_FILE ]] || ! [[ -f $SETTINGS_FILE ]] || ! [[ -f $COMPOSE_FILE ]]; then
+        CONFIG=()
+        return
+    fi
+    CONFIG=(
+        ["db-host"]=$(REGEX="DBCONFIG\['host'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
+        ["db-name"]=$(REGEX="DBCONFIG\['database'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
+        ["db-user"]=$(REGEX="DBCONFIG\['user'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
+        ["db-pass"]=$(REGEX="DBCONFIG\['password'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
+        ["db-prefix"]=$(REGEX="DBCONFIG\['tablePrefix'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
+        ["hostname"]=$(REGEX="CONFIG\['domainUrl'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $SETTINGS_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
+        ["cms-version"]=$(REGEX="CONFIG\['coreCmsVersion'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $SETTINGS_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
+        ["port"]=$(REGEX="CONFIG\['portFrontendHTTP'\]\ +=\ +([0-9]+);"; CFG=$(cat $SETTINGS_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
+        ["php-version"]=""
+        ["php-image"]=""
+        ["db-image"]=""
+    )
+
+    if [ -f "docker-compose.yml" ];then
+        CONFIG["db-image"]=$(REGEX="db:\s*image: \"([^\"]+)\""; CFG=$(cat $COMPOSE_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
+        CONFIG["php-image"]=$(REGEX="web:\s*image: \"([^\"]+)\""; CFG=$(cat $COMPOSE_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
+        CONFIG["php-version"]=$(REGEX="([0-9]+\.[0-9]+)"; [[ "${CONFIG["php-image"]}" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
+        if [[ "${CONFIG["php-version"]}" != "" ]]; then
+            CONFIG["php-image"]=${CONFIG[php-image]//"${CONFIG["php-version"]}"/"<php-version>"}
+        fi
+    fi
+    if [[ "${CONFIG["php-version"]}" == "" ]]; then
+        CONFIG["php-version"]="5.6"
+        if [[ "${CONFIG["cms-version"]:0:1}" -ge 5 ]]; then
+            CONFIG["php-version"]="7.0"
+        fi
+    fi
+    if [[ "${CONFIG["php-image"]}" == "" ]]; then
+        CONFIG["php-image"]=${DEFAULT_CONFIG["php-image"]}
+    fi
+    if [[ "${CONFIG["db-image"]}" == "" ]]; then
+        CONFIG["db-image"]=${DEFAULT_CONFIG["db-image"]}
+    fi
+}
+
+function set_config_array {
+    # load config file
+    FILE_CONTENTS=$(cat config/configuration.php)
+    # replace db-host, db-name, db-user, db-pass
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((DBCONFIG\['host'\]\ +=\ +['\"])[^'\"]*(['\"];))" "${CONFIG["db-host"]}")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((DBCONFIG\['database'\]\ +=\ +['\"])[^'\"]*(['\"];))" "${CONFIG["db-name"]}")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((DBCONFIG\['user'\]\ +=\ +['\"])[^'\"]*(['\"];))" "${CONFIG["db-user"]}")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((DBCONFIG\['password'\]\ +=\ +['\"])[^'\"]*(['\"];))" "${CONFIG["db-pass"]}")
+    # save config file
+    echo "$FILE_CONTENTS" > config/configuration.php
+
+    # load settings
+    FILE_CONTENTS=$(cat config/settings.php)
+    # replace hostname, port
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['port'\]\ +=\ +)[0-9]+(;))" "${CONFIG["port"]}")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['domainUrl'\]\ +=\ +['\"])[^'\"]*(['\"];))" "${CONFIG["hostname"]}")
+    # save settings
+    echo "$FILE_CONTENTS" > config/settings.php
+
+    # load _meta/docker-compose.yml
+    FILE_CONTENTS=$(cat _meta/docker-compose.yml)
+    # replace php-image with php-version internally
+    PHP_IMAGE=${CONFIG["php-image"]}
+    PHP_IMAGE=${PHP_IMAGE//"<php-version>"/${CONFIG["php-version"]}}
+    # replace hostname, php- and db-image
+    FILE_CONTENTS=${FILE_CONTENTS//"<hostname>"/${CONFIG["hostname"]}}
+    FILE_CONTENTS=${FILE_CONTENTS//"<php-image>"/$PHP_IMAGE}
+    FILE_CONTENTS=${FILE_CONTENTS//"<db-image>"/${CONFIG["db-image"]}}
+    FILE_CONTENTS=${FILE_CONTENTS//"<port>"/${CONFIG["port"]}}
+    # save docker-compose.yml
+    echo "$FILE_CONTENTS" > docker-compose.yml
+}
+
+# regex_replace <haystack> <regex> <replacement>
+# regex match 1 needs to be whole match
+# regex match 2 needs to be everything before replaced part
+# regex match 3 needs to be everything after replaced part
+function regex_replace {
+    local HAYSTACK="$1"
+    local REGEX="$2"
+    local REPLACEMENT="$3"
+    [[ "$HAYSTACK" =~ $REGEX ]]
+    REPLACE="${BASH_REMATCH[2]}${REPLACEMENT}${BASH_REMATCH[3]}"
+    HAYSTACK="${HAYSTACK//"${BASH_REMATCH[0]}"/"$REPLACE"}"
+    echo "$HAYSTACK"
+}
+
+#####################
+# Wrapper functions #
+#####################
+function phpexec {
+    # TODO: Check if we should run async
+    if type docker >/dev/null 2>&1; then
+        dockerexec exec "<env-name>_web_1" php index.php "$@"
+    else
+        php index.php "$@"
+    fi
+}
+
+function dockerexec {
+    get_config_array
+    local ENV_NAME="${CONFIG[hostname]//"."/}"
+    local ARGS=()
+    for index in "$@"; do
+        ARGS+=(${index//"<env-name>"/"$ENV_NAME"})
+    done
+    docker "${ARGS[@]}"
+}
+
+function dockercomposeexec {
+    get_config_array
+    docker-compose --project-name "${CONFIG["hostname"]}" "$@"
+}
+
+#####################
+# Decide what to do #
+#####################
+
+case "${COMMANDS[0]}" in
+    envs)
+        COMMANDS=("${COMMANDS[@]:1}")
+        cmd_envs "${COMMANDS[@]/#/}"
+        ;;
+    env)
+        COMMANDS=("${COMMANDS[@]:1}")
+        cmd_env "${COMMANDS[@]/#/}"
+        ;;
+    debug)
+        if [[ ${ARGUMENTS["web"]} == true ]]; then
+            dockerexec logs -f "<env-name>_web_1"
+            exit
+        elif [[ ${ARGUMENTS["request"]} ]]; then
+            grep "$(tail -n1 tmp/log/dbg.log | grep -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log
+            exit
+        fi
+        tac tmp/log/dbg.log | grep -m1 "initialization failed"
+        ;;
+    *)
+        if [[ "${COMMANDS[0]}" == "" || "${COMMANDS[0]}" == "help" ]]; then
+            # wrapper for "help" command to deliver help for internal commands
+            if [[ "${COMMANDS[1]}" == "" || " ${INTERNAL_COMMANDS[*]} " =~ " ${COMMANDS[1]} " ]]; then
+                COMMANDS=("${COMMANDS[@]:1}")
+                cmd_help "${COMMANDS[@]/#/}"
+            else
+                shift
+                phpexec help "$@"
+            fi
+        else
+            # if system looks installed
+            if [ -f "index.php" ]; then
+                # TODO: add help text if return value indicates a setup problem (db conn., .htaccess, ...)
+                phpexec "$@"
+            else
+                echo "Cloudrexx does not seem to be installed. Did you already execute the \"env init\" command?"
+                cmd_help "${COMMANDS[1]}"
+            fi
+        fi
+        ;;
+esac
+
+#########################################
+# End of nice part, lesser systems next #
+#########################################
+
+exit
+:WIN
+
+REM Pass everything through our wrapper
+docker run --rm -ti --name clx-win-wrapper -v %cd%/:/root -v /var/run/docker.sock:/var/run/docker.sock ubuntu ./cx %*
