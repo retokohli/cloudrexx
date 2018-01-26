@@ -296,20 +296,20 @@ For more info about a command type ./cx help <command>"
 function cmd_envs {
     case "$1" in
         up)
-            dockerexec run --rm --name "clx-envs-proxy" -d -p "${ARGUMENTS["port"]}:80" -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
+            dockerexec run --rm --name "<proxy-container>" -d -p "${ARGUMENTS["port"]}:80" -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
             ;;
         down)
-            dockerexec stop "clx-envs-proxy"
+            dockerexec stop "<proxy-container>"
             ;;
         restart)
             cmd_envs down
             cmd_envs up
             ;;
         status)
-            dockerexec ps -f "name=clx-envs-proxy"
+            dockerexec ps -f "name=<proxy-container>"
             ;;
         info)
-            dockerexec ps -f "name=clx-env*"
+            dockerexec ps -f "name=<container-prefix>*"
             ;;
         *)
             (>&2 echo "No such subcommand")
@@ -361,7 +361,7 @@ function cmd_env {
                 echo "Loading database"
             fi
             ARGUMENTS["db"]=true && cmd_env update
-            dockerexec exec "<env-name>_web_1" chown -R www-data: ./
+            dockerexec exec "<web-container>" chown -R www-data: ./
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 echo "Environment successfully initialized, you should be able to reach Cloudrexx at http://${ARGUMENTS["hostname"]}.lvh.me/"
             fi
@@ -534,7 +534,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
             set_config_array
             ;;
         shell)
-            dockerexec exec -ti "<env-name>_web_1" bash
+            dockerexec exec -ti "<web-container>" bash
             ;;
         *)
             (>&2 echo "No such subcommand")
@@ -642,7 +642,7 @@ function regex_replace {
 function phpexec {
     # TODO: Check if we should run async
     if type docker >/dev/null 2>&1; then
-        dockerexec exec "<env-name>_web_1" php index.php "$@"
+        dockerexec exec "<web-container>" php index.php "$@"
     else
         php index.php "$@"
     fi
@@ -651,15 +651,17 @@ function phpexec {
 function dockerexec {
     get_config_array
     local ENV_NAME="${CONFIG[hostname]//"."/}"
-    # TODO: Replace <web-container>
-    # TODO: Add <container-prefix>
-    # TODO: Add <db-container>
-    # TODO: Add <cache-container>
-    # TODO: Add <phpma-container>
-    local WEB_CONTAINER="clx-env-${ENV_NAME}-web"
     local ARGS=()
     for index in "$@"; do
-        ARGS+=(${index//"<env-name>"/"$ENV_NAME"})
+        index="${index//"<web-container>"/"<container-prefix>-<env-name>-web"}"
+        index="${index//"<db-container>"/"<container-prefix>-<env-name>-db"}"
+        index="${index//"<cache-container>"/"<container-prefix>-<env-name>-cache"}"
+        index="${index//"<phpma-container>"/"<container-prefix>-<env-name>-phpma"}"
+        index="${index//"<proxy-container>"/"<proxy-prefix>-proxy"}"
+        index="${index//"<container-prefix>"/"clx-env"}"
+        index="${index//"<proxy-prefix>"/"clx-envs"}"
+        index="${index//"<env-name>"/"$ENV_NAME"}"
+        ARGS+=("$index")
     done
     docker "${ARGS[@]}"
 }
@@ -684,7 +686,7 @@ case "${COMMANDS[0]}" in
         ;;
     debug)
         if [[ ${ARGUMENTS["web"]} == true ]]; then
-            dockerexec logs -f "<env-name>_web_1"
+            dockerexec logs -f "<web-container>"
             exit
         elif [[ ${ARGUMENTS["request"]} ]]; then
             grep "$(tail -n1 tmp/log/dbg.log | grep -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log
