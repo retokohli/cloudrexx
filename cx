@@ -682,13 +682,13 @@ function internal_dockerexec {
     local ENV_NAME="${CONFIG[hostname]//"."/}"
     local ARGS=()
     for index in "$@"; do
-        index="${index//"<web-container>"/"<container-prefix>-<env-name>-web"}"
-        index="${index//"<db-container>"/"<container-prefix>-<env-name>-db"}"
-        index="${index//"<cache-container>"/"<container-prefix>-<env-name>-cache"}"
-        index="${index//"<phpma-container>"/"<container-prefix>-<env-name>-phpma"}"
+        index="${index//"<web-container>"/"<container-prefix><env-name>_web_1"}"
+        index="${index//"<db-container>"/"<container-prefix><env-name>_db_1"}"
+        index="${index//"<cache-container>"/"<container-prefix><env-name>_usercache_1"}"
+        index="${index//"<phpma-container>"/"<container-prefix><env-name>_phpmyadmin_1"}"
         index="${index//"<proxy-container>"/"<proxy-prefix>-proxy"}"
-        index="${index//"<container-prefix>"/"clx-env"}"
-        index="${index//"<proxy-prefix>"/"clx-envs"}"
+        index="${index//"<container-prefix>"/"clxenv"}"
+        index="${index//"<proxy-prefix>"/"clxenvs"}"
         index="${index//"<proxy-network>"/"nginx-proxy"}"
         index="${index//"<env-name>"/"$ENV_NAME"}"
         ARGS+=("$index")
@@ -698,7 +698,7 @@ function internal_dockerexec {
 
 function dockercomposeexec {
     get_config_array
-    docker-compose --project-name "${CONFIG["hostname"]}" "$@"
+    docker-compose --project-name "clxenv${CONFIG["hostname"]}" "$@"
 }
 
 #####################
