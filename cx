@@ -522,7 +522,6 @@ SET FOREIGN_KEY_CHECKS = 1;"
             for value in "${!CONFIG_OVERRIDE[@]}"; do
                 CONFIG[$value]=${CONFIG_OVERRIDE[$value]}
             done
-            # TODO: Decide whether this is a vhost or not (based on existing config and presence of clx-envs-proxy container)
             # if interactive: loop over all options and let the user decide
             if [[ ${ARGUMENTS["interactive"]} = true ]]; then
                 # TODO: Only ask if argument is not in forced arguments
