@@ -200,7 +200,7 @@ class Wysiwyg extends \Cx\Model\Base\EntityBase
         \JS::activate('ckeditor');
         \JS::activate('jquery');
 
-        $configPath = ASCMS_PATH_OFFSET.substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH.'/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT));
+        $configPath = $this->getComponentController()->getConfigPath();
         $options = array(
             "customConfig: CKEDITOR.getUrl('".$configPath."?langId=".$this->langId."')",
             "width: '" . $this->types[$this->type]['width'] . "'",
