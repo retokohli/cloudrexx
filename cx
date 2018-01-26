@@ -296,10 +296,12 @@ For more info about a command type ./cx help <command>"
 function cmd_envs {
     case "$1" in
         up)
-            dockerexec run --rm --name "<proxy-container>" -d -p "${ARGUMENTS["port"]}:80" -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
+            dockerexec network create "<proxy-network>"
+            dockerexec run --rm --name "<proxy-container>" -e "HTTPS_METHOD=nohttps" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
             ;;
         down)
             dockerexec stop "<proxy-container>"
+            dockerexec network rm "<proxy-network>"
             ;;
         restart)
             cmd_envs down
@@ -630,6 +632,7 @@ function set_config_array {
     FILE_CONTENTS=${FILE_CONTENTS//"<hostname>"/${CONFIG["hostname"]}}
     FILE_CONTENTS=${FILE_CONTENTS//"<php-image>"/$PHP_IMAGE}
     FILE_CONTENTS=${FILE_CONTENTS//"<db-image>"/${CONFIG["db-image"]}}
+    FILE_CONTENTS=${FILE_CONTENTS//"<proxy-network>"/"nginx-proxy"}
     FILE_CONTENTS=${FILE_CONTENTS//"<port>"/${CONFIG["port"]}}
     if [[ "${CONFIG["is-vhost"]}" == true ]]; then
         FILE_CONTENTS=${FILE_CONTENTS//"<vhost>"/""}
@@ -687,6 +690,7 @@ function internal_dockerexec {
         index="${index//"<proxy-container>"/"<proxy-prefix>-proxy"}"
         index="${index//"<container-prefix>"/"clx-env"}"
         index="${index//"<proxy-prefix>"/"clx-envs"}"
+        index="${index//"<proxy-network>"/"nginx-proxy"}"
         index="${index//"<env-name>"/"$ENV_NAME"}"
         ARGS+=("$index")
     done
