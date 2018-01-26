@@ -35,15 +35,15 @@ DEFAULT_CONFIG=(
     ["hostname"]=""
     ["php-version"]=""
     ["db-image"]="mariadb:latest"
-    ["php-image"]="cloudrexx/web:PHP<phpversion>-with-mysql"
     ["db-name"]=""
     ["db-pass"]=""
     ["db-user"]=""
     ["db-host"]=""
+    ["php-image"]="cloudrexx/web:PHP<php-version>-with-mysql"
 )
 ARGUMENTS=(
     ["port"]=80
-    ["php-image"]="cloudrexx/web:PHP<phpversion>-with-mysql"
+    ["php-image"]="cloudrexx/web:PHP<php-version>-with-mysql"
     ["db-image"]="mariadb:latest"
     ["source-repo"]="git@github.com:Cloudrexx/cloudrexx.git"
     ["source-branch"]="master"
@@ -221,7 +221,7 @@ Available options are:
     --db-pass=<password>            Sets database password to <password>
     --php-image=<dockerImageName>   Name of the docker image to use. Default is 'cloudrexx/web:PHP<php_version>-with-mysql'.
     --db-image=<dockerImageName>    Name of the docker image to use. Default is 'mariadb'.
-    --php-version=<phpversion>      Sets PHP version to <phpversion> (example: 7.2), default is based on Cloudrexx version
+    --php-version=<php-version>     Sets PHP version to <php-version> (example: 7.2), default is based on Cloudrexx version
     --hostname=<hostname>           Sets installation hostname to <hostname>, defaults to parent directory name
     --port=<port>                   Sets installation port to <port>, defaults to 80"
                     ;;
