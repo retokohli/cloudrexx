@@ -631,7 +631,15 @@ function set_config_array {
     FILE_CONTENTS=${FILE_CONTENTS//"<php-image>"/$PHP_IMAGE}
     FILE_CONTENTS=${FILE_CONTENTS//"<db-image>"/${CONFIG["db-image"]}}
     FILE_CONTENTS=${FILE_CONTENTS//"<port>"/${CONFIG["port"]}}
-    # TODO: replace <vhost> and <novhost> placeholders.
+    if [[ "${CONFIG["is-vhost"]}" == true ]]; then
+        FILE_CONTENTS=${FILE_CONTENTS//"<vhost>"/""}
+        FILE_CONTENTS=${FILE_CONTENTS//"</vhost>"/""}
+        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<novhost>.*</novhost>())" "")
+    else
+        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<vhost>.*</vhost>())" "")
+        FILE_CONTENTS=${FILE_CONTENTS//"<novhost>"/""}
+        FILE_CONTENTS=${FILE_CONTENTS//"</novhost>"/""}
+    fi
     # save docker-compose.yml
     echo "$FILE_CONTENTS" > docker-compose.yml
 }
