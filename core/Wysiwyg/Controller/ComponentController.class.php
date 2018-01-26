@@ -165,8 +165,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         if (!empty($ymlOption['css'])) {
-            if ($this->cx->getClassLoader()->getFilePath($this->cx->getCodeBaseThemesPath() . '/' . $skin . '/' . $ymlOption['css'])) {
-                $cssArr[] = $this->cx->getWebsiteOffsetPath() . '/' . $skin . '/' . $ymlOption['css'];
+            $filePath = $this->cx->getWebsiteThemesWebPath() . '/' . $skin . '/' . $ymlOption['css'];
+            if ($this->cx->getClassLoader()->getFilePath($filePath)) {
+                $cssArr[] = $filePath;
             }
         }
 
