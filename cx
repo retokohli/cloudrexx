@@ -546,7 +546,7 @@ function get_config_array {
     local CONFIG_FILE="config/configuration.php"
     local SETTINGS_FILE="config/settings.php"
     local COMPOSE_FILE="docker-compose.yml"
-    if ! [[ -f $CONFIG_FILE ]] || ! [[ -f $SETTINGS_FILE ]] || ! [[ -f $COMPOSE_FILE ]]; then
+    if ! [[ -f $CONFIG_FILE ]] || ! [[ -f $SETTINGS_FILE ]]; then
         CONFIG=()
         return
     fi
@@ -565,7 +565,7 @@ function get_config_array {
         ["is-vhost"]=""
     )
 
-    if [ -f "docker-compose.yml" ];then
+    if [ -f "docker-compose.yml" ]; then
         CONFIG["db-image"]=$(REGEX="db:\s*image: \"([^\"]+)\""; CFG=$(cat $COMPOSE_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
         CONFIG["php-image"]=$(REGEX="web:\s*image: \"([^\"]+)\""; CFG=$(cat $COMPOSE_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
         CONFIG["php-version"]=$(REGEX="([0-9]+\.[0-9]+)"; [[ "${CONFIG["php-image"]}" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
@@ -592,7 +592,7 @@ function get_config_array {
     fi
     if [[ "${CONFIG["is-vhost"]}" == "" ]]; then
         local proxy_present
-        proxy_present=$(dockerexec ps -q -f "name=<proxy-container>")
+        proxy_present=$(internal_dockerexec ps -q -f "name=<proxy-container>")
         if [[ "$proxy_present" == "" ]]; then
             CONFIG["is-vhost"]=false
         else
@@ -616,7 +616,7 @@ function set_config_array {
     # load settings
     FILE_CONTENTS=$(cat config/settings.php)
     # replace hostname, port
-    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['port'\]\ +=\ +)[0-9]+(;))" "${CONFIG["port"]}")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['portFrontendHTTP'\]\ +=\ +)[0-9]+(;))" "${CONFIG["port"]}")
     FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['domainUrl'\]\ +=\ +['\"])[^'\"]*(['\"];))" "${CONFIG["hostname"]}")
     # save settings
     echo "$FILE_CONTENTS" > config/settings.php
@@ -637,6 +637,7 @@ function set_config_array {
 }
 
 # regex_replace <haystack> <regex> <replacement>
+# Matches multi-line and replaces all occurences
 # regex match 1 needs to be whole match
 # regex match 2 needs to be everything before replaced part
 # regex match 3 needs to be everything after replaced part
@@ -664,6 +665,10 @@ function phpexec {
 
 function dockerexec {
     get_config_array
+    internal_dockerexec "$@"
+}
+
+function internal_dockerexec {
     local ENV_NAME="${CONFIG[hostname]//"."/}"
     local ARGS=()
     for index in "$@"; do
