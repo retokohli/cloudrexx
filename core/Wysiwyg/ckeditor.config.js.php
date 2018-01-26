@@ -26,14 +26,24 @@
  */
 
 header("content-type: application/javascript");
-if (strpos(dirname(__FILE__), 'customizing') === false) {
-    $contrexx_path = dirname(dirname(dirname(__FILE__)));
-} else {
+
+// detect system location
+$depth = 3;
+if (strpos(__FILE__, 'customizing/') !== false) {
     // this files resides within the customizing directory, therefore we'll have to strip
     // out one directory more than usually
-    $contrexx_path = dirname(dirname(dirname(dirname(__FILE__))));
+    $depth++;
 }
+if (strpos(__FILE__, 'codeBases/') !== false) {
+    // this files resides in a codeBase directory, therefore we'll have to strip
+    // out two directory more than usually
+    $depth += 2;
+}
+$contrexx_path = dirname(__FILE__, $depth);
 
+/**
+ * @ignore
+ */
 require_once($contrexx_path . '/core/Core/init.php');
 $cx = init('minimal');
 
