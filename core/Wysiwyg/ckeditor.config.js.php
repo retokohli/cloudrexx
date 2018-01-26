@@ -47,14 +47,13 @@ $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
 $mainDomain = $domainRepository->getMainDomain()->getName();
 
 //find the right css files and put it into the wysiwyg
-$em = $cx->getDb()->getEntityManager();
-$componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-$wysiwyg = $componentRepo->findOneBy(array('name'=>'Wysiwyg'));
-$pageRepo   = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+$wysiwyg= $cx->getComponent('Wysiwyg');
 \Cx\Core\Setting\Controller\Setting::init('Wysiwyg', 'config', 'Yaml');
 
 $skinId = 0;
 if (!empty($pageId) && $pageId != 'new') {
+    $em = $cx->getDb()->getEntityManager();
+    $pageRepo   = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
     $skinId = $pageRepo->find($pageId)->getSkin();
 }
 
@@ -121,23 +120,20 @@ CKEDITOR.editorConfig = function( config )
 CKEDITOR.on('instanceReady',function(){
     var loadingTemplates = <?php echo $wysiwyg->getWysiwygTempaltes();?>;
     for(var instanceName in CKEDITOR.instances) {
-        //console.log( CKEDITOR.instances[instanceName] );
         loadingTemplates.button = CKEDITOR.instances[instanceName].getCommand("templates") //Reference to Template-Button
 
         // Define Standard-Path
-        //var path = CKEDITOR.plugins.getPath('templates')
-        //var defaultPath = path.split("lib/ckeditor/")[0]+"customizing/lib/ckeditor"+path.split("lib/ckeditor")[1]+"templates/"
-        //var defaultPath = path.split("lib/ckeditor")[0] //Path to Templates-Folder
-        //var defaultPath = "/"
         loadingTemplates.load = (function(){
-            //this.defaultPath = defaultPath;
             if (typeof this.button != 'undefined') {
                 this.button.setState(CKEDITOR.TRISTATE_DISABLED) // Disable "Template"-Button
             }
             for(var i=0;i<this.length;i++){
                 (function(item){
                     CKEDITOR.addTemplates('default',{
-                        imagesPath: "../../",//CKEDITOR.getUrl(defaultPath),
+                        // CKeditor does not accept an empty imagesPath
+                        // therefore, we have to perform a virtual traversal
+                        // using a random folder path
+                        imagesPath: cx.variables.get('basePath', 'contrexx') + 'random/..',
                         templates: this
                     });
                 }).bind(this)(this[i])
@@ -149,7 +145,7 @@ CKEDITOR.on('instanceReady',function(){
     }
 
     var translations = cx.variables.get('toolbarTranslations', 'toolbarConfigurator');
-    if (translations && cx.variables.get('language') == 'de') {
+    if (translations) {
         cx.jQuery('div.toolbarModifier ul[data-type="table-body"] > li[data-type="group"] > ul > li[data-type="subgroup"] > p > span').each(
             function() {
                 if (translations.hasOwnProperty(cx.jQuery(this).text())) {
@@ -213,7 +209,6 @@ cx.bind("loadingEnd", function(myArgs) {
         var data = myArgs['data'];
         if(data.hasOwnProperty('wysiwygCssReload') && (data.wysiwygCssReload).hasOwnProperty('css')) {
             for(var instanceName in CKEDITOR.instances) {
-                //CKEDITOR.instances[instanceName].config.contentsCss =  data.wysiwygCssReload.css;
                 var is_same = (data.wysiwygCssReload.css).equals(cx.variables.get('css', 'wysiwyg')) && cx.variables.get('css', 'wysiwyg').every(function(element, index) {
                     return element === data.wysiwygCssReload.css[index];
                 });
