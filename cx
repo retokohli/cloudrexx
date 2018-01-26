@@ -108,6 +108,18 @@ Synopsis:
 Synopsis:
     ./cx envs info"
                     ;;
+                debug)
+                    echo "Shows the logs of the nginx proxy.
+
+Synopsis:
+    ./cx envs debug"
+                    ;;
+                list)
+                    echo "Shows a list of all attached environments.
+
+Synopsis:
+    ./cx envs list"
+                    ;;
                 *)
                     echo "This command manages the environment for multiple Cloudrexx installations on one host.
 
@@ -312,6 +324,14 @@ function cmd_envs {
             ;;
         info)
             dockerexec ps -f "name=<container-prefix>*"
+            ;;
+        debug)
+            dockerexec logs -f "<proxy-container>"
+            ;;
+        list)
+            local containerlist
+            containerlist=$(dockerexec ps -f "name=<container-prefix>" -f "network=<proxy-network>" --format "{{.Names}}" | grep web)
+            echo "${containerlist//"clxenv"/}"
             ;;
         *)
             (>&2 echo "No such subcommand")
