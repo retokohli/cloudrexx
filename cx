@@ -35,15 +35,15 @@ DEFAULT_CONFIG=(
     ["hostname"]=""
     ["php-version"]=""
     ["db-image"]="mariadb:latest"
-    ["php-image"]="cloudrexx/web:PHP<phpversion>-with-mysql"
     ["db-name"]=""
     ["db-pass"]=""
     ["db-user"]=""
     ["db-host"]=""
+    ["php-image"]="cloudrexx/web:PHP<php-version>-with-mysql"
 )
 ARGUMENTS=(
     ["port"]=80
-    ["php-image"]="cloudrexx/web:PHP<phpversion>-with-mysql"
+    ["php-image"]="cloudrexx/web:PHP<php-version>-with-mysql"
     ["db-image"]="mariadb:latest"
     ["source-repo"]="git@github.com:Cloudrexx/cloudrexx.git"
     ["source-branch"]="master"
@@ -75,41 +75,51 @@ function cmd_help {
     case "$1" in
         envs)
             case "$2" in
-                init)
-                    # TODO: Add help text
-                    ;;
                 up)
-                    # TODO: Add help text
+                    echo "Starts the multi-vhost environment.
+
+Synopsis:
+    ./cx envs up [<options>]
+
+Available options are:
+    --port=<port>   Port on which the vhosts are available."
                     ;;
                 down)
-                    # TODO: Add help text
+                    echo "Stops the multi-vhost environment.
+
+Synopsis:
+    ./cx envs down"
                     ;;
                 restart)
-                    # TODO: Add help text
+                    echo "Restarts the multi-vhost environment.
+
+Synopsis:
+    ./cx envs restart"
                     ;;
                 status)
-                    # TODO: Add help text
+                    echo "Shows the status of the multi-vhost environment.
+
+Synopsis:
+    ./cx envs status"
                     ;;
                 info)
-                    # TODO: Add help text
-                    ;;
-                update)
-                    # TODO: Add help text
+                    echo "Shows the status of all vhosts' containers.
+
+Synopsis:
+    ./cx envs info"
                     ;;
                 *)
-                    echo "This command manages the environment for multiple Cloudrexx installations on one host
+                    echo "This command manages the environment for multiple Cloudrexx installations on one host.
 
 Synopsis
     ./cx envs <subcommand> [<options>]
 
 Available subcommands are:
-    init        Initializes the docker containers (only needs to be called once per host).
-    up          Starts the docker containers.
-    down        Stops the docker containers.
-    restart     Restarts the docker containers.
-    status      Tells whether the containers are running.
-    info        Alias for 'status'.
-    update      Pulls the newest version of the containers.
+    up          Starts the docker containers
+    down        Stops the docker containers
+    restart     Restarts the docker containers
+    status      Tells whether the containers are running
+    info        Alias for 'status'
 
 For more info about a subcommand type ./cx help envs <subcommand>";
                     ;;
@@ -211,7 +221,7 @@ Available options are:
     --db-pass=<password>            Sets database password to <password>
     --php-image=<dockerImageName>   Name of the docker image to use. Default is 'cloudrexx/web:PHP<php_version>-with-mysql'.
     --db-image=<dockerImageName>    Name of the docker image to use. Default is 'mariadb'.
-    --php-version=<phpversion>      Sets PHP version to <phpversion> (example: 7.2), default is based on Cloudrexx version
+    --php-version=<php-version>     Sets PHP version to <php-version> (example: 7.2), default is based on Cloudrexx version
     --hostname=<hostname>           Sets installation hostname to <hostname>, defaults to parent directory name
     --port=<port>                   Sets installation port to <port>, defaults to 80"
                     ;;
@@ -285,26 +295,23 @@ For more info about a command type ./cx help <command>"
 ##################
 function cmd_envs {
     case "$1" in
-        init)
-            # TODO: Add code
-            ;;
         up)
-            # TODO: Add code
+            dockerexec network create "<proxy-network>"
+            dockerexec run --rm --name "<proxy-container>" -e "HTTPS_METHOD=nohttps" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
             ;;
         down)
-            # TODO: Add code
+            dockerexec stop "<proxy-container>"
+            dockerexec network rm "<proxy-network>"
             ;;
         restart)
-            # TODO: Add code
+            cmd_envs down
+            cmd_envs up
             ;;
         status)
-            # TODO: Add code
+            dockerexec ps -f "name=<proxy-container>"
             ;;
         info)
-            # TODO: Add code
-            ;;
-        update)
-            # TODO: Add code
+            dockerexec ps -f "name=<container-prefix>*"
             ;;
         *)
             (>&2 echo "No such subcommand")
@@ -356,7 +363,7 @@ function cmd_env {
                 echo "Loading database"
             fi
             ARGUMENTS["db"]=true && cmd_env update
-            dockerexec exec "<env-name>_web_1" chown -R www-data: ./
+            dockerexec exec "<web-container>" chown -R www-data: ./
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 echo "Environment successfully initialized, you should be able to reach Cloudrexx at http://${ARGUMENTS["hostname"]}.lvh.me/"
             fi
@@ -472,6 +479,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
                     mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < "${TEMP_FILES["session-backup"]}"
                 fi
             fi
+            # TODO: Check if there's at least one admin, make the user's ID dynamic
             EXISTING_CX_USER=$(mysql --defaults-file="${TEMP_FILES["db-conf"]}" -e "SELECT id FROM contrexx_access_users WHERE id = 1")
             if [[ "$EXISTING_CX_USER" == "" ]]; then
                 if [[ ${ARGUMENTS["yes"]} != true ]]; then
@@ -527,7 +535,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
             set_config_array
             ;;
         shell)
-            dockerexec exec -ti "<env-name>_web_1" bash
+            dockerexec exec -ti "<web-container>" bash
             ;;
         *)
             (>&2 echo "No such subcommand")
@@ -539,7 +547,7 @@ function get_config_array {
     local CONFIG_FILE="config/configuration.php"
     local SETTINGS_FILE="config/settings.php"
     local COMPOSE_FILE="docker-compose.yml"
-    if ! [[ -f $CONFIG_FILE ]] || ! [[ -f $SETTINGS_FILE ]] || ! [[ -f $COMPOSE_FILE ]]; then
+    if ! [[ -f $CONFIG_FILE ]] || ! [[ -f $SETTINGS_FILE ]]; then
         CONFIG=()
         return
     fi
@@ -555,14 +563,20 @@ function get_config_array {
         ["php-version"]=""
         ["php-image"]=""
         ["db-image"]=""
+        ["is-vhost"]=""
     )
 
-    if [ -f "docker-compose.yml" ];then
+    if [ -f "docker-compose.yml" ]; then
         CONFIG["db-image"]=$(REGEX="db:\s*image: \"([^\"]+)\""; CFG=$(cat $COMPOSE_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
         CONFIG["php-image"]=$(REGEX="web:\s*image: \"([^\"]+)\""; CFG=$(cat $COMPOSE_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
         CONFIG["php-version"]=$(REGEX="([0-9]+\.[0-9]+)"; [[ "${CONFIG["php-image"]}" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
         if [[ "${CONFIG["php-version"]}" != "" ]]; then
             CONFIG["php-image"]=${CONFIG[php-image]//"${CONFIG["php-version"]}"/"<php-version>"}
+        fi
+        if [[ "$(cat $COMPOSE_FILE)" =~ "VIRTUAL_HOST" ]]; then
+            CONFIG["is-vhost"]=true
+        else
+            CONFIG["is-vhost"]=false
         fi
     fi
     if [[ "${CONFIG["php-version"]}" == "" ]]; then
@@ -577,6 +591,16 @@ function get_config_array {
     if [[ "${CONFIG["db-image"]}" == "" ]]; then
         CONFIG["db-image"]=${DEFAULT_CONFIG["db-image"]}
     fi
+    if [[ "${CONFIG["is-vhost"]}" == "" ]]; then
+        local proxy_present
+        proxy_present=$(internal_dockerexec ps -q -f "name=<proxy-container>")
+        if [[ "$proxy_present" == "" ]]; then
+            CONFIG["is-vhost"]=false
+        else
+            CONFIG["is-vhost"]=true
+        fi
+    fi
+    # TODO: Propose hostname
 }
 
 function set_config_array {
@@ -593,7 +617,7 @@ function set_config_array {
     # load settings
     FILE_CONTENTS=$(cat config/settings.php)
     # replace hostname, port
-    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['port'\]\ +=\ +)[0-9]+(;))" "${CONFIG["port"]}")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['portFrontendHTTP'\]\ +=\ +)[0-9]+(;))" "${CONFIG["port"]}")
     FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((CONFIG\['domainUrl'\]\ +=\ +['\"])[^'\"]*(['\"];))" "${CONFIG["hostname"]}")
     # save settings
     echo "$FILE_CONTENTS" > config/settings.php
@@ -607,12 +631,23 @@ function set_config_array {
     FILE_CONTENTS=${FILE_CONTENTS//"<hostname>"/${CONFIG["hostname"]}}
     FILE_CONTENTS=${FILE_CONTENTS//"<php-image>"/$PHP_IMAGE}
     FILE_CONTENTS=${FILE_CONTENTS//"<db-image>"/${CONFIG["db-image"]}}
+    FILE_CONTENTS=${FILE_CONTENTS//"<proxy-network>"/"nginx-proxy"}
     FILE_CONTENTS=${FILE_CONTENTS//"<port>"/${CONFIG["port"]}}
+    if [[ "${CONFIG["is-vhost"]}" == true ]]; then
+        FILE_CONTENTS=${FILE_CONTENTS//"<vhost>"/""}
+        FILE_CONTENTS=${FILE_CONTENTS//"</vhost>"/""}
+        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<novhost>.*</novhost>())" "")
+    else
+        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<vhost>.*</vhost>())" "")
+        FILE_CONTENTS=${FILE_CONTENTS//"<novhost>"/""}
+        FILE_CONTENTS=${FILE_CONTENTS//"</novhost>"/""}
+    fi
     # save docker-compose.yml
     echo "$FILE_CONTENTS" > docker-compose.yml
 }
 
 # regex_replace <haystack> <regex> <replacement>
+# Matches multi-line and replaces all occurences
 # regex match 1 needs to be whole match
 # regex match 2 needs to be everything before replaced part
 # regex match 3 needs to be everything after replaced part
@@ -632,7 +667,7 @@ function regex_replace {
 function phpexec {
     # TODO: Check if we should run async
     if type docker >/dev/null 2>&1; then
-        dockerexec exec "<env-name>_web_1" php index.php "$@"
+        dockerexec exec "<web-container>" php index.php "$@"
     else
         php index.php "$@"
     fi
@@ -640,10 +675,23 @@ function phpexec {
 
 function dockerexec {
     get_config_array
+    internal_dockerexec "$@"
+}
+
+function internal_dockerexec {
     local ENV_NAME="${CONFIG[hostname]//"."/}"
     local ARGS=()
     for index in "$@"; do
-        ARGS+=(${index//"<env-name>"/"$ENV_NAME"})
+        index="${index//"<web-container>"/"<container-prefix>-<env-name>-web"}"
+        index="${index//"<db-container>"/"<container-prefix>-<env-name>-db"}"
+        index="${index//"<cache-container>"/"<container-prefix>-<env-name>-cache"}"
+        index="${index//"<phpma-container>"/"<container-prefix>-<env-name>-phpma"}"
+        index="${index//"<proxy-container>"/"<proxy-prefix>-proxy"}"
+        index="${index//"<container-prefix>"/"clx-env"}"
+        index="${index//"<proxy-prefix>"/"clx-envs"}"
+        index="${index//"<proxy-network>"/"nginx-proxy"}"
+        index="${index//"<env-name>"/"$ENV_NAME"}"
+        ARGS+=("$index")
     done
     docker "${ARGS[@]}"
 }
@@ -668,7 +716,7 @@ case "${COMMANDS[0]}" in
         ;;
     debug)
         if [[ ${ARGUMENTS["web"]} == true ]]; then
-            dockerexec logs -f "<env-name>_web_1"
+            dockerexec logs -f "<web-container>"
             exit
         elif [[ ${ARGUMENTS["request"]} ]]; then
             grep "$(tail -n1 tmp/log/dbg.log | grep -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log
