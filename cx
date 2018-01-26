@@ -562,6 +562,7 @@ function get_config_array {
         ["php-version"]=""
         ["php-image"]=""
         ["db-image"]=""
+        ["is-vhost"]=""
     )
 
     if [ -f "docker-compose.yml" ];then
@@ -570,6 +571,11 @@ function get_config_array {
         CONFIG["php-version"]=$(REGEX="([0-9]+\.[0-9]+)"; [[ "${CONFIG["php-image"]}" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
         if [[ "${CONFIG["php-version"]}" != "" ]]; then
             CONFIG["php-image"]=${CONFIG[php-image]//"${CONFIG["php-version"]}"/"<php-version>"}
+        fi
+        if [[ "$(cat $COMPOSE_FILE)" =~ "VIRTUAL_HOST" ]]; then
+            CONFIG["is-vhost"]=true
+        else
+            CONFIG["is-vhost"]=false
         fi
     fi
     if [[ "${CONFIG["php-version"]}" == "" ]]; then
@@ -584,7 +590,15 @@ function get_config_array {
     if [[ "${CONFIG["db-image"]}" == "" ]]; then
         CONFIG["db-image"]=${DEFAULT_CONFIG["db-image"]}
     fi
-    # TODO: Decide whether this is a vhost or not (based on existing config and presence of clx-envs-proxy container)
+    if [[ "${CONFIG["is-vhost"]}" == "" ]]; then
+        local proxy_present
+        proxy_present=$(dockerexec ps -q -f "name=<proxy-container>")
+        if [[ "$proxy_present" == "" ]]; then
+            CONFIG["is-vhost"]=false
+        else
+            CONFIG["is-vhost"]=true
+        fi
+    fi
     # TODO: Propose hostname
 }
 
