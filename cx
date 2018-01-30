@@ -360,7 +360,8 @@ function cmd_env {
             if [[ ${ARGUMENTS["yes"]} != true ]]; then
                 echo "This will install Cloudrexx in the current directory ($(pwd))"
                 read -p "Continue [Yn]? " -n 1 -r
-                if ! [[ "$REPLY" =~ ^[Yy]$ ]]; then
+                echo ""
+                if ! [[ "$REPLY" != "" && "$REPLY" =~ ^[Yy]$ ]]; then
                     return
                 fi
             fi
