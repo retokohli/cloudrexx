@@ -494,6 +494,7 @@ $_ARRAYLANG['TXT_CALENDAR_EVENT_EMAIL_TEMPLATE'] = "E-Mail Vorlage";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_TICKET_SALES'] = "Ticketverkauf";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_NUM_SEATING'] = "Anzahl Sitzplätze pro Bestellung";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION'] = "Einladung versenden";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_COUNT'] = "ungefähre Anzahl der Gäste: ";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_AGAIN_INVITATION'] = "Einladung nochmals versenden";
 $_ARRAYLANG['TXT_CALENDAR_CATEGORY_COUNT_ENTRIES'] = "Anzahl Veranstaltungen im Dropdown anzeigen";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE'] = "Veranstaltungstyp";

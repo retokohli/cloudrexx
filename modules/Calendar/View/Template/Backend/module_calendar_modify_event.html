@@ -205,6 +205,35 @@
         elm2.style.display = (elm2.style.display=='none') ? 'block' : 'none';
     }
 
+    function updateRecipientsCount() {
+        // parse selected access user groups
+        var selectedGroups = new Array();
+        cx.jQuery('#selectedGroups option').each(function() {
+            selectedGroups.push(cx.jQuery(this).val());
+        });
+
+        cx.ajax(
+            "calendar",
+            "getRecipientCount",
+            {
+                data: {
+                    'id': '{CALENDAR_EVENT_ID}',
+                    'lang_id': cx.jQuery("input[name='showIn[]']").val(),
+                    'invite_crm_memberships':
+                        cx.jQuery("#calendar_event_invite_crm_memberships").val(),
+                    'excluded_crm_memberships':
+                        cx.jQuery("#calendar_event_excluded_crm_memberships").val(),
+                    'invitedMails':
+                        cx.jQuery("#invitedMails").val(),
+                    'selectedGroups': selectedGroups
+                },
+                success: function(json) {
+                    cx.jQuery("#recipientsCount").text(json['data']);
+                }
+            }
+        );
+    }
+
     cx.ready(function() {
         var options = {
             dateFormat: '{CALENDAR_EVENT_DATE_FORMAT}',
@@ -362,6 +391,12 @@
                 addExeptionList(key, v);
             }
         });
+        updateRecipientsCount();
+        $J("#calendar_event_invite_crm_memberships").change(updateRecipientsCount);
+        $J("#calendar_event_excluded_crm_memberships").change(updateRecipientsCount);
+        $J("input[name='addElement']").click(updateRecipientsCount);
+        $J("input[name='removeElement']").click(updateRecipientsCount);
+        $J("#invitedMails").change(updateRecipientsCount);
     });
 
     function showOrHidePlaceFields(inputValue, type) {
@@ -1310,13 +1345,14 @@
             <tr class="row1">
                 <td valign="top">{TXT_CALENDAR_EVENT_MORE_INVITATIONS}</td>
                 <td colspan="2">
-                    <textarea name="invitedMails" style="width: 250px; height: 60px;" />{CALENDAR_EVENT_MORE_INVITATIONS}</textarea>&nbsp;&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_MORE_INVITATIONS_INFO}</span>
+                    <textarea id="invitedMails" name="invitedMails" style="width: 250px; height: 60px;" />{CALENDAR_EVENT_MORE_INVITATIONS}</textarea>&nbsp;&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_MORE_INVITATIONS_INFO}</span>
                 </td>
             </tr>
             <tr class="row2">
                 <td valign="top">{TXT_CALENDAR_EVENT_SEND_INVITATION}</td>
                 <td width="1%">
                     <input name="sendInvitation" class="sendInvitation" type="checkbox" value="1" {CALENDAR_EVENT_SEND_INVITATION}/>
+                    ({TXT_CALENDAR_EVENT_SEND_INVITATION_COUNT}  <p style="display: inline-block;" id="recipientsCount"></p>)
                 </td>
                 <td>
                     <div class="invitationEmailTemplateContainer" style="display: none;">

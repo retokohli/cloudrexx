@@ -558,6 +558,27 @@ class CalendarMailManager extends CalendarLibrary {
     }
 
     /**
+     * Returns the array recipients count
+     *
+     * @param integer $actionId         Mail Action
+     * @param object  $objEvent         Event object
+     * @param integer $regId            registration id
+     * @param object  $objRegistration  Registration object
+     *
+     * @return integer                  returns the array recipients count
+     */
+    public function getSendMailRecipientsCount(
+        $actionId, $objEvent, $regId = 0, $objRegistration = null
+    )
+    {
+        return count(
+            $this->getSendMailRecipients(
+                $actionId, $objEvent, $regId, $objRegistration
+            )
+        );
+    }
+
+    /**
      * Returns the array recipients
      *
      * @param integer $actionId         Mail Action
