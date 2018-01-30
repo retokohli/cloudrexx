@@ -609,10 +609,15 @@ class CalendarMailManager extends CalendarLibrary {
                 $excludeQuery = '';
                 if($objEvent->excludedCrmGroups) {
                     $excludeQuery = 'AND `crm_contact`.`id` NOT IN (
-                                   SELECT m.`contact_id`
-                                    FROM `' . DBPREFIX . 'module_crm_customer_membership` AS m 
-                                        WHERE m.`membership_id` IN (' . join(',', $objEvent->excludedCrmGroups) . ')
-                            )';
+                                        SELECT m.`contact_id`
+                                            FROM `' . DBPREFIX . 'module_crm_customer_membership` AS m 
+                                                WHERE m.`membership_id` IN (' . join(',', $objEvent->excludedCrmGroups) . ')
+                                    )
+                                    AND `crm_company`.`id` NOT IN (
+                                        SELECT m.`contact_id`
+                                            FROM `' . DBPREFIX . 'module_crm_customer_membership` AS m 
+                                                WHERE m.`membership_id` IN (' . join(',', $objEvent->excludedCrmGroups) . ')
+                                    )';
                 }
                 $result = $db->Execute('
                     SELECT
