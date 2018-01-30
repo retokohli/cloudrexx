@@ -120,6 +120,12 @@ Synopsis:
 Synopsis:
     ./cx envs list"
                     ;;
+                shell)
+                    echo "This command opens an interactive shell of the PHP docker container for this environment.
+
+Synopsis
+    ./cx envs shell"
+                    ;;
                 *)
                     echo "This command manages the environment for multiple Cloudrexx installations on one host.
 
@@ -132,6 +138,7 @@ Available subcommands are:
     restart     Restarts the docker containers
     status      Tells whether the containers are running
     info        Alias for 'status'
+    shell       Interactive shell of the proxy container
 
 For more info about a subcommand type ./cx help envs <subcommand>";
                     ;;
@@ -241,7 +248,7 @@ Available options are:
                     echo "This command opens an interactive shell of the PHP docker container for this environment.
 
 Synopsis
-    ./cx env info"
+    ./cx env shell"
                     ;;
                 *)
                     echo "This command manages a Cloudrexx installation and its environment.
@@ -258,6 +265,7 @@ Available subcommands are:
     info        Calls 'status' and prints environment information
     update      Updates docker images and GIT and reloads database
     config      Configures Cloudrexx (config/configuration.php)
+    shell       Interactive shell of the current environment's web container
 
 For more info about a subcommand type ./cx help env <subcommand>";
                     ;;
@@ -327,6 +335,9 @@ function cmd_envs {
             ;;
         debug)
             dockerexec logs -f "<proxy-container>"
+            ;;
+        shell)
+            dockerexec exec -ti "<proxy-container>" bash
             ;;
         list)
             local containerlist
