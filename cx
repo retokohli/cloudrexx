@@ -35,11 +35,11 @@ DEFAULT_CONFIG=(
     ["hostname"]=""
     ["php-version"]=""
     ["db-image"]="mariadb:latest"
-    ["db-name"]=""
-    ["db-pass"]=""
-    ["db-user"]=""
-    ["db-host"]=""
     ["php-image"]="cloudrexx/web:PHP<php-version>-with-mysql"
+    ["db-name"]="test"
+    ["db-pass"]="123456"
+    ["db-user"]="root"
+    ["db-host"]="db"
 )
 ARGUMENTS=(
     ["port"]=80
@@ -625,6 +625,18 @@ function get_config_array {
     fi
     if [[ "${CONFIG["db-image"]}" == "" ]]; then
         CONFIG["db-image"]=${DEFAULT_CONFIG["db-image"]}
+    fi
+    if [[ "${CONFIG["db-host"]}" == "" ]]; then
+        CONFIG["db-host"]=${DEFAULT_CONFIG["db-host"]}
+    fi
+    if [[ "${CONFIG["db-name"]}" == "" ]]; then
+        CONFIG["db-name"]=${DEFAULT_CONFIG["db-name"]}
+    fi
+    if [[ "${CONFIG["db-user"]}" == "" ]]; then
+        CONFIG["db-user"]=${DEFAULT_CONFIG["db-user"]}
+        if [[ "${CONFIG["db-pass"]}" == "" ]]; then
+            CONFIG["db-pass"]=${DEFAULT_CONFIG["db-pass"]}
+        fi
     fi
     if [[ "${CONFIG["is-vhost"]}" == "" ]]; then
         local proxy_present
