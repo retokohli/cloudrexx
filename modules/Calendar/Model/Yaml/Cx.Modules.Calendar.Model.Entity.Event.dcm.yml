@@ -262,6 +262,7 @@ Cx\Modules\Calendar\Model\Entity\Event:
     categories:
       targetEntity: Cx\Modules\Calendar\Model\Entity\Category
       inversedBy: events
+      cascade: [persist]
       joinTable:
         name: module_calendar_events_categories
         joinColumns:

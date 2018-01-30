@@ -66,14 +66,14 @@ class ComponentController extends
      */
     public function getControllerClasses() {
         if (
-            in_array(
+        in_array(
             'Workbench',
-                \Cx\Core\ModuleChecker::getInstance(
-                    $this->cx->getDb()->getEntityManager(),
-                    $this->cx->getDb()->getAdoDb(),
-                    $this->cx->getClassLoader()
-                )->getCoreModules()
-            )
+            \Cx\Core\ModuleChecker::getInstance(
+                $this->cx->getDb()->getEntityManager(),
+                $this->cx->getDb()->getAdoDb(),
+                $this->cx->getClassLoader()
+            )->getCoreModules()
+        )
         ) {
             return array('Backend');
         }
@@ -165,8 +165,7 @@ class ComponentController extends
             $thumbnailsTemplate->setVariable(
                 array(
                     'THUMBNAIL_NAME' => sprintf(
-                        $_ARRAYLANG[
-                        'TXT_FILEBROWSER_THUMBNAIL_' . strtoupper(
+                        $_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_' . strtoupper(
                             $thumbnail['name']
                         ) . '_SIZE'], $thumbnail['size']
                     ),
@@ -181,7 +180,7 @@ class ComponentController extends
             'mediabrowser'
         );
         \ContrexxJavascript::getInstance()->setVariable(
-            'chunk_size', min(floor((\FWSystem::getMaxUploadFileSize()-1000000)/1000000), 20).'mb', 'mediabrowser'
+            'chunk_size', min(floor((\FWSystem::getMaxUploadFileSize() - 1000000) / 1000000), 20) . 'mb', 'mediabrowser'
         );
         \ContrexxJavascript::getInstance()->setVariable(
             'languages', \FWLanguage::getActiveFrontendLanguages(), 'mediabrowser'

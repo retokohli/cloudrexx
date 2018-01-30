@@ -2063,6 +2063,16 @@ class Event extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Add a category
+     * @param Category $category Category to add
+     * @author Michael Ritter <michael.ritter@cloudrexx.com>
+     */
+    public function addCategories($category) {
+        $category->addEvents($this);
+        $this->categories[] = $category;
+    }
+
+    /**
      * Set registrationForm
      *
      * @param Cx\Modules\Calendar\Model\Entity\RegistrationForm $registrationForm

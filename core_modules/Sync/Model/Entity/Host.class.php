@@ -277,7 +277,17 @@ class Host extends \Cx\Model\Base\EntityBase
     {
         $this->changes = $changes;
     }
-
+    
+    /**
+     * Remove Change
+     *
+     * @param Cx\Core_Modules\Sync\Model\Entity\Change $change
+     */
+    public function removeChange($change)
+    {
+        $this->changes->removeElement($change);
+    }
+    
     /**
      * Set state
      *
@@ -391,11 +401,14 @@ class Host extends \Cx\Model\Base\EntityBase
         $config = array(
         );
         $request = new \HTTP_Request2($url, $method, $config);
-        /*$refUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
+        $refUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
         $refUrl->setMode('backend');
-        $request->setHeader('Referrer', $refUrl->toString());*/
-        $request->setHeader('Referrer', 'http://localhost/');
+        $request->setHeader('Referrer', $refUrl->toString());
         $request->setBody(http_build_query($content, null, '&'));
+        $request->setConfig(array(
+            'follow_redirects' => true,
+            'strict_redirects' => true,
+        ));
         
         $response = $request->send();
         var_dump($response->getStatus());
@@ -407,7 +420,9 @@ class Host extends \Cx\Model\Base\EntityBase
     
     public function isLocked() {
         $em = $this->cx->getDb()->getEntityManager();
-        $em->refresh($this);
+        $hostRepo = $em->getRepository(get_class($this));
+        $me = $hostRepo->find($this->getId());
+        $this->state = $me->getState();
         return $this->state == 1;
     }
     
