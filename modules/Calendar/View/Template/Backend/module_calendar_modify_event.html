@@ -86,6 +86,7 @@
 <script language="JavaScript" type="text/javascript">
     var defaultLang = cx.variables.get('language_id', 'calendar');
     var activeLang = [];
+    var calendarXhr = null;
     var blankExeception;
     var modifyEvent = {
         // elm => jquery object
@@ -206,13 +207,17 @@
     }
 
     function updateRecipientsCount() {
+        // abort last call
+        if(calendarXhr != null){
+            calendarXhr.abort();
+        }
         // parse selected access user groups
         var selectedGroups = new Array();
         cx.jQuery('#selectedGroups option').each(function() {
             selectedGroups.push(cx.jQuery(this).val());
         });
 
-        cx.ajax(
+        calendarXhr = cx.ajax(
             "calendar",
             "getRecipientCount",
             {
