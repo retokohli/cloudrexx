@@ -369,7 +369,12 @@ function cmd_env {
                 echo "Checking out source and scripts repository"
             fi
             if [[ ${ARGUMENTS["skip-source"]} != true ]]; then
-                git clone ${ARGUMENTS["source-repo"]} --branch=${ARGUMENTS["source-branch"]} .
+                # We do not simply clone because ./cx already exists
+                git init
+                git remote add origin ${ARGUMENTS["source-repo"]}
+                git fetch
+                git reset "origin/${ARGUMENTS["source-branch"]}"
+                git checkout -t "origin/${ARGUMENTS["source-branch"]}"
                 # assume ./tmp/* and ./config/* are unchanged
                 git ls-files -z tmp/ | xargs -0 git update-index --assume-unchanged
                 git ls-files -z config/ | xargs -0 git update-index --assume-unchanged
