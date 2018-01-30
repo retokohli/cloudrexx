@@ -2591,7 +2591,7 @@ cx.cm.createEditor = function() {
         var config = {
             customConfig: buildUrl(cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'), 'pageId', cx.jQuery('#pageId').val()),
             toolbar: 'Full',
-            skin: 'moono'
+            removePlugins: 'bbcode'
         };
         CKEDITOR.replace('page[content]', config);
 
