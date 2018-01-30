@@ -35,11 +35,11 @@ DEFAULT_CONFIG=(
     ["hostname"]=""
     ["php-version"]=""
     ["db-image"]="mariadb:latest"
-    ["db-name"]=""
-    ["db-pass"]=""
-    ["db-user"]=""
-    ["db-host"]=""
     ["php-image"]="cloudrexx/web:PHP<php-version>-with-mysql"
+    ["db-name"]="test"
+    ["db-pass"]="123456"
+    ["db-user"]="root"
+    ["db-host"]="db"
 )
 ARGUMENTS=(
     ["port"]=80
@@ -49,6 +49,7 @@ ARGUMENTS=(
     ["source-branch"]="master"
     ["scripts-repo"]="git@github.com:Cloudrexx/scripts.git"
     ["scripts-branch"]="master"
+    ["root-domain"]="lvh.me"
 )
 
 # iterate over all arguments to separate commands and arguments
@@ -108,6 +109,24 @@ Synopsis:
 Synopsis:
     ./cx envs info"
                     ;;
+                debug)
+                    echo "Shows the logs of the nginx proxy.
+
+Synopsis:
+    ./cx envs debug"
+                    ;;
+                list)
+                    echo "Shows a list of all attached environments.
+
+Synopsis:
+    ./cx envs list"
+                    ;;
+                shell)
+                    echo "This command opens an interactive shell of the PHP docker container for this environment.
+
+Synopsis
+    ./cx envs shell"
+                    ;;
                 *)
                     echo "This command manages the environment for multiple Cloudrexx installations on one host.
 
@@ -120,6 +139,7 @@ Available subcommands are:
     restart     Restarts the docker containers
     status      Tells whether the containers are running
     info        Alias for 'status'
+    shell       Interactive shell of the proxy container
 
 For more info about a subcommand type ./cx help envs <subcommand>";
                     ;;
@@ -229,7 +249,7 @@ Available options are:
                     echo "This command opens an interactive shell of the PHP docker container for this environment.
 
 Synopsis
-    ./cx env info"
+    ./cx env shell"
                     ;;
                 *)
                     echo "This command manages a Cloudrexx installation and its environment.
@@ -246,6 +266,7 @@ Available subcommands are:
     info        Calls 'status' and prints environment information
     update      Updates docker images and GIT and reloads database
     config      Configures Cloudrexx (config/configuration.php)
+    shell       Interactive shell of the current environment's web container
 
 For more info about a subcommand type ./cx help env <subcommand>";
                     ;;
@@ -312,6 +333,17 @@ function cmd_envs {
             ;;
         info)
             dockerexec ps -f "name=<container-prefix>*"
+            ;;
+        debug)
+            dockerexec logs -f "<proxy-container>"
+            ;;
+        shell)
+            dockerexec exec -ti "<proxy-container>" bash
+            ;;
+        list)
+            local containerlist
+            containerlist=$(dockerexec ps -f "name=<container-prefix>" -f "network=<proxy-network>" --format "{{.Names}}" | grep web)
+            echo "${containerlist//"clxenv"/}"
             ;;
         *)
             (>&2 echo "No such subcommand")
@@ -579,6 +611,9 @@ function get_config_array {
             CONFIG["is-vhost"]=false
         fi
     fi
+    if [[ "${CONFIG["hostname"]}" == "" || "${CONFIG["hostname"]}" == "localhost" ]]; then
+        CONFIG["hostname"]="${PWD##*/}.${CONFIG["root-domain"]}"
+    fi
     if [[ "${CONFIG["php-version"]}" == "" ]]; then
         CONFIG["php-version"]="5.6"
         if [[ "${CONFIG["cms-version"]:0:1}" -ge 5 ]]; then
@@ -591,6 +626,18 @@ function get_config_array {
     if [[ "${CONFIG["db-image"]}" == "" ]]; then
         CONFIG["db-image"]=${DEFAULT_CONFIG["db-image"]}
     fi
+    if [[ "${CONFIG["db-host"]}" == "" ]]; then
+        CONFIG["db-host"]=${DEFAULT_CONFIG["db-host"]}
+    fi
+    if [[ "${CONFIG["db-name"]}" == "" ]]; then
+        CONFIG["db-name"]=${DEFAULT_CONFIG["db-name"]}
+    fi
+    if [[ "${CONFIG["db-user"]}" == "" ]]; then
+        CONFIG["db-user"]=${DEFAULT_CONFIG["db-user"]}
+        if [[ "${CONFIG["db-pass"]}" == "" ]]; then
+            CONFIG["db-pass"]=${DEFAULT_CONFIG["db-pass"]}
+        fi
+    fi
     if [[ "${CONFIG["is-vhost"]}" == "" ]]; then
         local proxy_present
         proxy_present=$(internal_dockerexec ps -q -f "name=<proxy-container>")
@@ -600,7 +647,6 @@ function get_config_array {
             CONFIG["is-vhost"]=true
         fi
     fi
-    # TODO: Propose hostname
 }
 
 function set_config_array {
@@ -633,14 +679,19 @@ function set_config_array {
     FILE_CONTENTS=${FILE_CONTENTS//"<db-image>"/${CONFIG["db-image"]}}
     FILE_CONTENTS=${FILE_CONTENTS//"<proxy-network>"/"nginx-proxy"}
     FILE_CONTENTS=${FILE_CONTENTS//"<port>"/${CONFIG["port"]}}
+    # TODO: Find better way to replace all occurences
     if [[ "${CONFIG["is-vhost"]}" == true ]]; then
         FILE_CONTENTS=${FILE_CONTENTS//"<vhost>"/""}
         FILE_CONTENTS=${FILE_CONTENTS//"</vhost>"/""}
-        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<novhost>.*</novhost>())" "")
+        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<novhost>[^<]*</novhost>())" "")
+        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<novhost>[^<]*</novhost>())" "")
+        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<novhost>[^<]*</novhost>())" "")
     else
-        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<vhost>.*</vhost>())" "")
         FILE_CONTENTS=${FILE_CONTENTS//"<novhost>"/""}
         FILE_CONTENTS=${FILE_CONTENTS//"</novhost>"/""}
+        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<vhost>[^<]*</vhost>())" "")
+        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<vhost>[^<]*</vhost>())" "")
+        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "(()<vhost>[^<]*</vhost>())" "")
     fi
     # save docker-compose.yml
     echo "$FILE_CONTENTS" > docker-compose.yml
@@ -682,13 +733,13 @@ function internal_dockerexec {
     local ENV_NAME="${CONFIG[hostname]//"."/}"
     local ARGS=()
     for index in "$@"; do
-        index="${index//"<web-container>"/"<container-prefix>-<env-name>-web"}"
-        index="${index//"<db-container>"/"<container-prefix>-<env-name>-db"}"
-        index="${index//"<cache-container>"/"<container-prefix>-<env-name>-cache"}"
-        index="${index//"<phpma-container>"/"<container-prefix>-<env-name>-phpma"}"
+        index="${index//"<web-container>"/"<container-prefix><env-name>_web_1"}"
+        index="${index//"<db-container>"/"<container-prefix><env-name>_db_1"}"
+        index="${index//"<cache-container>"/"<container-prefix><env-name>_usercache_1"}"
+        index="${index//"<phpma-container>"/"<container-prefix><env-name>_phpmyadmin_1"}"
         index="${index//"<proxy-container>"/"<proxy-prefix>-proxy"}"
-        index="${index//"<container-prefix>"/"clx-env"}"
-        index="${index//"<proxy-prefix>"/"clx-envs"}"
+        index="${index//"<container-prefix>"/"clxenv"}"
+        index="${index//"<proxy-prefix>"/"clxenvs"}"
         index="${index//"<proxy-network>"/"nginx-proxy"}"
         index="${index//"<env-name>"/"$ENV_NAME"}"
         ARGS+=("$index")
@@ -698,7 +749,7 @@ function internal_dockerexec {
 
 function dockercomposeexec {
     get_config_array
-    docker-compose --project-name "${CONFIG["hostname"]}" "$@"
+    docker-compose --project-name "clxenv${CONFIG["hostname"]}" "$@"
 }
 
 #####################
