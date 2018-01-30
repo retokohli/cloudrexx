@@ -227,15 +227,15 @@ class CalendarMailManager extends CalendarLibrary {
      * @param integer   $actionId               Mail action id
      * @param integer   $regId                  Registration id
      * @param array     $arrMailTemplateIds     Prefered templates of the specified action to be sent
-     * @param boolean   $exclude_registered     If true, all guests which are already
-     *                                          in a list, will not be invited again
+     * @param string    $send_invitaion_to      The filter to which contacts the
+     *                                          mail should be sent
      */
     function sendMail(
         CalendarEvent $event,
         $actionId,
         $regId = null,
         $arrMailTemplateIds = array(),
-        $exclude_registered = false
+        $send_invitaion_to = 'all'
     ) {
         global $_ARRAYLANG, $_CONFIG ;
 
@@ -306,7 +306,7 @@ class CalendarMailManager extends CalendarLibrary {
 
         $placeholder = array('[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[LINK_EVENT]]', '[[LINK_REGISTRATION]]', '[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[URL]]', '[[DATE]]');
 
-        $recipients = $this->getSendMailRecipients($actionId, $event, $regId, $objRegistration, $exclude_registered);
+        $recipients = $this->getSendMailRecipients($actionId, $event, $regId, $objRegistration, $send_invitaion_to);
 
         $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
         $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
@@ -571,8 +571,8 @@ class CalendarMailManager extends CalendarLibrary {
      * @param object  $objEvent             Event object
      * @param integer $regId                registration id
      * @param object  $objRegistration      Registration object
-     * @param boolean $exclude_registered   If true, all guests which are already
-     *                                      in a list, will not be invited again
+     * @param string  $send_invitaion_to    The filter to which contacts the
+     *                                      mail should be sent
      *
      * @return array returns the array recipients
      */
@@ -581,7 +581,7 @@ class CalendarMailManager extends CalendarLibrary {
         $objEvent,
         $regId = 0,
         $objRegistration = null,
-        $exclude_registered = false
+        $send_invitaion_to = 'all'
     ) {
         global $_CONFIG, $_LANGID;
 
@@ -737,7 +737,7 @@ class CalendarMailManager extends CalendarLibrary {
         }
 
         // exclude all guests which are already registered on any of the lists
-        if($exclude_registered && $actionId == static::MAIL_INVITATION) {
+        if($send_invitaion_to && $actionId == static::MAIL_INVITATION) {
             // get all guests which are on a list
             $query = 'SELECT `v`.`value` AS `mail`
                         FROM `'.DBPREFIX.'module_calendar_registration_form_field_value` AS `v`

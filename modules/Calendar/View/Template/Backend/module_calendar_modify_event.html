@@ -1319,12 +1319,15 @@
             </tr>
             <tr class="row1" id="invitationExclude" style="display: none;">
                 <td valign="top">
-                    {TXT_CALENDAR_EVENT_EXCLUDE_FROM_INVITATION}
+                    {TXT_CALENDAR_EVENT_SEND_INVITATION_TO}
                     <span class="icon-info tooltip-trigger"></span>
-                    <span class="tooltip-message">{TXT_CALENDAR_EVENT_EXCLUDE_TOOLTIP}</span>
+                    <span class="tooltip-message">{TXT_CALENDAR_EVENT_SEND_INVITATION_TO_TOOLTIP}</span>
                 </td>
                 <td colspan="2">
-                    <input name="excludeFromInvitation" class="excludeFromInvitation" type="checkbox" value="1" />
+                    <input type="radio" name="sendMailTo" id="allUsers" value="all" checked="checked"/><label for="allUsers"> {TXT_CALENDAR_EVENT_SEND_INVITATION_TO_ALL}</label><br />
+                    <input type="radio" name="sendMailTo" id="signedInUsers" value="signedIn" /><label for="signedInUsers"> {TXT_CALENDAR_EVENT_SEND_INVITATION_TO_SIGNEDIN}</label><br />
+                    <input type="radio" name="sendMailTo" id="inactiveUsers" value="inactive" /><label for="inactiveUsers"> {TXT_CALENDAR_EVENT_SEND_INVITATION_TO_INACTIVE}</label>
+
                 </td>
             </tr>
         </table>
