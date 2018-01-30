@@ -215,12 +215,6 @@ cx.jQuery(document).ready(function(){
             ),
             'dependencies' => array('jquery'),
         ),
-        'ckeditor'     => array(
-            'jsfiles'       => array(
-                'lib/ckeditor/ckeditor.js',
-            ),
-            'dependencies' => array('jquery'),
-        ),
         'js-cookie' => array(
             'jsfiles'       => array(
                 'lib/javascript/js-cookie.min.js',
@@ -783,6 +777,20 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             self::$customJS[] = $file;
         }
         return true;
+    }
+
+    /**
+     * Register a JavaScript library that can later (after preContentLoad hook)
+     * be loaded by any component by calling \JS::activate($name).
+     * This method should only be used within the preContentLoad hook.
+     *
+     * @param   $name   string  Name of the library to register
+     * @param   $definition array   Meta information about the library.
+     *                              See static::$available for schema
+     *                              definition.
+     */
+    public static function registerJsLibrary($name, $definition = array()) {
+        static::$available[$name] = $definition;
     }
 
     /**

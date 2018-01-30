@@ -752,8 +752,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 WHERE `group_id` = ' . intval($objGroup->getId()) . '
                 LIMIT 1');
             // Fetch the data
-            $toolbarId = $toolbarIdRes->fields;
-            $toolbarId = $toolbarId['toolbar'];
+            $toolbarId = $toolbarIdRes->fields['toolbar'];
             $newToolbarId = $toolbarController->store($newButtons, $toolbarId);
             // Check if a new toolbar has been created or an existing one updated
             if ($newToolbarId !== 0) {

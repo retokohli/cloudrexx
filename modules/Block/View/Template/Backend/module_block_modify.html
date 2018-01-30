@@ -107,7 +107,7 @@
         if ($J('#wysiwyg_editor').prop('checked')) {
             if (typeof(CKEDITOR.instances.ckeditor) == 'undefined') {
                 var config = {
-                    customConfig : cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'block'),
+                    customConfig : cx.variables.get('ckeditorconfigpath', 'block'),
                     toolbar: 'Full',
                     removePlugins: 'bbcode',
                     height: 380
