@@ -57,7 +57,7 @@ for arg in "$@"
 do
     if [[ "$arg" == --* ]]; then
         arg="${arg:2:${#arg}-2}"
-        if [[ "$arg" = --*=* ]]; then
+        if [[ "$arg" = *=* ]]; then
             IFS='='; read -r key value <<< "$arg"
             ARGUMENTS[$key]=$value
             FORCED_ARGUMENTS[$key]=$value
@@ -361,7 +361,7 @@ function cmd_env {
                 echo "This will install Cloudrexx in the current directory ($(pwd))"
                 read -p "Continue [Yn]? " -n 1 -r
                 echo ""
-                if ! [[ "$REPLY" != "" && "$REPLY" =~ ^[Yy]$ ]]; then
+                if [[ "$REPLY" != "" ]] && ! [[ "$REPLY" =~ ^[Yy]$ ]]; then
                     return
                 fi
             fi
@@ -403,7 +403,8 @@ function cmd_env {
             ARGUMENTS["db"]=true && cmd_env update
             dockerexec exec "<web-container>" chown -R www-data: ./
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
-                echo "Environment successfully initialized, you should be able to reach Cloudrexx at http://${ARGUMENTS["hostname"]}.lvh.me/"
+                get_config_array
+                echo "Environment successfully initialized, you should be able to reach Cloudrexx at http://${CONFIG["hostname"]}/"
             fi
             ;;
         up)
@@ -618,7 +619,7 @@ function get_config_array {
         fi
     fi
     if [[ "${CONFIG["hostname"]}" == "" || "${CONFIG["hostname"]}" == "localhost" ]]; then
-        CONFIG["hostname"]="${PWD##*/}.${CONFIG["root-domain"]}"
+        CONFIG["hostname"]="${PWD##*/}.${ARGUMENTS["root-domain"]}"
     fi
     if [[ "${CONFIG["php-version"]}" == "" ]]; then
         CONFIG["php-version"]="5.6"
@@ -755,7 +756,7 @@ function internal_dockerexec {
 
 function dockercomposeexec {
     get_config_array
-    docker-compose --project-name "clxenv${CONFIG["hostname"]}" "$@"
+    docker-compose --project-name "clxenv${CONFIG["hostname"]//./}" "$@"
 }
 
 #####################
