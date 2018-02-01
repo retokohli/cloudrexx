@@ -102,22 +102,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // downloads group
         $groups            = Group::getGroups();
         $groupsPlaceholders = $groups->getGroupsPlaceholders();
-        $this->registerDownloadsWidgets($groupsPlaceholders);
+        $this->registerDownloadsWidgets($groupsPlaceholders, \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::TYPE_PLACEHOLDER);
 
         // downloads category list
         $categoriesBlocks = Category::getCategoryWidgetNames();
-        $this->registerDownloadsWidgets($categoriesBlocks, true);
+        $this->registerDownloadsWidgets($categoriesBlocks, \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::TYPE_BLOCK);
     }
 
     /**
      * Register the downloads widgets
      *
      * @param array   $widgets widgets array
-     * @param boolean $isBlock Set the widget is block or placeholder
+     * @param string  $type Widget type
      *
      * @return null
      */
-    public function registerDownloadsWidgets($widgets, $isBlock = false) {
+    protected function registerDownloadsWidgets($widgets, $type) {
 
         $pos = 0;
         if (isset($_GET['pos'])) {
@@ -128,11 +128,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
                 $widgetName,
-                (
-                    $isBlock ? 
-                    \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::TYPE_BLOCK :
-                    \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::TYPE_PLACEHOLDER
-                ),
+                $type,
                 '',
                 '',
                 array('pos' => $pos)
