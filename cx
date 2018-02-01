@@ -408,6 +408,15 @@ function cmd_env {
             fi
             ARGUMENTS["db"]=true && cmd_env update
             dockerexec exec "<web-container>" chown -R www-data ./
+            if [[ "${CONFIG["cms-version"]:0:1}" -ge 5 ]]; then
+                phpexec Setting set Config -engine=Yaml -group=cache cacheEnabled on
+                phpexec Setting set Config -engine=Yaml -group=cache internalSsiCache on
+                phpexec Setting set Config -engine=Yaml -group=cache cacheUserCache memcached
+                phpexec Setting set Config -engine=Yaml -group=cache cacheUserCacheMemcachedConfig "{\"ip\":\"usercache\",\"port\":\"11211\"}"
+                phpexec Setting set Config -engine=Yaml -group=cache cacheDbStatus on
+                phpexec Setting set Config -engine=Yaml -group=cache cacheOPCache zendopcache
+                phpexec Setting set Config -engine=Yaml -group=cache cacheOpStatus on
+            fi
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 get_config_array
                 echo "Environment successfully initialized, you should be able to reach Cloudrexx at http://${CONFIG["hostname"]}/"
