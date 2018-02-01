@@ -751,7 +751,12 @@ function internal_dockerexec {
         index="${index//"<env-name>"/"$ENV_NAME"}"
         ARGS+=("$index")
     done
-    docker "${ARGS[@]}"
+    if read -r -t 0; then
+        data=$(cat /dev/stdin)
+        echo "$data" | docker "${ARGS[@]}"
+    else
+        docker "${ARGS[@]}"
+    fi
 }
 
 function dockercomposeexec {
