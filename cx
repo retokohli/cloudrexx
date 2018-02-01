@@ -688,7 +688,7 @@ function set_config_array {
     echo "$FILE_CONTENTS" > config/settings.php
 
     # load _meta/docker-compose.yml
-    FILE_CONTENTS=$(cat _meta/docker-compose.yml)
+    FILE_CONTENTS=$(cat _meta/docker-compose.tpl)
     # replace php-image with php-version internally
     PHP_IMAGE=${CONFIG["php-image"]}
     PHP_IMAGE=${PHP_IMAGE//"<php-version>"/${CONFIG["php-version"]}}
