@@ -657,14 +657,12 @@ function get_config_array {
             CONFIG["db-pass"]=${DEFAULT_CONFIG["db-pass"]}
         fi
     fi
-    if [[ "${CONFIG["is-vhost"]}" == "" ]]; then
-        local proxy_present
-        proxy_present=$(internal_dockerexec ps -q -f "name=<proxy-container>")
-        if [[ "$proxy_present" == "" ]]; then
-            CONFIG["is-vhost"]=false
-        else
-            CONFIG["is-vhost"]=true
-        fi
+    local proxy_present
+    proxy_present=$(internal_dockerexec ps -q -f "name=<proxy-container>")
+    if [[ "$proxy_present" == "" ]]; then
+        CONFIG["is-vhost"]=false
+    else
+        CONFIG["is-vhost"]=true
     fi
 }
 
