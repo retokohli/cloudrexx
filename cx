@@ -395,6 +395,9 @@ function cmd_env {
                 ARGUMENTS["interactive"]=true
             fi
             cmd_env config
+            FILE_CONTENTS=$(cat config/configuration.php)
+            FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((define\('CONTREXX_INSTALLED', )false(\);))" "true")
+            echo "$FILE_CONTENTS" > config/configuration.php
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 echo "Loading docker containers"
             fi
@@ -403,7 +406,7 @@ function cmd_env {
                 echo "Loading database"
             fi
             ARGUMENTS["db"]=true && cmd_env update
-            dockerexec exec "<web-container>" chown -R www-data: ./
+            dockerexec exec "<web-container>" chown -R www-data ./
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 get_config_array
                 echo "Environment successfully initialized, you should be able to reach Cloudrexx at http://${CONFIG["hostname"]}/"
