@@ -413,7 +413,13 @@ class Calendar extends CalendarLibrary
         if ($cmd == 'boxes' || $cmd == 'category') {
             $this->startPos = 0;
             $this->numEvents = 'n';
-        } else if(!isset($_GET['search']) && ($cmd != 'list' && $cmd != 'eventlist' && $cmd != 'archive')) {
+        } else if(
+            !isset($_GET['search']) &&
+            $cmd != 'list' &&
+            $cmd != 'eventlist' &&
+            $cmd != 'archive' &&
+            $cmd != 'my_events'
+        ) {
             $this->startPos = 0;
             $this->numEvents = $this->arrSettings['numEntrance'];
         } else {

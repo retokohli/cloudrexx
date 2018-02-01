@@ -905,10 +905,17 @@ class Resolver {
             // if this page is protected, we do not follow fallback
             $this->checkPageFrontendProtection($page);
 
-            if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_SYMLINK) {
-                $fallbackPage = $this->pageRepo->getTargetPage($page);
-            } else {
-                $fallbackPage = $this->getFallbackPage($page);
+            try {
+                if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_SYMLINK) {
+                    $fallbackPage = $this->pageRepo->getTargetPage($page);
+                } else {
+                    $fallbackPage = $this->getFallbackPage($page);
+                }
+            } catch (\Exception $e) {
+                \DBG::msg(__METHOD__ . ': '. $e->getMessage());
+                //page not found, redirect to error page.
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Error'));
+                exit;
             }
 
             // due that the fallback is located within a different language
