@@ -116,6 +116,13 @@ class DownloadsLibrary
         )
     );
 
+    /**
+     * The locale in which the output shall be parsed for
+     *
+     * @var \Cx\Core\Locale\Model\Entity\Locale
+     */
+    protected static $outputLocale;
+
     public function __construct()
     {
         $this->initSettings();
@@ -160,6 +167,57 @@ class DownloadsLibrary
         $this->defaultDownloadImage = $this->defaultCategoryImage;
     }
 
+    /**
+     * Get locale in which output shall be parsed for
+     *
+     * @return \Cx\Core\Locale\Model\Entity\Locale
+     */
+    public static function getOutputLocale() {
+        if (!static::$outputLocale) {
+            static::initOutputLocale();
+        }
+        return static::$outputLocale;
+    }
+
+    /**
+     * Determine the locale in which the output shall be parsed for.
+     */
+    protected static function initOutputLocale() {
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getDb()
+            ->getEntityManager();
+
+        $locale = null;
+        if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+            try {
+                // get ISO-639-1 code of backend language
+                $backend = $em->find(
+                    'Cx\Core\Locale\Model\Entity\Backend',
+                    LANG_ID
+                );
+                $iso1Code = $backend->getIso1()->getId();
+
+                // find matching frontend locale based on ISO-639-1 code of backend
+                // language
+                $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
+                $locale = $localeRepo->findOneByCode($iso1Code);
+            } catch (\Exception $e) {}
+        }
+
+        if (!$locale) {
+            // get currently selected frontend locale
+            $locale = $em->find(
+                'Cx\Core\Locale\Model\Entity\Locale',
+                FRONTEND_LANG_ID
+            );
+        }
+
+        if (!$locale) {
+            throw new \Exception('Unable to initialize frontend locale');
+        }
+
+        static::$outputLocale = $locale;
+    }
 
     protected function updateSettings()
     {
@@ -181,8 +239,6 @@ class DownloadsLibrary
         $accessType, $selectedCategory, $selectionText,
         $attrs=null, $categoryId=null)
     {
-        global $_LANGID;
-
         $sortOrder   = $this->categoriesSortingOptions[$this->arrConfig['categories_sorting_order']];
         $objCategory = Category::getCategories(null, null, $sortOrder);
         $arrCategories = array();
@@ -202,7 +258,7 @@ class DownloadsLibrary
             if ($objCategory->getVisibility() || \Permission::checkAccess($objCategory->getReadAccessId(), 'dynamic', true)) {
                 $arrCategories[$objCategory->getParentId()][] = array(
                     'id'        => $objCategory->getId(),
-                    'name'      => $objCategory->getName($_LANGID),
+                    'name'      => $objCategory->getName(),
                     'owner_id'  => $objCategory->getOwnerId(),
                     'access_id' => $objCategory->{$accessCheckFunction}(),
                     'is_child'  => $objCategory->check4Subcategory($categoryId)
@@ -265,8 +321,6 @@ class DownloadsLibrary
 
     protected function getParsedCategoryListForDownloadAssociation( )
     {
-        global $_LANGID;
-
         $sortOrder   = $this->categoriesSortingOptions[$this->arrConfig['categories_sorting_order']];
         $objCategory = Category::getCategories(null, null, $sortOrder);
         $arrCategories = array();
@@ -274,7 +328,7 @@ class DownloadsLibrary
         while (!$objCategory->EOF) {
                 $arrCategories[$objCategory->getParentId()][] = array(
                     'id'                    => $objCategory->getId(),
-                    'name'                  => $objCategory->getName($_LANGID),
+                    'name'                  => $objCategory->getName(),
                     'owner_id'              => $objCategory->getOwnerId(),
                     'add_files_access_id'     => $objCategory->getAddFilesAccessId(),
                     'manage_files_access_id'  => $objCategory->getManageFilesAccessId()
@@ -376,7 +430,7 @@ class DownloadsLibrary
         return $menu;
     }
 
-     /**
+      /**
      * Get Group content by group id
      *
      * @param integer $id     group id
