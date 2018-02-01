@@ -235,7 +235,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                     $this,
                     $widgetName,
-                    true
+                    \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK
                 );
                 $widget->setEsiVariable(
                     \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER
@@ -257,7 +257,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
                 $widgetName,
-                true
+                \Cx\Core_Modules\Widget\Model\Entity\Widget::TYPE_BLOCK
             );
             $widget->setEsiVariable(
                 \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER

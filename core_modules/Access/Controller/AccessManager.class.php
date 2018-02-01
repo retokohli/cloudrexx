@@ -752,8 +752,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 WHERE `group_id` = ' . intval($objGroup->getId()) . '
                 LIMIT 1');
             // Fetch the data
-            $toolbarId = $toolbarIdRes->fields;
-            $toolbarId = $toolbarId['toolbar'];
+            $toolbarId = $toolbarIdRes->fields['toolbar'];
             $newToolbarId = $toolbarController->store($newButtons, $toolbarId);
             // Check if a new toolbar has been created or an existing one updated
             if ($newToolbarId !== 0) {
@@ -1983,7 +1982,14 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         if (
             (
-                $objUserMail->load($mail2load, $_LANGID) ||
+                $objUserMail->load(
+                    $mail2load,
+                    $objUser->getFrontendLanguage()
+                ) ||
+                $objUserMail->load(
+                    $mail2load,
+                    $objUser->getBackendLanguage()
+                ) ||
                 $objUserMail->load($mail2load)
             ) &&
             ($objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail()) !== false
