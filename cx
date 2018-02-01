@@ -558,6 +558,7 @@ SET FOREIGN_KEY_CHECKS = 1;" | internal_dockerexec exec -i "<db-container>" bash
                 return
             fi
             get_config_array
+            declare -A CONFIG_OVERRIDE
             if [ ${#CONFIG[@]} -eq 0 ]; then
                 # load config, if its empty: load default config over it
                 for value in "${!ARGUMENTS[@]}"; do
