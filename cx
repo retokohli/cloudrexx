@@ -370,11 +370,13 @@ function cmd_env {
             fi
             if [[ ${ARGUMENTS["skip-source"]} != true ]]; then
                 # We do not simply clone because ./cx already exists
-                git init
+                git init -q
                 git remote add origin ${ARGUMENTS["source-repo"]}
                 git fetch
-                git reset "origin/${ARGUMENTS["source-branch"]}"
-                git checkout -t "origin/${ARGUMENTS["source-branch"]}"
+                git reset -q --hard "origin/${ARGUMENTS["source-branch"]}"
+                if [[ "${ARGUMENTS["source-branch"]}" != "master" ]]; then
+                    git checkout -q -t "origin/${ARGUMENTS["source-branch"]}"
+                fi
                 # assume ./tmp/* and ./config/* are unchanged
                 git ls-files -z tmp/ | xargs -0 git update-index --assume-unchanged
                 git ls-files -z config/ | xargs -0 git update-index --assume-unchanged
