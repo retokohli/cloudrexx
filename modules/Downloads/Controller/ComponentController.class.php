@@ -150,6 +150,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm = $this->cx->getEvents();
         $eventListener = new \Cx\Modules\Downloads\Model\Event\DownloadsEventListener($this->cx);
         $evm->addEventListener('mediasource.load', $eventListener);
+
         // locale event listener
         $localeLocaleEventListener = new \Cx\Modules\Downloads\Model\Event\LocaleLocaleEventListener($this->cx);
         $evm->addModelListener('postPersist', 'Cx\\Core\\Locale\\Model\\Entity\\Locale', $localeLocaleEventListener);

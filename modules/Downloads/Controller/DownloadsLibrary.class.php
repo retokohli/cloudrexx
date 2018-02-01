@@ -329,7 +329,6 @@ class DownloadsLibrary
             } else {
                 $author = $objUser->getUsername();
             }
-            $author = htmlentities($author, ENT_QUOTES, CONTREXX_CHARSET);
         } else {
             $author = $_ARRAYLANG['TXT_DOWNLOADS_UNKNOWN'];
         }
@@ -343,7 +342,7 @@ class DownloadsLibrary
         $objFWUser = \FWUser::getFWUserObject();
         $objUser = $objFWUser->objUser->getUsers(null, null, null, array('id', 'username', 'firstname', 'lastname'));
         while (!$objUser->EOF) {
-            $menu .= '<option value="'.$objUser->getId().'"'.($objUser->getId() == $selectedUserId ? ' selected="selected"' : '').'>'.$this->getParsedUsername($objUser->getId()).'</option>';
+            $menu .= '<option value="'.$objUser->getId().'"'.($objUser->getId() == $selectedUserId ? ' selected="selected"' : '').'>'.contrexx_raw2xhtml($this->getParsedUsername($objUser->getId())).'</option>';
             $objUser->next();
         }
         $menu .= '</select>';

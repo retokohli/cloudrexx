@@ -685,6 +685,10 @@ class User extends User_Profile
 
     public function getBackendLanguage()
     {
+        if (!$this->backend_language) {
+            global $_LANGID;
+            $this->backend_language = $_LANGID;
+        }
         return $this->backend_language;
     }
 
@@ -1110,7 +1114,7 @@ class User extends User_Profile
         $arrSelectCoreExpressions = array();
         $arrSelectCustomExpressions = null;
         $this->filtered_search_count = 0;
-        $sqlCondition = '';
+        $sqlCondition = array();
 
         // set filter
         if (isset($filter) && is_array($filter) && count($filter) || !empty($search)) {
@@ -1360,7 +1364,7 @@ class User extends User_Profile
 
 
     private function setSortedUserIdList(
-        $arrSort, $sqlCondition=null, $limit=null, $offset=null, $groupless=false, $crmUser=false
+        $arrSort, $sqlCondition=array(), $limit=null, $offset=null, $groupless=false, $crmUser=false
     ) {
         global $objDatabase;
 
@@ -1812,12 +1816,7 @@ class User extends User_Profile
                     'clearEsiCache',
                     array(
                         'Widget',
-                        array(
-                            'access_currently_online_member_list',
-                            'access_last_active_member_list',
-                            'access_latest_registered_member_list',
-                            'access_birthday_member_list',
-                        ),
+                        $cx->getComponent('Access')->getUserDataBasedWidgetNames(),
                     )
                 );
             }
@@ -1830,12 +1829,7 @@ class User extends User_Profile
                 'clearEsiCache',
                 array(
                     'Widget',
-                    array(
-                        'access_currently_online_member_list',
-                        'access_last_active_member_list',
-                        'access_latest_registered_member_list',
-                        'access_birthday_member_list',
-                    ),
+                    $cx->getComponent('Access')->getUserDataBasedWidgetNames(),
                 )
             );
         }

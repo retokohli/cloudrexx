@@ -100,7 +100,7 @@ class MediaDirectoryMail extends MediaDirectoryLibrary
 
     function loadTemplate()
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $objRSLoadTemplate = $objDatabase->Execute("SELECT
                                                         title, content, recipients
@@ -109,7 +109,7 @@ class MediaDirectoryMail extends MediaDirectoryLibrary
                                                     WHERE
                                                         action_id='".$this->intAction."'
                                                     AND
-                                                        lang_id='".intval($_LANGID)."'
+                                                        lang_id='".intval(FRONTEND_LANG_ID)."'
                                                     AND
                                                         active='1'
                                                     LIMIT 1");
@@ -142,7 +142,7 @@ class MediaDirectoryMail extends MediaDirectoryLibrary
 
     function parsePlaceholders()
     {
-        global $objDatabase, $_LANGID, $_CONFIG;
+        global $objDatabase, $_CONFIG;
 
         if($this->objUser != false) {
             $strUserNick = $this->objUser->getUsername();
@@ -168,7 +168,7 @@ class MediaDirectoryMail extends MediaDirectoryLibrary
                                                         ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield
                                                     WHERE (rel_inputfield.`entry_id`='".$this->intEntryId."')
                                                     AND (rel_inputfield.`field_id` = (".$strRelQuery."))
-                                                    AND (rel_inputfield.`lang_id` = '".$_LANGID."')
+                                                    AND (rel_inputfield.`lang_id` = '".FRONTEND_LANG_ID."')
                                                     AND (rel_inputfield.`value` != '')
                                                     GROUP BY value
                                                     ");

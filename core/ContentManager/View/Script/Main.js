@@ -225,10 +225,13 @@ cx.ready(function() {
     });
     cx.jQuery('#page_target_edit').click(function() {
         cx.jQuery('#page_target_cancel').show();
-        cx.jQuery('.page_target_text_wrapper').hide().prev().show();
+        cx.jQuery('#page_target_text_wrapper_redirect').hide().prev().show();
     });
     cx.jQuery('#page_target_cancel').click(function() {
-        cx.cm.setPageTarget(cx.jQuery(".page_target_backup").val(), cx.jQuery(".page_target_text").text());
+        cx.cm.setPageTarget(
+            cx.jQuery(".page_target_backup").val(),
+            cx.jQuery(this).parent().next(".page_target_text_wrapper").find(".page_target_text").text()
+        );
     });
     cx.jQuery('#page_target_check').click(function() {
         cx.jQuery(this).hide();
@@ -2586,9 +2589,9 @@ cx.cm.createEditor = function() {
             return base + sep + key + '=' + value;
         }
         var config = {
-            customConfig: buildUrl(cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'), 'pageId', cx.jQuery('#pageId').val()),
+            customConfig: buildUrl(cx.variables.get('ckeditorconfigpath', 'contentmanager'), 'pageId', cx.jQuery('#pageId').val()),
             toolbar: 'Full',
-            skin: 'moono'
+            removePlugins: 'bbcode'
         };
         CKEDITOR.replace('page[content]', config);
 

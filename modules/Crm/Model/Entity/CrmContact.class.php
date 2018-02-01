@@ -70,6 +70,13 @@ class CrmContact
     protected $emailDelivery;
 
     /**
+     * Date of last modification
+     *
+     * @var string
+     */
+    public $updated_date = '';
+
+    /**
      * Load the record
      *
      * @param Integer $id record id
@@ -350,6 +357,7 @@ class CrmContact
         $this->email            = '';
         $this->phone            = '';
         $this->added_date       = '';
+        $this->updated_date     = '';
     }
 
     /**

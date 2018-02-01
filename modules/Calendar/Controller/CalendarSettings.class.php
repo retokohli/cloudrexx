@@ -635,20 +635,18 @@ class CalendarSettings extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_HOST_KEY_AUTOGEN_IF_EMPTY'    => $_ARRAYLANG['TXT_CALENDAR_HOST_KEY_AUTOGEN_IF_EMPTY'],
             'TXT_'.$this->moduleLangVar.'_HOST_CATEGORY'                => $_ARRAYLANG['TXT_CALENDAR_CATEGORY'],
         ));
-
         if($hostId != 0) {
             $objHostManager = new \Cx\Modules\Calendar\Controller\CalendarHostManager();
             $objHostManager->showHost($objTpl, $hostId);
             $objHost = $objHostManager->hostList[$hostId];
         }
-
         $objCategoryManager = new \Cx\Modules\Calendar\Controller\CalendarCategoryManager(true);
         $objCategoryManager->getCategoryList();
-
         $category = '<select style="width: 252px;" name="category" >';
-        $category .= $objCategoryManager->getCategoryDropdown(intval($objHost->catId), 2);
+        $category .= $objCategoryManager->getCategoryDropdown(
+            array($objHost->catId => null),
+            CalendarCategoryManager::DROPDOWN_TYPE_ASSIGN);
         $category .= '</select>';
-
         $objTpl->setVariable(array(
             $this->moduleLangVar.'_HOST_CATEGORY'    => $category
         ));
@@ -716,6 +714,7 @@ class CalendarSettings extends CalendarLibrary
 
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
+            $infoboxJS = '';
             while (!$objResult->EOF) {
                 $objTpl->setVariable(array(
                     'TXT_CALENDAR_SECTION_NAME' => $_ARRAYLANG[$objResult->fields['title']],
@@ -738,12 +737,14 @@ class CalendarSettings extends CalendarLibrary
                         $objTpl->setVariable(array(
                             $this->moduleLangVar.'_SETTING_ROW'             => $i%2==0 ? 'row1' : 'row2',
                             $this->moduleLangVar.'_SETTING_NAME'            => $objResultSetting->fields['name'],
-                            'TXT_'.$this->moduleLangVar.'_SETTING_NAME'     => $_ARRAYLANG[$objResultSetting->fields['title']],
+                            'TXT_'.$this->moduleLangVar.'_SETTING_NAME'     => isset($_ARRAYLANG[$objResultSetting->fields['title']]) ? $_ARRAYLANG[$objResultSetting->fields['title']] : '',
                             $this->moduleLangVar.'_SETTING_VALUE'           => $arrSetting['output'],
                             $this->moduleLangVar.'_SETTING_INFO'            => $arrSetting['infobox'],
                         ));
 
-                        $infoboxJS .= $arrSetting['infoboxJS'];
+                        if (isset($arrSetting['infoboxJS'])) {
+                            $infoboxJS .= $arrSetting['infoboxJS'];
+                        }
 
                         $i++;
                         $objTpl->parse('settingsList');
@@ -780,6 +781,7 @@ class CalendarSettings extends CalendarLibrary
         global $_ARRAYLANG, $_CORELANG;
 
         $arrSetting = array();
+        $output = '';
 
         switch (intval($type)) {
             case 1:
@@ -839,24 +841,25 @@ class CalendarSettings extends CalendarLibrary
                                 }
                     $output .= '</select>';
                 }
-
                 if(!empty($special)) {
                     switch ($special) {
                         case 'getCategoryDorpdown':
                             $objCategoryManager = new \Cx\Modules\Calendar\Controller\CalendarCategoryManager(true);
                             $objCategoryManager->getCategoryList();
                             $output = '<select style="width: 252px;" name="settings['.$name.']" >';
-                            $output .= $objCategoryManager->getCategoryDropdown(intval($value), 1);
+                            $output .= $objCategoryManager->getCategoryDropdown(
+                                array(intval($value) => null),
+                                CalendarCategoryManager::DROPDOWN_TYPE_FILTER);
                             $output .= '</select>';
                             break;
                         case 'getPlaceDataDorpdown':
                             $objMediadirForms = new \Cx\Modules\MediaDir\Controller\MediaDirectoryForm(null, 'MediaDir');
                             $objMediadirForms->getForms();
-                            $objMediadirForms->listForms($objTpl,4);
+                            $objMediadirForms->listForms(null,4);
 
                             $output  = $_ARRAYLANG['TXT_CALENDAR_SELECT_FORM_MEDIADIR'].": <br />";
                             $output .= '<select style="width: 252px;" name="settings['.$name.']" >';
-                            $output .= $objMediadirForms->listForms($objTpl,4,intval($value));
+                            $output .= $objMediadirForms->listForms(null,4,intval($value));
                             $output .= '</select>';
                             break;
                     }

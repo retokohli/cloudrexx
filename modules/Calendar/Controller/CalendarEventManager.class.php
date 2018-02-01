@@ -205,7 +205,7 @@ class CalendarEventManager extends CalendarLibrary
      * @var array List of indexData of calendar events synced from a remote location
      */
     protected static $syncedIds;
-    
+
     /**
      * Loads the event manager configuration
      *
@@ -246,58 +246,58 @@ class CalendarEventManager extends CalendarLibrary
      */
     function getEventList() {
         global $objDatabase, $_ARRAYLANG, $_LANGID, $objInit;
-
         $this->getSettings();
-
         // need for database TIMESTAMP
-        $startDate = $this->startDate ? $this->getDbDateTimeFromIntern($this->startDate)->format('Y-m-d H:i:s') : '0000-00-00 00:00:00';
-        $endDate   = $this->endDate ? $this->getDbDateTimeFromIntern($this->endDate)->format("Y-m-d H:i:s") : '0000-00-00 00:00:00';
-
-        $onlyActive_where = ($this->onlyActive == true ? ' AND event.status=1' : '');
-        $categoryId_where = ($this->categoryId != 0 ? ' AND event.catid='.$this->categoryId : '');
-
-        if($objInit->mode == 'backend') {
-            $showIn_where = "";
-        } else {
+        $startDate = $this->startDate
+            ? $this->getDbDateTimeFromIntern($this->startDate)->format('Y-m-d H:i:s')
+            : '0000-00-00 00:00:00';
+        $endDate   = $this->endDate
+            ? $this->getDbDateTimeFromIntern($this->endDate)->format("Y-m-d H:i:s")
+            : '0000-00-00 00:00:00';
+        $onlyActive_where = ($this->onlyActive ? ' AND event.status=1' : '');
+        $joins = $categoryId_where = $showIn_where = $dateScope_where =
+            $searchTerm_where = $searchTerm_DB = $author_where = '';
+        if ($this->categoryId) {
+            $categoryId_where = '
+                AND rel_categories.category_id='.intval($this->categoryId);
+            $joins = '
+                JOIN ' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_events_categories AS rel_categories
+                ON event.id=rel_categories.event_id';
+        }
+        if ($objInit->mode !== \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
             if($this->arrSettings['showEventsOnlyInActiveLanguage'] == 1) {
-                $showIn_where = "AND FIND_IN_SET('".$_LANGID."',event.show_in)>0 ";
-            } else {
-                $showIn_where = "";
+                $showIn_where = "
+                    AND FIND_IN_SET('" . $_LANGID . "', event.show_in)>0";
             }
         }
-
         if ($this->endDate !== null) {
             // Note: 'NOW' in the following comments refers to the filtered
             //       date of the request.
-            $dateScope_where = '(('
+            $dateScope_where = '
+                (('
                 // Event is happening now (it did already start) and will go on
                 // after the selected range.
                 // Logic: startdate <= START && enddate <= END
                 .'(event.startdate <= "'.$startDate.'" AND "'.$endDate.'" <= event.enddate) OR '
-
                 // Event is about to happen in the selected range, but will go
                 // on afterwards as well.
                 // Logic: START <= startdate <= END <= enddate
                 .'("'.$startDate.'" <= event.startdate AND "'.$endDate.'" <= event.enddate AND event.startdate <= "'.$endDate.'") OR '
-
                 // Event is happening now and is about to end in the selected range.
                 // Logic: startdate <= START <= enddate <= END
                 .'(event.startdate <= "'.$startDate.'" AND event.enddate <= "'.$endDate.'" AND "'.$startDate.'" <= event.enddate) OR '
-
                 // Event is happening exactly within the selected range
                 // Logic: START <= startdate <= enddate <= END
                 .'("'.$startDate.'" <= event.startdate AND event.enddate <= "'.$endDate.'")
             ) OR (
                 (event.series_status = 1) AND (event.startdate <= "'.$endDate.'")
             ))';
-
         } else {
             // Note: 'NOW' in the following comments refers to the filtered
             //       date of the request.
             $dateScope_where = '(('
                 // event is happening now (startdate <= NOW <= enddate)
                 .'((event.enddate >= "'.$startDate.'") AND (event.startdate <= "'.$startDate.'")) OR '
-
                 // event lies in the future (NOW <= startdate <= enddate)
                 .'((event.startdate >= "'.$startDate.'") AND (event.enddate >= "'.$startDate.'"))
             ) OR (
@@ -323,21 +323,21 @@ class CalendarEventManager extends CalendarLibrary
             $author_where =' AND (event.author = '.intval($this->author).')';
         }
 
-        $query = "SELECT event.id AS id
-                    FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event AS event
-                         ".$searchTerm_DB."
-                   WHERE ".$dateScope_where."
-                         ".$onlyActive_where."
-                         ".$categoryId_where."
-                         ".$searchTerm_where."
-                         ".$showIn_where."
-                         ".$confirmed_where."
-                         ".$author_where."
-                GROUP BY event.id
-                ORDER BY event.startdate";
-
+        $query = "
+            SELECT event.id AS id
+            FROM " . DBPREFIX . "module_" . $this->moduleTablePrefix . "_event AS event
+                $searchTerm_DB
+                $joins
+            WHERE $dateScope_where
+                $onlyActive_where
+                $categoryId_where
+                $searchTerm_where
+                $showIn_where
+                $confirmed_where
+                $author_where
+            GROUP BY event.id
+            ORDER BY event.startdate";
         $objResult = $objDatabase->Execute($query);
-
         if ($objResult !== false) {
             $objFWUser = \FWUser::getFWUserObject();
             while (!$objResult->EOF) {
@@ -352,8 +352,8 @@ class CalendarEventManager extends CalendarLibrary
                         continue;
                     }
                 }
-
-                if($objInit->mode == 'frontend' || $this->showSeries) {
+                if ($objInit->mode !== \Cx\Core\Core\Controller\Cx::MODE_BACKEND
+                    || $this->showSeries) {
                     $checkFutureEvents = true;
                     if(self::_addToEventList($objEvent)) {
                         $this->eventList[] = $objEvent;
@@ -362,32 +362,25 @@ class CalendarEventManager extends CalendarLibrary
                         }
                     }
 
-                    if ($checkFutureEvents && $objEvent->seriesStatus == 1 && $_GET['cmd'] != 'my_events') {
+                    if ($checkFutureEvents &&
+                        $objEvent->seriesStatus == 1 &&
+                        (
+                            !isset($_GET['cmd']) ||
+                            $_GET['cmd'] != 'my_events'
+                        )
+                    ) {
                         $additionalRecurrences = $objEvent->seriesData['seriesAdditionalRecurrences'];
                         self::_setNextSeriesElement($objEvent, $additionalRecurrences);
                     }
                 } else {
                     $this->eventList[] = $objEvent;
                 }
-
-                //if ($this->numEvents != 'n' && count($this->eventList) > $this->numEvents && $objInit->mode == 'frontend') {
-                //     break;
-                //} else {
                 $objResult->MoveNext();
-//              //  }
             }
         }
-
-        /* if($this->arrSettings['publicationStatus'] == 1) {
-            self::_importEvents();
-        } */
-
         self::_clearEmptyEvents();
         self::_sortEventList();
-
         $this->countEvents = count($this->eventList);
-
-
         if ($this->numEvents != 'n' && $this->numEvents != 0) {
             $this->eventList = array_slice($this->eventList, $this->startPos, $this->numEvents);
         }
@@ -402,7 +395,7 @@ class CalendarEventManager extends CalendarLibrary
     {
         global $objDatabase, $objInit, $_LANGID, $_CONFIG;
 
-        if($objInit->mode == 'frontend') {
+        if ($objInit->mode !== \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
             $this->getSettings();
 
             $objHostManager = new \Cx\Modules\Calendar\Controller\CalendarHostManager($this->categoryId, true, true);
@@ -507,7 +500,7 @@ class CalendarEventManager extends CalendarLibrary
                 $result->MoveNext();
             }
         }
-        
+
          foreach($this->eventList as $key => $objEvent) {
              if(empty($objEvent->title)) {
                 unset($this->eventList[$key]);
@@ -612,7 +605,8 @@ class CalendarEventManager extends CalendarLibrary
         $this->eventList[] = $objEvent;
 
         if (   $objEvent->seriesStatus == 1
-            && ($forceCalculateSeries || $objInit->mode == 'frontend')
+            && ($forceCalculateSeries
+            || $objInit->mode !== \Cx\Core\Core\Controller\Cx::MODE_BACKEND)
         ) {
             $additionalRecurrences = $objEvent->seriesData['seriesAdditionalRecurrences'];
             self::_setNextSeriesElement($objEvent, $additionalRecurrences);
@@ -677,7 +671,7 @@ class CalendarEventManager extends CalendarLibrary
         try {
             $inviteId = $request->getParam(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_ID);
         } catch (\Exception $e) {}
-        try { 
+        try {
             $inviteToken = $request->getParam(\CX\Modules\Calendar\Model\Entity\Invite::HTTP_REQUEST_PARAM_TOKEN);
         } catch (\Exception $e) {}
 
@@ -687,7 +681,8 @@ class CalendarEventManager extends CalendarLibrary
         // invite of an invitee
         $invite = null;
 
-        if ($objInit->mode != 'frontend' || $eventId == null || $eventStartDate == null) {
+        if ($objInit->mode === \Cx\Core\Core\Controller\Cx::MODE_BACKEND
+            || $eventId == null || $eventStartDate == null) {
             return;
         }
 
@@ -728,7 +723,7 @@ class CalendarEventManager extends CalendarLibrary
             }
         }
 
-        if (!$objEvent) { 
+        if (!$objEvent) {
             $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
             $this->eventList = array($objEvent);
         }
@@ -758,11 +753,9 @@ class CalendarEventManager extends CalendarLibrary
             \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
             return;
         }
-
-        $objCategory = new \Cx\Modules\Calendar\Controller\CalendarCategory($objEvent->catId);
-
+            $objCategory = CalendarCategory::getCurrentCategory(
+                $this->categoryId, $objEvent);
         list ($priority, $priorityImg) = $this->getPriorityImage($objEvent);
-
         $plainDescription = contrexx_html2plaintext($objEvent->description);
         if (strlen($plainDescription) > 100) {
             $points = '...';
@@ -816,10 +809,20 @@ class CalendarEventManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_ID'                => $objEvent->id,
             $this->moduleLangVar.'_EVENT_START'             => $this->format2userDateTime($startDate),
             $this->moduleLangVar.'_EVENT_START_DATE'        => $this->format2userDate($startDate),
+            $this->moduleLangVar.'_EVENT_START_DATE_DAY'    => $this->formatDateTime2user($startDate, 'd'),
+            $this->moduleLangVar.'_EVENT_START_DATE_MONTH'  => $this->formatDateTime2user($startDate, 'm'),
+            $this->moduleLangVar.'_EVENT_START_DATE_YEAR'   => $this->formatDateTime2user($startDate, 'Y'),
             $this->moduleLangVar.'_EVENT_START_TIME'        => $this->format2userTime($startDate),
+            $this->moduleLangVar.'_EVENT_START_TIME_MINUTE' => $this->formatDateTime2user($startDate, 'i'),
+            $this->moduleLangVar.'_EVENT_START_TIME_HOUR'   => $this->formatDateTime2user($startDate, 'H'),
             $this->moduleLangVar.'_EVENT_END'               => $this->format2userDateTime($endDate),
             $this->moduleLangVar.'_EVENT_END_DATE'          => $this->format2userDate($endDate),
+            $this->moduleLangVar.'_EVENT_END_DATE_DAY'      => $this->formatDateTime2user($endDate, 'd'),
+            $this->moduleLangVar.'_EVENT_END_DATE_MONTH'    => $this->formatDateTime2user($endDate, 'm'),
+            $this->moduleLangVar.'_EVENT_END_DATE_YEAR'     => $this->formatDateTime2user($endDate, 'Y'),
             $this->moduleLangVar.'_EVENT_END_TIME'          => $this->format2userTime($endDate),
+            $this->moduleLangVar.'_EVENT_END_TIME_MINUTE'   => $this->formatDateTime2user($endDate, 'i'),
+            $this->moduleLangVar.'_EVENT_END_TIME_HOUR'     => $this->formatDateTime2user($endDate, 'H'),
             $this->moduleLangVar.'_EVENT_TITLE'             => $objEvent->title,
             $this->moduleLangVar.'_EVENT_TEASER'            => $objEvent->teaser,
             $this->moduleLangVar.'_EVENT_ATTACHMENT'        => $objEvent->attach != '' ? '<a href="'.$hostUri.$objEvent->attach.'" target="_blank" >'.$attachName.'</a>' : '',
@@ -1184,7 +1187,7 @@ class CalendarEventManager extends CalendarLibrary
             $regLinkSrc       = '';
             $registrationOpen = false;
         }
-         
+
         $regLinkSrc = str_replace(
             '[[SERIES_ELEMENT_STARTDATE]]',
             $event->startDate->getTimestamp(),
@@ -1322,12 +1325,9 @@ class CalendarEventManager extends CalendarLibrary
 
         //if($objInit->mode == 'backend') {
             $i=0;
-            foreach ($this->eventList as $key => $objEvent) {
-
-                $objCategory = new \Cx\Modules\Calendar\Controller\CalendarCategory(intval($objEvent->catId));
-
+            foreach ($this->eventList as $objEvent) {
+                $category_names = CalendarCategory::getNamesByEvent($objEvent);
                 $showIn = explode(",",$objEvent->showIn);
-
                 $languages = '';
                 if (count(\FWLanguage::getActiveFrontendLanguages()) > 1) {
                     $langState = array();
@@ -1446,13 +1446,24 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_ATTACHMENT_SOURCE' => $objEvent->attach,
                     $this->moduleLangVar.'_EVENT_START'          => $this->format2userDateTime($startDate),
                     $this->moduleLangVar.'_EVENT_START_DATE'     => $this->format2userDate($startDate),
+                    $this->moduleLangVar.'_EVENT_START_DATE_DAY' => $this->formatDateTime2user($startDate, 'd'),
+                    $this->moduleLangVar.'_EVENT_START_DATE_MONTH'=> $this->formatDateTime2user($startDate, 'm'),
+                    $this->moduleLangVar.'_EVENT_START_DATE_YEAR'=> $this->formatDateTime2user($startDate, 'Y'),
                     $this->moduleLangVar.'_EVENT_START_TIME'     => $this->format2userTime($startDate),
+                    $this->moduleLangVar.'_EVENT_START_TIME_MINUTE'=> $this->formatDateTime2user($startDate, 'i'),
+                    $this->moduleLangVar.'_EVENT_START_TIME_HOUR'=> $this->formatDateTime2user($startDate, 'H'),
                     $this->moduleLangVar.'_EVENT_DATE'           => $this->format2userDate($startDate),
                     $this->moduleLangVar.'_EVENT_END'            => $this->format2userDateTime($endDate),
                     $this->moduleLangVar.'_EVENT_END_DATE'       => $this->format2userDate($endDate),
+                    $this->moduleLangVar.'_EVENT_END_DATE_DAY'   => $this->formatDateTime2user($endDate, 'd'),
+                    $this->moduleLangVar.'_EVENT_END_DATE_MONTH' => $this->formatDateTime2user($endDate, 'm'),
+                    $this->moduleLangVar.'_EVENT_END_DATE_YEAR'  => $this->formatDateTime2user($endDate, 'Y'),
                     $this->moduleLangVar.'_EVENT_END_TIME'       => $this->format2userTime($endDate),
+                    $this->moduleLangVar.'_EVENT_END_TIME_MINUTE'=> $this->formatDateTime2user($endDate, 'i'),
+                    $this->moduleLangVar.'_EVENT_END_TIME_HOUR'  => $this->formatDateTime2user($endDate, 'H'),
                     $this->moduleLangVar.'_EVENT_LANGUAGES'      => $languages,
-                    $this->moduleLangVar.'_EVENT_CATEGORY'       => $objCategory->name,
+                    $this->moduleLangVar.'_EVENT_CATEGORY'       =>
+                        implode(', ', $category_names),
                     $this->moduleLangVar.'_EVENT_EXPORT_LINK'    => $hostUri.'index.php?section='.$this->moduleName.'&amp;export='.$objEvent->id,
                     $this->moduleLangVar.'_EVENT_EXPORT_ICON'    => '<a href="'.$hostUri.'index.php?section='.$this->moduleName.'&amp;export='.$objEvent->id.'"><img src="modules/Calendar/View/Media/ical_export.gif" border="0" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" /></a>',
                     $this->moduleLangVar.'_EVENT_EDIT_LINK'      => $editLink,
@@ -1460,6 +1471,7 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_SERIES'         => $objEvent->seriesStatus == 1 ? '<img src="'.ASCMS_MODULE_WEB_PATH.'/'.$this->moduleName.'/View/Media/Repeat.png" border="0"/>' : '<i>'.$_ARRAYLANG['TXT_CALENDAR_NO_SERIES'].'</i>',
                     $this->moduleLangVar.'_EVENT_FREE_PLACES'    => $freeSeats,
                     $this->moduleLangVar.'_EVENT_ACCESS'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_ACCESS_'.$objEvent->access],
+                    'TXT_' . $this->moduleLangVar . '_MORE_INFO' => $_ARRAYLANG['TXT_CALENDAR_MORE_INFO'],
                 ));
 
                 // hide attachment template block in case no attachment is set
@@ -2204,8 +2216,9 @@ class CalendarEventManager extends CalendarLibrary
 
             //load events
             foreach ($this->eventList as $objEvent) {
-
-                if ($objEvent->access && $objInit->mode == 'frontend' && !\Permission::checkAccess(116, 'static', true)) {
+                if ($objEvent->access
+                    && $objInit->mode !== \Cx\Core\Core\Controller\Cx::MODE_BACKEND
+                    && !\Permission::checkAccess(116, 'static', true)) {
                     continue;
                 }
                 $startdate     = $this->getUserDateTimeFromIntern($objEvent->startDate);

@@ -327,25 +327,97 @@ class NewsletterLib
 
         $query = \SQL::update('module_newsletter_user', array(
             'email' => contrexx_addslashes($email),
-            'uri' => array('val' => contrexx_addslashes($uri), 'omitEmpty' => !$recipientAttributeStatus['recipient_website']['active']),
-            'sex' => array('val' => contrexx_addslashes($sex), 'omitEmpty' => !$recipientAttributeStatus['recipient_sex']['active']),
-            'salutation' => array('val' => contrexx_addslashes($salutation), 'omitEmpty' => !$recipientAttributeStatus['recipient_salutation']['active']),
-            'title' => array('val' => contrexx_addslashes($title), 'omitEmpty' => !$recipientAttributeStatus['recipient_title']['active']),
-            'lastname' => array('val' => contrexx_addslashes($lastname), 'omitEmpty' => !$recipientAttributeStatus['recipient_lastname']['active']),
-            'firstname' => array('val' => contrexx_addslashes($firstname), 'omitEmpty' => !$recipientAttributeStatus['recipient_firstname']['active']),
-            'position' => array('val' => contrexx_addslashes($position), 'omitEmpty' => !$recipientAttributeStatus['recipient_position']['active']),
-            'company' => array('val' => contrexx_addslashes($company), 'omitEmpty' => !$recipientAttributeStatus['recipient_company']['active']),
-            'industry_sector' => array('val' => contrexx_addslashes($industry_sector), 'omitEmpty' => !$recipientAttributeStatus['recipient_industry']['active']),
-            'address' => array('val' => contrexx_addslashes($address), 'omitEmpty' => !$recipientAttributeStatus['recipient_address']['active']),
-            'zip' => array('val' => contrexx_addslashes($zip), 'omitEmpty' => !$recipientAttributeStatus['recipient_zip']['active']),
-            'city' => array('val' => contrexx_addslashes($city), 'omitEmpty' => !$recipientAttributeStatus['recipient_city']['active']),
-            'country_id' => array('val' => contrexx_addslashes($country), 'omitEmpty' => !$recipientAttributeStatus['recipient_country']['active']),
-            'phone_office' => array('val' => contrexx_addslashes($phone_office), 'omitEmpty' => !$recipientAttributeStatus['recipient_phone']['active']),
-            'phone_private' => array('val' => contrexx_addslashes($phone_private), 'omitEmpty' => !$recipientAttributeStatus['recipient_private']['active']),
-            'phone_mobile' => array('val' => contrexx_addslashes($phone_mobile), 'omitEmpty' => !$recipientAttributeStatus['recipient_mobile']['active']),
-            'fax' => array('val' => contrexx_addslashes($fax), 'omitEmpty' => !$recipientAttributeStatus['recipient_fax']['active']),
+            'uri' => array(
+                'val'       => contrexx_addslashes($uri),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_website']) ||
+                               !$recipientAttributeStatus['recipient_website']['active']
+            ),
+            'sex' => array(
+                'val'       => contrexx_addslashes($sex),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_sex']) ||
+                               !$recipientAttributeStatus['recipient_sex']['active']
+            ),
+            'salutation' => array(
+                'val'       => contrexx_addslashes($salutation),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_salutation']) ||
+                               !$recipientAttributeStatus['recipient_salutation']['active']
+            ),
+            'title' => array(
+                'val'       => contrexx_addslashes($title),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_title']) ||
+                               !$recipientAttributeStatus['recipient_title']['active']
+            ),
+            'lastname' => array(
+                'val'       => contrexx_addslashes($lastname),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_lastname']) ||
+                               !$recipientAttributeStatus['recipient_lastname']['active']
+            ),
+            'firstname' => array(
+                'val'       => contrexx_addslashes($firstname),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_firstname']) ||
+                               !$recipientAttributeStatus['recipient_firstname']['active']
+            ),
+            'position' => array(
+                'val'       => contrexx_addslashes($position),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_position']) ||
+                               !$recipientAttributeStatus['recipient_position']['active']
+            ),
+            'company' => array(
+                'val'       => contrexx_addslashes($company),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_company']) ||
+                               !$recipientAttributeStatus['recipient_company']['active']
+            ),
+            'industry_sector' => array(
+                'val'       => contrexx_addslashes($industry_sector),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_industry']) ||
+                               !$recipientAttributeStatus['recipient_industry']['active']
+            ),
+            'address' => array(
+                'val'       => contrexx_addslashes($address), 
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_address']) ||
+                               !$recipientAttributeStatus['recipient_address']['active']
+            ),
+            'zip' => array(
+                'val'       => contrexx_addslashes($zip),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_zip']) ||
+                               !$recipientAttributeStatus['recipient_zip']['active']
+            ),
+            'city' => array(
+                'val'       => contrexx_addslashes($city),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_city']) ||
+                               !$recipientAttributeStatus['recipient_city']['active']
+            ),
+            'country_id' => array(
+                'val'       => contrexx_addslashes($country),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_country']) ||
+                               !$recipientAttributeStatus['recipient_country']['active']
+            ),
+            'phone_office' => array(
+                'val'       => contrexx_addslashes($phone_office),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_phone']) ||
+                               !$recipientAttributeStatus['recipient_phone']['active']
+            ),
+            'phone_private' => array(
+                'val'       => contrexx_addslashes($phone_private),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_private']) ||
+                               !$recipientAttributeStatus['recipient_private']['active']
+            ),
+            'phone_mobile' => array(
+                'val'       => contrexx_addslashes($phone_mobile),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_mobile']) ||
+                               !$recipientAttributeStatus['recipient_mobile']['active']
+            ),
+            'fax' => array(
+                'val'       => contrexx_addslashes($fax),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_fax']) ||
+                               !$recipientAttributeStatus['recipient_fax']['active']
+            ),
             'notes' => (!$notes ? '' : contrexx_addslashes($notes)),
-            'birthday' => array('val' => contrexx_addslashes($birthday), 'omitEmpty' => !$recipientAttributeStatus['recipient_birthday']['active']),
+            'birthday' => array(
+                'val'       => contrexx_addslashes($birthday),
+                'omitEmpty' => !isset($recipientAttributeStatus['recipient_birthday']) ||
+                               !$recipientAttributeStatus['recipient_birthday']['active']
+            ),
             'status' => intval($status),
             'language' => intval($language)
         ))."WHERE id=".$id;

@@ -128,7 +128,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
         }
         $uploader = UploaderController::handleRequest(
             array(
-                'allow_extensions' => is_array($allowedExtensions) ? explode(', ', $allowedExtensions) : $allowedExtensions,
+                'allow_extensions' => $allowedExtensions,
                 'target_dir' => $path,
                 'tmp_dir' => $tmpPath
             )
