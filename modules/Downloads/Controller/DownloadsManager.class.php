@@ -273,7 +273,7 @@ class DownloadsManager extends DownloadsLibrary
         $this->objTemplate->setVariable(array(
             'TXT_DOWNLOADS_DOWNLOADS'       => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS'],
             'TXT_DOWNLOADS_SEARCH_DOWNLOAD' => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'],
-            'DOWNLOADS_SEARCH_TERM'         => !empty($searchTerm) ? $searchTerm : $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'],
+            'DOWNLOADS_SEARCH_TERM'         => !empty($searchTerm) ? $searchTerm : '',
             'DOWNLOADS_CATEGORY_MENU'       => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES']),
             'TXT_DOWNLOADS_SEARCH'          => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
         ));
@@ -926,7 +926,7 @@ class DownloadsManager extends DownloadsLibrary
         $this->objTemplate->setVariable(array(
             'TXT_DOWNLOADS_FILTER'          => $_ARRAYLANG['TXT_DOWNLOADS_FILTER'],
             'TXT_DOWNLOADS_SEARCH_DOWNLOAD' => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'],
-            'DOWNLOADS_SEARCH_TERM'         => !empty($searchTerm) ? $searchTerm : $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'],
+            'DOWNLOADS_SEARCH_TERM'         => !empty($searchTerm) ? $searchTerm : '',
             'DOWNLOADS_CATEGORY_MENU'       => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES']),
             'TXT_DOWNLOADS_SEARCH'          => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
         ));
@@ -2066,7 +2066,7 @@ class DownloadsManager extends DownloadsLibrary
             'TXT_DOWNLOADS_CATEGORY'            => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY'],
             'DOWNLOADS_CATEGORY_ID'             => $objCategory->getId(),
             'DOWNLOADS_CATEGORY_MENU'           => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES']),
-            'DOWNLOADS_SEARCH_TERM'             => !empty($_GET['search_term']) ? $_GET['search_term'] : $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'],
+            'DOWNLOADS_SEARCH_TERM'             => !empty($_GET['search_term']) ? $_GET['search_term'] : '',
             'TXT_DOWNLOADS_SEARCH_DOWNLOAD'     => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'],
             'TXT_DOWNLOADS_FILTER'              => $_ARRAYLANG['TXT_DOWNLOADS_FILTER'],
             'TXT_DOWNLOADS_SEARCH'              => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
