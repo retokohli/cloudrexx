@@ -1,5 +1,5 @@
 #!/bin/bash
-@ECHO off 2>nul & @GOTO WIN \
+@GOTO WIN \
 2>/dev/null
 #!/bin/bash
 # vim: syn=sh
@@ -36,7 +36,7 @@ DEFAULT_CONFIG=(
     ["php-version"]=""
     ["db-image"]="mariadb:latest"
     ["php-image"]="cloudrexx/web:PHP<php-version>-with-mysql"
-    ["db-name"]="test"
+    ["db-name"]="dev"
     ["db-pass"]="123456"
     ["db-user"]="root"
     ["db-host"]="db"
@@ -57,7 +57,7 @@ for arg in "$@"
 do
     if [[ "$arg" == --* ]]; then
         arg="${arg:2:${#arg}-2}"
-        if [[ "$arg" = --*=* ]]; then
+        if [[ "$arg" = *=* ]]; then
             IFS='='; read -r key value <<< "$arg"
             ARGUMENTS[$key]=$value
             FORCED_ARGUMENTS[$key]=$value
@@ -361,7 +361,7 @@ function cmd_env {
                 echo "This will install Cloudrexx in the current directory ($(pwd))"
                 read -p "Continue [Yn]? " -n 1 -r
                 echo ""
-                if ! [[ "$REPLY" != "" && "$REPLY" =~ ^[Yy]$ ]]; then
+                if [[ "$REPLY" != "" ]] && ! [[ "$REPLY" =~ ^[Yy]$ ]]; then
                     return
                 fi
             fi
@@ -370,11 +370,13 @@ function cmd_env {
             fi
             if [[ ${ARGUMENTS["skip-source"]} != true ]]; then
                 # We do not simply clone because ./cx already exists
-                git init
+                git init -q
                 git remote add origin ${ARGUMENTS["source-repo"]}
                 git fetch
-                git reset "origin/${ARGUMENTS["source-branch"]}"
-                git checkout -t "origin/${ARGUMENTS["source-branch"]}"
+                git reset -q --hard "origin/${ARGUMENTS["source-branch"]}"
+                if [[ "${ARGUMENTS["source-branch"]}" != "master" ]]; then
+                    git checkout -q -t "origin/${ARGUMENTS["source-branch"]}"
+                fi
                 # assume ./tmp/* and ./config/* are unchanged
                 git ls-files -z tmp/ | xargs -0 git update-index --assume-unchanged
                 git ls-files -z config/ | xargs -0 git update-index --assume-unchanged
@@ -393,6 +395,9 @@ function cmd_env {
                 ARGUMENTS["interactive"]=true
             fi
             cmd_env config
+            FILE_CONTENTS=$(cat config/configuration.php)
+            FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((define\('CONTREXX_INSTALLED', )false(\);))" "true")
+            echo "$FILE_CONTENTS" > config/configuration.php
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 echo "Loading docker containers"
             fi
@@ -401,9 +406,10 @@ function cmd_env {
                 echo "Loading database"
             fi
             ARGUMENTS["db"]=true && cmd_env update
-            dockerexec exec "<web-container>" chown -R www-data: ./
+            dockerexec exec "<web-container>" chown -R www-data ./
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
-                echo "Environment successfully initialized, you should be able to reach Cloudrexx at http://${ARGUMENTS["hostname"]}.lvh.me/"
+                get_config_array
+                echo "Environment successfully initialized, you should be able to reach Cloudrexx at http://${CONFIG["hostname"]}/"
             fi
             ;;
         up)
@@ -464,25 +470,30 @@ function cmd_env {
                 echo "DB update not necessary, run ./cx env update --db --force to force db reload"
                 return
             fi
-            TEMP_FILES["db-conf"]=$(mktemp)
+
+            # create login file
+            # TODO: Use trap to delete the temp file
+            local tempfile
+            tempfile=$(dockerexec exec "<db-container>" mktemp)
             echo "[mysql]
 database=${CONFIG["db-name"]}
 [client]
 host=${CONFIG["db-host"]}
 user=${CONFIG["db-user"]}
-password=${CONFIG["db-pass"]}" > "${TEMP_FILES["db-conf"]}"
+password=${CONFIG["db-pass"]}" | internal_dockerexec exec -i "<db-container>" bash -c "cat > $tempfile"
+
             if [[ ${ARGUMENTS["drop-users"]} != true ]]; then
                 TEMP_FILES["user-backup"]="$(mktemp)"
-                mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers "${CONFIG["db-name"]}" contrexx_access_users contrexx_access_user_profile > "${TEMP_FILES["user-backup"]}"
-                mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers -w 'attribute_id=0' "${CONFIG["db-name"]}" contrexx_access_user_attribute_value >> "${TEMP_FILES["user-backup"]}"
+                dockerexec exec "<db-container>" mysqldump --defaults-file="$tempfile" --no-create-info --skip-triggers "${CONFIG["db-name"]}" contrexx_access_users contrexx_access_user_profile > "${TEMP_FILES["user-backup"]}"
+                dockerexec exec "<db-container>" mysqldump --defaults-file="$tempfile" --no-create-info --skip-triggers -w 'attribute_id=0' "${CONFIG["db-name"]}" contrexx_access_user_attribute_value >> "${TEMP_FILES["user-backup"]}"
                 if [[ ${ARGUMENTS["drop-sessions"]} != true ]]; then
                     TEMP_FILES["session-backup"]="$(mktemp)"
-                    mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers "${CONFIG["db-name"]}" contrexx_sessions > "${TEMP_FILES["session-backup"]}"
+                    dockerexec exec "<db-container>" mysqldump --defaults-file="$tempfile" --no-create-info --skip-triggers "${CONFIG["db-name"]}" contrexx_sessions > "${TEMP_FILES["session-backup"]}"
                 fi
             fi
             # empty database if exists
 # from https://stackoverflow.com/questions/12403662/how-to-remove-all-mysql-tables-from-the-command-line-without-drop-database-permi
-            mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A -e "
+            echo "
 SET FOREIGN_KEY_CHECKS = 0;
 SET GROUP_CONCAT_MAX_LEN=32768;
 SET @tables = NULL;
@@ -505,25 +516,26 @@ SET @views = CONCAT('DROP VIEW IF EXISTS ', @views);
 PREPARE stmt FROM @views;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
-SET FOREIGN_KEY_CHECKS = 1;"
+SET FOREIGN_KEY_CHECKS = 1;" | internal_dockerexec exec -i "<db-container>" bash -c "cat - | mysql --defaults-file=$tempfile -A"
             # create db if it does not exist
-            mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A -e "CREATE DATABASE IF NOT EXISTS ${CONFIG["db-name"]} COLLATE utf8_unicode_ci"
+            echo "CREATE DATABASE IF NOT EXISTS ${CONFIG["db-name"]} COLLATE utf8_unicode_ci" | internal_dockerexec exec -i "<db-container>" bash -c "cat - | mysql --defaults-file=$tempfile -A"
             # load db
-            mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < installer/data/contrexx_dump_structure.sql
-            mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < installer/data/contrexx_dump_data.sql
+            cat installer/data/contrexx_dump_structure.sql | internal_dockerexec exec -i "<db-container>" mysql --defaults-file="$tempfile" -A
+            cat installer/data/contrexx_dump_data.sql | internal_dockerexec exec -i "<db-container>" mysql --defaults-file="$tempfile" -A
             if [[ ${ARGUMENTS["drop-users"]} != true ]]; then
-                mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < "${TEMP_FILES["user-backup"]}"
+                cat "${TEMP_FILES["user-backup"]}" | internal_dockerexec exec -i "<db-container>" mysql --defaults-file="$tempfile" -A
                 if [[ ${ARGUMENTS["drop-sessions"]} != true ]]; then
-                    mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < "${TEMP_FILES["session-backup"]}"
+                    cat "${TEMP_FILES["session-backup"]}" | internal_dockerexec exec -i "<db-container>" mysql --defaults-file="$tempfile" -A
                 fi
             fi
             # TODO: Check if there's at least one admin, make the user's ID dynamic
-            EXISTING_CX_USER=$(mysql --defaults-file="${TEMP_FILES["db-conf"]}" -e "SELECT id FROM contrexx_access_users WHERE id = 1")
+            EXISTING_CX_USER=$(echo "SELECT id FROM contrexx_access_users WHERE id = 1" | internal_dockerexec exec -i "<db-container>" mysql --defaults-file="$tempfile" -A)
             if [[ "$EXISTING_CX_USER" == "" ]]; then
                 if [[ ${ARGUMENTS["yes"]} != true ]]; then
                     echo "There is no user, will create a default user. Ok?"
                     read -p "Continue [Yn]? " -n 1 -r
                     if [[ "$REPLY" =~ ^[Nn]$ ]]; then
+                        dockerexec exec "<db-container>" rm "$tempfile"
                         return
                     fi
                 fi
@@ -531,8 +543,9 @@ SET FOREIGN_KEY_CHECKS = 1;"
                 ClxUser="system"
                 ClxMail="noreply@contrexx.com"
                 ClxPass="123456"
-                mysql --defaults-file="${TEMP_FILES["db-conf"]}" "${CONFIG["db-name"]}" -e "INSERT INTO contrexx_access_users (id, is_admin, username, password, regdate, expiration, validity, last_auth, last_activity, email, email_access, frontend_lang_id, backend_lang_id, active, profile_access, restore_key, restore_key_time, u2u_active, auth_token) VALUES (1,1,'${ClxUser}',MD5('${ClxPass}'),0,0,0,0,0,'${ClxMail}','nobody', 0,0,1,'members_only','',0,'0', '');INSERT INTO contrexx_access_user_profile (user_id, gender, title, firstname, lastname, company, address, city, zip, country, phone_office, phone_private, phone_mobile, phone_fax, birthday, website, profession, interests, signature, picture) VALUES (1,'gender_undefined',2,'CMS','System Benutzer','','','','',0,'','','','','','','','','','');INSERT INTO contrexx_access_user_attribute_value (attribute_id, user_id, history_id, value) VALUES (0,1,0,'');"
+                echo "INSERT INTO contrexx_access_users (id, is_admin, username, password, regdate, expiration, validity, last_auth, last_activity, email, email_access, frontend_lang_id, backend_lang_id, active, profile_access, restore_key, restore_key_time, u2u_active, auth_token) VALUES (1,1,'${ClxUser}',MD5('${ClxPass}'),0,0,0,0,0,'${ClxMail}','nobody', 0,0,1,'members_only','',0,'0', '');INSERT INTO contrexx_access_user_profile (user_id, gender, title, firstname, lastname, company, address, city, zip, country, phone_office, phone_private, phone_mobile, phone_fax, birthday, website, profession, interests, signature, picture) VALUES (1,'gender_undefined',2,'CMS','System Benutzer','','','','',0,'','','','','','','','','','');INSERT INTO contrexx_access_user_attribute_value (attribute_id, user_id, history_id, value) VALUES (0,1,0,'');" | internal_dockerexec exec -i "<db-container>" mysql --defaults-file="$tempfile" -A
             fi
+            dockerexec exec "<db-container>" rm "$tempfile"
             ;;
         config)
             if [[ ${ARGUMENTS["show"]} = true ]]; then
@@ -545,6 +558,7 @@ SET FOREIGN_KEY_CHECKS = 1;"
                 return
             fi
             get_config_array
+            declare -A CONFIG_OVERRIDE
             if [ ${#CONFIG[@]} -eq 0 ]; then
                 # load config, if its empty: load default config over it
                 for value in "${!ARGUMENTS[@]}"; do
@@ -618,7 +632,7 @@ function get_config_array {
         fi
     fi
     if [[ "${CONFIG["hostname"]}" == "" || "${CONFIG["hostname"]}" == "localhost" ]]; then
-        CONFIG["hostname"]="${PWD##*/}.${CONFIG["root-domain"]}"
+        CONFIG["hostname"]="${PWD##*/}.${ARGUMENTS["root-domain"]}"
     fi
     if [[ "${CONFIG["php-version"]}" == "" ]]; then
         CONFIG["php-version"]="5.6"
@@ -644,14 +658,12 @@ function get_config_array {
             CONFIG["db-pass"]=${DEFAULT_CONFIG["db-pass"]}
         fi
     fi
-    if [[ "${CONFIG["is-vhost"]}" == "" ]]; then
-        local proxy_present
-        proxy_present=$(internal_dockerexec ps -q -f "name=<proxy-container>")
-        if [[ "$proxy_present" == "" ]]; then
-            CONFIG["is-vhost"]=false
-        else
-            CONFIG["is-vhost"]=true
-        fi
+    local proxy_present
+    proxy_present=$(internal_dockerexec ps -q -f "name=<proxy-container>")
+    if [[ "$proxy_present" == "" ]]; then
+        CONFIG["is-vhost"]=false
+    else
+        CONFIG["is-vhost"]=true
     fi
 }
 
@@ -675,7 +687,7 @@ function set_config_array {
     echo "$FILE_CONTENTS" > config/settings.php
 
     # load _meta/docker-compose.yml
-    FILE_CONTENTS=$(cat _meta/docker-compose.yml)
+    FILE_CONTENTS=$(cat _meta/docker-compose.tpl)
     # replace php-image with php-version internally
     PHP_IMAGE=${CONFIG["php-image"]}
     PHP_IMAGE=${PHP_IMAGE//"<php-version>"/${CONFIG["php-version"]}}
@@ -750,12 +762,17 @@ function internal_dockerexec {
         index="${index//"<env-name>"/"$ENV_NAME"}"
         ARGS+=("$index")
     done
-    docker "${ARGS[@]}"
+    if read -r -t 0; then
+        data=$(cat /dev/stdin)
+        echo "$data" | docker "${ARGS[@]}"
+    else
+        docker "${ARGS[@]}"
+    fi
 }
 
 function dockercomposeexec {
     get_config_array
-    docker-compose --project-name "clxenv${CONFIG["hostname"]}" "$@"
+    docker-compose --project-name "clxenv${CONFIG["hostname"]//./}" "$@"
 }
 
 #####################
