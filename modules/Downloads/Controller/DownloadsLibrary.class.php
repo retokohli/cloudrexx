@@ -464,16 +464,20 @@ class DownloadsLibrary
      */
     public static function clearEsiCache()
     {
+        // clear ESI cache
         $groups       = Group::getGroups();
         $categories   = Category::getCategories();
         $widgetNames  = array_merge(
             $groups->getGroupsPlaceholders(),
-            $categories->getCategoriesBlocks()
+            Category::getCategoryWidgetNames()
         );
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $cx->getEvents()->triggerEvent(
             'clearEsiCache',
             array('Widget', $widgetNames)
         );
+
+        // clear contrexx cache
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Downloads');
     }
 }

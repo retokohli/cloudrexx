@@ -63,6 +63,11 @@ class Downloads extends DownloadsLibrary
      */
     private $arrStatusMsg = array('ok' => array(), 'error' => array());
 
+    /**
+     * The reuqested page this component will be parsed into
+     * @var \Cx\Core\ContentManager\Model\Entity\Page
+     */
+    protected $requestedPage = null;
 
     /**
     * Constructor
@@ -72,9 +77,10 @@ class Downloads extends DownloadsLibrary
     *                           \Cx\Core\Html\Sigma template
     * @param $queryParams array The constructor accepts an array parameter $queryParams, which will
     *                           override the request parameters cmd and/or category, if given
-    * override the request parameters cmd and/or category
+    * @param $requestedPage \Cx\Core\ContentManager\Model\Entity\Page The requested page this
+    *                           component will be parsed into
     */
-    function __construct($pageContent, array $queryParams = array())
+    function __construct($pageContent, array $queryParams = array(), $requestedPage = null)
     {
         parent::__construct();
 
@@ -88,6 +94,11 @@ class Downloads extends DownloadsLibrary
             $this->objTemplate->setTemplate($pageContent);
             \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->objTemplate);
             $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+        }
+
+        $this->requestedPage = $requestedPage;
+        if (!$this->requestedPage) {
+            $this->requestedPage = \Cx\Core\Core\Controller\Cx::instanciate()->getPage();
         }
     }
 
@@ -124,6 +135,15 @@ class Downloads extends DownloadsLibrary
     public function getPage()
     {
         \Cx\Core\Csrf\Controller\Csrf::add_code();
+
+        // TODO: Algorithm for loading downloads has to be refactored
+        //       so that it does not check the access permissions through SQL
+        //       but instead using PHP. Checking the access permissions
+        //       on the PHP side would allow us to determine if we need
+        //       to activate user based page caching.
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getComponent('Cache')->forceUserbasedPageCache();
+
         switch ($this->cmd) {
             case 'download_file':
                 $this->download();
@@ -249,7 +269,7 @@ class Downloads extends DownloadsLibrary
 
                 $metakeys = $objDownload->getMetakeys(FRONTEND_LANG_ID);
                 if ($this->arrConfig['use_attr_metakeys'] && !empty($metakeys)) {
-                    \Env::get('cx')->getPage()->setMetakeys($metakeys);
+                    $this->requestedPage->setMetakeys($metakeys);
                 }
 
                 $this->parseRelatedCategories($objDownload);
@@ -1155,7 +1175,7 @@ JS_CODE;
 
             $downloadCount = $objDownload->getFilteredSearchDownloadCount();
             if ($downloadCount > $_CONFIG['corePagingLimit']) {
-                if(\Env::get('cx')->getPage()->getModule() != 'Downloads'){
+                if($this->requestedPage->getModule() != 'Downloads'){
                     $this->objTemplate->setVariable('DOWNLOADS_' . $variablePrefix .'FILE_PAGING', getPaging($downloadCount, $limitOffset, '', "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
                 }else{
                     $this->objTemplate->setVariable('DOWNLOADS_' . $variablePrefix .'FILE_PAGING', getPaging($downloadCount, $limitOffset, '&'.substr($this->moduleParamsHtml, 1).'&category='.$objCategory->getId().'&downloads_search_keyword='.htmlspecialchars($this->searchKeyword), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));

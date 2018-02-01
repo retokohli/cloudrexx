@@ -102,12 +102,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // downloads group
         $groups            = Group::getGroups();
         $groupsPlaceholders = $groups->getGroupsPlaceholders();
-        $this->registerWidgets($groupsPlaceholders);
+        $this->registerDownloadsWidgets($groupsPlaceholders);
 
         // downloads category list
-        $categories       = Category::getCategories();
-        $categoriesBlocks = $categories->getCategoriesBlocks();
-        $this->registerWidgets($categoriesBlocks, true);
+        $categoriesBlocks = Category::getCategoryWidgetNames();
+        $this->registerDownloadsWidgets($categoriesBlocks, true);
     }
 
     /**
@@ -118,14 +117,25 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *
      * @return null
      */
-    protected function registerWidgets($widgets, $isBlock = false) {
+    public function registerDownloadsWidgets($widgets, $isBlock = false) {
 
+        $pos = 0;
+        if (isset($_GET['pos'])) {
+            $pos = intval($_GET['pos']);
+        }
         $widgetController = $this->getComponent('Widget');
         foreach ($widgets as $widgetName) {
             $widget = new \Cx\Core_Modules\Widget\Model\Entity\EsiWidget(
                 $this,
                 $widgetName,
-                $isBlock
+                (
+                    $isBlock ? 
+                    \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::TYPE_BLOCK :
+                    \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::TYPE_PLACEHOLDER
+                ),
+                '',
+                '',
+                array('pos' => $pos)
             );
             $widget->setEsiVariable(
                 \Cx\Core_Modules\Widget\Model\Entity\EsiWidget::ESI_VAR_ID_USER |

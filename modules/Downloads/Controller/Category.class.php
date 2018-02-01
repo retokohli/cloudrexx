@@ -1523,16 +1523,30 @@ class Category
     }
 
     /**
-     * Get Categories template blocks
+     * Return a list of all available category widgets
      *
-     * @return array
+     * @return array    List of category widget names
      */
-    public function getCategoriesBlocks()
-    {
+    public static function getCategoryWidgetNames() {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $db = $cx->getDb()->getAdoDb();
+        $arrCategoryIds = array();
+
+        $result = $db->Execute('SELECT id FROM `' . DBPREFIX . 'module_downloads_category`');
+        if ($result !== false) {
+            while (!$result->EOF) {
+                $arrCategoryIds[] = $result->fields['id'];
+                $result->MoveNext();
+            }
+        }
+
+        // add entry 0 to allow overview widget functionality
+        $arrCategoryIds[] = 0;
+
         return preg_replace(
             '/\d+/',
             'downloads_category_$0_list',
-            array_merge(array_keys($this->arrLoadedCategories), array(0))
+            $arrCategoryIds
         );
     }
 }

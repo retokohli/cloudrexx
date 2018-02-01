@@ -60,23 +60,34 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
      */
     public function parseWidget($name, $template, $response, $params)
     {
-        global $_LANGID;
+        global $_ARRAYLANG;
 
         $this->getComponent('Session')->getSession();
         //The $_LANGID is required in the Downloads::overview()
-        $_LANGID = $params['locale']->getId();
+        $langId = $params['locale']->getId();
+        $_ARRAYLANG = array_merge(
+            $_ARRAYLANG,
+            \Env::get('init')->getComponentSpecificLanguageData(
+                'Downloads',
+                true,
+                $langId
+            )
+        );
 
         $matches = array();
         if (preg_match('/^DOWNLOADS_GROUP_([0-9]+)$/', $name, $matches)) {
             $downloads    = new DownloadsLibrary();
-            $groupContent = $downloads->getGroupById($matches[1], $_LANGID);
+            $groupContent = $downloads->getGroupById($matches[1], $langId);
             $template->setVariable($name, $groupContent);
             return;
         }
 
         $catMatches = array();
         if (preg_match('/^downloads_category_(\d+)_list$/', $name, $catMatches)) {
-            $downloads = new Downloads($template, array('category' => $catMatches[1]));
+            if (!$params['page']) {
+                return;
+            }
+            $downloads = new Downloads($template, array('category' => $catMatches[1]), $params['page']);
             $downloads->getPage();
         }
     }
