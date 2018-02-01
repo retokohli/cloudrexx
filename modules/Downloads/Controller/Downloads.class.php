@@ -63,38 +63,70 @@ class Downloads extends DownloadsLibrary
      */
     private $arrStatusMsg = array('ok' => array(), 'error' => array());
 
+    /**
+     * The reuqested page this component will be parsed into
+     * @var \Cx\Core\ContentManager\Model\Entity\Page
+     */
+    protected $requestedPage = null;
+
+    /**
+     * Whether or not this instance is used for parsing the frontend
+     * application section or for a widget.
+     *
+     * If instance is used for processing a regular frontend request to this
+     * components application section, then $isRegularMode is set TRUE.
+     * Otherwise, if this instance is being used for parsing a Widget of this
+     * component, then $isRegularMode is set to FALSE.
+     *
+     * @var boolean
+     */
+    protected $isRegularMode = true;
 
     /**
     * Constructor
     *
     * Calls the parent constructor and creates a local template object
-    * @param $strPageContent string The content of the page as string.
+    * @param mixed $pageContent The content of the page as string or
+    *                           \Cx\Core\Html\Sigma template
     * @param $queryParams array The constructor accepts an array parameter $queryParams, which will
     *                           override the request parameters cmd and/or category, if given
-    * override the request parameters cmd and/or category
+    * @param $requestedPage \Cx\Core\ContentManager\Model\Entity\Page The requested page this
+    *                           component will be parsed into
     */
-    function __construct($strPageContent, array $queryParams = array())
+    function __construct($pageContent, array $queryParams = array(), $requestedPage = null)
     {
         parent::__construct();
 
         $objFWUser = \FWUser::getFWUserObject();
         $this->userId = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
         $this->parseURLModifiers($queryParams);
-        $this->objTemplate = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->objTemplate);
-        $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-        $this->objTemplate->setTemplate($strPageContent);
+        if ($pageContent instanceof \Cx\Core\Html\Sigma) {
+            $this->objTemplate = $pageContent;
+        } else {
+            $this->objTemplate = new \Cx\Core\Html\Sigma('.');
+            $this->objTemplate->setTemplate($pageContent);
+            \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->objTemplate);
+            $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+        }
+
+        // if $requestedPage is set, then we're about to process a widget
+        if ($requestedPage) {
+            $this->isRegularMode = false;
+            $this->requestedPage = $requestedPage;
+        } else {
+            $this->requestedPage = \Cx\Core\Core\Controller\Cx::instanciate()->getPage();
+        }
     }
 
     private function parseURLModifiers($queryParams)
     {
-        $cmd = isset($queryParams['cmd']) ? $queryParams['cmd'] : (isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '');
+        $cmd = isset($queryParams['cmd']) ? $queryParams['cmd'] : ($this->isRegularMode && isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '');
 
-        if (isset($_GET['download'])) {
+        if ($this->isRegularMode && isset($_GET['download'])) {
             $this->cmd = 'download_file';
-        } elseif (isset($_GET['delete_file'])) {
+        } elseif ($this->isRegularMode && isset($_GET['delete_file'])) {
             $this->cmd = 'delete_file';
-        } elseif (isset($_GET['delete_category'])) {
+        } elseif ($this->isRegularMode && isset($_GET['delete_category'])) {
             $this->cmd = 'delete_category';
         } elseif ($cmd) {
             $this->cmd = $cmd;
@@ -106,9 +138,9 @@ class Downloads extends DownloadsLibrary
         }
 
         if (intval($cmd)) {
-            $this->categoryId = isset($queryParams['category']) ? $queryParams['category'] : (!empty($_REQUEST['category']) ? intval($_REQUEST['category']) : intval($cmd));
+            $this->categoryId = isset($queryParams['category']) ? $queryParams['category'] : ($this->isRegularMode && !empty($_REQUEST['category']) ? intval($_REQUEST['category']) : intval($cmd));
         } else {
-            $this->categoryId = isset($queryParams['category']) ? $queryParams['category'] : (!empty($_REQUEST['category']) ? intval($_REQUEST['category']) : 0);
+            $this->categoryId = isset($queryParams['category']) ? $queryParams['category'] : ($this->isRegularMode && !empty($_REQUEST['category']) ? intval($_REQUEST['category']) : 0);
         }
     }
 
@@ -119,6 +151,15 @@ class Downloads extends DownloadsLibrary
     public function getPage()
     {
         \Cx\Core\Csrf\Controller\Csrf::add_code();
+
+        // TODO: Algorithm for loading downloads has to be refactored
+        //       so that it does not check the access permissions through SQL
+        //       but instead using PHP. Checking the access permissions
+        //       on the PHP side would allow us to determine if we need
+        //       to activate user based page caching.
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getComponent('Cache')->forceUserbasedPageCache();
+
         switch ($this->cmd) {
             case 'download_file':
                 $this->download();
@@ -221,14 +262,18 @@ class Downloads extends DownloadsLibrary
                 && !\Permission::checkAccess($objCategory->getReadAccessId(), 'dynamic', true)
                 && $objCategory->getOwnerId() != $this->userId
             ) {
-// TODO: might we have to add a soft noAccess handler in case the output is meant for a regular page (not section=Downloads)
+                // in case we're processing a widget, then we shall not
+                // redirect the user to the no-access section
+                if (!$this->isRegularMode) {
+                    return;
+                }
                 \Permission::noAccess(base64_encode(CONTREXX_SCRIPT_PATH.$this->moduleParamsJs.'&category='.$objCategory->getId()));
             }
 
             // parse crumbtrail
             $this->parseCrumbtrail($objCategory);
 
-            $id = !empty($_REQUEST['id']) ? contrexx_input2int($_REQUEST['id']) : 0;
+            $id = $this->isRegularMode && !empty($_REQUEST['id']) ? contrexx_input2int($_REQUEST['id']) : 0;
             if (
                 $objDownload->load($id, $this->arrConfig['list_downloads_current_lang']) &&
                 (
@@ -242,7 +287,7 @@ class Downloads extends DownloadsLibrary
 
                 $metakeys = $objDownload->getMetakeys();
                 if ($this->arrConfig['use_attr_metakeys'] && !empty($metakeys)) {
-                    \Env::get('cx')->getPage()->setMetakeys($metakeys);
+                    $this->requestedPage->setMetakeys($metakeys);
                 }
 
                 $this->parseRelatedCategories($objDownload);
@@ -581,7 +626,7 @@ class Downloads extends DownloadsLibrary
 
     private function processCreateDirectory($objCategory)
     {
-        if (empty($_POST['downloads_category_name'])) {
+        if ($this->isRegularMode || empty($_POST['downloads_category_name'])) {
             return;
         } else {
             $name = contrexx_stripslashes($_POST['downloads_category_name']);
@@ -1083,7 +1128,7 @@ JS_CODE;
             return;
         }
 
-        $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+        $limitOffset = $this->isRegularMode && isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $includeDownloadsOfSubcategories = false;
 
         // set downloads filter
@@ -1144,7 +1189,7 @@ JS_CODE;
 
             $downloadCount = $objDownload->getFilteredSearchDownloadCount();
             if ($downloadCount > $_CONFIG['corePagingLimit']) {
-                if(\Env::get('cx')->getPage()->getModule() != 'Downloads'){
+                if($this->requestedPage->getModule() != 'Downloads'){
                     $this->objTemplate->setVariable('DOWNLOADS_' . $variablePrefix .'FILE_PAGING', getPaging($downloadCount, $limitOffset, '', "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
                 }else{
                     $this->objTemplate->setVariable('DOWNLOADS_' . $variablePrefix .'FILE_PAGING', getPaging($downloadCount, $limitOffset, '&'.substr($this->moduleParamsHtml, 1).'&category='.$objCategory->getId().'&downloads_search_keyword='.htmlspecialchars($this->searchKeyword), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));

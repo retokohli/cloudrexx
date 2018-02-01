@@ -277,6 +277,8 @@ class Category
             LEFT JOIN `'.DBPREFIX.'module_downloads_rel_download_category` AS tblR ON tblR.`category_id` = tblC.`id`
             WHERE tblC.`id` = '.$this->id) !== false
         ) {
+            //clear Esi Cache
+            DownloadsLibrary::clearEsiCache();
             return true;
         } else {
             $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_DELETE_FAILED'], '<strong>'.htmlentities($this->name, ENT_QUOTES, CONTREXX_CHARSET).'</strong>');
@@ -1088,6 +1090,8 @@ class Category
         $objFWUser = \FWUser::getFWUserObject();
         $objFWUser->objUser->getDynamicPermissionIds(true);
 
+        //clear Esi Cache
+        DownloadsLibrary::clearEsiCache();
         return true;
     }
 
@@ -1491,6 +1495,8 @@ class Category
             $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_ORDER_SET_FAILED'], implode(', ', $arrFailedDownloads));
             return false;
         } else {
+            //clear Esi Cache
+            DownloadsLibrary::clearEsiCache();
             return true;
         }
     }
@@ -1520,4 +1526,31 @@ class Category
         return $this->manage_files_access_id;
     }
 
+    /**
+     * Return a list of all available category widgets
+     *
+     * @return array    List of category widget names
+     */
+    public static function getCategoryWidgetNames() {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $db = $cx->getDb()->getAdoDb();
+        $arrCategoryIds = array();
+
+        $result = $db->Execute('SELECT id FROM `' . DBPREFIX . 'module_downloads_category`');
+        if ($result !== false) {
+            while (!$result->EOF) {
+                $arrCategoryIds[] = $result->fields['id'];
+                $result->MoveNext();
+            }
+        }
+
+        // add entry 0 to allow overview widget functionality
+        $arrCategoryIds[] = 0;
+
+        return preg_replace(
+            '/\d+/',
+            'downloads_category_$0_list',
+            $arrCategoryIds
+        );
+    }
 }

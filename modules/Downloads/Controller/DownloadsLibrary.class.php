@@ -226,6 +226,8 @@ class DownloadsLibrary
         foreach ($this->arrConfig as $key => $value) {
             $objDatabase->Execute("UPDATE `".DBPREFIX."module_downloads_settings` SET `value` = '".addslashes($value)."' WHERE `name` = '".$key."'");
         }
+        //clear Esi Cache
+        static::clearEsiCache();
     }
 
     public function getSettings()
@@ -428,22 +430,54 @@ class DownloadsLibrary
         return $menu;
     }
 
-    public function setGroups($arrGroups, &$page_content)
+      /**
+     * Get Group content by group id
+     *
+     * @param integer $id     group id
+     * @param integer $langId Language id
+     *
+     * @return string
+     */
+    public function getGroupById($id, $langId)
     {
-        $objGroup  = Group::getGroups(array('id' => $arrGroups));
-        $sortOrder = $this->categoriesSortingOptions[$this->arrConfig['categories_sorting_order']];
-        while (!$objGroup->EOF) {
-            $output = "<ul>\n";
-            $objCategory = Category::getCategories(array('id' => $objGroup->getAssociatedCategoryIds()), null, $sortOrder);
-            while (!$objCategory->EOF) {
-                $output .= '<li><a href="'.CONTREXX_SCRIPT_PATH.'?section=Downloads&amp;category='.$objCategory->getId().'" title="'.htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET).'">'.htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
-                $objCategory->next();
-            }
-            $output .= "</ul>\n";
-
-            $page_content = str_replace('{'.$objGroup->getPlaceholder().'}', $output, $page_content);
-            $objGroup->next();
+        if (empty($id)) {
+            return '';
         }
+        $group = Group::getGroup($id);
+
+        if (!$group->getActiveStatus()) {
+            return '';
+        }
+
+        $sortOrder = $this->categoriesSortingOptions[$this->arrConfig['categories_sorting_order']];
+        $ulTag     = new \Cx\Core\Html\Model\Entity\HtmlElement('ul');
+        $category  = Category::getCategories(
+            array('id' => $group->getAssociatedCategoryIds()),
+            null,
+            $sortOrder
+        );
+        while (!$category->EOF) {
+            $url = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                'Downloads',
+                '',
+                '',
+                array('category' => $category->getId())
+            )->toString();
+            $linkText = contrexx_raw2xhtml($category->getName($langId));
+            //Generate anchor tag
+            $linkTag     = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
+            $linkTag->setAttributes(array(
+                'href'  => $url,
+                'title' => $linkText
+            ));
+            $linkTag->addChild(new \Cx\Core\Html\Model\Entity\TextElement($linkText));
+            $liTag       = new \Cx\Core\Html\Model\Entity\HtmlElement('li');
+            $liTag->addChild($linkTag);
+            $ulTag->addChild($liTag);
+            $category->next();
+        }
+
+        return $ulTag;
     }
 
     /**
@@ -477,5 +511,27 @@ class DownloadsLibrary
             ));
             $objTemplate->parse('downloads_settings_sorting_dropdown_' . $blockName);
         }
+    }
+
+    /**
+     * Clear Esi Cache content
+     */
+    public static function clearEsiCache()
+    {
+        // clear ESI cache
+        $groups       = Group::getGroups();
+        $categories   = Category::getCategories();
+        $widgetNames  = array_merge(
+            $groups->getGroupsPlaceholders(),
+            Category::getCategoryWidgetNames()
+        );
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getEvents()->triggerEvent(
+            'clearEsiCache',
+            array('Widget', $widgetNames)
+        );
+
+        // clear contrexx cache
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Downloads');
     }
 }
