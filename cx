@@ -36,7 +36,7 @@ DEFAULT_CONFIG=(
     ["php-version"]=""
     ["db-image"]="mariadb:latest"
     ["php-image"]="cloudrexx/web:PHP<php-version>-with-mysql"
-    ["db-name"]="test"
+    ["db-name"]="dev"
     ["db-pass"]="123456"
     ["db-user"]="root"
     ["db-host"]="db"
@@ -465,25 +465,30 @@ function cmd_env {
                 echo "DB update not necessary, run ./cx env update --db --force to force db reload"
                 return
             fi
-            TEMP_FILES["db-conf"]=$(mktemp)
+
+            # create login file
+            # TODO: Use trap to delete the temp file
+            local tempfile
+            tempfile=$(dockerexec exec "<db-container>" mktemp)
             echo "[mysql]
 database=${CONFIG["db-name"]}
 [client]
 host=${CONFIG["db-host"]}
 user=${CONFIG["db-user"]}
-password=${CONFIG["db-pass"]}" > "${TEMP_FILES["db-conf"]}"
+password=${CONFIG["db-pass"]}" | internal_dockerexec exec -i "<db-container>" bash -c "cat > $tempfile"
+
             if [[ ${ARGUMENTS["drop-users"]} != true ]]; then
                 TEMP_FILES["user-backup"]="$(mktemp)"
-                mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers "${CONFIG["db-name"]}" contrexx_access_users contrexx_access_user_profile > "${TEMP_FILES["user-backup"]}"
-                mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers -w 'attribute_id=0' "${CONFIG["db-name"]}" contrexx_access_user_attribute_value >> "${TEMP_FILES["user-backup"]}"
+                dockerexec exec "<db-container>" mysqldump --defaults-file="$tempfile" --no-create-info --skip-triggers "${CONFIG["db-name"]}" contrexx_access_users contrexx_access_user_profile > "${TEMP_FILES["user-backup"]}"
+                dockerexec exec "<db-container>" mysqldump --defaults-file="$tempfile" --no-create-info --skip-triggers -w 'attribute_id=0' "${CONFIG["db-name"]}" contrexx_access_user_attribute_value >> "${TEMP_FILES["user-backup"]}"
                 if [[ ${ARGUMENTS["drop-sessions"]} != true ]]; then
                     TEMP_FILES["session-backup"]="$(mktemp)"
-                    mysqldump --defaults-file="${TEMP_FILES["db-conf"]}" --no-create-info --skip-triggers "${CONFIG["db-name"]}" contrexx_sessions > "${TEMP_FILES["session-backup"]}"
+                    dockerexec exec "<db-container>" mysqldump --defaults-file="$tempfile" --no-create-info --skip-triggers "${CONFIG["db-name"]}" contrexx_sessions > "${TEMP_FILES["session-backup"]}"
                 fi
             fi
             # empty database if exists
 # from https://stackoverflow.com/questions/12403662/how-to-remove-all-mysql-tables-from-the-command-line-without-drop-database-permi
-            mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A -e "
+            echo "
 SET FOREIGN_KEY_CHECKS = 0;
 SET GROUP_CONCAT_MAX_LEN=32768;
 SET @tables = NULL;
@@ -506,25 +511,26 @@ SET @views = CONCAT('DROP VIEW IF EXISTS ', @views);
 PREPARE stmt FROM @views;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
-SET FOREIGN_KEY_CHECKS = 1;"
+SET FOREIGN_KEY_CHECKS = 1;" | internal_dockerexec exec -i "<db-container>" bash -c "cat - | mysql --defaults-file=$tempfile -A"
             # create db if it does not exist
-            mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A -e "CREATE DATABASE IF NOT EXISTS ${CONFIG["db-name"]} COLLATE utf8_unicode_ci"
+            echo "CREATE DATABASE IF NOT EXISTS ${CONFIG["db-name"]} COLLATE utf8_unicode_ci" | internal_dockerexec exec -i "<db-container>" bash -c "cat - | mysql --defaults-file=$tempfile -A"
             # load db
-            mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < installer/data/contrexx_dump_structure.sql
-            mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < installer/data/contrexx_dump_data.sql
+            cat installer/data/contrexx_dump_structure.sql | internal_dockerexec exec -i "<db-container>" mysql --defaults-file="$tempfile" -A
+            cat installer/data/contrexx_dump_data.sql | internal_dockerexec exec -i "<db-container>" mysql --defaults-file="$tempfile" -A
             if [[ ${ARGUMENTS["drop-users"]} != true ]]; then
-                mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < "${TEMP_FILES["user-backup"]}"
+                cat "${TEMP_FILES["user-backup"]}" | internal_dockerexec exec -i "<db-container>" mysql --defaults-file="$tempfile" -A
                 if [[ ${ARGUMENTS["drop-sessions"]} != true ]]; then
-                    mysql --defaults-file="${TEMP_FILES["db-conf"]}" -A < "${TEMP_FILES["session-backup"]}"
+                    cat "${TEMP_FILES["session-backup"]}" | internal_dockerexec exec -i "<db-container>" mysql --defaults-file="$tempfile" -A
                 fi
             fi
             # TODO: Check if there's at least one admin, make the user's ID dynamic
-            EXISTING_CX_USER=$(mysql --defaults-file="${TEMP_FILES["db-conf"]}" -e "SELECT id FROM contrexx_access_users WHERE id = 1")
+            EXISTING_CX_USER=$(echo "SELECT id FROM contrexx_access_users WHERE id = 1" | internal_dockerexec exec -i "<db-container>" mysql --defaults-file="$tempfile" -A)
             if [[ "$EXISTING_CX_USER" == "" ]]; then
                 if [[ ${ARGUMENTS["yes"]} != true ]]; then
                     echo "There is no user, will create a default user. Ok?"
                     read -p "Continue [Yn]? " -n 1 -r
                     if [[ "$REPLY" =~ ^[Nn]$ ]]; then
+                        dockerexec exec "<db-container>" rm "$tempfile"
                         return
                     fi
                 fi
@@ -532,8 +538,9 @@ SET FOREIGN_KEY_CHECKS = 1;"
                 ClxUser="system"
                 ClxMail="noreply@contrexx.com"
                 ClxPass="123456"
-                mysql --defaults-file="${TEMP_FILES["db-conf"]}" "${CONFIG["db-name"]}" -e "INSERT INTO contrexx_access_users (id, is_admin, username, password, regdate, expiration, validity, last_auth, last_activity, email, email_access, frontend_lang_id, backend_lang_id, active, profile_access, restore_key, restore_key_time, u2u_active, auth_token) VALUES (1,1,'${ClxUser}',MD5('${ClxPass}'),0,0,0,0,0,'${ClxMail}','nobody', 0,0,1,'members_only','',0,'0', '');INSERT INTO contrexx_access_user_profile (user_id, gender, title, firstname, lastname, company, address, city, zip, country, phone_office, phone_private, phone_mobile, phone_fax, birthday, website, profession, interests, signature, picture) VALUES (1,'gender_undefined',2,'CMS','System Benutzer','','','','',0,'','','','','','','','','','');INSERT INTO contrexx_access_user_attribute_value (attribute_id, user_id, history_id, value) VALUES (0,1,0,'');"
+                echo "INSERT INTO contrexx_access_users (id, is_admin, username, password, regdate, expiration, validity, last_auth, last_activity, email, email_access, frontend_lang_id, backend_lang_id, active, profile_access, restore_key, restore_key_time, u2u_active, auth_token) VALUES (1,1,'${ClxUser}',MD5('${ClxPass}'),0,0,0,0,0,'${ClxMail}','nobody', 0,0,1,'members_only','',0,'0', '');INSERT INTO contrexx_access_user_profile (user_id, gender, title, firstname, lastname, company, address, city, zip, country, phone_office, phone_private, phone_mobile, phone_fax, birthday, website, profession, interests, signature, picture) VALUES (1,'gender_undefined',2,'CMS','System Benutzer','','','','',0,'','','','','','','','','','');INSERT INTO contrexx_access_user_attribute_value (attribute_id, user_id, history_id, value) VALUES (0,1,0,'');" | internal_dockerexec exec -i "<db-container>" mysql --defaults-file="$tempfile" -A
             fi
+            dockerexec exec "<db-container>" rm "$tempfile"
             ;;
         config)
             if [[ ${ARGUMENTS["show"]} = true ]]; then
