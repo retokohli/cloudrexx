@@ -129,7 +129,6 @@ class DownloadsLibrary
         $this->initSearch();
         $this->initDefaultCategoryImage();
         $this->initDefaultDownloadImage();
-        $this->initOutputLocale();
     }
 
 
@@ -183,7 +182,7 @@ class DownloadsLibrary
     /**
      * Determine the locale in which the output shall be parsed for.
      */
-    protected function initOutputLocale() {
+    protected static function initOutputLocale() {
         $em = \Cx\Core\Core\Controller\Cx::instanciate()
             ->getDb()
             ->getEntityManager();
