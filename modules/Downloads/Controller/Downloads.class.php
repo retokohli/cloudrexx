@@ -177,13 +177,13 @@ class Downloads extends DownloadsLibrary
 
     private function deleteCategory()
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         \Cx\Core\Csrf\Controller\Csrf::check_code();
         $objCategory = Category::getCategory(isset($_GET['delete_category']) ? $_GET['delete_category'] : 0);
 
         if (!$objCategory->EOF) {
-            $name = '<strong>'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'</strong>';
+            $name = '<strong>'.htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET).'</strong>';
             if ($objCategory->delete()) {
                 $this->arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_DELETE_SUCCESS'], $name);
             } else {
@@ -195,8 +195,6 @@ class Downloads extends DownloadsLibrary
 
     private function overview()
     {
-        global $_LANGID;
-
         // load source code if cmd value is integer
         if ($this->objTemplate->placeholderExists('APPLICATION_DATA')) {
             $page = new \Cx\Core\ContentManager\Model\Entity\Page();
@@ -240,9 +238,9 @@ class Downloads extends DownloadsLibrary
                 $objDownload->getActiveStatus()
             ) {
                 /* DOWNLOAD DETAIL PAGE */
-                $this->pageTitle = $objDownload->getName(FRONTEND_LANG_ID);
+                $this->pageTitle = $objDownload->getName();
 
-                $metakeys = $objDownload->getMetakeys(FRONTEND_LANG_ID);
+                $metakeys = $objDownload->getMetakeys();
                 if ($this->arrConfig['use_attr_metakeys'] && !empty($metakeys)) {
                     \Env::get('cx')->getPage()->setMetakeys($metakeys);
                 }
@@ -270,7 +268,7 @@ class Downloads extends DownloadsLibrary
                 }
             } else {
                 /* CATEGORY DETAIL PAGE */
-                $this->pageTitle = $objCategory->getName($_LANGID);
+                $this->pageTitle = $objCategory->getName();
 
                 // process create directory
                 $this->processCreateDirectory($objCategory);
@@ -566,13 +564,13 @@ class Downloads extends DownloadsLibrary
             \Cx\Core\MailTemplate\Controller\MailTemplate::send(
                 array(
                     'section' => 'Downloads',
-                    'lang_id' => FRONTEND_LANG_ID,
+                    'lang_id' => DownloadsLibrary::getOutputLocale()->getId(),
                     'key'     => 'new_asset_notification',
                     'substitution' => array(
                         'DOMAIN_URL'    => \Env::get('config')['domainUrl'],
                         'FILE_OWNER'    => $data['owner'],
-                        'FILE_NAME'     => $objDownload->getName(FRONTEND_LANG_ID),
-                        'CATEGORY_NAME' => $objCategory->getName(FRONTEND_LANG_ID),
+                        'FILE_NAME'     => $objDownload->getName(),
+                        'CATEGORY_NAME' => $objCategory->getName(),
                         'FILE_DOWNLOAD_LINK_SRC' => $downloadUrl->toString(),
                     )
                 )
@@ -743,13 +741,11 @@ class Downloads extends DownloadsLibrary
 
     private function parseCategory($objCategory)
     {
-        global $_LANGID;
-
         if (!$this->objTemplate->blockExists('downloads_category')) {
             return;
         }
 
-        $description = $objCategory->getDescription($_LANGID);
+        $description = $objCategory->getDescription();
         if (strlen($description) > 100) {
             $shortDescription = substr($description, 0, 97).'...';
         } else {
@@ -773,12 +769,12 @@ class Downloads extends DownloadsLibrary
 
         $this->objTemplate->setVariable(array(
             'DOWNLOADS_CATEGORY_ID'                 =>  $objCategory->getId(),
-            'DOWNLOADS_CATEGORY_NAME'               => htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_CATEGORY_NAME'               => htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET),
             'DOWNLOADS_CATEGORY_DESCRIPTION'        => nl2br(htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_CATEGORY_SHORT_DESCRIPTION'  => htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET),
-            'DOWNLOADS_CATEGORY_IMAGE'              => $this->getHtmlImageTag($imageSrc, htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+            'DOWNLOADS_CATEGORY_IMAGE'              => $this->getHtmlImageTag($imageSrc, htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_CATEGORY_IMAGE_SRC'          => $imageSrc,
-            'DOWNLOADS_CATEGORY_THUMBNAIL'          => $this->getHtmlImageTag($thumbnailSrc, htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+            'DOWNLOADS_CATEGORY_THUMBNAIL'          => $this->getHtmlImageTag($thumbnailSrc, htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_CATEGORY_THUMBNAIL_SRC'      => $thumbnailSrc,
         ));
 
@@ -790,8 +786,6 @@ class Downloads extends DownloadsLibrary
 
     private function parseGroups($objCategory)
     {
-        global $_LANGID;
-
         if (!$this->objTemplate->blockExists('downloads_category_group_list')) {
             return;
         }
@@ -802,7 +796,7 @@ class Downloads extends DownloadsLibrary
             while (!$objGroup->EOF) {
                 $this->objTemplate->setVariable(array(
                     'DOWNLOADS_GROUP_ID'        => $objGroup->getId(),
-                    'DOWNLOADS_GROUP_NAME'      => htmlentities($objGroup->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_GROUP_NAME'      => htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET),
                     'DOWNLOADS_GROUP_PAGE'      => $objGroup->getInfoPage()
                 ));
 
@@ -819,7 +813,7 @@ class Downloads extends DownloadsLibrary
 
     private function parseCrumbtrail($objParentCategory)
     {
-        global $_ARRAYLANG, $_LANGID;
+        global $_ARRAYLANG;
 
         if (!$this->objTemplate->blockExists('downloads_crumbtrail')) {
             return;
@@ -830,7 +824,7 @@ class Downloads extends DownloadsLibrary
         do {
             $arrCategories[] = array(
                 'id'    => $objParentCategory->getId(),
-                'name'  => htmlentities($objParentCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)
+                'name'  => htmlentities($objParentCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET)
             );
             $objParentCategory = Category::getCategory($objParentCategory->getParentId());
         } while ($objParentCategory->getId());
@@ -1001,9 +995,9 @@ JS_CODE;
 
     private function parseCategoryAttributes($objCategory, $row, $variablePrefix, $allowDeleteCategory = false)
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
-        $description = $objCategory->getDescription($_LANGID);
+        $description = $objCategory->getDescription();
         if (strlen($description) > 100) {
             $shortDescription = substr($description, 0, 97).'...';
         } else {
@@ -1029,7 +1023,7 @@ JS_CODE;
         if ($allowDeleteCategory || $objCategory->getOwnerId() == $this->userId && $objCategory->getDeletableByOwner()) {
             $deleteIcon = $this->getHtmlDeleteLinkIcon(
                 $objCategory->getId(),
-                htmlspecialchars(str_replace("'", "\\'", $objCategory->getName($_LANGID)), ENT_QUOTES, CONTREXX_CHARSET),
+                htmlspecialchars(str_replace("'", "\\'", $objCategory->getName()), ENT_QUOTES, CONTREXX_CHARSET),
                 'downloadsDeleteCategory'
             );
         } else {
@@ -1038,14 +1032,14 @@ JS_CODE;
 
         $this->objTemplate->setVariable(array(
             'DOWNLOADS_'.$variablePrefix.'CATEGORY_ID'                 => $objCategory->getId(),
-            'DOWNLOADS_'.$variablePrefix.'CATEGORY_NAME'               => htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
-            'DOWNLOADS_'.$variablePrefix.'CATEGORY_NAME_LINK'          => $this->getHtmlLinkTag(CONTREXX_SCRIPT_PATH . $this->moduleParamsHtml . '&amp;category=' . $objCategory->getId(), sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)), htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
-            'DOWNLOADS_'.$variablePrefix.'CATEGORY_FOLDER_LINK'        => $this->getHtmlFolderLinkTag(CONTREXX_SCRIPT_PATH . $this->moduleParamsHtml . '&amp;category=' . $objCategory->getId(), sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)), htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+            'DOWNLOADS_'.$variablePrefix.'CATEGORY_NAME'               => htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_'.$variablePrefix.'CATEGORY_NAME_LINK'          => $this->getHtmlLinkTag(CONTREXX_SCRIPT_PATH . $this->moduleParamsHtml . '&amp;category=' . $objCategory->getId(), sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET)), htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET)),
+            'DOWNLOADS_'.$variablePrefix.'CATEGORY_FOLDER_LINK'        => $this->getHtmlFolderLinkTag(CONTREXX_SCRIPT_PATH . $this->moduleParamsHtml . '&amp;category=' . $objCategory->getId(), sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET)), htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_'.$variablePrefix.'CATEGORY_DESCRIPTION'        => nl2br(htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_'.$variablePrefix.'CATEGORY_SHORT_DESCRIPTION'  => htmlentities($shortDescription, ENT_QUOTES, CONTREXX_CHARSET),
-            'DOWNLOADS_'.$variablePrefix.'CATEGORY_IMAGE'              => $this->getHtmlImageTag($imageSrc, htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+            'DOWNLOADS_'.$variablePrefix.'CATEGORY_IMAGE'              => $this->getHtmlImageTag($imageSrc, htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_'.$variablePrefix.'CATEGORY_IMAGE_SRC'          => $imageSrc,
-            'DOWNLOADS_'.$variablePrefix.'CATEGORY_THUMBNAIL'          => $this->getHtmlImageTag($thumbnailSrc, htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
+            'DOWNLOADS_'.$variablePrefix.'CATEGORY_THUMBNAIL'          => $this->getHtmlImageTag($thumbnailSrc, htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET)),
             'DOWNLOADS_'.$variablePrefix.'CATEGORY_THUMBNAIL_SRC'      => $thumbnailSrc,
             'DOWNLOADS_'.$variablePrefix.'CATEGORY_DOWNLOADS_COUNT'    => intval($objCategory->getAssociatedDownloadsCount($this->arrConfig['list_downloads_current_lang'])),
             'DOWNLOADS_'.$variablePrefix.'CATEGORY_DELETE_ICON'        => $deleteIcon,

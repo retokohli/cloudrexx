@@ -54,7 +54,7 @@ class Download {
     private $mime_type;
 
     /**
-     * Source in loaded interface language (LANG_ID)
+     * Source in loaded interface language
      * @var string
      */
     private $source;
@@ -66,7 +66,7 @@ class Download {
     private $sources;
 
     /**
-     * Source-name in loaded interface language (LANG_ID)
+     * Source-name in loaded interface language
      * @var string
      */
     private $source_name;
@@ -78,7 +78,7 @@ class Download {
     private $source_names;
 
     /**
-     * Filetype in loaded interface language (LANG_ID)
+     * Filetype in loaded interface language
      *
      * @var string
      */
@@ -111,7 +111,7 @@ class Download {
     private $categories;
 
     /**
-     * Name of download in loaded interface language (LANG_ID)
+     * Name of download in loaded interface language
      * @var string
      */
     private $name;
@@ -123,7 +123,7 @@ class Download {
     private $names;
 
     /**
-     * Description in loaded interface language (LANG_ID)
+     * Description in loaded interface language
      * @var string
      */
     private $description;
@@ -135,7 +135,7 @@ class Download {
     private $descriptions;
 
     /**
-     * Metakeys in loaded interface language (LANG_ID)
+     * Metakeys in loaded interface language
      * @var string
      */
     private $metakey;
@@ -340,7 +340,7 @@ class Download {
      */
     public function delete($categoryId = null)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         $objFWUser = \FWUser::getFWUserObject();
 
@@ -358,7 +358,7 @@ class Download {
                 )
             )
         ) {
-            $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_NO_PERM_DEL_DOWNLOAD'], htmlentities($this->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
+            $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_NO_PERM_DEL_DOWNLOAD'], htmlentities($this->getName(), ENT_QUOTES, CONTREXX_CHARSET));
             return false;
         }
 
@@ -409,7 +409,7 @@ class Download {
         }
     }
 
-    public function send($langId = LANG_ID)
+    public function send($langId = 0)
     {
         $objHTTPDownload = new \HTTP_Download();
         $objHTTPDownload->setFile(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$this->getSource($langId));
@@ -430,10 +430,14 @@ class Download {
      *
      * @return string
      */
-    public function getName($langId = LANG_ID, $force = false)
+    public function getName($langId = 0, $force = false)
     {
-        // name of interface language (-> LANG_ID) might be cached in $this->name
-        if ($langId == LANG_ID && !empty($this->name) && !$force) {
+        if (!$langId) {
+            $langId = DownloadsLibrary::getOutputLocale()->getId();
+        }
+
+        // name of interface language might be cached in $this->name
+        if ($langId == DownloadsLibrary::getOutputLocale()->getId() && !empty($this->name) && !$force) {
             return $this->name;
         }
 
@@ -448,10 +452,14 @@ class Download {
         return $this->filtered_search_count;
     }
 
-    public function getDescription($langId = LANG_ID)
+    public function getDescription($langId = 0)
     {
-        // description of interface language (-> LANG_ID) might be cached in $this->description
-        if ($langId == LANG_ID && !empty($this->description)) {
+        if (!$langId) {
+            $langId = DownloadsLibrary::getOutputLocale()->getId();
+        }
+
+        // description of interface language might be cached in $this->description
+        if ($langId == DownloadsLibrary::getOutputLocale()->getId() && !empty($this->description)) {
             return $this->description;
         }
 
@@ -461,10 +469,14 @@ class Download {
         return isset($this->descriptions[$langId]) ? $this->descriptions[$langId] : '';
     }
 
-    public function getMetakeys($langId = LANG_ID)
+    public function getMetakeys($langId = 0)
     {
-        // metakeys of interface language (-> LANG_ID) might be cached in $this->metakey
-        if ($langId == LANG_ID && !empty($this->metakey)) {
+        if (!$langId) {
+            $langId = DownloadsLibrary::getOutputLocale()->getId();
+        }
+
+        // metakeys of interface language might be cached in $this->metakey
+        if ($langId == DownloadsLibrary::getOutputLocale()->getId() && !empty($this->metakey)) {
             return $this->metakey;
         }
 
@@ -479,12 +491,16 @@ class Download {
      *
      * @param  integer $langId The language ID
      *
-     * @return string          Filetype in loaded interface language (LANG_ID)
+     * @return string          Filetype of Download
      */
-    public function getFileType($langId = LANG_ID)
+    public function getFileType($langId = 0)
     {
-        // filetype of interface language (-> LANG_ID) might be cached in $this->fileType
-        if ($langId == LANG_ID && isset($this->fileType)) {
+        if (!$langId) {
+            $langId = DownloadsLibrary::getOutputLocale()->getId();
+        }
+
+        // filetype of interface language might be cached in $this->fileType
+        if ($langId == DownloadsLibrary::getOutputLocale()->getId() && isset($this->fileType)) {
             return $this->fileType;
         }
 
@@ -606,8 +622,6 @@ class Download {
      */
     public function load($id, $listDownloadsOfCurrentLanguage = false)
     {
-        global $_LANGID;
-
 //        $arrDebugBackTrace = debug_backtrace();
 //        if (!in_array($arrDebugBackTrace[1]['function'], array('getDownload', 'first','next'))) {
 //            die("Download->load(): Illegal method call in {$arrDebugBackTrace[0]['file']} on line {$arrDebugBackTrace[0]['line']}!");
@@ -758,25 +772,24 @@ class Download {
         // then try to take it from fallback language
         // If fallback language is empty then take it from the default language,
         // If default language is empty, then take it any available language
-        $availableLangIds = array(LANG_ID);
-        if (\FWLanguage::getFallbackLanguageIdById(LANG_ID)) {
-            $availableLangIds[] = \FWLanguage::getFallbackLanguageIdById(LANG_ID);
+
+        // add current interface language
+        $frontendLangId = DownloadsLibrary::getOutputLocale()->getId();
+        $availableLangIds = array($frontendLangId);
+        if (\FWLanguage::getFallbackLanguageIdById($frontendLangId)) {
+            $availableLangIds[] = \FWLanguage::getFallbackLanguageIdById($frontendLangId);
         }
+
+        // add default frontend locale
         if (!in_array(\FWLanguage::getDefaultLangId(), $availableLangIds)) {
             $availableLangIds[] = \FWLanguage::getDefaultLangId();
         }
 
-        if ($this->isFrontendMode) {
-            $otherLangIds = array_diff(
-                array_keys(\FWLanguage::getActiveFrontendLanguages()),
-                $availableLangIds
-            );
-        } else {
-            $otherLangIds = array_diff(
-                array_keys(\FWLanguage::getActiveBackendLanguages()),
-                $availableLangIds
-            );
-        }
+        // fetch all other frontend locales
+        $otherLangIds = array_diff(
+            array_keys(\FWLanguage::getActiveFrontendLanguages()),
+            $availableLangIds
+        );
 
         if (count($arrSelectLocaleExpressions)) {
             array_walk(
@@ -1196,7 +1209,7 @@ class Download {
         $arrConditions = array();
 
         if ($listDownloadsOfCurrentLanguage) {
-            $availableLangIds = array(LANG_ID);
+            $availableLangIds = array(DownloadsLibrary::getOutputLocale()->getId());
         } else {
             if ($this->isFrontendMode) {
                 $availableLangIds = array_keys(\FWLanguage::getActiveFrontendLanguages());
@@ -1246,7 +1259,7 @@ class Download {
         $offset = null,
         $listDownloadsOfCurrentLanguage = false
     ) {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $arrCustomSelection = array();
         $joinLocaleTbl = false;
@@ -1296,7 +1309,7 @@ class Download {
                 AS tblL0 ON tblL0.`download_id` = tblD.`id`';
         }
         if ($listDownloadsOfCurrentLanguage) {
-            $arrCustomSelection[] = 'tblL0.`lang_id` = ' . LANG_ID;
+            $arrCustomSelection[] = 'tblL0.`lang_id` = ' . DownloadsLibrary::getOutputLocale()->getId();
         }
         $query = 'SELECT SQL_CALC_FOUND_ROWS DISTINCT tblD.`id`
             FROM `'.DBPREFIX.'module_downloads_download` AS tblD'
@@ -1788,27 +1801,35 @@ class Download {
         return $this->mime_type;
     }
 
-    public function getSource($langId = LANG_ID)
+    public function getSource($langId = 0)
     {
-        // source of interface language (-> LANG_ID) might be cached in $this->source
-        if ($langId == LANG_ID && !empty($this->source)) {
+        if (!$langId) {
+            $langId = DownloadsLibrary::getOutputLocale()->getId();
+        }
+
+        // source of interface language might be cached in $this->source
+        if ($langId == DownloadsLibrary::getOutputLocale()->getId() && !empty($this->source)) {
             return $this->source;
         }
 
-        if (!isset($this->sources)) {
+        if (empty($this->sources)) {
             $this->loadLocales();
         }
         return isset($this->sources[$langId]) ? $this->sources[$langId] : '';
     }
 
-    public function getSourceName($langId = LANG_ID)
+    public function getSourceName($langId = 0)
     {
-        // source-name of interface language (-> LANG_ID) might be cached in $this->source_name
-        if ($langId == LANG_ID && !empty($this->source_name)) {
+        if (!$langId) {
+            $langId = DownloadsLibrary::getOutputLocale()->getId();
+        }
+
+        // source-name of interface language might be cached in $this->source_name
+        if ($langId == DownloadsLibrary::getOutputLocale()->getId() && !empty($this->source_name)) {
             return $this->source_name;
         }
 
-        if (!isset($this->source_names)) {
+        if (empty($this->source_names)) {
             $this->loadLocales();
         }
         return isset($this->source_names[$langId]) ? $this->source_names[$langId] : '';
@@ -2014,7 +2035,7 @@ class Download {
             }
 
             // set source of interface language
-            if ($langId == LANG_ID) {
+            if ($langId == DownloadsLibrary::getOutputLocale()->getId()) {
                 $this->source = $source;
                 $this->source_name = $this->source_names[$langId];
                 $this->fileType    = $this->fileTypes[$langId];
@@ -2114,7 +2135,7 @@ class Download {
     public function setNames($arrNames)
     {
         // set name of interface language
-        $this->name = $arrNames[LANG_ID];
+        $this->name = $arrNames[DownloadsLibrary::getOutputLocale()->getId()];
 
         // set names of all languages
         $this->names = $arrNames;
@@ -2123,7 +2144,7 @@ class Download {
     public function setDescriptions($arrDescriptions)
     {
         // set description of interface language
-        $this->description = $arrDescriptions[LANG_ID];
+        $this->description = $arrDescriptions[DownloadsLibrary::getOutputLocale()->getId()];
 
         // set descriptions of all languages
         $this->descriptions = $arrDescriptions;
@@ -2132,7 +2153,7 @@ class Download {
     public function setMetakeys($arrMetakeys)
     {
         // set metakey of interface language
-        $this->metakey = $arrMetakeys[LANG_ID];
+        $this->metakey = $arrMetakeys[DownloadsLibrary::getOutputLocale()->getId()];
 
         // set metakeys of all languages
         $this->metakeys = $arrMetakeys;

@@ -224,7 +224,7 @@ class Category
      */
     public function delete($recursive = false)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         $objFWUser = \FWUser::getFWUserObject();
 
@@ -244,7 +244,7 @@ class Category
                 )
             )
         ) {
-            $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_NO_PERM_DEL_CATEGORY'], htmlentities($this->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
+            $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_NO_PERM_DEL_CATEGORY'], htmlentities($this->getName(), ENT_QUOTES, CONTREXX_CHARSET));
             return false;
         }
 
@@ -383,7 +383,7 @@ class Category
             $localeJoinQry =
                 ' INNER JOIN `' . DBPREFIX . 'module_downloads_download_locale` as tblL
                 ON tblL.`download_id` = tblD.`id` ';
-            $localeCondition = ' AND tblL.`lang_id` = ' . LANG_ID . ' ';
+            $localeCondition = ' AND tblL.`lang_id` = ' . DownloadsLibrary::getOutputLocale()->getId() . ' ';
         }
         $objResult = $objDatabase->Execute('
             SELECT  tblR.`category_id`,
@@ -489,10 +489,13 @@ class Category
         return $arrSubCategories;
     }
 
-    public function getName($langId)
+    public function getName($langId = 0)
     {
         if (!isset($this->names)) {
             $this->loadLocales();
+        }
+        if (!$langId) {
+            $langId = DownloadsLibrary::getOutputLocale()->getId();
         }
         return isset($this->names[$langId]) ? $this->names[$langId] : '';
     }
@@ -522,10 +525,13 @@ class Category
         }
     }
 
-    public function getDescription($langId)
+    public function getDescription($langId = 0)
     {
         if (!isset($this->descriptions)) {
             $this->loadLocales();
+        }
+        if (!$langId) {
+            $langId = DownloadsLibrary::getOutputLocale()->getId();
         }
         return isset($this->descriptions[$langId]) ? $this->descriptions[$langId] : '';
     }
@@ -562,8 +568,6 @@ class Category
      */
     private function load($id)
     {
-        global $_LANGID;
-
         $arrDebugBackTrace = debug_backtrace();
         if (!in_array($arrDebugBackTrace[1]['function'], array('getCategory', 'first','next'))) {
             die("Category->load(): Illegal method call in {$arrDebugBackTrace[0]['file']} on line {$arrDebugBackTrace[0]['line']}!");
@@ -873,7 +877,7 @@ class Category
 
     private function setSortedCategoryIdList($arrSort, $sqlCondition = null, $limit = null, $offset = null)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $arrCustomSelection = array();
         $joinLocaleTbl = false;
@@ -901,7 +905,7 @@ class Category
                         $arrSortExpressions[] = 'tblC.`'.$attribute.'` '.$direction;
                     } elseif (isset($this->arrAttributes['locale'][$attribute])) {
                         $arrSortExpressions[] = 'tblLS.`'.$attribute.'` '.$direction;
-                        $arrCustomSelection[] = 'tblLS.`lang_id` = '.$_LANGID ;
+                        $arrCustomSelection[] = 'tblLS.`lang_id` = ' . DownloadsLibrary::getOutputLocale()->getId();
                         $joinLocaleSortTbl = true;
                     }
                 } elseif ($attribute == 'special') {
@@ -977,7 +981,7 @@ class Category
      */
     public function store()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         if (isset($this->names) && !$this->validateName()) {
             return false;
@@ -1018,7 +1022,7 @@ class Category
                 )
             )
         ) {
-            $this->error_msg[] = $objParentCategory->getId() ? ($this->id ? sprintf($_ARRAYLANG['TXT_DOWNLOADS_UPDATE_CATEGORY_PROHIBITED'], htmlentities($this->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)) : sprintf($_ARRAYLANG['TXT_DOWNLOADS_ADD_SUBCATEGORY_TO_CATEGORY_PROHIBITED'], htmlentities($this->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET))) : $_ARRAYLANG['TXT_DOWNLOADS_ADD_MAIN_CATEGORY_PROHIBITED'];
+            $this->error_msg[] = $objParentCategory->getId() ? ($this->id ? sprintf($_ARRAYLANG['TXT_DOWNLOADS_UPDATE_CATEGORY_PROHIBITED'], htmlentities($this->getName(), ENT_QUOTES, CONTREXX_CHARSET)) : sprintf($_ARRAYLANG['TXT_DOWNLOADS_ADD_SUBCATEGORY_TO_CATEGORY_PROHIBITED'], htmlentities($this->getName(), ENT_QUOTES, CONTREXX_CHARSET))) : $_ARRAYLANG['TXT_DOWNLOADS_ADD_MAIN_CATEGORY_PROHIBITED'];
             return false;
         }
 
@@ -1312,7 +1316,7 @@ class Category
 
     public function setParentId($parentId)
     {
-        global $_ARRAYLANG, $_LANGID;
+        global $_ARRAYLANG;
 
         if ($this->parent_id == $parentId) {
             return true;
@@ -1339,7 +1343,7 @@ class Category
                 && !\Permission::checkAccess($objParentCategory->getAddSubcategoriesAccessId(), 'dynamic', true)
                 && (($objFWUser = \FWUser::getFWUserObject()) == false || !$objFWUser->objUser->login() || $objParentCategory->getOwnerId() != $objFWUser->objUser->getId())
             ) {
-                $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_ADD_SUBCATEGORY_TO_CATEGORY_PROHIBITED'], htmlentities($objParentCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
+                $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_ADD_SUBCATEGORY_TO_CATEGORY_PROHIBITED'], htmlentities($objParentCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET));
                 return false;
             }
         } else {
@@ -1469,7 +1473,7 @@ class Category
 
     public function updateDownloadOrder($arrDownloadOrder)
     {
-        global $objDatabase, $_LANGID, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         $arrFailedDownloads = array();
         $objDownload = new Download();
@@ -1478,7 +1482,7 @@ class Category
             if ($objDatabase->Execute('UPDATE `'.DBPREFIX.'module_downloads_rel_download_category` SET `order` = '.intval($order).' WHERE `download_id` = '.$downloadId.' AND `category_id` = '.$this->getId()) === false) {
                 $objDownload->load($downloadId);
                 if (!$objDownload->EOF) {
-                    $arrFailedDownloads[] = htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
+                    $arrFailedDownloads[] = htmlentities($objDownload->getName(), ENT_QUOTES, CONTREXX_CHARSET);
                 }
             }
         }
