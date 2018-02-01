@@ -63,7 +63,6 @@ class EsiWidgetController extends \Cx\Core_Modules\Widget\Controller\EsiWidgetCo
         global $_ARRAYLANG;
 
         $this->getComponent('Session')->getSession();
-        //The $_LANGID is required in the Downloads::overview()
         $langId = $params['locale']->getId();
         $_ARRAYLANG = array_merge(
             $_ARRAYLANG,

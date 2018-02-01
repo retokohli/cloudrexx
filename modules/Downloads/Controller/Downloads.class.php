@@ -70,6 +70,19 @@ class Downloads extends DownloadsLibrary
     protected $requestedPage = null;
 
     /**
+     * Whether or not this instance is used for parsing the frontend
+     * application section or for a widget.
+     *
+     * If instance is used for processing a regular frontend request to this
+     * components application section, then $isRegularMode is set TRUE.
+     * Otherwise, if this instance is being used for parsing a Widget of this
+     * component, then $isRegularMode is set to FALSE.
+     *
+     * @var boolean
+     */
+    protected $isRegularMode = true;
+
+    /**
     * Constructor
     *
     * Calls the parent constructor and creates a local template object
@@ -96,21 +109,24 @@ class Downloads extends DownloadsLibrary
             $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         }
 
-        $this->requestedPage = $requestedPage;
-        if (!$this->requestedPage) {
+        // if $requestedPage is set, then we're about to process a widget
+        if ($requestedPage) {
+            $this->isRegularMode = false;
+            $this->requestedPage = $requestedPage;
+        } else {
             $this->requestedPage = \Cx\Core\Core\Controller\Cx::instanciate()->getPage();
         }
     }
 
     private function parseURLModifiers($queryParams)
     {
-        $cmd = isset($queryParams['cmd']) ? $queryParams['cmd'] : (isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '');
+        $cmd = isset($queryParams['cmd']) ? $queryParams['cmd'] : ($this->isRegularMode && isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '');
 
-        if (isset($_GET['download'])) {
+        if ($this->isRegularMode && isset($_GET['download'])) {
             $this->cmd = 'download_file';
-        } elseif (isset($_GET['delete_file'])) {
+        } elseif ($this->isRegularMode && isset($_GET['delete_file'])) {
             $this->cmd = 'delete_file';
-        } elseif (isset($_GET['delete_category'])) {
+        } elseif ($this->isRegularMode && isset($_GET['delete_category'])) {
             $this->cmd = 'delete_category';
         } elseif ($cmd) {
             $this->cmd = $cmd;
@@ -122,9 +138,9 @@ class Downloads extends DownloadsLibrary
         }
 
         if (intval($cmd)) {
-            $this->categoryId = isset($queryParams['category']) ? $queryParams['category'] : (!empty($_REQUEST['category']) ? intval($_REQUEST['category']) : intval($cmd));
+            $this->categoryId = isset($queryParams['category']) ? $queryParams['category'] : ($this->isRegularMode && !empty($_REQUEST['category']) ? intval($_REQUEST['category']) : intval($cmd));
         } else {
-            $this->categoryId = isset($queryParams['category']) ? $queryParams['category'] : (!empty($_REQUEST['category']) ? intval($_REQUEST['category']) : 0);
+            $this->categoryId = isset($queryParams['category']) ? $queryParams['category'] : ($this->isRegularMode && !empty($_REQUEST['category']) ? intval($_REQUEST['category']) : 0);
         }
     }
 
@@ -246,14 +262,18 @@ class Downloads extends DownloadsLibrary
                 && !\Permission::checkAccess($objCategory->getReadAccessId(), 'dynamic', true)
                 && $objCategory->getOwnerId() != $this->userId
             ) {
-// TODO: might we have to add a soft noAccess handler in case the output is meant for a regular page (not section=Downloads)
+                // in case we're processing a widget, then we shall not
+                // redirect the user to the no-access section
+                if (!$this->isRegularMode) {
+                    return;
+                }
                 \Permission::noAccess(base64_encode(CONTREXX_SCRIPT_PATH.$this->moduleParamsJs.'&category='.$objCategory->getId()));
             }
 
             // parse crumbtrail
             $this->parseCrumbtrail($objCategory);
 
-            $id = !empty($_REQUEST['id']) ? contrexx_input2int($_REQUEST['id']) : 0;
+            $id = $this->isRegularMode && !empty($_REQUEST['id']) ? contrexx_input2int($_REQUEST['id']) : 0;
             if (
                 $objDownload->load($id, $this->arrConfig['list_downloads_current_lang']) &&
                 (
@@ -606,7 +626,7 @@ class Downloads extends DownloadsLibrary
 
     private function processCreateDirectory($objCategory)
     {
-        if (empty($_POST['downloads_category_name'])) {
+        if ($this->isRegularMode || empty($_POST['downloads_category_name'])) {
             return;
         } else {
             $name = contrexx_stripslashes($_POST['downloads_category_name']);
@@ -1108,7 +1128,7 @@ JS_CODE;
             return;
         }
 
-        $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+        $limitOffset = $this->isRegularMode && isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $includeDownloadsOfSubcategories = false;
 
         // set downloads filter
