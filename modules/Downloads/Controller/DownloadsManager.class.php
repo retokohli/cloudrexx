@@ -2016,12 +2016,18 @@ class DownloadsManager extends DownloadsLibrary
 
         // parse frontend preview link
         if ($objCategory->getId()) {
-            $categoryFrontendURI = ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/'.CONTREXX_DIRECTORY_INDEX.'?section=Downloads&amp;category='.$objCategory->getId();
-            $this->objTemplate->setVariable(array(
-                'TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND'      => $_ARRAYLANG['TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND'],
-                'DOWNLOADS_CATEGORY_FRONTEND_URI'           => $categoryFrontendURI
-            ));
-            $this->objTemplate->parse('downloads_category_frontend_link');
+            try {
+                $categoryFrontendURI = \Cx\Core\Routing\Url::fromModuleAndCmd('Downloads', '', DownloadsLibrary::getOutputLocale()->getId(), array('category' => $objCategory->getId()), '', false);
+            } catch (\Exception $e) {}
+            if ($categoryFrontendURI) {
+                $this->objTemplate->setVariable(array(
+                    'TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND'      => $_ARRAYLANG['TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND'],
+                    'DOWNLOADS_CATEGORY_FRONTEND_URI'           => $categoryFrontendURI
+                ));
+                $this->objTemplate->parse('downloads_category_frontend_link');
+            } else {
+                $this->objTemplate->hideBlock('downloads_category_frontend_link');
+            }
         } else {
             $this->objTemplate->hideBlock('downloads_category_frontend_link');
         }
