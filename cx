@@ -1,5 +1,5 @@
 #!/bin/bash
-@ECHO off 2>nul & @GOTO WIN \
+@GOTO WIN \
 2>/dev/null
 #!/bin/bash
 # vim: syn=sh
