@@ -45,9 +45,9 @@ ARGUMENTS=(
     ["port"]=80
     ["php-image"]="cloudrexx/web:PHP<php-version>-with-mysql"
     ["db-image"]="mariadb:latest"
-    ["source-repo"]="git@github.com:Cloudrexx/cloudrexx.git"
+    ["source-repo"]="https://github.com/Cloudrexx/cloudrexx.git"
     ["source-branch"]="master"
-    ["scripts-repo"]="git@github.com:Cloudrexx/scripts.git"
+    ["scripts-repo"]="https://github.com/Cloudrexx/scripts.git"
     ["scripts-branch"]="master"
     ["root-domain"]="lvh.me"
 )
