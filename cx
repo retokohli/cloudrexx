@@ -891,8 +891,8 @@ exit
 REM Check if bash script is present
 DIR /b /a-d |find /v "." |find "cx"
 if %errorlevel% NEQ 0 (
-    docker run --rm --name clx-win-wrapper -v %cd%/:/root cloudrexx/ubuntu "cd /root && wget https://raw.githubusercontent.com/Cloudrexx/cloudrexx/master/cx && chmod +x cx"
+    docker run --rm --name clx-win-wrapper -v %cd%/:/root cloudrexx/ubuntu bash -c "cd /root && wget -q https://raw.githubusercontent.com/Cloudrexx/cloudrexx/master/cx && chmod +x cx"
 )
 
 REM Pass everything through our wrapper
-docker run -ti --name clx-win-wrapper -v %cd%/:/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu ./cx %*
+docker run --rm -ti --name clx-win-wrapper -v %cd%/:/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu bash -c "cd /root && /root/cx %*"
