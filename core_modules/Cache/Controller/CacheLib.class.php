@@ -299,6 +299,7 @@ class CacheLib
             unset($this->memcached); // needed for reinitialization
             if (class_exists('\Memcached')) {
                 $memcached = new \Memcached();
+                $memcached->setOption(\Memcached::OPT_BINARY_PROTOCOL, false);
                 if (@$memcached->addServer($memcachedConfiguration['ip'], $memcachedConfiguration['port'])) {
                     $this->memcached = $memcached;
                 }
@@ -940,19 +941,24 @@ class CacheLib
 
     /**
      * Clears all Memcacheddata related to this Domain if Memcache is installed
+     * @return  integer Returns the number of invalidated keys
      */
-    private function clearMemcached()
+    public function clearMemcached()
     {
         if(!$this->isInstalled(self::CACHE_ENGINE_MEMCACHED)){
             return;
         }
         //$this->memcache->flush(); //<- not like this!!!
         $keys = $this->memcached->getAllKeys();
+        $n = 0;
         foreach($keys as $key){
             if(strpos($key, $this->getCachePrefix()) !== false){
                 $this->memcached->delete($key);
+                $n++;
             }
         }
+
+        return $n;
     }
 
     /**
