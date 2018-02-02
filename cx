@@ -1,4 +1,3 @@
-#!/bin/bash
 @GOTO WIN \
 2>/dev/null
 #!/bin/bash
@@ -45,9 +44,9 @@ ARGUMENTS=(
     ["port"]=80
     ["php-image"]="cloudrexx/web:PHP<php-version>-with-mysql"
     ["db-image"]="mariadb:latest"
-    ["source-repo"]="git@github.com:Cloudrexx/cloudrexx.git"
+    ["source-repo"]="https://github.com/Cloudrexx/cloudrexx.git"
     ["source-branch"]="master"
-    ["scripts-repo"]="git@github.com:Cloudrexx/scripts.git"
+    ["scripts-repo"]="https://github.com/Cloudrexx/scripts.git"
     ["scripts-branch"]="master"
     ["root-domain"]="lvh.me"
 )
@@ -399,9 +398,6 @@ function cmd_env {
             fi
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 echo "Configuring the environment"
-            fi
-            if [[ ${ARGUMENTS["yes"]} != true ]]; then
-                ARGUMENTS["interactive"]=true
             fi
             cmd_env config
             FILE_CONTENTS=$(cat config/configuration.php)
@@ -890,6 +886,12 @@ esac
 
 exit
 :WIN
+@ECHO off
+REM Check if bash script is present
+DIR /b /a-d |find /v "." |find "cx"
+if %errorlevel% NEQ 0 (
+    docker run --rm --name clx-win-wrapper -v %cd%/:/root cloudrexx/ubuntu "cd /root && wget https://raw.githubusercontent.com/Cloudrexx/cloudrexx/master/cx && chmod +x cx"
+)
 
 REM Pass everything through our wrapper
-docker run --rm -ti --name clx-win-wrapper -v %cd%/:/root -v /var/run/docker.sock:/var/run/docker.sock ubuntu ./cx %*
+docker run -ti --name clx-win-wrapper -v %cd%/:/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu ./cx %*
