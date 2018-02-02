@@ -184,7 +184,10 @@ Synopsis
                     echo "This command stops the environment for your installation.
 
 Synopsis
-    ./cx env down"
+    ./cx env down [<options>]
+
+Available options are:
+    --purge     Drops docker volumes associated with this environment. WARNING: You may loose data!"
                     ;;
                 restart)
                     echo "This command restarts the environment for your installation.
@@ -302,8 +305,6 @@ The following commands are available:
             while read -r line; do
                 [[ "$line" =~ $REGEX ]]
                 echo "    ${BASH_REMATCH[1]}${spacepad:${#BASH_REMATCH[1]}}${BASH_REMATCH[2]}"
-                #printf "    %5s    %s" "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
-                #echo ""
             done <<< "$HELP_LIST"
             echo "
 For more info about a command type ./cx help <command>"
@@ -365,14 +366,18 @@ function cmd_env {
                     return
                 fi
             fi
-            if [[ ${ARGUMENTS["skip-source"]} != true || ${ARGUMENTS["skip-scripts"]} != true && ${ARGUMENTS["silent"]} != true ]]; then
+            if [[ ${ARGUMENTS["skip-source"]} != true || ${ARGUMENTS["skip-scripts"]} != true ]] && [[ ${ARGUMENTS["silent"]} != true ]]; then
                 echo "Checking out source and scripts repository"
             fi
             if [[ ${ARGUMENTS["skip-source"]} != true ]]; then
                 # We do not simply clone because ./cx already exists
                 git init -q
                 git remote add origin ${ARGUMENTS["source-repo"]}
-                git fetch
+                if [[ ${ARGUMENTS["silent"]} == true ]]; then
+                    git fetch -q
+                else
+                    git fetch
+                fi
                 git reset -q --hard "origin/${ARGUMENTS["source-branch"]}"
                 if [[ "${ARGUMENTS["source-branch"]}" != "master" ]]; then
                     git checkout -q -t "origin/${ARGUMENTS["source-branch"]}"
@@ -385,7 +390,11 @@ function cmd_env {
                 if [[ ${ARGUMENTS["scripts-dir"]} != "" ]]; then
                     ln -s ${ARGUMENTS["scripts-dir"]} "_meta"
                 else
-                    git clone ${ARGUMENTS["scripts-repo"]} --branch=${ARGUMENTS["scripts-branch"]} _meta
+                    if [[ ${ARGUMENTS["silent"]} == true ]]; then
+                        git clone -q ${ARGUMENTS["scripts-repo"]} --branch=${ARGUMENTS["scripts-branch"]} _meta
+                    else
+                        git clone ${ARGUMENTS["scripts-repo"]} --branch=${ARGUMENTS["scripts-branch"]} _meta
+                    fi
                 fi
             fi
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
@@ -397,26 +406,78 @@ function cmd_env {
             cmd_env config
             FILE_CONTENTS=$(cat config/configuration.php)
             FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((define\('CONTREXX_INSTALLED', )false(\);))" "true")
+            FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((define\('CONTEXX_INSTALLED', )false(\);))" "true")
             echo "$FILE_CONTENTS" > config/configuration.php
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 echo "Loading docker containers"
             fi
             cmd_env up
+            if [[ ${ARGUMENTS["skip-source"]} != true || ${ARGUMENTS["yes"]} == true ]]; then
+                dockerexec exec "<web-container>" chown -R www-data /var/www/html
+                dockerexec exec "<web-container>" chmod g+w -R /var/www/html
+            else
+                echo "Source repository skipped. Should permissions be set anyway (chown to www-data, chmod g+w)?"
+                read -p "Say yes or no or choose to continue [Ync]? " -n 1 -r
+                echo ""
+                # if reply is "n" we do nothing
+                if [[ "$REPLY" != "n" ]]; then
+                    # if reply is "c" we ask
+                    OLDREPLY="$REPLY"
+                    if [[ "$OLDREPLY" == "c" ]]; then
+                        read -p "Execute 'chown -R www-data' on working directory? [Yn]? " -n 1 -r
+                        echo ""
+                    fi
+                    # if we did not have to ask or answer was != n
+                    if [[ "$OLDREPLY" != "c" || "$REPLY" != "n" ]]; then
+                        dockerexec exec "<web-container>" chown -R www-data /var/www/html
+                    fi
+                    if [[ "$OLDREPLY" == "c" ]]; then
+                        read -p "Execute 'chmod -R g+w' on working directory? [Yn]? " -n 1 -r
+                        echo ""
+                    fi
+                    # if we did not have to ask or answer was != n
+                    if [[ "$OLDREPLY" != "c" || "$REPLY" != "n" ]]; then
+                        dockerexec exec "<web-container>" chmod g+w -R /var/www/html
+                    fi
+                fi
+            fi
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 echo "Loading database"
             fi
-            ARGUMENTS["db"]=true && cmd_env update
-            dockerexec exec "<web-container>" chown -R www-data ./
+            ARGUMENTS["db"]=true && ARGUMENTS["drop-users"]=true && cmd_env update
+            if [[ "${CONFIG["cms-version"]:0:1}" -ge 5 ]]; then
+                if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                    echo "Configuring cache"
+                fi
+                phpexec Setting set Config -engine=Yaml -group=cache cacheEnabled on > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=cache internalSsiCache on > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=cache cacheUserCache memcached > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=cache cacheUserCacheMemcacheConfig "{\"ip\":\"usercache\",\"port\":\"11211\"}" > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=cache cacheUserCacheMemcachedConfig "{\"ip\":\"usercache\",\"port\":\"11211\"}" > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=cache cacheDbStatus on > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=cache cacheOPCache zendopcache > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=cache cacheOpStatus on > /dev/null
+            fi
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 get_config_array
                 echo "Environment successfully initialized, you should be able to reach Cloudrexx at http://${CONFIG["hostname"]}/"
             fi
             ;;
         up)
-            dockercomposeexec up -d
+            if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                dockercomposeexec up -d
+                echo "Waiting for database server to come up..."
+            else
+                dockercomposeexec up -d &> /dev/null
+            fi
+            dockerexec exec "<db-container>" bash -c "while ! echo | mysql -u${CONFIG["db-user"]} -p${CONFIG["db-pass"]} &> /dev/null; do sleep 1; done"
             ;;
         down)
-            dockercomposeexec down
+            if [[ "${ARGUMENTS["purge"]}" == true ]]; then
+                dockercomposeexec down -v
+            else
+                dockercomposeexec down
+            fi
             ;;
         restart)
             cmd_env down
@@ -439,6 +500,7 @@ function cmd_env {
                     if [[ ${ARGUMENTS["yes"]} != true ]]; then
                         echo "This will remove all local changes. Are you sure?"
                         read -p "Continue [Ny]? " -n 1 -r
+                        echo ""
                         if ! [[ "$REPLY" =~ ^[Yy]$ ]]; then
                             return
                         fi
@@ -534,6 +596,7 @@ SET FOREIGN_KEY_CHECKS = 1;" | internal_dockerexec exec -i "<db-container>" bash
                 if [[ ${ARGUMENTS["yes"]} != true ]]; then
                     echo "There is no user, will create a default user. Ok?"
                     read -p "Continue [Yn]? " -n 1 -r
+                    echo ""
                     if [[ "$REPLY" =~ ^[Nn]$ ]]; then
                         dockerexec exec "<db-container>" rm "$tempfile"
                         return
