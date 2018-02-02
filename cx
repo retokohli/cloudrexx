@@ -302,8 +302,6 @@ The following commands are available:
             while read -r line; do
                 [[ "$line" =~ $REGEX ]]
                 echo "    ${BASH_REMATCH[1]}${spacepad:${#BASH_REMATCH[1]}}${BASH_REMATCH[2]}"
-                #printf "    %5s    %s" "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
-                #echo ""
             done <<< "$HELP_LIST"
             echo "
 For more info about a command type ./cx help <command>"
@@ -449,6 +447,7 @@ function cmd_env {
                     if [[ ${ARGUMENTS["yes"]} != true ]]; then
                         echo "This will remove all local changes. Are you sure?"
                         read -p "Continue [Ny]? " -n 1 -r
+                        echo ""
                         if ! [[ "$REPLY" =~ ^[Yy]$ ]]; then
                             return
                         fi
@@ -544,6 +543,7 @@ SET FOREIGN_KEY_CHECKS = 1;" | internal_dockerexec exec -i "<db-container>" bash
                 if [[ ${ARGUMENTS["yes"]} != true ]]; then
                     echo "There is no user, will create a default user. Ok?"
                     read -p "Continue [Yn]? " -n 1 -r
+                    echo ""
                     if [[ "$REPLY" =~ ^[Nn]$ ]]; then
                         dockerexec exec "<db-container>" rm "$tempfile"
                         return
