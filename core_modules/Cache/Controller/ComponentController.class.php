@@ -432,7 +432,7 @@ Cache clear all';
                 break;
             case 'page':
                 if (!empty($options)) {
-                    $this->cache>_deleteSingleFile($options);
+                    $this->cache->deleteSingleFile($options);
                     break;
                 }
                 // @TODO: this will drop ESI cache too
