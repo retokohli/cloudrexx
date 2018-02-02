@@ -301,7 +301,12 @@ class CacheLib
                 $memcached = new \Memcached();
                 $memcached->setOption(\Memcached::OPT_BINARY_PROTOCOL, false);
                 if (@$memcached->addServer($memcachedConfiguration['ip'], $memcachedConfiguration['port'])) {
-                    $this->memcached = $memcached;
+                    $servers = $memcached->getStats();
+                    if (!empty($servers) &&
+                        isset($servers[$memcachedConfiguration['ip'] . ':' . $memcachedConfiguration['port']])
+                    ) {
+                        $this->memcached = $memcached;
+                    }
                 }
             }
             if ($this->isConfigured(self::CACHE_ENGINE_MEMCACHED)) {
@@ -671,9 +676,9 @@ class CacheLib
                 $setting = 'opcache.enable';
                 break;
             case self::CACHE_ENGINE_MEMCACHE:
-                return $this->memcache ? true : false;
+                return !empty($this->memcache) ? true : false;
             case self::CACHE_ENGINE_MEMCACHED:
-                return $this->memcached ? true : false;
+                return !empty($this->memcached) ? true : false;
             case self::CACHE_ENGINE_XCACHE:
                 $setting = 'xcache.cacher';
                 break;
