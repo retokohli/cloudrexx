@@ -299,7 +299,7 @@ The following commands are available:
     help        Shows this help
     debug       Returns the last fatal error"
             REGEX="(\S+) - ?(.*)"
-            HELP_LIST="$(phpexec | grep $'^\t')"
+            HELP_LIST="$(phpexec | grep $'^\t' 2> /dev/null)"
             spacepad="            "
             while read -r line; do
                 [[ "$line" =~ $REGEX ]]
