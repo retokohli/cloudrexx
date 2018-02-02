@@ -454,6 +454,8 @@ function cmd_env {
             ;;
         up)
             dockercomposeexec up -d
+            echo "Waiting for database server to come up..."
+            dockerexec exec "<db-container>" bash -c "while ! echo | mysql -u${CONFIG["db-user"]} -p${CONFIG["db-pass"]} &> /dev/null; do sleep 1; done"
             ;;
         down)
             if [[ "${ARGUMENTS["purge"]}" == true ]]; then
