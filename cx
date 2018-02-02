@@ -366,14 +366,18 @@ function cmd_env {
                     return
                 fi
             fi
-            if [[ ${ARGUMENTS["skip-source"]} != true || ${ARGUMENTS["skip-scripts"]} != true && ${ARGUMENTS["silent"]} != true ]]; then
+            if [[ ${ARGUMENTS["skip-source"]} != true || ${ARGUMENTS["skip-scripts"]} != true ]] && [[ ${ARGUMENTS["silent"]} != true ]]; then
                 echo "Checking out source and scripts repository"
             fi
             if [[ ${ARGUMENTS["skip-source"]} != true ]]; then
                 # We do not simply clone because ./cx already exists
                 git init -q
                 git remote add origin ${ARGUMENTS["source-repo"]}
-                git fetch
+                if [[ ${ARGUMENTS["silent"]} == true ]]; then
+                    git fetch -q
+                else
+                    git fetch
+                fi
                 git reset -q --hard "origin/${ARGUMENTS["source-branch"]}"
                 if [[ "${ARGUMENTS["source-branch"]}" != "master" ]]; then
                     git checkout -q -t "origin/${ARGUMENTS["source-branch"]}"
@@ -386,7 +390,11 @@ function cmd_env {
                 if [[ ${ARGUMENTS["scripts-dir"]} != "" ]]; then
                     ln -s ${ARGUMENTS["scripts-dir"]} "_meta"
                 else
-                    git clone ${ARGUMENTS["scripts-repo"]} --branch=${ARGUMENTS["scripts-branch"]} _meta
+                    if [[ ${ARGUMENTS["silent"]} == true ]]; then
+                        git clone -q ${ARGUMENTS["scripts-repo"]} --branch=${ARGUMENTS["scripts-branch"]} _meta
+                    else
+                        git clone ${ARGUMENTS["scripts-repo"]} --branch=${ARGUMENTS["scripts-branch"]} _meta
+                    fi
                 fi
             fi
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
@@ -404,10 +412,10 @@ function cmd_env {
                 echo "Loading docker containers"
             fi
             cmd_env up
-            if [[ ${ARGUMENTS["skip-source"]} != true && ${ARGUMENTS["silent"]} != true ]]; then
+            if [[ ${ARGUMENTS["skip-source"]} != true || ${ARGUMENTS["yes"]} == true ]]; then
                 dockerexec exec "<web-container>" chown -R www-data /var/www/html
                 dockerexec exec "<web-container>" chmod g+w -R /var/www/html
-            elif [[ ${ARGUMENTS["silent"]} != true ]]; then
+            else
                 echo "Source repository skipped. Should permissions be set anyway (chown to www-data, chmod g+w)?"
                 read -p "Say yes or no or choose to continue [Ync]? " -n 1 -r
                 echo ""
@@ -438,7 +446,9 @@ function cmd_env {
             fi
             ARGUMENTS["db"]=true && ARGUMENTS["drop-users"]=true && cmd_env update
             if [[ "${CONFIG["cms-version"]:0:1}" -ge 5 ]]; then
-                echo "Configuring cache"
+                if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                    echo "Configuring cache"
+                fi
                 phpexec Setting set Config -engine=Yaml -group=cache cacheEnabled on > /dev/null
                 phpexec Setting set Config -engine=Yaml -group=cache internalSsiCache on > /dev/null
                 phpexec Setting set Config -engine=Yaml -group=cache cacheUserCache memcached > /dev/null
@@ -454,8 +464,12 @@ function cmd_env {
             fi
             ;;
         up)
-            dockercomposeexec up -d
-            echo "Waiting for database server to come up..."
+            if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                dockercomposeexec up -d
+                echo "Waiting for database server to come up..."
+            else
+                dockercomposeexec up -d &> /dev/null
+            fi
             dockerexec exec "<db-container>" bash -c "while ! echo | mysql -u${CONFIG["db-user"]} -p${CONFIG["db-pass"]} &> /dev/null; do sleep 1; done"
             ;;
         down)
