@@ -184,7 +184,10 @@ Synopsis
                     echo "This command stops the environment for your installation.
 
 Synopsis
-    ./cx env down"
+    ./cx env down [<options>]
+
+Available options are:
+    --purge     Drops docker volumes associated with this environment. WARNING: You may loose data!"
                     ;;
                 restart)
                     echo "This command restarts the environment for your installation.
@@ -424,7 +427,11 @@ function cmd_env {
             dockercomposeexec up -d
             ;;
         down)
-            dockercomposeexec down
+            if [[ "${ARGUMENTS["purge"]}" == true ]]; then
+                dockercomposeexec down -v
+            else
+                dockercomposeexec down
+            fi
             ;;
         restart)
             cmd_env down
