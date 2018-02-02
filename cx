@@ -438,13 +438,15 @@ function cmd_env {
             fi
             ARGUMENTS["db"]=true && ARGUMENTS["drop-users"]=true && cmd_env update
             if [[ "${CONFIG["cms-version"]:0:1}" -ge 5 ]]; then
-                phpexec Setting set Config -engine=Yaml -group=cache cacheEnabled on
-                phpexec Setting set Config -engine=Yaml -group=cache internalSsiCache on
-                phpexec Setting set Config -engine=Yaml -group=cache cacheUserCache memcached
-                phpexec Setting set Config -engine=Yaml -group=cache cacheUserCacheMemcachedConfig "{\"ip\":\"usercache\",\"port\":\"11211\"}"
-                phpexec Setting set Config -engine=Yaml -group=cache cacheDbStatus on
-                phpexec Setting set Config -engine=Yaml -group=cache cacheOPCache zendopcache
-                phpexec Setting set Config -engine=Yaml -group=cache cacheOpStatus on
+                echo "Configuring cache"
+                phpexec Setting set Config -engine=Yaml -group=cache cacheEnabled on > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=cache internalSsiCache on > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=cache cacheUserCache memcached > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=cache cacheUserCacheMemcacheConfig "{\"ip\":\"usercache\",\"port\":\"11211\"}" > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=cache cacheUserCacheMemcachedConfig "{\"ip\":\"usercache\",\"port\":\"11211\"}" > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=cache cacheDbStatus on > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=cache cacheOPCache zendopcache > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=cache cacheOpStatus on > /dev/null
             fi
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 get_config_array
