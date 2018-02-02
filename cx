@@ -534,6 +534,7 @@ function cmd_env {
             local tempfile
             tempfile=$(dockerexec exec "<db-container>" mktemp)
             echo "[mysql]
+default-character-set=utf8
 database=${CONFIG["db-name"]}
 [client]
 host=${CONFIG["db-host"]}
