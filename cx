@@ -400,9 +400,6 @@ function cmd_env {
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 echo "Configuring the environment"
             fi
-            if [[ ${ARGUMENTS["yes"]} != true ]]; then
-                ARGUMENTS["interactive"]=true
-            fi
             cmd_env config
             FILE_CONTENTS=$(cat config/configuration.php)
             FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((define\('CONTREXX_INSTALLED', )false(\);))" "true")
