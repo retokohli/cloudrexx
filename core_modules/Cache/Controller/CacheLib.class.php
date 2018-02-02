@@ -808,7 +808,14 @@ class CacheLib
             $this->_deleteAllFiles('cxPages');
         }
 
-        $cacheEngine = $cacheEngine == null ? $this->userCacheEngine : $cacheEngine;
+        if ($cacheEngine == null) {
+            if ($this->userCacheEngine == self::CACHE_ENGINE_MEMCACHED) {
+                // do not automatically flush memcached as fallback
+                // this will break Gedmo etc
+            } else {
+                $cacheEngine = $this->userCacheEngine;
+            }
+        }
         switch ($cacheEngine) {
             case self::CACHE_ENGINE_APC:
                 $this->clearApc();
