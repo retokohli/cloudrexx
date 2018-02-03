@@ -103,7 +103,7 @@ CKEDITOR.editorConfig = function( config )
 
     config.tabSpaces = 4;
     config.baseHref = '<?php echo \Cx\Core\Routing\Url::fromCapturedRequest('', $cx->getWebsiteOffsetPath(), array())->toString(); ?>';
-    config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
+    config.templates_files = [ '' ];
     config.templates_replaceContent = <?php echo \Cx\Core\Setting\Controller\Setting::getValue('replaceActualContents','Wysiwyg')? 'true' : 'false' ?>;
 
     config.toolbar_Full = config.toolbar_Small = <?php echo $wysiwyg->getToolbar() ?>;
