@@ -151,7 +151,7 @@ class Group
      */
     public function delete()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         \Permission::checkAccess(142, 'static');
 
@@ -162,9 +162,11 @@ class Group
             LEFT JOIN `'.DBPREFIX.'module_downloads_rel_group_category` AS tblR ON tblR.`group_id` = tblG.`id`
             WHERE tblG.`id` = '.$this->id) !== false
         ) {
+            //clear Esi Cache
+            DownloadsLibrary::clearEsiCache();
             return true;
         } else {
-            $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_GROUP_DELETE_FAILED'], '<strong>'.htmlentities($this->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'</strong>');
+            $this->error_msg[] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_GROUP_DELETE_FAILED'], '<strong>'.htmlentities($this->getName(), ENT_QUOTES, CONTREXX_CHARSET).'</strong>');
         }
 
         return false;
@@ -277,10 +279,13 @@ class Group
         }
     }
 
-    public function getName($langId)
+    public function getName($langId = 0)
     {
         if (!isset($this->names)) {
             $this->loadLocales();
+        }
+        if (!$langId) {
+            $langId = DownloadsLibrary::getOutputLocale()->getId();
         }
         return isset($this->names[$langId]) ? $this->names[$langId] : '';
     }
@@ -338,8 +343,6 @@ class Group
      */
     private function load($id)
     {
-        global $_LANGID;
-
         $arrDebugBackTrace = debug_backtrace();
         if (!in_array($arrDebugBackTrace[1]['function'], array('getGroup', 'first','next'))) {
             die("Group->load(): Illegal method call in {$arrDebugBackTrace[0]['file']} on line {$arrDebugBackTrace[0]['line']}!");
@@ -727,7 +730,7 @@ class Group
      */
     public function store()
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID;
+        global $objDatabase, $_ARRAYLANG;
 
         if (isset($this->names) && !$this->validateName()) {
             return false;
@@ -774,6 +777,8 @@ class Group
             return false;
         }
 
+        //clear Esi Cache
+        DownloadsLibrary::clearEsiCache();
         return true;
     }
 
@@ -921,5 +926,19 @@ class Group
     public function getErrorMsg()
     {
         return $this->error_msg;
+    }
+
+    /**
+     * Get Groups placeholders
+     *
+     * @return array
+     */
+    public function getGroupsPlaceholders()
+    {
+        return preg_filter(
+            '/^/',
+            'DOWNLOADS_GROUP_',
+            array_keys($this->arrLoadedGroups)
+        );
     }
 }
