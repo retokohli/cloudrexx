@@ -304,7 +304,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
      * @return  integer Number of cached entries by Memcached
      */
     protected function getMemcachedEntryCount() {
-        if (!$this->isInstalled(self::CACHE_ENGINE_MEMCACHED)){
+        if (!$this->isConfigured(self::CACHE_ENGINE_MEMCACHED)){
             return;
         }
 
