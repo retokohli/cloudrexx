@@ -1,5 +1,4 @@
-*~
-*.swo
-*.swp
-config/*.php
-
+docker-compose.yml
+tmp/*
+_meta
+cx.bat

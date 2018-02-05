@@ -1,5 +1,0 @@
-<Directory>
-  <Limit ALL>
-    DenyAll
-  </Limit>
-</Directory>

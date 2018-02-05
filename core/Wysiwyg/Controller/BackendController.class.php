@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Cloudrexx
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -57,10 +58,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         }
         return $cmds;
     }
-    
+
     /**
     * Use this to parse your backend page
-    * 
+    *
     * You will get the template located in /View/Template/{CMD}.html
     * You can access Cx class using $this->cx
     * To show messages, use \Message class
@@ -68,28 +69,28 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     * @param array $cmd CMD separated by slashes
     * @global array $_ARRAYLANG Language data
     */
-    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd, &$isSingle = false) {
         global $_ARRAYLANG;
-        
+
         // Parse entity view generation pages
         $entityClassName = $this->getNamespace() . '\\Model\\Entity\\' . current($cmd);
         if (in_array($entityClassName, $this->getEntityClasses())) {
             $this->parseEntityClassPage($template, $entityClassName, current($cmd));
             return;
         }
-        
+
         // Not an entity, parse overview or settings
         switch (current($cmd)) {
             case 'Settings':
                 \Cx\Core\Setting\Controller\Setting::init('Wysiwyg', 'config', 'Yaml');
-                
+
                 if(isset($_POST) && isset($_POST['bsubmit'])) {
                     \Cx\Core\Setting\Controller\Setting::set('specificStylesheet', isset($_POST['specificStylesheet'])?1:0);
                     \Cx\Core\Setting\Controller\Setting::set('replaceActualContents', isset($_POST['replaceActualContents'])?1:0);
-                    
+
                     \Cx\Core\Setting\Controller\Setting::storeFromPost();
                 }
-                
+
                 $i = 0;
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('specificStylesheet')
                     && !\Cx\Core\Setting\Controller\Setting::add('specificStylesheet', '0', ++$i, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'config')
@@ -101,7 +102,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 ){
                     throw new \Exception("Failed to add new configuration option");
                 }
-                
+
                 $tmpl = new \Cx\Core\Html\Sigma();
                 \Cx\Core\Setting\Controller\Setting::show(
                     $tmpl,
@@ -110,8 +111,41 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_SETTINGS'],
                     'TXT_CORE_WYSIWYG_'
                 );
-                
+
                 $template->setVariable('WYSIWYG_CONFIG_TEMPLATE', $tmpl->get());
+                break;
+            case 'Functions':
+                $toolbarController = $this->getController('Toolbar');
+                // check if the toolbar shall be saved
+                if (isset($_POST) && isset($_POST['save'])) {
+                    // Get the database connection
+                    $dbCon = $this->cx->getDb()->getAdoDb();
+                    // Check if there is already a default toolbar
+                    $defaultToolbar = $dbCon->Execute('
+                        SELECT `id` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
+                        WHERE `is_default` = 1
+                        LIMIT 1');
+                    // Check if the query did not fail
+                    if (!$defaultToolbar) {
+                        throw new \Exception('Failed to check for existing default toolbar!');
+                    }
+                    // Get the default toolbar id
+                    $toolbarId = $defaultToolbar->fields['id'];
+                    $toolbarController->store(
+                        $_POST['removedButtons'],
+                        $toolbarId,
+                        true
+                    );
+                }
+                $toolbarConfigurator = $toolbarController->getToolbarConfiguratorTemplate(
+                    $this->getDirectory(false, true),
+                    true
+                );
+                // Get the template and replace the placeholder
+                $template->setVariable(
+                    'WYSIWYG_CONFIG_TEMPLATE',
+                    $toolbarConfigurator->get()
+                );
                 break;
             case '':
             default:
@@ -121,10 +155,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 break;
         }
     }
-    
+
     /**
      * This is called by the default ComponentController and does all the repeating work
-     * 
+     *
      * This loads a template named after current $act and calls parsePage($actTemplate)
      * @todo $this->cx->getTemplate()->setVariable() should not be called here but in Cx class
      * @global array $_ARRAYLANG Language data
@@ -134,14 +168,14 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function getPage(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         global $_ARRAYLANG, $subMenuTitle;
         $subMenuTitle = $_ARRAYLANG['TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName())];
-        
+
         $cmd = array('');
         if (isset($_GET['act'])) {
             $cmd = explode('/', contrexx_input2raw($_GET['act']));
         } else {
             $cmd[0] = 'Wysiwyg';
         }
-        
+
         $actTemplate = new \Cx\Core\Html\Sigma($this->getDirectory(true) . '/View/Template/Backend');
         $filename = $cmd[0] . '.html';
         $testFilename = $cmd[0];
@@ -153,7 +187,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             if ($index == 0) {
                 continue;
             }
-            
+
             $testFilename .= $name;
             if (\Env::get('ClassLoader')->getFilePath($actTemplate->getRoot() . '/' . $testFilename . '.html')) {
                 $filename = $testFilename . '.html';
@@ -162,10 +196,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             }
         }
         $actTemplate->loadTemplateFile($filename);
-        
+
         // todo: Messages
         $this->parsePage($actTemplate, $cmd);
-        
+
         // set tabs
         $navigation = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath() . '/Core/View/Template/Backend');
         $navigation->loadTemplateFile('Navigation.html');
@@ -176,7 +210,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 $subnav = array_merge(array(''), $command);
                 $command = $key;
             }
-            
+
             if ($key !== '') {
                 if ($cmd[0] == $command) {
                     $navigation->touchBlock('tab_active');
@@ -197,7 +231,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 ));
                 $navigation->parse('tab_entry');
             }
-            
+
             // subnav
             if ($cmd[0] == $command && count($subnav)) {
                 $first = true;
@@ -230,7 +264,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         if (empty($txt)) {
             $txt = 'DEFAULT';
         }
-        
+
         // default css and js
         if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory(false) . '/View/Style/Backend.css'))) {
             \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/Backend.css', 1));
@@ -238,7 +272,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory(false) . '/View/Script/Backend.js'))) {
             \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Backend.js', 1));
         }
-        
+
         // finish
         $actTemplate->setGlobalVariable($_ARRAYLANG);
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($actTemplate);
@@ -253,20 +287,22 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             'CONTENT_TITLE' => $_ARRAYLANG['TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt)],
         ));
     }
-    
+
     /**
-     * This method defines the option to generate the backend view (list and form)
-     * 
-     * @global array $_ARRAYLANG Language data
-     * @param string $entityClassName contains the FQCN from entity
-     * @return array array containing the options
+     * This function returns the ViewGeneration options for a given entityClass
+     *
+     * @access protected
+     * @global $_ARRAYLANG
+     * @param $entityClassName contains the FQCN from entity
+     * @param $dataSetIdentifier if $entityClassName is DataSet, this is used for better partition
+     * @return array with options
      */
-    protected function getViewGeneratorOptions($entityClassName) {
+    protected function getViewGeneratorOptions($entityClassName, $dataSetIdentifier = '') {
         global $_ARRAYLANG;
 
         $classNameParts = explode('\\', $entityClassName);
         $classIdentifier = end($classNameParts);
-        
+
         return array(
             'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier)],
             'entityName' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_ENTITY'],

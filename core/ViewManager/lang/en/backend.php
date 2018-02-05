@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,20 +24,20 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
-/** 
+
+/**
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Cloudrexx Development Team <info@cloudrexx.com>
- * @access      public 
+ * @access      public
  * @package     cloudrexx
  * @subpackage  core_viewmanager
- */ 
-global $_ARRAYLANG; 
+ */
+global $_ARRAYLANG;
 $_ARRAYLANG['TXT_DESIGN_MANAGEMENT'] = "Layout";
 $_ARRAYLANG['TXT_VIEWMANAGER_MODULE_DESCRIPTION'] = "Layout";
 $_ARRAYLANG['TXT_THEME_UNABLE_TO_CREATE'] = '  cannot be created';
-$_ARRAYLANG['TXT_DESIGN_OVERVIEW'] = 'Overview';
-$_ARRAYLANG['TXT_DESIGN_TEMPLATES'] = 'Theme Manager';
+$_ARRAYLANG['TXT_VIEWMANAGER_OVERVIEW'] = 'Overview';
+$_ARRAYLANG['TXT_VIEWMANAGER_TEMPLATE_EDITOR'] = 'Theme Manager';
 $_ARRAYLANG['TXT_DESIGN_SETTINGS'] = 'Settings';
 $_ARRAYLANG['TXT_DESIGN_FILES_ADMINISTRATION'] = 'Files administration';
 $_ARRAYLANG['TXT_CORE_PLACEHOLDERS'] = 'Placeholders';
@@ -114,7 +114,6 @@ $_ARRAYLANG['TXT_ACTIVE_TEMPLATE'] = 'Standard';
 $_ARRAYLANG['TXT_ACTIVE_PDF_TEMPLATE'] = 'PDF';
 $_ARRAYLANG['TXT_ACTIVE_PRINT_TEMPLATE'] = 'Print';
 $_ARRAYLANG['TXT_THEME_ACTIVATE_INFO'] = 'Activated Languages';
-$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = 'Languags highlighted in pink have been activated as a Frontend language in the <a href="index.php?cmd=LanguageManager">settings.</a>';
 $_ARRAYLANG['TXT_ACTIVE_MOBILE_TEMPLATE'] = 'Mobile';
 $_ARRAYLANG['TXT_APP'] = 'App';
 $_ARRAYLANG['TXT_DESIGN_VARIABLES_LIST'] = 'Replacement directory';

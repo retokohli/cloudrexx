@@ -1,6 +1,0 @@
--
-  name: Net
-  type: core
--
-  name: MultiSite
-  type: core_module

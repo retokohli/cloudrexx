@@ -70,9 +70,58 @@ class DownloadsLibrary
         'updated_file_count'            => 5,
         'new_file_time_limit'           => 604800,
         'updated_file_time_limit'       => 604800,
-        'associate_user_to_groups'      => ''
+        'associate_user_to_groups'      => '',
+        'list_downloads_current_lang'   => 1
     );
 
+    /**
+     * Downloads setting option
+     *
+     * @var array
+     */
+    protected $downloadsSortingOptions = array(
+        'custom' => array(
+            'order' => 'ASC',
+            'name'  => 'ASC',
+            'id'    => 'ASC'
+        ),
+        'alphabetic' => array(
+            'name' => 'ASC',
+            'id'   => 'ASC'
+        ),
+        'newestToOldest' => array(
+            'ctime' => 'DESC',
+            'id'    => 'ASC'
+        ),
+        'oldestToNewest' => array(
+            'ctime' => 'ASC',
+            'id'    => 'ASC'
+        )
+    );
+
+    /**
+     * Categories setting option
+     *
+     * @var array
+     */
+    protected $categoriesSortingOptions = array(
+        'custom' => array(
+            'order' => 'ASC',
+            'name'  => 'ASC',
+            'id'    => 'ASC'
+        ),
+        'alphabetic' => array(
+            'name' => 'ASC',
+            'id'   => 'ASC'
+        )
+    );
+
+    /**
+     * The locale in which the output shall be parsed for
+     *
+     * @var \Cx\Core\Locale\Model\Entity\Locale
+     */
+    protected static $outputLocale;
 
     public function __construct()
     {
@@ -107,7 +156,7 @@ class DownloadsLibrary
     {
         $this->defaultCategoryImage['src'] = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getWebFilePath(\Cx\Core\Core\Controller\Cx::instanciate()->getModuleFolderName() . '/Downloads/View/Media/no_picture.gif');
         $imageSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBasePath().$this->defaultCategoryImage['src']);
-        
+
         $this->defaultCategoryImage['width'] = $imageSize[0];
         $this->defaultCategoryImage['height'] = $imageSize[1];
     }
@@ -118,6 +167,57 @@ class DownloadsLibrary
         $this->defaultDownloadImage = $this->defaultCategoryImage;
     }
 
+    /**
+     * Get locale in which output shall be parsed for
+     *
+     * @return \Cx\Core\Locale\Model\Entity\Locale
+     */
+    public static function getOutputLocale() {
+        if (!static::$outputLocale) {
+            static::initOutputLocale();
+        }
+        return static::$outputLocale;
+    }
+
+    /**
+     * Determine the locale in which the output shall be parsed for.
+     */
+    protected static function initOutputLocale() {
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getDb()
+            ->getEntityManager();
+
+        $locale = null;
+        if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+            try {
+                // get ISO-639-1 code of backend language
+                $backend = $em->find(
+                    'Cx\Core\Locale\Model\Entity\Backend',
+                    LANG_ID
+                );
+                $iso1Code = $backend->getIso1()->getId();
+
+                // find matching frontend locale based on ISO-639-1 code of backend
+                // language
+                $localeRepo = $em->getRepository('Cx\Core\Locale\Model\Entity\Locale');
+                $locale = $localeRepo->findOneByCode($iso1Code);
+            } catch (\Exception $e) {}
+        }
+
+        if (!$locale) {
+            // get currently selected frontend locale
+            $locale = $em->find(
+                'Cx\Core\Locale\Model\Entity\Locale',
+                FRONTEND_LANG_ID
+            );
+        }
+
+        if (!$locale) {
+            throw new \Exception('Unable to initialize frontend locale');
+        }
+
+        static::$outputLocale = $locale;
+    }
 
     protected function updateSettings()
     {
@@ -126,6 +226,8 @@ class DownloadsLibrary
         foreach ($this->arrConfig as $key => $value) {
             $objDatabase->Execute("UPDATE `".DBPREFIX."module_downloads_settings` SET `value` = '".addslashes($value)."' WHERE `name` = '".$key."'");
         }
+        //clear Esi Cache
+        static::clearEsiCache();
     }
 
     public function getSettings()
@@ -137,9 +239,8 @@ class DownloadsLibrary
         $accessType, $selectedCategory, $selectionText,
         $attrs=null, $categoryId=null)
     {
-        global $_LANGID;
-
-        $objCategory = Category::getCategories(null, null, array('order' => 'ASC', 'name' => 'ASC', 'id' => 'ASC'));
+        $sortOrder   = $this->categoriesSortingOptions[$this->arrConfig['categories_sorting_order']];
+        $objCategory = Category::getCategories(null, null, $sortOrder);
         $arrCategories = array();
 
         switch ($accessType) {
@@ -157,7 +258,7 @@ class DownloadsLibrary
             if ($objCategory->getVisibility() || \Permission::checkAccess($objCategory->getReadAccessId(), 'dynamic', true)) {
                 $arrCategories[$objCategory->getParentId()][] = array(
                     'id'        => $objCategory->getId(),
-                    'name'      => $objCategory->getName($_LANGID),
+                    'name'      => $objCategory->getName(),
                     'owner_id'  => $objCategory->getOwnerId(),
                     'access_id' => $objCategory->{$accessCheckFunction}(),
                     'is_child'  => $objCategory->check4Subcategory($categoryId)
@@ -220,15 +321,14 @@ class DownloadsLibrary
 
     protected function getParsedCategoryListForDownloadAssociation( )
     {
-        global $_LANGID;
-
-        $objCategory = Category::getCategories(null, null, array('order' => 'ASC', 'name' => 'ASC', 'id' => 'ASC'));
+        $sortOrder   = $this->categoriesSortingOptions[$this->arrConfig['categories_sorting_order']];
+        $objCategory = Category::getCategories(null, null, $sortOrder);
         $arrCategories = array();
 
         while (!$objCategory->EOF) {
                 $arrCategories[$objCategory->getParentId()][] = array(
                     'id'                    => $objCategory->getId(),
-                    'name'                  => $objCategory->getName($_LANGID),
+                    'name'                  => $objCategory->getName(),
                     'owner_id'              => $objCategory->getOwnerId(),
                     'add_files_access_id'     => $objCategory->getAddFilesAccessId(),
                     'manage_files_access_id'  => $objCategory->getManageFilesAccessId()
@@ -283,7 +383,6 @@ class DownloadsLibrary
             } else {
                 $author = $objUser->getUsername();
             }
-            $author = htmlentities($author, ENT_QUOTES, CONTREXX_CHARSET);
         } else {
             $author = $_ARRAYLANG['TXT_DOWNLOADS_UNKNOWN'];
         }
@@ -297,7 +396,7 @@ class DownloadsLibrary
         $objFWUser = \FWUser::getFWUserObject();
         $objUser = $objFWUser->objUser->getUsers(null, null, null, array('id', 'username', 'firstname', 'lastname'));
         while (!$objUser->EOF) {
-            $menu .= '<option value="'.$objUser->getId().'"'.($objUser->getId() == $selectedUserId ? ' selected="selected"' : '').'>'.$this->getParsedUsername($objUser->getId()).'</option>';
+            $menu .= '<option value="'.$objUser->getId().'"'.($objUser->getId() == $selectedUserId ? ' selected="selected"' : '').'>'.contrexx_raw2xhtml($this->getParsedUsername($objUser->getId())).'</option>';
             $objUser->next();
         }
         $menu .= '</select>';
@@ -310,7 +409,7 @@ class DownloadsLibrary
     {
         global $_ARRAYLANG;
 
-        $menu = '<select name="downloads_download_mime_type" id="downloads_download_mime_type" style="width:300px;">';
+        $menu = '<select name="downloads_download_mime_type" id="downloads_download_mime_type" style="width:300px;display:block;">';
         $arrMimeTypes = Download::$arrMimeTypes;
         foreach ($arrMimeTypes as $type => $arrMimeType) {
             $menu .= '<option value="'.$type.'"'.($type == $selectedType ? ' selected="selected"' : '').'>'.$_ARRAYLANG[$arrMimeType['description']].'</option>';
@@ -331,24 +430,108 @@ class DownloadsLibrary
         return $menu;
     }
 
-    public function setGroups($arrGroups, &$page_content)
+      /**
+     * Get Group content by group id
+     *
+     * @param integer $id     group id
+     * @param integer $langId Language id
+     *
+     * @return string
+     */
+    public function getGroupById($id, $langId)
     {
-        global $_LANGID;
+        if (empty($id)) {
+            return '';
+        }
+        $group = Group::getGroup($id);
 
-        $objGroup = Group::getGroups(array('id' => $arrGroups));
+        if (!$group->getActiveStatus()) {
+            return '';
+        }
 
-        while (!$objGroup->EOF) {
-            $output = "<ul>\n";
-            $objCategory = Category::getCategories(array('id' => $objGroup->getAssociatedCategoryIds()), null, array( 'order' => 'asc', 'name' => 'asc'));
-            while (!$objCategory->EOF) {
-                $output .= '<li><a href="'.CONTREXX_SCRIPT_PATH.'?section=Downloads&amp;category='.$objCategory->getId().'" title="'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'">'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
-                $objCategory->next();
-            }
-            $output .= "</ul>\n";
+        $sortOrder = $this->categoriesSortingOptions[$this->arrConfig['categories_sorting_order']];
+        $ulTag     = new \Cx\Core\Html\Model\Entity\HtmlElement('ul');
+        $category  = Category::getCategories(
+            array('id' => $group->getAssociatedCategoryIds()),
+            null,
+            $sortOrder
+        );
+        while (!$category->EOF) {
+            $url = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                'Downloads',
+                '',
+                '',
+                array('category' => $category->getId())
+            )->toString();
+            $linkText = contrexx_raw2xhtml($category->getName($langId));
+            //Generate anchor tag
+            $linkTag     = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
+            $linkTag->setAttributes(array(
+                'href'  => $url,
+                'title' => $linkText
+            ));
+            $linkTag->addChild(new \Cx\Core\Html\Model\Entity\TextElement($linkText));
+            $liTag       = new \Cx\Core\Html\Model\Entity\HtmlElement('li');
+            $liTag->addChild($linkTag);
+            $ulTag->addChild($liTag);
+            $category->next();
+        }
 
-            $page_content = str_replace('{'.$objGroup->getPlaceholder().'}', $output, $page_content);
-            $objGroup->next();
+        return $ulTag;
+    }
+
+    /**
+     * parse the settings dropdown
+     *
+     * @param object $objTemplate   template object
+     * @param array  $settingValues array of setting values
+     * @param string $selected      selected dropdown value
+     * @param string $blockName     block name for template parsing
+     *
+     * @return null
+     */
+    public function parseSettingsDropDown(
+        \Cx\Core\Html\Sigma $objTemplate,
+        $settingValues,
+        $selected,
+        $blockName
+    ) {
+        global $_ARRAYLANG;
+
+        if (empty($settingValues)) {
+            return;
+        }
+
+        foreach (array_keys($settingValues) as $key) {
+            $selectedOption = ($selected == $key) ? 'selected="selected"' : '';
+            $objTemplate->setVariable(array(
+                'DOWNLOADS_SETTINGS_DROPDOWN_OPTION_VALUE'    => $key,
+                'DOWNLOADS_SETTINGS_DROPDOWN_OPTION_NAME'     => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_'.  strtoupper($key).'_LABEL'],
+                'DOWNLOADS_SETTINGS_DROPDOWN_SELECTED_OPTION' => $selectedOption,
+            ));
+            $objTemplate->parse('downloads_settings_sorting_dropdown_' . $blockName);
         }
     }
 
+    /**
+     * Clear Esi Cache content
+     */
+    public static function clearEsiCache()
+    {
+        // clear ESI cache
+        $groups       = Group::getGroups();
+        $categories   = Category::getCategories();
+        $widgetNames  = array_merge(
+            $groups->getGroupsPlaceholders(),
+            Category::getCategoryWidgetNames()
+        );
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getEvents()->triggerEvent(
+            'clearEsiCache',
+            array('Widget', $widgetNames)
+        );
+
+        // clear contrexx cache
+        \Cx\Core\Core\Controller\Cx::instanciate()->getComponent('Cache')->deleteComponentFiles('Downloads');
+    }
 }

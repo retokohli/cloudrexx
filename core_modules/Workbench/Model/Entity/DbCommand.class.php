@@ -58,7 +58,11 @@ class DbCommand extends Command {
     update({component type} ({component name}))|
     cleanup|
     doctrine {doctrine syntax}
-]';
+]
+
+`update`    Updates the model of a component, a component type or all components (set component type and name to generate YAML files)
+`cleanup`   Removes cached files
+`doctrine`  Gives access to doctrine command line tools';
     
     /**
      * Command help text
@@ -86,26 +90,37 @@ class DbCommand extends Command {
                 
                 // prepare component filter
                 $componentFilter = '';
+                $componentType = '';
+                $componentName = '';
                 if (isset($arguments[2])) {
                     switch (strtolower($arguments[2])) {
                         case 'core':
+                            $componentType = strtolower('core');
                             $componentFilter .= 'Cx\\Core\\';
                             break;
                         case 'core_module':
                         case 'core_modules':
+                            $componentType = strtolower('core_module');
                             $componentFilter .= 'Cx\\Core_Modules\\';
                             break;
                         case 'module':
                         case 'modules':
+                            $componentType = strtolower('module');
                             $componentFilter .= 'Cx\\Modules\\';
                             break;
                     }
                     if (isset($arguments[3])) {
+                        $componentName = $arguments[3];
                         $componentFilter .= $arguments[3] . '\\';
                     }
                 }
                 if (!empty($componentFilter)) {
                     $componentFilter = '--filter=' . $componentFilter;
+                }
+                
+                // check for mwb file
+                if (!empty($componentType) && !empty($componentName)) {
+                    $this->tryYamlGeneration($componentType, $componentName);
                 }
                 
                 // doctrine orm:generate-entities --filter="{component filter}" entities
@@ -322,6 +337,226 @@ class DbCommand extends Command {
             echo '[Database] OK - The database schema is in sync with the mapping files.' . "\n";
         }
         return $exit;
+    }
+    
+    protected function tryYamlGeneration($componentType, $componentName) {
+        $component = new \Cx\Core\Core\Model\Entity\ReflectionComponent($componentName, $componentType);
+        if (!$component->exists()) {
+            return;
+        }
+        if (!file_exists($component->getDirectory() . '/Doc')) {
+            return;
+        }
+        $dir = new \RecursiveDirectoryIterator($component->getDirectory() . '/Doc');
+        $iterator = new \RecursiveIteratorIterator($dir);
+        $regex = new \RegexIterator($iterator, '/^.+\.mwb$/i', \RecursiveRegexIterator::GET_MATCH);
+        $mwbFiles = array();
+        foreach ($regex as $file) {
+            $mwbFiles[] = $file[0];
+        }
+        spl_autoload_register(array($this, 'mwbExporterAutoload'));
+        while (true) {
+            if (!count($mwbFiles)) {
+                return;
+            }
+            $this->interface->show('The component has the following MySQL Workbench files:');
+            foreach ($mwbFiles as $index=>$file) {
+                $fileParts = explode('/', $file);
+                $this->interface->show(($index + 1) . ' - ' . end($fileParts));
+            }
+            $retVal = trim($this->interface->input('Enter the file\'s number in order to generate YAML files for it:'));
+            if (empty($retVal) || !isset($mwbFiles[$retVal - 1])) {
+                return;
+            }
+            $mwbFile = $mwbFiles[$retVal - 1];
+            $this->generateYamlFromMySqlWorkbenchFile($mwbFile);
+            unset($mwbFiles[$retVal - 1]);
+        }
+    }
+
+    /**
+     * Generate yaml files to component's yaml directory based on file $mwbFile
+     *
+     * @param string $mwbFile Path to mysql workbench file
+     */
+    protected function generateYamlFromMySqlWorkbenchFile($mwbFile)
+    {
+        $setup = array(
+            Doctrine2YamlFormatter::CFG_ADD_COMMENT          => false,
+            Doctrine2YamlFormatter::CFG_USE_LOGGED_STORAGE   => true,
+            Doctrine2YamlFormatter::CFG_INDENTATION          => 2,
+            Doctrine2YamlFormatter::CFG_FILENAME             => '%entity-namespace%.%entity%.dcm.%extension%',
+            Doctrine2YamlFormatter::CFG_AUTOMATIC_REPOSITORY => true,
+            Doctrine2YamlFormatter::CFG_BACKUP_FILE          => false,
+        );
+
+        try {
+            $tempPath  = $this->cx->getWebsiteTempPath() . '/workbench';
+            $outputDir = $tempPath . '/yaml';
+            $bootstrap = new \MwbExporter\Bootstrap();
+            $formatter = new Doctrine2YamlFormatter('doctrine2-yaml');
+            $formatter->setup($setup);
+            $bootstrap->export($formatter, $mwbFile, $outputDir, 'file');
+
+            //Move the generated yaml file from tmp to corresponding component
+            $this->moveYamlFilesToComponent($tempPath, $outputDir);
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+        }
+    }
+
+    /**
+     * Backup the yaml file
+     *
+     * @param string $sourceDir source directory
+     * @param string $destDir   destination directory
+     * @param string $fileName  name of the file
+     *
+     * @return boolean
+     */
+    public function backupYamlFile($sourceDir, $destDir, $fileName)
+    {
+        if (empty($sourceDir) || empty($destDir) || empty($fileName)) {
+            return false;
+        }
+
+        //Check the destination folder exits or not
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($destDir)) {
+            if (
+                !\Cx\Lib\FileSystem\FileSystem::make_folder(
+                    $destDir,
+                    true
+                )
+            ) {
+                return false;
+            }
+        }
+
+        //backup the yml file
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File($sourceDir . '/' . $fileName);
+            $objFile->move($destDir . '/' . $fileName, true);
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Move the created Yaml files into corresponding component
+     *
+     * @param string $tempWorkbenchPath workbench tmp path
+     * @param string $ymlFilePath       yml file path
+     *
+     * @return null
+     */
+    public function moveYamlFilesToComponent($tempWorkbenchPath, $ymlFilePath)
+    {
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($ymlFilePath)) {
+            $this->interface->show('Unable to create YAML files.');
+            return;
+        }
+
+        $first         = true;
+        $backupFile    = false;
+        $components    = array();
+        $errorFiles    = array();
+        $em            = $this->cx->getDb()->getEntityManager();
+        $componentRepo = $em->getRepository(
+            '\Cx\Core\Core\Model\Entity\SystemComponent'
+        );
+        foreach (glob($ymlFilePath . '/*.yml') as $yamlFile) {
+            $fileName  = basename($yamlFile);
+            $fileParts = explode('.', $fileName);
+            if (count($fileParts) != 8) {
+                $errorFiles[] = $fileName;
+                continue;
+            }
+            if (!isset($components[$fileParts[2]])) {
+                $components[$fileParts[2]] = $componentRepo->findOneBy(
+                    array('name' => $fileParts[2])
+                );
+                if (!$components[$fileParts[2]]) {
+                    $errorFiles[] = $fileName;
+                    continue;
+                }
+            }
+            $filePath = $components[$fileParts[2]]->getDirectory() . '/Model/Yaml';
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($filePath)) {
+                if (
+                    !\Cx\Lib\FileSystem\FileSystem::make_folder(
+                        $filePath,
+                        true
+                    )
+                ) {
+                    $errorFiles[] = $fileName;
+                    continue;
+                }
+            }
+
+            $isFileAlreadyExists = \Cx\Lib\FileSystem\FileSystem::exists(
+                $filePath . '/' . $fileName
+            );
+            if ($first && $isFileAlreadyExists) {
+                $first      = false;
+                $backupFile = $this->interface->yesNo(
+                    'Do you want to backup the existing YAML files?'
+                );
+            }
+
+            if (!$isFileAlreadyExists || !$backupFile) {
+                goto moveFileToComponent;
+            }
+
+            $destDir = $tempWorkbenchPath . '/yamlBackup/' .
+                $components[$fileParts[2]]->getName() . '/Model/Yaml';
+            if (!$this->backupYamlFile($filePath, $destDir, $fileName)) {
+                $this->interface->show(
+                    'Unable to backup the YAML files.'
+                );
+                return;
+            }
+
+            moveFileToComponent:
+            try {
+                $objFile = new \Cx\Lib\FileSystem\File($ymlFilePath . '/' . $fileName);
+                $objFile->move($filePath . '/' . $fileName, true);
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                $errorFiles[] = $fileName;
+            }
+        }
+
+        if (empty($errorFiles)) {
+            $this->interface->show('YAML files created successfully.');
+            if ($backupFile) {
+                $this->interface->show(
+                    'The files have been backed-up to ' .
+                    $tempWorkbenchPath . '/yamlBackup' . '.'
+                );
+            }
+            return;
+        }
+
+        $errorText = count($errorFiles) > 1
+            ? "Unable to create the following yml files: \r\n"
+            : "Unable to create the yml file ";
+        $this->interface->show($errorText . implode("\r\n", $errorFiles));
+    }
+
+    /**
+     * Auto load register to load lib
+     *
+     * @param string $class Class name
+     */
+    public function mwbExporterAutoload($class) {
+        if (strpos($class, 'MwbExporter') === 0) {
+           $file     = strtr($class, '\\', DIRECTORY_SEPARATOR) . '.php';
+           $filePath = $this->cx->getCodeBaseCoreModulePath() . '/Workbench/Lib/'. $file;
+           if (file_exists($filePath)) {
+               require_once $filePath;
+           }
+        }
     }
 }
 

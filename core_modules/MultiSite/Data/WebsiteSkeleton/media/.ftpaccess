@@ -1,5 +1,0 @@
-<Directory>
-  <Limit WRITE>
-    AllowAll
-  </Limit>
-</Directory>
