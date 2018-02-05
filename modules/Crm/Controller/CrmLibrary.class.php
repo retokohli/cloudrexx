@@ -1432,7 +1432,7 @@ class CrmLibrary
             $where[] = " (c.customer_type = '".intval($filter['customer_type'])."')";
         }
         if (isset($filter['filter_membership']) && !empty($filter['filter_membership'])) {
-            $where[] = " mem.membership_id = '".intval($filter['filter_membership'])."'";
+            $where[] = " mem.membership_id IN(" . implode(',', $filter['filter_membership']) . ")";
         }
 
         $orderBy = '';
@@ -2235,7 +2235,7 @@ class CrmLibrary
      *
      * @return null
      */
-    function getOverviewMembershipDropdown($objTpl, $modelMembership, $selected = 0, $block = "memberships", $options = array())
+    function getOverviewMembershipDropdown($objTpl, $modelMembership, $selected = array(), $block = "memberships", $options = array())
     {
         $data = array(
                 'status = 1'
@@ -2249,7 +2249,7 @@ class CrmLibrary
                 $objTpl->setVariable(array(
                         "CRM_MEMBERSHIP_ID"         => (int) $result->fields['id'],
                         "CRM_MEMBERSHIP_VALUE"      => contrexx_raw2xhtml($result->fields['value']),
-                        "CRM_MEMBERSHIP_SELECTED"   => ($result->fields['id'] == $selected) ? "selected='selected'" : '',
+                        "CRM_MEMBERSHIP_SELECTED"   => (in_array($result->fields['id'], $selected)) ? "selected='selected'" : '',
                 ));
                 $objTpl->parse($block);
                 $result->MoveNext();
