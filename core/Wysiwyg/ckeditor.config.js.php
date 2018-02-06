@@ -128,7 +128,7 @@ CKEDITOR.editorConfig = function( config )
 
 //loading the templates
 CKEDITOR.on('instanceReady',function(){
-    var loadingTemplates = <?php echo $wysiwyg->getWysiwygTempaltes($skinId);?>;
+    var loadingTemplates = <?php echo $wysiwyg->getWysiwygTemplates($skinId);?>;
     for(var instanceName in CKEDITOR.instances) {
         loadingTemplates.button = CKEDITOR.instances[instanceName].getCommand("templates") //Reference to Template-Button
 

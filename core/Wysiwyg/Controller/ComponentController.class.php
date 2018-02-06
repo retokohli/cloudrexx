@@ -102,7 +102,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *                          load the Wysiwyg templates from.
      * @return  string  JSON-encoded string of Wysiwyg templates
      */
-    public function getWysiwygTempaltes($skinId) {
+    public function getWysiwygTemplates($skinId) {
         // wysiwyg templates from webdesign template (theme)
         $templatesFromTheme = $this->getWysiwygTemplatesFromTheme($skinId);
 
@@ -159,13 +159,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         // fetch default theme as fallback
-        if (!$themeFolder) {
+        if (empty($themeFolder)) {
             $themeFolder = $themeRepo->getDefaultTheme()->getFoldername();
         }
 
         // load Wysiwyg.yml from theme
         $wysiwygDataPath = $this->cx->getClassLoader()->getFilePath($this->cx->getWebsiteThemesPath() . '/' . $themeFolder. '/Wysiwyg.yml');
-        if (!$wysiwygDataPath) {
+        if ($wysiwygDataPath === false) {
             return array();
         }
 
@@ -206,11 +206,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             throw new \Exception("Failed to add new configuration option");
         }
 
-        //0 is default theme so you dont must change the themefolder
-        if(!empty($skinId)){
+        // fetch theme specified by $skinId
+        if (!empty($skinId)) {
             $skin = $themeRepo->findById($skinId)->getFoldername();
             $componentData = $themeRepo->findById($skinId)->getComponentData();
-        } else {
+        }
+
+        // fetch default theme
+        if (empty($skin)) {
             $skin = $themeRepo->getDefaultTheme()->getFoldername();
             $componentData = $themeRepo->getDefaultTheme()->getComponentData();
         }
