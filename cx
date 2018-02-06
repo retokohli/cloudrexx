@@ -378,6 +378,7 @@ function cmd_env {
                     git fetch
                 fi
                 git reset -q --hard "origin/${ARGUMENTS["source-branch"]}"
+                git branch --set-upstream-to=origin/${ARGUMENTS["source-branch"]} ${ARGUMENTS["source-branch"]}
                 if [[ "${ARGUMENTS["source-branch"]}" != "master" ]]; then
                     git checkout -q -t "origin/${ARGUMENTS["source-branch"]}"
                 fi
