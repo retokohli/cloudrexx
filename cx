@@ -708,6 +708,7 @@ function get_config_array {
         if [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
             working_directory="${ARGUMENTS["proxy-host-dir"]}"
         fi
+        working_directory${working_directory//" "/""}
         CONFIG["hostname"]="${working_directory##*/}.${ARGUMENTS["root-domain"]}"
     fi
     if [[ "${CONFIG["php-version"]}" == "" ]]; then
@@ -931,7 +932,7 @@ set string=%string:\=/%
 set string=/host_mnt/%string::/=/%
 
 REM Pass everything through our wrapper
-docker run --rm -ti --name clx-win-wrapper -v %cd%/:/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu bash -c "cd /root && ./cx --proxy-host-dir=%string% %*"
+docker run --rm -ti --name clx-win-wrapper -v "%cd%/":/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu bash -c "cd /root && ./cx --proxy-host-dir='%string%' %*"
 goto :EOF
 
 :tolower
