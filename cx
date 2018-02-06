@@ -708,7 +708,7 @@ function get_config_array {
         if [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
             working_directory="${ARGUMENTS["proxy-host-dir"]}"
         fi
-        working_directory${working_directory//" "/""}
+        working_directory=${working_directory//" "/""}
         CONFIG["hostname"]="${working_directory##*/}.${ARGUMENTS["root-domain"]}"
     fi
     if [[ "${CONFIG["php-version"]}" == "" ]]; then
