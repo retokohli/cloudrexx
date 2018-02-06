@@ -139,6 +139,8 @@ Available subcommands are:
     status      Tells whether the containers are running
     info        Alias for 'status'
     shell       Interactive shell of the proxy container
+    debug       Shows NGINX logs
+    list        Lists all environments that are up
 
 For more info about a subcommand type ./cx help envs <subcommand>";
                     ;;
@@ -343,7 +345,9 @@ function cmd_envs {
         list)
             local containerlist
             containerlist=$(dockerexec ps -f "name=<container-prefix>" -f "network=<proxy-network>" --format "{{.Names}}" | grep web)
-            echo "${containerlist//"clxenv"/}"
+            containerlist="${containerlist//"clxenv"/}"
+            containerlist="${containerlist//"lvhme_web_1"/}"
+            echo "${containerlist//"_web_1"/}"
             ;;
         *)
             (>&2 echo "No such subcommand")
