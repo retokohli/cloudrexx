@@ -85,6 +85,8 @@ CKEDITOR.editorConfig = function( config )
     config.height = 307;
     config.uiColor = '#ececec';
 
+    <?php if (!empty($_GET['locale'])) echo "config.language = '" . preg_replace('/[^a-z]/', '', $_GET['locale']) . "';";?>
+
     config.forcePasteAsPlainText = false;
     config.enterMode = CKEDITOR.ENTER_BR;
     config.shiftEnterMode = CKEDITOR.ENTER_P;
