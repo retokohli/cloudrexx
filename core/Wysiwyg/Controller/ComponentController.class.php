@@ -305,7 +305,31 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return  string
      */
     public function getConfigPath() {
-        return $this->getDirectory(true, true) . '/ckeditor.config.js.php';
+        $localeIsoCode = '';
+        $em = $this->cx->getDb()->getEntityManager();
+        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+            try {
+                // get ISO-639-1 code of backend language
+                $backend = $em->find(
+                    'Cx\Core\Locale\Model\Entity\Backend',
+                    LANG_ID
+                );
+                $localeIsoCode = $backend->getIso1()->getId();
+            } catch (\Throwable $e) {}
+        }
+
+        if (empty($localeIsoCode)) {
+            try {
+                // get currently selected frontend locale
+                $locale = $em->find(
+                    'Cx\Core\Locale\Model\Entity\Locale',
+                    FRONTEND_LANG_ID
+                );
+                $localeIsoCode = $locale->getIso1()->getId();
+            } catch (\Throwable $e) {}
+        }
+
+        return $this->getDirectory(true, true) . '/ckeditor.config.js.php?locale=' . $localeIsoCode;
     }
 
     /**

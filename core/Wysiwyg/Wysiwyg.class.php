@@ -202,7 +202,7 @@ class Wysiwyg extends \Cx\Model\Base\EntityBase
 
         $configPath = $this->getComponentController()->getConfigPath();
         $options = array(
-            "customConfig: CKEDITOR.getUrl('".$configPath."?langId=".$this->langId."')",
+            "customConfig: CKEDITOR.getUrl('".$configPath."')",
             "width: '" . $this->types[$this->type]['width'] . "'",
             "height: '" . $this->types[$this->type]['height'] . "'",
             "toolbar: '" . $this->types[$this->type]['toolbar'] . "'",
