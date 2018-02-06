@@ -698,7 +698,12 @@ function get_config_array {
         fi
     fi
     if [[ "${CONFIG["hostname"]}" == "" || "${CONFIG["hostname"]}" == "localhost" ]]; then
-        CONFIG["hostname"]="${PWD##*/}.${ARGUMENTS["root-domain"]}"
+        local working_directory
+        working_directory="$PWD"
+        if [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
+            working_directory="${ARGUMENTS["proxy-host-dir"]}"
+        fi
+        CONFIG["hostname"]="${working_directory##*/}.${ARGUMENTS["root-domain"]}"
     fi
     if [[ "${CONFIG["php-version"]}" == "" ]]; then
         CONFIG["php-version"]="5.6"
@@ -758,6 +763,12 @@ function set_config_array {
     PHP_IMAGE=${CONFIG["php-image"]}
     PHP_IMAGE=${PHP_IMAGE//"<php-version>"/${CONFIG["php-version"]}}
     # replace hostname, php- and db-image
+    local working_directory
+    working_directory="."
+    if [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
+        working_directory="${ARGUMENTS["proxy-host-dir"]}"
+    fi
+    FILE_CONTENTS=${FILE_CONTENTS//"<cd>"/"$working_directory"}
     FILE_CONTENTS=${FILE_CONTENTS//"<hostname>"/${CONFIG["hostname"]}}
     FILE_CONTENTS=${FILE_CONTENTS//"<php-image>"/$PHP_IMAGE}
     FILE_CONTENTS=${FILE_CONTENTS//"<db-image>"/${CONFIG["db-image"]}}
@@ -901,4 +912,4 @@ if %errorlevel% NEQ 0 (
 )
 
 REM Pass everything through our wrapper
-docker run --rm -ti --name clx-win-wrapper -v %cd%/:/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu bash -c "cd /root && /root/cx %*"
+docker run --rm -ti --name clx-win-wrapper -v %cd%/:/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu bash -c "cd /root && ./cx --proxy-host-dir=%cd% %*"
