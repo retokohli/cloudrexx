@@ -381,11 +381,7 @@ function cmd_env {
                 else
                     git fetch
                 fi
-                git reset -q --hard "origin/${ARGUMENTS["source-branch"]}"
-                git branch --set-upstream-to=origin/${ARGUMENTS["source-branch"]} ${ARGUMENTS["source-branch"]}
-                if [[ "${ARGUMENTS["source-branch"]}" != "master" ]]; then
-                    git checkout -q -t "origin/${ARGUMENTS["source-branch"]}"
-                fi
+                git checkout -t -f "origin/${ARGUMENTS["source-branch"]}"
                 # assume ./tmp/* and ./config/* are unchanged
                 git ls-files -z tmp/ | xargs -0 git update-index --assume-unchanged
                 git ls-files -z config/ | xargs -0 git update-index --assume-unchanged
@@ -413,32 +409,34 @@ function cmd_env {
                 echo "Loading docker containers"
             fi
             cmd_env up
-            if [[ ${ARGUMENTS["skip-source"]} != true || ${ARGUMENTS["yes"]} == true ]]; then
-                dockerexec exec "<web-container>" chown -R www-data /var/www/html
-                dockerexec exec "<web-container>" chmod g+w -R /var/www/html
-            else
-                echo "Source repository skipped. Should permissions be set anyway (chown to www-data, chmod g+w)?"
-                read -p "Say yes or no or choose to continue [Ync]? " -n 1 -r
-                echo ""
-                # if reply is "n" we do nothing
-                if [[ "$REPLY" != "n" ]]; then
-                    # if reply is "c" we ask
-                    OLDREPLY="$REPLY"
-                    if [[ "$OLDREPLY" == "c" ]]; then
-                        read -p "Execute 'chown -R www-data' on working directory? [Yn]? " -n 1 -r
-                        echo ""
-                    fi
-                    # if we did not have to ask or answer was != n
-                    if [[ "$OLDREPLY" != "c" || "$REPLY" != "n" ]]; then
-                        dockerexec exec "<web-container>" chown -R www-data /var/www/html
-                    fi
-                    if [[ "$OLDREPLY" == "c" ]]; then
-                        read -p "Execute 'chmod -R g+w' on working directory? [Yn]? " -n 1 -r
-                        echo ""
-                    fi
-                    # if we did not have to ask or answer was != n
-                    if [[ "$OLDREPLY" != "c" || "$REPLY" != "n" ]]; then
-                        dockerexec exec "<web-container>" chmod g+w -R /var/www/html
+            if [[ "${ARGUMENTS["proxy-host-dir"]}" == "" ]]; then
+                if [[ ${ARGUMENTS["skip-source"]} != true || ${ARGUMENTS["yes"]} == true ]]; then
+                    dockerexec exec "<web-container>" chown -R www-data /var/www/html
+                    dockerexec exec "<web-container>" chmod g+w -R /var/www/html
+                else
+                    echo "Source repository skipped. Should permissions be set anyway (chown to www-data, chmod g+w)?"
+                    read -p "Say yes or no or choose to continue [Ync]? " -n 1 -r
+                    echo ""
+                    # if reply is "n" we do nothing
+                    if [[ "$REPLY" != "n" ]]; then
+                        # if reply is "c" we ask
+                        OLDREPLY="$REPLY"
+                        if [[ "$OLDREPLY" == "c" ]]; then
+                            read -p "Execute 'chown -R www-data' on working directory? [Yn]? " -n 1 -r
+                            echo ""
+                        fi
+                        # if we did not have to ask or answer was != n
+                        if [[ "$OLDREPLY" != "c" || "$REPLY" != "n" ]]; then
+                            dockerexec exec "<web-container>" chown -R www-data /var/www/html
+                        fi
+                        if [[ "$OLDREPLY" == "c" ]]; then
+                            read -p "Execute 'chmod -R g+w' on working directory? [Yn]? " -n 1 -r
+                            echo ""
+                        fi
+                        # if we did not have to ask or answer was != n
+                        if [[ "$OLDREPLY" != "c" || "$REPLY" != "n" ]]; then
+                            dockerexec exec "<web-container>" chmod g+w -R /var/www/html
+                        fi
                     fi
                 fi
             fi
