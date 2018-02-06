@@ -346,7 +346,7 @@ function cmd_envs {
             local containerlist
             containerlist=$(dockerexec ps -f "name=<container-prefix>" -f "network=<proxy-network>" --format "{{.Names}}" | grep web)
             containerlist="${containerlist//"clxenv"/}"
-            containerlist="${containerlist//"lvhme_web_1"/}"
+            containerlist="${containerlist//"${ARGUMENTS["root-domain"]//./}_web_1"/}"
             echo "${containerlist//"_web_1"/}"
             ;;
         *)
