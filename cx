@@ -139,6 +139,8 @@ Available subcommands are:
     status      Tells whether the containers are running
     info        Alias for 'status'
     shell       Interactive shell of the proxy container
+    debug       Shows NGINX logs
+    list        Lists all environments that are up
 
 For more info about a subcommand type ./cx help envs <subcommand>";
                     ;;
@@ -343,7 +345,9 @@ function cmd_envs {
         list)
             local containerlist
             containerlist=$(dockerexec ps -f "name=<container-prefix>" -f "network=<proxy-network>" --format "{{.Names}}" | grep web)
-            echo "${containerlist//"clxenv"/}"
+            containerlist="${containerlist//"clxenv"/}"
+            containerlist="${containerlist//"lvhme_web_1"/}"
+            echo "${containerlist//"_web_1"/}"
             ;;
         *)
             (>&2 echo "No such subcommand")
@@ -704,6 +708,7 @@ function get_config_array {
         if [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
             working_directory="${ARGUMENTS["proxy-host-dir"]}"
         fi
+        working_directory=${working_directory//" "/""}
         CONFIG["hostname"]="${working_directory##*/}.${ARGUMENTS["root-domain"]}"
     fi
     if [[ "${CONFIG["php-version"]}" == "" ]]; then
@@ -907,10 +912,29 @@ exit
 :WIN
 @ECHO off
 REM Check if bash script is present
-DIR /b /a-d |find /v "." |find "cx"
+DIR /b /a-d |find /v "." |find "cx" >nul
 if %errorlevel% NEQ 0 (
     docker run --rm --name clx-win-wrapper -v %cd%/:/root cloudrexx/ubuntu bash -c "cd /root && wget -q https://raw.githubusercontent.com/Cloudrexx/cloudrexx/master/cx && chmod +x cx"
 )
 
+SETLOCAL ENABLEEXTENSIONS ENABLEDELAYEDEXPANSION
+set string=%cd%
+
+REM Split on first doublepoint to get drive letter separately
+for /f "tokens=1 delims=:" %%a in ("%string%") do set new_var=%%a
+
+REM Replace uppercase drive letter by lowercase
+call :tolower new_var
+
+REM Merge new path and replace backslashes and colons
+set string=%new_var%%string:~2%
+set string=%string:\=/%
+set string=/host_mnt/%string::/=/%
+
 REM Pass everything through our wrapper
-docker run --rm -ti --name clx-win-wrapper -v %cd%/:/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu bash -c "cd /root && ./cx --proxy-host-dir=%cd% %*"
+docker run --rm -ti --name clx-win-wrapper -v "%cd%/":/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu bash -c "cd /root && ./cx --proxy-host-dir='%string%' %*"
+goto :EOF
+
+:tolower
+for %%L IN (a b c d e f g h i j k l m n o p q r s t u v w x y z) DO SET %1=!%1:%%L=%%L!
+goto :EOF
