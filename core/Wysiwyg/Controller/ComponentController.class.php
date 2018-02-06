@@ -96,25 +96,88 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * find all wysiwyg templates and return it in the correct format for the ckeditor
+     * Returns all Wysiwyg templates in JSON to be used by the CKEditor
      *
-     * @return json All wysiwyg templates where active in json format
+     * @param   integer $skinId The ID of the webdesign template (theme) to
+     *                          load the Wysiwyg templates from.
+     * @return  string  JSON-encoded string of Wysiwyg templates
      */
-    public function getWysiwygTempaltes() {
+    public function getWysiwygTemplates($skinId) {
+        // wysiwyg templates from webdesign template (theme)
+        $templatesFromTheme = $this->getWysiwygTemplatesFromTheme($skinId);
+
+        // wysiwyg templates from config section
+        $templatesFromConfig = $this->getWysiwygTemplatesFromConfig();
+
+        // merge templates from theme and config section together
+        $templates = array_merge($templatesFromTheme, $templatesFromConfig);
+
+        return json_encode($templates);
+    }
+
+    /**
+     * Returns the Wysiwyg templates from config section
+     *
+     * @return  array   List of Wysiwyg templates loaded from config section
+     */
+    protected function getWysiwygTemplatesFromConfig() {
+        // fetch templates from configuration section
+        $templates = array();
         $em = $this->cx->getDb()->getEntityManager();
-        $repo = $em->getRepository('Cx\Core\Wysiwyg\Model\Entity\WysiwygTemplate');
-        $allWysiwyg = $repo->findBy(array('active'=>'1'));
-        $containerArr = array();
-        foreach ($allWysiwyg as $wysiwyg) {
-            $containerArr[] = array(
-                'title' => $wysiwyg->getTitle(),
-                'image' => $wysiwyg->getImagePath(),
-                'description' => $wysiwyg->getDescription(),
-                'html' => $wysiwyg->getHtmlContent(),
+        $wysiwygTemplatesRepo = $em->getRepository('Cx\Core\Wysiwyg\Model\Entity\WysiwygTemplate');
+        $wysiwygTemplates = $wysiwygTemplatesRepo->findBy(array('active'=>'1'));
+        foreach ($wysiwygTemplates as $wysiwygTemplate) {
+            $templates[] = array(
+                'title'         => $wysiwygTemplate->getTitle(),
+                'image'         => $wysiwygTemplate->getImagePath(),
+                'description'   => $wysiwygTemplate->getDescription(),
+                'html'          => $wysiwygTemplate->getHtmlContent(),
             );
         }
 
-        return json_encode($containerArr);
+        return $templates;
+    }
+
+    /**
+     * Returns the Wysiwyg templates from the Wysiwyg.yml file from the theme
+     * identified by $skinId. If no theme can be identified by $skinId, then
+     * the Wysiwyg.yml from the default theme is loaded instead.
+     *
+     * @param   integer $skinId The ID of the webdesign template (theme) to
+     *                          load the Wysiwyg templates from.
+     * @return  array   List of Wysiwyg templates loaded from Wysiwyg.yml
+     *                  file from the theme identified by $skinId.
+     */
+    protected function getWysiwygTemplatesFromTheme($skinId) {
+        // fetch templates from webdesign template (theme)
+        $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
+
+        // fetch specific theme by $skinId
+        $themeFolder = '';
+        if (!empty($skinId)) {
+            $themeFolder = $themeRepo->findById($skinId)->getFoldername();
+        }
+
+        // fetch default theme as fallback
+        if (empty($themeFolder)) {
+            $themeFolder = $themeRepo->getDefaultTheme()->getFoldername();
+        }
+
+        // load Wysiwyg.yml from theme
+        $wysiwygDataPath = $this->cx->getClassLoader()->getFilePath($this->cx->getWebsiteThemesPath() . '/' . $themeFolder. '/Wysiwyg.yml');
+        if ($wysiwygDataPath === false) {
+            return array();
+        }
+
+        $wysiwygData = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($wysiwygDataPath);
+        if (!$wysiwygData) {
+            return array();
+        }
+        if (!$wysiwygData->entryExists('Templates')) {
+            return array();
+        }
+
+        return $wysiwygData->getEntry('Templates');
     }
 
 
@@ -143,11 +206,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             throw new \Exception("Failed to add new configuration option");
         }
 
-        //0 is default theme so you dont must change the themefolder
-        if(!empty($skinId)){
+        // fetch theme specified by $skinId
+        if (!empty($skinId)) {
             $skin = $themeRepo->findById($skinId)->getFoldername();
             $componentData = $themeRepo->findById($skinId)->getComponentData();
-        } else {
+        }
+
+        // fetch default theme
+        if (empty($skin)) {
             $skin = $themeRepo->getDefaultTheme()->getFoldername();
             $componentData = $themeRepo->getDefaultTheme()->getComponentData();
         }
