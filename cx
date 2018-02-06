@@ -456,6 +456,9 @@ function cmd_env {
                 phpexec Setting set Config -engine=Yaml -group=cache cacheDbStatus on > /dev/null
                 phpexec Setting set Config -engine=Yaml -group=cache cacheOPCache zendopcache > /dev/null
                 phpexec Setting set Config -engine=Yaml -group=cache cacheOpStatus on > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=cache forceDomainUrl on > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=cache forceProtocolFrontend http > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=cache forceProtocolBackend http > /dev/null
             fi
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 get_config_array
