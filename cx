@@ -299,7 +299,7 @@ The following commands are available:
     help        Shows this help
     debug       Returns the last fatal error"
             REGEX="(\S+) - ?(.*)"
-            HELP_LIST="$(phpexec | grep $'^\t')"
+            HELP_LIST="$(phpexec | grep $'^\t' 2> /dev/null)"
             spacepad="            "
             while read -r line; do
                 [[ "$line" =~ $REGEX ]]
@@ -378,6 +378,7 @@ function cmd_env {
                     git fetch
                 fi
                 git reset -q --hard "origin/${ARGUMENTS["source-branch"]}"
+                git branch --set-upstream-to=origin/${ARGUMENTS["source-branch"]} ${ARGUMENTS["source-branch"]}
                 if [[ "${ARGUMENTS["source-branch"]}" != "master" ]]; then
                     git checkout -q -t "origin/${ARGUMENTS["source-branch"]}"
                 fi
@@ -456,7 +457,12 @@ function cmd_env {
             fi
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 get_config_array
-                echo "Environment successfully initialized, you should be able to reach Cloudrexx at http://${CONFIG["hostname"]}/"
+                echo "Environment successfully initialized. It is available on http://${CONFIG["hostname"]}/"
+                if [[ ${CONFIG["is-vhost"]} == true ]]; then
+                    echo "phpMyAdmin is available at http://phpma.${CONFIG["hostname"]}/"
+                else
+                    echo "phpMyAdmin is available at http://${CONFIG["hostname"]}:8234/"
+                fi
             fi
             ;;
         up)
@@ -534,6 +540,7 @@ function cmd_env {
             local tempfile
             tempfile=$(dockerexec exec "<db-container>" mktemp)
             echo "[mysql]
+default-character-set=utf8
 database=${CONFIG["db-name"]}
 [client]
 host=${CONFIG["db-host"]}
@@ -603,6 +610,7 @@ SET FOREIGN_KEY_CHECKS = 1;" | internal_dockerexec exec -i "<db-container>" bash
                 ClxMail="noreply@contrexx.com"
                 ClxPass="123456"
                 echo "INSERT INTO contrexx_access_users (id, is_admin, username, password, regdate, expiration, validity, last_auth, last_activity, email, email_access, frontend_lang_id, backend_lang_id, active, profile_access, restore_key, restore_key_time, u2u_active, auth_token) VALUES (1,1,'${ClxUser}',MD5('${ClxPass}'),0,0,0,0,0,'${ClxMail}','nobody', 0,0,1,'members_only','',0,'0', '');INSERT INTO contrexx_access_user_profile (user_id, gender, title, firstname, lastname, company, address, city, zip, country, phone_office, phone_private, phone_mobile, phone_fax, birthday, website, profession, interests, signature, picture) VALUES (1,'gender_undefined',2,'CMS','System Benutzer','','','','',0,'','','','','','','','','','');INSERT INTO contrexx_access_user_attribute_value (attribute_id, user_id, history_id, value) VALUES (0,1,0,'');" | internal_dockerexec exec -i "<db-container>" mysql --defaults-file="$tempfile" -A
+                echo "Created the user \"$ClxUser\" with e-mail \"$ClxMail\" and password \"$ClxPass\""
             fi
             dockerexec exec "<db-container>" rm "$tempfile"
             ;;
@@ -691,7 +699,12 @@ function get_config_array {
         fi
     fi
     if [[ "${CONFIG["hostname"]}" == "" || "${CONFIG["hostname"]}" == "localhost" ]]; then
-        CONFIG["hostname"]="${PWD##*/}.${ARGUMENTS["root-domain"]}"
+        local working_directory
+        working_directory="$PWD"
+        if [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
+            working_directory="${ARGUMENTS["proxy-host-dir"]}"
+        fi
+        CONFIG["hostname"]="${working_directory##*/}.${ARGUMENTS["root-domain"]}"
     fi
     if [[ "${CONFIG["php-version"]}" == "" ]]; then
         CONFIG["php-version"]="5.6"
@@ -751,6 +764,12 @@ function set_config_array {
     PHP_IMAGE=${CONFIG["php-image"]}
     PHP_IMAGE=${PHP_IMAGE//"<php-version>"/${CONFIG["php-version"]}}
     # replace hostname, php- and db-image
+    local working_directory
+    working_directory="."
+    if [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
+        working_directory="${ARGUMENTS["proxy-host-dir"]}"
+    fi
+    FILE_CONTENTS=${FILE_CONTENTS//"<cd>"/"$working_directory"}
     FILE_CONTENTS=${FILE_CONTENTS//"<hostname>"/${CONFIG["hostname"]}}
     FILE_CONTENTS=${FILE_CONTENTS//"<php-image>"/$PHP_IMAGE}
     FILE_CONTENTS=${FILE_CONTENTS//"<db-image>"/${CONFIG["db-image"]}}
@@ -890,8 +909,8 @@ exit
 REM Check if bash script is present
 DIR /b /a-d |find /v "." |find "cx"
 if %errorlevel% NEQ 0 (
-    docker run --rm --name clx-win-wrapper -v %cd%/:/root cloudrexx/ubuntu "cd /root && wget https://raw.githubusercontent.com/Cloudrexx/cloudrexx/master/cx && chmod +x cx"
+    docker run --rm --name clx-win-wrapper -v %cd%/:/root cloudrexx/ubuntu bash -c "cd /root && wget -q https://raw.githubusercontent.com/Cloudrexx/cloudrexx/master/cx && chmod +x cx"
 )
 
 REM Pass everything through our wrapper
-docker run -ti --name clx-win-wrapper -v %cd%/:/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu ./cx %*
+docker run --rm -ti --name clx-win-wrapper -v %cd%/:/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu bash -c "cd /root && ./cx --proxy-host-dir=%cd% %*"
