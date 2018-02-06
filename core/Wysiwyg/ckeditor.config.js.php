@@ -68,19 +68,6 @@ if (!empty($pageId) && $pageId != 'new') {
 }
 
 $ymlOption = $wysiwyg->getCustomCSSVariables($skinId);
-//Get the Active template from the Wysiwyg page(under the Administration tab)
-$templates  = json_decode($wysiwyg->getWysiwygTempaltes(), true);
-//get the Wysiwyg templates from default themes
-$themeRepo      = new \Cx\Core\View\Model\Repository\ThemeRepository();
-$theme          = $themeRepo->getDefaultTheme();
-$themesFilePath = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($theme->getFoldername() . '/Wysiwyg.yml');
-$fileSystem     = $cx->getMediaSourceManager()->getMediaType('themes')->getFileSystem();
-if ($fileSystem->fileExists($themesFilePath)) {
-    $webdesignTmpl = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($fileSystem->getFullPath($themesFilePath));
-    //If the Wysiwyg template exists in default themes
-    //then merge those templates with the active templates present in the Wysiwyg page
-    $templates = $webdesignTmpl->entryExists('Templates') ? array_merge($templates, $webdesignTmpl->getEntry('Templates')) : $templates;
-}
 ?>
 //if the wysiwyg css not defined in the session, then load the css variables and put it into the session
 if(!cx.variables.get('css', 'wysiwyg')) {
@@ -141,7 +128,7 @@ CKEDITOR.editorConfig = function( config )
 
 //loading the templates
 CKEDITOR.on('instanceReady',function(){
-    var loadingTemplates = <?php echo json_encode($templates);?>;
+    var loadingTemplates = <?php echo $wysiwyg->getWysiwygTempaltes($skinId);?>;
     for(var instanceName in CKEDITOR.instances) {
         loadingTemplates.button = CKEDITOR.instances[instanceName].getCommand("templates") //Reference to Template-Button
 
