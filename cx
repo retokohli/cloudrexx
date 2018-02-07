@@ -878,7 +878,7 @@ case "${COMMANDS[0]}" in
             dockerexec logs -f "<web-container>"
             exit
         elif [[ ${ARGUMENTS["request"]} ]]; then
-            grep "$(tail -n1 tmp/log/dbg.log | grep -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log
+            grep "$(tail -n1 tmp/log/dbg.log | grep -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log | less
             exit
         fi
         tac tmp/log/dbg.log | grep -m1 "initialization failed"
