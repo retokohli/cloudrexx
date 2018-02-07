@@ -492,11 +492,23 @@ function cmd_env {
             dockerexec exec "<db-container>" bash -c "while ! echo | mysql -u${CONFIG["db-user"]} -p${CONFIG["db-pass"]} &> /dev/null; do sleep 1; done"
             ;;
         down)
-            if [[ "${ARGUMENTS["purge"]}" == true ]]; then
-                dockercomposeexec down -v
-            else
-                dockercomposeexec down
+            local working_directory
+            working_directory="$PWD"
+            if [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
+                working_directory="${ARGUMENTS["proxy-host-dir"]}"
             fi
+            local environments
+            ARGUMENTS["dir"]="$working_directory"
+            ARGUMENTS["real"]=true
+            environments=$(cmd_envs list)
+            while read -r environment; do
+                echo "Shutting down environment clxenv$environment"
+                if [[ "${ARGUMENTS["purge"]}" == true ]]; then
+                    docker-compose --project-name "$environment" down -v
+                else
+                    docker-compose --project-name "$environment" down
+                fi
+            done <<< "$environments"
             ;;
         restart)
             cmd_env down
