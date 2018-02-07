@@ -236,6 +236,7 @@ Synopsis
     ./cx env config [<options>]
 
 Available options are:
+    --show                          Displays current configuration and exits.
     --yes                           Answer all questions with yes / default. Use with care!
     --silent                        Do not output non-necessary messages
     --interactive                   Ask for each value instead of using default behavior
