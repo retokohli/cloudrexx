@@ -121,7 +121,8 @@ Synopsis:
     ./cx envs list [<options>]
 
 Available options are:
-    --dir=<directory>   Shows the name of the environment(s) tied to a directory."
+    --dir=<directory>   Shows the name of the environment(s) tied to a directory.
+    --real              Shows docker-compose's project name instead of environment's name"
                     ;;
                 shell)
                     echo "This command opens an interactive shell of the PHP docker container for this environment.
@@ -353,9 +354,12 @@ function cmd_envs {
             else
                 containerlist=$(dockerexec ps -f "name=<container-prefix>" -f "network=<proxy-network>" --format "{{.Names}}" | grep web)
             fi
-            containerlist="${containerlist//"clxenv"/}"
-            containerlist="${containerlist//"${ARGUMENTS["root-domain"]//./}_web_1"/}"
-            echo "${containerlist//"_web_1"/}"
+            if ! [[ ${ARGUMENTS["real"]} ]]; then
+                containerlist="${containerlist//"clxenv"/}"
+                containerlist="${containerlist//"${ARGUMENTS["root-domain"]//./}_web_1"/}"
+            fi
+            containerlist="${containerlist//"_web_1"/}"
+            echo "$containerlist"
             ;;
         *)
             (>&2 echo "No such subcommand")
