@@ -125,10 +125,13 @@ Available options are:
     --real              Shows docker-compose's project name instead of environment's name"
                     ;;
                 shell)
-                    echo "This command opens an interactive shell of the PHP docker container for this environment.
+                    echo "This command opens an interactive shell of the NGINX proxy docker container.
 
 Synopsis
-    ./cx envs shell"
+    ./cx envs shell [<options>]
+
+Available options are:
+    --wrapper       Opens an interactive shell of the  Windows wrapper container instead (Windows only)"
                     ;;
                 *)
                     echo "This command manages the environment for multiple Cloudrexx installations on one host.
@@ -955,6 +958,12 @@ REM Merge new path and replace backslashes and colons
 set string=%new_var%%string:~2%
 set string=%string:\=/%
 set string=/host_mnt/%string::/=/%
+
+REM Special case: user wants to start interactive shell to wrapper container
+if "%*" == "envs shell --wrapper" (
+    docker run --rm -ti --name clx-win-wrapper -v "%cd%/":/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu sh -c "cd /root && bash"
+    goto :EOF
+)
 
 REM Pass everything through our wrapper
 docker run --rm -ti --name clx-win-wrapper -v "%cd%/":/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu bash -c "cd /root && ./cx --proxy-host-dir='%string%' %*"
