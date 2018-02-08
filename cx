@@ -968,7 +968,7 @@ function phpexec {
         if [ ! "$(dockerexec ps -q -f "name=<web-container>")" ]; then
             php index.php "$@"
         else
-            dockerexec exec "<web-container>" php index.php "$@"
+            dockerexec exec -ti "<web-container>" php index.php "$@"
         fi
     else
         php index.php "$@"
