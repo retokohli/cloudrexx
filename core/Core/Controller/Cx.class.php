@@ -1000,6 +1000,10 @@ namespace Cx\Core\Core\Controller {
             if (!isset($_CONFIG)) {
                 die('System halted: Unable to load basic configuration!');
             }
+
+            if (empty($_SERVER['SERVER_NAME'])) {
+                $_SERVER['SERVER_NAME'] = $_CONFIG['domainUrl'];
+            }
         }
 
         protected function setCustomizingPath() {
