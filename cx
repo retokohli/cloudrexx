@@ -305,8 +305,9 @@ Synopsis
     ./cx debug [<options>]
 
 Available options are:
-    --web       Shows the log of the web docker container (Apache)
-    --request   Shows the log of the last request"
+    --web               Shows the log of the web docker container (Apache)
+    --request           Shows the log of the last request
+    --clear-usercache   Clears the user cache"
             ;;
         *)
             echo "Executes commands for Cloudrexx installations.
@@ -1026,6 +1027,9 @@ case "${COMMANDS[0]}" in
             exit
         elif [[ ${ARGUMENTS["request"]} ]]; then
             grep "$(tail -n1 tmp/log/dbg.log | grep -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log | less
+            exit
+        elif [[ ${ARGUMENTS["clear-usercache"]} ]]; then
+            dockerexec exec "<web-container>" bash -c 'exec 3<>/dev/tcp/usercache/11211 && echo flush_all >&3 && read -u 3 msg_in && echo $msg_in'
             exit
         fi
         tac tmp/log/dbg.log | grep -m1 "initialization failed"
