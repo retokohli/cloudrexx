@@ -496,9 +496,9 @@ function cmd_env {
                 git init -q
                 git remote add origin ${ARGUMENTS["source-repo"]}
                 if [[ ${ARGUMENTS["silent"]} == true ]]; then
-                    git fetch -q
+                    git fetch --tags -q
                 else
-                    git fetch
+                    git fetch --tags
                 fi
                 git checkout -t -f "origin/${ARGUMENTS["source-branch"]}"
                 # assume ./tmp/* and ./config/* are unchanged
@@ -575,9 +575,9 @@ function cmd_env {
                 phpexec Setting set Config -engine=Yaml -group=cache cacheDbStatus on > /dev/null
                 phpexec Setting set Config -engine=Yaml -group=cache cacheOPCache zendopcache > /dev/null
                 phpexec Setting set Config -engine=Yaml -group=cache cacheOpStatus on > /dev/null
-                phpexec Setting set Config -engine=Yaml -group=cache forceDomainUrl on > /dev/null
-                phpexec Setting set Config -engine=Yaml -group=cache forceProtocolFrontend http > /dev/null
-                phpexec Setting set Config -engine=Yaml -group=cache forceProtocolBackend http > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=site forceDomainUrl on > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=site forceProtocolFrontend http > /dev/null
+                phpexec Setting set Config -engine=Yaml -group=administrationArea forceProtocolBackend http > /dev/null
             fi
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 get_config_array
@@ -615,14 +615,14 @@ function cmd_env {
                 environments=($(cmd_envs list))
                 set +f
             fi
-            while read -r environment; do
+            for environment in "${environments[@]}"; do
                 echo "Shutting down environment clxenv$environment"
                 if [[ "${ARGUMENTS["purge"]}" == true ]]; then
                     docker-compose --project-name "$environment" down -v
                 else
                     docker-compose --project-name "$environment" down
                 fi
-            done <<< "${environments[@]}"
+            done
             ;;
         restart)
             cmd_env down
