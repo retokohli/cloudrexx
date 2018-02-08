@@ -453,7 +453,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         return $this->strBlockName;
     }
 
-    function listEntries($objTpl, $intView, $googleMapPlaceholder = null)
+    function listEntries($objTpl, $intView, $templateKey = null)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
@@ -822,12 +822,12 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             case 4:
                 //Google Map
 
-                if (!isset($googleMapPlaceholder)) {
-                    $googleMapPlaceholder = $this->moduleLangVar.'_GOOGLE_MAP';
+                if (!isset($templateKey)) {
+                    $templateKey = $this->moduleLangVar.'_GOOGLE_MAP';
                 }
 
                 // abort in case the relevant placeholder is missing in the template
-                if (!$objTpl->placeholderExists($googleMapPlaceholder)) {
+                if (!$objTpl->placeholderExists($templateKey)) {
                     break;
                 }
 
@@ -918,18 +918,20 @@ JSCODE;
                 }
 
                 $objTpl->setVariable(array(
-                    $googleMapPlaceholder => $objGoogleMap->getMap()
+                    $templateKey => $objGoogleMap->getMap()
                 ));
 
                 break;
 
             case 5:
-                // Frontend View: related entries
+                // Frontend View: related entries / previous entry / next entry
+                $varPrefixLC = '_' . strtolower($templateKey);
+                $varPrefixUC = '_' . strtoupper($templateKey);
                 foreach ($this->arrEntries as $key => $arrEntry) {
                     if(($arrEntry['entryDurationStart'] < $intToday && $arrEntry['entryDurationEnd'] > $intToday) || $arrEntry['entryDurationType'] == 1) {
                         $objInputfields = new MediaDirectoryInputfield(intval($arrEntry['entryFormId']),false,$arrEntry['entryTranslationStatus'], $this->moduleName);
-                        $objInputfields->moduleNameLC .= '_related';
-                        $objInputfields->moduleLangVar .= '_RELATED';
+                        $objInputfields->moduleNameLC .= $varPrefixLC;
+                        $objInputfields->moduleLangVar .= $varPrefixUC;
                         $objInputfields->listInputfields($objTpl, 3, intval($arrEntry['entryId']));
 
                         if(intval($arrEntry['entryAddedBy']) != 0) {
@@ -949,24 +951,24 @@ JSCODE;
                             }
                         } catch (MediaDirectoryEntryException $e) {}
                         $objTpl->setVariable(array(
-                            $this->moduleLangVar.'_RELATED_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
-                            $this->moduleLangVar.'_RELATED_ENTRY_ID' =>  $arrEntry['entryId'],
-                            $this->moduleLangVar.'_RELATED_ENTRY_TITLE' => contrexx_raw2xhtml($arrEntry['entryFields'][0]),
-                            $this->moduleLangVar.'_RELATED_ENTRY_TITLE_URL_ENCODED' => urlencode($arrEntry['entryFields'][0]),
-                            $this->moduleLangVar.'_RELATED_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
-                            $this->moduleLangVar.'_RELATED_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
-                            $this->moduleLangVar.'_RELATED_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
-                            $this->moduleLangVar.'_RELATED_ENTRY_HITS' =>  $arrEntry['entryHits'],
-                            $this->moduleLangVar.'_RELATED_ENTRY_POPULAR_HITS' =>  $arrEntry['entryPopularHits'],
-                            $this->moduleLangVar.'_RELATED_ENTRY_DETAIL_URL' => $strDetailUrl,
-                            'TXT_'.$this->moduleLangVar.'_RELATED_ENTRY_DETAIL' =>  $_ARRAYLANG['TXT_MEDIADIR_DETAIL'],
+                            $this->moduleLangVar . $varPrefixUC . '_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
+                            $this->moduleLangVar . $varPrefixUC . '_ENTRY_ID' =>  $arrEntry['entryId'],
+                            $this->moduleLangVar . $varPrefixUC . '_ENTRY_TITLE' => contrexx_raw2xhtml($arrEntry['entryFields'][0]),
+                            $this->moduleLangVar . $varPrefixUC . '_ENTRY_TITLE_URL_ENCODED' => urlencode($arrEntry['entryFields'][0]),
+                            $this->moduleLangVar . $varPrefixUC . '_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
+                            $this->moduleLangVar . $varPrefixUC . '_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
+                            $this->moduleLangVar . $varPrefixUC . '_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
+                            $this->moduleLangVar . $varPrefixUC . '_ENTRY_HITS' =>  $arrEntry['entryHits'],
+                            $this->moduleLangVar . $varPrefixUC . '_ENTRY_POPULAR_HITS' =>  $arrEntry['entryPopularHits'],
+                            $this->moduleLangVar . $varPrefixUC . '_ENTRY_DETAIL_URL' => $strDetailUrl,
+                            'TXT_'.$this->moduleLangVar . $varPrefixUC . '_ENTRY_DETAIL' =>  $_ARRAYLANG['TXT_MEDIADIR_DETAIL'],
                         ));
 
                         foreach ($arrEntry['entryFields'] as $key => $strFieldValue) {
                             $intPos = $key+1;
 
                             $objTpl->setVariable(array(
-                                'MEDIADIR_RELATED_ENTRY_FIELD_'.$intPos.'_POS' => substr($strFieldValue, 0, 255),
+                                $this->moduleLangVar . $varPrefixUC . '_ENTRY_FIELD_'.$intPos.'_POS' => substr($strFieldValue, 0, 255),
                             ));
                         }
 
