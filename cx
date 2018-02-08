@@ -1058,7 +1058,7 @@ exit
 REM Check if bash script is present
 DIR /b /a-d |find /v "." |find "cx" >nul
 if %errorlevel% NEQ 0 (
-    docker run --rm --name clx-win-wrapper -v %cd%/:/root cloudrexx/ubuntu bash -c "cd /root && wget -q https://raw.githubusercontent.com/Cloudrexx/cloudrexx/master/cx && chmod +x cx"
+    docker run --rm --name clx-win-wrapper -v "%cd%/":/root cloudrexx/ubuntu bash -c "cd /root && wget -q https://raw.githubusercontent.com/Cloudrexx/cloudrexx/master/cx && chmod +x cx"
 )
 
 SETLOCAL ENABLEEXTENSIONS ENABLEDELAYEDEXPANSION
