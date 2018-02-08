@@ -362,7 +362,7 @@ function cmd_envs {
         list)
             local containerlist
             if [[ "${ARGUMENTS["dir"]}" != "" ]]; then
-                containerlist=$(while read -r container; do if [[ "$(docker inspect "$container" | grep "${ARGUMENTS["dir"]}:")" != "" ]]; then echo "$container"; fi done <<< $(docker ps --format '{{.Names}}'))
+                containerlist=$(while read -r container; do if [[ "$(docker inspect "$container" | grep "${ARGUMENTS["dir"]}:")" != "" ]]; then echo "$container"; fi done <<< "$(docker ps --format '{{.Names}}')")
             else
                 containerlist=$(dockerexec ps -f "name=<container-prefix>" -f "network=<proxy-network>" --format "{{.Names}}" | grep web)
             fi
@@ -521,9 +521,16 @@ function cmd_env {
                 working_directory="${ARGUMENTS["proxy-host-dir"]}"
             fi
             local environments
-            ARGUMENTS["dir"]="$working_directory"
-            ARGUMENTS["real"]=true
-            environments=$(cmd_envs list)
+            if [[ "${ARGUMENTS["name"]}" != "" ]]; then
+                environments=(${ARGUMENTS["name"]})
+            else
+                ARGUMENTS["dir"]="$working_directory"
+                ARGUMENTS["real"]=true
+                IFS=$'\n'
+                set -f
+                environments=($(cmd_envs list))
+                set +f
+            fi
             while read -r environment; do
                 echo "Shutting down environment clxenv$environment"
                 if [[ "${ARGUMENTS["purge"]}" == true ]]; then
@@ -531,7 +538,7 @@ function cmd_env {
                 else
                     docker-compose --project-name "$environment" down
                 fi
-            done <<< "$environments"
+            done <<< "${environments[@]}"
             ;;
         restart)
             cmd_env down
