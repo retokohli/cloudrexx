@@ -481,7 +481,12 @@ function cmd_env {
     case "$1" in
         init)
             if [[ ${ARGUMENTS["yes"]} != true ]]; then
-                echo "This will install Cloudrexx in the current directory ($(pwd))"
+                local working_directory
+                working_directory="$PWD"
+                if [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
+                    working_directory="${ARGUMENTS["proxy-host-dir"]}"
+                fi
+                echo "This will install Cloudrexx in the current directory ($working_directory)"
                 read -p "Continue [Yn]? " -n 1 -r
                 echo ""
                 if [[ "$REPLY" != "" ]] && ! [[ "$REPLY" =~ ^[Yy]$ ]]; then
