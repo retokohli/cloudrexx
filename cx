@@ -496,9 +496,9 @@ function cmd_env {
                 git init -q
                 git remote add origin ${ARGUMENTS["source-repo"]}
                 if [[ ${ARGUMENTS["silent"]} == true ]]; then
-                    git fetch -q
+                    git fetch --tags -q
                 else
-                    git fetch
+                    git fetch --tags
                 fi
                 git checkout -t -f "origin/${ARGUMENTS["source-branch"]}"
                 # assume ./tmp/* and ./config/* are unchanged
