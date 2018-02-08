@@ -132,6 +132,7 @@ Synopsis:
 
 Available options are:
     --real              Expects environment name to be docker-compose's project name"
+                    ;;
                 shell)
                     echo "This command opens an interactive shell of the NGINX proxy docker container.
 
