@@ -801,6 +801,21 @@ class MediaDirectory extends MediaDirectoryLibrary
             $this->metaDescription = $firstInputfieldValue;
         }
 
+        // parse related entries
+        $this->parseRelatedEntries($objEntry, $intEntryId, $intCategoryId, $intLevelId);
+    }
+
+    /**
+     * Parse related entries in template block mediadirRelatedList.
+     * See (@see fetchMediaDirListConfigFromTemplate) for a list of functional
+     * placeholders to be used in the template.
+     *
+     * @param   MediaDirectoryEntry $objEntry   Instance of current MediaDirectoryEntry
+     * @param   integer $intEntryId ID of the currently processing entry
+     * @param   integer $intCategoryId ID of the currently selected category
+     * @param   integer $intLevelId ID of the currently selected level
+     */
+    protected function parseRelatedEntries($objEntry, $intEntryId, $intCategoryId = 0, $intLevelId = 0) {
         // check if we shall parse any related entries
         if (!$this->_objTpl->blockExists($this->moduleNameLC.'RelatedList')) {
             return;
@@ -851,7 +866,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         $objEntry->setStrBlockName($this->moduleNameLC.'RelatedListEntry');
 
         // prarse related entries
-        $objEntry->listEntries($this->_objTpl, 5);
+        $objEntry->listEntries($this->_objTpl, 5, 'related');
     }
 
 
