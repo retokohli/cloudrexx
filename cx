@@ -615,14 +615,14 @@ function cmd_env {
                 environments=($(cmd_envs list))
                 set +f
             fi
-            while read -r environment; do
+            for environment in "${environments[@]}"; do
                 echo "Shutting down environment clxenv$environment"
                 if [[ "${ARGUMENTS["purge"]}" == true ]]; then
                     docker-compose --project-name "$environment" down -v
                 else
                     docker-compose --project-name "$environment" down
                 fi
-            done <<< "${environments[@]}"
+            done
             ;;
         restart)
             cmd_env down
