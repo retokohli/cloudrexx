@@ -2,7 +2,7 @@
 Cloudrexx is an open source PHP based web customer experience management system released under the GNU AGPL.
 
 ## Installation (automated) ##
-Please follow the instructions on https://www.cloudrexx.com/de/Mehr/Community/Entwicklung/Tutorials/Environment-Setup to easily setup one or more local Cloudrexx installations based on Docker.
+Please follow the instructions on [https://www.cloudrexx.com/getting-started](https://www.cloudrexx.com/getting-started) to easily setup one or more local Cloudrexx installations based on Docker.
 
 For Unix based systems with Docker and Docker-Compose the following bash command should install Cloudrexx in the current directory:
 
@@ -11,7 +11,7 @@ wget https://raw.githubusercontent.com/Cloudrexx/cloudrexx/master/cx && chmod +x
 ```
 
 ## Installation (manual) ##
-Manual installation can be done according to https://wiki.cloudrexx.com/Manual_Installation
+Manual installation can be done according to [https://wiki.cloudrexx.com/Manual_Installation](https://wiki.cloudrexx.com/Manual_Installation)
 
 ## Bugtracker ##
 Bugs are tracked on [bugs.cloudrexx.com](http://bugs.cloudrexx.com).
@@ -23,8 +23,8 @@ Bugs are tracked on [bugs.cloudrexx.com](http://bugs.cloudrexx.com).
 
 ## License ##
 Cloudrexx
-http://www.cloudrexx.com
-Cloudrexx AG 2007-2017
+[http://www.cloudrexx.com](http://www.cloudrexx.com)
+Cloudrexx AG 2007-2018
 
 According to our dual licensing model, this program can be used either under the terms of the GNU Affero General Public License, version 3, or under a proprietary license.
 
