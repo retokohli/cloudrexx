@@ -922,7 +922,11 @@ function regex_replace {
 function phpexec {
     # TODO: Check if we should run async
     if type docker >/dev/null 2>&1; then
-        dockerexec exec "<web-container>" php index.php "$@"
+        if [ ! "$(dockerexec ps -q -f "name=<web-container>")" ]; then
+            php index.php "$@"
+        else
+            dockerexec exec "<web-container>" php index.php "$@"
+        fi
     else
         php index.php "$@"
     fi
