@@ -122,6 +122,7 @@ Synopsis:
 
 Available options are:
     --dir=<directory>   Shows the name of the environment(s) tied to a directory.
+    --all               Also lists environments which are not attached to the proxy.
     --real              Shows docker-compose's project name instead of environment's name"
                     ;;
                 locate)
@@ -408,6 +409,8 @@ function cmd_envs {
             local containerlist
             if [[ "${ARGUMENTS["dir"]}" != "" ]]; then
                 containerlist=$(while read -r container; do if [[ "$(docker inspect "$container" | grep "${ARGUMENTS["dir"]}:")" != "" ]]; then echo "$container"; fi done <<< "$(docker ps --format '{{.Names}}')")
+            elif [[ ${ARGUMENTS["all"]} ]]; then
+                containerlist=$(dockerexec ps -f "name=<container-prefix>" --format "{{.Names}}" | grep web)
             else
                 containerlist=$(dockerexec ps -f "name=<container-prefix>" -f "network=<proxy-network>" --format "{{.Names}}" | grep web)
             fi
