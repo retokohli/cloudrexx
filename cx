@@ -124,6 +124,14 @@ Available options are:
     --dir=<directory>   Shows the name of the environment(s) tied to a directory.
     --real              Shows docker-compose's project name instead of environment's name"
                     ;;
+                locate)
+                    echo "Shows the working directory of an environment.
+
+Synopsis:
+    ./cx envs locate <environment> [<options>]
+
+Available options are:
+    --real              Expects environment name to be docker-compose's project name"
                 shell)
                     echo "This command opens an interactive shell of the NGINX proxy docker container.
 
@@ -148,6 +156,7 @@ Available subcommands are:
     shell       Interactive shell of the proxy container
     debug       Shows NGINX logs
     list        Lists all environments that are up
+    locate      Show an environments working directory
 
 For more info about a subcommand type ./cx help envs <subcommand>";
                     ;;
@@ -363,6 +372,17 @@ function cmd_envs {
             fi
             containerlist="${containerlist//"_web_1"/}"
             echo "$containerlist"
+            ;;
+        locate)
+            local mountline environment
+            environment=$2
+            if [[ ${ARGUMENTS["real"]} != true ]]; then
+                environment="clxenv$2${ARGUMENTS["root-domain"]//./}"
+            fi
+            mountline=$(docker inspect "${environment}_web_1" | grep ":/var/www/html:")
+            REGEX="\"([^:]+):"
+            [[ "$mountline" =~ $REGEX ]]
+            echo "${BASH_REMATCH[1]}"
             ;;
         *)
             (>&2 echo "No such subcommand")
