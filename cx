@@ -340,8 +340,52 @@ function cmd_envs {
             dockerexec run --rm --name "<proxy-container>" -e "HTTPS_METHOD=nohttps" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
             ;;
         down)
+            local environments env_dir
+            ARGUMENTS["real"]=true
+            IFS=$'\n'
+            set -f
+            environments=($(cmd_envs list))
+            set +f
+            if [ "${#environments[@]}" -gt "0" ]; then
+                if [[ ${ARGUMENTS["yes"]} != true ]]; then
+                    echo "The following environments are still up. Shall they be shut down?"
+                    for environment in "${environments[@]}"; do
+                        echo "    $environment"
+                    done
+                    read -p "Shut environments down? [Yn]? " -n 1 -r
+                    echo ""
+                fi
+                if [[ ${ARGUMENTS["yes"]} ]] || [[ "$REPLY" == "" ]] || [[ "$REPLY" =~ ^[Yy]$ ]]; then
+                    if [ "${#environments[@]}" -eq "1" ]; then
+                        ARGUMENTS["real"]=true
+                        env_dir=$(cmd_envs locate "${environments[0]}")
+                    fi
+                    for environment in "${environments[@]}"; do
+                        ARGUMENTS["name"]=$environment
+                        cmd_env down
+                    done
+                else
+                    if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                        echo "Aborting"
+                    fi
+                    exit
+                fi
+            fi
             dockerexec stop "<proxy-container>"
             dockerexec network rm "<proxy-network>"
+            if [ "${#environments[@]}" -eq "1" ]; then
+                if [[ ${ARGUMENTS["yes"]} != true ]]; then
+                    echo "Should the environment \"${environments[0]}\" be restarted as a standalone environment?"
+                    read -p "Reconfigure and start environment? [Yn]? " -n 1 -r
+                    echo ""
+                fi
+                if [[ ${ARGUMENTS["yes"]} ]] || [[ "$REPLY" == "" ]] || [[ "$REPLY" =~ ^[Yy]$ ]]; then
+                    cd "$env_dir"
+                    cmd_env config
+                    cmd_env up
+                    cd - > /dev/null
+                fi
+            fi
             ;;
         restart)
             cmd_envs down
