@@ -338,8 +338,44 @@ For more info about a command type ./cx help <command>"
 function cmd_envs {
     case "$1" in
         up)
+            local environments env_dirs
+            ARGUMENTS["real"]=true
+            ARGUMENTS["all"]=true
+            IFS=$'\n'
+            set -f
+            environments=($(cmd_envs list))
+            set +f
+            # TODO: Only list environments on the same port
+            if [ "${#environments[@]}" -gt "0" ]; then
+                if [[ ${ARGUMENTS["yes"]} != true ]]; then
+                    echo "The following environments are up. Shall they be adopted?"
+                    for environment in "${environments[@]}"; do
+                        echo "    $environment"
+                    done
+                    read -p "Adopt environments? [Yn]? " -n 1 -r
+                    echo ""
+                fi
+                if [[ ${ARGUMENTS["yes"]} ]] || [[ "$REPLY" == "" ]] || [[ "$REPLY" =~ ^[Yy]$ ]]; then
+                    for environment in "${environments[@]}"; do
+                        env_dirs+=($(cmd_envs locate "$environment"))
+                        ARGUMENTS["name"]=$environment
+                        cmd_env down
+                    done
+                else
+                    if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                        echo "Aborting"
+                    fi
+                    exit
+                fi
+            fi
             dockerexec network create "<proxy-network>"
             dockerexec run --rm --name "<proxy-container>" -e "HTTPS_METHOD=nohttps" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
+            for env_dir in "${env_dirs[@]}"; do
+                cd "$env_dir"
+                cmd_env config
+                cmd_env up
+                cd - > /dev/null
+            done
             ;;
         down)
             local environments env_dir
