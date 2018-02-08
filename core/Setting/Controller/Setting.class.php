@@ -96,6 +96,7 @@ class Setting{
     const TYPE_DATE = 'date';
     const TYPE_DATETIME = 'datetime';
     const TYPE_IMAGE  = 'image';
+    const TYPE_FILECONTENT = 'file';
     // Not implemented
     //const TYPE_SUBMIT = 'submit';
     /**
