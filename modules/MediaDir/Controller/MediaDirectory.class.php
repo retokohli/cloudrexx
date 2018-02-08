@@ -892,8 +892,6 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         $latest = null;
-        $limit = $this->arrSettings['settingsPagingNumEntries'];
-        $offset = null;
         $formId = null;
         $categoryId = null;
         $levelId = null;
@@ -902,12 +900,6 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         if (isset($config['list']['latest'])) {
             $latest = $config['list']['latest'];
-        }
-        if (isset($config['list']['limit'])) {
-            $limit = $config['list']['limit'];
-        }
-        if (isset($config['list']['offset'])) {
-            $offset = $config['list']['offset'];
         }
         if (isset($config['filter']['form'])) {
             $formId = $config['filter']['form'];
@@ -920,7 +912,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         // fetch related entries
-        $objEntry->getEntries(null, $levelId, $categoryId, null, $latest, null, true, $offset, $limit, null, null, $formId);
+        $objEntry->getEntries(null, $levelId, $categoryId, null, $latest, null, true, null, 'n', null, null, $formId);
 
         // If the list contains less than two entries, there is no point
         // in proceeding as the previous entry would be the same as the
@@ -954,7 +946,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         // fetch previous entry
-        $objEntry->getEntries($previousEntryId, $levelId, $categoryId, null, $latest, null, true, $offset, $limit, null, null, $formId);
+        $objEntry->getEntries($previousEntryId, $levelId, $categoryId, null, $latest, null, true, null, 'n', null, null, $formId);
 
         // set mediadirPreviousEntry tempalte block to be parsed
         $objEntry->setStrBlockName($this->moduleNameLC.'PreviousEntry');
@@ -980,8 +972,6 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         $latest = null;
-        $limit = $this->arrSettings['settingsPagingNumEntries'];
-        $offset = null;
         $formId = null;
         $categoryId = null;
         $levelId = null;
@@ -990,12 +980,6 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         if (isset($config['list']['latest'])) {
             $latest = $config['list']['latest'];
-        }
-        if (isset($config['list']['limit'])) {
-            $limit = $config['list']['limit'];
-        }
-        if (isset($config['list']['offset'])) {
-            $offset = $config['list']['offset'];
         }
         if (isset($config['filter']['form'])) {
             $formId = $config['filter']['form'];
@@ -1008,7 +992,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         // fetch related entries
-        $objEntry->getEntries(null, $levelId, $categoryId, null, $latest, null, true, $offset, $limit, null, null, $formId);
+        $objEntry->getEntries(null, $levelId, $categoryId, null, $latest, null, true, null, 'n', null, null, $formId);
 
         // if the list contains less than two entries, there is no point
         // in proceeding as the next entry would be the same as the
@@ -1042,7 +1026,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         // fetch next entry
-        $objEntry->getEntries($nextEntryId, $levelId, $categoryId, null, $latest, null, true, $offset, $limit, null, null, $formId);
+        $objEntry->getEntries($nextEntryId, $levelId, $categoryId, null, $latest, null, true, null, 'n', null, null, $formId);
 
         // set mediadirNextEntry tempalte block to be parsed
         $objEntry->setStrBlockName($this->moduleNameLC.'NextEntry');
