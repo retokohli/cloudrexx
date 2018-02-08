@@ -118,13 +118,30 @@ Synopsis:
                     echo "Shows a list of all attached environments.
 
 Synopsis:
-    ./cx envs list"
+    ./cx envs list [<options>]
+
+Available options are:
+    --dir=<directory>   Shows the name of the environment(s) tied to a directory.
+    --all               Also lists environments which are not attached to the proxy.
+    --real              Shows docker-compose's project name instead of environment's name"
+                    ;;
+                locate)
+                    echo "Shows the working directory of an environment.
+
+Synopsis:
+    ./cx envs locate <environment> [<options>]
+
+Available options are:
+    --real              Expects environment name to be docker-compose's project name"
                     ;;
                 shell)
-                    echo "This command opens an interactive shell of the PHP docker container for this environment.
+                    echo "This command opens an interactive shell of the NGINX proxy docker container.
 
 Synopsis
-    ./cx envs shell"
+    ./cx envs shell [<options>]
+
+Available options are:
+    --wrapper       Opens an interactive shell of the  Windows wrapper container instead (Windows only)"
                     ;;
                 *)
                     echo "This command manages the environment for multiple Cloudrexx installations on one host.
@@ -141,6 +158,7 @@ Available subcommands are:
     shell       Interactive shell of the proxy container
     debug       Shows NGINX logs
     list        Lists all environments that are up
+    locate      Show an environments working directory
 
 For more info about a subcommand type ./cx help envs <subcommand>";
                     ;;
@@ -236,6 +254,7 @@ Synopsis
     ./cx env config [<options>]
 
 Available options are:
+    --show                          Displays current configuration and exits.
     --yes                           Answer all questions with yes / default. Use with care!
     --silent                        Do not output non-necessary messages
     --interactive                   Ask for each value instead of using default behavior
@@ -319,12 +338,92 @@ For more info about a command type ./cx help <command>"
 function cmd_envs {
     case "$1" in
         up)
+            local environments env_dirs
+            ARGUMENTS["real"]=true
+            ARGUMENTS["all"]=true
+            IFS=$'\n'
+            set -f
+            environments=($(cmd_envs list))
+            set +f
+            # TODO: Only list environments on the same port
+            if [ "${#environments[@]}" -gt "0" ]; then
+                if [[ ${ARGUMENTS["yes"]} != true ]]; then
+                    echo "The following environments are up. Shall they be adopted?"
+                    for environment in "${environments[@]}"; do
+                        echo "    $environment"
+                    done
+                    read -p "Adopt environments? [Yn]? " -n 1 -r
+                    echo ""
+                fi
+                if [[ ${ARGUMENTS["yes"]} ]] || [[ "$REPLY" == "" ]] || [[ "$REPLY" =~ ^[Yy]$ ]]; then
+                    for environment in "${environments[@]}"; do
+                        env_dirs+=($(cmd_envs locate "$environment"))
+                        ARGUMENTS["name"]=$environment
+                        cmd_env down
+                    done
+                else
+                    if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                        echo "Aborting"
+                    fi
+                    exit
+                fi
+            fi
             dockerexec network create "<proxy-network>"
             dockerexec run --rm --name "<proxy-container>" -e "HTTPS_METHOD=nohttps" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
+            for env_dir in "${env_dirs[@]}"; do
+                cd "$env_dir"
+                cmd_env config
+                cmd_env up
+                cd - > /dev/null
+            done
             ;;
         down)
+            local environments env_dir
+            ARGUMENTS["real"]=true
+            IFS=$'\n'
+            set -f
+            environments=($(cmd_envs list))
+            set +f
+            if [ "${#environments[@]}" -gt "0" ]; then
+                if [[ ${ARGUMENTS["yes"]} != true ]]; then
+                    echo "The following environments are still up. Shall they be shut down?"
+                    for environment in "${environments[@]}"; do
+                        echo "    $environment"
+                    done
+                    read -p "Shut environments down? [Yn]? " -n 1 -r
+                    echo ""
+                fi
+                if [[ ${ARGUMENTS["yes"]} ]] || [[ "$REPLY" == "" ]] || [[ "$REPLY" =~ ^[Yy]$ ]]; then
+                    if [ "${#environments[@]}" -eq "1" ]; then
+                        ARGUMENTS["real"]=true
+                        env_dir=$(cmd_envs locate "${environments[0]}")
+                    fi
+                    for environment in "${environments[@]}"; do
+                        ARGUMENTS["name"]=$environment
+                        cmd_env down
+                    done
+                else
+                    if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                        echo "Aborting"
+                    fi
+                    exit
+                fi
+            fi
             dockerexec stop "<proxy-container>"
             dockerexec network rm "<proxy-network>"
+            if [ "${#environments[@]}" -eq "1" ]; then
+                if [[ ${ARGUMENTS["yes"]} != true ]]; then
+                    echo "Should the environment \"${environments[0]}\" be restarted as a standalone environment?"
+                    read -p "Reconfigure and start environment? [Yn]? " -n 1 -r
+                    echo ""
+                fi
+                if [[ ${ARGUMENTS["yes"]} ]] || [[ "$REPLY" == "" ]] || [[ "$REPLY" =~ ^[Yy]$ ]]; then
+                    cd "$env_dir"
+                    cmd_env config
+                    cmd_env up
+                    cd - > /dev/null
+                fi
+            fi
             ;;
         restart)
             cmd_envs down
@@ -344,10 +443,30 @@ function cmd_envs {
             ;;
         list)
             local containerlist
-            containerlist=$(dockerexec ps -f "name=<container-prefix>" -f "network=<proxy-network>" --format "{{.Names}}" | grep web)
-            containerlist="${containerlist//"clxenv"/}"
-            containerlist="${containerlist//"${ARGUMENTS["root-domain"]//./}_web_1"/}"
-            echo "${containerlist//"_web_1"/}"
+            if [[ "${ARGUMENTS["dir"]}" != "" ]]; then
+                containerlist=$(while read -r container; do if [[ "$(docker inspect "$container" | grep "${ARGUMENTS["dir"]}:")" != "" ]]; then echo "$container"; fi done <<< "$(docker ps --format '{{.Names}}')")
+            elif [[ ${ARGUMENTS["all"]} ]]; then
+                containerlist=$(dockerexec ps -f "name=<container-prefix>" --format "{{.Names}}" | grep web)
+            else
+                containerlist=$(dockerexec ps -f "name=<container-prefix>" -f "network=<proxy-network>" --format "{{.Names}}" | grep web)
+            fi
+            if ! [[ ${ARGUMENTS["real"]} ]]; then
+                containerlist="${containerlist//"clxenv"/}"
+                containerlist="${containerlist//"${ARGUMENTS["root-domain"]//./}_web_1"/}"
+            fi
+            containerlist="${containerlist//"_web_1"/}"
+            echo "$containerlist"
+            ;;
+        locate)
+            local mountline environment
+            environment=$2
+            if [[ ${ARGUMENTS["real"]} != true ]]; then
+                environment="clxenv$2${ARGUMENTS["root-domain"]//./}"
+            fi
+            mountline=$(docker inspect "${environment}_web_1" | grep ":/var/www/html:")
+            REGEX="\"([^:]+):"
+            [[ "$mountline" =~ $REGEX ]]
+            echo "${BASH_REMATCH[1]}"
             ;;
         *)
             (>&2 echo "No such subcommand")
@@ -480,11 +599,30 @@ function cmd_env {
             dockerexec exec "<db-container>" bash -c "while ! echo | mysql -u${CONFIG["db-user"]} -p${CONFIG["db-pass"]} &> /dev/null; do sleep 1; done"
             ;;
         down)
-            if [[ "${ARGUMENTS["purge"]}" == true ]]; then
-                dockercomposeexec down -v
-            else
-                dockercomposeexec down
+            local working_directory
+            working_directory="$PWD"
+            if [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
+                working_directory="${ARGUMENTS["proxy-host-dir"]}"
             fi
+            local environments
+            if [[ "${ARGUMENTS["name"]}" != "" ]]; then
+                environments=(${ARGUMENTS["name"]})
+            else
+                ARGUMENTS["dir"]="$working_directory"
+                ARGUMENTS["real"]=true
+                IFS=$'\n'
+                set -f
+                environments=($(cmd_envs list))
+                set +f
+            fi
+            while read -r environment; do
+                echo "Shutting down environment clxenv$environment"
+                if [[ "${ARGUMENTS["purge"]}" == true ]]; then
+                    docker-compose --project-name "$environment" down -v
+                else
+                    docker-compose --project-name "$environment" down
+                fi
+            done <<< "${environments[@]}"
             ;;
         restart)
             cmd_env down
@@ -820,7 +958,11 @@ function regex_replace {
 function phpexec {
     # TODO: Check if we should run async
     if type docker >/dev/null 2>&1; then
-        dockerexec exec "<web-container>" php index.php "$@"
+        if [ ! "$(dockerexec ps -q -f "name=<web-container>")" ]; then
+            php index.php "$@"
+        else
+            dockerexec exec "<web-container>" php index.php "$@"
+        fi
     else
         php index.php "$@"
     fi
@@ -877,7 +1019,7 @@ case "${COMMANDS[0]}" in
             dockerexec logs -f "<web-container>"
             exit
         elif [[ ${ARGUMENTS["request"]} ]]; then
-            grep "$(tail -n1 tmp/log/dbg.log | grep -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log
+            grep "$(tail -n1 tmp/log/dbg.log | grep -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log | less
             exit
         fi
         tac tmp/log/dbg.log | grep -m1 "initialization failed"
@@ -931,6 +1073,12 @@ REM Merge new path and replace backslashes and colons
 set string=%new_var%%string:~2%
 set string=%string:\=/%
 set string=/host_mnt/%string::/=/%
+
+REM Special case: user wants to start interactive shell to wrapper container
+if "%*" == "envs shell --wrapper" (
+    docker run --rm -ti --name clx-win-wrapper -v "%cd%/":/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu sh -c "cd /root && bash"
+    goto :EOF
+)
 
 REM Pass everything through our wrapper
 docker run --rm -ti --name clx-win-wrapper -v "%cd%/":/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu bash -c "cd /root && ./cx --proxy-host-dir='%string%' %*"
