@@ -528,6 +528,7 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_SERIES_PATTERN_APPONTMENTS'       => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS'],
             'TXT_'.$this->moduleLangVar.'_SERIES_PATTERN_ENDS'              => $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_ENDS'],
             'TXT_'.$this->moduleLangVar.'_EVENT_SEND_INVITATION'            => $objEvent->invitationSent == 0 ? $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION'] : $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_AGAIN_INVITATION'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_SEND_INVITATION_COUNT'      => $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_COUNT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_SEND_INVITATION_TO'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO'],
             'TXT_'.$this->moduleLangVar.'_EVENT_SEND_INVITATION_TO_ALL'     => $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_ALL'],
             'TXT_'.$this->moduleLangVar.'_EVENT_SEND_INVITATION_TO_TOOLTIP' => $_ARRAYLANG['TXT_CALENDAR_EVENT_SEND_INVITATION_TO_TOOLTIP'],
