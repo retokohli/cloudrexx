@@ -532,7 +532,8 @@ function cmd_env {
                 echo "Loading docker containers"
             fi
             local result
-            if ! result="$(cmd_env up)"; then
+            result="$(cmd_env up)"
+            if [[ "$?" != "0" ]]; then
                 echo "$result"
                 echo "In order to retry, please run ./cx env init --skip-scripts --skip-source"
                 exit
@@ -1023,13 +1024,14 @@ function dockercomposeexec {
 # Helper functions #
 ####################
 
+# Usage: if runs_as_proxy; then
 function runs_as_proxy {
     if [[ "$PROXY_HOST_DIR" != "" ]]; then
-        exit 0
+        return 0
     elif [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
-        exit 0
+        return 0
     else
-        exit 1
+        return 1
     fi
 }
 
@@ -1044,6 +1046,7 @@ function get_real_pwd {
     echo $working_directory
 }
 
+# Usage: if isPortFree 123; then
 function isPortFree {
     local hostname
     hostname="localhost"
@@ -1053,9 +1056,9 @@ function isPortFree {
         hostname="$((16#${route[2]:6:2})).$((16#${route[2]:4:2})).$((16#${route[2]:2:2})).$((16#${route[2]:0:2}))"
     fi
     if (echo >"/dev/tcp/$hostname/$1") &>/dev/null; then
-        exit 1
+        return 1
     else
-        exit 0
+        return 0
     fi
 }
 
