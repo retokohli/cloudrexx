@@ -340,6 +340,12 @@ For more info about a command type ./cx help <command>"
 function cmd_envs {
     case "$1" in
         up)
+            if ! isPortFree ${ARGUMENTS["port"]}; then
+                if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                    echo "TCP port ${ARGUMENTS["port"]} is in use. Stop any service running on this port and try again."
+                fi
+                exit 1
+            fi
             local environments env_dirs
             ARGUMENTS["real"]=true
             ARGUMENTS["all"]=true
@@ -496,7 +502,7 @@ function cmd_env {
             if [[ ${ARGUMENTS["skip-source"]} != true ]]; then
                 # We do not simply clone because ./cx already exists
                 git init -q
-                git remote add origin ${ARGUMENTS["source-repo"]}
+                git remote add origin "${ARGUMENTS["source-repo"]}"
                 if [[ ${ARGUMENTS["silent"]} == true ]]; then
                     git fetch --tags -q
                 else
@@ -509,12 +515,12 @@ function cmd_env {
             fi
             if [[ ${ARGUMENTS["skip-scripts"]} != true ]]; then
                 if [[ ${ARGUMENTS["scripts-dir"]} != "" ]]; then
-                    ln -s ${ARGUMENTS["scripts-dir"]} "_meta"
+                    ln -s "${ARGUMENTS["scripts-dir"]}" "_meta"
                 else
                     if [[ ${ARGUMENTS["silent"]} == true ]]; then
-                        git clone -q ${ARGUMENTS["scripts-repo"]} --branch=${ARGUMENTS["scripts-branch"]} _meta
+                        git clone -q "${ARGUMENTS["scripts-repo"]}" --branch="${ARGUMENTS["scripts-branch"]}" _meta
                     else
-                        git clone ${ARGUMENTS["scripts-repo"]} --branch=${ARGUMENTS["scripts-branch"]} _meta
+                        git clone "${ARGUMENTS["scripts-repo"]}" --branch="${ARGUMENTS["scripts-branch"]}" _meta
                     fi
                 fi
             fi
@@ -525,8 +531,13 @@ function cmd_env {
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 echo "Loading docker containers"
             fi
-            cmd_env up
-            if [[ $(runs_as_proxy) ]]; then
+            local result
+            if ! result="$(cmd_env up)"; then
+                echo "$result"
+                echo "In order to retry, please run ./cx env init --skip-scripts --skip-source"
+                exit
+            fi
+            if runs_as_proxy; then
                 if [[ ${ARGUMENTS["skip-source"]} != true || ${ARGUMENTS["yes"]} == true ]]; then
                     dockerexec exec "<web-container>" chown -R www-data /var/www/html
                     dockerexec exec "<web-container>" chmod g+w -R /var/www/html
@@ -588,6 +599,13 @@ function cmd_env {
             fi
             ;;
         up)
+            get_config_array
+            if ! isPortFree "${CONFIG["port"]}"; then
+                if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                    echo "TCP port ${CONFIG["port"]} is in use. Stop any service running on this port and try again."
+                fi
+                exit 1
+            fi
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 dockercomposeexec up -d
                 echo "Waiting for database server to come up..."
@@ -670,7 +688,7 @@ function cmd_env {
                 return
             fi
             if [[ ${ARGUMENTS["force"]} != true && $DB_UPDATE_NECESSARY != true && ${ARGUMENTS["silent"]} != true ]]; then
-                echo "DB update not necessary, run ./cx env update --db to force db reload"
+                echo "DB update not necessary, run ./cx env update --db if you want to force db reload"
                 return
             fi
 
@@ -906,7 +924,7 @@ function set_config_array {
     # replace hostname, php- and db-image
     local working_directory
     working_directory="."
-    if [[ $(runs_as_proxy) ]]; then
+    if runs_as_proxy; then
         working_directory="$(get_real_pwd)"
     fi
     FILE_CONTENTS=${FILE_CONTENTS//"<cd>"/"$working_directory"}
@@ -1001,7 +1019,11 @@ function dockercomposeexec {
     docker-compose --project-name "clxenv${CONFIG["hostname"]//./}" "$@"
 }
 
-function runs_on_proxy {
+####################
+# Helper functions #
+####################
+
+function runs_as_proxy {
     if [[ "$PROXY_HOST_DIR" != "" ]]; then
         exit 0
     elif [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
@@ -1020,6 +1042,21 @@ function get_real_pwd {
         working_directory="${ARGUMENTS["proxy-host-dir"]}"
     fi
     echo $working_directory
+}
+
+function isPortFree {
+    local hostname
+    hostname="localhost"
+    if runs_as_proxy; then
+        local route
+        route=($(cat /proc/net/route | grep -E "eth0\s*00000000"))
+        hostname="$((16#${route[2]:6:2})).$((16#${route[2]:4:2})).$((16#${route[2]:2:2})).$((16#${route[2]:0:2}))"
+    fi
+    if (echo >"/dev/tcp/$hostname/$1") &>/dev/null; then
+        exit 1
+    else
+        exit 0
+    fi
 }
 
 #####################
