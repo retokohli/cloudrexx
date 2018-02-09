@@ -259,6 +259,7 @@ Available options are:
     --yes                           Answer all questions with yes / default. Use with care!
     --silent                        Do not output non-necessary messages
     --interactive                   Ask for each value instead of using default behavior
+    --force-default                 Forces default (/automatic) configuration
     --db-host=<hostname>            Sets database host to <hostname>
     --db-name=<dbname>              Sets database name to <dbname>
     --db-user=<username>            Sets database user to <username>
@@ -791,17 +792,16 @@ SET FOREIGN_KEY_CHECKS = 1;"
             fi
             get_config_array
             declare -A CONFIG_OVERRIDE
-            if [ ${#CONFIG[@]} -eq 0 ]; then
+            if [ ${#CONFIG[@]} -eq 0 ] || [[ ${ARGUMENTS["force-default"]} == true ]] ; then
                 # load config, if its empty: load default config over it
                 for value in "${!ARGUMENTS[@]}"; do
                     CONFIG_OVERRIDE[$value]=${ARGUMENTS[$value]}
                 done
-            else
-                # else only load forced arguments over it
-                for value in "${!FORCED_ARGUMENTS[@]}"; do
-                    CONFIG_OVERRIDE[$value]=${FORCED_ARGUMENTS[$value]}
-                done
             fi
+            # load forced arguments over it
+            for value in "${!FORCED_ARGUMENTS[@]}"; do
+                CONFIG_OVERRIDE[$value]=${FORCED_ARGUMENTS[$value]}
+            done
             # loop over CONFIG_OVERRIDE and override all 
             for value in "${!CONFIG_OVERRIDE[@]}"; do
                 CONFIG[$value]=${CONFIG_OVERRIDE[$value]}
@@ -836,19 +836,28 @@ function get_config_array {
         return
     fi
     CONFIG=(
-        ["db-host"]=$(REGEX="DBCONFIG\['host'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
-        ["db-name"]=$(REGEX="DBCONFIG\['database'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
-        ["db-user"]=$(REGEX="DBCONFIG\['user'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
-        ["db-pass"]=$(REGEX="DBCONFIG\['password'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
-        ["db-prefix"]=$(REGEX="DBCONFIG\['tablePrefix'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
-        ["hostname"]=$(REGEX="CONFIG\['domainUrl'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $SETTINGS_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
+        ["db-host"]=""
+        ["db-name"]=""
+        ["db-user"]=""
+        ["db-pass"]=""
+        ["db-prefix"]=""
+        ["hostname"]=""
         ["cms-version"]=$(REGEX="CONFIG\['coreCmsVersion'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $SETTINGS_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
-        ["port"]=$(REGEX="CONFIG\['portFrontendHTTP'\]\ +=\ +([0-9]+);"; CFG=$(cat $SETTINGS_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
+        ["port"]=""
         ["php-version"]=""
         ["php-image"]=""
         ["db-image"]=""
         ["is-vhost"]=""
     )
+    if [[ ${ARGUMENTS["force-default"]} != true ]]; then
+        CONFIG["db-host"]=$(REGEX="DBCONFIG\['host'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
+        CONFIG["db-name"]=$(REGEX="DBCONFIG\['database'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
+        CONFIG["db-user"]=$(REGEX="DBCONFIG\['user'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
+        CONFIG["db-pass"]=$(REGEX="DBCONFIG\['password'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
+        CONFIG["db-prefix"]=$(REGEX="DBCONFIG\['tablePrefix'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $CONFIG_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
+        CONFIG["hostname"]=$(REGEX="CONFIG\['domainUrl'\]\ +=\ +(['\"])([^'\"]+)\1;"; CFG=$(cat $SETTINGS_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[2]}")
+        CONFIG["port"]=$(REGEX="CONFIG\['portFrontendHTTP'\]\ +=\ +([0-9]+);"; CFG=$(cat $SETTINGS_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
+    fi
 
     local proxy_present
     proxy_present=$(internal_dockerexec ps -q -f "name=<proxy-container>")
