@@ -264,6 +264,9 @@ class DbCommand extends Command {
     }
     
     protected function moveModel($sourceFolder, $destinationFolder, $force = false) {
+        if (!file_exists($sourceFolder)) {
+            return true;
+        }
         $sourceDirectory = new \RecursiveDirectoryIterator($sourceFolder);
         $sourceDirectoryIterator = new \RecursiveIteratorIterator($sourceDirectory);
         $sourceDirectoryRegexIterator = new \RegexIterator($sourceDirectoryIterator, '/^.+\.php$/i', \RegexIterator::GET_MATCH);

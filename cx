@@ -305,8 +305,9 @@ Synopsis
     ./cx debug [<options>]
 
 Available options are:
-    --web       Shows the log of the web docker container (Apache)
-    --request   Shows the log of the last request"
+    --web               Shows the log of the web docker container (Apache)
+    --request           Shows the log of the last request
+    --clear-usercache   Clears the user cache"
             ;;
         *)
             echo "Executes commands for Cloudrexx installations.
@@ -481,7 +482,12 @@ function cmd_env {
     case "$1" in
         init)
             if [[ ${ARGUMENTS["yes"]} != true ]]; then
-                echo "This will install Cloudrexx in the current directory ($(pwd))"
+                local working_directory
+                working_directory="$PWD"
+                if [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
+                    working_directory="${ARGUMENTS["proxy-host-dir"]}"
+                fi
+                echo "This will install Cloudrexx in the current directory ($working_directory)"
                 read -p "Continue [Yn]? " -n 1 -r
                 echo ""
                 if [[ "$REPLY" != "" ]] && ! [[ "$REPLY" =~ ^[Yy]$ ]]; then
@@ -848,6 +854,7 @@ function get_config_array {
             working_directory="${ARGUMENTS["proxy-host-dir"]}"
         fi
         working_directory=${working_directory//" "/""}
+        working_directory=${working_directory,,}
         CONFIG["hostname"]="${working_directory##*/}.${ARGUMENTS["root-domain"]}"
     fi
     if [[ "${CONFIG["php-version"]}" == "" ]]; then
@@ -961,7 +968,7 @@ function phpexec {
         if [ ! "$(dockerexec ps -q -f "name=<web-container>")" ]; then
             php index.php "$@"
         else
-            dockerexec exec "<web-container>" php index.php "$@"
+            dockerexec exec -ti "<web-container>" php index.php "$@"
         fi
     else
         php index.php "$@"
@@ -1021,6 +1028,9 @@ case "${COMMANDS[0]}" in
         elif [[ ${ARGUMENTS["request"]} ]]; then
             grep "$(tail -n1 tmp/log/dbg.log | grep -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log | less
             exit
+        elif [[ ${ARGUMENTS["clear-usercache"]} ]]; then
+            dockerexec exec "<web-container>" bash -c 'exec 3<>/dev/tcp/usercache/11211 && echo flush_all >&3 && read -u 3 msg_in && echo $msg_in'
+            exit
         fi
         tac tmp/log/dbg.log | grep -m1 "initialization failed"
         ;;
@@ -1057,7 +1067,7 @@ exit
 REM Check if bash script is present
 DIR /b /a-d |find /v "." |find "cx" >nul
 if %errorlevel% NEQ 0 (
-    docker run --rm --name clx-win-wrapper -v %cd%/:/root cloudrexx/ubuntu bash -c "cd /root && wget -q https://raw.githubusercontent.com/Cloudrexx/cloudrexx/master/cx && chmod +x cx"
+    docker run --rm --name clx-win-wrapper -v "%cd%/":/root cloudrexx/ubuntu bash -c "cd /root && wget -q https://raw.githubusercontent.com/Cloudrexx/cloudrexx/master/cx && chmod +x cx"
 )
 
 SETLOCAL ENABLEEXTENSIONS ENABLEDELAYEDEXPANSION
