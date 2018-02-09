@@ -589,15 +589,7 @@ function cmd_env {
                 phpexec Setting set Config -engine=Yaml -group=site forceProtocolFrontend http > /dev/null
                 phpexec Setting set Config -engine=Yaml -group=administrationArea forceProtocolBackend http > /dev/null
             fi
-            if [[ ${ARGUMENTS["silent"]} != true ]]; then
-                get_config_array
-                echo "Environment successfully initialized. It is available on http://${CONFIG["hostname"]}/"
-                if [[ ${CONFIG["is-vhost"]} == true ]]; then
-                    echo "phpMyAdmin is available at http://phpma.${CONFIG["hostname"]}/"
-                else
-                    echo "phpMyAdmin is available at http://${CONFIG["hostname"]}:8234/"
-                fi
-            fi
+            echo "$result"
             ;;
         up)
             get_config_array
@@ -616,6 +608,15 @@ function cmd_env {
                 dockercomposeexec up -d &> /dev/null
             fi
             dockerexec exec "<db-container>" bash -c "while ! echo | mysql -u${CONFIG["db-user"]} -p${CONFIG["db-pass"]} &> /dev/null; do sleep 1; done"
+            if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                echo "Environment successfully initialized. It is available at http://${CONFIG["hostname"]}/"
+                if [[ ${CONFIG["is-vhost"]} == true ]]; then
+                    echo "phpMyAdmin is available at http://phpma.${CONFIG["hostname"]}/"
+                else
+                    echo "phpMyAdmin is available at http://${CONFIG["hostname"]}:8234/"
+                fi
+            fi
+            exit 0
             ;;
         down)
             local environments
