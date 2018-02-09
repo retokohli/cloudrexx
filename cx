@@ -974,21 +974,6 @@ function set_config_array {
     echo "$FILE_CONTENTS" > docker-compose.yml
 }
 
-# regex_replace <haystack> <regex> <replacement>
-# Matches multi-line and replaces all occurences
-# regex match 1 needs to be whole match
-# regex match 2 needs to be everything before replaced part
-# regex match 3 needs to be everything after replaced part
-function regex_replace {
-    local HAYSTACK="$1"
-    local REGEX="$2"
-    local REPLACEMENT="$3"
-    [[ "$HAYSTACK" =~ $REGEX ]]
-    REPLACE="${BASH_REMATCH[2]}${REPLACEMENT}${BASH_REMATCH[3]}"
-    HAYSTACK="${HAYSTACK//"${BASH_REMATCH[0]}"/"$REPLACE"}"
-    echo "$HAYSTACK"
-}
-
 #####################
 # Wrapper functions #
 #####################
@@ -1045,6 +1030,21 @@ function dockercomposeexec {
 ####################
 # Helper functions #
 ####################
+
+# regex_replace <haystack> <regex> <replacement>
+# Matches multi-line and replaces only first occurences (/non-global)
+# regex match 1 needs to be whole match
+# regex match 2 needs to be everything before replaced part
+# regex match 3 needs to be everything after replaced part
+function regex_replace {
+    local HAYSTACK="$1"
+    local REGEX="$2"
+    local REPLACEMENT="$3"
+    [[ "$HAYSTACK" =~ $REGEX ]]
+    REPLACE="${BASH_REMATCH[2]}${REPLACEMENT}${BASH_REMATCH[3]}"
+    HAYSTACK="${HAYSTACK//"${BASH_REMATCH[0]}"/"$REPLACE"}"
+    echo "$HAYSTACK"
+}
 
 # Usage: if runs_as_proxy; then
 function runs_as_proxy {
