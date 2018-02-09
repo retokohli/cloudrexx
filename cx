@@ -1036,7 +1036,7 @@ case "${COMMANDS[0]}" in
             dockerexec logs -f "<web-container>"
             exit
         elif [[ ${ARGUMENTS["request"]} ]]; then
-            grep "$(tail -n1 tmp/log/dbg.log | grep -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log | less
+            grep "$(tac tmp/log/dbg.log | grep -m1 -o ' "([0-9a-z]\+)" ')" tmp/log/dbg.log | less
             exit
         elif [[ ${ARGUMENTS["clear-usercache"]} ]]; then
             dockerexec exec "<web-container>" bash -c 'exec 3<>/dev/tcp/usercache/11211 && echo flush_all >&3 && read -u 3 msg_in && echo $msg_in'
