@@ -482,12 +482,7 @@ function cmd_env {
     case "$1" in
         init)
             if [[ ${ARGUMENTS["yes"]} != true ]]; then
-                local working_directory
-                working_directory="$PWD"
-                if [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
-                    working_directory="${ARGUMENTS["proxy-host-dir"]}"
-                fi
-                echo "This will install Cloudrexx in the current directory ($working_directory)"
+                echo "This will install Cloudrexx in the current directory ($(get_real_pwd))"
                 read -p "Continue [Yn]? " -n 1 -r
                 echo ""
                 if [[ "$REPLY" != "" ]] && ! [[ "$REPLY" =~ ^[Yy]$ ]]; then
@@ -530,7 +525,7 @@ function cmd_env {
                 echo "Loading docker containers"
             fi
             cmd_env up
-            if [[ "${ARGUMENTS["proxy-host-dir"]}" == "" ]]; then
+            if [[ $(runs_as_proxy) ]]; then
                 if [[ ${ARGUMENTS["skip-source"]} != true || ${ARGUMENTS["yes"]} == true ]]; then
                     dockerexec exec "<web-container>" chown -R www-data /var/www/html
                     dockerexec exec "<web-container>" chmod g+w -R /var/www/html
@@ -601,16 +596,11 @@ function cmd_env {
             dockerexec exec "<db-container>" bash -c "while ! echo | mysql -u${CONFIG["db-user"]} -p${CONFIG["db-pass"]} &> /dev/null; do sleep 1; done"
             ;;
         down)
-            local working_directory
-            working_directory="$PWD"
-            if [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
-                working_directory="${ARGUMENTS["proxy-host-dir"]}"
-            fi
             local environments
             if [[ "${ARGUMENTS["name"]}" != "" ]]; then
                 environments=(${ARGUMENTS["name"]})
             else
-                ARGUMENTS["dir"]="$working_directory"
+                ARGUMENTS["dir"]="$(get_real_pwd)"
                 ARGUMENTS["real"]=true
                 IFS=$'\n'
                 set -f
@@ -845,10 +835,7 @@ function get_config_array {
     fi
     if [[ "${CONFIG["hostname"]}" == "" || "${CONFIG["hostname"]}" == "localhost" ]]; then
         local working_directory
-        working_directory="$PWD"
-        if [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
-            working_directory="${ARGUMENTS["proxy-host-dir"]}"
-        fi
+        working_directory=$(get_real_pwd)
         working_directory=${working_directory//" "/""}
         working_directory=${working_directory,,}
         CONFIG["hostname"]="${working_directory##*/}.${ARGUMENTS["root-domain"]}"
@@ -915,8 +902,8 @@ function set_config_array {
     # replace hostname, php- and db-image
     local working_directory
     working_directory="."
-    if [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
-        working_directory="${ARGUMENTS["proxy-host-dir"]}"
+    if [[ $(runs_as_proxy) ]]; then
+        working_directory="$(get_real_pwd)"
     fi
     FILE_CONTENTS=${FILE_CONTENTS//"<cd>"/"$working_directory"}
     FILE_CONTENTS=${FILE_CONTENTS//"<hostname>"/${CONFIG["hostname"]}}
@@ -1006,6 +993,27 @@ function dockercomposeexec {
     docker-compose --project-name "clxenv${CONFIG["hostname"]//./}" "$@"
 }
 
+function runs_on_proxy {
+    if [[ "$PROXY_HOST_DIR" != "" ]]; then
+        exit 0
+    elif [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
+        exit 0
+    else
+        exit 1
+    fi
+}
+
+function get_real_pwd {
+    local working_directory
+    working_directory="$PWD"
+    if [[ "$PROXY_HOST_DIR" != "" ]]; then
+        working_directory="$PROXY_HOST_DIR"
+    elif [[ "${ARGUMENTS["proxy-host-dir"]}" != "" ]]; then
+        working_directory="${ARGUMENTS["proxy-host-dir"]}"
+    fi
+    echo $working_directory
+}
+
 #####################
 # Decide what to do #
 #####################
@@ -1084,7 +1092,7 @@ set string=/host_mnt/%string::/=/%
 
 REM Special case: user wants to start interactive shell to wrapper container
 if "%*" == "envs shell --wrapper" (
-    docker run --rm -ti --name clx-win-wrapper -v "%cd%/":/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu sh -c "cd /root && bash"
+    docker run --rm -ti --name clx-win-wrapper -e PROXY_HOST_DIR="%string%" -v "%cd%/":/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu sh -c "cd /root && bash"
     goto :EOF
 )
 
