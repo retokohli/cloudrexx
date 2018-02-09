@@ -601,11 +601,13 @@ function cmd_env {
             ;;
         up)
             get_config_array
-            if ! isPortFree "${CONFIG["port"]}"; then
-                if [[ ${ARGUMENTS["silent"]} != true ]]; then
-                    echo "TCP port ${CONFIG["port"]} is in use. Stop any service running on this port and try again."
+            if [[ ${CONFIG["is-vhost"]} != true ]]; then
+                if ! isPortFree "${CONFIG["port"]}"; then
+                    if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                        echo "TCP port ${CONFIG["port"]} is in use. Stop any service running on this port and try again."
+                    fi
+                    exit 1
                 fi
-                exit 1
             fi
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 dockercomposeexec up -d
