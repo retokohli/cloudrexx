@@ -883,6 +883,9 @@ function get_config_array {
             CONFIG["php-version"]="7.0"
         fi
     fi
+    if [[ "${CONFIG["port"]}" == "" ]]; then
+        CONFIG["port"]=${DEFAULT_CONFIG["port"]}
+    fi
     if [[ "${CONFIG["php-image"]}" == "" ]]; then
         CONFIG["php-image"]=${DEFAULT_CONFIG["php-image"]}
     fi
