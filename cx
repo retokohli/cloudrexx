@@ -843,6 +843,13 @@ function get_config_array {
         ["is-vhost"]=""
     )
 
+    local proxy_present
+    proxy_present=$(internal_dockerexec ps -q -f "name=<proxy-container>")
+    if [[ "$proxy_present" == "" ]]; then
+        CONFIG["is-vhost"]=false
+    else
+        CONFIG["is-vhost"]=true
+    fi
     if [ -f "docker-compose.yml" ]; then
         CONFIG["db-image"]=$(REGEX="db:\s*image: \"([^\"]+)\""; CFG=$(cat $COMPOSE_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
         CONFIG["php-image"]=$(REGEX="web:\s*image: \"([^\"]+)\""; CFG=$(cat $COMPOSE_FILE); [[ "$CFG" =~ $REGEX ]] && echo "${BASH_REMATCH[1]}")
@@ -887,6 +894,9 @@ function get_config_array {
             CONFIG["db-pass"]=${DEFAULT_CONFIG["db-pass"]}
         fi
     fi
+}
+
+function set_config_array {
     local proxy_present
     proxy_present=$(internal_dockerexec ps -q -f "name=<proxy-container>")
     if [[ "$proxy_present" == "" ]]; then
@@ -894,9 +904,7 @@ function get_config_array {
     else
         CONFIG["is-vhost"]=true
     fi
-}
 
-function set_config_array {
     # load config file
     FILE_CONTENTS=$(cat config/configuration.php)
     # replace db-host, db-name, db-user, db-pass
