@@ -232,7 +232,8 @@
                         cx.jQuery("#calendar_event_excluded_crm_memberships").val(),
                     'invitedMails':
                         cx.jQuery("#invitedMails").val(),
-                    'selectedGroups': selectedGroups
+                    'selectedGroups': selectedGroups,
+                    'sendMailTo': cx.jQuery("input[name='sendMailTo']:checked").val()
                 },
                 success: function(json) {
                     cx.jQuery("#recipientsCount").text(json['data']);
@@ -404,6 +405,7 @@
         $J("input[name='addElement']").click(updateRecipientsCount);
         $J("input[name='removeElement']").click(updateRecipientsCount);
         $J("#invitedMails").change(updateRecipientsCount);
+        $J("input[name='sendMailTo']").change(updateRecipientsCount);
     });
 
     function showOrHidePlaceFields(inputValue, type) {

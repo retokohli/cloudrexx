@@ -245,7 +245,7 @@ class CalendarMailManager extends CalendarLibrary {
      * @param integer   $actionId               Mail action id
      * @param integer   $regId                  Registration id
      * @param array     $arrMailTemplateIds     Prefered templates of the specified action to be sent
-     * @param string    $send_invitaion_to      The filter to which contacts the
+     * @param string    $send_invitation_to      The filter to which contacts the
      *                                          mail should be sent
      */
     function sendMail(
@@ -253,7 +253,7 @@ class CalendarMailManager extends CalendarLibrary {
         $actionId,
         $regId = null,
         $arrMailTemplateIds = array(),
-        $send_invitaion_to = CalendarMailManager::MAIL_INVITATION_TO_ALL
+        $send_invitation_to = CalendarMailManager::MAIL_INVITATION_TO_ALL
     ) {
         global $_ARRAYLANG, $_CONFIG ;
 
@@ -324,7 +324,7 @@ class CalendarMailManager extends CalendarLibrary {
 
         $placeholder = array('[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[LINK_EVENT]]', '[[LINK_REGISTRATION]]', '[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[URL]]', '[[DATE]]');
 
-        $recipients = $this->getSendMailRecipients($actionId, $event, $regId, $objRegistration, $send_invitaion_to);
+        $recipients = $this->getSendMailRecipients($actionId, $event, $regId, $objRegistration, $send_invitation_to);
 
         $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
         $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
@@ -585,20 +585,26 @@ class CalendarMailManager extends CalendarLibrary {
     /**
      * Returns the array recipients count
      *
-     * @param integer $actionId         Mail Action
-     * @param object  $objEvent         Event object
-     * @param integer $regId            registration id
-     * @param object  $objRegistration  Registration object
+     * @param integer $actionId          Mail Action
+     * @param object  $objEvent          Event object
+     * @param integer $regId             registration id
+     * @param object  $objRegistration   Registration object
+     * @param string  $send_invitation_to The filter to which contacts the
+     *                                   mail should be sent
      *
      * @return integer                  returns the array recipients count
      */
     public function getSendMailRecipientsCount(
-        $actionId, $objEvent, $regId = 0, $objRegistration = null
+        $actionId,
+        $objEvent,
+        $regId = 0,
+        $objRegistration = null,
+        $send_invitation_to = self::MAIL_INVITATION_TO_ALL
     )
     {
         return count(
             $this->getSendMailRecipients(
-                $actionId, $objEvent, $regId, $objRegistration
+                $actionId, $objEvent, $regId, $objRegistration, $send_invitation_to
             )
         );
     }
@@ -610,7 +616,7 @@ class CalendarMailManager extends CalendarLibrary {
      * @param object  $objEvent             Event object
      * @param integer $regId                registration id
      * @param object  $objRegistration      Registration object
-     * @param string  $send_invitaion_to    The filter to which contacts the
+     * @param string  $send_invitation_to    The filter to which contacts the
      *                                      mail should be sent
      *
      * @return array returns the array recipients
@@ -620,7 +626,7 @@ class CalendarMailManager extends CalendarLibrary {
         $objEvent,
         $regId = 0,
         $objRegistration = null,
-        $send_invitaion_to = self::MAIL_INVITATION_TO_ALL
+        $send_invitation_to = self::MAIL_INVITATION_TO_ALL
     ) {
         global $_CONFIG, $_LANGID;
 
@@ -639,17 +645,22 @@ class CalendarMailManager extends CalendarLibrary {
                 // fetch users from Crm groups
                 $db = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getAdoDb();
                 $excludeQuery = '';
-                if($objEvent->excludedCrmGroups) {
-                    $excludeQuery = 'AND `crm_contact`.`id` NOT IN (
-                                        SELECT m.`contact_id`
-                                            FROM `' . DBPREFIX . 'module_crm_customer_membership` AS m 
-                                                WHERE m.`membership_id` IN (' . join(',', $objEvent->excludedCrmGroups) . ')
-                                    )
-                                    AND `crm_company`.`id` NOT IN (
-                                        SELECT m.`contact_id`
-                                            FROM `' . DBPREFIX . 'module_crm_customer_membership` AS m 
-                                                WHERE m.`membership_id` IN (' . join(',', $objEvent->excludedCrmGroups) . ')
-                                    )';
+                if ($objEvent->excludedCrmGroups) {
+                    $excludeQuery = '
+                        AND `crm_contact`.`id` NOT IN (
+                            SELECT m.`contact_id`
+                            FROM `' . DBPREFIX . 'module_crm_customer_membership` AS m
+                            WHERE m.`membership_id` IN ('
+                        . join(',', $objEvent->excludedCrmGroups) . ')
+                        )
+                        AND (`crm_company`.`id` IS NULL
+                            OR `crm_company`.`id` NOT IN (
+                                SELECT m.`contact_id`
+                                FROM `' . DBPREFIX . 'module_crm_customer_membership` AS m
+                                WHERE m.`membership_id` IN ('
+                        . join(',', $objEvent->excludedCrmGroups) . ')
+                            )
+                        )';
                 }
                 $result = $db->Execute('
                     SELECT
@@ -792,7 +803,7 @@ class CalendarMailManager extends CalendarLibrary {
         }
 
         if (
-            $send_invitaion_to != self::MAIL_INVITATION_TO_ALL &&
+            $send_invitation_to != self::MAIL_INVITATION_TO_ALL &&
             $actionId == static::MAIL_INVITATION
         ) {
 
@@ -806,7 +817,7 @@ class CalendarMailManager extends CalendarLibrary {
                         WHERE `r`.`event_id` = ' . $objEvent->getId() . '
                         AND `f`.`type` = \'mail\'';
 
-            switch ($send_invitaion_to) {
+            switch ($send_invitation_to) {
                 case self::MAIL_INVITATION_TO_INACTIVE:
                     // exclude all guests which are already registered on any list
                     $result = $db->Execute($query);
@@ -835,7 +846,7 @@ class CalendarMailManager extends CalendarLibrary {
                     );
                     break;
                 default:
-                    die($send_invitaion_to . ' is not a valid invitation type');
+                    die($send_invitation_to . ' is not a valid invitation type');
                     break;
             }
         }

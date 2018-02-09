@@ -129,10 +129,15 @@ class JsonCalendar implements JsonAdapter {
         // 3.) load emails which were entered manually
         $event->invitedMails = $params['get']['invitedMails'];
 
+        // get the send to filter
+        $send_invitation_to = $params['get']['sendMailTo'];
         $calendarManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();
         $recipientsCount = $calendarManager->getSendMailRecipientsCount(
             \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_INVITATION,
-            $event
+            $event,
+            0,
+            null,
+            $send_invitation_to
         );
         return $recipientsCount;
     }
