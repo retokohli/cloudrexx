@@ -692,7 +692,7 @@ function cmd_env {
                 return
             fi
             if [[ ${ARGUMENTS["force"]} != true && $DB_UPDATE_NECESSARY != true && ${ARGUMENTS["silent"]} != true ]]; then
-                echo "DB update not necessary, run ./cx env update --db if you want to force db reload"
+                echo "DB update not necessary, run ./cx env update --db --force if you want to force db reload"
                 return
             fi
 
@@ -767,11 +767,22 @@ SET FOREIGN_KEY_CHECKS = 1;" | internal_dockerexec exec -i "<db-container>" bash
                     fi
                 fi
                 # there is no user and we decided to create one
-                ClxUser="system"
-                ClxMail="noreply@contrexx.com"
-                ClxPass="123456"
-                echo "INSERT INTO contrexx_access_users (id, is_admin, username, password, regdate, expiration, validity, last_auth, last_activity, email, email_access, frontend_lang_id, backend_lang_id, active, profile_access, restore_key, restore_key_time, u2u_active, auth_token) VALUES (1,1,'${ClxUser}',MD5('${ClxPass}'),0,0,0,0,0,'${ClxMail}','nobody', 0,0,1,'members_only','',0,'0', '');INSERT INTO contrexx_access_user_profile (user_id, gender, title, firstname, lastname, company, address, city, zip, country, phone_office, phone_private, phone_mobile, phone_fax, birthday, website, profession, interests, signature, picture) VALUES (1,'gender_undefined',2,'CMS','System Benutzer','','','','',0,'','','','','','','','','','');INSERT INTO contrexx_access_user_attribute_value (attribute_id, user_id, history_id, value) VALUES (0,1,0,'');" | internal_dockerexec exec -i "<db-container>" mysql --defaults-file="$tempfile" -A
-                echo "Created the user \"$ClxUser\" with e-mail \"$ClxMail\" and password \"$ClxPass\""
+                declare -A ClxCredentials
+                ClxCredentials["user"]=""
+                ClxCredentials["mail"]="info@example.org"
+                ClxCredentials["pass"]="123456"
+                if [[ ${ARGUMENTS["yes"]} != true ]]; then
+                    for key in "${!ClxCredentials[@]}"; do
+                        read -r -p "Enter Cloudrexx $key [${ClxCredentials[$key]}]: " newvalue
+                        if [[ "$newvalue" != "" ]]; then
+                            ClxCredentials[$key]="$newvalue"
+                        fi
+                    done
+                fi
+                echo "INSERT INTO contrexx_access_users (id, is_admin, username, password, regdate, expiration, validity, last_auth, last_activity, email, email_access, frontend_lang_id, backend_lang_id, active, profile_access, restore_key, restore_key_time, u2u_active, auth_token) VALUES (1,1,'${ClxCredentials["user"]}',MD5('${ClxCredentials["pass"]}'),0,0,0,0,0,'${ClxCredentials["mail"]}','nobody', 0,0,1,'members_only','',0,'0', '');INSERT INTO contrexx_access_user_profile (user_id, gender, title, firstname, lastname, company, address, city, zip, country, phone_office, phone_private, phone_mobile, phone_fax, birthday, website, profession, interests, signature, picture) VALUES (1,'gender_undefined',2,'CMS','System Benutzer','','','','',0,'','','','','','','','','','');INSERT INTO contrexx_access_user_attribute_value (attribute_id, user_id, history_id, value) VALUES (0,1,0,'');" | internal_dockerexec exec -i "<db-container>" mysql --defaults-file="$tempfile" -A
+                if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                    echo "Created the user \"${ClxCredentials["user"]}\" with e-mail \"${ClxCredentials["mail"]}\" and password \"${ClxCredentials["pass"]}\""
+                fi
             fi
             dockerexec exec "<db-container>" rm "$tempfile"
             ;;
