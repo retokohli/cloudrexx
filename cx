@@ -530,7 +530,7 @@ function cmd_env {
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 echo "Configuring the environment"
             fi
-            cmd_env config
+            ARGUMENTS["force-default"]=true && cmd_env config
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 echo "Loading docker containers"
             fi
