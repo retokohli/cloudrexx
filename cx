@@ -379,10 +379,11 @@ function cmd_envs {
             dockerexec network create "<proxy-network>"
             dockerexec run --rm --name "<proxy-container>" -e "HTTPS_METHOD=nohttps" --net "nginx-proxy" -d -p "${ARGUMENTS["port"]}:80" -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
             for env_dir in "${env_dirs[@]}"; do
-                cd "$env_dir"
-                cmd_env config
-                cmd_env up
-                cd - > /dev/null
+                (
+                    cd "$env_dir"
+                    cmd_env config
+                    cmd_env up
+                )
             done
             ;;
         down)
@@ -426,10 +427,11 @@ function cmd_envs {
                     echo ""
                 fi
                 if [[ ${ARGUMENTS["yes"]} ]] || [[ "$REPLY" == "" ]] || [[ "$REPLY" =~ ^[Yy]$ ]]; then
-                    cd "$env_dir"
-                    cmd_env config
-                    cmd_env up
-                    cd - > /dev/null
+                    (
+                        cd "$env_dir"
+                        cmd_env config
+                        cmd_env up
+                    )
                 fi
             fi
             ;;
@@ -1131,7 +1133,7 @@ function isPortFree {
     hostname="localhost"
     if runs_as_proxy; then
         local route
-        route=($(cat /proc/net/route | grep -E "eth0\s*00000000"))
+        route=($(grep -E "eth0\s*00000000" < /proc/net/route))
         hostname="$((16#${route[2]:6:2})).$((16#${route[2]:4:2})).$((16#${route[2]:2:2})).$((16#${route[2]:0:2}))"
     fi
     if (echo >"/dev/tcp/$hostname/$1") &>/dev/null; then
