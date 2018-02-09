@@ -526,10 +526,6 @@ function cmd_env {
                 echo "Configuring the environment"
             fi
             cmd_env config
-            FILE_CONTENTS=$(cat config/configuration.php)
-            FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((define\('CONTREXX_INSTALLED', )false(\);))" "true")
-            FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((define\('CONTEXX_INSTALLED', )false(\);))" "true")
-            echo "$FILE_CONTENTS" > config/configuration.php
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 echo "Loading docker containers"
             fi
@@ -898,6 +894,8 @@ function set_config_array {
     FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((DBCONFIG\['database'\]\ +=\ +['\"])[^'\"]*(['\"];))" "${CONFIG["db-name"]}")
     FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((DBCONFIG\['user'\]\ +=\ +['\"])[^'\"]*(['\"];))" "${CONFIG["db-user"]}")
     FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((DBCONFIG\['password'\]\ +=\ +['\"])[^'\"]*(['\"];))" "${CONFIG["db-pass"]}")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((define\('CONTREXX_INSTALLED', )false(\);))" "true")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((define\('CONTEXX_INSTALLED', )false(\);))" "true")
     # save config file
     echo "$FILE_CONTENTS" > config/configuration.php
 
