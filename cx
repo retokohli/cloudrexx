@@ -951,7 +951,11 @@ function phpexec {
     # TODO: Check if we should run async
     if type docker >/dev/null 2>&1; then
         if [ ! "$(dockerexec ps -q -f "name=<web-container>")" ]; then
-            php index.php "$@"
+            if type php >/dev/null 2>&1; then
+                php index.php "$@"
+            else
+                echo "Environment not running!"
+            fi
         else
             dockerexec exec -ti "<web-container>" php index.php "$@"
         fi
