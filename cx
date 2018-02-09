@@ -932,6 +932,11 @@ function set_config_array {
     # save settings
     echo "$FILE_CONTENTS" > config/settings.php
 
+    # set correct rewritebase
+    FILE_CONTENTS=$(cat .htaccess)
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((RewriteBase /)[-_a-zA-Z0-9/]*())" "")
+    echo "$FILE_CONTENTS" > .htaccess
+
     # load _meta/docker-compose.yml
     FILE_CONTENTS=$(cat _meta/docker-compose.tpl)
     # replace php-image with php-version internally
