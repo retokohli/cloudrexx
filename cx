@@ -1043,7 +1043,7 @@ case "${COMMANDS[0]}" in
     *)
         if [[ "${COMMANDS[0]}" == "" || "${COMMANDS[0]}" == "help" ]]; then
             # wrapper for "help" command to deliver help for internal commands
-            if [[ "${COMMANDS[1]}" == "" || " ${INTERNAL_COMMANDS[*]} " =~ " ${COMMANDS[1]} " ]]; then
+            if [[ "${COMMANDS[1]}" == "" || " ${INTERNAL_COMMANDS[@]} " =~ " ${COMMANDS[1]} " ]]; then
                 COMMANDS=("${COMMANDS[@]:1}")
                 cmd_help "${COMMANDS[@]/#/}"
             else
