@@ -582,10 +582,8 @@ class Config
                 \DBG::log($e->getMessage());
             }
 
-            // if we were able to resolve domain name,
-            // we shall use it's DNS target as proxy to ensure
-            // we're trying to connect to the correct host for
-            // verification
+            // if we were able to resolve the website's domain name,
+            // then we shall use it's DNS target as URL target
             foreach($result->answer as $resourceRecord) {
                 if ($resourceRecord->name != $domain) {
                     continue;
