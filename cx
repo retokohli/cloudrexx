@@ -602,6 +602,9 @@ function cmd_env {
                 environments=($(cmd_envs list))
                 set +f
             fi
+            get_config_array
+            environments+=("clxenv${CONFIG["hostname"]//./}")
+            environments=($(tr ' ' '\n' <<< "${environments[@]}" | sort -u | tr '\n' ' '))
             for environment in "${environments[@]}"; do
                 echo "Shutting down environment clxenv$environment"
                 if [[ "${ARGUMENTS["purge"]}" == true ]]; then
