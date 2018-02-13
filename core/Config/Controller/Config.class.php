@@ -561,9 +561,59 @@ class Config
             $domain = $_CONFIG['domainUrl'];
         }
 
+        $nameServer = \Cx\Core\Setting\Controller\Setting::getValue('dnsServer', 'Config');
+        if ($protocol == 'http') {
+            $protocolPort = \Cx\Core\Setting\Controller\Setting::getValue('portBackendHTTP', 'Config');
+        } else {
+            $protocolPort = \Cx\Core\Setting\Controller\Setting::getValue('portBackendHTTPS', 'Config');
+        }
+
         try {
+            // set host for TCP connection to the website's domain
+            $host = $domain;
+
+            // try to resolve domain name using default name server
+            $dnsResolver = new \Net_DNS2_Resolver(array(
+                'nameservers' => array($nameServer),
+            ));
+            try {
+                $result = $dnsResolver->query($domain, 'A');
+            } catch(\Net_DNS2_Exception $e) {
+                \DBG::log($e->getMessage());
+            }
+
+            // if we were able to resolve domain name,
+            // we shall use it's DNS target as proxy to ensure
+            // we're trying to connect to the correct host for
+            // verification
+            foreach($result->answer as $resourceRecord) {
+                if ($resourceRecord->name != $domain) {
+                    continue;
+                }
+
+                switch ($resourceRecord->type) {
+                    case 'A':
+                        $host = $resourceRecord->address;
+                        break;
+                    case 'CNAME':
+                        $host = $resourceRecord->cname;
+                        break;
+                    default:
+                        \DBG::log('Unknown DNS Resource Record');
+                        \DBG::dump($resourceRecord);
+                        break;
+                }
+                break;
+            }
+
             // create request to port 443 (https), to check whether the request works or not
-            $request = new \HTTP_Request2($protocol . '://' . $domain . ASCMS_ADMIN_WEB_PATH . '/index.php?cmd=JsonData');
+            $request = new \HTTP_Request2($protocol . '://' . $host . ASCMS_ADMIN_WEB_PATH . '/index.php?cmd=JsonData');
+
+            // force original domain as HTTP Host header
+            $request->setHeader('Host', $domain);
+
+            // use SNI
+            $request->setConfig('ssl_peer_name', $domain);
 
             // ignore ssl issues
             // otherwise, cloudrexx does not activate 'https' when the server doesn't have an ssl certificate installed
