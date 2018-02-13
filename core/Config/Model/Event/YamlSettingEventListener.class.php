@@ -123,6 +123,9 @@ class YamlSettingEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventL
                     break;
 
                 case 'forceDomainUrl':
+                    if ($value == 'off') {
+                        break;
+                    }
                     $useHttps = $_CONFIG['forceProtocolBackend'] == 'https';
                     $protocol = 'http';
                     if ($useHttps == 'https') {
