@@ -541,37 +541,6 @@ function cmd_env {
                 echo "In order to retry, please run ./cx env init --skip-scripts --skip-source"
                 exit
             fi
-            if runs_as_proxy; then
-                if [[ ${ARGUMENTS["skip-source"]} != true || ${ARGUMENTS["yes"]} == true ]]; then
-                    dockerexec exec "<web-container>" chown -R www-data /var/www/html
-                    dockerexec exec "<web-container>" chmod g+w -R /var/www/html
-                else
-                    echo "Source repository skipped. Should permissions be set anyway (chown to www-data, chmod g+w)?"
-                    read -p "Say yes or no or choose to continue [Ync]? " -n 1 -r
-                    echo ""
-                    # if reply is "n" we do nothing
-                    if [[ "$REPLY" != "n" ]]; then
-                        # if reply is "c" we ask
-                        OLDREPLY="$REPLY"
-                        if [[ "$OLDREPLY" == "c" ]]; then
-                            read -p "Execute 'chown -R www-data' on working directory? [Yn]? " -n 1 -r
-                            echo ""
-                        fi
-                        # if we did not have to ask or answer was != n
-                        if [[ "$OLDREPLY" != "c" || "$REPLY" != "n" ]]; then
-                            dockerexec exec "<web-container>" chown -R www-data /var/www/html
-                        fi
-                        if [[ "$OLDREPLY" == "c" ]]; then
-                            read -p "Execute 'chmod -R g+w' on working directory? [Yn]? " -n 1 -r
-                            echo ""
-                        fi
-                        # if we did not have to ask or answer was != n
-                        if [[ "$OLDREPLY" != "c" || "$REPLY" != "n" ]]; then
-                            dockerexec exec "<web-container>" chmod g+w -R /var/www/html
-                        fi
-                    fi
-                fi
-            fi
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 echo "Loading database"
             fi
