@@ -666,7 +666,7 @@ function cmd_env {
                 fi
                 return
             fi
-            if [[ ${ARGUMENTS["force"]} != true && $DB_UPDATE_NECESSARY != true && ${ARGUMENTS["silent"]} != true ]]; then
+            if [[ ${ARGUMENTS["force"]} != true && ${ARGUMENTS["db"]} != true && $DB_UPDATE_NECESSARY != true && ${ARGUMENTS["silent"]} != true ]]; then
                 echo "DB update not necessary, run ./cx env update --db --force if you want to force db reload"
                 return
             fi
