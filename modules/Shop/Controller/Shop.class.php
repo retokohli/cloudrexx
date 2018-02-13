@@ -4016,11 +4016,6 @@ die("Shop::processRedirect(): This method is obsolete!");
                 }
             }
         }
-//die();
-        // Clear the ship-to country if there is no shipping
-        if (!Cart::needs_shipment()) {
-            $_SESSION['shop']['countryId2'] = 0;
-        }
         $shipper_id = (empty($_SESSION['shop']['shipperId'])
             ? null : $_SESSION['shop']['shipperId']);
         $payment_id = (empty($_SESSION['shop']['paymentId'])
