@@ -907,6 +907,10 @@ function set_config_array {
     FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((DBCONFIG\['password'\]\ +=\ +['\"])[^'\"]*(['\"];))" "${CONFIG["db-pass"]}")
     FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((define\('CONTREXX_INSTALLED', )false(\);))" "true")
     FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((define\('CONTEXX_INSTALLED', )false(\);))" "true")
+    if [[ "${CONFIG["cms-version"]:0:1}" == "3" && "${CONFIG["cms-version"]:2:1}" == "0" ]] || [[ "${CONFIG["cms-version"]:0:1}" -lt 3 ]]; then
+        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((PATHCONFIG\['ascms_root'\]\ +=\ +['\"])[^'\"]*(['\"];))" "/var/www/html")
+        FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((PATHCONFIG\['ascms_root_offset'\]\ +=\ +['\"])[^'\"]*(['\"];))" "")
+    fi
     # save config file
     echo "$FILE_CONTENTS" > config/configuration.php
 
