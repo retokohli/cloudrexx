@@ -1753,9 +1753,10 @@ class Config
 
     /**
      * Initializes basic config of Cloudrexx
+     * @param string $configPath (optional) Path the the configuration repository
      * @throws \Cx\Lib\Update_DatabaseException If a config cannot be initialized
      */
-    protected static function init($configPath = null) {
+    protected static function init($configPath = '') {
         // fetch $_CONFIG data from settings.php file will be used for migration
         // of basic configuration from contrexx_settings to \Cx\Core\Setting
         $existingConfig = static::fetchConfigFromSettingsFile(
