@@ -920,7 +920,7 @@ function set_config_array {
 
     # set correct rewritebase
     FILE_CONTENTS=$(cat .htaccess)
-    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((RewriteBase /)[-_a-zA-Z0-9/]*())" "")
+    FILE_CONTENTS=$(regex_replace "$FILE_CONTENTS" "((RewriteBase\s+/)[-_a-zA-Z0-9/]*())" "")
     echo "$FILE_CONTENTS" > .htaccess
 
     # load _meta/docker-compose.yml
