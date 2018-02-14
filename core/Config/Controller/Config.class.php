@@ -1829,7 +1829,8 @@ class Config
                         $group
                     );
                 }
-                if (!$result) {
+                // result is null if value did not change
+                if ($result === false) {
                     throw new \Cx\Lib\Update_DatabaseException(
                         'Failed to add/update setting entry "' . $name . '" in group "' . $group . '"!'
                     );
