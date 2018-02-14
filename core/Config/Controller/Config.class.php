@@ -73,7 +73,11 @@ class Config
     function __construct()
     {
         $this->configFile = \Env::get('cx')->getWebsiteConfigPath() . '/Config.yml';
-        self::init();
+        try {
+            static::init();
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+        }
         $this->checkWritePermissions();
     }
 
@@ -1300,525 +1304,516 @@ class Config
         return $_CONFIG;
     }
 
-     /**
-     * Initialize basic config of Cloudrexx
-     *
-     * @return  boolean                 False.  Always.
-     * @throws  \Cx\Lib\Update_DatabaseException
+    /**
+     * Initializes basic config of Cloudrexx
+     * @throws \Cx\Lib\Update_DatabaseException If a config cannot be initialized
      */
-    static function init($configPath = null) {
-        global $_CONFIG;
+    protected static function init($configPath = null) {
+        // fetch $_CONFIG data from settings.php file
+        // will be used for migration of basic configuration from contrexx_settings to \Cx\Core\Setting
+        $existingConfig = static::fetchConfigFromSettingsFile(self::getSettingsFile());
 
-        try {
-            // fetch $_CONFIG data from settings.php file
-            // will be used for migration of basic configuration from contrexx_settings to \Cx\Core\Setting
-            $existingConfig = self::fetchConfigFromSettingsFile(self::getSettingsFile());
+        // List of configurations to initialize
+        // Entries type and values are optional as they are set to TEXT and
+        // null by default.
+        // @TODO: Cleanup this list (move to components)
+        $configlist = array(
+            'site' => array(
+                'systemStatus' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'on',
+                ),
+                'languageDetection' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'on',
+                ),
+                'coreGlobalPageTitle' => array(
+                    'value' => 'Cloudrexx Example Website',
+                ),
+                'mainDomainId' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
+                    'value' => '0',
+                    'values' => '{src:\\' . __CLASS__ . '::getDomains()}',
+                ),
+                'forceDomainUrl' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'off',
+                ),
+                'coreListProtectedPages' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'off',
+                ),
+                'searchVisibleContentOnly' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'on',
+                ),
+                'advancedUploadFrontend' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'off',
+                ),
+                'forceProtocolFrontend' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
+                    'value' => 'none',
+                    'values' => '{src:\\' . __CLASS__ . '::getPortOptions()}',
+                ),
+                'portFrontendHTTP' => array(
+                    'value' => '80',
+                ),
+                'portFrontendHTTPS' => array(
+                    'value' => '443',
+                ),
+                'favicon' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_IMAGE,
+                    'value' => 'favicon.ico',
+                    'values' => '{"type":"copy"}',
+                ),
+                'defaultLocaleId' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
+                    'value' => '1',
+                    'values' => '{src:\\' . __CLASS__ . '::getLocales()}',
+                ),
+            ),
+            'administrationArea' => array(
+                'dashboardNews' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'off',
+                ),
+                'dashboardStatistics' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'on',
+                ),
+                'advancedUploadBackend' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'on',
+                ),
+                'sessionLifeTime' => array(
+                    'value' => '3600',
+                ),
+                'sessionLifeTimeRememberMe' => array(
+                    'value' => '1209600',
+                ),
+                'dnsServer' => array(
+                    'value' => '8.8.8.8',
+                    'componentDependencies' => array('SystemInfo'),
+                ),
+                'timezone' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
+                    'value' => 'Europe/Zurich',
+                    'values' => '{src:\\' . __CLASS__ . '::getTimezoneOptions()}',
+                ),
+                'forceProtocolBackend' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
+                    'value' => 'none',
+                    'values' => '{src:\\' . __CLASS__ . '::getPortOptions()}',
+                ),
+                'portBackendHTTP' => array(
+                    'value' => '80',
+                ),
+                'portBackendHTTPS' => array(
+                    'value' => '443',
+                ),
+                'defaultLanguageId' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
+                    'value' => '1',
+                    'values' => '{src:\\' . __CLASS__ . '::getBackendLanguages()}',
+                ),
+            ),
+            'security' => array(
+                'coreIdsStatus' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'off',
+                ),
+                'passwordComplexity' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'off',
+                ),
+                'captchaMethod' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
+                    'value' => 'contrexxCaptcha',
+                    'values' => '{src:\\' . __CLASS__ . '::getCaptchaOptions()}',
+                ),
+                'recaptchaSiteKey' => array(
+                    'value' => '',
+                ),
+                'recaptchaSecretKey' => array(
+                    'value' => '',
+                ),
+            ),
+            'contactInformation' => array(
+                'coreAdminName' => array(
+                    'value' => 'Administrator',
+                ),
+                'coreAdminEmail' => array(
+                    'value' => 'info@example.com',
+                ),
+                'contactFormEmail' => array(
+                    'value' => 'info@example.com',
+                ),
+                'contactCompany' => array(
+                    'value' => 'Ihr Firmenname',
+                ),
+                'contactAddress' => array(
+                    'value' => 'Musterstrasse 12',
+                ),
+                'contactZip' => array(
+                    'value' => '3600',
+                ),
+                'contactPlace' => array(
+                    'value' => 'Musterhausen',
+                ),
+                'contactCountry' => array(
+                    'value' => 'Musterland',
+                ),
+                'contactPhone' => array(
+                    'value' => '033 123 45 67',
+                ),
+                'contactFax' => array(
+                    'value' => '033 123 45 68',
+                ),
+            ),
+            'otherConfigurations' => array(
+                'xmlSitemapStatus' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'on',
+                ),
+                'frontendEditingStatus' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'on',
+                ),
+                'useCustomizings' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'off',
+                    'componentDependencies' => array('SystemInfo'),
+                ),
+                'corePagingLimit' => array(
+                    'value' => '30',
+                ),
+                'searchDescriptionLength' => array(
+                    'value' => '150',
+                ),
+                'googleMapsAPIKey' => array(
+                    'value' => '',
+                ),
+                'googleAnalyticsTrackingId' => array(
+                    'value' => '',
+                ),
+                'defaultMetaimage' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_IMAGE,
+                    'value' => '/themes/standard_4_0/images/og_logo_social_media.jpg',
+                    'values' => '{"type":"reference"}',
+                ),
+                'robotstxt' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_FILECONTENT,
+                    'values' => 'robots.txt',
+                ),
+                'dnsHostnameLookup' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'off',
+                ),
+            ),
+            'core' => array(
+                'coreSmtpServer' => array(
+                    'value' => '0',
+                ),
+                'lastAccessId' => array(
+                    'value' => '1',
+                ),
+                'installationId' => array(
+                    'value' => '',
+                ),
+            ),
+            'component' => array(
+                'bannerStatus' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => '0',
+                    'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
+                ),
+                'spamKeywords' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_TEXTAREA,
+                    'value' => 'sex, viagra',
+                    'values' => '',
+                ),
+                'newsTeasersStatus' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => '0',
+                    'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
+                ),
+                'feedNewsMLStatus' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => '0',
+                    'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
+                ),
+                'calendarheadlines' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => '0',
+                    'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
+                ),
+                'calendarheadlinescount' => array(
+                    'value' => '5',
+                ),
+                'calendardefaultcount' => array(
+                    'value' => '16',
+                ),
+                'calendarheadlinescat' => array(
+                    'value' => '0',
+                ),
+                'blockStatus' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => '1',
+                    'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
+                ),
+                'blockRandom' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => '1',
+                    'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
+                ),
+                'directoryHomeContent' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => '0',
+                    'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
+                ),
+                'forumHomeContent' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => '0',
+                    'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
+                ),
+                'podcastHomeContent' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => '0',
+                    'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
+                ),
+                'forumTagContent' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => '0',
+                    'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
+                ),
+                'dataUseModule' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => '0',
+                    'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
+                ),
+                'useKnowledgePlaceholders' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => '0',
+                    'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
+                ),
+                'dashboardNewsSrc' => array(
+                    'value' => 'http://www.cloudrexx.com/feed/news_headlines_de.xml',
+                ),
+            ),
+            'release' => array(
+                'coreCmsEdition' => array(
+                    'value' => 'Open Source',
+                ),
+                'coreCmsVersion' => array(
+                    'value' => '5.0.0',
+                ),
+                'coreCmsCodeName' => array(
+                    'value' => 'Nandri',
+                ),
+                'coreCmsStatus' => array(
+                    'value' => 'Stable',
+                ),
+                'coreCmsReleaseDate' => array(
+                    'value' => '1348783200',
+                ),
+                'coreCmsName' => array(
+                    'value' => 'Cloudrexx',
+                ),
+            ),
+            'license' => array(
+                'licenseKey' => array(
+                    'value' => '',
+                ),
+                'licenseState' => array(
+                    'value' => 'OK',
+                ),
+                'licenseValidTo' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DATETIME,
+                    'value' => '0',
+                ),
+                'licenseMessage' => array(
+                    'value' => '',
+                ),
+                'licensePartner' => array(
+                    'value' => '',
+                ),
+                'licenseCustomer' => array(
+                    'value' => '',
+                ),
+                'upgradeUrl' => array(
+                    'value' => 'http://license.contrexx.com/',
+                ),
+                'licenseGrayzoneMessages' => array(
+                    'value' => '',
+                ),
+                'licenseGrayzoneTime' => array(
+                    'value' => '14',
+                ),
+                'licenseLockTime' => array(
+                    'value' => '',
+                ),
+                'licenseUpdateInterval' => array(
+                    'value' => '24',
+                ),
+                'licenseFailedUpdate' => array(
+                    'value' => '0',
+                ),
+                'licenseSuccessfulUpdate' => array(
+                    'value' => '0',
+                ),
+                'licenseCreatedAt' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DATETIME,
+                    'value' => '',
+                ),
+                'licenseDomains' => array(
+                    'value' => '',
+                ),
+                'availableComponents' => array(
+                    'value' => '',
+                ),
+                'dashboardMessages' => array(
+                    'value' => '',
+                ),
+                'isUpgradable' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'on',
+                ),
+            ),
+            'cache' => array(
+                'cacheEnabled' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'off',
+                    'componentDependencies' => array('SystemInfo'),
+                ),
+                'cacheExpiration' => array(
+                    'value' => '86400',
+                    'componentDependencies' => array('SystemInfo'),
+                ),
+                'cacheOpStatus' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'off',
+                    'componentDependencies' => array('SystemInfo'),
+                ),
+                'cacheDbStatus' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'off',
+                    'componentDependencies' => array('SystemInfo'),
+                ),
+                'cacheReverseProxy' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'none',
+                    'values' => '{src:\\' . __CLASS__ . '::getReverseProxyTypes()}',
+                    'componentDependencies' => array('SystemInfo'),
+                ),
+                'cacheSsiOutput' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
+                    'value' => 'intern',
+                    'values' => '{src:\\' . __CLASS__ . '::getSsiOutputModes()}',
+                    'componentDependencies' => array('SystemInfo'),
+                ),
+                'cacheSsiType' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
+                    'value' => 'varnish',
+                    'values' => '{src:\\' . __CLASS__ . '::getSsiTypes()}',
+                    'componentDependencies' => array('SystemInfo'),
+                ),
+                'cacheUserCache' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'off',
+                    'componentDependencies' => array('SystemInfo'),
+                ),
+                'cacheOPCache' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'off',
+                    'componentDependencies' => array('SystemInfo'),
+                ),
+                'cacheProxyCacheConfig' => array(
+                    'value' => '{"ip":"127.0.0.1","port":8080}',
+                    'componentDependencies' => array('SystemInfo'),
+                ),
+                'cacheSsiProcessorConfig' => array(
+                    'value' => '{"ip":"127.0.0.1","port":8080}',
+                    'componentDependencies' => array('SystemInfo'),
+                ),
+                'internalSsiCache' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'off',
+                    'componentDependencies' => array('SystemInfo'),
+                ),
+                'cacheUserCacheMemcacheConfig' => array(
+                    'value' => '{"ip":"127.0.0.1","port":11211}',
+                    'componentDependencies' => array('SystemInfo'),
+                ),
+                'cacheUserCacheMamcachedConfig' => array(
+                    'value' => '{"ip":"127.0.0.1","port":11211}',
+                    'componentDependencies' => array('SystemInfo'),
+                ),
+            ),
+            'lang' => array(
+                'useVirtualLanguageDirectories' => array(
+                    'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
+                    'value' => 'on',
+                ),
+            ),
+        );
 
-            // List of configurations to initialize
-            // Entries type and values are optional as they are set to TEXT and
-            // null by default.
-            // @TODO: Cleanup this list (move to components)
-            $configlist = array(
-                'site' => array(
-                    'systemStatus' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'on',
-                    ),
-                    'languageDetection' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'on',
-                    ),
-                    'coreGlobalPageTitle' => array(
-                        'value' => 'Cloudrexx Example Website',
-                    ),
-                    'mainDomainId' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
-                        'value' => '0',
-                        'values' => '{src:\\' . __CLASS__ . '::getDomains()}',
-                    ),
-                    'forceDomainUrl' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'off',
-                    ),
-                    'coreListProtectedPages' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'off',
-                    ),
-                    'searchVisibleContentOnly' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'on',
-                    ),
-                    'advancedUploadFrontend' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'off',
-                    ),
-                    'forceProtocolFrontend' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
-                        'value' => 'none',
-                        'values' => '{src:\\' . __CLASS__ . '::getPortOptions()}',
-                    ),
-                    'portFrontendHTTP' => array(
-                        'value' => '80',
-                    ),
-                    'portFrontendHTTPS' => array(
-                        'value' => '443',
-                    ),
-                    'favicon' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_IMAGE,
-                        'value' => 'favicon.ico',
-                        'values' => '{"type":"copy"}',
-                    ),
-                    'defaultLocaleId' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
-                        'value' => '1',
-                        'values' => '{src:\\' . __CLASS__ . '::getLocales()}',
-                    ),
-                ),
-                'administrationArea' => array(
-                    'dashboardNews' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'off',
-                    ),
-                    'dashboardStatistics' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'on',
-                    ),
-                    'advancedUploadBackend' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'on',
-                    ),
-                    'sessionLifeTime' => array(
-                        'value' => '3600',
-                    ),
-                    'sessionLifeTimeRememberMe' => array(
-                        'value' => '1209600',
-                    ),
-                    'dnsServer' => array(
-                        'value' => '8.8.8.8',
-                        'componentDependencies' => array('SystemInfo'),
-                    ),
-                    'timezone' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
-                        'value' => 'Europe/Zurich',
-                        'values' => '{src:\\' . __CLASS__ . '::getTimezoneOptions()}',
-                    ),
-                    'forceProtocolBackend' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
-                        'value' => 'none',
-                        'values' => '{src:\\' . __CLASS__ . '::getPortOptions()}',
-                    ),
-                    'portBackendHTTP' => array(
-                        'value' => '80',
-                    ),
-                    'portBackendHTTPS' => array(
-                        'value' => '443',
-                    ),
-                    'defaultLanguageId' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
-                        'value' => '1',
-                        'values' => '{src:\\' . __CLASS__ . '::getBackendLanguages()}',
-                    ),
-                ),
-                'security' => array(
-                    'coreIdsStatus' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'off',
-                    ),
-                    'passwordComplexity' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'off',
-                    ),
-                    'captchaMethod' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
-                        'value' => 'contrexxCaptcha',
-                        'values' => '{src:\\' . __CLASS__ . '::getCaptchaOptions()}',
-                    ),
-                    'recaptchaSiteKey' => array(
-                        'value' => '',
-                    ),
-                    'recaptchaSecretKey' => array(
-                        'value' => '',
-                    ),
-                ),
-                'contactInformation' => array(
-                    'coreAdminName' => array(
-                        'value' => 'Administrator',
-                    ),
-                    'coreAdminEmail' => array(
-                        'value' => 'info@example.com',
-                    ),
-                    'contactFormEmail' => array(
-                        'value' => 'info@example.com',
-                    ),
-                    'contactCompany' => array(
-                        'value' => 'Ihr Firmenname',
-                    ),
-                    'contactAddress' => array(
-                        'value' => 'Musterstrasse 12',
-                    ),
-                    'contactZip' => array(
-                        'value' => '3600',
-                    ),
-                    'contactPlace' => array(
-                        'value' => 'Musterhausen',
-                    ),
-                    'contactCountry' => array(
-                        'value' => 'Musterland',
-                    ),
-                    'contactPhone' => array(
-                        'value' => '033 123 45 67',
-                    ),
-                    'contactFax' => array(
-                        'value' => '033 123 45 68',
-                    ),
-                ),
-                'otherConfigurations' => array(
-                    'xmlSitemapStatus' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'on',
-                    ),
-                    'frontendEditingStatus' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'on',
-                    ),
-                    'useCustomizings' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'off',
-                        'componentDependencies' => array('SystemInfo'),
-                    ),
-                    'corePagingLimit' => array(
-                        'value' => '30',
-                    ),
-                    'searchDescriptionLength' => array(
-                        'value' => '150',
-                    ),
-                    'googleMapsAPIKey' => array(
-                        'value' => '',
-                    ),
-                    'googleAnalyticsTrackingId' => array(
-                        'value' => '',
-                    ),
-                    'defaultMetaimage' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_IMAGE,
-                        'value' => '/themes/standard_4_0/images/og_logo_social_media.jpg',
-                        'values' => '{"type":"reference"}',
-                    ),
-                    'robotstxt' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_FILECONTENT,
-                        'values' => 'robots.txt',
-                    ),
-                    'dnsHostnameLookup' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'off',
-                    ),
-                ),
-                'core' => array(
-                    'coreSmtpServer' => array(
-                        'value' => '0',
-                    ),
-                    'lastAccessId' => array(
-                        'value' => '1',
-                    ),
-                    'installationId' => array(
-                        'value' => '',
-                    ),
-                ),
-                'component' => array(
-                    'bannerStatus' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => '0',
-                        'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
-                    ),
-                    'spamKeywords' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_TEXTAREA,
-                        'value' => 'sex, viagra',
-                        'values' => '',
-                    ),
-                    'newsTeasersStatus' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => '0',
-                        'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
-                    ),
-                    'feedNewsMLStatus' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => '0',
-                        'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
-                    ),
-                    'calendarheadlines' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => '0',
-                        'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
-                    ),
-                    'calendarheadlinescount' => array(
-                        'value' => '5',
-                    ),
-                    'calendardefaultcount' => array(
-                        'value' => '16',
-                    ),
-                    'calendarheadlinescat' => array(
-                        'value' => '0',
-                    ),
-                    'blockStatus' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => '1',
-                        'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
-                    ),
-                    'blockRandom' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => '1',
-                        'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
-                    ),
-                    'directoryHomeContent' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => '0',
-                        'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
-                    ),
-                    'forumHomeContent' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => '0',
-                        'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
-                    ),
-                    'podcastHomeContent' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => '0',
-                        'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
-                    ),
-                    'forumTagContent' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => '0',
-                        'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
-                    ),
-                    'dataUseModule' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => '0',
-                        'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
-                    ),
-                    'useKnowledgePlaceholders' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => '0',
-                        'values' => '1:TXT_ACTIVATED,0:TXT_DEACTIVATED',
-                    ),
-                    'dashboardNewsSrc' => array(
-                        'value' => 'http://www.cloudrexx.com/feed/news_headlines_de.xml',
-                    ),
-                ),
-                'release' => array(
-                    'coreCmsEdition' => array(
-                        'value' => 'Open Source',
-                    ),
-                    'coreCmsVersion' => array(
-                        'value' => '5.0.0',
-                    ),
-                    'coreCmsCodeName' => array(
-                        'value' => 'Nandri',
-                    ),
-                    'coreCmsStatus' => array(
-                        'value' => 'Stable',
-                    ),
-                    'coreCmsReleaseDate' => array(
-                        'value' => '1348783200',
-                    ),
-                    'coreCmsName' => array(
-                        'value' => 'Cloudrexx',
-                    ),
-                ),
-                'license' => array(
-                    'licenseKey' => array(
-                        'value' => '',
-                    ),
-                    'licenseState' => array(
-                        'value' => 'OK',
-                    ),
-                    'licenseValidTo' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DATETIME,
-                        'value' => '0',
-                    ),
-                    'licenseMessage' => array(
-                        'value' => '',
-                    ),
-                    'licensePartner' => array(
-                        'value' => '',
-                    ),
-                    'licenseCustomer' => array(
-                        'value' => '',
-                    ),
-                    'upgradeUrl' => array(
-                        'value' => 'http://license.contrexx.com/',
-                    ),
-                    'licenseGrayzoneMessages' => array(
-                        'value' => '',
-                    ),
-                    'licenseGrayzoneTime' => array(
-                        'value' => '14',
-                    ),
-                    'licenseLockTime' => array(
-                        'value' => '',
-                    ),
-                    'licenseUpdateInterval' => array(
-                        'value' => '24',
-                    ),
-                    'licenseFailedUpdate' => array(
-                        'value' => '0',
-                    ),
-                    'licenseSuccessfulUpdate' => array(
-                        'value' => '0',
-                    ),
-                    'licenseCreatedAt' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DATETIME,
-                        'value' => '',
-                    ),
-                    'licenseDomains' => array(
-                        'value' => '',
-                    ),
-                    'availableComponents' => array(
-                        'value' => '',
-                    ),
-                    'dashboardMessages' => array(
-                        'value' => '',
-                    ),
-                    'isUpgradable' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'on',
-                    ),
-                ),
-                'cache' => array(
-                    'cacheEnabled' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'off',
-                        'componentDependencies' => array('SystemInfo'),
-                    ),
-                    'cacheExpiration' => array(
-                        'value' => '86400',
-                        'componentDependencies' => array('SystemInfo'),
-                    ),
-                    'cacheOpStatus' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'off',
-                        'componentDependencies' => array('SystemInfo'),
-                    ),
-                    'cacheDbStatus' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'off',
-                        'componentDependencies' => array('SystemInfo'),
-                    ),
-                    'cacheReverseProxy' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'none',
-                        'values' => '{src:\\' . __CLASS__ . '::getReverseProxyTypes()}',
-                        'componentDependencies' => array('SystemInfo'),
-                    ),
-                    'cacheSsiOutput' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
-                        'value' => 'intern',
-                        'values' => '{src:\\' . __CLASS__ . '::getSsiOutputModes()}',
-                        'componentDependencies' => array('SystemInfo'),
-                    ),
-                    'cacheSsiType' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
-                        'value' => 'varnish',
-                        'values' => '{src:\\' . __CLASS__ . '::getSsiTypes()}',
-                        'componentDependencies' => array('SystemInfo'),
-                    ),
-                    'cacheUserCache' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'off',
-                        'componentDependencies' => array('SystemInfo'),
-                    ),
-                    'cacheOPCache' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'off',
-                        'componentDependencies' => array('SystemInfo'),
-                    ),
-                    'cacheProxyCacheConfig' => array(
-                        'value' => '{"ip":"127.0.0.1","port":8080}',
-                        'componentDependencies' => array('SystemInfo'),
-                    ),
-                    'cacheSsiProcessorConfig' => array(
-                        'value' => '{"ip":"127.0.0.1","port":8080}',
-                        'componentDependencies' => array('SystemInfo'),
-                    ),
-                    'internalSsiCache' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'off',
-                        'componentDependencies' => array('SystemInfo'),
-                    ),
-                    'cacheUserCacheMemcacheConfig' => array(
-                        'value' => '{"ip":"127.0.0.1","port":11211}',
-                        'componentDependencies' => array('SystemInfo'),
-                    ),
-                    'cacheUserCacheMamcachedConfig' => array(
-                        'value' => '{"ip":"127.0.0.1","port":11211}',
-                        'componentDependencies' => array('SystemInfo'),
-                    ),
-                ),
-                'lang' => array(
-                    'useVirtualLanguageDirectories' => array(
-                        'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
-                        'value' => 'on',
-                    ),
-                ),
-            );
-
-            $legalComponents = \Env::get('cx')->getLicense()->getLegalComponentsList();
-            foreach ($configlist as $group=>$configs) {
-                \Cx\Core\Setting\Controller\Setting::init('Config', $group, 'Yaml', $configPath);
-                $i = 0;
-                foreach ($configs as $name=>$data) {
-                    $i++;
-                    if (\Cx\Core\Setting\Controller\Setting::isDefined($name)) {
-                        continue;
-                    }
-                    if (isset($data['componentDependencies'])) {
-                        foreach ($data['componentDependencies'] as $dependency) {
-                            if (!in_array($dependency, $legalComponents)) {
-                                continue;
-                            }
+        $legalComponents = \Env::get('cx')->getLicense()->getLegalComponentsList();
+        foreach ($configlist as $group=>$configs) {
+            \Cx\Core\Setting\Controller\Setting::init('Config', $group, 'Yaml', $configPath);
+            $i = 0;
+            foreach ($configs as $name=>$data) {
+                $i++;
+                if (\Cx\Core\Setting\Controller\Setting::isDefined($name)) {
+                    continue;
+                }
+                if (isset($data['componentDependencies'])) {
+                    foreach ($data['componentDependencies'] as $dependency) {
+                        if (!in_array($dependency, $legalComponents)) {
+                            continue;
                         }
                     }
-                    if (!isset($data['type'])) {
-                        $data['type'] = \Cx\Core\Setting\Controller\Setting::TYPE_TEXT;
-                    }
-                    switch ($data['type']) {
-                        case \Cx\Core\Setting\Controller\Setting::TYPE_FILECONTENT:
-                            $data['value'] = '';
-                            break;
-                        case \Cx\Core\Setting\Controller\Setting::TYPE_RADIO:
-                            if (!isset($data['values'])) {
-                                $data['values'] = 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED';
-                            }
-                            // intentionally no break!
-                            //break;
-                        default:
-                            if (isset($existingConfig[$name])) {
-                                $data['value'] = $existingConfig[$name];
-                            }
-                            break;
-                    }
-                    if (!isset($data['values'])) {
-                        $data['values'] = null;
-                    }
-                    if (
-                        \Cx\Core\Setting\Controller\Setting::add(
-                            $name,
-                            $data['value'],
-                            $i,
-                            $data['type'],
-                            $data['values'],
-                            $group
-                        )
-                    ) {
-                        throw new \Cx\Lib\Update_DatabaseException(
-                            'Failed to add setting entry "' . $name . '" in group "' . $group . '"!'
-                        );
-                    }
+                }
+                if (!isset($data['type'])) {
+                    $data['type'] = \Cx\Core\Setting\Controller\Setting::TYPE_TEXT;
+                }
+                switch ($data['type']) {
+                    case \Cx\Core\Setting\Controller\Setting::TYPE_FILECONTENT:
+                        $data['value'] = '';
+                        break;
+                    case \Cx\Core\Setting\Controller\Setting::TYPE_RADIO:
+                        if (!isset($data['values'])) {
+                            $data['values'] = 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED';
+                        }
+                        // intentionally no break!
+                        //break;
+                    default:
+                        if (isset($existingConfig[$name])) {
+                            $data['value'] = $existingConfig[$name];
+                        }
+                        break;
+                }
+                if (!isset($data['values'])) {
+                    $data['values'] = null;
+                }
+                if (
+                    \Cx\Core\Setting\Controller\Setting::add(
+                        $name,
+                        $data['value'],
+                        $i,
+                        $data['type'],
+                        $data['values'],
+                        $group
+                    )
+                ) {
+                    throw new \Cx\Lib\Update_DatabaseException(
+                        'Failed to add setting entry "' . $name . '" in group "' . $group . '"!'
+                    );
                 }
             }
-        } catch (\Exception $e) {
-            \DBG::msg($e->getMessage());
         }
-        // Always
-        return false;
     }
+
     /**
      * Shows the all domains page
      *
