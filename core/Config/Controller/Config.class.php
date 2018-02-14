@@ -1753,10 +1753,14 @@ class Config
 
     /**
      * Initializes basic config of Cloudrexx
+     *
+     * $forceMigration forces the migration of configurations in settings.php
+     * to the configuration repository.
      * @param string $configPath (optional) Path the the configuration repository
+     * @param boolean $forceMigration (optional) Default false
      * @throws \Cx\Lib\Update_DatabaseException If a config cannot be initialized
      */
-    protected static function init($configPath = '') {
+    protected static function init($configPath = '', $forceMigration = false) {
         // fetch $_CONFIG data from settings.php file will be used for migration
         // of basic configuration from contrexx_settings to \Cx\Core\Setting
         $existingConfig = static::fetchConfigFromSettingsFile(
@@ -1774,7 +1778,11 @@ class Config
             $i = 0;
             foreach ($configs as $name=>$data) {
                 $i++;
-                if (\Cx\Core\Setting\Controller\Setting::isDefined($name)) {
+                $isDefined = \Cx\Core\Setting\Controller\Setting::isDefined($name);
+                if (
+                    !$forceMigration &&
+                    $isDefined
+                ) {
                     continue;
                 }
                 if (isset($data['componentDependencies'])) {
@@ -1806,18 +1814,24 @@ class Config
                 if (!isset($data['values'])) {
                     $data['values'] = null;
                 }
-                if (
-                    \Cx\Core\Setting\Controller\Setting::add(
+                if ($isDefined) {
+                    $result = \Cx\Core\Setting\Controller\Setting::set(
+                        $name,
+                        $data['value']
+                    );
+                } else {
+                    $result = \Cx\Core\Setting\Controller\Setting::add(
                         $name,
                         $data['value'],
                         $i,
                         $data['type'],
                         $data['values'],
                         $group
-                    )
-                ) {
+                    );
+                }
+                if (!$result) {
                     throw new \Cx\Lib\Update_DatabaseException(
-                        'Failed to add setting entry "' . $name . '" in group "' . $group . '"!'
+                        'Failed to add/update setting entry "' . $name . '" in group "' . $group . '"!'
                     );
                 }
             }
