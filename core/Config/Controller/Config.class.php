@@ -1309,9 +1309,11 @@ class Config
      * @throws \Cx\Lib\Update_DatabaseException If a config cannot be initialized
      */
     protected static function init($configPath = null) {
-        // fetch $_CONFIG data from settings.php file
-        // will be used for migration of basic configuration from contrexx_settings to \Cx\Core\Setting
-        $existingConfig = static::fetchConfigFromSettingsFile(self::getSettingsFile());
+        // fetch $_CONFIG data from settings.php file will be used for migration
+        // of basic configuration from contrexx_settings to \Cx\Core\Setting
+        $existingConfig = static::fetchConfigFromSettingsFile(
+            static::getSettingsFile()
+        );
 
         // List of configurations to initialize
         // Entries type and values are optional as they are set to TEXT and
@@ -1759,8 +1761,13 @@ class Config
         );
 
         $legalComponents = \Env::get('cx')->getLicense()->getLegalComponentsList();
-        foreach ($configlist as $group=>$configs) {
-            \Cx\Core\Setting\Controller\Setting::init('Config', $group, 'Yaml', $configPath);
+        foreach (static::$configlist as $group=>$configs) {
+            \Cx\Core\Setting\Controller\Setting::init(
+                'Config',
+                $group,
+                'Yaml',
+                $configPath
+            );
             $i = 0;
             foreach ($configs as $name=>$data) {
                 $i++;
