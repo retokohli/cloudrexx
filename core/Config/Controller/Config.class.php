@@ -1760,7 +1760,7 @@ class Config
      * @param boolean $forceMigration (optional) Default false
      * @throws \Cx\Lib\Update_DatabaseException If a config cannot be initialized
      */
-    public static function init($configPath = '', $forceMigration = false) {
+    public static function init($configPath = null, $forceMigration = false) {
         // fetch $_CONFIG data from settings.php file will be used for migration
         // of basic configuration from contrexx_settings to \Cx\Core\Setting
         $existingConfig = static::fetchConfigFromSettingsFile(

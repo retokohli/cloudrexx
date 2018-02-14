@@ -103,7 +103,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         switch ($command) {
             case 'config':
                 $force = current($arguments) == '--force';
-                \Cx\Core\Config\Controller\Config::init('', $force);
+                \Cx\Core\Config\Controller\Config::init(null, $force);
                 echo 'Done' . PHP_EOL;
                 break;
         }
