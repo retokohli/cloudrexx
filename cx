@@ -190,6 +190,7 @@ Available options are:
     --scripts-dir=<dir>             Locale directory to use as scripts directory instead of cloning from GIT repository
     --scripts-repo=<repoUrl>        GIT-URL for the scripts repository. Default is https://github.com/Cloudrexx/scripts
     --scripts-branch=<branchName>   GIT branch to check out of the scripts repository. Default is master.
+    --skip-database                 Does not initialize database.
 
 In addition all options of ./cx env config can be used, see ./cx help env config."
                     ;;
@@ -541,10 +542,12 @@ function cmd_env {
                 echo "In order to retry, please run ./cx env init --skip-scripts --skip-source"
                 exit
             fi
-            if [[ ${ARGUMENTS["silent"]} != true ]]; then
-                echo "Loading database"
+            if [[ ${ARGUMENTS["skip-database"]} != true ]]; then
+                if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                    echo "Loading database"
+                fi
+                ARGUMENTS["db"]=true && ARGUMENTS["drop-users"]=true && cmd_env update
             fi
-            ARGUMENTS["db"]=true && ARGUMENTS["drop-users"]=true && cmd_env update
             if [[ "${CONFIG["cms-version"]:0:1}" -ge 5 ]]; then
                 if [[ ${ARGUMENTS["silent"]} != true ]]; then
                     echo "Configuring cache"
