@@ -58,6 +58,7 @@ isset($objInit) && $objInit->mode == 'backend' ? \Env::get('ClassLoader')->loadF
  * @todo        Edit PHP DocBlocks!
  */
 
+class ConfigException extends \Exception {}
 
 class Config
 {
@@ -1758,7 +1759,7 @@ class Config
      * to the configuration repository.
      * @param string $configPath (optional) Path the the configuration repository
      * @param boolean $forceMigration (optional) Default false
-     * @throws \Cx\Lib\Update_DatabaseException If a config cannot be initialized
+     * @throws ConfigException If a config cannot be initialized
      */
     public static function init($configPath = null, $forceMigration = false) {
         // fetch $_CONFIG data from settings.php file will be used for migration
@@ -1833,7 +1834,7 @@ class Config
                 }
                 // result is null if value did not change
                 if ($result === false) {
-                    throw new \Cx\Lib\Update_DatabaseException(
+                    throw new ConfigException(
                         'Failed to add/update setting entry "' . $name . '" in group "' . $group . '"!'
                     );
                 }
