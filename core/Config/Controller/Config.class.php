@@ -1788,7 +1788,7 @@ class Config
                 if (isset($data['componentDependencies'])) {
                     foreach ($data['componentDependencies'] as $dependency) {
                         if (!in_array($dependency, $legalComponents)) {
-                            continue;
+                            continue 2;
                         }
                     }
                 }
