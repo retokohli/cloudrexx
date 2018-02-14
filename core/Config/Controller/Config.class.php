@@ -277,6 +277,7 @@ class Config
             ),
             'lastAccessId' => array(
                 'value' => '1',
+                'values' => '',
             ),
             'installationId' => array(
                 'value' => '',
@@ -310,12 +311,15 @@ class Config
             ),
             'calendarheadlinescount' => array(
                 'value' => '5',
+                'values' => '',
             ),
             'calendardefaultcount' => array(
                 'value' => '16',
+                'values' => '',
             ),
             'calendarheadlinescat' => array(
                 'value' => '0',
+                'values' => '',
             ),
             'blockStatus' => array(
                 'type' => \Cx\Core\Setting\Controller\Setting::TYPE_RADIO,
@@ -375,6 +379,7 @@ class Config
                 'value' => 'Stable',
             ),
             'coreCmsReleaseDate' => array(
+                'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DATE,
                 'value' => '1348783200',
             ),
             'coreCmsName' => array(
@@ -423,7 +428,7 @@ class Config
                 'value' => '0',
             ),
             'licenseCreatedAt' => array(
-                'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DATETIME,
+                'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DATE,
                 'value' => '',
             ),
             'licenseDomains' => array(
@@ -505,7 +510,7 @@ class Config
                 'value' => '{"ip":"127.0.0.1","port":11211}',
                 'componentDependencies' => array('SystemInfo'),
             ),
-            'cacheUserCacheMamcachedConfig' => array(
+            'cacheUserCacheMemcachedConfig' => array(
                 'value' => '{"ip":"127.0.0.1","port":11211}',
                 'componentDependencies' => array('SystemInfo'),
             ),
