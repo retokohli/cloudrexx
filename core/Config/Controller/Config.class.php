@@ -1768,6 +1768,7 @@ class Config
         );
 
         $legalComponents = \Env::get('cx')->getLicense()->getLegalComponentsList();
+        $needsUpdate = false;
         foreach (static::$configlist as $group=>$configs) {
             \Cx\Core\Setting\Controller\Setting::init(
                 'Config',
@@ -1819,6 +1820,7 @@ class Config
                         $name,
                         $data['value']
                     );
+                    $needsUpdate = true;
                 } else {
                     $result = \Cx\Core\Setting\Controller\Setting::add(
                         $name,
@@ -1836,6 +1838,9 @@ class Config
                     );
                 }
             }
+        }
+        if ($needsUpdate) {
+            \Cx\Core\Setting\Controller\Setting::updateAll();
         }
     }
 
