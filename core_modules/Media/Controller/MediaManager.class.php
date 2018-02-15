@@ -1244,7 +1244,7 @@ class MediaManager extends MediaLibrary
                                       ? 'on' : 'off';
             $objDatabase->Execute('
                 UPDATE
-                    '.DBPREFIX.'module_media_settings
+                    `'.DBPREFIX.'module_media_settings`
                 SET
                     `value` = "' . $settingPrettyFormat . '"
                 WHERE
@@ -1253,10 +1253,9 @@ class MediaManager extends MediaLibrary
 
             $prettyFormatRegexpKey     = 'mediaSettings_Media'. $i .'PrettyFormatRegexp';
             $settingPrettyFormatRegexp = isset($_POST[$prettyFormatRegexpKey]) ? contrexx_input2raw($_POST[$prettyFormatRegexpKey]) : '';
-\DBG::dump($settingPrettyFormatRegexp);
             $objDatabase->Execute('
                 UPDATE
-                    '.DBPREFIX.'module_media_settings
+                    `'.DBPREFIX.'module_media_settings`
                 SET
                     `value` = "' . contrexx_raw2db($settingPrettyFormatRegexp) . '"
                 WHERE

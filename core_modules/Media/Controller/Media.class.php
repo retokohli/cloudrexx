@@ -445,7 +445,7 @@ CODE;
 
     /**
      * Format a filename according to configuration option 'Pretty format'
-     * of currently loaded media archiv.
+     * of currently loaded media archive.
      *
      * @param   string  $filename The filename to pretty format
      * @return  string  The pretty formatted filename. In case of any error
@@ -460,39 +460,23 @@ CODE;
 
         // check if a regexp is set
         $regexpConf = $this->_arrSettings[strtolower($this->archive) . '_pretty_file_name_regexp'];
-        if (empty($regexpConf)) {
-            return $filename;
-        }
-
-        // verify delimiter of regexp
-        $delimiter = preg_quote($regexpConf[0], '/');
-        if (!preg_match('/^' . $delimiter . '.+' . $delimiter . '.+' . $delimiter . '$/', $regexpConf)) {
-            return $filename;
-        }
-
-        $regexp = explode($delimiter, $regexpConf);
-
-        // drop empty elements
-        $regexp = array_filter($regexp);
-        $regexp = array_values($regexp);
-
-        // verify valid regexp
-        // must contain exactly two elements:
-        // - pattern
-        // - replacement
-        if (count($regexp) != 2) {
-            return $filename;
-        }
 
         // generate pretty formatted filename
-        $prettyFilename = preg_replace($delimiter . $regexp[0] . $delimiter, $regexp[1], $filename);
+        try {
+            $regularExpression = new \Cx\Lib\Helpers\RegularExpression($regexpConf);
+            $prettyFilename = $regularExpression->replace($filename);
 
-        // check if pretty format generation was successful
-        if (is_null($prettyFilename)) {
-            return $filename;
+            // return pretty filename if conversion was successful
+            if (!is_null($prettyFilename)) {
+                return $prettyFilename;
+            }
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
         }
 
-        return $prettyFilename;
+        // return original filename in case anything
+        // didn't work out as expected
+        return $filename;
     }
 
     /**
