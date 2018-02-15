@@ -277,6 +277,16 @@ class Media extends MediaLibrary
                         $previewUrl->setParam('act', null);
                         $previewUrl->setParam('file', null);
                         $previewUrl->setParam('path', $path);
+
+                        // show directory specific template block
+                        if ($this->_objTpl->blockExists('mediaDirectoryTreeDir')) {
+                            $this->_objTpl->touchBlock('mediaDirectoryTreeDir');
+                        }
+
+                        // hide file specific template block
+                        if ($this->_objTpl->blockExists('mediaDirectoryTreeFile')) {
+                            $this->_objTpl->hideBlock('mediaDirectoryTreeFile');
+                        }
                         break;
 
                     case 'file':
@@ -293,6 +303,16 @@ class Media extends MediaLibrary
                             $image        = true;
                             $tmpSize      = getimagesize($filePath);
                             $imagePreview = 'javascript: preview(\'' . $mediaWebPath . $fileName . '\', ' . $tmpSize[0] . ', ' . $tmpSize[1] . ');';
+                        }
+
+                        // hide directory specific template block
+                        if ($this->_objTpl->blockExists('mediaDirectoryTreeDir')) {
+                            $this->_objTpl->hideBlock('mediaDirectoryTreeDir');
+                        }
+
+                        // show file specific template block
+                        if ($this->_objTpl->blockExists('mediaDirectoryTreeFile')) {
+                            $this->_objTpl->touchBlock('mediaDirectoryTreeFile');
                         }
                     break;
                 }
