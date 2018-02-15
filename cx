@@ -138,10 +138,7 @@ Available options are:
                     echo "This command opens an interactive shell of the NGINX proxy docker container.
 
 Synopsis
-    ./cx envs shell [<options>]
-
-Available options are:
-    --wrapper       Opens an interactive shell of the  Windows wrapper container instead (Windows only)"
+    ./cx envs shell"
                     ;;
                 *)
                     echo "This command manages the environment for multiple Cloudrexx installations on one host.
@@ -275,7 +272,10 @@ Available options are:
                     echo "This command opens an interactive shell of the PHP docker container for this environment.
 
 Synopsis
-    ./cx env shell"
+    ./cx env shell [<options>]
+
+Available options are:
+    --wrapper       Opens an interactive shell of the  Windows wrapper container instead (Windows only)"
                     ;;
                 *)
                     echo "This command manages a Cloudrexx installation and its environment.
@@ -1229,7 +1229,7 @@ set string=%string:\=/%
 set string=/host_mnt/%string::/=/%
 
 REM Special case: user wants to start interactive shell to wrapper container
-if "%*" == "envs shell --wrapper" (
+if "%*" == "env shell --wrapper" (
     docker run --rm -ti --name clx-win-wrapper -e PROXY_HOST_DIR="%string%" -v "%cd%/":/root -v /var/run/docker.sock:/var/run/docker.sock cloudrexx/ubuntu sh -c "cd /root && bash"
     goto :EOF
 )
