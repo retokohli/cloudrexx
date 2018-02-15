@@ -246,10 +246,11 @@ class Media extends MediaLibrary
                         $this->_objTpl->hideBlock('manage_access_option');
                     }
                 }
+
                 $this->_objTpl->setVariable(array(  // file
                     'MEDIA_DIR_TREE_ROW'  => $class,
                     'MEDIA_FILE_ICON'     => $dirTree[$key]['icon'][$x],
-                    'MEDIA_FILE_NAME'     => $fileName,
+                    'MEDIA_FILE_NAME'     => $this->prettyFormatFilename($fileName),
                     'MEDIA_FILE_SIZE'     => $this->_formatSize($dirTree[$key]['size'][$x]),
                     'MEDIA_FILE_TYPE'     => $this->_formatType($dirTree[$key]['type'][$x]),
                     'MEDIA_FILE_DATE'     => $this->_formatDate($dirTree[$key]['date'][$x]),
@@ -440,6 +441,58 @@ CODE;
                 'FOLDER_WIDGET_CODE' => $folderWidget->getXHtml()
             ));
         }
+    }
+
+    /**
+     * Format a filename according to configuration option 'Pretty format'
+     * of currently loaded media archiv.
+     *
+     * @param   string  $filename The filename to pretty format
+     * @return  string  The pretty formatted filename. In case of any error
+     *                  or if the function to pretty format is disabled,
+     *                  then the original $filename is being returned.
+     */
+    protected function prettyFormatFilename($filename) {
+        // return original filename in case pretty format function is disabled
+        if ($this->_arrSettings[strtolower($this->archive) . '_pretty_file_names'] == 'off') {
+            return $filename;
+        }
+
+        // check if a regexp is set
+        $regexpConf = $this->_arrSettings[strtolower($this->archive) . '_pretty_file_name_regexp'];
+        if (empty($regexpConf)) {
+            return $filename;
+        }
+
+        // verify delimiter of regexp
+        $delimiter = preg_quote($regexpConf[0], '/');
+        if (!preg_match('/^' . $delimiter . '.+' . $delimiter . '.+' . $delimiter . '$/', $regexpConf)) {
+            return $filename;
+        }
+
+        $regexp = explode($delimiter, $regexpConf);
+
+        // drop empty elements
+        $regexp = array_filter($regexp);
+        $regexp = array_values($regexp);
+
+        // verify valid regexp
+        // must contain exactly two elements:
+        // - pattern
+        // - replacement
+        if (count($regexp) != 2) {
+            return $filename;
+        }
+
+        // generate pretty formatted filename
+        $prettyFilename = preg_replace($delimiter . $regexp[0] . $delimiter, $regexp[1], $filename);
+
+        // check if pretty format generation was successful
+        if (is_null($prettyFilename)) {
+            return $filename;
+        }
+
+        return $prettyFilename;
     }
 
     /**
