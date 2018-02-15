@@ -270,12 +270,16 @@ class Media extends MediaLibrary
                 }
 
                 $file = rawurlencode($fileName);
-                if ($key == 'dir') {
+                switch ($key) {
+                    case 'dir':
                     $path = rawurlencode($mediaWebPath . $fileName . '/');
                     $previewUrl->setParam('act', null);
                     $previewUrl->setParam('file', null);
                     $previewUrl->setParam('path', $path);
-                } elseif ($key == 'file') {
+                        break;
+
+                    case 'file':
+                    default:
                     $path = rawurlencode($mediaWebPath);
 
                     $filePath = $mediaPath . $fileName;
@@ -288,7 +292,10 @@ class Media extends MediaLibrary
                         $previewUrl->setParam('path', $path);
                         $previewUrl->setParam('file', $file);
                     }
+
+                    break;
                 }
+
                 $deleteUrl->setParam('path', $path);
                 $deleteUrl->setParam('file', $key == 'dir' ? null : $file);
 
