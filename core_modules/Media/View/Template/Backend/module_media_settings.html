@@ -1,4 +1,9 @@
 <!-- START module_media_settings.html -->
+<style type="text/css">
+.group_div {
+    margin-left: 22px;
+}
+</style>
 <script language="javascript" type="text/javascript">
 
 cx.jQuery(function() {
@@ -170,13 +175,13 @@ function setArchiveTitle(archiveNumber) {
         <tr class="row1">
             <td>
                 <label>
-                    <input type="radio" {MEDIA_ALLOW_USER_SEARCH_ON} name="mediaSettings_Media{MEDIA_ARCHIVE_NUMBER}FrontendSearch" value="on" />
-                    {TXT_CORE_MODULE_MEDIA_ENABLE_SEARCH_FUNCTIONALITY}
+                    <input type="radio" {MEDIA_ALLOW_USER_SEARCH_OFF} name="mediaSettings_Media{MEDIA_ARCHIVE_NUMBER}FrontendSearch" value="off" />
+                    {TXT_CORE_MODULE_MEDIA_DISABLED}
                 </label>
                 <br />
                 <label>
-                    <input type="radio" {MEDIA_ALLOW_USER_SEARCH_OFF} name="mediaSettings_Media{MEDIA_ARCHIVE_NUMBER}FrontendSearch" value="off" />
-                    {TXT_CORE_MODULE_MEDIA_DISABLED}
+                    <input type="radio" {MEDIA_ALLOW_USER_SEARCH_ON} name="mediaSettings_Media{MEDIA_ARCHIVE_NUMBER}FrontendSearch" value="on" />
+                    {TXT_CORE_MODULE_MEDIA_ENABLE_SEARCH_FUNCTIONALITY}
                 </label>
             </td>
         </tr>
