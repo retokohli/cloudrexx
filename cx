@@ -584,6 +584,10 @@ function cmd_env {
             fi
             dockerexec exec "<db-container>" bash -c "while ! echo | mysql -u${CONFIG["db-user"]} -p${CONFIG["db-pass"]} &> /dev/null; do sleep 1; done"
             if [[ ${ARGUMENTS["silent"]} != true ]]; then
+                echo "Applying configuration to new environment"
+            fi
+            phpexec config --force
+            if [[ ${ARGUMENTS["silent"]} != true ]]; then
                 echo "Environment successfully initialized. It is available at http://${CONFIG["hostname"]}/"
                 if [[ ${CONFIG["is-vhost"]} == true ]]; then
                     echo "phpMyAdmin is available at http://phpma.${CONFIG["hostname"]}/"
@@ -963,6 +967,13 @@ function set_config_array {
     fi
     # save docker-compose.yml
     echo "$FILE_CONTENTS" > docker-compose.yml
+    
+    if [[ "${CONFIG["cms-version"]:0:1}" -ge 5 ]] && [ "$(dockerexec ps -q -f "name=<web-container>")" ]; then
+        if [[ ${ARGUMENTS["silent"]} != true ]]; then
+            echo "Applying configuration to running environment"
+        fi
+        phpexec config --force
+    fi
 }
 
 #####################
