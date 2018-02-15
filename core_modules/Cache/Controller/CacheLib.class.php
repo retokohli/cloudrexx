@@ -299,8 +299,14 @@ class CacheLib
             unset($this->memcached); // needed for reinitialization
             if (class_exists('\Memcached')) {
                 $memcached = new \Memcached();
+                $memcached->setOption(\Memcached::OPT_BINARY_PROTOCOL, false);
                 if (@$memcached->addServer($memcachedConfiguration['ip'], $memcachedConfiguration['port'])) {
-                    $this->memcached = $memcached;
+                    $servers = $memcached->getStats();
+                    if (!empty($servers) &&
+                        isset($servers[$memcachedConfiguration['ip'] . ':' . $memcachedConfiguration['port']])
+                    ) {
+                        $this->memcached = $memcached;
+                    }
                 }
             }
             if ($this->isConfigured(self::CACHE_ENGINE_MEMCACHED)) {
@@ -670,9 +676,9 @@ class CacheLib
                 $setting = 'opcache.enable';
                 break;
             case self::CACHE_ENGINE_MEMCACHE:
-                return $this->memcache ? true : false;
+                return !empty($this->memcache) ? true : false;
             case self::CACHE_ENGINE_MEMCACHED:
-                return $this->memcached ? true : false;
+                return !empty($this->memcached) ? true : false;
             case self::CACHE_ENGINE_XCACHE:
                 $setting = 'xcache.cacher';
                 break;
@@ -802,7 +808,14 @@ class CacheLib
             $this->_deleteAllFiles('cxPages');
         }
 
-        $cacheEngine = $cacheEngine == null ? $this->userCacheEngine : $cacheEngine;
+        if ($cacheEngine == null) {
+            if ($this->userCacheEngine == self::CACHE_ENGINE_MEMCACHED) {
+                // do not automatically flush memcached as fallback
+                // this will break Gedmo etc
+            } else {
+                $cacheEngine = $this->userCacheEngine;
+            }
+        }
         switch ($cacheEngine) {
             case self::CACHE_ENGINE_APC:
                 $this->clearApc();
@@ -940,19 +953,24 @@ class CacheLib
 
     /**
      * Clears all Memcacheddata related to this Domain if Memcache is installed
+     * @return  integer Returns the number of invalidated keys
      */
-    private function clearMemcached()
+    public function clearMemcached()
     {
         if(!$this->isInstalled(self::CACHE_ENGINE_MEMCACHED)){
             return;
         }
         //$this->memcache->flush(); //<- not like this!!!
         $keys = $this->memcached->getAllKeys();
+        $n = 0;
         foreach($keys as $key){
             if(strpos($key, $this->getCachePrefix()) !== false){
                 $this->memcached->delete($key);
+                $n++;
             }
         }
+
+        return $n;
     }
 
     /**

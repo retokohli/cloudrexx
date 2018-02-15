@@ -801,6 +801,27 @@ class MediaDirectory extends MediaDirectoryLibrary
             $this->metaDescription = $firstInputfieldValue;
         }
 
+        // parse related entries
+        $this->parseRelatedEntries($objEntry, $intEntryId, $intCategoryId, $intLevelId);
+
+        // parse previous entry
+        $this->parsePreviousEntry($objEntry, $intEntryId, $intCategoryId, $intLevelId);
+
+        // parse next entry
+        $this->parseNextEntry($objEntry, $intEntryId, $intCategoryId, $intLevelId);
+    }
+
+    /**
+     * Parse related entries in template block mediadirRelatedList.
+     * See (@see fetchMediaDirListConfigFromTemplate) for a list of functional
+     * placeholders to be used in the template.
+     *
+     * @param   MediaDirectoryEntry $objEntry   Instance of current MediaDirectoryEntry
+     * @param   integer $intEntryId ID of the currently processing entry
+     * @param   integer $intCategoryId ID of the currently selected category
+     * @param   integer $intLevelId ID of the currently selected level
+     */
+    protected function parseRelatedEntries($objEntry, $intEntryId, $intCategoryId = 0, $intLevelId = 0) {
         // check if we shall parse any related entries
         if (!$this->_objTpl->blockExists($this->moduleNameLC.'RelatedList')) {
             return;
@@ -851,9 +872,168 @@ class MediaDirectory extends MediaDirectoryLibrary
         $objEntry->setStrBlockName($this->moduleNameLC.'RelatedListEntry');
 
         // prarse related entries
-        $objEntry->listEntries($this->_objTpl, 5);
+        $objEntry->listEntries($this->_objTpl, 5, 'related');
     }
 
+    /**
+     * Parse previous entry in template block mediadirPreviousEntry
+     * See (@see fetchMediaDirListConfigFromTemplate) for a list of functional
+     * placeholders to be used in the template.
+     *
+     * @param   MediaDirectoryEntry $objEntry   Instance of current MediaDirectoryEntry
+     * @param   integer $intEntryId ID of the currently processing entry
+     * @param   integer $intCategoryId ID of the currently selected category
+     * @param   integer $intLevelId ID of the currently selected level
+     */
+    protected function parsePreviousEntry($objEntry, $intEntryId, $intCategoryId = 0, $intLevelId = 0) {
+        // check if we shall parse the previous entry
+        if (!$this->_objTpl->blockExists($this->moduleNameLC.'PreviousEntry')) {
+            return;
+        }
+
+        $latest = null;
+        $formId = null;
+        $categoryId = null;
+        $levelId = null;
+
+        $config = MediaDirectoryLibrary::fetchMediaDirListConfigFromTemplate($this->moduleNameLC.'PreviousEntry', $this->_objTpl, null, $intCategoryId, $intLevelId);
+
+        if (isset($config['list']['latest'])) {
+            $latest = $config['list']['latest'];
+        }
+        if (isset($config['filter']['form'])) {
+            $formId = $config['filter']['form'];
+        }
+        if (isset($config['filter']['category'])) {
+            $categoryId = $config['filter']['category'];
+        }
+        if (isset($config['filter']['level'])) {
+            $levelId = $config['filter']['level'];
+        }
+
+        // fetch related entries
+        $objEntry->getEntries(null, $levelId, $categoryId, null, $latest, null, true, null, 'n', null, null, $formId);
+
+        // If the list contains less than two entries, there is no point
+        // in proceeding as the previous entry would be the same as the
+        // one currently processing.
+        // Also, if the currently processing entry is not part of the
+        // related list, then there does no real previous entry exists.
+        if (
+            count($objEntry->arrEntries) < 2 ||
+            !isset($objEntry->arrEntries[$intEntryId])
+        ) {
+            // hide block being used to display previous entry
+            $this->_objTpl->hideBlock($this->moduleNameLC.'PreviousEntry');
+            return;
+        }
+
+        // identify previous entry
+        $previousEntryId = 0;
+        reset($objEntry->arrEntries);
+        while (key($objEntry->arrEntries) !== $intEntryId) {
+            $previousEntryId = key($objEntry->arrEntries);
+            next($objEntry->arrEntries);
+        }
+
+        // In case previousEntryId is not set, then $intEntryId is the first
+        // entry in the list ($objEntry->arrEntries).
+        // Therefore the previous entry of $intEntryId is the last entry of
+        // the list (array)
+        if (!$previousEntryId) {
+            end($objEntry->arrEntries);
+            $previousEntryId = key($objEntry->arrEntries);
+        }
+
+        // fetch previous entry
+        $objEntry->getEntries($previousEntryId, $levelId, $categoryId, null, $latest, null, true, null, 'n', null, null, $formId);
+
+        // set mediadirPreviousEntry tempalte block to be parsed
+        $objEntry->setStrBlockName($this->moduleNameLC.'PreviousEntry');
+
+        // parse previous entry
+        $objEntry->listEntries($this->_objTpl, 5, 'previous');
+    }
+
+    /**
+     * Parse next entry in template block mediadirNextEntry
+     * See (@see fetchMediaDirListConfigFromTemplate) for a list of functional
+     * placeholders to be used in the template.
+     *
+     * @param   MediaDirectoryEntry $objEntry   Instance of current MediaDirectoryEntry
+     * @param   integer $intEntryId ID of the currently processing entry
+     * @param   integer $intCategoryId ID of the currently selected category
+     * @param   integer $intLevelId ID of the currently selected level
+     */
+    protected function parseNextEntry($objEntry, $intEntryId, $intCategoryId = 0, $intLevelId = 0) {
+        // check if we shall parse the next entry
+        if (!$this->_objTpl->blockExists($this->moduleNameLC.'NextEntry')) {
+            return;
+        }
+
+        $latest = null;
+        $formId = null;
+        $categoryId = null;
+        $levelId = null;
+
+        $config = MediaDirectoryLibrary::fetchMediaDirListConfigFromTemplate($this->moduleNameLC.'NextEntry', $this->_objTpl, null, $intCategoryId, $intLevelId);
+
+        if (isset($config['list']['latest'])) {
+            $latest = $config['list']['latest'];
+        }
+        if (isset($config['filter']['form'])) {
+            $formId = $config['filter']['form'];
+        }
+        if (isset($config['filter']['category'])) {
+            $categoryId = $config['filter']['category'];
+        }
+        if (isset($config['filter']['level'])) {
+            $levelId = $config['filter']['level'];
+        }
+
+        // fetch related entries
+        $objEntry->getEntries(null, $levelId, $categoryId, null, $latest, null, true, null, 'n', null, null, $formId);
+
+        // if the list contains less than two entries, there is no point
+        // in proceeding as the next entry would be the same as the
+        // one currently processing
+        // Also, if the currently processing entry is not part of the
+        // related list, then there does no real next entry exists.
+        if (
+            count($objEntry->arrEntries) < 2 ||
+            !isset($objEntry->arrEntries[$intEntryId])
+        ) {
+            // hide block being used to display next entry
+            $this->_objTpl->hideBlock($this->moduleNameLC.'NextEntry');
+            return;
+        }
+
+        // identify next entry
+        $nextEntryId = 0;
+        end($objEntry->arrEntries);
+        while (key($objEntry->arrEntries) !== $intEntryId) {
+            $nextEntryId = key($objEntry->arrEntries);
+            prev($objEntry->arrEntries);
+        }
+
+        // In case nextEntryId is not set, then $intEntryId is the last 
+        // entry in the list ($objEntry->arrEntries).
+        // Therefore the next entry of $intEntryId is the first entry of
+        // the list (array)
+        if (!$nextEntryId) {
+            reset($objEntry->arrEntries);
+            $nextEntryId = key($objEntry->arrEntries);
+        }
+
+        // fetch next entry
+        $objEntry->getEntries($nextEntryId, $levelId, $categoryId, null, $latest, null, true, null, 'n', null, null, $formId);
+
+        // set mediadirNextEntry tempalte block to be parsed
+        $objEntry->setStrBlockName($this->moduleNameLC.'NextEntry');
+
+        // parse next entry
+        $objEntry->listEntries($this->_objTpl, 5, 'next');
+    }
 
 
     function showMap()

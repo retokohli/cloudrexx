@@ -114,7 +114,7 @@ class DownloadsManager extends DownloadsLibrary
      */
     public function getPage()
     {
-        global $objTemplate, $_ARRAYLANG, $_LANGID;
+        global $objTemplate, $_ARRAYLANG;
 
         \Permission::checkAccess(141, 'static');
 
@@ -133,7 +133,7 @@ class DownloadsManager extends DownloadsLibrary
 
         switch ($_REQUEST['act']) {
             case 'get':
-                $this->getDownload($_LANGID);
+                $this->getDownload();
                 break;
             case 'delete_group':
                 $this->deleteGroup();
@@ -273,7 +273,7 @@ class DownloadsManager extends DownloadsLibrary
         $this->objTemplate->setVariable(array(
             'TXT_DOWNLOADS_DOWNLOADS'       => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS'],
             'TXT_DOWNLOADS_SEARCH_DOWNLOAD' => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'],
-            'DOWNLOADS_SEARCH_TERM'         => !empty($searchTerm) ? $searchTerm : $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'],
+            'DOWNLOADS_SEARCH_TERM'         => !empty($searchTerm) ? $searchTerm : '',
             'DOWNLOADS_CATEGORY_MENU'       => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES']),
             'TXT_DOWNLOADS_SEARCH'          => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
         ));
@@ -291,7 +291,7 @@ class DownloadsManager extends DownloadsLibrary
         ));
     }
 
-    private function getDownload($langId)
+    private function getDownload()
     {
         $objDownload = new Download();
         $objDownload->load(!empty($_GET['id']) ? intval($_GET['id']) : 0);
@@ -308,6 +308,7 @@ class DownloadsManager extends DownloadsLibrary
                 \Permission::noAccess();
             }
 
+            $langId = DownloadsLibrary::getOutputLocale()->getId();
             if ($objDownload->getType() == 'file') {
                 $objDownload->send($langId);
             } else {
@@ -328,12 +329,12 @@ class DownloadsManager extends DownloadsLibrary
 
     private function deleteGroup()
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $objGroup = Group::getGroup(isset($_GET['id']) ? $_GET['id'] : 0);
 
         if (!$objGroup->EOF) {
-            $name = '<strong>'.htmlentities($objGroup->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'</strong>';
+            $name = '<strong>'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).'</strong>';
             if ($objGroup->delete()) {
                 $this->arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_GROUP_DELETE_SUCCESS'], $name);
             } else {
@@ -344,7 +345,7 @@ class DownloadsManager extends DownloadsLibrary
 
     private function deleteGroups($arrGroupsIds)
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $succeded = true;
 
@@ -366,7 +367,7 @@ class DownloadsManager extends DownloadsLibrary
 
     private function groups()
     {
-        global $_ARRAYLANG, $_LANGID, $_CONFIG;
+        global $_ARRAYLANG, $_CONFIG;
 
         \Permission::checkAccess(142, 'static');
 
@@ -442,13 +443,13 @@ class DownloadsManager extends DownloadsLibrary
                 // parse delete button
                 $this->objTemplate->setVariable(array(
                     'TXT_DOWNLOADS_DELETE'               => $_ARRAYLANG['TXT_DOWNLOADS_DELETE'],
-                    'DOWNLOADS_GROUP_NAME_JS'            => htmlspecialchars($objGroup->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)
+                    'DOWNLOADS_GROUP_NAME_JS'            => htmlspecialchars($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET)
                 ));
 
                 $this->objTemplate->setVariable(array(
                     'DOWNLOADS_GROUP_ROW_CLASS'          => $nr++ % 2 ? 'row1' : 'row2',
                     'DOWNLOADS_GROUP_STATUS_LED'         => $objGroup->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
-                    'DOWNLOADS_GROUP_NAME'               => htmlentities($objGroup->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_GROUP_NAME'               => htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET),
                     'DOWNLOADS_GROUP_PLACEHOLDER'        => $objGroup->getPlaceholder()
                 ));
                 $this->objTemplate->parse('downloads_group_list');
@@ -494,7 +495,7 @@ class DownloadsManager extends DownloadsLibrary
 
     private function group()
     {
-        global $_ARRAYLANG, $_LANGID;
+        global $_ARRAYLANG;
 
         \Permission::checkAccess(142, 'static');
 
@@ -574,7 +575,7 @@ class DownloadsManager extends DownloadsLibrary
         }
 
         $this->objTemplate->setVariable(array(
-            'DOWNLOADS_GROUP_NAME'   => htmlentities($objGroup->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_GROUP_NAME'   => htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_DOWNLOADS_EXTENDED' => $_ARRAYLANG['TXT_DOWNLOADS_EXTENDED']
         ));
         $this->objTemplate->parse('downloads_group_name');
@@ -605,12 +606,12 @@ class DownloadsManager extends DownloadsLibrary
 
     private function deleteCategory()
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $objCategory = Category::getCategory(isset($_GET['id']) ? $_GET['id'] : 0);
 
         if (!$objCategory->EOF) {
-            $name = '<strong>'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'</strong>';
+            $name = '<strong>'.htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET).'</strong>';
             if ($objCategory->delete(isset($_GET['subcategories']) && $_GET['subcategories'] == 'true')) {
                 $this->arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_DELETE_SUCCESS'], $name);
             } else {
@@ -622,7 +623,7 @@ class DownloadsManager extends DownloadsLibrary
 
     private function deleteCategories($arrCategoryIds, $recursive = false)
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $succeded = true;
 
@@ -660,7 +661,7 @@ class DownloadsManager extends DownloadsLibrary
      */
     private function category()
     {
-        global $_ARRAYLANG, $_LANGID;
+        global $_ARRAYLANG;
 
         $status = true;
         $objFWUser = \FWUser::getFWUserObject();
@@ -818,13 +819,13 @@ class DownloadsManager extends DownloadsLibrary
         }
 
         $this->objTemplate->setVariable(array(
-            'DOWNLOADS_CATEGORY_NAME'   => htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_CATEGORY_NAME'   => htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_DOWNLOADS_EXTENDED'    => $_ARRAYLANG['TXT_DOWNLOADS_EXTENDED']
         ));
         $this->objTemplate->parse('downloads_category_name');
 
         $this->objTemplate->setVariable(array(
-            'DOWNLOADS_CATEGORY_DESCRIPTION'    => htmlentities($objCategory->getDescription($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+            'DOWNLOADS_CATEGORY_DESCRIPTION'    => htmlentities($objCategory->getDescription(), ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_DOWNLOADS_EXTENDED'            => $_ARRAYLANG['TXT_DOWNLOADS_EXTENDED']
         ));
         $this->objTemplate->parse('downloads_category_description');
@@ -890,7 +891,7 @@ class DownloadsManager extends DownloadsLibrary
 
     private function downloads()
     {
-        global $_ARRAYLANG, $_LANGID, $_CONFIG;
+        global $_ARRAYLANG, $_CONFIG;
 
         $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS'];
         $this->objTemplate->addBlockFile('DOWNLOADS_DOWNLOAD_TEMPLATE', 'module_downloads_downloads', 'module_downloads_downloads_overview.html');
@@ -926,7 +927,7 @@ class DownloadsManager extends DownloadsLibrary
         $this->objTemplate->setVariable(array(
             'TXT_DOWNLOADS_FILTER'          => $_ARRAYLANG['TXT_DOWNLOADS_FILTER'],
             'TXT_DOWNLOADS_SEARCH_DOWNLOAD' => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'],
-            'DOWNLOADS_SEARCH_TERM'         => !empty($searchTerm) ? $searchTerm : $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'],
+            'DOWNLOADS_SEARCH_TERM'         => !empty($searchTerm) ? $searchTerm : '',
             'DOWNLOADS_CATEGORY_MENU'       => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES']),
             'TXT_DOWNLOADS_SEARCH'          => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
         ));
@@ -1149,7 +1150,7 @@ class DownloadsManager extends DownloadsLibrary
 
     private function deleteDownload()
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $objDownload = new Download();
         $objDownload->load(isset($_GET['id']) ? $_GET['id'] : 0);
@@ -1167,7 +1168,7 @@ class DownloadsManager extends DownloadsLibrary
 
     private function deleteDownloads($arrDownloadIds)
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $succeded = true;
 
@@ -1220,6 +1221,8 @@ class DownloadsManager extends DownloadsLibrary
         $objCategory->setDownloads(array_diff($arrDownloadIds, $arrUnlinkDownloadIds));
 
         if ($objCategory->storeDownloadAssociations()) {
+            //clear Esi Cache
+            static::clearEsiCache();
             return true;
         } else {
             $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objCategory->getErrorMsg());
@@ -1230,7 +1233,7 @@ class DownloadsManager extends DownloadsLibrary
 
     private function addDownloadsToCategory()
     {
-        global $_ARRAYLANG, $_LANGID;
+        global $_ARRAYLANG;
 
         $objCategory = Category::getCategory(!empty($_REQUEST['parent_id']) ? $_REQUEST['parent_id'] : 0);
         if ($objCategory->EOF) {
@@ -1251,13 +1254,15 @@ class DownloadsManager extends DownloadsLibrary
             $objCategory->setDownloads(isset($_POST['downloads_category_associated_downloads']) ? array_map('intval', $_POST['downloads_category_associated_downloads']) : array());
 
             if ($objCategory->storeDownloadAssociations()) {
+                //clear Esi Cache
+                static::clearEsiCache();
                 return true;
             } else {
                 $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objCategory->getErrorMsg());
             }
         }
 
-        $pageTitle = sprintf($_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'], htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
+        $pageTitle = sprintf($_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'], htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET));
         $this->_pageTitle = $pageTitle;
         $this->objTemplate->loadTemplateFile('module_downloads_category_add_downloads.html');
 
@@ -1308,7 +1313,7 @@ class DownloadsManager extends DownloadsLibrary
 
     private function updateDownloadOrder($arrDownloadOrder)
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $arrFailedDownloads = array();
 
@@ -1333,7 +1338,7 @@ class DownloadsManager extends DownloadsLibrary
 
     private function download()
     {
-        global $_ARRAYLANG, $_LANGID;
+        global $_ARRAYLANG;
 
         $id = isset($_REQUEST['id']) ? contrexx_input2int($_REQUEST['id']) : 0;
         $objFWUser = \FWUser::getFWUserObject();
@@ -1466,7 +1471,7 @@ class DownloadsManager extends DownloadsLibrary
         $arrLanguages = \FWLanguage::getActiveFrontendLanguages();
         foreach ($arrLanguages as $langId => $arrLanguage) {
             $isSelectedLang = !empty($objDownload->getName($langId, true));
-            if (empty($id) && $_LANGID == $langId) {
+            if (empty($id) && $langId == DownloadsLibrary::getOutputLocale()->getId()) {
                 $isSelectedLang = true;
             }
 
@@ -1690,7 +1695,7 @@ class DownloadsManager extends DownloadsLibrary
                 continue;
             }
 
-            $option = '<option value="'.$objAvailableDownload->getId().'">'.htmlentities($objAvailableDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).' ('.htmlentities($objAvailableDownload->getDescription($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).')</option>';
+            $option = '<option value="'.$objAvailableDownload->getId().'">'.htmlentities($objAvailableDownload->getName(DownloadsLibrary::getOutputLocale()->getId()), ENT_QUOTES, CONTREXX_CHARSET).' ('.htmlentities($objAvailableDownload->getDescription(DownloadsLibrary::getOutputLocale()->getId()), ENT_QUOTES, CONTREXX_CHARSET).')</option>';
 
             if (in_array($objAvailableDownload->getId(), $arrRelatedDownloads)) {
                 $arrAssociatedDownloadOptions[] = $option;
@@ -1765,7 +1770,7 @@ class DownloadsManager extends DownloadsLibrary
         ));
 
         // sets javascript variable for current language
-        \ContrexxJavascript::getInstance()->setVariable('currentLanguage', $_LANGID, 'Downloads');
+        \ContrexxJavascript::getInstance()->setVariable('currentLanguage', DownloadsLibrary::getOutputLocale()->getId(), 'Downloads');
 
         return true;
     }
@@ -1820,7 +1825,7 @@ class DownloadsManager extends DownloadsLibrary
      */
     private function updateCategoryOrder($arrCategoryOrder)
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         // TODO: check subcategory manage access permission of $parentCategoryId
 
@@ -1830,7 +1835,7 @@ class DownloadsManager extends DownloadsLibrary
             if (!$objCategory->EOF) {
                 $objCategory->setOrder($orderNr);
                 if (!$objCategory->store()) {
-                    $arrFailedCategories[] = htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
+                    $arrFailedCategories[] = htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET);
                 }
             }
         }
@@ -1906,7 +1911,7 @@ class DownloadsManager extends DownloadsLibrary
      */
     private function categories()
     {
-        global $_ARRAYLANG, $_LANGID, $_CONFIG, $objInit;
+        global $_ARRAYLANG, $_CONFIG, $objInit;
 
         $objCategory = Category::getCategory($this->parentCategoryId);
         $objFWUser = \FWUser::getFWUserObject();
@@ -2016,12 +2021,18 @@ class DownloadsManager extends DownloadsLibrary
 
         // parse frontend preview link
         if ($objCategory->getId()) {
-            $categoryFrontendURI = ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/'.CONTREXX_DIRECTORY_INDEX.'?section=Downloads&amp;category='.$objCategory->getId();
-            $this->objTemplate->setVariable(array(
-                'TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND'      => $_ARRAYLANG['TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND'],
-                'DOWNLOADS_CATEGORY_FRONTEND_URI'           => $categoryFrontendURI
-            ));
-            $this->objTemplate->parse('downloads_category_frontend_link');
+            try {
+                $categoryFrontendURI = \Cx\Core\Routing\Url::fromModuleAndCmd('Downloads', '', DownloadsLibrary::getOutputLocale()->getId(), array('category' => $objCategory->getId()), '', false);
+            } catch (\Exception $e) {}
+            if ($categoryFrontendURI) {
+                $this->objTemplate->setVariable(array(
+                    'TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND'      => $_ARRAYLANG['TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND'],
+                    'DOWNLOADS_CATEGORY_FRONTEND_URI'           => $categoryFrontendURI
+                ));
+                $this->objTemplate->parse('downloads_category_frontend_link');
+            } else {
+                $this->objTemplate->hideBlock('downloads_category_frontend_link');
+            }
         } else {
             $this->objTemplate->hideBlock('downloads_category_frontend_link');
         }
@@ -2046,8 +2057,8 @@ class DownloadsManager extends DownloadsLibrary
         ) {
             $this->objTemplate->setVariable(array(
                 'DOWNLOADS_CATEGORY_ID'                     => $objCategory->getId(),
-                'TXT_DOWNLOADS_ADD_NEW_DOWNLOAD_TO_CATEGORY'=> sprintf($_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_DOWNLOAD_TO_CATEGORY'], htmlentities($objCategory->getName(LANG_ID), ENT_QUOTES, CONTREXX_CHARSET)),
-                'TXT_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'   => sprintf($_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'], htmlentities($objCategory->getName(LANG_ID), ENT_QUOTES, CONTREXX_CHARSET)),
+                'TXT_DOWNLOADS_ADD_NEW_DOWNLOAD_TO_CATEGORY'=> sprintf($_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_DOWNLOAD_TO_CATEGORY'], htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET)),
+                'TXT_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'   => sprintf($_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOADS_TO_CATEGORY'], htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET)),
                 'DOWNLOADS_DOWNLOAD_CATEGORY_SORT'          => $categoryOrderDirection,
                 'DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY'       => $categoryOrderBy,
                 'DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT'          => $downloadOrderDirection,
@@ -2066,7 +2077,7 @@ class DownloadsManager extends DownloadsLibrary
             'TXT_DOWNLOADS_CATEGORY'            => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY'],
             'DOWNLOADS_CATEGORY_ID'             => $objCategory->getId(),
             'DOWNLOADS_CATEGORY_MENU'           => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES']),
-            'DOWNLOADS_SEARCH_TERM'             => !empty($_GET['search_term']) ? $_GET['search_term'] : $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'],
+            'DOWNLOADS_SEARCH_TERM'             => !empty($_GET['search_term']) ? $_GET['search_term'] : '',
             'TXT_DOWNLOADS_SEARCH_DOWNLOAD'     => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'],
             'TXT_DOWNLOADS_FILTER'              => $_ARRAYLANG['TXT_DOWNLOADS_FILTER'],
             'TXT_DOWNLOADS_SEARCH'              => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
@@ -2077,7 +2088,7 @@ class DownloadsManager extends DownloadsLibrary
 
     private function parseCategories($objCategory, $downloadOrderBy, $downloadOrderDirection, $downloadLimitOffset, $categoryOrderBy, $categoryOrderDirection, $categoryLimitOffset)
     {
-        global $_ARRAYLANG, $_LANGID, $_CONFIG;
+        global $_ARRAYLANG, $_CONFIG;
 
         $objFWUser = \FWUser::getFWUserObject();
 
@@ -2211,7 +2222,7 @@ class DownloadsManager extends DownloadsLibrary
                         'DOWNLOADS_CATEGORY_CATEGORY_OFFSET'        => $categoryLimitOffset,
                         'DOWNLOADS_CATEGORY_DOWNLOAD_OFFSET'        => $downloadLimitOffset,
                         //'DOWNLOADS_CATEGORY_STATUS_JS'           => $objSubcategory->getActiveStatus(),
-                        //'DOWNLOADS_CATEGORY_NAME_JS'             => htmlspecialchars($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                        //'DOWNLOADS_CATEGORY_NAME_JS'             => htmlspecialchars($objSubcategory->getName(), ENT_QUOTES, CONTREXX_CHARSET),
                         'DOWNLOADS_CATEGORY_SWITCH_STATUS_DESC'     => $objSubcategory->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_CATEGORY_DESC'] : $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_CATEGORY_DESC'],
                         'DOWNLOADS_CATEGORY_SWITCH_STATUS_IMG_DESC' => $objSubcategory->getActiveStatus() ? $_ARRAYLANG['TXT_DOWNLOADS_DEACTIVATE_CATEGORY_DESC'] : $_ARRAYLANG['TXT_DOWNLOADS_ACTIVATE_CATEGORY_DESC']
                     ));
@@ -2260,7 +2271,7 @@ class DownloadsManager extends DownloadsLibrary
                 ) {
                     $this->objTemplate->setVariable(array(
                         'TXT_DOWNLOADS_DELETE'                  => $_ARRAYLANG['TXT_DOWNLOADS_DELETE'],
-                        'DOWNLOADS_CATEGORY_NAME_JS'            => htmlspecialchars($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                        'DOWNLOADS_CATEGORY_NAME_JS'            => htmlspecialchars($objSubcategory->getName(), ENT_QUOTES, CONTREXX_CHARSET),
                         'DOWNLOADS_CATEGORY_HAS_SUBCATEGORIES'  => $objSubcategory->hasSubcategories()
                     ));
 
@@ -2299,7 +2310,7 @@ class DownloadsManager extends DownloadsLibrary
                     $this->objTemplate->hideBlock('downloads_category_name_link_close');
                 }
 
-                $description = $objSubcategory->getDescription($_LANGID);
+                $description = $objSubcategory->getDescription();
                 if (strlen($description) > 100) {
                     $description = substr($description, 0, 97).'...';
                 }
@@ -2308,8 +2319,8 @@ class DownloadsManager extends DownloadsLibrary
                     'DOWNLOADS_CATEGORY_ROW_CLASS'          => $nr++ % 2 ? 'row1' : 'row2',
                     'DOWNLOADS_CATEGORY_ID'                 => $objSubcategory->getId(),
                     'DOWNLOADS_CATEGORY_STATUS_LED'         => $objSubcategory->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
-                    'DOWNLOADS_OPEN_CATEGORY_DESC'          => sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)),
-                    'DOWNLOADS_CATEGORY_NAME'               => htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+                    'DOWNLOADS_OPEN_CATEGORY_DESC'          => sprintf($_ARRAYLANG['TXT_DOWNLOADS_SHOW_CATEGORY_CONTENT'], htmlentities($objSubcategory->getName(), ENT_QUOTES, CONTREXX_CHARSET)),
+                    'DOWNLOADS_CATEGORY_NAME'               => htmlentities($objSubcategory->getName(), ENT_QUOTES, CONTREXX_CHARSET),
                     'DOWNLOADS_CATEGORY_PROTECTED'          => $objSubcategory->getReadAccessId() ? '_locked' : '',
                     'DOWNLOADS_CATEGORY_DOWNLOADS_COUNT'    => intval($objSubcategory->getAssociatedDownloadsCount()),
                     'DOWNLOADS_CATEGORY_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
@@ -2368,14 +2379,14 @@ class DownloadsManager extends DownloadsLibrary
 
 
         if ($objCategory->getId()) {
-            $this->objTemplate->setVariable('TXT_DOWNLOADS_CATEGORIES_OF_CATEGORY', sprintf($_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES_OF_CATEGORY'], '&bdquo;'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'&ldquo;'));
+            $this->objTemplate->setVariable('TXT_DOWNLOADS_CATEGORIES_OF_CATEGORY', sprintf($_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES_OF_CATEGORY'], '&bdquo;'.htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET).'&ldquo;'));
         }
     }
 
 
     private function parseCategoryDownloads($objCategory, $downloadOrderBy, $downloadOrderDirection, $downloadLimitOffset, $categoryOrderBy, $categoryOrderDirection, $categoryLimitOffset, $searchTerm)
     {
-        global $_ARRAYLANG, $_LANGID, $_CONFIG;
+        global $_ARRAYLANG, $_CONFIG;
 
         $nr = 0;
         $arrDownloadOrder = $objCategory->getAssociatedDownloadIds();
@@ -2594,7 +2605,7 @@ class DownloadsManager extends DownloadsLibrary
         }
 
         if ($downloadsAvailable && !empty($this->parentCategoryId)) {
-            $this->objTemplate->setVariable('TXT_DOWNLOADS_OF_CATEGORY', sprintf($_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS_OF_CATEGORY'], '&bdquo;'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'&ldquo;'));
+            $this->objTemplate->setVariable('TXT_DOWNLOADS_OF_CATEGORY', sprintf($_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS_OF_CATEGORY'], '&bdquo;'.htmlentities($objCategory->getName(), ENT_QUOTES, CONTREXX_CHARSET).'&ldquo;'));
         } else {
             $this->objTemplate->setVariable('TXT_DOWNLOADS_ALL_DOWNLOADS', $_ARRAYLANG['TXT_DOWNLOADS_ALL_DOWNLOADS']);
         }
@@ -2667,7 +2678,7 @@ class DownloadsManager extends DownloadsLibrary
      */
     private function settings()
     {
-        global $_ARRAYLANG, $_LANGID;
+        global $_ARRAYLANG;
 
         \Permission::checkAccess(142, 'static');
 
@@ -2710,7 +2721,7 @@ class DownloadsManager extends DownloadsLibrary
         $notAssociatedGroups = '';
 
         while (!$objGroup->EOF) {
-            $option = '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).' ['.$objGroup->getType().']</option>';
+            $option = '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).' ['.$objGroup->getType().']</option>';
             if (in_array($objGroup->getId(), $arrGroups)) {
                 $associatedGroups .= $option;
             } else {

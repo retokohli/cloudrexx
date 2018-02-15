@@ -85,6 +85,8 @@ CKEDITOR.editorConfig = function( config )
     config.height = 307;
     config.uiColor = '#ececec';
 
+    <?php if (!empty($_GET['locale'])) echo "config.language = '" . preg_replace('/[^a-z]/', '', $_GET['locale']) . "';";?>
+
     config.forcePasteAsPlainText = false;
     config.enterMode = CKEDITOR.ENTER_BR;
     config.shiftEnterMode = CKEDITOR.ENTER_P;
@@ -103,7 +105,7 @@ CKEDITOR.editorConfig = function( config )
 
     config.tabSpaces = 4;
     config.baseHref = '<?php echo \Cx\Core\Routing\Url::fromCapturedRequest('', $cx->getWebsiteOffsetPath(), array())->toString(); ?>';
-    config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
+    config.templates_files = [ '' ];
     config.templates_replaceContent = <?php echo \Cx\Core\Setting\Controller\Setting::getValue('replaceActualContents','Wysiwyg')? 'true' : 'false' ?>;
 
     config.toolbar_Full = config.toolbar_Small = <?php echo $wysiwyg->getToolbar() ?>;
@@ -128,7 +130,7 @@ CKEDITOR.editorConfig = function( config )
 
 //loading the templates
 CKEDITOR.on('instanceReady',function(){
-    var loadingTemplates = <?php echo $wysiwyg->getWysiwygTempaltes();?>;
+    var loadingTemplates = <?php echo $wysiwyg->getWysiwygTemplates($skinId);?>;
     for(var instanceName in CKEDITOR.instances) {
         loadingTemplates.button = CKEDITOR.instances[instanceName].getCommand("templates") //Reference to Template-Button
 

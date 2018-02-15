@@ -117,7 +117,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
         $contrexxJavascript->setVariable('defaultTemplate', $this->getDefaultTemplate(), 'FrontendEditing');
 
         $configPath = $this->cx->getComponent('Wysiwyg')->getConfigPath();
-        $contrexxJavascript->setVariable('configPath', $configPath . '?langId=' . FRONTEND_LANG_ID, 'FrontendEditing');
+        $contrexxJavascript->setVariable('configPath', $configPath, 'FrontendEditing');
     }
 
     /**
