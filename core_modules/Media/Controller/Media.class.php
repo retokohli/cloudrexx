@@ -272,27 +272,28 @@ class Media extends MediaLibrary
                 $file = rawurlencode($fileName);
                 switch ($key) {
                     case 'dir':
-                    $path = rawurlencode($mediaWebPath . $fileName . '/');
-                    $previewUrl->setParam('act', null);
-                    $previewUrl->setParam('file', null);
-                    $previewUrl->setParam('path', $path);
+                        // build directory traversal url
+                        $path = rawurlencode($mediaWebPath . $fileName . '/');
+                        $previewUrl->setParam('act', null);
+                        $previewUrl->setParam('file', null);
+                        $previewUrl->setParam('path', $path);
                         break;
 
                     case 'file':
                     default:
-                    $path = rawurlencode($mediaWebPath);
-
-                    $filePath = $mediaPath . $fileName;
-                    if ($this->_isImage($filePath)) {
-                        $image        = true;
-                        $tmpSize      = getimagesize($filePath);
-                        $imagePreview = 'javascript: preview(\'' . $mediaWebPath . $fileName . '\', ' . $tmpSize[0] . ', ' . $tmpSize[1] . ');';
-                    } else {
+                        // build file download url
+                        $path = rawurlencode($mediaWebPath);
                         $previewUrl->setParam('act', 'download');
                         $previewUrl->setParam('path', $path);
                         $previewUrl->setParam('file', $file);
-                    }
 
+                        // build image preview url
+                        $filePath = $mediaPath . $fileName;
+                        if ($this->_isImage($filePath)) {
+                            $image        = true;
+                            $tmpSize      = getimagesize($filePath);
+                            $imagePreview = 'javascript: preview(\'' . $mediaWebPath . $fileName . '\', ' . $tmpSize[0] . ', ' . $tmpSize[1] . ');';
+                        }
                     break;
                 }
 
