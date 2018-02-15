@@ -118,9 +118,11 @@ class Config
             ),
             'portFrontendHTTP' => array(
                 'value' => '80',
+                'componentDependencies' => array('SystemInfo'),
             ),
             'portFrontendHTTPS' => array(
                 'value' => '443',
+                'componentDependencies' => array('SystemInfo'),
             ),
             'favicon' => array(
                 'type' => \Cx\Core\Setting\Controller\Setting::TYPE_IMAGE,
@@ -168,9 +170,11 @@ class Config
             ),
             'portBackendHTTP' => array(
                 'value' => '80',
+                'componentDependencies' => array('SystemInfo'),
             ),
             'portBackendHTTPS' => array(
                 'value' => '443',
+                'componentDependencies' => array('SystemInfo'),
             ),
             'defaultLanguageId' => array(
                 'type' => \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
