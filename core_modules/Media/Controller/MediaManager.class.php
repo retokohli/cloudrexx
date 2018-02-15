@@ -1215,7 +1215,7 @@ class MediaManager extends MediaLibrary
         global $objDatabase, $_ARRAYLANG;
 
         $this->_arrSettings = $this->createSettingsArray();
-        for ($i = 0; $i <=4; $i++)
+        for ($i = 1; $i <=4; $i++)
         {
             $frontendSearchkey     = 'mediaSettings_Media'. $i .'FrontendSearch';
             $settingFrontendSearch = !empty($_POST[$frontendSearchkey]) && $_POST[$frontendSearchkey] == 'on'
