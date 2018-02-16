@@ -45,6 +45,7 @@ $contrexx_path = dirname(__FILE__, $depth);
  * @ignore
  */
 require_once($contrexx_path . '/core/Core/init.php');
+\DBG::activate(DBG_PHP | DBG_LOG_FILE);
 $cx = init('minimal');
 
 $sessionObj = $cx->getComponent('Session')->getSession();
@@ -128,12 +129,24 @@ CKEDITOR.editorConfig = function( config )
     }
 
     // load custom config from Wysiwyg.yml of webdesign template 
-    <?php echo $wysiwyg->getCustomWysiwygEditorConfig($skinId).PHP_EOL;?>
+    <?php
+        try {
+            echo $wysiwyg->getCustomWysiwygEditorConfig($skinId, 1) . "\n";
+        } catch (\Throwable $t) {
+            \DBG::msg($t->getMessage());
+        }
+    ?>
 };
 
 //loading the templates
 CKEDITOR.on('instanceReady',function(){
-    var loadingTemplates = <?php echo $wysiwyg->getWysiwygTemplates($skinId);?>;
+    var loadingTemplates = <?php
+        try {
+            echo $wysiwyg->getWysiwygTemplates($skinId);
+        } catch (\Throwable $t) {
+            \DBG::msg($t->getMessage());
+        }
+    ?>;
     for(var instanceName in CKEDITOR.instances) {
         loadingTemplates.button = CKEDITOR.instances[instanceName].getCommand("templates") //Reference to Template-Button
 
@@ -219,7 +232,13 @@ if (<?php
 }
 
 // load custom code from Wysiwyg.yml of webdesign template 
-<?php echo $wysiwyg->getCustomWysiwygEditorJsCode($skinId).PHP_EOL;?>
+<?php
+    try {
+        echo $wysiwyg->getCustomWysiwygEditorJsCode($skinId) . "\n";
+    } catch (\Throwable $t) {
+        \DBG::msg($t->getMessage());
+    }
+?>
 
 //this script will not be executed at the first round (first wysiwyg call)
 cx.bind("loadingEnd", function(myArgs) {

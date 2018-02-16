@@ -134,13 +134,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *
      * @param   integer $themeId    The ID of the webdesign template to
      *                              load the Wysiwyg editor config from.
+     * @param   integer $tabCount   Number of tabs to be added on each
+     *                              line if the config spreads over multiple
+     *                              lines. Defaults to 0 (no indent).
      * @return  string              Wysiwyg editor config loaded from
      *                              Wysiwyg.yml file of theme identified
      *                              by $themeId.
      */
-    public function getCustomWysiwygEditorConfig($themeId) {
+    public function getCustomWysiwygEditorConfig($themeId, $tabCount = 0) {
         $data = $this->getCustomWysiwygData($themeId, 'Config');
-        return join("\n".str_repeat(" ", 4), $data);
+
+        // the cloudrexx guidelines stats that a tab consists of 4 spaces
+        $tab = str_repeat(' ', 4);
+
+        return join("\n" . str_repeat($tab, $tabCount), $data);
     }
 
     /**
@@ -193,7 +200,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return  \Cx\Core_Modules\Listing\Model\Entity\DataSet   Loaded DataSet
      *                                                          of Wysiwyg.yml
      */
-    public function getWysiwygDataFromTheme($themeId) {
+    protected function getWysiwygDataFromTheme($themeId) {
         // fetch from local cache
         if (isset($this->wysiwygDataCache[$themeId])) {
             return $this->wysiwygDataCache[$themeId];
@@ -256,7 +263,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
 
             return $wysiwygData->getEntry($key);
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
             \DBG::log($e->getMessage());
             return array();
         }
