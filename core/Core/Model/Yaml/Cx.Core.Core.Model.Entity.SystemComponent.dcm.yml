@@ -12,5 +12,6 @@ Cx\Core\Core\Model\Entity\SystemComponent:
       type: string
       length: 100
     type:
-      type: string
+      type: enum
       length: 12
+      values: ['core', 'core_module', 'module']

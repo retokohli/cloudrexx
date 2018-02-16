@@ -395,7 +395,8 @@ namespace Cx\Core\Model {
 
             //resolve enum, set errors
             $conn = $em->getConnection();
-            $conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
+            \Doctrine\DBAL\Types\Type::addType('enum', 'Cx\Core\Model\Model\Entity\EnumType');
+            $conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'enum');
             $conn->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');
 
             $this->em = $em;
