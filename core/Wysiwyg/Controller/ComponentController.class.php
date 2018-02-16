@@ -144,7 +144,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getCustomWysiwygEditorConfig($themeId, $tabCount = 0) {
         $data = $this->getCustomWysiwygData($themeId, 'Config');
 
-        // the cloudrexx guidelines stats that a tab consists of 4 spaces
+        // the cloudrexx guidelines states that a tab consists of 4 spaces
         $tab = str_repeat(' ', 4);
 
         return join("\n" . str_repeat($tab, $tabCount), $data);
