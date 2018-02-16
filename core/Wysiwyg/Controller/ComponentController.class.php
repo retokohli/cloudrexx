@@ -230,7 +230,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         // load Wysiwyg.yml from theme
-        $wysiwygData = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($wysiwygDataPath);
+        $wysiwygData = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($wysiwygDataPath, false);
         if (!$wysiwygData) {
             return null;
         }
