@@ -270,25 +270,53 @@ class Media extends MediaLibrary
                 }
 
                 $file = rawurlencode($fileName);
-                if ($key == 'dir') {
-                    $path = rawurlencode($mediaWebPath . $fileName . '/');
-                    $previewUrl->setParam('act', null);
-                    $previewUrl->setParam('file', null);
-                    $previewUrl->setParam('path', $path);
-                } elseif ($key == 'file') {
-                    $path = rawurlencode($mediaWebPath);
+                switch ($key) {
+                    case 'dir':
+                        // build directory traversal url
+                        $path = rawurlencode($mediaWebPath . $fileName . '/');
+                        $previewUrl->setParam('act', null);
+                        $previewUrl->setParam('file', null);
+                        $previewUrl->setParam('path', $path);
 
-                    $filePath = $mediaPath . $fileName;
-                    if ($this->_isImage($filePath)) {
-                        $image        = true;
-                        $tmpSize      = getimagesize($filePath);
-                        $imagePreview = 'javascript: preview(\'' . $mediaWebPath . $fileName . '\', ' . $tmpSize[0] . ', ' . $tmpSize[1] . ');';
-                    } else {
+                        // show directory specific template block
+                        if ($this->_objTpl->blockExists('mediaDirectoryTreeDir')) {
+                            $this->_objTpl->touchBlock('mediaDirectoryTreeDir');
+                        }
+
+                        // hide file specific template block
+                        if ($this->_objTpl->blockExists('mediaDirectoryTreeFile')) {
+                            $this->_objTpl->hideBlock('mediaDirectoryTreeFile');
+                        }
+                        break;
+
+                    case 'file':
+                    default:
+                        // build file download url
+                        $path = rawurlencode($mediaWebPath);
                         $previewUrl->setParam('act', 'download');
                         $previewUrl->setParam('path', $path);
                         $previewUrl->setParam('file', $file);
-                    }
+
+                        // build image preview url
+                        $filePath = $mediaPath . $fileName;
+                        if ($this->_isImage($filePath)) {
+                            $image        = true;
+                            $tmpSize      = getimagesize($filePath);
+                            $imagePreview = 'javascript: preview(\'' . $mediaWebPath . $fileName . '\', ' . $tmpSize[0] . ', ' . $tmpSize[1] . ');';
+                        }
+
+                        // hide directory specific template block
+                        if ($this->_objTpl->blockExists('mediaDirectoryTreeDir')) {
+                            $this->_objTpl->hideBlock('mediaDirectoryTreeDir');
+                        }
+
+                        // show file specific template block
+                        if ($this->_objTpl->blockExists('mediaDirectoryTreeFile')) {
+                            $this->_objTpl->touchBlock('mediaDirectoryTreeFile');
+                        }
+                    break;
                 }
+
                 $deleteUrl->setParam('path', $path);
                 $deleteUrl->setParam('file', $key == 'dir' ? null : $file);
 
