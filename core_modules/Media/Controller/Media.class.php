@@ -223,6 +223,17 @@ class Media extends MediaLibrary
         $renameUrl->setParam('act', 'rename');
         $deleteUrl->setParam('act', 'delete');
 
+        // we'll parse image specific functionality only,
+        // if related placeholder used for its output is present
+        // in the application template
+        if ($this->_objTpl->blockExists('mediaDirectoryTreeFile')) {
+            // check in file specific template block
+            $parseImagePreview = $this->_objTpl->placeholderExists('MEDIA_FILE_NAME_HREF', 'mediaDirectoryTreeFile');
+        } else {
+            // check in generic template block
+            $parseImagePreview = $this->_objTpl->placeholderExists('MEDIA_FILE_NAME_HREF', 'mediaDirectoryTree');
+        }
+
         $i = 0;
         foreach (array_keys($dirTree) as $key) {
             if (!is_array($dirTree[$key]['icon'])) {
@@ -299,7 +310,7 @@ class Media extends MediaLibrary
 
                         // build image preview url
                         $filePath = $mediaPath . $fileName;
-                        if ($this->_isImage($filePath)) {
+                        if ($parseImagePreview && $this->_isImage($filePath)) {
                             $image        = true;
                             $tmpSize      = getimagesize($filePath);
                             $imagePreview = 'javascript: preview(\'' . $mediaWebPath . $fileName . '\', ' . $tmpSize[0] . ', ' . $tmpSize[1] . ');';
@@ -325,6 +336,7 @@ class Media extends MediaLibrary
 
                 $this->_objTpl->setVariable(array(
                     'MEDIA_FILE_NAME_HREF'   => $image ? $imagePreview : $previewUrl->toString(false),
+                    'MEDIA_FILE_NAME_SRC'    => $previewUrl->toString(false),
                     'MEDIA_FILE_RENAME_HREF' => $renameUrl->toString(false),
                     'MEDIA_FILE_DELETE_HREF' => $deleteUrl->toString(false),
                 ));
