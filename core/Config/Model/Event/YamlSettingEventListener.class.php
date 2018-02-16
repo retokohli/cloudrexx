@@ -101,7 +101,8 @@ class YamlSettingEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventL
                             php_sapi_name() != 'cli' &&
                             !\Cx\Core\Config\Controller\Config::checkAccessibility($value)
                         ) {
-                            \Message::add($_ARRAYLANG['TXT_CONFIG_UNABLE_TO_SET_PROTOCOL'], \Message::CLASS_ERROR);
+                            $domainAddr = $value . '://' . $_CONFIG['domainUrl'] . '/';
+                            \Message::add(sprintf($_ARRAYLANG['TXT_CONFIG_UNABLE_TO_SET_PROTOCOL'], $domainAddr), \Message::CLASS_ERROR);
                             $objSetting->setValue('none');
                         }
                     }
@@ -116,7 +117,8 @@ class YamlSettingEventListener extends \Cx\Core\Event\Model\Entity\DefaultEventL
                             php_sapi_name() != 'cli' &&
                             !\Cx\Core\Config\Controller\Config::checkAccessibility($value)
                         ) {
-                            \Message::add($_ARRAYLANG['TXT_CONFIG_UNABLE_TO_SET_PROTOCOL'], \Message::CLASS_ERROR);
+                            $domainAddr = $value . '://' . $_CONFIG['domainUrl'] . '/';
+                            \Message::add(sprintf($_ARRAYLANG['TXT_CONFIG_UNABLE_TO_SET_PROTOCOL'], $domainAddr), \Message::CLASS_ERROR);
                             $objSetting->setValue('none');
                         }
                     }

@@ -1037,32 +1037,33 @@ class Config
             $dnsResolver = new \Net_DNS2_Resolver(array(
                 'nameservers' => array($nameServer),
             ));
+
             try {
                 $result = $dnsResolver->query($domain, 'A');
+
+                // if we were able to resolve the website's domain name,
+                // then we shall use it's DNS target as URL target
+                foreach($result->answer as $resourceRecord) {
+                    if ($resourceRecord->name != $domain) {
+                        continue;
+                    }
+
+                    switch ($resourceRecord->type) {
+                        case 'A':
+                            $host = $resourceRecord->address;
+                            break;
+                        case 'CNAME':
+                            $host = $resourceRecord->cname;
+                            break;
+                        default:
+                            \DBG::log('Unknown DNS Resource Record');
+                            \DBG::dump($resourceRecord);
+                            break;
+                    }
+                    break;
+                }
             } catch(\Net_DNS2_Exception $e) {
                 \DBG::log($e->getMessage());
-            }
-
-            // if we were able to resolve the website's domain name,
-            // then we shall use it's DNS target as URL target
-            foreach($result->answer as $resourceRecord) {
-                if ($resourceRecord->name != $domain) {
-                    continue;
-                }
-
-                switch ($resourceRecord->type) {
-                    case 'A':
-                        $host = $resourceRecord->address;
-                        break;
-                    case 'CNAME':
-                        $host = $resourceRecord->cname;
-                        break;
-                    default:
-                        \DBG::log('Unknown DNS Resource Record');
-                        \DBG::dump($resourceRecord);
-                        break;
-                }
-                break;
             }
 
             // create request to port 443 (https), to check whether the request works or not

@@ -189,5 +189,5 @@ $_ARRAYLANG['TXT_CORE_CONFIG_FAVICON'] = 'Favicon';
 $_ARRAYLANG['TXT_CORE_CONFIG_PDF'] = 'PDF Templates';
 $_ARRAYLANG['TXT_CORE_CONFIG_ROBOTSTXT'] = 'robots.txt';
 $_ARRAYLANG['TXT_CONFIG_UNABLE_TO_SET_MAINDOMAIN'] = 'Unable to change main domain to %s as the website can not be reached through it. Please verify the DNS-configuration of the domain.';
-$_ARRAYLANG['TXT_CONFIG_UNABLE_TO_SET_PROTOCOL'] = 'Unable to change the protocol as the website can not be reached over it.';
+$_ARRAYLANG['TXT_CONFIG_UNABLE_TO_SET_PROTOCOL'] = 'Unable to change the protocol as the website can not be reached on %s';
 $_ARRAYLANG['TXT_CONFIG_UNABLE_TO_FORCE_MAINDOMAIN'] = 'Unable to force the main domain as the website can not be reached through it.';

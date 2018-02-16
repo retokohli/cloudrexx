@@ -200,5 +200,5 @@ $_ARRAYLANG['TXT_CORE_CONFIG_PORTBACKENDHTTP'] = 'HTTP Port';
 $_ARRAYLANG['TXT_CORE_CONFIG_PORTBACKENDHTTPS'] = 'HTTPS Port';
 $_ARRAYLANG['TXT_CORE_CONFIG_PDF'] = 'PDF Vorlagen';
 $_ARRAYLANG['TXT_CONFIG_UNABLE_TO_SET_MAINDOMAIN'] = 'Hauptdomain kann nicht auf %s umgestellt werden, da die Website über diese Domain nicht erreichbar ist. Stellen Sie sicher, dass die DNS-Konfiguration korrekt ist.';
-$_ARRAYLANG['TXT_CONFIG_UNABLE_TO_SET_PROTOCOL'] = 'Das Protokoll kann nicht umgestellt werden, da die Website darüber nicht erreichbar ist.';
+$_ARRAYLANG['TXT_CONFIG_UNABLE_TO_SET_PROTOCOL'] = 'Das Protokoll kann nicht umgestellt werden, da die Website über %s nicht erreichbar ist.';
 $_ARRAYLANG['TXT_CONFIG_UNABLE_TO_FORCE_MAINDOMAIN'] = 'Die Hauptdomain kann nicht erzwungen werden, da die Website über diese Domain nicht erreichbar ist.';
