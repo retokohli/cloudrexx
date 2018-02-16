@@ -126,6 +126,9 @@ CKEDITOR.editorConfig = function( config )
     ) {
         <?php echo $wysiwyg->getRemovedButtons(); ?>;
     }
+
+    // load custom config from Wysiwyg.yml of webdesign template 
+    <?php echo $wysiwyg->getCustomWysiwygEditorConfig($skinId).PHP_EOL;?>
 };
 
 //loading the templates
@@ -214,6 +217,9 @@ if (<?php
         }
     });
 }
+
+// load custom code from Wysiwyg.yml of webdesign template 
+<?php echo $wysiwyg->getCustomWysiwygEditorJsCode($skinId).PHP_EOL;?>
 
 //this script will not be executed at the first round (first wysiwyg call)
 cx.bind("loadingEnd", function(myArgs) {
