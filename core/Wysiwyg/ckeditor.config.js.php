@@ -45,7 +45,6 @@ $contrexx_path = dirname(__FILE__, $depth);
  * @ignore
  */
 require_once($contrexx_path . '/core/Core/init.php');
-\DBG::activate(DBG_PHP | DBG_LOG_FILE);
 $cx = init('minimal');
 
 $sessionObj = $cx->getComponent('Session')->getSession();
